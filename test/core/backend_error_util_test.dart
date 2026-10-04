@@ -17,6 +17,63 @@ void main() {
     resource: 'events',
   );
 
+  group('backendCallableErrorIdentity', () {
+    test('preserves exact code and message through mapped wrappers', () {
+      final raw = FirebaseFunctionsException(
+        code: 'aborted',
+        message: 'Rejected',
+      );
+      final mapped = normalizeBackendError(raw, context: firestoreContext);
+      expect(backendCallableErrorIdentity(raw), (
+        code: 'aborted',
+        message: 'Rejected',
+      ));
+      expect(backendCallableErrorIdentity(mapped), (
+        code: 'aborted',
+        message: 'Rejected',
+      ));
+      expect(
+        backendCallableErrorIdentity(
+          FirebaseFunctionsException(code: 'aborted', message: ''),
+        ),
+        (code: 'aborted', message: ''),
+      );
+    });
+
+    test('rejects non-callable causes and excessive wrapper depth', () {
+      expect(
+        backendCallableErrorIdentity(
+          FirebaseException(plugin: 'cloud_firestore', code: 'aborted'),
+        ),
+        isNull,
+      );
+      expect(backendCallableErrorIdentity(StateError('aborted')), isNull);
+      Object error = FirebaseFunctionsException(
+        code: 'aborted',
+        message: 'Rejected',
+      );
+      for (var depth = 0; depth < 8; depth++) {
+        error = BackendOperationException(
+          code: 'unexpected',
+          message: 'Diagnostic',
+          context: firestoreContext,
+          cause: error,
+        );
+      }
+      expect(backendCallableErrorIdentity(error), (
+        code: 'aborted',
+        message: 'Rejected',
+      ));
+      error = BackendOperationException(
+        code: 'unexpected',
+        message: 'Diagnostic',
+        context: firestoreContext,
+        cause: error,
+      );
+      expect(backendCallableErrorIdentity(error), isNull);
+    });
+  });
+
   group('backendCallableErrorDetails', () {
     test('preserves structured recovery details through mapped wrappers', () {
       final raw = FirebaseFunctionsException(

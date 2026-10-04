@@ -27,6 +27,7 @@ export interface ProgramHotelRoomsCallableResponse {
     heldForGroupIds: string[];
     startsAtMillis: number;
     endsAtMillis: number;
+    maxOccupantsPerRoom?: number;
   }[];
   /**
    * @maxItems 2000
@@ -43,6 +44,7 @@ export interface ProgramHotelRoomsCallableResponse {
     roomReadyAtMillis: number | null;
     hotelArrivedAtMillis: number | null;
     revision: number;
+    roomOccupancyId?: string;
   }[];
   /**
    * @maxItems 2000

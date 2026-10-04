@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-30",
+  "updated": "2026-10-04",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -644,6 +644,15 @@
       "reason": "Hotel-scoped room board with stay assignment, lifecycle transitions, and live block capacity.",
       "targetFeature": "feature.programs_arrivals_ops",
       "debtId": "PROGRAMS-FEATURE-013"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.lodging",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private coordinator lodging setup, social membership decisions, dated party allocation, manual moves, and approval/confirmation/publication have source and focused controller, repository, setup and screen tests. Compilation of the feature state/action/evidence contract and dedicated routed capture proof remains planned; the canonical marketing captures do not cover this route.",
+      "targetFeature": "feature.programs_lodging",
+      "debtId": "PROGRAMS-LODGING-FEATURE-001"
     },
     {
       "authority": "flutter_screens",

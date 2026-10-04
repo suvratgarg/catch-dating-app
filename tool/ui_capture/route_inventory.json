@@ -4,12 +4,12 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "7ca916addb969844516d1683cc76696c6ef98c1a0c485e7625a2ef2473fe88a6",
-    "goRouteCount": 117,
+    "routeContractSha256": "a3f08e9c0368b2460d9d9534f4500ffaa00282bcb586e478ae984ee47b732788",
+    "goRouteCount": 118,
     "shellBranchCount": 9,
-    "enumRouteCount": 102,
-    "referencedRouteCount": 102,
-    "runtimeRouteCount": 102,
+    "enumRouteCount": 103,
+    "referencedRouteCount": 103,
+    "runtimeRouteCount": 103,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1290,6 +1290,23 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostProgramLodgingScreen",
+      "path": "/host/programs/:programId/lodging",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/programs/:programId/lodging",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostProgramLodgingScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramLodgingScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramLodgingScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostProgramGuestsScreen",
       "path": "/host/programs/:programId/guests",
       "pathParameters": [
@@ -1916,6 +1933,7 @@
     "hostOrganizerScreen",
     "hostProgramGuestsScreen",
     "hostProgramImportScreen",
+    "hostProgramLodgingScreen",
     "hostProgramMomentsScreen",
     "hostProgramsScreen",
     "hostProgramTeamScreen",

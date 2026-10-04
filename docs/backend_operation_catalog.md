@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.93.2
+version: 1.94.0
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -774,3 +774,15 @@ The scoped Auth mutation inventory and remaining external-administration gap are
 recorded in [Readiness authority mutation boundary](data_contracts.md#readiness-authority-mutation-boundary).
 Role projections, token observations and application deletion tombstones are not
 a substitute for the mandatory full-span authority fence.
+
+### Program Lodging Planner
+
+`manageProgramLodging` provides authenticated private setup/review/preview,
+independently validated manual proposals and alternatives, immutable proposal
+save, and host approval/hotel confirmation/guest publication commands. Actor
+identity comes from `requireAuth`; current canonical authority and source are
+read in the same transaction as writes. Setup requires coordinator authority
+and exact revisions. Lifecycle receipts bind actor, operation ID and command.
+Hotel-desk reads return only the hotel-scoped operational projection; setup,
+affinity memberships and functional requirements remain coordinator-private.
+Canonical stay publication does not activate a provider or make a booking.

@@ -773,7 +773,7 @@ test("retention isolates program field assertions and decisions",
     }
     assert.deepEqual(db.getDoc("programGuests/guest-1")!.fieldSelections, {});
     assert.equal((db.getDoc("programRetentionRuns/program-1")!.phases as
-      Array<{collection: string}>).length, 16);
+      Array<{collection: string}>).length, 23);
   });
 
 test("mismatched evidence scope blocks retention completion",
@@ -793,3 +793,47 @@ test("mismatched evidence scope blocks retention completion",
     assert.ok(db.getDoc("workspaceFieldAssertions/corrupt-fixture"));
     assert.equal(db.getDoc("programRetentionRuns/program-1")!.status, "failed");
   });
+
+
+test("retention deletes private lodging only in the archived program",
+  async () => {
+    const db = new FakeFirestore(retentionSeed());
+    const collections = ["programLodgingProposals", "programLodgingWorkflows",
+      "programLodgingReceipts", "programLodgingSourceVersions",
+      "programLodgingConfigs",
+      "workspaceMembershipAssertions",
+      "workspaceMembershipDecisions"];
+    for (const collection of collections) {
+      for (const programId of ["program-1", "program-2"]) {
+        db.setDoc(collection + "/" + programId, {programId,
+          organizerId: "org-1", workspaceRef: {kind: "program", id: programId},
+          proposal: {scope: {programId, organizerId: "org-1"}}});
+      }
+    }
+    archived(db);
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const result = await anonymizeProgram(db as never, "program-1",
+      retentionDeps(db, {now: () => pastGrace, pageLimit: 1}),
+      pastGrace.toMillis() + 60_000);
+    assert.equal(result, "completed");
+    for (const collection of collections) {
+      assert.equal(db.getDoc(collection + "/program-1"), undefined);
+      assert.ok(db.getDoc(collection + "/program-2"));
+    }
+    assert.equal(validateProgramRetentionRunDocument(
+      db.getDoc("programRetentionRuns/program-1")), true);
+  });
+
+test("conflicting lodging scope prevents retention completion", async () => {
+  const db = new FakeFirestore(retentionSeed());
+  db.setDoc("programLodgingProposals/conflict", {programId: "program-1",
+    organizerId: "org-1", proposal: {scope: {
+      programId: "program-2", organizerId: "org-1"}}});
+  archived(db);
+  const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+  const result = await anonymizeProgram(db as never, "program-1",
+    retentionDeps(db, {now: () => pastGrace}), pastGrace.toMillis() + 60_000);
+  assert.equal(result, "failed");
+  assert.ok(db.getDoc("programLodgingProposals/conflict"));
+  assert.equal(db.getDoc("organizerPrograms/program-1")!.anonymizedAt, null);
+});

@@ -6,7 +6,7 @@ export const programStayDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_stays.schema.json",
   "title": "ProgramStayDocument",
-  "description": "Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.",
+  "description": "Server-owned per-guest lodging assignment. Roommates explicitly share a stable roomOccupancyId; roomLabel is display-only. Legacy rows remain separate until explicitly joined.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programStays",
@@ -46,7 +46,7 @@ export const programStayDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
-      "description": "Exactly one guest per stay; roommates are separate stays sharing roomLabel."
+      "description": "Exactly one guest per stay; room sharing is explicit and independent of invitation household and social groups."
     },
     "hotelId": {
       "type": "string",
@@ -283,6 +283,26 @@ export const programStayDocumentSchema: Record<string, unknown> = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "roomOccupancyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing."
+    },
+    "lodgingPartyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Explicit private lodging room-sharing party identity; absent on unverified legacy/manual assignments.",
+      "x-catch-ownership": "server-only"
+    },
+    "lodgingInventoryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Stable dated lodging inventory unit identity; never inferred from roomLabel.",
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;

@@ -1,3 +1,5 @@
+import {planImportedMembership} from
+  "../workspaces/programMembershipPersistence";
 import {seedWorkspaceFieldAssertions} from
   "../workspaces/workspaceFieldFixture";
 import assert from "node:assert/strict";
@@ -132,6 +134,28 @@ test("deleting a group scrubs member groupIds in bounded pages", async () => {
   /not found/);
 });
 
+test("group deletion retires choice pointers before the next guest edit",
+  async () => {
+    const db = new FakeFirestore(seed());
+    const first = await upsertProgramGuestHandler(request({
+      programId: "program-1",
+      guestId: "guest-1", displayName: "Rohan Sharma", expectedRevision: 1,
+      groupIds: ["side-a", "company-b"]}, "manager-1"), deps(db));
+    assert.equal((db.getDoc("programGuests/guest-1")!.membershipSelections as
+      Array<unknown>).length, 2);
+    await deleteProgramGuestGroupHandler(request({programId: "program-1",
+      groupId: "side-a", expectedRevision: groupDoc(db, "side-a").revision},
+    "manager-1"), deps(db));
+    const guest = db.getDoc("programGuests/guest-1")!;
+    assert.ok((guest.revision as number) > first.revision);
+    assert.deepEqual((guest.membershipSelections as Array<{groupId: string}>)
+      .map((p) => p.groupId), ["company-b"]);
+    await upsertProgramGuestHandler(request({programId: "program-1",
+      guestId: "guest-1", displayName: "Rohan Sharma",
+      expectedRevision: guest.revision, groupIds: []}, "manager-1"), deps(db));
+    assert.deepEqual(db.getDoc("programGuests/guest-1")!.groupIds, []);
+  });
+
 test("guest lists embed the referenced group labels", async () => {
   const db = new FakeFirestore(seed());
   db.updateDoc("programGuests/guest-1",
@@ -205,3 +229,110 @@ test("program groups reject staff without the coordinator duty", async () => {
   await assert.rejects(listProgramGuestGroupsHandler(request({
     programId: "program-1"}, "manager-1"), deps(db)), /access|not found/i);
 });
+
+
+test("group deletion reaches suggestion-only guests beyond an unchanged page",
+  async () => {
+    const db = new FakeFirestore(seed());
+    const guest = db.getDoc("programGuests/guest-1")!;
+    for (let i = 0; i < 401; i++) {
+      db.setDoc(`programGuests/a-${String(i).padStart(3, "0")}`,
+        {...guest, groupIds: []});
+    }
+    const imported = planImportedMembership({guest: {groupIds: []},
+      programId: "program-1", organizerId: "org-1", guestId: "z-target",
+      groupIds: ["side-a", "company-b"], operationId: "source-list",
+      rowIndex: 0, actorUid: "manager-1", observedAtMillis: now.toMillis()});
+    for (const write of imported.writes) {
+      db.setDoc(write.path, {...write.data});
+    }
+    const pointers = imported.projection.suggestions;
+    db.setDoc("programGuests/z-target", {...guest, groupIds: [],
+      membershipSuggestions: pointers});
+    db.setDoc("programGuests/foreign", {...guest, programId: "program-2",
+      organizerId: "org-2", groupIds: [], membershipSuggestions: pointers});
+    const history = [...db.docs].filter(([path]) =>
+      path.startsWith("workspaceMembership"));
+    const untouched = {...db.getDoc("programGuests/a-000")!};
+    const foreign = {...db.getDoc("programGuests/foreign")!};
+    await deleteProgramGuestGroupHandler(request({programId: "program-1",
+      groupId: "side-a", expectedRevision: 1}, "manager-1"), deps(db));
+    const updated = db.getDoc("programGuests/z-target")!;
+    assert.deepEqual(updated.groupIds, []);
+    assert.deepEqual(updated.membershipSuggestions,
+      pointers.filter((p) => p.groupId === "company-b"));
+    assert.ok((updated.revision as number) > (guest.revision as number));
+    assert.deepEqual(db.getDoc("programGuests/a-000"), untouched);
+    assert.deepEqual(db.getDoc("programGuests/foreign"), foreign);
+    assert.deepEqual([...db.docs].filter(([path]) =>
+      path.startsWith("workspaceMembership")), history);
+  });
+
+test("group deletion frees excluded choices at the membership pointer cap",
+  async () => {
+    const db = new FakeFirestore(seed());
+    for (let batch = 0; batch < 10; batch++) {
+      const ids = Array.from({length: 10}, (_, i) =>
+        `retired-${batch * 10 + i}`);
+      for (const id of ids) {
+        db.setDoc(`programGuestGroups/${id}`, group({label: id}));
+      }
+      const guest = db.getDoc("programGuests/guest-1")!;
+      const imported = planImportedMembership({guest,
+        programId: "program-1", organizerId: "org-1", guestId: "guest-1",
+        groupIds: ids, operationId: `excluded-list-${batch}`, rowIndex: 0,
+        actorUid: "manager-1", observedAtMillis: now.toMillis()});
+      for (const write of imported.writes) {
+        db.setDoc(write.path, {...write.data});
+      }
+      db.updateDoc("programGuests/guest-1", {
+        membershipSuggestions: imported.projection.suggestions});
+      await upsertProgramGuestHandler(request({programId: "program-1",
+        guestId: "guest-1", displayName: "Rohan Sharma",
+        expectedRevision: guest.revision, groupIds: []},
+      "manager-1"), deps(db));
+    }
+    const full = db.getDoc("programGuests/guest-1")!;
+    assert.equal((full.membershipSelections as unknown[]).length, 100);
+    assert.deepEqual(full.groupIds, []);
+    const history = [...db.docs].filter(([path]) =>
+      path.startsWith("workspaceMembership"));
+    await deleteProgramGuestGroupHandler(request({programId: "program-1",
+      groupId: "retired-0", expectedRevision: 1}, "manager-1"), deps(db));
+    const cleaned = db.getDoc("programGuests/guest-1")!;
+    assert.equal((cleaned.membershipSelections as unknown[]).length, 99);
+    assert.deepEqual([...db.docs].filter(([path]) =>
+      path.startsWith("workspaceMembership")), history);
+    await upsertProgramGuestHandler(request({programId: "program-1",
+      guestId: "guest-1", displayName: "Rohan Sharma",
+      expectedRevision: cleaned.revision, groupIds: ["company-b"]},
+    "manager-1"), deps(db));
+    assert.deepEqual(db.getDoc("programGuests/guest-1")!.groupIds,
+      ["company-b"]);
+    assert.equal(groupDoc(db, "company-b").memberCount, 1);
+  });
+
+
+for (const field of ["groupIds", "membershipSelections",
+  "membershipSuggestions"]) {
+  for (const bad of [null, [{}]]) {
+    test(`group cleanup rejects ${field}=${JSON.stringify(bad)}`, async () => {
+      const db = new FakeFirestore(seed());
+      db.updateDoc("programGuests/guest-1", {[field]: bad});
+      const before = [...db.docs].filter(([path]) =>
+        path.startsWith("programGuests/") ||
+        path.startsWith("workspaceMembership"));
+      await assert.rejects(deleteProgramGuestGroupHandler(request({
+        programId: "program-1", groupId: "side-a", expectedRevision: 1},
+      "manager-1"), deps(db)), (error: unknown) => {
+        assert.ok(error instanceof Error && "code" in error);
+        assert.equal(error.code, "failed-precondition");
+        assert.match(error.message, /reconciliation/);
+        return true;
+      });
+      assert.deepEqual([...db.docs].filter(([path]) =>
+        path.startsWith("programGuests/") ||
+        path.startsWith("workspaceMembership")), before);
+    });
+  }
+}

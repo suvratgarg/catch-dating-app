@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.161.2
+version: 1.163.0
 updated: 2026-10-03
 owner: recursive_audit_loop
 status: active
@@ -2571,9 +2571,17 @@ health and event state before each attempt. Meta provider tokens live in Secret
 Manager. Every environment pre-provisions one
 `ORGANIZER_WHATSAPP_ACCESS_TOKENS` vault; each organizer connection is stored
 as a distinct immutable secret version containing its organizer and connection
-binding, and retired versions are disabled. The Functions runtime receives
-secret-level accessor and version-manager roles on that vault only; it may not
-create secrets or access unrelated application secrets. Existing raw-token
+binding, and retired versions are disabled. The source proposal binds
+`dispatchOrganizerCampaign`, `getOrganizerMessagingSetup`,
+`sendOrganizerWhatsappReply`, `sendOrganizerWhatsappTest`, and
+`syncOrganizerWhatsappTemplates` to the project-scoped
+`catch-whatsapp-reader@` runtime identity, with secret-level accessor access
+only to this vault and `META_WHATSAPP_APP_SECRET`. Only
+`completeOrganizerWhatsappConnection` and
+`disconnectOrganizerWhatsappConnection` retain the default connection-writer
+runtime identity, which requires accessor and version-manager access on the
+vault. This source change is not deployed; other permissions inherited by the
+default runtime identity remain unchanged. Existing raw-token
 versions remain readable only for migration compatibility. Meta integration is
 reported configured only when `META_WHATSAPP_ENABLED=true` and the real Meta
 app/config credentials are present. Webhook receipts are signature-verified,
@@ -2678,7 +2686,7 @@ withdrawal stamps that response instead of deleting the audit record.
 bounded attribution counters. A source token changes measurement only; it
 never grants form-management, response, or Firestore authority.
 
-All six collections are server-only. Organizer managers create, update,
+All seven collections are server-only. Organizer managers create, update,
 validate, publish, pause, resume, archive, duplicate, delete eligible drafts,
 and list bounded projections through App-Check-protected callables. Form lists
 use the `organizerId + updatedAt desc + __name__ desc` index and opaque cursors;
@@ -3418,6 +3426,64 @@ drift with later catalog edits.
 with function selection, RSVP-status filters, and household dedupe. The
 document field ships ahead of its callable payload and dispatcher wiring;
 clients cannot set it through `upsertOrganizerCampaign` today.
+
+### Program Room Occupancy
+
+`programStays` remains the per-guest lodging record. `roomOccupancyId` is a
+server-minted shared-room identity; a legacy row without it uses its own stay
+ID. Labels, invitation households and social group membership never establish
+sharing. An explicit `shareWithStayId` plus its reviewed revision joins a live
+stay at the same hotel and block. `separateRoom` mints a new occupancy identity.
+The current native room sheet does not yet expose these sharing controls.
+
+`programRoomOccupancy.ts` counts peak simultaneous distinct occupancies over
+calendar nights `[check-in, checkout)` in the program timezone. Unknown dates
+reserve the entire window; malformed legacy dates cannot release capacity.
+Complete bounded snapshots, not old guest-count rollups, own room availability.
+Contract windows and `maxOccupantsPerRoom` are hard limits; an unknown occupant
+limit defaults to one. This is not evidence of bed type or accessibility.
+Multi-timezone properties require explicit property timezones in a later slice.
+
+The stay/block callables require revisions for updates, reject overlapping
+assignments for the same guest across hotels, and serialize competing writes
+through guest and block documents. Checked-in stays permit only remaining
+checked in or checking out; allocation edits cannot move them or downgrade
+status first. Desk responses remain hotel-scoped operational projections.
+The shared validator is available to future automatic proposals; current
+writes are manual and do not publish or confirm a hotel booking.
+
+### Private Lodging Proposals And Membership Evidence
+
+`programLodgingProposals` stores immutable, scoped placement proposals with
+source/inventory/layout/published revisions. `programLodgingWorkflows` separates
+host approval, hotel confirmation and guest publication; `programLodgingReceipts`
+binds each operation to its actor and exact request. These collections deny
+all direct client access. The server adapter validates stored document shapes,
+proposal content identity independent of map key order, current authority after
+reads, and complete approved hotel projections. Its required publication callback
+must enqueue canonical stay writes in the same transaction as workflow/receipt
+writes. The authenticated `manageProgramLodging` source export uses the canonical
+configuration/source/publication adapter; real emulator and combined release
+validation remain required.
+
+`workspaceMembershipAssertions` and `workspaceMembershipDecisions` are typed,
+program/guest/group evidence beside the existing scalar field ledger. Imports
+suggest memberships; explicit included/excluded selections survive re-import.
+Canonical `programGuests.groupIds` remains membership truth. Canonical import and
+selection transaction adapters are still required; these schemas do not grant
+membership or infer room sharing from a household.
+
+All seven private collections join the existing archive retention sweep by exact
+program scope. Membership workspace scope and lodging proposal scope must agree
+with the archived program and organizer; mismatches block completion. Records
+are deleted rather than retaining guest/group pointers as aggregate counts.
+The resumable retention journal supports 23 collection phases.
+`programLodgingSourceVersions` holds private per-domain counters and complete
+source fingerprints; previews persist the prepared fence before search, and
+canonical publication must advance its published fence in the same transaction.
+The bounded native reader includes all program guests without requiring travel
+legs and rejects truncated source. No guest records are copied into the fence. Real emulator
+rules, transaction integration and combined feature acceptance remain gates.
 
 ### Organizer Application Intake
 
@@ -4939,3 +5005,59 @@ Firestore commits. A future audited fence must address role removal/regrant,
 enable/delete/recreate, session revocation and phone unlink/reassign/restore,
 including changes through external principals. No application epoch protocol or
 live authority fence is introduced by these producer interfaces.
+
+The canonical lodging publication source adapter prepares per-guest stay writes
+from the same complete transactional records used for feasibility. Planner
+stays carry explicit `lodgingPartyId` and `lodgingInventoryId`; labels never
+establish inventory identity. Desk readiness edits preserve these links, while
+manual room/date/occupancy changes invalidate them. Unbound live stays require
+verified adoption before planning; they cannot be ignored as spare capacity.
+The adapter preserves checked-in stay documents and verifies native block
+occupancy/date limits before queueing any writes. Its exact post-write stay
+evidence must advance the source fence atomically with workflow/receipt writes.
+`canonicalLodgingSource` now connects persisted private configuration, complete
+native records, per-domain revision fences and this prepared writer to the Store.
+`saveCanonicalLodgingConfig` requires current coordinator authority and an exact
+configuration revision. Legacy adoption explicitly verifies the selected stay,
+its revision, dates, room and existing occupancy; it does not infer sharing.
+Configuration references canonical guest/group/hotel/block IDs and has no copied
+contact records. Native membership with unknown acquisition evidence is marked
+`canonical`; it is never relabelled as a manual decision. The private config is
+retained only within the event and deleted by the archive sweep. The authenticated
+`manageProgramLodging` callable validates strict action-specific requests and
+role-specific responses, derives the actor from authentication, and exposes
+revision-fenced manual proposals and independently checked destinations. Private
+reviews include the exact snapshot and labels read in the same transaction;
+native guest corrections invalidate that snapshot. The private Host stay-planner
+route connects the current proposal to manual room moves, regeneration, host
+approval, per-hotel confirmation and explicit guest publication. Confirmation is
+bound to a hotel allocated by the exact approved proposal; an uncertain response
+retains the same hotel and operation ID. It clears session-invalid projections
+and preserves exact operation IDs for uncertain decision retries. Routed setup
+edits dates, explicit sharing parties, inventory and pins against the current
+configuration revision. Ordinary preview preserves the exact approved proposal
+while its source remains compatible, including precisely its own publication
+revision advance and unchanged native placements; explicit `regenerate: true`
+creates a new current candidate without changing approval. Manual edits use the
+current snapshot revisions. Acknowledged writes with failed reloads require a
+fresh read instead of repeating an old write. Membership decisions work before
+lodging setup exists and reload the current no-configuration view honestly.
+Coordinator-only `readMembership`
+projects one guest's bounded, immutable source-labelled assertions, canonical
+memberships and selected inclusions/exclusions. `decideMembership` fences the
+complete explicit group choice by the current guest revision and reuses the
+existing evidence ledger and group-count writer, without editing contact or
+household fields. Repeated imports leave selected manual choices authoritative;
+new lists remain suggestions. The routed membership editor expires its complete
+private catalog at the earliest setup/evidence deadline. Uncertain membership
+CAS results require a fresh read rather than repeating an old revision; lodging
+publication retains its separate exact operation receipt. Coordinator-only
+`readSetup` also returns a bounded live catalog of
+canonical guests, groups, hotels, contracted room blocks and consuming stays.
+It includes guests without travel records, omits contact details and notes, and
+keeps invitation households separate from explicit sharing decisions. Unknown
+legacy occupancy bindings remain null and require explicit verified adoption;
+contract occupant limits do not establish bed types or accessibility. A strict demo-only Firestore integration fixture verifies concurrent
+configuration edits, publication replay, canonical roommate counting, transactional
+rollback and stale native edits; private collection deny rules are also exercised.
+Fresh captures and full combined release validation remain pending.

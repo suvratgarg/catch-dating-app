@@ -17,6 +17,51 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ManageProgramLodgingCallablePayload',
+    source: 'callables/manage_program_lodging_payload.schema.json',
+    schema: schemaManageProgramLodgingCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManageProgramLodgingCallableResponse',
+    source: 'callable_responses/manage_program_lodging_response.schema.json',
+    schema: schemaManageProgramLodgingCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingConfigDocument',
+    source: 'firestore/program_lodging_configs.schema.json',
+    schema: schemaProgramLodgingConfigDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingSourceVersionDocument',
+    source: 'firestore/program_lodging_source_versions.schema.json',
+    schema: schemaProgramLodgingSourceVersionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingProposalDocument',
+    source: 'firestore/program_lodging_proposals.schema.json',
+    schema: schemaProgramLodgingProposalDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingWorkflowDocument',
+    source: 'firestore/program_lodging_workflows.schema.json',
+    schema: schemaProgramLodgingWorkflowDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ProgramLodgingReceiptDocument',
+    source: 'firestore/program_lodging_receipts.schema.json',
+    schema: schemaProgramLodgingReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WorkspaceMembershipAssertionDocument',
+    source: 'firestore/workspace_membership_assertions.schema.json',
+    schema: schemaWorkspaceMembershipAssertionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WorkspaceMembershipDecisionDocument',
+    source: 'firestore/workspace_membership_decisions.schema.json',
+    schema: schemaWorkspaceMembershipDecisionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappReadinessApprovalDocument',
     source: 'firestore/catch_whatsapp_readiness_approval.schema.json',
     schema: schemaCatchWhatsappReadinessApprovalDocumentSchema,
@@ -5864,6 +5909,15 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ManageProgramLodgingCallablePayload': schemaManageProgramLodgingCallablePayloadSchema,
+  'ManageProgramLodgingCallableResponse': schemaManageProgramLodgingCallableResponseSchema,
+  'ProgramLodgingConfigDocument': schemaProgramLodgingConfigDocumentSchema,
+  'ProgramLodgingSourceVersionDocument': schemaProgramLodgingSourceVersionDocumentSchema,
+  'ProgramLodgingProposalDocument': schemaProgramLodgingProposalDocumentSchema,
+  'ProgramLodgingWorkflowDocument': schemaProgramLodgingWorkflowDocumentSchema,
+  'ProgramLodgingReceiptDocument': schemaProgramLodgingReceiptDocumentSchema,
+  'WorkspaceMembershipAssertionDocument': schemaWorkspaceMembershipAssertionDocumentSchema,
+  'WorkspaceMembershipDecisionDocument': schemaWorkspaceMembershipDecisionDocumentSchema,
   'CatchWhatsappReadinessApprovalDocument': schemaCatchWhatsappReadinessApprovalDocumentSchema,
   'CatchWhatsappReadinessIngressDocument': schemaCatchWhatsappReadinessIngressDocumentSchema,
   'CatchWhatsappReadinessAuditDocument': schemaCatchWhatsappReadinessAuditDocumentSchema,
@@ -7036,6 +7090,15 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/manage_program_lodging_payload.schema.json': schemaManageProgramLodgingCallablePayloadSchema,
+  'callable_responses/manage_program_lodging_response.schema.json': schemaManageProgramLodgingCallableResponseSchema,
+  'firestore/program_lodging_configs.schema.json': schemaProgramLodgingConfigDocumentSchema,
+  'firestore/program_lodging_source_versions.schema.json': schemaProgramLodgingSourceVersionDocumentSchema,
+  'firestore/program_lodging_proposals.schema.json': schemaProgramLodgingProposalDocumentSchema,
+  'firestore/program_lodging_workflows.schema.json': schemaProgramLodgingWorkflowDocumentSchema,
+  'firestore/program_lodging_receipts.schema.json': schemaProgramLodgingReceiptDocumentSchema,
+  'firestore/workspace_membership_assertions.schema.json': schemaWorkspaceMembershipAssertionDocumentSchema,
+  'firestore/workspace_membership_decisions.schema.json': schemaWorkspaceMembershipDecisionDocumentSchema,
   'firestore/catch_whatsapp_readiness_approval.schema.json': schemaCatchWhatsappReadinessApprovalDocumentSchema,
   'firestore/catch_whatsapp_readiness_ingress.schema.json': schemaCatchWhatsappReadinessIngressDocumentSchema,
   'firestore/catch_whatsapp_readiness_audit.schema.json': schemaCatchWhatsappReadinessAuditDocumentSchema,

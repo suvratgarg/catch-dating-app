@@ -231,7 +231,7 @@ test("hotel desk reads blocks, stays, and unplaced guests without PII",
       b.roomBlockId === "blk-general")!;
     // One live stay consumes one of two rooms; cancelled stay-2 holds none.
     assert.equal(general.totalRooms, 2);
-    assert.equal(general.assignedCount, 0);
+    assert.equal(general.assignedCount, 1);
     assert.equal(general.remainingRooms, 1);
     const bride = result.roomBlocks.find((b) =>
       b.roomBlockId === "blk-bride")!;
@@ -348,4 +348,169 @@ test("coordinators define blocks; desk staff and capacity cuts are refused",
     const updated = db.getDoc(`programRoomBlocks/${created.entityId}`)!;
     assert.equal(updated.label, "Renamed");
     assert.equal(updated.assignedCount, 2);
+  });
+
+
+test("explicit roommates use one room and keep identity after label edits",
+  async () => {
+    const db = new FakeFirestore(seed());
+    db.updateDoc("programRoomBlocks/blk-general",
+      {totalRooms: 1, maxOccupantsPerRoom: 2, assignedCount: 2});
+    const joined = await upsertStay(db, "desk-1", {
+      roomBlockId: "blk-general", shareWithStayId: "stay-1",
+      shareWithStayRevision: 1, roomLabel: "Different display label",
+    });
+    assert.equal(db.getDoc(`programStays/${joined.entityId}`)!.roomOccupancyId,
+      "stay-1");
+    assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 1);
+    const board = await view(db, "desk-1");
+    assert.equal(board.roomBlocks.find((b) => b.roomBlockId ===
+      "blk-general")!.remainingRooms, 0);
+    await assert.rejects(upsertStay(db, "desk-1", {
+      guestId: "g-3", roomBlockId: "blk-general", roomLabel: "301",
+    }), precondition);
+    await assert.rejects(upsertStay(db, "desk-1", {
+      guestId: "g-3", roomBlockId: "blk-general", shareWithStayId: "stay-1",
+      shareWithStayRevision: 1,
+    }), precondition);
+    await assert.rejects(upsertStay(db, "desk-1", {
+      stayId: joined.entityId, expectedRevision: joined.revision,
+      separateRoom: true,
+    }), precondition);
+  });
+
+test("turnover and contract windows use local nights", async () => {
+  const db = new FakeFirestore(seed());
+  const turnover = WINDOW_START + 86400000;
+  db.updateDoc("programRoomBlocks/blk-general", {totalRooms: 1});
+  db.updateDoc("programStays/stay-1",
+    {endsAt: admin.firestore.Timestamp.fromMillis(turnover)});
+  const added = await upsertStay(db, "desk-1", {
+    roomBlockId: "blk-general", startsAtMillis: turnover,
+    endsAtMillis: WINDOW_END,
+  });
+  assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 1);
+  await assert.rejects(upsertStay(db, "desk-1", {
+    stayId: added.entityId, expectedRevision: added.revision,
+    startsAtMillis: WINDOW_START,
+  }), precondition);
+  await assert.rejects(upsertStay(db, "desk-1", {
+    stayId: added.entityId, expectedRevision: added.revision,
+    endsAtMillis: WINDOW_END + 86400000,
+  }), precondition);
+  await assert.rejects(upsertBlock(db, "manager-1", {
+    roomBlockId: "blk-general",
+    expectedRevision: db.getDoc("programRoomBlocks/blk-general")!.revision,
+    endsAtMillis: turnover,
+  }), precondition);
+});
+
+test("missing revisions and stale roommate reviews cannot mutate", async () => {
+  const db = new FakeFirestore(seed());
+  await assert.rejects(upsertStay(db, "manager-1", {
+    stayId: "stay-1", guestId: "g-1", roomLabel: "999",
+  }), precondition);
+  await assert.rejects(upsertBlock(db, "manager-1", {
+    roomBlockId: "blk-general",
+  }), precondition);
+  await assert.rejects(upsertStay(db, "manager-1", {
+    roomBlockId: "blk-general", shareWithStayId: "stay-1",
+  }), precondition);
+  await assert.rejects(upsertStay(db, "manager-1", {
+    roomBlockId: "blk-general", shareWithStayId: "stay-1",
+    shareWithStayRevision: 999,
+  }), aborted);
+});
+
+test("cross-hotel simultaneous assignments have one winner", async () => {
+  const db = new FakeFirestore(seed());
+  const result = await Promise.allSettled([
+    upsertStay(db, "manager-1", {guestId: "g-3"}),
+    upsertStay(db, "manager-1", {guestId: "g-3", hotelId: "hotel-oberoi"}),
+  ]);
+  assert.equal(result.filter((r) => r.status === "fulfilled").length, 1);
+  assert.equal(result.filter((r) => r.status === "rejected").length, 1);
+});
+
+test("roommate writes serialize and cannot exceed occupancy", async () => {
+  const db = new FakeFirestore(seed());
+  db.updateDoc("programRoomBlocks/blk-general",
+    {totalRooms: 1, maxOccupantsPerRoom: 2});
+  const result = await Promise.allSettled(["g-2", "g-3"].map((guestId) =>
+    upsertStay(db, "manager-1", {guestId, roomBlockId: "blk-general",
+      shareWithStayId: "stay-1", shareWithStayRevision: 1})));
+  assert.equal(result.filter((r) => r.status === "fulfilled").length, 1);
+});
+
+test("a concurrent check-in invalidates an earlier room edit", async () => {
+  const db = new FakeFirestore(seed());
+  db.beforeCommit = async () => {
+    db.beforeCommit = undefined;
+    db.updateDoc("programStays/stay-1", {status: "checkedIn", revision: 2});
+  };
+  await assert.rejects(upsertStay(db, "manager-1", {
+    stayId: "stay-1", guestId: "g-1", expectedRevision: 1, roomLabel: "New",
+  }), aborted);
+  await assert.rejects(upsertStay(db, "manager-1", {
+    stayId: "stay-1", guestId: "g-1", expectedRevision: 2, roomLabel: "New",
+  }), precondition);
+  assert.equal(db.getDoc("programStays/stay-1")!.roomLabel, "301");
+});
+
+test("sharing never follows a household and unknown occupancy stays single",
+  async () => {
+    const db = new FakeFirestore(seed());
+    db.updateDoc("programGuests/g-1", {householdId: "family"});
+    db.updateDoc("programGuests/g-2", {householdId: "family"});
+    await assert.rejects(upsertStay(db, "manager-1", {
+      roomBlockId: "blk-general", shareWithStayId: "stay-1",
+      shareWithStayRevision: 1,
+    }), precondition);
+    const added = await upsertStay(db, "manager-1", {
+      roomBlockId: "blk-general", roomLabel: "301",
+    });
+    const saved = db.getDoc(`programStays/${added.entityId}`)!;
+    assert.notEqual(saved.roomOccupancyId,
+      "stay-1");
+    assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 2);
+  });
+
+
+test("checked-in status cannot be downgraded to bypass allocation locks",
+  async () => {
+    const db = new FakeFirestore(seed());
+    db.updateDoc("programStays/stay-1", {status: "checkedIn", revision: 2});
+    for (const status of ["held", "confirmed", "cancelled"]) {
+      await assert.rejects(upsertStay(db, "desk-1", {
+        stayId: "stay-1", guestId: "g-1", expectedRevision: 2, status,
+      }), precondition);
+      assert.equal(db.getDoc("programStays/stay-1")!.status, "checkedIn");
+      await assert.rejects(upsertStay(db, "desk-1", {
+        stayId: "stay-1", guestId: "g-1", expectedRevision: 2,
+        separateRoom: true, roomLabel: "999",
+      }), precondition);
+    }
+    await upsertStay(db, "desk-1", {
+      stayId: "stay-1", guestId: "g-1", expectedRevision: 2,
+      status: "checkedOut",
+    });
+    assert.equal(db.getDoc("programStays/stay-1")!.status, "checkedOut");
+    assert.equal(db.getDoc("programRoomBlocks/blk-general")!.assignedCount, 0);
+  });
+
+
+test("desk updates preserve planner bindings until an allocation moves",
+  async () => {
+    const db = new FakeFirestore(seed());
+    db.updateDoc("programStays/stay-1", {lodgingPartyId: "party",
+      lodgingInventoryId: "unit"});
+    const ready = await upsertStay(db, "desk-1", {stayId: "stay-1",
+      guestId: "g-1", expectedRevision: 1, markRoomReady: true});
+    assert.equal(db.getDoc("programStays/stay-1")!.lodgingPartyId, "party");
+    assert.equal(db.getDoc("programStays/stay-1")!.lodgingInventoryId, "unit");
+    await upsertStay(db, "desk-1", {stayId: "stay-1", guestId: "g-1",
+      expectedRevision: ready.revision, roomLabel: "302"});
+    const moved = db.getDoc("programStays/stay-1")!;
+    assert.equal(moved.lodgingPartyId, undefined);
+    assert.equal(moved.lodgingInventoryId, undefined);
   });

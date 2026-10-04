@@ -5,6 +5,15 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {manageProgramLodgingCallablePayloadSchema} from "./schemas/manageProgramLodgingInput";
+export {manageProgramLodgingCallableResponseSchema} from "./schemas/manageProgramLodgingOutput";
+export {programLodgingConfigDocumentSchema} from "./schemas/programLodgingConfigDocument";
+export {programLodgingSourceVersionDocumentSchema} from "./schemas/programLodgingSourceVersionDocument";
+export {programLodgingProposalDocumentSchema} from "./schemas/programLodgingProposalDocument";
+export {programLodgingWorkflowDocumentSchema} from "./schemas/programLodgingWorkflowDocument";
+export {programLodgingReceiptDocumentSchema} from "./schemas/programLodgingReceiptDocument";
+export {workspaceMembershipAssertionDocumentSchema} from "./schemas/workspaceMembershipAssertionDocument";
+export {workspaceMembershipDecisionDocumentSchema} from "./schemas/workspaceMembershipDecisionDocument";
 export {catchWhatsappReadinessApprovalDocumentSchema} from "./schemas/catchWhatsappReadinessApprovalDocument";
 export {catchWhatsappReadinessIngressDocumentSchema} from "./schemas/catchWhatsappReadinessIngressDocument";
 export {catchWhatsappReadinessAuditDocumentSchema} from "./schemas/catchWhatsappReadinessAuditDocument";

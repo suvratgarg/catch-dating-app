@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 abstract final class CatchLayout {
   /// Center full-bleed page bodies in a width-clamped [ConstrainedBox].
   static const double maxContentWidth = 600;
+
   static const int roomMapMaxVisiblePositions = 8;
   static const double roomMapPositionExtent = CatchSpacing.s5;
   static const double roomMapUnitWidthFactor = 0.62;

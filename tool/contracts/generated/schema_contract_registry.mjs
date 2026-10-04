@@ -1,6 +1,5322 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const manageProgramLodgingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_program_lodging_payload.schema.json",
+  "title": "ManageProgramLodgingCallablePayload",
+  "description": "Authenticated private lodging commands. Current authority comes from the session and canonical program documents, never this payload. Hotel desk may request only its scoped operational board/confirmation.",
+  "type": "object",
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "guestId"
+      ],
+      "properties": {
+        "action": {
+          "const": "readMembership"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "guestId",
+        "expectedRevision",
+        "groupIds"
+      ],
+      "properties": {
+        "action": {
+          "const": "decideMembership"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "groupIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId"
+      ],
+      "properties": {
+        "action": {
+          "const": "readSetup"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "setup",
+        "expectedConfigurationRevision",
+        "adoptions"
+      ],
+      "properties": {
+        "action": {
+          "const": "setup"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "setup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "demand",
+            "parties",
+            "groupParents",
+            "rooms",
+            "inventory",
+            "labels"
+          ],
+          "properties": {
+            "demand": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "guestId",
+                  "startsAtMillis",
+                  "endsAtMillis",
+                  "beds",
+                  "requiredFeatures"
+                ],
+                "properties": {
+                  "guestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "startsAtMillis": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 8640000000000000
+                  },
+                  "endsAtMillis": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 8640000000000000
+                  },
+                  "beds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "requiredFeatures": {
+                    "type": "array",
+                    "maxItems": 30,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              "x-catch-ownership": "server-only"
+            },
+            "parties": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "guestIds",
+                  "confirmed",
+                  "priority",
+                  "requiredRoomType",
+                  "pin"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "guestIds": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180,
+                      "x-catch-ownership": "server-only"
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  },
+                  "confirmed": {
+                    "type": "boolean"
+                  },
+                  "priority": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "requiredRoomType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "pin": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [],
+                        "properties": {
+                          "inventoryId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          "hotelId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          "zoneId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "x-catch-ownership": "server-only"
+            },
+            "groupParents": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "parentIds"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "parentIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180,
+                      "x-catch-ownership": "server-only"
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              "x-catch-ownership": "server-only"
+            },
+            "rooms": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "hotelId",
+                  "zoneId",
+                  "building",
+                  "floor",
+                  "wing",
+                  "roomType",
+                  "beds",
+                  "maxOccupants",
+                  "verifiedFeatures",
+                  "resourceIds",
+                  "position"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "hotelId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "zoneId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "building": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "floor": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "wing": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "roomType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "beds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "maxOccupants": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "verifiedFeatures": {
+                    "type": "array",
+                    "maxItems": 30,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "uniqueItems": true
+                  },
+                  "resourceIds": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180,
+                      "x-catch-ownership": "server-only"
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  },
+                  "position": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "properties": {
+                          "x": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "y": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "x-catch-ownership": "server-only"
+            },
+            "inventory": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "contractId",
+                  "physicalRoomId",
+                  "provisional",
+                  "availability"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "contractId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "physicalRoomId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "provisional": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "hotelId",
+                          "zoneId",
+                          "building",
+                          "floor",
+                          "wing",
+                          "roomType",
+                          "beds",
+                          "maxOccupants",
+                          "verifiedFeatures"
+                        ],
+                        "properties": {
+                          "hotelId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          "zoneId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          "building": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          "floor": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          "wing": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          "roomType": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          "beds": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                          },
+                          "maxOccupants": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                          },
+                          "verifiedFeatures": {
+                            "type": "array",
+                            "maxItems": 30,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            },
+                            "uniqueItems": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "availability": {
+                    "type": "array",
+                    "maxItems": 30,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "arrival",
+                        "departure"
+                      ],
+                      "properties": {
+                        "arrival": {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        },
+                        "departure": {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        }
+                      }
+                    },
+                    "minItems": 1
+                  }
+                }
+              },
+              "x-catch-ownership": "server-only"
+            },
+            "labels": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "inventoryId",
+                  "roomLabel"
+                ],
+                "properties": {
+                  "inventoryId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "roomLabel": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 40
+                  }
+                }
+              },
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "expectedConfigurationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "adoptions": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "stayId",
+              "partyId",
+              "inventoryId",
+              "expectedRevision"
+            ],
+            "properties": {
+              "stayId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "partyId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "expectedRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId"
+      ],
+      "properties": {
+        "action": {
+          "const": "preview"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "regenerate": {
+          "type": "boolean",
+          "description": "Explicitly generate a new current candidate instead of retaining a compatible approved proposal."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "placements",
+        "expectedRevisions"
+      ],
+      "properties": {
+        "action": {
+          "const": "propose"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "placements": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "partyId",
+              "inventoryId"
+            ],
+            "properties": {
+              "partyId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              },
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            }
+          }
+        },
+        "expectedRevisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "inventory",
+            "layout",
+            "published"
+          ],
+          "properties": {
+            "source": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inventory": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "layout": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "placements",
+        "expectedRevisions",
+        "partyId"
+      ],
+      "properties": {
+        "action": {
+          "const": "destinations"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "placements": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "partyId",
+              "inventoryId"
+            ],
+            "properties": {
+              "partyId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              },
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            }
+          }
+        },
+        "expectedRevisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "inventory",
+            "layout",
+            "published"
+          ],
+          "properties": {
+            "source": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inventory": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "layout": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "partyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "proposal"
+      ],
+      "properties": {
+        "action": {
+          "const": "save"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "proposal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "id",
+            "revisions",
+            "placements",
+            "unplacedPartyIds",
+            "explanations",
+            "score",
+            "search"
+          ],
+          "properties": {
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "programId",
+                "organizerId"
+              ],
+              "properties": {
+                "programId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                }
+              }
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revisions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "inventory",
+                "layout",
+                "published"
+              ],
+              "properties": {
+                "source": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "inventory": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "layout": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "published": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "placements": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "partyId",
+                  "inventoryId"
+                ],
+                "properties": {
+                  "partyId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "inventoryId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  }
+                }
+              }
+            },
+            "unplacedPartyIds": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            },
+            "explanations": {
+              "type": "array",
+              "maxItems": 502,
+              "items": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            },
+            "score": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 5,
+              "items": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "search": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "complete",
+                "explored"
+              ],
+              "properties": {
+                "complete": {
+                  "type": "boolean"
+                },
+                "explored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          },
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "command"
+      ],
+      "properties": {
+        "action": {
+          "const": "transition"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "command": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "proposalId",
+            "operationId",
+            "expectedWorkflowRevision",
+            "action",
+            "hotelId"
+          ],
+          "properties": {
+            "proposalId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "operationId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+            },
+            "expectedWorkflowRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "confirmHotel",
+                "publishGuests"
+              ]
+            },
+            "hotelId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "hotelId"
+      ],
+      "properties": {
+        "action": {
+          "const": "hotelBoard"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "hotelId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "programId",
+        "arrival",
+        "departure"
+      ],
+      "properties": {
+        "action": {
+          "const": "resolveDates"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "arrival": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "departure": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    }
+  ]
+};
+
+export const manageProgramLodgingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_program_lodging_response.schema.json",
+  "title": "ManageProgramLodgingCallableResponse",
+  "x-callable-aliases": [
+    "manageProgramLodging"
+  ],
+  "description": "Strict role-specific lodging result. Coordinator context is private; hotelBoard contains only allowlisted operational fields.",
+  "type": "object",
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "programId",
+        "guestId",
+        "revision",
+        "label",
+        "groupIds",
+        "groups",
+        "evidence",
+        "accessExpiresAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "membership"
+        },
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "groupIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 240,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "assertionId",
+              "groupId",
+              "selected",
+              "included",
+              "sourceKind",
+              "sourceLabel",
+              "sourceVersion",
+              "observedAtMillis"
+            ],
+            "properties": {
+              "assertionId": {
+                "type": "string",
+                "pattern": "^wma_[a-f0-9]{64}$"
+              },
+              "groupId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "selected": {
+                "type": "boolean"
+              },
+              "included": {
+                "type": "boolean"
+              },
+              "sourceKind": {
+                "enum": [
+                  "manualEntry",
+                  "manifestRow",
+                  "contributorList"
+                ]
+              },
+              "sourceLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "sourceVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "observedAtMillis": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "accessExpiresAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "guestId",
+        "revision"
+      ],
+      "properties": {
+        "kind": {
+          "const": "membershipSaved"
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "configuration",
+        "accessExpiresAtMillis",
+        "catalog"
+      ],
+      "properties": {
+        "kind": {
+          "const": "readSetup"
+        },
+        "configuration": {
+          "anyOf": [
+            {
+              "title": "ProgramLodgingConfigDocument",
+              "description": "Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.",
+              "x-firestore-collection": "programLodgingConfigs",
+              "x-firestore-path": "programLodgingConfigs/{programId}",
+              "x-document-id-field": "programId",
+              "x-owner": "program lodging coordinator configuration",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "programId",
+                "organizerId",
+                "revision",
+                "demand",
+                "parties",
+                "groupParents",
+                "rooms",
+                "inventory",
+                "labels"
+              ],
+              "properties": {
+                "programId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991,
+                  "x-catch-ownership": "server-only"
+                },
+                "demand": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "guestId",
+                      "startsAtMillis",
+                      "endsAtMillis",
+                      "beds",
+                      "requiredFeatures"
+                    ],
+                    "properties": {
+                      "guestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "startsAtMillis": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8640000000000000
+                      },
+                      "endsAtMillis": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8640000000000000
+                      },
+                      "beds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "requiredFeatures": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "uniqueItems": true
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "parties": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "guestIds",
+                      "confirmed",
+                      "priority",
+                      "requiredRoomType",
+                      "pin"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "guestIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "priority": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000000
+                      },
+                      "requiredRoomType": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "pin": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [],
+                            "properties": {
+                              "inventoryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "hotelId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "zoneId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "groupParents": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "parentIds"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "parentIds": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "uniqueItems": true
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "rooms": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "hotelId",
+                      "zoneId",
+                      "building",
+                      "floor",
+                      "wing",
+                      "roomType",
+                      "beds",
+                      "maxOccupants",
+                      "verifiedFeatures",
+                      "resourceIds",
+                      "position"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "hotelId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "zoneId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "building": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "floor": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "wing": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "roomType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "beds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "maxOccupants": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "verifiedFeatures": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "uniqueItems": true
+                      },
+                      "resourceIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "position": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "properties": {
+                              "x": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "y": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "inventory": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "contractId",
+                      "physicalRoomId",
+                      "provisional",
+                      "availability"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "contractId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "physicalRoomId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "provisional": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "hotelId",
+                              "zoneId",
+                              "building",
+                              "floor",
+                              "wing",
+                              "roomType",
+                              "beds",
+                              "maxOccupants",
+                              "verifiedFeatures"
+                            ],
+                            "properties": {
+                              "hotelId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "zoneId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "building": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "floor": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "wing": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "roomType": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "beds": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                              },
+                              "maxOccupants": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                              },
+                              "verifiedFeatures": {
+                                "type": "array",
+                                "maxItems": 30,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 80
+                                },
+                                "uniqueItems": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "availability": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "arrival",
+                            "departure"
+                          ],
+                          "properties": {
+                            "arrival": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            "departure": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            }
+                          }
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "labels": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "inventoryId",
+                      "roomLabel"
+                    ],
+                    "properties": {
+                      "inventoryId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "roomLabel": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 40
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessExpiresAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "catalog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "programId",
+            "organizerId",
+            "timezone",
+            "guests",
+            "groups",
+            "hotels",
+            "contracts",
+            "activeStays",
+            "calendarDates"
+          ],
+          "properties": {
+            "programId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "guests": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "householdId",
+                  "groupIds"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "householdId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "groupIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
+              }
+            },
+            "groups": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                }
+              }
+            },
+            "hotels": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "active"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "contracts": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "hotelId",
+                  "label",
+                  "roomType",
+                  "totalRooms",
+                  "maxOccupantsPerRoom",
+                  "startsAtMillis",
+                  "endsAtMillis"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "hotelId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "roomType": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 80
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "totalRooms": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 500
+                  },
+                  "maxOccupantsPerRoom": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "startsAtMillis": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 8640000000000000
+                  },
+                  "endsAtMillis": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 8640000000000000
+                  }
+                }
+              }
+            },
+            "activeStays": {
+              "type": "array",
+              "maxItems": 2000,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "guestId",
+                  "hotelId",
+                  "roomBlockId",
+                  "roomLabel",
+                  "roomOccupancyId",
+                  "lodgingPartyId",
+                  "lodgingInventoryId",
+                  "startsAtMillis",
+                  "endsAtMillis",
+                  "status",
+                  "revision"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "guestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "hotelId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "roomBlockId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "roomLabel": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 80
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "roomOccupancyId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "lodgingPartyId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "lodgingInventoryId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "startsAtMillis": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8640000000000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "endsAtMillis": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8640000000000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "status": {
+                    "enum": [
+                      "held",
+                      "confirmed",
+                      "checkedIn"
+                    ]
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            },
+            "calendarDates": {
+              "type": "object",
+              "maxProperties": 6000,
+              "propertyNames": {
+                "pattern": "^[0-9]+$"
+              },
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "revision"
+      ],
+      "properties": {
+        "kind": {
+          "const": "setup"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "proposal",
+        "context"
+      ],
+      "properties": {
+        "kind": {
+          "const": "proposal"
+        },
+        "proposal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "id",
+            "revisions",
+            "placements",
+            "unplacedPartyIds",
+            "explanations",
+            "score",
+            "search"
+          ],
+          "properties": {
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "programId",
+                "organizerId"
+              ],
+              "properties": {
+                "programId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                }
+              }
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revisions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "inventory",
+                "layout",
+                "published"
+              ],
+              "properties": {
+                "source": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "inventory": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "layout": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "published": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "placements": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "partyId",
+                  "inventoryId"
+                ],
+                "properties": {
+                  "partyId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "inventoryId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  }
+                }
+              }
+            },
+            "unplacedPartyIds": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            },
+            "explanations": {
+              "type": "array",
+              "maxItems": 502,
+              "items": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            },
+            "score": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 5,
+              "items": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "search": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "complete",
+                "explored"
+              ],
+              "properties": {
+                "complete": {
+                  "type": "boolean"
+                },
+                "explored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          },
+          "x-catch-ownership": "server-only"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "snapshot",
+            "configuration",
+            "labels",
+            "workflow",
+            "accessExpiresAtMillis"
+          ],
+          "properties": {
+            "snapshot": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "scope",
+                "revisions",
+                "guests",
+                "parties",
+                "groups",
+                "memberships",
+                "rooms",
+                "contracts",
+                "inventory",
+                "published"
+              ],
+              "properties": {
+                "scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "programId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "programId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                },
+                "revisions": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "source",
+                    "inventory",
+                    "layout",
+                    "published"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "inventory": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "layout": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "published": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "guests": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "arrival",
+                      "departure",
+                      "beds",
+                      "requiredFeatures"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "arrival": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "departure": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "beds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "requiredFeatures": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      }
+                    }
+                  }
+                },
+                "parties": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "guestIds",
+                      "confirmed",
+                      "priority",
+                      "requiredRoomType",
+                      "pin"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "guestIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "priority": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000000
+                      },
+                      "requiredRoomType": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "pin": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [],
+                            "properties": {
+                              "inventoryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "hotelId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "zoneId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "groups": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "parentIds"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "parentIds": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "uniqueItems": true
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "memberships": {
+                  "type": "array",
+                  "maxItems": 10000,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "guestId",
+                      "groupId",
+                      "included",
+                      "authority",
+                      "sourceId"
+                    ],
+                    "properties": {
+                      "guestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "groupId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "included": {
+                        "type": "boolean"
+                      },
+                      "authority": {
+                        "type": "string",
+                        "enum": [
+                          "canonical",
+                          "manual",
+                          "acceptedSuggestion"
+                        ]
+                      },
+                      "sourceId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "rooms": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "hotelId",
+                      "zoneId",
+                      "building",
+                      "floor",
+                      "wing",
+                      "roomType",
+                      "beds",
+                      "maxOccupants",
+                      "verifiedFeatures",
+                      "resourceIds",
+                      "position"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "hotelId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "zoneId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "building": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "floor": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "wing": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "roomType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "beds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "maxOccupants": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "verifiedFeatures": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "uniqueItems": true
+                      },
+                      "resourceIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "position": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "properties": {
+                              "x": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "y": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "contracts": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "hotelId",
+                      "arrival",
+                      "departure",
+                      "nightlyRoomQuota"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "hotelId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "arrival": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "departure": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "nightlyRoomQuota": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000000
+                      }
+                    }
+                  }
+                },
+                "inventory": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "contractId",
+                      "physicalRoomId",
+                      "provisional",
+                      "availability"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "contractId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "physicalRoomId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "provisional": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "hotelId",
+                              "zoneId",
+                              "building",
+                              "floor",
+                              "wing",
+                              "roomType",
+                              "beds",
+                              "maxOccupants",
+                              "verifiedFeatures"
+                            ],
+                            "properties": {
+                              "hotelId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "zoneId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "building": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "floor": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "wing": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "roomType": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "beds": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                              },
+                              "maxOccupants": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                              },
+                              "verifiedFeatures": {
+                                "type": "array",
+                                "maxItems": 30,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 80
+                                },
+                                "uniqueItems": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "availability": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "arrival",
+                            "departure"
+                          ],
+                          "properties": {
+                            "arrival": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            "departure": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            }
+                          }
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "published": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "partyId",
+                      "inventoryId",
+                      "locked",
+                      "checkedIn"
+                    ],
+                    "properties": {
+                      "partyId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "inventoryId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "locked": {
+                        "type": "boolean"
+                      },
+                      "checkedIn": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "configuration": {
+              "title": "ProgramLodgingConfigDocument",
+              "description": "Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.",
+              "x-firestore-collection": "programLodgingConfigs",
+              "x-firestore-path": "programLodgingConfigs/{programId}",
+              "x-document-id-field": "programId",
+              "x-owner": "program lodging coordinator configuration",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "programId",
+                "organizerId",
+                "revision",
+                "demand",
+                "parties",
+                "groupParents",
+                "rooms",
+                "inventory",
+                "labels"
+              ],
+              "properties": {
+                "programId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991,
+                  "x-catch-ownership": "server-only"
+                },
+                "demand": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "guestId",
+                      "startsAtMillis",
+                      "endsAtMillis",
+                      "beds",
+                      "requiredFeatures"
+                    ],
+                    "properties": {
+                      "guestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "startsAtMillis": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8640000000000000
+                      },
+                      "endsAtMillis": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 8640000000000000
+                      },
+                      "beds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "requiredFeatures": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "uniqueItems": true
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "parties": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "guestIds",
+                      "confirmed",
+                      "priority",
+                      "requiredRoomType",
+                      "pin"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "guestIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "priority": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000000
+                      },
+                      "requiredRoomType": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "pin": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [],
+                            "properties": {
+                              "inventoryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "hotelId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "zoneId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "groupParents": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "parentIds"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "parentIds": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "uniqueItems": true
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "rooms": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "hotelId",
+                      "zoneId",
+                      "building",
+                      "floor",
+                      "wing",
+                      "roomType",
+                      "beds",
+                      "maxOccupants",
+                      "verifiedFeatures",
+                      "resourceIds",
+                      "position"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "hotelId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "zoneId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "building": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "floor": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "wing": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "roomType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "beds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "maxOccupants": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "verifiedFeatures": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "uniqueItems": true
+                      },
+                      "resourceIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "x-catch-ownership": "server-only"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                      },
+                      "position": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "properties": {
+                              "x": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "y": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "inventory": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "contractId",
+                      "physicalRoomId",
+                      "provisional",
+                      "availability"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "contractId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "physicalRoomId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "x-catch-ownership": "server-only"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "provisional": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "hotelId",
+                              "zoneId",
+                              "building",
+                              "floor",
+                              "wing",
+                              "roomType",
+                              "beds",
+                              "maxOccupants",
+                              "verifiedFeatures"
+                            ],
+                            "properties": {
+                              "hotelId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "zoneId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 180,
+                                "x-catch-ownership": "server-only"
+                              },
+                              "building": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "floor": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "wing": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "roomType": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 80
+                              },
+                              "beds": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                              },
+                              "maxOccupants": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                              },
+                              "verifiedFeatures": {
+                                "type": "array",
+                                "maxItems": 30,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 80
+                                },
+                                "uniqueItems": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "availability": {
+                        "type": "array",
+                        "maxItems": 30,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "arrival",
+                            "departure"
+                          ],
+                          "properties": {
+                            "arrival": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            "departure": {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            }
+                          }
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                },
+                "labels": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "inventoryId",
+                      "roomLabel"
+                    ],
+                    "properties": {
+                      "inventoryId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "x-catch-ownership": "server-only"
+                      },
+                      "roomLabel": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 40
+                      }
+                    }
+                  },
+                  "x-catch-ownership": "server-only"
+                }
+              }
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "guests",
+                "groups",
+                "hotels"
+              ],
+              "properties": {
+                "guests": {
+                  "type": "object",
+                  "maxProperties": 500,
+                  "additionalProperties": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                },
+                "groups": {
+                  "type": "object",
+                  "maxProperties": 500,
+                  "additionalProperties": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                },
+                "hotels": {
+                  "type": "object",
+                  "maxProperties": 500,
+                  "additionalProperties": {
+                    "type": "string",
+                    "maxLength": 200
+                  }
+                }
+              }
+            },
+            "workflow": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "approvedProposalId",
+                "confirmedHotelIds",
+                "guestPublishedProposalId"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "approvedProposalId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "confirmedHotelIds": {
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "uniqueItems": true
+                },
+                "guestPublishedProposalId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "x-catch-ownership": "server-only"
+            },
+            "accessExpiresAtMillis": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "revisions",
+        "destinations"
+      ],
+      "properties": {
+        "kind": {
+          "const": "destinations"
+        },
+        "revisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "inventory",
+            "layout",
+            "published"
+          ],
+          "properties": {
+            "source": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inventory": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "layout": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "destinations": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "inventoryId",
+              "allowed",
+              "explanation"
+            ],
+            "properties": {
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "allowed": {
+                "type": "boolean"
+              },
+              "explanation": {
+                "type": "string",
+                "maxLength": 1000
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "proposal"
+      ],
+      "properties": {
+        "kind": {
+          "const": "saved"
+        },
+        "proposal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "id",
+            "revisions",
+            "placements",
+            "unplacedPartyIds",
+            "explanations",
+            "score",
+            "search"
+          ],
+          "properties": {
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "programId",
+                "organizerId"
+              ],
+              "properties": {
+                "programId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "x-catch-ownership": "server-only"
+                }
+              }
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revisions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "inventory",
+                "layout",
+                "published"
+              ],
+              "properties": {
+                "source": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "inventory": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "layout": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "published": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "placements": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "partyId",
+                  "inventoryId"
+                ],
+                "properties": {
+                  "partyId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "inventoryId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  }
+                }
+              }
+            },
+            "unplacedPartyIds": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            },
+            "explanations": {
+              "type": "array",
+              "maxItems": 502,
+              "items": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            },
+            "score": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 5,
+              "items": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "search": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "complete",
+                "explored"
+              ],
+              "properties": {
+                "complete": {
+                  "type": "boolean"
+                },
+                "explored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          },
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "workflow",
+        "receipt",
+        "replayed"
+      ],
+      "properties": {
+        "kind": {
+          "const": "transition"
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "approvedProposalId",
+            "confirmedHotelIds",
+            "guestPublishedProposalId"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "approvedProposalId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "confirmedHotelIds": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              },
+              "uniqueItems": true
+            },
+            "guestPublishedProposalId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "x-catch-ownership": "server-only"
+        },
+        "receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operationId",
+            "requestHash",
+            "actorUid",
+            "resultingRevision"
+          ],
+          "properties": {
+            "operationId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            },
+            "resultingRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "x-catch-ownership": "server-only"
+            }
+          },
+          "x-catch-ownership": "server-only"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "rows"
+      ],
+      "properties": {
+        "kind": {
+          "const": "hotelBoard"
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "partyId",
+              "inventoryId",
+              "physicalRoomId",
+              "zoneId",
+              "roomType",
+              "guests"
+            ],
+            "properties": {
+              "partyId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "physicalRoomId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "zoneId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "roomType": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "guests": {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "guestId",
+                    "arrival",
+                    "departure"
+                  ],
+                  "properties": {
+                    "guestId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "arrival": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    },
+                    "departure": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timezone",
+        "arrival",
+        "departure",
+        "startsAtMillis",
+        "endsAtMillis",
+        "accessExpiresAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "resolvedDates"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "arrival": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "departure": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "startsAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8640000000000000
+        },
+        "endsAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8640000000000000
+        },
+        "accessExpiresAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const programLodgingConfigDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_configs.schema.json",
+  "title": "ProgramLodgingConfigDocument",
+  "description": "Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.",
+  "x-firestore-collection": "programLodgingConfigs",
+  "x-firestore-path": "programLodgingConfigs/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "program lodging coordinator configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "revision",
+    "demand",
+    "parties",
+    "groupParents",
+    "rooms",
+    "inventory",
+    "labels"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "demand": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "startsAtMillis",
+          "endsAtMillis",
+          "beds",
+          "requiredFeatures"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8640000000000000
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8640000000000000
+          },
+          "beds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "requiredFeatures": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "parties": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "guestIds",
+          "confirmed",
+          "priority",
+          "requiredRoomType",
+          "pin"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "guestIds": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "confirmed": {
+            "type": "boolean"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "requiredRoomType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "pin": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "inventoryId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "hotelId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "zoneId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "groupParents": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "parentIds"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "parentIds": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "rooms": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "hotelId",
+          "zoneId",
+          "building",
+          "floor",
+          "wing",
+          "roomType",
+          "beds",
+          "maxOccupants",
+          "verifiedFeatures",
+          "resourceIds",
+          "position"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "zoneId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "building": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "floor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "wing": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "roomType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "beds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "maxOccupants": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "verifiedFeatures": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "uniqueItems": true
+          },
+          "resourceIds": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "inventory": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "contractId",
+          "physicalRoomId",
+          "provisional",
+          "availability"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "contractId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "physicalRoomId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "provisional": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "hotelId",
+                  "zoneId",
+                  "building",
+                  "floor",
+                  "wing",
+                  "roomType",
+                  "beds",
+                  "maxOccupants",
+                  "verifiedFeatures"
+                ],
+                "properties": {
+                  "hotelId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "zoneId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "x-catch-ownership": "server-only"
+                  },
+                  "building": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "floor": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "wing": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "roomType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "beds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "maxOccupants": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "verifiedFeatures": {
+                    "type": "array",
+                    "maxItems": 30,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "availability": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "arrival",
+                "departure"
+              ],
+              "properties": {
+                "arrival": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                "departure": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                }
+              }
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "labels": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "inventoryId",
+          "roomLabel"
+        ],
+        "properties": {
+          "inventoryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "roomLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programLodgingSourceVersionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_source_versions.schema.json",
+  "title": "ProgramLodgingSourceVersionDocument",
+  "description": "Private transactional revision counters backed by complete canonical source fingerprints. Contains no copied guest or property records. Changes invalidate proposals; publication advances its own domain atomically with canonical stays.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programLodgingSourceVersions",
+  "x-firestore-path": "programLodgingSourceVersions/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "private program lodging source reader",
+  "required": [
+    "programId",
+    "organizerId",
+    "versions"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "inventory",
+        "layout",
+        "published"
+      ],
+      "properties": {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "fingerprint"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "inventory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "fingerprint"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "fingerprint"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "published": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "fingerprint"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programLodgingProposalDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_proposals.schema.json",
+  "title": "ProgramLodgingProposalDocument",
+  "description": "Private immutable placement proposal tied to source, inventory, layout and published revisions. Server validates content identity and current canonical Programs scope; no hotel affinity or medical projection is public.",
+  "x-firestore-collection": "programLodgingProposals",
+  "x-firestore-path": "programLodgingProposals/{proposalId}",
+  "x-document-id-field": "proposalId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "proposal",
+    "createdByUid",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "id",
+        "revisions",
+        "placements",
+        "unplacedPartyIds",
+        "explanations",
+        "score",
+        "search"
+      ],
+      "properties": {
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "programId",
+            "organizerId"
+          ],
+          "properties": {
+            "programId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "inventory",
+            "layout",
+            "published"
+          ],
+          "properties": {
+            "source": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inventory": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "layout": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "placements": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "partyId",
+              "inventoryId"
+            ],
+            "properties": {
+              "partyId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              },
+              "inventoryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "x-catch-ownership": "server-only"
+              }
+            }
+          }
+        },
+        "unplacedPartyIds": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          }
+        },
+        "explanations": {
+          "type": "array",
+          "maxItems": 502,
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "score": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "search": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "complete",
+            "explored"
+          ],
+          "properties": {
+            "complete": {
+              "type": "boolean"
+            },
+            "explored": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programLodgingWorkflowDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_workflows.schema.json",
+  "title": "ProgramLodgingWorkflowDocument",
+  "description": "Private program workflow. Host approval, individual hotel confirmation and guest publication are distinct states. Publication changes canonical stays and this workflow atomically.",
+  "x-firestore-collection": "programLodgingWorkflows",
+  "x-firestore-path": "programLodgingWorkflows/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "workflow"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "approvedProposalId",
+        "confirmedHotelIds",
+        "guestPublishedProposalId"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "approvedProposalId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "confirmedHotelIds": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-catch-ownership": "server-only"
+          },
+          "uniqueItems": true
+        },
+        "guestPublishedProposalId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const programLodgingReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_lodging_receipts.schema.json",
+  "title": "ProgramLodgingReceiptDocument",
+  "description": "Immutable private operation receipt bound to program, actor and exact request. Replay rechecks current authority and returns current workflow; it never restores a prior approval.",
+  "x-firestore-collection": "programLodgingReceipts",
+  "x-firestore-path": "programLodgingReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "receipt"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operationId",
+        "requestHash",
+        "actorUid",
+        "resultingRevision"
+      ],
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,100}$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        },
+        "resultingRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const workspaceMembershipAssertionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/workspace_membership_assertions.schema.json",
+  "title": "WorkspaceMembershipAssertionDocument",
+  "description": "Immutable source-labelled suggestion or manual membership evidence. Exact program/guest/group scope and program retention index are checked by the server. Import suggestions cannot overwrite selected manual inclusion or exclusion.",
+  "x-firestore-collection": "workspaceMembershipAssertions",
+  "x-firestore-path": "workspaceMembershipAssertions/{assertionId}",
+  "x-document-id-field": "assertionId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "programId",
+    "workspaceRef",
+    "relationshipRef",
+    "groupId",
+    "included",
+    "sourceKind",
+    "sourceId",
+    "sourceVersion",
+    "sourceLabel",
+    "actorUid",
+    "observedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "workspaceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "program"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "relationshipRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "programGuest"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "included": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceKind": {
+      "enum": [
+        "manualEntry",
+        "manifestRow",
+        "contributorList"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
+    },
+    "sourceVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "sourceLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const workspaceMembershipDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/workspace_membership_decisions.schema.json",
+  "title": "WorkspaceMembershipDecisionDocument",
+  "description": "Immutable explicit membership selection, preserving previous evidence identity and reviewed guest revision. Canonical programGuests.groupIds remains membership truth, updated with this decision in one authorized transaction.",
+  "x-firestore-collection": "workspaceMembershipDecisions",
+  "x-firestore-path": "workspaceMembershipDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "private program lodging server operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "programId",
+    "workspaceRef",
+    "relationshipRef",
+    "groupId",
+    "selectedAssertionId",
+    "previousAssertionId",
+    "relationshipRevision",
+    "actorUid",
+    "observedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "workspaceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "program"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "relationshipRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "programGuest"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "server-only"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "selectedAssertionId": {
+      "type": "string",
+      "pattern": "^wma_[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "previousAssertionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^wma_[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "relationshipRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const catchWhatsappReadinessApprovalDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_readiness_approval.schema.json",
@@ -168402,7 +173718,7 @@ export const programGuestDocumentSchema = {
         "minLength": 1,
         "maxLength": 180
       },
-      "description": "Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import."
+      "description": "Current canonical social membership truth. Host selections update it through upsertProgramGuest; imported group labels append source-labelled suggestions without changing this projection."
     },
     "invitationStatus": {
       "type": "string",
@@ -168556,6 +173872,56 @@ export const programGuestDocumentSchema = {
         }
       },
       "description": "Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger."
+    },
+    "membershipSelections": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "assertionId"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "assertionId": {
+            "type": "string",
+            "pattern": "^wma_[a-f0-9]{64}$"
+          }
+        }
+      },
+      "description": "Exact immutable host membership choices; includes and excludes survive every import."
+    },
+    "membershipSuggestions": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "assertionId"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "assertionId": {
+            "type": "string",
+            "pattern": "^wma_[a-f0-9]{64}$"
+          }
+        }
+      },
+      "description": "Source-labelled unapproved membership assertions. Never add canonical groupIds without a host choice."
     }
   }
 };
@@ -169898,7 +175264,7 @@ export const programStayDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_stays.schema.json",
   "title": "ProgramStayDocument",
-  "description": "Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.",
+  "description": "Server-owned per-guest lodging assignment. Roommates explicitly share a stable roomOccupancyId; roomLabel is display-only. Legacy rows remain separate until explicitly joined.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programStays",
@@ -169938,7 +175304,7 @@ export const programStayDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180,
-      "description": "Exactly one guest per stay; roommates are separate stays sharing roomLabel."
+      "description": "Exactly one guest per stay; room sharing is explicit and independent of invitation household and social groups."
     },
     "hotelId": {
       "type": "string",
@@ -170175,6 +175541,26 @@ export const programStayDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "roomOccupancyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing."
+    },
+    "lodgingPartyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Explicit private lodging room-sharing party identity; absent on unverified legacy/manual assignments.",
+      "x-catch-ownership": "server-only"
+    },
+    "lodgingInventoryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Stable dated lodging inventory unit identity; never inferred from roomLabel.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
@@ -170247,7 +175633,7 @@ export const programRoomBlockDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 500,
-      "description": "Server-maintained count of live programStays rows bound to this block; never written by clients."
+      "description": "Peak simultaneous occupied rooms across local contract nights; recomputed from explicit occupancy identities, not guest rows."
     },
     "heldForGroupIds": {
       "type": "array",
@@ -170380,6 +175766,12 @@ export const programRoomBlockDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "maxOccupantsPerRoom": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility."
     }
   }
 };
@@ -171184,7 +176576,7 @@ export const programRetentionRunDocumentSchema = {
     },
     "phases": {
       "type": "array",
-      "maxItems": 16,
+      "maxItems": 23,
       "description": "Per-collection progress journal; one entry per scrubbed collection, appended in order as phases complete.",
       "items": {
         "type": "object",
@@ -182661,7 +188053,7 @@ export const upsertProgramStayCallablePayloadSchema = {
       ],
       "minLength": 1,
       "maxLength": 40,
-      "description": "Room or suite label shared by roommates (e.g. \"312\")."
+      "description": "Display-only room or suite label; never used as room identity."
     },
     "status": {
       "type": "string",
@@ -182706,6 +188098,21 @@ export const upsertProgramStayCallablePayloadSchema = {
     "markHotelArrived": {
       "type": "boolean",
       "description": "When true, stamps hotelArrivedAt with the server time."
+    },
+    "shareWithStayId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Explicitly join this live stay at the same hotel and block; requires its reviewed revision and verified block occupancy limit. Never inferred from labels or households."
+    },
+    "shareWithStayRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "separateRoom": {
+      "type": "boolean",
+      "description": "Explicitly leave a shared occupancy for a newly minted room occupancy."
     }
   }
 };
@@ -182797,6 +188204,12 @@ export const upsertProgramRoomBlockCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 500
+    },
+    "maxOccupantsPerRoom": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Coordinator-verified occupant limit for each contracted room. Defaults to one when unknown; does not establish bed type or accessibility."
     }
   }
 };
@@ -186208,6 +191621,11 @@ export const programHotelRoomsCallableResponseSchema = {
             "type": "integer",
             "minimum": 0,
             "maximum": 253402300799999
+          },
+          "maxOccupantsPerRoom": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
           }
         }
       }
@@ -186309,6 +191727,11 @@ export const programHotelRoomsCallableResponseSchema = {
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "roomOccupancyId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
           }
         }
       }

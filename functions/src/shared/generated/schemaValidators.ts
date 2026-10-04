@@ -5,6 +5,15 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateManageProgramLodgingCallablePayload} from "./validators/manageProgramLodgingInput";
+export {validateManageProgramLodgingCallableResponse} from "./validators/manageProgramLodgingOutput";
+export {validateProgramLodgingConfigDocument} from "./validators/programLodgingConfigDocument";
+export {validateProgramLodgingSourceVersionDocument} from "./validators/programLodgingSourceVersionDocument";
+export {validateProgramLodgingProposalDocument} from "./validators/programLodgingProposalDocument";
+export {validateProgramLodgingWorkflowDocument} from "./validators/programLodgingWorkflowDocument";
+export {validateProgramLodgingReceiptDocument} from "./validators/programLodgingReceiptDocument";
+export {validateWorkspaceMembershipAssertionDocument} from "./validators/workspaceMembershipAssertionDocument";
+export {validateWorkspaceMembershipDecisionDocument} from "./validators/workspaceMembershipDecisionDocument";
 export {validateCatchWhatsappReadinessApprovalDocument} from "./validators/catchWhatsappReadinessApprovalDocument";
 export {validateCatchWhatsappReadinessIngressDocument} from "./validators/catchWhatsappReadinessIngressDocument";
 export {validateCatchWhatsappReadinessAuditDocument} from "./validators/catchWhatsappReadinessAuditDocument";

@@ -15,6 +15,15 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ManageProgramLodgingCallablePayload", "source": "callables/manage_program_lodging_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallablePayload.ts"},
+  {"name": "ManageProgramLodgingCallableResponse", "source": "callable_responses/manage_program_lodging_response.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallableResponse.ts"},
+  {"name": "ProgramLodgingConfigDocument", "source": "firestore/program_lodging_configs.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingConfigDocument.ts"},
+  {"name": "ProgramLodgingSourceVersionDocument", "source": "firestore/program_lodging_source_versions.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingSourceVersionDocument.ts"},
+  {"name": "ProgramLodgingProposalDocument", "source": "firestore/program_lodging_proposals.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingProposalDocument.ts"},
+  {"name": "ProgramLodgingWorkflowDocument", "source": "firestore/program_lodging_workflows.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingWorkflowDocument.ts"},
+  {"name": "ProgramLodgingReceiptDocument", "source": "firestore/program_lodging_receipts.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingReceiptDocument.ts"},
+  {"name": "WorkspaceMembershipAssertionDocument", "source": "firestore/workspace_membership_assertions.schema.json", "typeOutput": "functions/src/shared/generated/workspaceMembershipAssertionDocument.ts"},
+  {"name": "WorkspaceMembershipDecisionDocument", "source": "firestore/workspace_membership_decisions.schema.json", "typeOutput": "functions/src/shared/generated/workspaceMembershipDecisionDocument.ts"},
   {"name": "CatchWhatsappReadinessApprovalDocument", "source": "firestore/catch_whatsapp_readiness_approval.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessApprovalDocument.ts"},
   {"name": "CatchWhatsappReadinessIngressDocument", "source": "firestore/catch_whatsapp_readiness_ingress.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessIngressDocument.ts"},
   {"name": "CatchWhatsappReadinessAuditDocument", "source": "firestore/catch_whatsapp_readiness_audit.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts"},

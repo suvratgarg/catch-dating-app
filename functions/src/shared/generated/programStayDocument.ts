@@ -3,13 +3,13 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Server-owned per-guest stay assignment: which hotel (and optionally which room block / room label) a guest occupies, with planned dates and hotel-side progression timestamps. One document per guest per stay; guests sharing a room have separate stays with the same roomLabel.
+ * Server-owned per-guest lodging assignment. Roommates explicitly share a stable roomOccupancyId; roomLabel is display-only. Legacy rows remain separate until explicitly joined.
  */
 export interface ProgramStayDocument {
   programId: string;
   organizerId: string;
   /**
-   * Exactly one guest per stay; roommates are separate stays sharing roomLabel.
+   * Exactly one guest per stay; room sharing is explicit and independent of invitation household and social groups.
    */
   guestId: string;
   /**
@@ -83,4 +83,16 @@ export interface ProgramStayDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Server-minted shared-room identity. Missing legacy rows use stayId; labels and households never imply sharing.
+   */
+  roomOccupancyId?: string;
+  /**
+   * Explicit private lodging room-sharing party identity; absent on unverified legacy/manual assignments.
+   */
+  lodgingPartyId?: string;
+  /**
+   * Stable dated lodging inventory unit identity; never inferred from roomLabel.
+   */
+  lodgingInventoryId?: string;
 }

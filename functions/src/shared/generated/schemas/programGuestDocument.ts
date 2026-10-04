@@ -95,7 +95,7 @@ export const programGuestDocumentSchema: Record<string, unknown> = {
         "minLength": 1,
         "maxLength": 180
       },
-      "description": "Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import."
+      "description": "Current canonical social membership truth. Host selections update it through upsertProgramGuest; imported group labels append source-labelled suggestions without changing this projection."
     },
     "invitationStatus": {
       "type": "string",
@@ -249,6 +249,56 @@ export const programGuestDocumentSchema: Record<string, unknown> = {
         }
       },
       "description": "Imported conflicting assertions awaiting explicit host field choice. All historical assertions remain in their scoped ledger."
+    },
+    "membershipSelections": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "assertionId"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "assertionId": {
+            "type": "string",
+            "pattern": "^wma_[a-f0-9]{64}$"
+          }
+        }
+      },
+      "description": "Exact immutable host membership choices; includes and excludes survive every import."
+    },
+    "membershipSuggestions": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "assertionId"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "assertionId": {
+            "type": "string",
+            "pattern": "^wma_[a-f0-9]{64}$"
+          }
+        }
+      },
+      "description": "Source-labelled unapproved membership assertions. Never add canonical groupIds without a host choice."
     }
   }
 } as const;

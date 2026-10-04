@@ -2,6 +2,8 @@ import {requireMutableTravelLeg, validateTravelPartyMembership}
   from "../transport/travelPartyPolicy";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
+import {planImportedMembership} from
+  "../workspaces/programMembershipPersistence";
 import {nextRevision} from "../shared/programAuthority";
 import {planHouseholdMembership, type HouseholdMembershipChange} from
   "./programHouseholdMembership";
@@ -37,7 +39,6 @@ export function buildManifestWrites(
     newGroupMeta} = planned;
   const householdChanges: HouseholdMembershipChange[] = [];
   const partyMembers = new Map<string, Set<string>>();
-  const groupAdds = new Map<string, number>();
 
   const writes: Array<{path: string; data: object}> = [];
 
@@ -65,6 +66,11 @@ export function buildManifestWrites(
       writes.push({path: `workspaceFieldAssertions/${fact.id}`,
         data: fact.data});
     }
+    const membership = planImportedMembership({guest: existing ?? {},
+      programId, organizerId, guestId: plan.guestId, groupIds: plan.groupIds,
+      operationId: source.operationId, rowIndex: source.rowIndices[plan.index],
+      actorUid: source.actorUid, observedAtMillis: now.toMillis()});
+    writes.push(...membership.writes);
     const guestDoc: ScopedProgramGuest = {
       ...existing,
       programId,
@@ -78,8 +84,9 @@ export function buildManifestWrites(
       fieldConflicts: fields.fieldConflicts,
       externalReference: row.externalReference ||
         existing?.externalReference || null,
-      groupIds: [...new Set([...(existing?.groupIds ?? []),
-        ...plan.groupIds])].sort(),
+      groupIds: membership.projection.groupIds,
+      membershipSelections: membership.projection.selections,
+      membershipSuggestions: membership.projection.suggestions,
       invitationStatus: existing?.invitationStatus ?? "notInvited",
       rsvpStatus: existing?.rsvpStatus ?? "pending",
       source: existing?.source ?? "import",
@@ -91,11 +98,6 @@ export function buildManifestWrites(
     householdChanges.push({guestId: plan.guestId,
       previousHouseholdId: existing?.householdId ?? null,
       nextHouseholdId: guestDoc.householdId});
-    // Imports only add memberships; removal goes through upsertProgramGuest.
-    for (const groupId of plan.groupIds) {
-      if ((existing?.groupIds ?? []).includes(groupId)) continue;
-      groupAdds.set(groupId, (groupAdds.get(groupId) ?? 0) + 1);
-    }
     const partyId = plan.partyId ?? plan.existingLeg?.partyId;
     if (partyId) {
       const members = partyMembers.get(partyId) ??
@@ -226,21 +228,13 @@ export function buildManifestWrites(
       label: meta.label,
       dimension: meta.dimension,
       sortOrder: 0,
-      memberCount: groupAdds.get(groupId) ?? 0,
+      memberCount: 0,
       hotelId: null,
       createdAt: now,
       updatedAt: now,
       revision: 1,
     };
     writes.push({path: `programGuestGroups/${groupId}`, data: groupDoc});
-  }
-  for (const [groupId, added] of groupAdds) {
-    if (newGroupMeta.has(groupId)) continue;
-    const existing = groups.get(groupId);
-    if (!existing) continue;
-    writes.push({path: `programGuestGroups/${groupId}`,
-      data: {...existing, memberCount: existing.memberCount + added,
-        updatedAt: now, revision: nextRevision(existing.revision, now)}});
   }
   for (const [normalizedLabel, partyId] of newParties) {
     const label = newLabels.get(partyId) ?? normalizedLabel;

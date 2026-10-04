@@ -1395,6 +1395,12 @@
       "status": "planned",
       "priority": "P1",
       "reason": "The unified staff assignment picker is implemented with loading/error/empty/picker states; captures remain planned until an authenticated staff fixture is admitted to the canonical capture catalog."
+    },
+    {
+      "routeId": "hostProgramLodgingScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private lodging route has focused routed controller/screen/setup editor and board tests covering configuration, membership, manual proposals, publication, stale revisions and session fences. Deterministic loaded, no-configuration, scoped hotel desk and uncertain-write retry route captures remain planned; the twelve existing marketing captures do not cover this route."
     }
   ]
 }
