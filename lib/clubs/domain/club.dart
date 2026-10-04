@@ -44,9 +44,7 @@ abstract class Club with _$Club {
     List<UploadedPhoto> clubPhotos,
     UploadedPhoto? logoPhoto,
     @Default([]) List<String> tags,
-    @JsonKey(name: 'followerCount')
-    @Default(0)
-    int memberCount,
+    @JsonKey(name: 'followerCount') @Default(0) int memberCount,
     @Default(0.0) double rating,
     @Default(0) int reviewCount,
     @NullableTimestampConverter() DateTime? nextEventAt,
@@ -89,10 +87,8 @@ abstract class Club with _$Club {
 
   bool isHostedBy(String? uid) {
     if (uid == null) return false;
-    return uid == hostUserId ||
-        uid == ownerUserId ||
-        hostUserIds.contains(uid) ||
-        hostProfiles.any((host) => host.uid == uid);
+    // Match callable and rule authority. Display profiles may outlive a seat.
+    return uid == hostUserId || uid == ownerUserId || hostUserIds.contains(uid);
   }
 
   List<ClubHostProfile> get displayHostProfiles {
