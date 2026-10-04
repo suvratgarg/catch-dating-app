@@ -11,6 +11,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../shared/validation";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
+import {participantOrganizerGrantId} from "./participantOrganizerApplications";
 import {genericFormApplicationId, organizerApplicationAccess,
   organizerApplicationContactId} from "./organizerApplicationAccess";
 import {customerApplicationAccountUid, customerApplicationMatches} from
@@ -44,7 +45,7 @@ export async function listUnifiedResponses(params: {
       OrganizerContactDocument | undefined;
     accountUid = customerApplicationAccountUid(contact, data.organizerId);
   }
-  const applications = await loadApplications(db, data.organizerId);
+  const applications = await loadApplications(db, data);
   const applicationBySource = new Map(applications.flatMap((row) =>
     row.sourceId ? [[row.sourceId, row] as const] : []));
   const fingerprint = hash([data.organizerId, params.filterHash,
@@ -78,6 +79,7 @@ export async function listUnifiedResponses(params: {
       .orderBy("submittedAt", ascending ? "asc" : "desc")
       .orderBy(admin.firestore.FieldPath.documentId(),
         ascending ? "asc" : "desc").limit(scanPageSize);
+    if (data.formId) query = query.where("formId", "==", data.formId);
     if (last) query = query.startAfter(last);
     else if (cursor) {
       // A unified cursor can name an application. Include equal timestamps;
@@ -151,28 +153,69 @@ export async function listUnifiedResponses(params: {
 }
 
 async function loadApplications(db: FirebaseFirestore.Firestore,
-  organizerId: string): Promise<AppRecord[]> {
-  const snapshot = await db.collection("organizerApplications")
-    .where("organizerId", "==", organizerId)
-    .orderBy(admin.firestore.FieldPath.documentId())
+  data: Query): Promise<AppRecord[]> {
+  const organizerId = data.organizerId;
+  let query: FirebaseFirestore.Query = db.collection("organizerApplications")
+    .where("organizerId", "==", organizerId);
+  if (data.formId) query = query.where("formId", "==", data.formId);
+  if (data.versionId) {
+    query = query.where("formVersionId", "==", data.versionId);
+  }
+  const snapshot = await query.orderBy(admin.firestore.FieldPath.documentId())
     .limit(applicationLimit + 1).get();
   if (snapshot.size > applicationLimit) {
     throw new HttpsError("resource-exhausted",
-      "This application queue is too large for the current review view.");
+      "This selected application scope is too large to summarize safely. " +
+      "Narrow the form or version filters.");
   }
+  // Bound before hydration; share immutable versions and read each source,
+  // grant and canonical origin once within this request. No cross-request cache.
+  const refs = new Map<string, FirebaseFirestore.DocumentReference>();
+  const add = (collection: string, id: string) => {
+    const ref = db.collection(collection).doc(id);
+    refs.set(ref.path, ref);
+  };
+  for (const doc of snapshot.docs) {
+    const app = requireDoc<OrganizerApplicationDocument>(doc,
+      "OrganizerApplicationDocument");
+    add("organizerApplicationResponses", app.latestResponseId);
+    const generic = app.source.kind === "native" &&
+      doc.id === genericFormApplicationId(app.latestResponseId);
+    if (generic) {
+      add("organizerFormResponses", app.latestResponseId);
+      add("organizerFormVersions", app.formVersionId);
+    } else if (app.source.kind === "native") {
+      add("participantOrganizerDataGrants", participantOrganizerGrantId(doc.id));
+    }
+    add("organizerContactOrigins", organizerContactOriginId({organizerId,
+      sourceKind: "hostForm", sourceEntityKind: generic ?
+        "hostFormResponse" : "hostApplicationResponse",
+      sourceEntityId: app.latestResponseId}));
+  }
+  const snapshots = new Map<string, FirebaseFirestore.DocumentSnapshot>();
+  const pending = [...refs.values()];
+  for (let offset = 0; offset < pending.length; offset += scanPageSize) {
+    const docs = await db.getAll(...pending.slice(offset, offset + scanPageSize));
+    for (const doc of docs) snapshots.set(doc.ref.path, doc);
+  }
+  const read = async (collection: string, id: string) => {
+    const snapshot = snapshots.get(`${collection}/${id}`);
+    if (!snapshot) throw new Error("Application hydration is incomplete.");
+    return snapshot;
+  };
   return Promise.all(snapshot.docs.map(async (doc) => {
     const application = requireDoc<OrganizerApplicationDocument>(doc,
       "OrganizerApplicationDocument");
     const access = await organizerApplicationAccess({db,
-      applicationId: doc.id, application});
+      applicationId: doc.id, application, read});
     // A withdrawn generic response still owns its single row even though its
     // application access projection intentionally no longer exposes the link.
     let sourceId = access.sourceResponseId;
     let reviewStatus = application.reviewStatus;
     if (!sourceId && application.source.kind === "native" &&
         doc.id === genericFormApplicationId(application.latestResponseId)) {
-      const source = (await db.collection("organizerFormResponses")
-        .doc(application.latestResponseId).get()).data() as
+      const source = (await read("organizerFormResponses",
+        application.latestResponseId)).data() as
           OrganizerFormResponseDocument | undefined;
       if (source?.organizerId === organizerId &&
           source.formId === application.formId &&
@@ -184,7 +227,7 @@ async function loadApplications(db: FirebaseFirestore.Firestore,
     return {id: doc.id, data: application, sourceId, summary: {
       applicationId: doc.id,
       contactId: await organizerApplicationContactId({db,
-        applicationId: doc.id, application}),
+        applicationId: doc.id, application, read}),
       sourceResponseId: access.sourceResponseId,
       formId: application.formId,
       formVersionId: application.formVersionId,

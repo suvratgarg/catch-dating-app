@@ -150,6 +150,24 @@ test(
       {code: "invalid-argument"});
   });
 
+test("withdrawal between pages invalidates the old source cursor",
+  async () => {
+    const docs = {...response("a", 300), ...response("b", 200),
+      ...response("c", 100),
+      ...application(genericFormApplicationId("a"), 300, "a", "approved")};
+    const first = await list(docs, {formId: "form"});
+    docs["organizerFormResponses/a"].status = "withdrawn";
+    await assert.rejects(list(docs, {formId: "form",
+      cursor: first.nextCursor}), {code: "invalid-argument"});
+    const refreshed = await list(docs, {formId: "form",
+      reviewStatus: "withdrawn"});
+    assert.deepEqual(refreshed.entries?.map((r) => r.entryId), ["response:a"]);
+    assert.equal(refreshed.entries?.[0].application?.dataAccessState,
+      "revokedParticipantGrant");
+    assert.equal(refreshed.entries?.[0].application?.applicantDisplayName,
+      "Withdrawn applicant");
+  });
+
 test(
   "revoked native application identities are masked before search",
   async () => {
@@ -504,6 +522,9 @@ function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestor
     reads.set(key, (reads.get(key) ?? 0) + count);
   class Snapshot {
     constructor(readonly path: string) {}
+    get ref() {
+      return {path: this.path};
+    }
     get id() {
       return this.path.split("/").at(-1)!;
     }

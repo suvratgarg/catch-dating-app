@@ -13,6 +13,9 @@ import {
 } from "./participantOrganizerApplications";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 
+export type ApplicationRead = (collection: string, id: string) =>
+  Promise<FirebaseFirestore.DocumentSnapshot>;
+
 export function genericFormApplicationId(responseId: string): string {
   return "formapplication_" + createHash("sha256")
     .update(responseId).digest("hex").slice(0, 32);
@@ -23,17 +26,22 @@ export async function organizerApplicationContactId(params: {
   db: FirebaseFirestore.Firestore;
   applicationId: string;
   application: OrganizerApplicationDocument;
+  read?: ApplicationRead;
 }): Promise<string | null> {
   const {application} = params;
   const generic = application.source.kind === "native" &&
     params.applicationId === genericFormApplicationId(
       application.latestResponseId);
-  const origin = (await params.db.collection("organizerContactOrigins")
-    .doc(organizerContactOriginId({organizerId: application.organizerId,
-      sourceKind: "hostForm", sourceEntityKind: generic ?
-        "hostFormResponse" : "hostApplicationResponse",
-      sourceEntityId: application.latestResponseId,
-    })).get()).data() as OrganizerContactOriginDocument | undefined;
+  const originId = organizerContactOriginId({
+    organizerId: application.organizerId,
+    sourceKind: "hostForm", sourceEntityKind: generic ?
+      "hostFormResponse" : "hostApplicationResponse",
+    sourceEntityId: application.latestResponseId,
+  });
+  const origin = (await (params.read ?
+    params.read("organizerContactOrigins", originId) :
+    params.db.collection("organizerContactOrigins").doc(originId).get()))
+    .data() as OrganizerContactOriginDocument | undefined;
   return origin?.organizerId === application.organizerId ?
     origin.currentContactId : application.contactId;
 }
@@ -54,11 +62,13 @@ export async function organizerApplicationAccess(params: {
   applicationId: string;
   application: OrganizerApplicationDocument;
   transaction?: FirebaseFirestore.Transaction;
+  read?: ApplicationRead;
 }): Promise<OrganizerApplicationAccess> {
   const {db, applicationId, application, transaction} = params;
   const read = (collection: string, id: string) => transaction ?
     transaction.get(db.collection(collection).doc(id)) :
-    db.collection(collection).doc(id).get();
+    params.read ? params.read(collection, id) :
+      db.collection(collection).doc(id).get();
   const denied: OrganizerApplicationAccess = {
     answers: [], accessState: "revokedParticipantGrant", sourceResponseId: null,
   };

@@ -33,7 +33,6 @@ import type {
   OrganizerContactOriginDocument,
   OrganizerFormAggregateDocument,
   OrganizerFormAssetDocument,
-  OrganizerFormConversionReceiptDocument,
   OrganizerFormDocument,
   OrganizerFormResponseDocument,
   OrganizerFormShareLinkDocument,
@@ -312,7 +311,7 @@ export async function getOrganizerFormResponseDetailHandler(
       db.collection("organizerFormVersions").doc(response.versionId).get(),
       response.sourceLinkId ? db.collection("organizerFormShareLinks")
         .doc(response.sourceLinkId).get() : Promise.resolve(null),
-      completedConversionKinds(db, data.responseId),
+      completedConversionKinds(db, data.organizerId, data.responseId),
     ]);
   const form = requireOwnedForm(formSnap, data.organizerId);
   const version = requireOwnedVersion(
@@ -561,6 +560,7 @@ async function responseRows(
         db.collection("organizerFormShareLinks").doc(id))) : [],
       completedConversionKindsForResponses(
         db,
+        responses[0].organizerId,
         snapshots.map((snap) => snap.id)
       ),
     ]);
@@ -623,41 +623,40 @@ function responseRow(
   };
 }
 
+// Exhaustive against the generated contract: adding a kind requires its
+// existence query here. Duplicate receipts never increase hydration work.
+const conversionKindSet: Record<ResponseRow["conversionKinds"][number], true> = {
+  crmContact: true, application: true, eventAttendeeProposal: true, followUp: true,
+};
+
 async function completedConversionKinds(
   db: FirebaseFirestore.Firestore,
+  organizerId: string,
   responseId: string
 ): Promise<ResponseRow["conversionKinds"]> {
-  const snapshot = await db.collection("organizerFormConversionReceipts")
-    .where("responseId", "==", responseId)
-    .where("status", "==", "completed")
-    .limit(200)
-    .get();
-  if (snapshot.size === 200) {
-    throw new HttpsError("resource-exhausted",
-      "This response has too many conversions to summarize safely.");
-  }
-  return [...new Set(snapshot.docs.map((doc) =>
-    (doc.data() as OrganizerFormConversionReceiptDocument).kind))];
+  const kinds = Object.keys(conversionKindSet) as ResponseRow["conversionKinds"];
+  const present = await Promise.all(kinds.map(async (kind) => {
+    const snapshot = await db.collection("organizerFormConversionReceipts")
+      .where("organizerId", "==", organizerId)
+      .where("responseId", "==", responseId)
+      .where("status", "==", "completed")
+      .where("kind", "==", kind)
+      .limit(1).get();
+    return snapshot.empty ? [] : [kind];
+  }));
+  return present.flat();
 }
 
 async function completedConversionKindsForResponses(
   db: FirebaseFirestore.Firestore,
+  organizerId: string,
   responseIds: string[]
 ): Promise<Map<string, ResponseRow["conversionKinds"]>> {
   const byResponseId = new Map<string, ResponseRow["conversionKinds"]>();
-  for (let offset = 0; offset < responseIds.length; offset += 30) {
-    const ids = responseIds.slice(offset, offset + 30);
-    if (ids.length === 0) continue;
-    const snapshot = await db.collection("organizerFormConversionReceipts")
-      .where("responseId", "in", ids)
-      .where("status", "==", "completed")
-      .get();
-    for (const doc of snapshot.docs) {
-      const receipt = doc.data() as OrganizerFormConversionReceiptDocument;
-      const kinds = byResponseId.get(receipt.responseId) ?? [];
-      if (!kinds.includes(receipt.kind)) kinds.push(receipt.kind);
-      byResponseId.set(receipt.responseId, kinds);
-    }
+  // Keep concurrent requests bounded while deduplicating input identities.
+  for (const responseId of new Set(responseIds)) {
+    byResponseId.set(responseId,
+      await completedConversionKinds(db, organizerId, responseId));
   }
   return byResponseId;
 }
