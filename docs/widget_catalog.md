@@ -791,7 +791,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerFilterSummary</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:57</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomersDirectory</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:169</code> | — | — | Sliver-native directory. The page owns scrolling; the section builds only visible people and preserves each contact's identity across filter changes. |
 | <code>HostCustomersSummary</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:283</code> | — | — | No class documentation or registry summary. |
-| <code>HostSavedAudienceOverview</code> | <code>lib/hosts/presentation/customers/host_saved_audience_overview.dart:33</code> | — | — | No class documentation or registry summary. |
+| <code>HostSavedAudienceOverview</code> | <code>lib/hosts/presentation/customers/host_saved_audience_overview.dart:49</code> | — | — | No class documentation or registry summary. |
 | <code>HostSavedAudienceWorkspace</code> | <code>lib/hosts/presentation/customers/host_saved_audience_overview.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostAudienceSourceRuleFields</code> | <code>lib/hosts/presentation/customers/host_saved_audience_source_rules.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>HostSavedAudiencesDirectory</code> | <code>lib/hosts/presentation/customers/host_saved_audiences_workspace.dart:37</code> | — | — | No class documentation or registry summary. |
