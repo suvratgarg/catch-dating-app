@@ -8,7 +8,8 @@ import type {OrganizerFormResponseDocument as Response} from
   "../shared/generated/firestoreAdminTypes";
 import {genericFormApplicationId} from "./organizerApplicationAccess";
 import {listUnifiedResponses} from "./organizerUnifiedResponses";
-import {listOrganizerFormResponsesHandler} from "./organizerFormOperations";
+import {getOrganizerFormResponseDetailHandler,
+  listOrganizerFormResponsesHandler} from "./organizerFormOperations";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 
 type Data = Record<string, Record<string, unknown>>;
@@ -46,9 +47,10 @@ function application(id: string, time: number,
     version: 1, definition: {sections: []}}};
 }
 async function list(docs: Data, overrides: Partial<Query> = {},
-  matches: (row: Response) => Promise<boolean> = async () => true) {
+  matches: (row: Response) => Promise<boolean> = async () => true,
+  reads?: Map<string, number>) {
   const data = {...defaults, ...overrides};
-  return listUnifiedResponses({db: fakeDb(docs), data,
+  return listUnifiedResponses({db: fakeDb(docs, reads), data,
     filterHash: JSON.stringify({...data, organizerId: null, cursor: null}),
     answerFilterOptions: [], matches,
     project: async (snaps) => snaps.map((snap) => {
@@ -209,6 +211,130 @@ test(
     const docs: Data = {};
     for (let i = 0; i < 501; i++) Object.assign(docs, application(`a${i}`, i));
     await assert.rejects(list(docs), {code: "resource-exhausted"});
+  });
+
+test("selected form and version are bounded before application hydration",
+  async () => {
+    for (const total of [501, 5000]) {
+      for (const selected of [1, 3]) {
+        const docs: Data = {};
+        for (let i = 0; i < total; i++) {
+          const id = `a${String(i).padStart(5, "0")}`;
+          Object.assign(docs, application(id, i));
+          if (i >= selected) {
+            docs[`organizerApplications/${id}`].formId = "other";
+          }
+        }
+        const reads = new Map<string, number>();
+        const result = await list(docs, {formId: "form", limit: 10},
+          async () => true, reads);
+        assert.equal(result.entries?.length, selected);
+        assert.equal(result.nextCursor, null);
+        assert.equal(reads.get("query:organizerApplications"), selected);
+        assert.equal(reads.has("organizerApplicationResponses/a00003-answer"),
+          false);
+        // Version scope must also precede the limit, within the same form.
+        for (let i = selected; i < total; i++) {
+          const id = `a${String(i).padStart(5, "0")}`;
+          docs[`organizerApplications/${id}`].formId = "form";
+          docs[`organizerApplications/${id}`].formVersionId = "v2";
+        }
+        assert.equal((await list(docs, {formId: "form", versionId: "v1",
+          limit: 10})).entries?.length, selected);
+        assert.equal((await list(docs, {versionId: "v1",
+          limit: 10})).entries?.length, selected);
+      }
+    }
+  });
+
+test("selected responses are scoped before sparse scanning in both orders",
+  async () => {
+    const docs: Data = {...response("selected", 100)};
+    for (let i = 0; i < 1001; i++) {
+      const id = `other${i}`;
+      Object.assign(docs, response(id, i));
+      docs[`organizerFormResponses/${id}`].formId = "other";
+    }
+    for (const sortDirection of ["asc", "desc"] as const) {
+      const reads = new Map<string, number>();
+      const result = await list(docs, {formId: "form", sortDirection},
+        async (r) => r.formId === "form", reads);
+      assert.deepEqual(result.entries?.map((r) => r.entryId),
+        ["response:selected"]);
+      assert.equal(result.nextCursor, null);
+      assert.equal(reads.get("query:organizerFormResponses"), 1);
+    }
+  });
+
+test("unrelated application mutations do not invalidate selected cursors",
+  async () => {
+    const docs = {...application("a", 300), ...application("b", 200),
+      ...application("c", 100), ...application("unrelated", 50)};
+    docs["organizerApplications/unrelated"].formId = "other";
+    const first = await list(docs, {formId: "form"});
+    docs["organizerApplications/unrelated"].revision = 2;
+    const second = await list(docs, {formId: "form", cursor: first.nextCursor});
+    assert.deepEqual(second.entries?.map((r) => r.entryId), ["application:c"]);
+    await assert.rejects(list(docs, {formId: "other",
+      cursor: first.nextCursor}), {code: "invalid-argument"});
+  });
+
+test("generic hydration reads each shared version and withdrawn source once",
+  async () => {
+    const docs: Data = {};
+    for (const id of ["a", "b", "c"]) {
+      Object.assign(docs, response(id, 100),
+        application(genericFormApplicationId(id), 100, id));
+      docs[`organizerFormResponses/${id}`].status = "withdrawn";
+    }
+    const reads = new Map<string, number>();
+    const result = await list(docs, {formId: "form", limit: 10},
+      async () => true, reads);
+    assert.equal(result.entries?.length, 3);
+    assert.equal(reads.get("organizerFormVersions/v1"), 1);
+    for (const id of ["a", "b", "c"]) {
+      assert.equal(reads.get(`organizerFormResponses/${id}`), 1);
+    }
+  });
+
+test("completed kinds remain bounded and complete beyond 200 receipts",
+  async () => {
+    const docs: Data = {...response("early", 300), ...response("late", 200),
+      "organizers/org": {ownerUserId: "owner", hostUserIds: ["owner"],
+        hostProfiles: []},
+      "organizerForms/form": {organizerId: "org", title: "Form"},
+      "organizerFormVersions/v1": {organizerId: "org", formId: "form",
+        version: 1, definition: {sections: []}}};
+    for (let i = 0; i < 250; i++) {
+      docs[`organizerFormConversionReceipts/r${i}`] = {
+        organizerId: "org", responseId: "early", status: "completed",
+        kind: "crmContact"};
+    }
+    docs["organizerFormConversionReceipts/late"] = {
+      organizerId: "org", responseId: "late", status: "completed",
+      kind: "application"};
+    docs["organizerFormConversionReceipts/foreign"] = {
+      organizerId: "other", responseId: "late", status: "completed",
+      kind: "followUp"};
+    docs["organizerFormConversionReceipts/pending"] = {
+      organizerId: "org", responseId: "late", status: "pending",
+      kind: "eventAttendeeProposal"};
+    const reads = new Map<string, number>();
+    const deps = {firestore: () => fakeDb(docs, reads),
+      checkRateLimit: async () => undefined,
+      timestamp: () => timestamp(0), storageBucket: () => { throw Error(); }};
+    const result = await listOrganizerFormResponsesHandler({
+      data: {...defaults, formId: "form"}, auth: {uid: "owner"},
+    } as CallableRequest<unknown>, deps);
+    assert.deepEqual(result.items.map((r) => [r.responseId, r.conversionKinds]),
+      [["early", ["crmContact"]], ["late", ["application"]]]);
+    assert.ok((reads.get("query:organizerFormConversionReceipts") ?? 0) <= 8);
+    reads.clear();
+    const detail = await getOrganizerFormResponseDetailHandler({
+      data: {organizerId: "org", responseId: "early"}, auth: {uid: "owner"},
+    } as CallableRequest<unknown>, deps);
+    assert.deepEqual(detail.response.conversionKinds, ["crmContact"]);
+    assert.ok((reads.get("query:organizerFormConversionReceipts") ?? 0) <= 4);
   });
 
 test(
@@ -373,7 +499,9 @@ test("legacy imported form and version scopes work", async () => {
     {code: "not-found"});
 });
 
-function fakeDb(docs: Data): FirebaseFirestore.Firestore {
+function fakeDb(docs: Data, reads = new Map<string, number>()): FirebaseFirestore.Firestore {
+  const record = (key: string, count = 1) =>
+    reads.set(key, (reads.get(key) ?? 0) + count);
   class Snapshot {
     constructor(readonly path: string) {}
     get id() {
@@ -387,7 +515,7 @@ function fakeDb(docs: Data): FirebaseFirestore.Firestore {
     }
   }
   class Collection {
-    filters: [string, unknown][] = [];
+    filters: [string, string, unknown][] = [];
     orders: [string, string][] = [];
     count = Infinity;
     position: unknown[] | null = null;
@@ -395,10 +523,13 @@ function fakeDb(docs: Data): FirebaseFirestore.Firestore {
     constructor(readonly path: string) {}
     doc(id: string) {
       return {path: `${this.path}/${id}`,
-        get: async () => new Snapshot(`${this.path}/${id}`)};
+        get: async () => {
+          record(`${this.path}/${id}`);
+          return new Snapshot(`${this.path}/${id}`);
+        }};
     }
-    where(field: string, _operator: string, value: unknown) {
-      this.filters.push([field, value]); return this;
+    where(field: string, operator: string, value: unknown) {
+      this.filters.push([field, operator, value]); return this;
     }
     orderBy(field: string | object, direction = "asc") {
       this.orders.push([typeof field === "string" ? field : "__name__",
@@ -431,7 +562,9 @@ function fakeDb(docs: Data): FirebaseFirestore.Firestore {
       let rows = Object.keys(docs).filter((path) =>
         path.startsWith(`${this.path}/`)).map((path) => new Snapshot(path))
         .filter((snap) => this.filters
-          .every(([key, v]) => snap.data()[key] === v));
+          .every(([key, op, v]) => op === "in" ?
+            (v as unknown[]).includes(snap.data()[key]) :
+            snap.data()[key] === v));
       rows.sort((a, b) => compare(a, this.orders
         .map(([key]) => value(b, key))));
       if (this.position) {
@@ -442,11 +575,15 @@ function fakeDb(docs: Data): FirebaseFirestore.Firestore {
           compare(snap, anchor) >= 0 : compare(snap, anchor) > 0);
       }
       rows = rows.slice(0, this.count);
+      record(`query:${this.path}`, rows.length);
       return {docs: rows, size: rows.length, empty: !rows.length};
     }
   }
   return {collection: (path: string) => new Collection(path),
     getAll: async (...refs: {path: string}[]) =>
-      refs.map((ref) => new Snapshot(ref.path))} as unknown as
+      refs.map((ref) => {
+        record(ref.path);
+        return new Snapshot(ref.path);
+      })} as unknown as
     FirebaseFirestore.Firestore;
 }
