@@ -9,12 +9,15 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('recipient sees accept and decline actions', (tester) async {
@@ -104,33 +107,107 @@ void main() {
     expect(find.text('Complete booking'), findsNothing);
   });
 
-  testWidgets('ended pair hold returns both people to the event', (
+  for (final viewerIsRequester in [true, false]) {
+    testWidgets(
+      'expired invitation opens its event for ${viewerIsRequester ? 'requester' : 'attendee'}',
+      (tester) async {
+        final fixture = _fixture(
+          status: CrossPathsInvitationStatus.invalidated,
+          withPairHold: true,
+          viewerIsRequester: viewerIsRequester,
+          pairHoldStatus: CrossPathsPairHoldStatus.expired,
+        );
+        GoRouterState? destination;
+        final router = _invitationRouter(
+          fixture,
+          onEvent: (state) => destination = state,
+        );
+        addTearDown(router.dispose);
+
+        await _pumpInvitation(
+          tester,
+          fixture.invitation,
+          fixture,
+          router: router,
+        );
+        await tester.scrollUntilVisible(find.text('See the event'), 120);
+
+        expect(find.text('This pair spot is no longer held'), findsOneWidget);
+        expect(
+          find.text('Your booking: Not booked · Their booking: Confirmed'),
+          findsOneWidget,
+        );
+        expect(find.text('Complete booking'), findsNothing);
+        expect(find.text('Open event plan'), findsNothing);
+        expect(find.text('Cancel event plan'), findsNothing);
+        expect(destination, isNull);
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.text('See the event'));
+        await pumpFeatureUi(tester);
+
+        expect(tester.takeException(), isNull);
+        expect(find.byKey(const ValueKey('event-destination')), findsOneWidget);
+        expect(destination?.name, Routes.eventDetailScreen.name);
+        expect(
+          destination?.uri.toString(),
+          '/organizers/club-1/events/event-1',
+        );
+        expect(destination?.pathParameters, {
+          'clubId': fixture.event.clubId,
+          'eventId': fixture.event.id,
+        });
+        expect(destination?.extra, same(fixture.event));
+
+        // Unmount the invitation to dispose its periodic hold timer.
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
+
+  testWidgets('active invitation keeps the booking action on its own route', (
     tester,
   ) async {
     final fixture = _fixture(
       status: CrossPathsInvitationStatus.accepted,
       withPairHold: true,
-      pairHoldStatus: CrossPathsPairHoldStatus.expired,
     );
-
-    await _pumpInvitation(tester, fixture.invitation, fixture);
-    await tester.scrollUntilVisible(
-      find.text('This pair spot is no longer held'),
-      180,
+    GoRouterState? destination;
+    final router = _invitationRouter(
+      fixture,
+      onEvent: (state) => destination = state,
     );
+    addTearDown(router.dispose);
 
-    expect(find.text('This pair spot is no longer held'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('See the event'), 120);
-    expect(find.text('See the event'), findsOneWidget);
-    expect(find.text('Complete booking'), findsNothing);
+    await _pumpInvitation(tester, fixture.invitation, fixture, router: router);
+    await tester.scrollUntilVisible(find.text('Complete booking'), 140);
+
+    expect(
+      tester
+          .widget<CatchButton>(
+            find.widgetWithText(CatchButton, 'Complete booking'),
+          )
+          .onPressed,
+      isNotNull,
+    );
+    expect(find.text('See the event'), findsNothing);
+    expect(find.byKey(const ValueKey('event-destination')), findsNothing);
+    expect(destination, isNull);
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/cross-paths/invitations/invitation-1',
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 }
 
 Future<void> _pumpInvitation(
   WidgetTester tester,
   CrossPathsInvitation invitation,
-  _InvitationFixture fixture,
-) async {
+  _InvitationFixture fixture, {
+  GoRouter? router,
+}) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -149,12 +226,19 @@ Future<void> _pumpInvitation(
             fixture.pairHold!.id,
           ).overrideWith((ref) => Stream.value(fixture.pairHold)),
       ],
-      child: MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: CrossPathsInvitationScreen(invitationId: invitation.id),
-      ),
+      child: router != null
+          ? MaterialApp.router(
+              theme: AppTheme.light,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              routerConfig: router,
+            )
+          : MaterialApp(
+              theme: AppTheme.light,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: CrossPathsInvitationScreen(invitationId: invitation.id),
+            ),
     ),
   );
   await tester.pump();
@@ -163,15 +247,48 @@ Future<void> _pumpInvitation(
   await tester.pump();
 }
 
+// The real invitation callback and GoRouter use the canonical named route
+// contract. Only the event destination is a sentinel; this does not exercise
+// Event Detail providers, backend eligibility, or native navigation.
+GoRouter _invitationRouter(
+  _InvitationFixture fixture, {
+  required ValueChanged<GoRouterState> onEvent,
+}) => GoRouter(
+  initialLocation: '/cross-paths/invitations/${fixture.invitation.id}',
+  routes: [
+    GoRoute(
+      path: Routes.crossPathsInvitationScreen.path,
+      name: Routes.crossPathsInvitationScreen.name,
+      builder: (_, state) => CrossPathsInvitationScreen(
+        invitationId: state.pathParameters['invitationId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.eventDetailScreen.path,
+      name: Routes.eventDetailScreen.name,
+      builder: (_, state) {
+        onEvent(state);
+        return const Scaffold(
+          body: Text('Event destination', key: ValueKey('event-destination')),
+        );
+      },
+    ),
+  ],
+);
+
 _InvitationFixture _fixture({
   CrossPathsInvitationStatus status = CrossPathsInvitationStatus.pending,
   bool withPairHold = false,
   bool viewerIsRequester = true,
   CrossPathsPairHoldStatus pairHoldStatus = CrossPathsPairHoldStatus.active,
 }) {
+  final now = DateTime.now();
+  final holdExpired =
+      withPairHold && pairHoldStatus == CrossPathsPairHoldStatus.expired;
+  final releasedAt = now.subtract(const Duration(minutes: 1));
   final event = event_test.buildEvent(
     meetingPoint: 'Kala Ghoda table room',
-    startTime: DateTime(2026, 8, 8, 18),
+    startTime: now.add(const Duration(days: 3)),
   );
   final parsedSuggestion = CrossPathsSuggestion.fromCallableData({
     'person': {
@@ -219,7 +336,6 @@ _InvitationFixture _fixture({
     tokenExpiresAt: parsedSuggestion.tokenExpiresAt,
     rankingVersion: parsedSuggestion.rankingVersion,
   );
-  final now = DateTime(2026, 8, 5, 12);
   final senderUid = withPairHold && viewerIsRequester
       ? 'viewer-1'
       : suggestion.profile.uid;
@@ -233,13 +349,18 @@ _InvitationFixture _fixture({
     recipientUid: recipientUid,
     participantIds: const ['candidate-1', 'viewer-1'],
     status: status,
-    createdAt: now,
-    updatedAt: now,
+    createdAt: now.subtract(const Duration(minutes: 20)),
+    updatedAt: holdExpired ? releasedAt : now,
     expiresAt: now.add(const Duration(days: 1)),
-    respondedAt: status == CrossPathsInvitationStatus.accepted ? now : null,
+    respondedAt: status == CrossPathsInvitationStatus.accepted || holdExpired
+        ? now.subtract(const Duration(minutes: 15))
+        : null,
     cancelledAt: null,
-    invalidatedAt: null,
-    invalidationReason: null,
+    // Matches the expiry transition in functions/src/crossPaths/pairHolds.ts.
+    invalidatedAt: holdExpired ? releasedAt : null,
+    invalidationReason: holdExpired
+        ? CrossPathsInvitationInvalidationReason.holdExpired
+        : null,
     conversationId:
         status == CrossPathsInvitationStatus.accepted && !withPairHold
         ? 'plan-1'
@@ -255,13 +376,13 @@ _InvitationFixture _fixture({
           attendeeUid: recipientUid,
           participantIds: const ['viewer-1', 'candidate-1'],
           status: pairHoldStatus,
-          requesterBookingStatus: 'held',
+          requesterBookingStatus: holdExpired ? 'cancelled' : 'held',
           attendeeBookingStatus: 'signedUp',
           requesterPriceInPaise: 0,
           currency: 'INR',
           expiresAt: pairHoldStatus.isActive
-              ? DateTime.now().add(const Duration(minutes: 15))
-              : DateTime.now().subtract(const Duration(minutes: 1)),
+              ? now.add(const Duration(minutes: 15))
+              : releasedAt,
           conversationId: null,
         )
       : null;
