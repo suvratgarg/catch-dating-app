@@ -7,7 +7,7 @@ export function usePartnerWorkspaceController() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const unresolved = useRef<{key: string; action: "register" | "nominate" | "decide";
+  const unresolved = useRef<{key: string; action: "register" | "nominate" | "decide" | "update";
     material: Record<string, unknown>; requestId: string} | null>(null);
   const [needsRetry, setNeedsRetry] = useState(false);
   const queryClient = useQueryClient();
@@ -15,9 +15,9 @@ export function usePartnerWorkspaceController() {
   const workspace = useQuery({queryKey: ["partner-workspace", cursor],
     queryFn: () => readPartnerWorkspace(cursor), retry: false, staleTime: 0});
   const mutation = useMutation({mutationFn: ({action, payload}: {
-    action: "register" | "nominate" | "decide"; payload: Record<string, unknown>}) =>
+    action: "register" | "nominate" | "decide" | "update"; payload: Record<string, unknown>}) =>
     writePartner(action, payload)});
-  const save = async (action: "register" | "nominate" | "decide", material: Record<string, unknown>) => {
+  const save = async (action: "register" | "nominate" | "decide" | "update", material: Record<string, unknown>) => {
     if (action !== "register" && (workspace.isError || workspace.isFetching || !workspace.data)) {
       setError("Refresh current partner access before saving."); return false;
     }

@@ -1436,3 +1436,18 @@ producer defaults (CAT-127) concern event publication dependencies, and organize
 contract retirement (CAT-131) concerns existing canonical DTO/adapters. Their
 current-source census is required before touched consumers change; this partner
 flow does not claim blanket retirement or migrate unrelated event publishing.
+
+
+The Sales Demo auth adapter observes ID-token changes so linking a phone or Google
+credential to the same UID refreshes current contact and private preview queries.
+OTP confirmation fences the original account; credential collisions provide
+explicit recovery without account merging. Public Forms and guest phone auth
+adapters keep their existing semantics. Private preview keys contain actor/contact
+state but never grants; retained private data is hidden during authority rechecks.
+`/claim/?continuation=…` reads an authenticated private continuation, not the public
+listing index. It uses the existing claim request mutation and current server
+Forms materializer. The URL identifier is not authority. Expired/revoked proofs
+hide the private target; each preparation reconciles uncertain outcomes before
+another action. This is source implementation pending its separate exact
+contract, backend, React, rules and release verification; it does not complete the
+research/writing worker or partner outreach workspace phases.

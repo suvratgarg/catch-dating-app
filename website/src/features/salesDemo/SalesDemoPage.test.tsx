@@ -40,6 +40,8 @@ function renderCompleted(setup: SalesDemoSetup) {
   const api: SalesDemoApi = {preview: vi.fn().mockResolvedValue(preview),
     start: vi.fn().mockResolvedValue(completed), getSession: vi.fn(),
     advance: vi.fn(), getSetup: vi.fn().mockResolvedValue(setup),
+    preserve: vi.fn().mockResolvedValue({continuationId: "c".repeat(64),
+      expiresAt: "2099-01-01T00:00:00Z", publicationAuthority: false}),
     prepareSetup: vi.fn().mockResolvedValue({...setup, status: "prepared",
       formId: "demo_123", editorPath: "/host/audience/forms/demo_123"})};
   const auth: SalesDemoAuth = {watch: (callback) => {
@@ -57,7 +59,26 @@ describe("private demo landing", () => {
   afterEach(() => {cleanup(); vi.unstubAllEnvs();
     window.history.replaceState(null, "", "/");});
 
-  it("removes the fragment and leaves the anonymous preview read-only", async () => {
+  it("requests only the generic shell while signed out and never opens a session automatically", async () => {
+    window.history.replaceState(null, "", `/demo/invite-1#grant=${grant}`);
+    const generic: SalesDemoPreview = {...preview, interactiveAvailable: false, expiresAt: null,
+      preview: {...preview.preview, brandName: "Catch", headline: "Private workflow preview", scenario: "Verify the invited contact", steps: [], retainedTools: [], limitations: [], cta: "Verify contact"}};
+    const api: SalesDemoApi = {preview: vi.fn().mockResolvedValue(generic), start: vi.fn(),
+      getSession: vi.fn(), advance: vi.fn(), getSetup: vi.fn(), prepareSetup: vi.fn()};
+    const auth: SalesDemoAuth = {watch: (callback) => {callback(null); return () => undefined;},
+      signInGoogle: vi.fn(), beginPhone: vi.fn()};
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
+    render(<QueryClientProvider client={client}><BrowserRouter><Routes>
+      <Route path="/demo/:invitationId" element={<SalesDemoPage api={api} auth={auth} />} />
+    </Routes></BrowserRouter></QueryClientProvider>);
+    await screen.findByText("Verify the invited contact");
+    expect(api.preview).toHaveBeenCalledExactlyOnceWith({invitationId: "invite-1"});
+    expect(screen.queryByText("Sample Host")).toBeNull();
+    expect(screen.queryByRole("button", {name: "Open interactive example"})).toBeNull();
+    expect(api.start).not.toHaveBeenCalled(); expect(window.location.hash).toBe("");
+  });
+
+  it("removes the fragment and verifies the authenticated preview before explicit start", async () => {
     window.history.replaceState(null, "", `/demo/invite-1#grant=${grant}`);
     const api: SalesDemoApi = {preview: vi.fn().mockResolvedValue(preview),
       start: vi.fn().mockResolvedValue({} as SalesDemoSession),
@@ -66,14 +87,15 @@ describe("private demo landing", () => {
     const auth: SalesDemoAuth = {watch: (callback) => {
       callback({uid: "user-one", email: "host@example.test", emailVerified: true,
         phoneNumber: null}); return () => undefined;},
-    signInGoogle: vi.fn(), beginPhone: vi.fn()};
+    signInGoogle: vi.fn(),
+    beginPhone: vi.fn()};
     const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
     render(<QueryClientProvider client={client}><BrowserRouter><Routes>
       <Route path="/demo/:invitationId" element={<SalesDemoPage api={api} auth={auth} />} />
     </Routes></BrowserRouter></QueryClientProvider>);
     await waitFor(() => expect(screen.getByText("A private sample")).toBeTruthy());
     expect(window.location.hash).toBe("");
-    expect(api.preview).toHaveBeenCalledWith({invitationId: "invite-1"});
+    expect(api.preview).toHaveBeenCalledWith({invitationId: "invite-1", grantToken: grant});
     expect(api.start).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", {name: "Open interactive example"}));
     await waitFor(() => expect(api.start).toHaveBeenCalledWith({
@@ -81,7 +103,7 @@ describe("private demo landing", () => {
     }));
   });
 
-  it("lets a verified account change identity and retry without losing the grant", async () => {
+  it("requires explicit sign-out before recovering another account without losing the grant", async () => {
     window.history.replaceState(null, "", `/demo/invite-1#grant=${grant}`);
     const api: SalesDemoApi = {preview: vi.fn().mockResolvedValue(preview),
       start: vi.fn().mockRejectedValue(new Error("permission-denied")),
@@ -94,6 +116,7 @@ describe("private demo landing", () => {
         phoneNumber: null}); return () => undefined;},
     signInGoogle: vi.fn(async () => updateViewer({uid: "invited-user",
       email: "invited@example.test", emailVerified: true, phoneNumber: null})),
+    signOut: vi.fn(async () => updateViewer(null)),
     beginPhone: vi.fn()};
     const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
     render(<QueryClientProvider client={client}><BrowserRouter><Routes>
@@ -101,7 +124,10 @@ describe("private demo landing", () => {
     </Routes></BrowserRouter></QueryClientProvider>);
     fireEvent.click(await screen.findByRole("button", {name: "Open interactive example"}));
     await screen.findByText(/This account does not match/);
-    fireEvent.click(screen.getByRole("button", {name: "Use another Google account"}));
+    expect(auth.signInGoogle).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", {name: "Sign out to recover a different account"}));
+    await waitFor(() => expect(auth.signOut).toHaveBeenCalledOnce());
+    fireEvent.click(await screen.findByRole("button", {name: "Continue with Google"}));
     await waitFor(() => expect(auth.signInGoogle).toHaveBeenCalledOnce());
     await screen.findByText(/invited@example.test/);
     fireEvent.click(screen.getByRole("button", {name: "Open interactive example"}));
@@ -154,12 +180,16 @@ describe("private demo landing", () => {
     expect(api.prepareSetup).not.toHaveBeenCalled();
   });
 
-  it("routes claim-required setup to the existing website claim entry", async () => {
+  it("preserves claim-required setup only explicitly before the protected claim entry", async () => {
     const api = renderCompleted({...templateSetup, status: "claim_required"});
     fireEvent.click(await screen.findByRole("button", {name: "Open interactive example"}));
     fireEvent.click(await screen.findByRole("button", {name: "Review setup options"}));
+    expect(api.preserve).not.toHaveBeenCalled();
+    expect(screen.queryByRole("link", {name: "Open organizer claim"})).toBeNull();
+    fireEvent.click(await screen.findByRole("button", {name: "Preserve this setup for claim review"}));
     const link = await screen.findByRole("link", {name: "Open organizer claim"});
-    expect(link.getAttribute("href")).toBe("/claim/");
+    expect(link.getAttribute("href")).toBe(`/claim/?continuation=${"c".repeat(64)}`);
+    expect(api.preserve).toHaveBeenCalledExactlyOnceWith({sessionId: "session-1", grantToken: grant});
     expect(api.prepareSetup).not.toHaveBeenCalled();
   });
 

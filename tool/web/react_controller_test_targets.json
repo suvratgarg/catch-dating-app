@@ -263,6 +263,11 @@
       "source": "admin/src/features/partners/controllers/usePartnerWorkspaceController.ts",
       "test": "admin/src/features/partners/controllers/usePartnerWorkspaceController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/claims/useDemoContinuationController.ts",
+      "test": "website/src/features/claims/useDemoContinuationController.test.tsx",
+      "status": "required"
     }
   ]
 }

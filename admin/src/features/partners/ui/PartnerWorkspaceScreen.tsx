@@ -65,7 +65,9 @@ function renderLead(lead: PartnerLead, pending: boolean,
 function LeadReview({lead, pending, save}: {lead: PartnerLead; pending: boolean;
   save: ReturnType<typeof usePartnerWorkspaceController>["save"]}) {
   const [relationship, setRelationship] = useState(lead.assignment.relationshipContext ?? "");
-  const [channel, setChannel] = useState("whatsapp");
+  const [channel, setChannel] = useState(lead.assignment.channel ?? "whatsapp");
+  const [nextAction, setNextAction] = useState(lead.assignment.nextAction);
+  const [reviewAt, setReviewAt] = useState(lead.assignment.reviewAt.slice(0, 16));
   return <Panel icon={<Handshake />} title={lead.organizer.name}>
     <p>{lead.organizer.city} · {lead.assignment.status} · claim: {lead.organizer.claimState}</p>
     <p>Next action: {lead.assignment.nextAction}. Review by {new Date(lead.assignment.reviewAt).toLocaleDateString()}.</p>
@@ -79,6 +81,22 @@ function LeadReview({lead, pending, save}: {lead: PartnerLead; pending: boolean;
       <AdminButton disabled={pending} onClick={() => void save("decide", {
         organizerId: lead.organizer.organizerId, expectedRevision: lead.assignment.revision,
         decision: "decline", channel: null, relationshipContext: relationship.trim() || null})}>Decline</AdminButton>
+    </AdminForm>}
+    {lead.assignment.status === "accepted" && <AdminForm onSubmit={(e) => {
+      e.preventDefault(); const date = new Date(`${reviewAt}:00.000Z`);
+      if (!Number.isFinite(date.getTime())) return;
+      void save("update", {organizerId: lead.organizer.organizerId,
+        expectedRevision: lead.assignment.revision, relationshipContext: relationship.trim() || null,
+        channel, nextAction: nextAction.trim(), reviewAt: date.toISOString()});
+    }}>
+      <TextareaField rows={3} label="Your relationship context (self-reported)" value={relationship}
+        onChange={setRelationship} disabled={pending} />
+      <SelectField label="Established contact channel" value={channel} onChange={setChannel} disabled={pending}
+        options={[{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}]} />
+      <TextField label="Next action" value={nextAction} onChange={setNextAction} disabled={pending} />
+      <TextField label="Review at (UTC)" type="datetime-local" value={reviewAt} onChange={setReviewAt} disabled={pending} />
+      <AdminButton type="submit" disabled={pending || !nextAction.trim() || !reviewAt}>Save private next step</AdminButton>
+      <p>Saving context or a next step does not send outreach, claim or publish this organizer.</p>
     </AdminForm>}
   </Panel>;
 }
