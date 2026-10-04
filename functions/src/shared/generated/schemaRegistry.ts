@@ -9,6 +9,11 @@ export {salesDemoContinuationDocumentSchema} from "./schemas/salesDemoContinuati
 export {createSalesDemoContinuationCallablePayloadSchema} from "./schemas/createSalesDemoContinuationInput";
 export {getSalesDemoContinuationCallablePayloadSchema} from "./schemas/getSalesDemoContinuationInput";
 export {prepareSalesDemoContinuationFormCallablePayloadSchema} from "./schemas/prepareSalesDemoContinuationFormInput";
+export {generateSalesPartnerOutreachCallablePayloadSchema} from "./schemas/generateSalesPartnerOutreachInput";
+export {getSalesPartnerOutreachJobCallablePayloadSchema} from "./schemas/getSalesPartnerOutreachJobInput";
+export {getSalesPartnerOutreachDraftCallablePayloadSchema} from "./schemas/getSalesPartnerOutreachDraftInput";
+export {reviewSalesPartnerOutreachDraftCallablePayloadSchema} from "./schemas/reviewSalesPartnerOutreachDraftInput";
+export {copySalesPartnerOutreachDraftCallablePayloadSchema} from "./schemas/copySalesPartnerOutreachDraftInput";
 export {registerSalesPartnerCallablePayloadSchema} from "./schemas/registerSalesPartnerInput";
 export {nominateSalesOrganizerCallablePayloadSchema} from "./schemas/nominateSalesOrganizerInput";
 export {getSalesPartnerWorkspaceCallablePayloadSchema} from "./schemas/getSalesPartnerWorkspaceInput";

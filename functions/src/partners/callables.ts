@@ -1,3 +1,11 @@
+import {validateGenerateSalesPartnerOutreachCallablePayload} from "../shared/generated/validators/generateSalesPartnerOutreachInput";
+import {validateGetSalesPartnerOutreachJobCallablePayload} from "../shared/generated/validators/getSalesPartnerOutreachJobInput";
+import {validateGetSalesPartnerOutreachDraftCallablePayload} from "../shared/generated/validators/getSalesPartnerOutreachDraftInput";
+import {validateReviewSalesPartnerOutreachDraftCallablePayload} from "../shared/generated/validators/reviewSalesPartnerOutreachDraftInput";
+import {validateCopySalesPartnerOutreachDraftCallablePayload} from "../shared/generated/validators/copySalesPartnerOutreachDraftInput";
+import {generatePartnerOutreachDraft} from "../admin/salesIntelligence/runtime";
+import {getPartnerDraftJob} from "../admin/salesIntelligence/job";
+import {getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft} from "../admin/salesIntelligence/service";
 import type {ValidateFunction} from "ajv";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validateRegisterSalesPartnerCallablePayload} from "../shared/generated/validators/registerSalesPartnerInput";
@@ -31,13 +39,13 @@ export async function currentPartnerActor(request: CallableRequest<unknown>,
   return {uid, roles: adminRolesFromToken(user.customClaims)};
 }
 function callable(action: string, employee: boolean, validator: ValidateFunction,
-  service: (deps: PartnerDeps, actor: PartnerActor, payload: unknown) => Promise<unknown>) {
+  service: (deps: PartnerDeps, actor: PartnerActor, payload: unknown) => Promise<unknown>, maxRequests = 20) {
   return onCall(appCheckCallableOptionsWithLimits({concurrency: 10, maxInstances: 5,
     memory: "256MiB", timeoutSeconds: 30}), async (request) => {
     const payload = validateCallableWithAjv(request, validator);
     const actor = await (employee ? currentSalesEmployee(request) : currentPartnerActor(request));
     const db = admin.firestore();
-    await checkRateLimit(db, actor.uid, `partner:${action}`, {maxRequests: 20, windowMs: 60000});
+    await checkRateLimit(db, actor.uid, `partner:${action}`, {maxRequests, windowMs: 60000});
     return service({db, now: () => new Date(), checkAuth: async (expected, staff) => {
       const current = await (staff ? currentSalesEmployee(request) : currentPartnerActor(request));
       if (current.uid !== expected.uid) throw new HttpsError("permission-denied", "Partner identity changed.");
@@ -52,3 +60,9 @@ export const adminAssignSalesPartner = callable("assign", true, validateAdminAss
 export const adminRevokeSalesPartnerAccess = callable("revoke", true, validateAdminRevokeSalesPartnerAccessCallablePayload, revokePartnerAccess);
 
 export const updateSalesPartnerAssignment = callable("assignment.update", false, validateUpdateSalesPartnerAssignmentCallablePayload, updateAssignment);
+
+export const generateSalesPartnerOutreach = callable("generateSalesPartnerOutreach", false, validateGenerateSalesPartnerOutreachCallablePayload, generatePartnerOutreachDraft, 5);
+export const getSalesPartnerOutreachJob = callable("getSalesPartnerOutreachJob", false, validateGetSalesPartnerOutreachJobCallablePayload, getPartnerDraftJob);
+export const getSalesPartnerOutreachDraft = callable("getSalesPartnerOutreachDraft", false, validateGetSalesPartnerOutreachDraftCallablePayload, getPartnerOutreachDraft);
+export const reviewSalesPartnerOutreachDraft = callable("reviewSalesPartnerOutreachDraft", false, validateReviewSalesPartnerOutreachDraftCallablePayload, reviewPartnerOutreachDraft);
+export const copySalesPartnerOutreachDraft = callable("copySalesPartnerOutreachDraft", false, validateCopySalesPartnerOutreachDraftCallablePayload, copyPartnerOutreachDraft);

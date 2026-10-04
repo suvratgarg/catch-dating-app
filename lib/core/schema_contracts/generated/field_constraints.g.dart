@@ -23423,6 +23423,47 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['notAvailable', 'available', 'used', 'expired'],
   );
 
+  static const copySalesPartnerOutreachDraftCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'copySalesPartnerOutreachDraftCallablePayload.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const copySalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'copySalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const copySalesPartnerOutreachDraftCallablePayloadExpectedContentHash = CatchContractFieldConstraints(
+    path: 'copySalesPartnerOutreachDraftCallablePayload.expectedContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const copySalesPartnerOutreachDraftCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'copySalesPartnerOutreachDraftCallablePayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const copySalesPartnerOutreachDraftCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'copySalesPartnerOutreachDraftCallablePayload.requestId',
+    maxLength: 96,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const createChatMessageClientWriteDataImageUrl = CatchContractFieldConstraints(
     path: 'createChatMessageClientWrite.data.imageUrl',
     maxLength: 2048,
@@ -77215,6 +77256,145 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const generateSalesPartnerOutreachCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.requestId',
+    maxLength: 96,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestCapabilityIds = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.capabilityIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestCapabilityIdsItems = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.capabilityIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestChannel = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.channel',
+    required: true,
+    enumValues: <String>['email', 'message'],
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestContactId = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.contactId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestCtaIds = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.ctaIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestCtaIdsItems = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.ctaIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestObservationIds = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.observationIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestObservationIdsItems = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.observationIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestOpportunityId = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.opportunityId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestOrganizerId = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestPriorActivityId = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.priorActivityId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestPurpose = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.purpose',
+    required: true,
+    enumValues: <String>['first_message', 'follow_up'],
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestReferenceIds = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.referenceIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const generateSalesPartnerOutreachCallablePayloadSourceRequestReferenceIdsItems = CatchContractFieldConstraints(
+    path: 'generateSalesPartnerOutreachCallablePayload.sourceRequest.referenceIds.items',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const getCrossPathsSuggestionsCallablePayloadEventIds = CatchContractFieldConstraints(
     path: 'getCrossPathsSuggestionsCallablePayload.eventIds',
     required: true,
@@ -83719,6 +83899,56 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const getSalesPartnerOutreachDraftCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftCallablePayload.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getSalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const getSalesPartnerOutreachDraftCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachDraftCallablePayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getSalesPartnerOutreachJobCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachJobCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const getSalesPartnerOutreachJobCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachJobCallablePayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getSalesPartnerOutreachJobCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerOutreachJobCallablePayload.requestId',
+    maxLength: 96,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getSalesPartnerWorkspaceCallablePayloadCursor = CatchContractFieldConstraints(
@@ -136172,6 +136402,65 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const reviewSalesPartnerOutreachDraftCallablePayloadChannelReadiness = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.channelReadiness',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadDraftId = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.draftId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadExpectedContentHash = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.expectedContentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadFactualValidity = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.factualValidity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.requestId',
+    maxLength: 96,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reviewSalesPartnerOutreachDraftCallablePayloadTone = CatchContractFieldConstraints(
+    path: 'reviewSalesPartnerOutreachDraftCallablePayload.tone',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const revokeEventStaffCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'revokeEventStaffCallablePayload.eventId',
     maxLength: 180,
@@ -142610,6 +142899,22 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesOutreachJobsDocumentParticipantScopeAssignmentRevision = CatchContractFieldConstraints(
+    path: 'salesOutreachJobsDocument.participantScope.assignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesOutreachJobsDocumentParticipantScopePartnerUid = CatchContractFieldConstraints(
+    path: 'salesOutreachJobsDocument.participantScope.partnerUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const salesOutreachJobsDocumentRequestId = CatchContractFieldConstraints(
@@ -162973,6 +163278,11 @@ abstract final class CatchContractConstraints {
     'convertOrganizerFormResponseCallableResponse.resultId': convertOrganizerFormResponseCallableResponseResultId,
     'convertOrganizerFormResponseCallableResponse.status': convertOrganizerFormResponseCallableResponseStatus,
     'convertOrganizerFormResponseCallableResponse.undoStatus': convertOrganizerFormResponseCallableResponseUndoStatus,
+    'copySalesPartnerOutreachDraftCallablePayload.draftId': copySalesPartnerOutreachDraftCallablePayloadDraftId,
+    'copySalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision': copySalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision,
+    'copySalesPartnerOutreachDraftCallablePayload.expectedContentHash': copySalesPartnerOutreachDraftCallablePayloadExpectedContentHash,
+    'copySalesPartnerOutreachDraftCallablePayload.organizerId': copySalesPartnerOutreachDraftCallablePayloadOrganizerId,
+    'copySalesPartnerOutreachDraftCallablePayload.requestId': copySalesPartnerOutreachDraftCallablePayloadRequestId,
     'createChatMessageClientWrite.data.imageUrl': createChatMessageClientWriteDataImageUrl,
     'createChatMessageClientWrite.data.senderId': createChatMessageClientWriteDataSenderId,
     'createChatMessageClientWrite.data.sentAt._nanoseconds': createChatMessageClientWriteDataSentAtNanoseconds,
@@ -170199,6 +170509,22 @@ abstract final class CatchContractConstraints {
     'functionEventReceiptDocument.handler': functionEventReceiptDocumentHandler,
     'functionEventReceiptDocument.matchId': functionEventReceiptDocumentMatchId,
     'functionEventReceiptDocument.messageId': functionEventReceiptDocumentMessageId,
+    'generateSalesPartnerOutreachCallablePayload.expectedAssignmentRevision': generateSalesPartnerOutreachCallablePayloadExpectedAssignmentRevision,
+    'generateSalesPartnerOutreachCallablePayload.requestId': generateSalesPartnerOutreachCallablePayloadRequestId,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.capabilityIds': generateSalesPartnerOutreachCallablePayloadSourceRequestCapabilityIds,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.capabilityIds.items': generateSalesPartnerOutreachCallablePayloadSourceRequestCapabilityIdsItems,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.channel': generateSalesPartnerOutreachCallablePayloadSourceRequestChannel,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.contactId': generateSalesPartnerOutreachCallablePayloadSourceRequestContactId,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.ctaIds': generateSalesPartnerOutreachCallablePayloadSourceRequestCtaIds,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.ctaIds.items': generateSalesPartnerOutreachCallablePayloadSourceRequestCtaIdsItems,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.observationIds': generateSalesPartnerOutreachCallablePayloadSourceRequestObservationIds,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.observationIds.items': generateSalesPartnerOutreachCallablePayloadSourceRequestObservationIdsItems,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.opportunityId': generateSalesPartnerOutreachCallablePayloadSourceRequestOpportunityId,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.organizerId': generateSalesPartnerOutreachCallablePayloadSourceRequestOrganizerId,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.priorActivityId': generateSalesPartnerOutreachCallablePayloadSourceRequestPriorActivityId,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.purpose': generateSalesPartnerOutreachCallablePayloadSourceRequestPurpose,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.referenceIds': generateSalesPartnerOutreachCallablePayloadSourceRequestReferenceIds,
+    'generateSalesPartnerOutreachCallablePayload.sourceRequest.referenceIds.items': generateSalesPartnerOutreachCallablePayloadSourceRequestReferenceIdsItems,
     'getCrossPathsSuggestionsCallablePayload.eventIds': getCrossPathsSuggestionsCallablePayloadEventIds,
     'getCrossPathsSuggestionsCallablePayload.eventIds.items': getCrossPathsSuggestionsCallablePayloadEventIdsItems,
     'getCrossPathsSuggestionsCallablePayload.sessionId': getCrossPathsSuggestionsCallablePayloadSessionId,
@@ -171066,6 +171392,12 @@ abstract final class CatchContractConstraints {
     'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
     'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
     'getSalesDemoContinuationCallablePayload.continuationId': getSalesDemoContinuationCallablePayloadContinuationId,
+    'getSalesPartnerOutreachDraftCallablePayload.draftId': getSalesPartnerOutreachDraftCallablePayloadDraftId,
+    'getSalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision': getSalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision,
+    'getSalesPartnerOutreachDraftCallablePayload.organizerId': getSalesPartnerOutreachDraftCallablePayloadOrganizerId,
+    'getSalesPartnerOutreachJobCallablePayload.expectedAssignmentRevision': getSalesPartnerOutreachJobCallablePayloadExpectedAssignmentRevision,
+    'getSalesPartnerOutreachJobCallablePayload.organizerId': getSalesPartnerOutreachJobCallablePayloadOrganizerId,
+    'getSalesPartnerOutreachJobCallablePayload.requestId': getSalesPartnerOutreachJobCallablePayloadRequestId,
     'getSalesPartnerWorkspaceCallablePayload.cursor': getSalesPartnerWorkspaceCallablePayloadCursor,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
     'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
@@ -178291,6 +178623,14 @@ abstract final class CatchContractConstraints {
     'reviewOrganizerContactMergeCandidateCallableResponse.decisionState': reviewOrganizerContactMergeCandidateCallableResponseDecisionState,
     'reviewOrganizerContactMergeCandidateCallableResponse.organizerId': reviewOrganizerContactMergeCandidateCallableResponseOrganizerId,
     'reviewOrganizerContactMergeCandidateCallableResponse.revision': reviewOrganizerContactMergeCandidateCallableResponseRevision,
+    'reviewSalesPartnerOutreachDraftCallablePayload.channelReadiness': reviewSalesPartnerOutreachDraftCallablePayloadChannelReadiness,
+    'reviewSalesPartnerOutreachDraftCallablePayload.draftId': reviewSalesPartnerOutreachDraftCallablePayloadDraftId,
+    'reviewSalesPartnerOutreachDraftCallablePayload.expectedAssignmentRevision': reviewSalesPartnerOutreachDraftCallablePayloadExpectedAssignmentRevision,
+    'reviewSalesPartnerOutreachDraftCallablePayload.expectedContentHash': reviewSalesPartnerOutreachDraftCallablePayloadExpectedContentHash,
+    'reviewSalesPartnerOutreachDraftCallablePayload.factualValidity': reviewSalesPartnerOutreachDraftCallablePayloadFactualValidity,
+    'reviewSalesPartnerOutreachDraftCallablePayload.organizerId': reviewSalesPartnerOutreachDraftCallablePayloadOrganizerId,
+    'reviewSalesPartnerOutreachDraftCallablePayload.requestId': reviewSalesPartnerOutreachDraftCallablePayloadRequestId,
+    'reviewSalesPartnerOutreachDraftCallablePayload.tone': reviewSalesPartnerOutreachDraftCallablePayloadTone,
     'revokeEventStaffCallablePayload.eventId': revokeEventStaffCallablePayloadEventId,
     'revokeEventStaffCallablePayload.expectedRevision': revokeEventStaffCallablePayloadExpectedRevision,
     'revokeEventStaffCallablePayload.uid': revokeEventStaffCallablePayloadUid,
@@ -179197,6 +179537,8 @@ abstract final class CatchContractConstraints {
     'salesOutreachJobsDocument.leaseOwner': salesOutreachJobsDocumentLeaseOwner,
     'salesOutreachJobsDocument.leaseUntil': salesOutreachJobsDocumentLeaseUntil,
     'salesOutreachJobsDocument.materialHash': salesOutreachJobsDocumentMaterialHash,
+    'salesOutreachJobsDocument.participantScope.assignmentRevision': salesOutreachJobsDocumentParticipantScopeAssignmentRevision,
+    'salesOutreachJobsDocument.participantScope.partnerUid': salesOutreachJobsDocumentParticipantScopePartnerUid,
     'salesOutreachJobsDocument.requestId': salesOutreachJobsDocumentRequestId,
     'salesOutreachJobsDocument.result.contentHash': salesOutreachJobsDocumentResultContentHash,
     'salesOutreachJobsDocument.result.draftId': salesOutreachJobsDocumentResultDraftId,

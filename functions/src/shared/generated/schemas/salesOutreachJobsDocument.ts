@@ -796,6 +796,26 @@ export const salesOutreachJobsDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 160
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     }
   },
   "definitions": {

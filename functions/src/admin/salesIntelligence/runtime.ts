@@ -3,11 +3,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import type {PartnerActor, PartnerDeps} from "../../partners/model";
 import type {SalesPrincipal} from "../sales/types";
-import {fail} from "./model";
-import {claimDraftJob, completeDraftJob,
+import {fail, hash} from "./model";
+import {claimDraftJob, claimPartnerDraftJob, completeDraftJob, completePartnerDraftJob,
   type DraftJob} from "./job";
-import {buildOutreachInput, recordOperationsDraft,
+import {buildOutreachInput, buildPartnerOutreachInput, recordOperationsDraft, recordPartnerOperationsDraft,
   type IntelligenceDeps} from "./service";
 
 interface PackagedOperations {
@@ -40,6 +41,38 @@ async function packagedOperations(): Promise<PackagedOperations> {
 export async function generateSalesOutreachDraft(deps: IntelligenceDeps,
   principal: SalesPrincipal, payload: unknown): Promise<Record<string, unknown>> {
   const claimed = await claimDraftJob(deps, principal, payload);
+  return runClaimedDraft(deps, principal, claimed, {
+    authorize: () => deps.authorize(principal, false),
+    current: () => buildOutreachInput(deps, principal, claimed.job.sourceRequest),
+    save: (rendered) => recordOperationsDraft(deps, principal, claimed.job.requestId,
+      claimed.job.sourceRequest, claimed.job.frozenBundle, claimed.job.sourceHash, rendered),
+    complete: (result) => completeDraftJob(deps, principal, claimed.job, result),
+  });
+}
+
+/** Actual partner authority uses the same Operations runner and existing Sales job. */
+export async function generatePartnerOutreachDraft(deps: PartnerDeps,
+  actor: PartnerActor, payload: unknown): Promise<Record<string, unknown>> {
+  const claimed = await claimPartnerDraftJob(deps, actor, payload);
+  const revision = claimed.job.participantScope!.assignmentRevision;
+  return runClaimedDraft(deps, actor, claimed, {
+    authorize: () => deps.checkAuth(actor, false),
+    current: () => buildPartnerOutreachInput(deps, actor, claimed.job.sourceRequest, revision),
+    save: (rendered) => recordPartnerOperationsDraft(deps, actor, claimed.job.requestId,
+      claimed.job.sourceRequest, revision, claimed.job.frozenBundle, claimed.job.sourceHash, rendered),
+    complete: (result) => completePartnerDraftJob(deps, actor, claimed.job, result),
+  });
+}
+
+interface DraftRuntimePorts {
+  authorize: () => Promise<void>;
+  current: () => Promise<Record<string, unknown>>;
+  save: (rendered: unknown) => Promise<{draftId: string; draft: {contentHash: string}}>;
+  complete: (result: {draftId: string; draft: {contentHash: string}}) => Promise<DraftJob>;
+}
+async function runClaimedDraft(deps: Pick<IntelligenceDeps, "now">,
+  principal: SalesPrincipal, claimed: {claimed: boolean; job: DraftJob},
+  ports: DraftRuntimePorts): Promise<Record<string, unknown>> {
   if (!claimed.claimed) {
     if (claimed.job.status === "failed") {
       return {status: "failed", failure: claimed.job.failure};
@@ -63,14 +96,14 @@ export async function generateSalesOutreachDraft(deps: IntelligenceDeps,
           if (actor.uid !== principal.uid) {
             return fail("permission-denied", "Draft actor changed.");
           }
-          await deps.authorize(principal, false);
+          await ports.authorize();
           return {bundle: job.frozenBundle, sourceHash: job.sourceHash};
         },
         current: async (actor: SalesPrincipal) => {
           if (actor.uid !== principal.uid) {
             return fail("permission-denied", "Draft actor changed.");
           }
-          return buildOutreachInput(deps, principal, job.sourceRequest);
+          return ports.current();
         },
       },
       save: async ({actor, requestId, sourceRequest, frozenBundle,
@@ -83,14 +116,17 @@ export async function generateSalesOutreachDraft(deps: IntelligenceDeps,
         if (actor.uid !== principal.uid) {
           return fail("permission-denied", "Draft actor changed.");
         }
-        return recordOperationsDraft(deps, principal, requestId,
-          sourceRequest, frozenBundle, frozenSourceHash, rendered);
+        if (requestId !== job.requestId || frozenSourceHash !== job.sourceHash ||
+            hash(sourceRequest) !== hash(job.sourceRequest) || hash(frozenBundle) !== hash(job.frozenBundle)) {
+          return fail("aborted", "Draft request changed during persistence.");
+        }
+        return ports.save(rendered);
       },
       clock: deps.now,
       workerId: `sales-${job.jobId}`});
     const result = await runner.run({requestId: job.requestId,
       actor: principal, sourceRequest: job.sourceRequest});
-    const completed = await completeDraftJob(deps, principal, job, result.draft);
+    const completed = await ports.complete(result.draft);
     return {status: "completed", result: completed.result,
       idempotentReplay: false};
   } catch (error) {

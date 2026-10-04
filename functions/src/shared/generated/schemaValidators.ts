@@ -9,6 +9,11 @@ export {validateSalesDemoContinuationDocument} from "./validators/salesDemoConti
 export {validateCreateSalesDemoContinuationCallablePayload} from "./validators/createSalesDemoContinuationInput";
 export {validateGetSalesDemoContinuationCallablePayload} from "./validators/getSalesDemoContinuationInput";
 export {validatePrepareSalesDemoContinuationFormCallablePayload} from "./validators/prepareSalesDemoContinuationFormInput";
+export {validateGenerateSalesPartnerOutreachCallablePayload} from "./validators/generateSalesPartnerOutreachInput";
+export {validateGetSalesPartnerOutreachJobCallablePayload} from "./validators/getSalesPartnerOutreachJobInput";
+export {validateGetSalesPartnerOutreachDraftCallablePayload} from "./validators/getSalesPartnerOutreachDraftInput";
+export {validateReviewSalesPartnerOutreachDraftCallablePayload} from "./validators/reviewSalesPartnerOutreachDraftInput";
+export {validateCopySalesPartnerOutreachDraftCallablePayload} from "./validators/copySalesPartnerOutreachDraftInput";
 export {validateRegisterSalesPartnerCallablePayload} from "./validators/registerSalesPartnerInput";
 export {validateNominateSalesOrganizerCallablePayload} from "./validators/nominateSalesOrganizerInput";
 export {validateGetSalesPartnerWorkspaceCallablePayload} from "./validators/getSalesPartnerWorkspaceInput";

@@ -166,6 +166,319 @@ export const prepareSalesDemoContinuationFormCallablePayloadSchema = {
   ]
 };
 
+export const generateSalesPartnerOutreachCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/generate_sales_partner_outreach_payload.schema.json",
+  "title": "GenerateSalesPartnerOutreachCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "sourceRequest",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRequest": {
+      "title": "AdminBuildSalesOutreachInputPayload",
+      "description": "Selects only existing approved clause IDs; trusted server builds the Operations snapshot. No source prose is accepted from the caller.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "observationIds",
+        "capabilityIds",
+        "referenceIds",
+        "ctaIds",
+        "channel",
+        "purpose"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "observationIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "capabilityIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "referenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "ctaIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "priorActivityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "generateSalesPartnerOutreach"
+  ]
+};
+
+export const getSalesPartnerOutreachJobCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_outreach_job_payload.schema.json",
+  "title": "GetSalesPartnerOutreachJobCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachJob"
+  ]
+};
+
+export const getSalesPartnerOutreachDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_outreach_draft_payload.schema.json",
+  "title": "GetSalesPartnerOutreachDraftCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachDraft"
+  ]
+};
+
+export const reviewSalesPartnerOutreachDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/review_sales_partner_outreach_draft_payload.schema.json",
+  "title": "ReviewSalesPartnerOutreachDraftCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId",
+    "expectedContentHash",
+    "factualValidity",
+    "tone",
+    "channelReadiness"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "factualValidity": {
+      "const": "verified",
+      "type": "string"
+    },
+    "tone": {
+      "const": "approved",
+      "type": "string"
+    },
+    "channelReadiness": {
+      "const": "manual_copy_only",
+      "type": "string"
+    }
+  },
+  "x-callable-aliases": [
+    "reviewSalesPartnerOutreachDraft"
+  ]
+};
+
+export const copySalesPartnerOutreachDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/copy_sales_partner_outreach_draft_payload.schema.json",
+  "title": "CopySalesPartnerOutreachDraftCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId",
+    "expectedContentHash"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "copySalesPartnerOutreachDraft"
+  ]
+};
+
 export const registerSalesPartnerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",
@@ -19972,6 +20285,26 @@ export const salesOutreachJobsDocumentSchema = {
         "null"
       ],
       "maxLength": 160
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     }
   },
   "definitions": {

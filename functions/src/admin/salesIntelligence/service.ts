@@ -893,7 +893,28 @@ async function requireCurrentDraftCore(deps: Pick<IntelligenceDeps, "db" | "now"
         stored.sourceMaterialHash) {
     return fail("aborted", "Outreach sources changed; prepare a new draft.");
   }
+  assertPersistedOutreachDraftIntegrity(stored, draftId,
+    current.bundle as Record<string, unknown>);
   return {ref, stored};
+}
+
+/** Shared read/replay check; saved content and approved sources must agree. */
+export function assertPersistedOutreachDraftIntegrity(stored: FirebaseFirestore.DocumentData,
+  draftId: string, currentBundle: Record<string, unknown>): void {
+  const draft = stored.draft;
+  if (stored.schemaVersion !== 1 || stored.draftId !== draftId ||
+      !stored.sourceRequest || !draft || draft.draftId !== draftId || stored.inputHash !== draft.inputHash ||
+      ["organizerId", "contactId", "opportunityId"].some((key) =>
+        stored[key] !== stored.sourceRequest[key] || draft[key] !== stored.sourceRequest[key]) ||
+      (draft.subject !== null && (typeof draft.subject !== "string" || draft.subject.length > 160)) ||
+      typeof draft.text !== "string" || draft.text.length > 2500 ||
+      draft.contentHash !== hash({subject: draft.subject, text: draft.text})) {
+    return fail("failed-precondition", "Stored outreach content differs from its exact artifact.");
+  }
+  // Sources are unchanged, but persisted prose/citations must still match them.
+  // The source material excludes evaluatedAt, so use the fresh bundle hash only
+  // for this deterministic clause validation without changing the saved artifact.
+  checkedDraft({...draft, inputHash: hash(currentBundle)}, currentBundle);
 }
 
 export async function reviewOutreachDraft(deps: IntelligenceDeps,

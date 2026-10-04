@@ -1,4 +1,12 @@
 /* eslint-disable max-len */
+import type {CallableRequest} from "firebase-functions/v2/https";
+import {currentPartnerActor} from "../../partners/callables";
+import {validateCallableWithAjv} from "../../shared/validation";
+import {validateGenerateSalesPartnerOutreachCallablePayload} from "../../shared/generated/validators/generateSalesPartnerOutreachInput";
+import {validateGetSalesPartnerOutreachJobCallablePayload} from "../../shared/generated/validators/getSalesPartnerOutreachJobInput";
+import {validateGetSalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/getSalesPartnerOutreachDraftInput";
+import {validateReviewSalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/reviewSalesPartnerOutreachDraftInput";
+import {validateCopySalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/copySalesPartnerOutreachDraftInput";
 import {strict as assert} from "node:assert";
 import {execFileSync} from "node:child_process";
 import path from "node:path";
@@ -7,8 +15,9 @@ import {qualificationPolicyHash} from "../sales/qualificationPolicy";
 import {salesRelationshipId} from "../sales/records";
 import type {SalesPrincipal} from "../sales/types";
 import {parsePolicy} from "./model";
-import {claimDraftJob, getDraftJob, jobIdFor} from "./job";
-import {generateSalesOutreachDraft} from "./runtime";
+import {claimDraftJob, claimPartnerDraftJob, completePartnerDraftJob,
+  getDraftJob, getPartnerDraftJob, jobIdFor} from "./job";
+import {generatePartnerOutreachDraft, generateSalesOutreachDraft} from "./runtime";
 import {buildOutreachInput, buildPartnerOutreachInput, recordPartnerOperationsDraft,
   getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft,
   type DraftRequest, type IntelligenceDeps} from "./service";
@@ -365,4 +374,175 @@ test("participant review and copy require own current artifact on fresh calls an
   f.db.docs.set(`salesOutreachDrafts/${saved.draftId}`, {...f.db.docs.get(`salesOutreachDrafts/${saved.draftId}`), status: "pending_review"});
   await assert.rejects(copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy), {code: "failed-precondition"});
   await assert.rejects(reviewPartnerOutreachDraft(f.partnerDeps, f.principal, review), {code: "failed-precondition"});
+});
+
+test("participant draft reads and reviewed replays reject persisted prose and identity edits", async () => {
+  const f = partnerFixture();
+  const completed = await generatePartnerOutreachDraft(f.partnerDeps, f.principal,
+    {...sampleRequest, expectedAssignmentRevision: 2});
+  const draftId = String((completed.result as {draftId: string}).draftId);
+  const path = `salesOutreachDrafts/${draftId}`;
+  const original = f.db.docs.get(path)!;
+  const draft = original.draft as Record<string, unknown>;
+  const target = {organizerId: "org-one", draftId, expectedAssignmentRevision: 2};
+  const review = {...target, requestId: "integrity-review", expectedContentHash: draft.contentHash,
+    factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"};
+  const copy = {...target, requestId: "integrity-copy", expectedContentHash: draft.contentHash};
+  await reviewPartnerOutreachDraft(f.partnerDeps, f.principal, review);
+  await copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy);
+  const reviewed = f.db.docs.get(path)!;
+  for (const change of [{text: "Unreviewed relationship proof"}, {subject: "Unreviewed subject"},
+    {contactId: "foreign-contact"}, {opportunityId: "foreign-opportunity"},
+    {sentences: [{text: "Unreviewed proof", kind: "reference", sourceIds: ["reference-foreign"]}]}]) {
+    f.db.docs.set(path, {...reviewed, draft: {...draft, ...change}});
+    await assert.rejects(getPartnerOutreachDraft(f.partnerDeps, f.principal, target), {code: "failed-precondition"});
+    await assert.rejects(reviewPartnerOutreachDraft(f.partnerDeps, f.principal, review), {code: "failed-precondition"});
+    await assert.rejects(copyPartnerOutreachDraft(f.partnerDeps, f.principal, copy), {code: "failed-precondition"});
+    await assert.rejects(generatePartnerOutreachDraft(f.partnerDeps, f.principal,
+      {...sampleRequest, expectedAssignmentRevision: 2}), {code: "failed-precondition"});
+    await assert.rejects(getPartnerDraftJob(f.partnerDeps, f.principal,
+      {organizerId: "org-one", expectedAssignmentRevision: 2, requestId: sampleRequest.requestId}), {code: "failed-precondition"});
+  }
+  f.db.docs.set(path, reviewed);
+  assert.equal((await getPartnerOutreachDraft(f.partnerDeps, f.principal, target)).status, "approved");
+});
+
+
+const partnerJobRequest = {...sampleRequest, expectedAssignmentRevision: 2};
+const partnerJobRead = {requestId: sampleRequest.requestId, organizerId: "org-one", expectedAssignmentRevision: 2};
+async function participantJobWithResult() {
+  const f = partnerFixture();
+  const claimed = await claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest);
+  await generateSalesOutreachDraft(f.deps, actor, sampleRequest);
+  const employeeDraft = [...f.db.docs.entries()].find(([key]) => key.startsWith("salesOutreachDrafts/"))![1];
+  const saved = await recordPartnerOperationsDraft(f.partnerDeps, f.principal, sampleRequest.requestId,
+    sampleRequest.sourceRequest as DraftRequest, 2, claimed.job.frozenBundle, claimed.job.sourceHash, employeeDraft.draft);
+  return {...f, job: claimed.job, saved};
+}
+
+test("participant job claims require own accepted assignment and preserve actor roles", async () => {
+  const f = partnerFixture();
+  const first = await claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest);
+  assert.equal(first.claimed, true);
+  assert.deepEqual(first.job.participantScope, {partnerUid: f.principal.uid, assignmentRevision: 2});
+  const busy = await claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest);
+  assert.equal(busy.claimed, false); assert.equal(busy.job.attemptCount, 1);
+  await assert.rejects(claimPartnerDraftJob(f.partnerDeps, {uid: "other-partner", roles: []}, partnerJobRequest), {code: "permission-denied"});
+  await assert.rejects(getPartnerDraftJob(f.partnerDeps, f.principal, {...partnerJobRead, expectedAssignmentRevision: 3}), {code: "aborted"});
+  f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), status: "revoked"});
+  await assert.rejects(claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest), {code: "permission-denied"});
+  await assert.rejects(getPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRead), {code: "permission-denied"});
+});
+
+test("participant job retries exhaust bounded attempts without renewing the frozen job deadline", async () => {
+  const f = partnerFixture();
+  const first = await claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest);
+  for (const at of ["2026-09-28T10:01:01.000Z", "2026-09-28T10:02:02.000Z"]) {
+    f.clock(at); const next = await claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest);
+    assert.equal(next.claimed, true); assert.equal(next.job.expiresAt, first.job.expiresAt);
+    assert.deepEqual(next.job.frozenBundle, first.job.frozenBundle);
+  }
+  f.clock("2026-09-28T10:03:03.000Z");
+  await assert.rejects(claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest), {code: "resource-exhausted"});
+  assert.equal(f.db.docs.get(`salesOutreachJobs/${first.job.jobId}`)?.attemptCount, 3);
+  assert.equal([...f.db.docs.keys()].some((key) => key.startsWith("salesOutreachDrafts/")), false);
+});
+
+test("participant completed claim and status replay reject deleted, foreign or edited artifacts", async () => {
+  const f = await participantJobWithResult();
+  const finished = await completePartnerDraftJob(f.partnerDeps, f.principal, f.job, f.saved);
+  const again = await claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest);
+  assert.equal(again.claimed, false); assert.deepEqual(again.job.result, finished.result);
+  const key = `salesOutreachDrafts/${f.saved.draftId}`;
+  const stored = f.db.docs.get(key)!;
+  for (const replacement of [null, {...stored, createdBy: "other-partner"},
+    {...stored, draft: {...stored.draft as Record<string, unknown>, contentHash: "a".repeat(64)}}]) {
+    if (replacement) f.db.docs.set(key, replacement); else f.db.docs.delete(key);
+    await assert.rejects(claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest), {code: "failed-precondition"});
+    await assert.rejects(getPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRead), {code: "failed-precondition"});
+    f.db.docs.set(key, stored);
+  }
+  f.db.docs.set("salesIntelligenceClauses/capability-one", {...f.db.docs.get("salesIntelligenceClauses/capability-one"), revision: 2});
+  await assert.rejects(claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest), {code: "aborted"});
+  await assert.rejects(getPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRead), {code: "aborted"});
+});
+
+test("participant completion rechecks lease expiry after awaited final authorization", async () => {
+  const f = await participantJobWithResult();
+  const key = `salesOutreachDrafts/${f.saved.draftId}`;
+  const originalGet = f.db.docs.get.bind(f.db.docs);
+  let readArtifact = false;
+  f.db.docs.get = (path) => {if (path === key) readArtifact = true; return originalGet(path);};
+  const auth = f.partnerDeps.checkAuth;
+  f.partnerDeps.checkAuth = async (...args) => {
+    await auth(...args);
+    if (readArtifact) {await Promise.resolve(); f.clock("2026-09-28T10:01:01.000Z");}
+  };
+  await assert.rejects(completePartnerDraftJob(f.partnerDeps, f.principal, f.job, f.saved), {code: "aborted"});
+  assert.equal(f.db.docs.get(`salesOutreachJobs/${f.job.jobId}`)?.status, "running");
+});
+
+test("participant transaction retry rechecks a revoked assignment and commits no initial claim", async () => {
+  const f = partnerFixture();
+  f.db.runTransaction = async <T>(callback: (tx: MemoryTx) => Promise<T>): Promise<T> => {
+    await callback(new MemoryTx(f.db)); // First attempt is deliberately discarded.
+    f.db.docs.set("salesPartnerAssignments/org-one", {...f.db.docs.get("salesPartnerAssignments/org-one"), status: "revoked"});
+    const retry = new MemoryTx(f.db); const result = await callback(retry); retry.commit(); return result;
+  };
+  await assert.rejects(claimPartnerDraftJob(f.partnerDeps, f.principal, partnerJobRequest), {code: "permission-denied"});
+  assert.equal([...f.db.docs.keys()].some((key) => key.startsWith("salesOutreachJobs/")), false);
+});
+
+
+test("actual partner runs the shared zero-model workflow with one own result and interrupted replay", async () => {
+  const f = partnerFixture();
+  const first = await generatePartnerOutreachDraft(f.partnerDeps, f.principal, partnerJobRequest);
+  assert.equal(first.status, "completed"); assert.equal(first.idempotentReplay, false);
+  const again = await generatePartnerOutreachDraft(f.partnerDeps, f.principal, partnerJobRequest);
+  assert.deepEqual(again.result, first.result); assert.equal(again.idempotentReplay, true);
+  const key = `salesOutreachJobs/${jobIdFor(f.principal.uid, sampleRequest.requestId)}`;
+  const committed = f.db.docs.get(key)!;
+  f.db.docs.set(key, {...committed, status: "running", result: null,
+    leaseOwner: "interrupted-partner-worker", leaseUntil: "2026-09-28T10:01:00.000Z"});
+  f.clock("2026-09-28T10:01:01.000Z");
+  const recovered = await generatePartnerOutreachDraft(f.partnerDeps, f.principal, partnerJobRequest);
+  assert.deepEqual(recovered.result, first.result);
+  assert.equal([...f.db.docs.keys()].filter((path) => path.startsWith("salesOutreachDrafts/")).length, 1);
+  const row = [...f.db.docs.entries()].find(([path]) => path.startsWith("salesOutreachDrafts/"))![1];
+  assert.equal(row.createdBy, f.principal.uid); assert.equal(row.status, "pending_review");
+  assert.equal((row.draft as {sendAuthority: boolean}).sendAuthority, false);
+});
+
+
+test("partner preparation callable payloads reject identity, provider, send and malformed source parameters", () => {
+  const target = {organizerId: "org-one", expectedAssignmentRevision: 2, draftId: "draft-own"};
+  const rows: Array<[import("ajv").ValidateFunction, Record<string, unknown>]> = [
+    [validateGenerateSalesPartnerOutreachCallablePayload, partnerJobRequest],
+    [validateGetSalesPartnerOutreachJobCallablePayload, partnerJobRead],
+    [validateGetSalesPartnerOutreachDraftCallablePayload, target],
+    [validateReviewSalesPartnerOutreachDraftCallablePayload, {...target, requestId: "review-own", expectedContentHash: "a".repeat(64), factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"}],
+    [validateCopySalesPartnerOutreachDraftCallablePayload, {...target, requestId: "copy-own", expectedContentHash: "a".repeat(64)}],
+  ];
+  for (const [validator, data] of rows) {
+    assert.equal(validator(data), true);
+    for (const field of ["actorUid", "apiKey", "send", "providerConfirmed", "publicationAuthority"]) {
+      assert.throws(() => validateCallableWithAjv({data: {...data, [field]: true}} as CallableRequest<unknown>, validator), {code: "invalid-argument"});
+    }
+    assert.equal(validator({...data, expectedAssignmentRevision: 0}), false);
+  }
+  assert.equal(validateGenerateSalesPartnerOutreachCallablePayload({...partnerJobRequest,
+    sourceRequest: {...sampleRequest.sourceRequest, prose: "Unreviewed proof"}}), false);
+  assert.equal(validateGenerateSalesPartnerOutreachCallablePayload({...partnerJobRequest,
+    sourceRequest: {...sampleRequest.sourceRequest, observationIds: Array(13).fill("observation-one")}}), false);
+});
+
+test("partner callable Auth resolution rejects disabled, revoked, missing and malformed sessions", async () => {
+  const authTime = Math.floor(Date.parse(started) / 1000);
+  const request = {data: {}, auth: {uid: "partner-one", token: {auth_time: authTime}}} as unknown as CallableRequest<unknown>;
+  const user = {uid: "partner-one", disabled: false, customClaims: {}, tokensValidAfterTime: started} as unknown as import("firebase-admin").auth.UserRecord;
+  assert.deepEqual(await currentPartnerActor(request, async () => user), {uid: "partner-one", roles: []});
+  await assert.rejects(currentPartnerActor(request, async () => ({...user, disabled: true, toJSON: () => ({})})), {code: "permission-denied"});
+  await assert.rejects(currentPartnerActor(request, async () => ({...user, tokensValidAfterTime: "2026-09-28T10:00:01.000Z", toJSON: () => ({})})), {code: "permission-denied"});
+  await assert.rejects(currentPartnerActor({...request, auth: {...request.auth!, token: {...request.auth!.token, auth_time: "stale"}}} as unknown as CallableRequest<unknown>, async () => user), {code: "permission-denied"});
+  await assert.rejects(currentPartnerActor(request, async () => {throw new Error("deleted Auth user");}), /deleted Auth user/u);
 });

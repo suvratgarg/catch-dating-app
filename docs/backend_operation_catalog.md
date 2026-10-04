@@ -801,8 +801,8 @@ creator and generation binding before every replay; copy requires current exact
 own composition approval. Stored draft identities include actor and assignment
 generation, preventing identical content from colliding with an earlier actor.
 This composition review grants no platform capability approval or sending proof.
-Participant jobs and browser callable review/copy actions are not wired by this
-extraction.
+Participant jobs and review/copy callables reuse this core under current accepted
+assignment authority; browser preparation workspace integration remains pending.
 
 `registerSalesPartner` accepts the current bounded role for a current, non-deleted
 Auth user without changing custom claims or organizer authority.
@@ -826,3 +826,17 @@ own contact-bound private canonical target and reviewed setup. The separate
 Forms manager authority and an exact reviewed setup hash; it reuses the existing
 materializer. Expired proofs use the existing Demo cleanup worker. Neither a
 partner assignment nor completed practice grants real organizer authority.
+
+
+`generateSalesPartnerOutreach` freezes an own accepted-assignment generation into
+an existing Sales outreach job, runs the existing zero-model Operations adapter,
+and persists an own draft awaiting composition review. Its request accepts source
+IDs and exact assignment revision, no provider, prose or send parameters.
+`getSalesPartnerOutreachJob` returns only current own status and result pointers;
+completed replay revalidates persisted artifact binding. Completion rechecks the
+fresh lease clock after final awaited authorization. Retry attempts and job
+expiry remain bounded without renewal. `getSalesPartnerOutreachDraft`,
+`reviewSalesPartnerOutreachDraft` and `copySalesPartnerOutreachDraft` expose the
+existing own artifact services; copy requires exact current composition review.
+No callable sends outreach, approves platform claims or activates a provider.
+These are source changes pending scoped generation/build/backend verification.

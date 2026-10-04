@@ -1421,6 +1421,10 @@ export interface SalesOutreachJobsDocument {
     contentHash: string;
   } | null;
   failure: string | null;
+  participantScope?: {
+    partnerUid: string;
+    assignmentRevision: number;
+  };
 }
 
 /**

@@ -20,6 +20,11 @@ const schemaSpecs = [
   {"name": "GetSalesDemoContinuationCallablePayload", "source": "callables/get_sales_demo_continuation_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesDemoContinuationCallablePayload.ts"},
   {"name": "PrepareSalesDemoContinuationFormCallablePayload", "source": "callables/prepare_sales_demo_continuation_form_payload.schema.json", "typeOutput": "functions/src/shared/generated/prepareSalesDemoContinuationFormCallablePayload.ts"},
 
+  {"name": "GenerateSalesPartnerOutreachCallablePayload", "source": "callables/generate_sales_partner_outreach_payload.schema.json", "typeOutput": "functions/src/shared/generated/generateSalesPartnerOutreachCallablePayload.ts"},
+  {"name": "GetSalesPartnerOutreachJobCallablePayload", "source": "callables/get_sales_partner_outreach_job_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesPartnerOutreachJobCallablePayload.ts"},
+  {"name": "GetSalesPartnerOutreachDraftCallablePayload", "source": "callables/get_sales_partner_outreach_draft_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesPartnerOutreachDraftCallablePayload.ts"},
+  {"name": "ReviewSalesPartnerOutreachDraftCallablePayload", "source": "callables/review_sales_partner_outreach_draft_payload.schema.json", "typeOutput": "functions/src/shared/generated/reviewSalesPartnerOutreachDraftCallablePayload.ts"},
+  {"name": "CopySalesPartnerOutreachDraftCallablePayload", "source": "callables/copy_sales_partner_outreach_draft_payload.schema.json", "typeOutput": "functions/src/shared/generated/copySalesPartnerOutreachDraftCallablePayload.ts"},
   {"name": "RegisterSalesPartnerCallablePayload", "source": "callables/register_sales_partner_payload.schema.json", "typeOutput": "functions/src/shared/generated/registerSalesPartnerCallablePayload.ts"},
   {"name": "NominateSalesOrganizerCallablePayload", "source": "callables/nominate_sales_organizer_payload.schema.json", "typeOutput": "functions/src/shared/generated/nominateSalesOrganizerCallablePayload.ts"},
   {"name": "GetSalesPartnerWorkspaceCallablePayload", "source": "callables/get_sales_partner_workspace_payload.schema.json", "typeOutput": "functions/src/shared/generated/getSalesPartnerWorkspaceCallablePayload.ts"},
