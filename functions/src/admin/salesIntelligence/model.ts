@@ -28,6 +28,7 @@ export interface Clause {
   organizerId: string; revision: number; kind: ClauseKind; text: string;
   state: "draft" | "approved" | "withdrawn";
   evidenceIds: string[]; validUntil: string;
+  partnerCitations?: Array<{evidenceId: string; sourceHash: string}>;
   permission: "not_required" | "private_mention" | "withdrawn";
   reviewedAt: string | null; reviewedBy: string | null;
   updatedAt: string; updatedBy: string;

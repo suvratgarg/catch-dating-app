@@ -322,6 +322,21 @@ export async function getIntelligenceCatalog(deps: IntelligenceDeps,
         row.organizerId !== organizerId)) {
     return fail("failed-precondition", "Private catalog contains invalid records.");
   }
+  const citationOptions = new Map<string, Array<Record<string, unknown>>>();
+  for (const clause of clauses) {
+    const options = [];
+    for (const evidenceId of uniqueIds(clause.evidenceIds, 8)) {
+      const evidence = (await db.collection("salesEvidence").doc(evidenceId).get()).data();
+      if (!currentReviewedEvidence(evidence, organizerId, deps.now().toISOString())) continue;
+      try {
+        const citation = publicPartnerCitation(evidence!, organizerId);
+        options.push({...citation, sourceHash: hash(citation)});
+      } catch (error) {
+        if (!(error instanceof Error && "code" in error && error.code === "failed-precondition")) throw error;
+      }
+    }
+    citationOptions.set(clause.clauseId, options);
+  }
   await deps.authorize(principal, false);
   await assertSalesPrivacyOpenRead(db, organizerId);
   return {policy, assessments: assessments.map((row) => ({
@@ -335,6 +350,8 @@ export async function getIntelligenceCatalog(deps: IntelligenceDeps,
     organizerId: row.organizerId, revision: row.revision, kind: row.kind,
     text: row.text, state: row.state, evidenceIds: row.evidenceIds,
     validUntil: row.validUntil, permission: row.permission,
+    partnerCitations: row.partnerCitations ?? [],
+    partnerCitationOptions: citationOptions.get(row.clauseId) ?? [],
     reviewedAt: row.reviewedAt, reviewedBy: row.reviewedBy,
     updatedAt: row.updatedAt, updatedBy: row.updatedBy,
   })).sort((a, b) => a.clauseId.localeCompare(b.clauseId)),
@@ -467,16 +484,30 @@ export async function saveIntelligenceClause(deps: IntelligenceDeps,
 export async function reviewIntelligenceClause(deps: IntelligenceDeps,
   principal: SalesPrincipal, payload: unknown) {
   const input = object(payload, ["requestId", "clauseId", "expectedRevision",
-    "decision"]);
+    "decision", "partnerCitations"]);
   const request = requestId(input.requestId);
   const clauseId = id(input.clauseId);
   const expectedRevision = revision(input.expectedRevision);
   const decision = input.decision;
+  if (input.partnerCitations !== undefined && (!Array.isArray(input.partnerCitations) || input.partnerCitations.length > 8)) {
+    fail("invalid-argument", "Choose at most eight explicitly shared public citations.");
+  }
+  const partnerCitations = (input.partnerCitations as unknown[] | undefined ?? []).map((raw) => {
+    const row = object(raw, ["evidenceId", "sourceHash"]);
+    const sourceHash = text(row.sourceHash, 64);
+    if (!/^[a-f0-9]{64}$/u.test(sourceHash)) fail("invalid-argument", "Exact public citation fingerprint is required.");
+    return {evidenceId: id(row.evidenceId), sourceHash};
+  });
+  if (new Set(partnerCitations.map((row) => row.evidenceId)).size !== partnerCitations.length ||
+      (decision === "withdraw" && partnerCitations.length)) {
+    fail("invalid-argument", "A withdrawal cannot grant citations; choose each public source once.");
+  }
   if (decision !== "approve" && decision !== "withdraw") {
     return fail("invalid-argument", "Explicit clause decision required.");
   }
   return mutate(deps, principal, "clause.review", request,
-    {clauseId, expectedRevision, decision}, true, async (tx, now) => {
+    {clauseId, expectedRevision, decision,
+      ...(input.partnerCitations !== undefined ? {partnerCitations} : {})}, true, async (tx, now) => {
       const ref = deps.db.collection("salesIntelligenceClauses").doc(clauseId);
       const prior = (await tx.get(ref)).data() as Clause | undefined;
       if (!prior || prior.classification !== "sales_private") {
@@ -490,16 +521,31 @@ export async function reviewIntelligenceClause(deps: IntelligenceDeps,
         return fail("failed-precondition", "Clause is not eligible for approval.");
       }
       await requireAccount(tx, deps.db, prior.organizerId);
+      if (partnerCitations.some((row) => !prior.evidenceIds.includes(row.evidenceId))) {
+        fail("invalid-argument", "Only this clause's linked evidence can be shared.");
+      }
+      const evidenceDeadlines = [];
       for (const evidenceId of prior.evidenceIds) {
         const evidence = (await tx.get(deps.db.collection("salesEvidence").doc(evidenceId))).data();
         if (!currentReviewedEvidence(evidence, prior.organizerId, now)) {
           return fail("failed-precondition", "Reviewed clause source changed.");
         }
+        if (evidence?.validThrough) evidenceDeadlines.push(Date.parse(evidence.validThrough));
+        const grant = partnerCitations.find((row) => row.evidenceId === evidenceId);
+        if (grant && hash(publicPartnerCitation(evidence!, prior.organizerId)) !== grant.sourceHash) {
+          fail("aborted", "Public citation changed since sharing review.");
+        }
+      }
+      await deps.authorize(principal, true);
+      const reviewedAt = deps.now().toISOString();
+      if (decision === "approve" && (Date.parse(prior.validUntil) <= Date.parse(reviewedAt) ||
+          evidenceDeadlines.some((deadline) => deadline <= Date.parse(reviewedAt)))) {
+        fail("failed-precondition", "Clause or citation expired during owner review.");
       }
       const clause: Clause = {...prior, revision: prior.revision + 1,
         state: decision === "approve" ? "approved" : "withdrawn",
-        reviewedAt: now, reviewedBy: principal.uid,
-        updatedAt: now, updatedBy: principal.uid};
+        partnerCitations, reviewedAt, reviewedBy: principal.uid,
+        updatedAt: reviewedAt, updatedBy: principal.uid};
       tx.set(ref, clause);
       return {clause};
     });
@@ -1141,4 +1187,118 @@ export async function recordPartnerManualSend(deps: PartnerDeps,
         fail("failed-precondition", "Manual-send attestation changed; refresh before retrying.");
       }
     });
+}
+
+/** Approved participant preparation, projected separately from employee catalog. */
+export async function getPartnerPreparation(deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  const input = object(payload, ["organizerId", "expectedAssignmentRevision"]);
+  const organizerId = id(input.organizerId);
+  const expected = revision(input.expectedAssignmentRevision);
+  await deps.checkAuth(actor, false);
+  return deps.db.runTransaction(async (tx) => {
+    const access = async () => {
+      const assignment = await requireAssignment(deps, actor, tx, organizerId);
+      expectRevision(assignment.revision, expected);
+    };
+    await access();
+    const [accountSnap, clauseSnap, relationshipSnap, opportunitySnap, evidenceSnap] = await Promise.all([
+      tx.get(deps.db.collection("organizerSalesAccounts").doc(organizerId)),
+      tx.get(deps.db.collection("salesIntelligenceClauses").where("organizerId", "==", organizerId).limit(51)),
+      tx.get(deps.db.collection("salesContactRelationships").where("organizerId", "==", organizerId).limit(26)),
+      tx.get(deps.db.collection("salesOpportunities").where("organizerId", "==", organizerId).limit(26)),
+      tx.get(deps.db.collection("salesEvidence").where("organizerId", "==", organizerId).limit(MAX_EVIDENCE + 1)),
+    ]);
+    if (clauseSnap.size > 50 || relationshipSnap.size > 25 || opportunitySnap.size > 25 || evidenceSnap.size > MAX_EVIDENCE) {
+      fail("resource-exhausted", "Preparation needs curation before participant review.");
+    }
+    const at = deps.now().toISOString();
+    const account = accountSnap.data();
+    if (!accountOk(account, organizerId)) fail("failed-precondition", "Current canonical Sales identity is required.");
+    const clauses = [];
+    const evidenceById = new Map(evidenceSnap.docs.map((snap) => [snap.id, snap.data()]));
+    for (const snap of clauseSnap.docs) {
+      const row = snap.data();
+      if (row.classification !== "sales_private" || row.organizerId !== organizerId ||
+          row.clauseId !== snap.id) fail("failed-precondition", "Preparation contains an invalid clause.");
+      if (row.state !== "approved" || row.permission === "withdrawn" ||
+          Date.parse(String(row.validUntil)) <= Date.parse(at) ||
+          !Number.isFinite(Date.parse(String(row.validUntil)))) continue;
+      if (row.kind === "reference" && row.permission !== "private_mention") continue;
+      const evidence = [];
+      const sourceDeadlines: number[] = [];
+      let eligible = true;
+      for (const evidenceId of uniqueIds(row.evidenceIds, 8)) {
+        const source = evidenceById.get(evidenceId);
+        if (!currentReviewedEvidence(source, organizerId, at)) {eligible = false; break;}
+        if (source!.validThrough) sourceDeadlines.push(Date.parse(source!.validThrough));
+        // Source provenance is not a disclosure grant. Only an owner-reviewed,
+        // exact safe public citation fingerprint can authorize participant sharing.
+        const grant = (row.partnerCitations ?? []).find((item: {evidenceId: string; sourceHash: string}) => item.evidenceId === evidenceId);
+        if (!grant) continue;
+        let citation: Record<string, unknown>;
+        try {citation = publicPartnerCitation(source!, organizerId);}
+        catch (error) {
+          if (error instanceof Error && "code" in error && error.code === "failed-precondition") continue;
+          throw error;
+        }
+        if (grant.sourceHash !== hash(citation)) continue;
+        evidence.push(citation);
+      }
+      if (!eligible) continue;
+      clauses.push({clauseId: row.clauseId, kind: row.kind, text: row.text,
+        revision: row.revision, validUntil: row.validUntil, evidence, sourceDeadlines});
+    }
+    const contacts = [];
+    for (const snap of relationshipSnap.docs) {
+      const row = snap.data();
+      if (row.classification !== "sales_private" || row.organizerId !== organizerId ||
+          row.relationshipId !== snap.id || row.relationshipId !== salesRelationshipId(organizerId, row.contactId)) {
+        fail("failed-precondition", "Preparation contains an invalid contact relationship.");
+      }
+      if (!await hasCurrentDraftContact(deps.db, organizerId, row.contactId, at, tx)) continue;
+      const contact = (await tx.get(deps.db.collection("salesContacts").doc(row.contactId))).data();
+      if (contact?.classification !== "sales_private" || contact.contactId !== row.contactId) continue;
+      const reviewEvidence = evidenceById.get(row.draftReviewEvidenceId);
+      contacts.push({contactId: contact.contactId, displayName: contact.displayName, role: row.role,
+        validThrough: reviewEvidence?.validThrough ?? null});
+    }
+    const opportunities = opportunitySnap.docs.map((snap) => {
+      const row = snap.data();
+      if (row.classification !== "sales_private" || row.organizerId !== organizerId ||
+          row.opportunityId !== snap.id) fail("failed-precondition", "Preparation contains an invalid opportunity.");
+      return {opportunityId: row.opportunityId, stage: row.stage, motion: row.motion};
+    });
+    await access();
+    const evaluatedAt = deps.now().toISOString();
+    // Repeat after the final awaited authorization; expiry can cross that wait.
+    const currentClauses = clauses.filter((row) => Date.parse(row.validUntil) > Date.parse(evaluatedAt) &&
+      row.sourceDeadlines.every((deadline) => deadline > Date.parse(evaluatedAt)))
+      .map((row) => ({clauseId: row.clauseId, kind: row.kind, text: row.text,
+        revision: row.revision, validUntil: row.validUntil, evidence: row.evidence}));
+    return {organizerId, assignmentRevision: expected, researchStatus: account!.researchStatus,
+      contacts: contacts.filter((row) => !row.validThrough || Date.parse(row.validThrough) > Date.parse(evaluatedAt))
+        .map((row) => ({contactId: row.contactId, displayName: row.displayName, role: row.role})),
+      opportunities, clauses: currentClauses, evaluatedAt,
+      sendAuthority: false, capabilityApprovalAuthority: false};
+  });
+}
+
+/** The same projection is shown to the owner before explicit sharing approval. */
+function publicPartnerCitation(source: FirebaseFirestore.DocumentData,
+  organizerId: string): Record<string, unknown> {
+  if (source.classification !== "sales_private" || source.organizerId !== organizerId ||
+      source.sourceType !== "public_web" || !["high", "medium", "low"].includes(source.confidence)) {
+    fail("failed-precondition", "Only explicit public-web citations can be shared.");
+  }
+  let url: URL;
+  try {url = new URL(source.sourceRef);} catch {return fail("failed-precondition", "Public citation URL is invalid.");}
+  if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash ||
+      !url.hostname.includes(".") || url.hostname.endsWith(".local") || url.hostname.endsWith(".localhost")) {
+    fail("failed-precondition", "A public citation cannot contain access credentials or query tokens.");
+  }
+  return {evidenceId: id(source.evidenceId), sourceRef: text(url.href, 320),
+    observedAt: iso(source.observedAt), validThrough: source.validThrough ? iso(source.validThrough) : null,
+    excerpt: source.excerpt ? text(source.excerpt, 500) : null,
+    confidence: source.confidence};
 }

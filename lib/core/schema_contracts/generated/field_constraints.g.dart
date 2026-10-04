@@ -5725,6 +5725,90 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptions = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsConfidence = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.confidence',
+    required: true,
+    enumValues: <String>['high', 'medium', 'low'],
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsEvidenceId = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.evidenceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsExcerpt = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.excerpt',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsObservedAt = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.observedAt',
+    maxLength: 48,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsSourceRef = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.sourceRef',
+    maxLength: 320,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsValidThrough = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.validThrough',
+    maxLength: 48,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitations = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitations',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationsItemsEvidenceId = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitations.items.evidenceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitations.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const adminGetSalesIntelligenceCatalogResponseClausesItemsPermission = CatchContractFieldConstraints(
     path: 'adminGetSalesIntelligenceCatalogResponse.clauses.items.permission',
     required: true,
@@ -10715,6 +10799,30 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const adminReviewSalesIntelligenceClauseRequestPartnerCitations = CatchContractFieldConstraints(
+    path: 'adminReviewSalesIntelligenceClauseRequest.partnerCitations',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const adminReviewSalesIntelligenceClauseRequestPartnerCitationsItemsEvidenceId = CatchContractFieldConstraints(
+    path: 'adminReviewSalesIntelligenceClauseRequest.partnerCitations.items.evidenceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewSalesIntelligenceClauseRequestPartnerCitationsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'adminReviewSalesIntelligenceClauseRequest.partnerCitations.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const adminReviewSalesIntelligenceClauseRequestRequestId = CatchContractFieldConstraints(
     path: 'adminReviewSalesIntelligenceClauseRequest.requestId',
     maxLength: 96,
@@ -11884,6 +11992,30 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminSalesIntelligenceClauseMutationResponseClausePartnerCitations = CatchContractFieldConstraints(
+    path: 'adminSalesIntelligenceClauseMutationResponse.clause.partnerCitations',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const adminSalesIntelligenceClauseMutationResponseClausePartnerCitationsItemsEvidenceId = CatchContractFieldConstraints(
+    path: 'adminSalesIntelligenceClauseMutationResponse.clause.partnerCitations.items.evidenceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminSalesIntelligenceClauseMutationResponseClausePartnerCitationsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'adminSalesIntelligenceClauseMutationResponse.clause.partnerCitations.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const adminSalesIntelligenceClauseMutationResponseClausePermission = CatchContractFieldConstraints(
@@ -83951,6 +84083,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const getSalesPartnerPreparationCallablePayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'getSalesPartnerPreparationCallablePayload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const getSalesPartnerPreparationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getSalesPartnerPreparationCallablePayload.organizerId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const getSalesPartnerWorkspaceCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'getSalesPartnerWorkspaceCallablePayload.cursor',
     maxLength: 128,
@@ -141415,6 +141563,30 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const salesIntelligenceClauseDocumentPartnerCitations = CatchContractFieldConstraints(
+    path: 'salesIntelligenceClauseDocument.partnerCitations',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const salesIntelligenceClauseDocumentPartnerCitationsItemsEvidenceId = CatchContractFieldConstraints(
+    path: 'salesIntelligenceClauseDocument.partnerCitations.items.evidenceId',
+    maxLength: 96,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesIntelligenceClauseDocumentPartnerCitationsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'salesIntelligenceClauseDocument.partnerCitations.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const salesIntelligenceClauseDocumentPermission = CatchContractFieldConstraints(
     path: 'salesIntelligenceClauseDocument.permission',
     required: true,
@@ -160935,6 +161107,17 @@ abstract final class CatchContractConstraints {
     'adminGetSalesIntelligenceCatalogResponse.clauses.items.evidenceIds.items': adminGetSalesIntelligenceCatalogResponseClausesItemsEvidenceIdsItems,
     'adminGetSalesIntelligenceCatalogResponse.clauses.items.kind': adminGetSalesIntelligenceCatalogResponseClausesItemsKind,
     'adminGetSalesIntelligenceCatalogResponse.clauses.items.organizerId': adminGetSalesIntelligenceCatalogResponseClausesItemsOrganizerId,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptions,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.confidence': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsConfidence,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.evidenceId': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsEvidenceId,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.excerpt': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsExcerpt,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.observedAt': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsObservedAt,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.sourceHash': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsSourceHash,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.sourceRef': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsSourceRef,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitationOptions.items.validThrough': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationOptionsItemsValidThrough,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitations': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitations,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitations.items.evidenceId': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationsItemsEvidenceId,
+    'adminGetSalesIntelligenceCatalogResponse.clauses.items.partnerCitations.items.sourceHash': adminGetSalesIntelligenceCatalogResponseClausesItemsPartnerCitationsItemsSourceHash,
     'adminGetSalesIntelligenceCatalogResponse.clauses.items.permission': adminGetSalesIntelligenceCatalogResponseClausesItemsPermission,
     'adminGetSalesIntelligenceCatalogResponse.clauses.items.reviewedAt': adminGetSalesIntelligenceCatalogResponseClausesItemsReviewedAt,
     'adminGetSalesIntelligenceCatalogResponse.clauses.items.reviewedBy': adminGetSalesIntelligenceCatalogResponseClausesItemsReviewedBy,
@@ -161633,6 +161816,9 @@ abstract final class CatchContractConstraints {
     'adminReviewSalesIntelligenceClauseRequest.clauseId': adminReviewSalesIntelligenceClauseRequestClauseId,
     'adminReviewSalesIntelligenceClauseRequest.decision': adminReviewSalesIntelligenceClauseRequestDecision,
     'adminReviewSalesIntelligenceClauseRequest.expectedRevision': adminReviewSalesIntelligenceClauseRequestExpectedRevision,
+    'adminReviewSalesIntelligenceClauseRequest.partnerCitations': adminReviewSalesIntelligenceClauseRequestPartnerCitations,
+    'adminReviewSalesIntelligenceClauseRequest.partnerCitations.items.evidenceId': adminReviewSalesIntelligenceClauseRequestPartnerCitationsItemsEvidenceId,
+    'adminReviewSalesIntelligenceClauseRequest.partnerCitations.items.sourceHash': adminReviewSalesIntelligenceClauseRequestPartnerCitationsItemsSourceHash,
     'adminReviewSalesIntelligenceClauseRequest.requestId': adminReviewSalesIntelligenceClauseRequestRequestId,
     'adminReviewSalesOutreachDraftRequest.channelReadiness': adminReviewSalesOutreachDraftRequestChannelReadiness,
     'adminReviewSalesOutreachDraftRequest.draftId': adminReviewSalesOutreachDraftRequestDraftId,
@@ -161791,6 +161977,9 @@ abstract final class CatchContractConstraints {
     'adminSalesIntelligenceClauseMutationResponse.clause.evidenceIds.items': adminSalesIntelligenceClauseMutationResponseClauseEvidenceIdsItems,
     'adminSalesIntelligenceClauseMutationResponse.clause.kind': adminSalesIntelligenceClauseMutationResponseClauseKind,
     'adminSalesIntelligenceClauseMutationResponse.clause.organizerId': adminSalesIntelligenceClauseMutationResponseClauseOrganizerId,
+    'adminSalesIntelligenceClauseMutationResponse.clause.partnerCitations': adminSalesIntelligenceClauseMutationResponseClausePartnerCitations,
+    'adminSalesIntelligenceClauseMutationResponse.clause.partnerCitations.items.evidenceId': adminSalesIntelligenceClauseMutationResponseClausePartnerCitationsItemsEvidenceId,
+    'adminSalesIntelligenceClauseMutationResponse.clause.partnerCitations.items.sourceHash': adminSalesIntelligenceClauseMutationResponseClausePartnerCitationsItemsSourceHash,
     'adminSalesIntelligenceClauseMutationResponse.clause.permission': adminSalesIntelligenceClauseMutationResponseClausePermission,
     'adminSalesIntelligenceClauseMutationResponse.clause.reviewedAt': adminSalesIntelligenceClauseMutationResponseClauseReviewedAt,
     'adminSalesIntelligenceClauseMutationResponse.clause.reviewedBy': adminSalesIntelligenceClauseMutationResponseClauseReviewedBy,
@@ -171460,6 +171649,8 @@ abstract final class CatchContractConstraints {
     'getSalesPartnerOutreachJobCallablePayload.expectedAssignmentRevision': getSalesPartnerOutreachJobCallablePayloadExpectedAssignmentRevision,
     'getSalesPartnerOutreachJobCallablePayload.organizerId': getSalesPartnerOutreachJobCallablePayloadOrganizerId,
     'getSalesPartnerOutreachJobCallablePayload.requestId': getSalesPartnerOutreachJobCallablePayloadRequestId,
+    'getSalesPartnerPreparationCallablePayload.expectedAssignmentRevision': getSalesPartnerPreparationCallablePayloadExpectedAssignmentRevision,
+    'getSalesPartnerPreparationCallablePayload.organizerId': getSalesPartnerPreparationCallablePayloadOrganizerId,
     'getSalesPartnerWorkspaceCallablePayload.cursor': getSalesPartnerWorkspaceCallablePayloadCursor,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
     'grantEventStaffCallablePayload.expiresAtMillis': grantEventStaffCallablePayloadExpiresAtMillis,
@@ -179396,6 +179587,9 @@ abstract final class CatchContractConstraints {
     'salesIntelligenceClauseDocument.evidenceIds.items': salesIntelligenceClauseDocumentEvidenceIdsItems,
     'salesIntelligenceClauseDocument.kind': salesIntelligenceClauseDocumentKind,
     'salesIntelligenceClauseDocument.organizerId': salesIntelligenceClauseDocumentOrganizerId,
+    'salesIntelligenceClauseDocument.partnerCitations': salesIntelligenceClauseDocumentPartnerCitations,
+    'salesIntelligenceClauseDocument.partnerCitations.items.evidenceId': salesIntelligenceClauseDocumentPartnerCitationsItemsEvidenceId,
+    'salesIntelligenceClauseDocument.partnerCitations.items.sourceHash': salesIntelligenceClauseDocumentPartnerCitationsItemsSourceHash,
     'salesIntelligenceClauseDocument.permission': salesIntelligenceClauseDocumentPermission,
     'salesIntelligenceClauseDocument.reviewedAt': salesIntelligenceClauseDocumentReviewedAt,
     'salesIntelligenceClauseDocument.reviewedBy': salesIntelligenceClauseDocumentReviewedBy,

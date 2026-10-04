@@ -545,6 +545,33 @@ export const recordSalesPartnerManualSendCallablePayloadSchema = {
   ]
 };
 
+export const getSalesPartnerPreparationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_preparation_payload.schema.json",
+  "title": "GetSalesPartnerPreparationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerPreparation"
+  ]
+};
+
 export const registerSalesPartnerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",
@@ -13827,6 +13854,31 @@ export const adminSalesIntelligenceClauseMutationResponseSchema = {
           "minLength": 1,
           "maxLength": 96,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "partnerCitations": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
         }
       },
       "definitions": {
@@ -14403,6 +14455,31 @@ export const adminReviewSalesIntelligenceClauseRequestSchema = {
         "approve",
         "withdraw"
       ]
+    },
+    "partnerCitations": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidenceId",
+          "sourceHash"
+        ],
+        "properties": {
+          "evidenceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -15465,14 +15542,8 @@ export const adminGetSalesIntelligenceCatalogResponseSchema = {
       "type": "array",
       "maxItems": 50,
       "items": {
-        "title": "SalesIntelligenceClauseDocument",
-        "description": "Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.",
         "type": "object",
         "additionalProperties": false,
-        "x-firestore-collection": "salesIntelligenceClauses",
-        "x-firestore-path": "salesIntelligenceClauses/{clauseId}",
-        "x-document-id-field": "clauseId",
-        "x-owner": "private Sales intelligence clause callable",
         "required": [
           "schemaVersion",
           "classification",
@@ -15584,14 +15655,102 @@ export const adminGetSalesIntelligenceCatalogResponseSchema = {
             "minLength": 1,
             "maxLength": 96,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-          }
-        },
-        "definitions": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 96,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "partnerCitations": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceHash"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          },
+          "partnerCitationOptions": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "observedAt",
+                "validThrough",
+                "excerpt",
+                "confidence",
+                "sourceHash"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320,
+                  "format": "uri"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                "validThrough": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "excerpt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "confidence": {
+                  "enum": [
+                    "high",
+                    "medium",
+                    "low"
+                  ]
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
           }
         }
       }
@@ -15603,7 +15762,229 @@ export const adminGetSalesIntelligenceCatalogResponseSchema = {
   },
   "x-callable-aliases": [
     "adminGetSalesIntelligenceCatalog"
-  ]
+  ],
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "catalogClause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "classification",
+        "clauseId",
+        "organizerId",
+        "revision",
+        "kind",
+        "text",
+        "state",
+        "evidenceIds",
+        "validUntil",
+        "permission",
+        "reviewedAt",
+        "reviewedBy",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "clauseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "enum": [
+            "observation",
+            "capability",
+            "reference",
+            "cta"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "approved",
+            "withdrawn"
+          ]
+        },
+        "evidenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "permission": {
+          "enum": [
+            "not_required",
+            "private_mention",
+            "withdrawn"
+          ]
+        },
+        "reviewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reviewedBy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "partnerCitations": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "partnerCitationOptions": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceRef",
+              "observedAt",
+              "validThrough",
+              "excerpt",
+              "confidence",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 320,
+                "format": "uri"
+              },
+              "observedAt": {
+                "type": "string",
+                "format": "date-time",
+                "maxLength": 48
+              },
+              "validThrough": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "maxLength": 48
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "excerpt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "confidence": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Private current catalog projects reviewed clause records with bounded, transient safe-public citation options; options are not persisted sharing grants."
 };
 
 export const adminGetSalesIntelligenceScoreResponseSchema = {
@@ -32639,6 +33020,31 @@ export const salesIntelligenceClauseDocumentSchema = {
       "minLength": 1,
       "maxLength": 96,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "partnerCitations": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidenceId",
+          "sourceHash"
+        ],
+        "properties": {
+          "evidenceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
     }
   },
   "definitions": {

@@ -594,6 +594,7 @@ export 'get_public_organizer_form_callable_response.g.dart';
 export 'get_sales_demo_continuation_callable_payload.g.dart';
 export 'get_sales_partner_outreach_draft_callable_payload.g.dart';
 export 'get_sales_partner_outreach_job_callable_payload.g.dart';
+export 'get_sales_partner_preparation_callable_payload.g.dart';
 export 'get_sales_partner_workspace_callable_payload.g.dart';
 export 'grant_event_staff_callable_payload.g.dart';
 export 'grant_program_staff_callable_payload.g.dart';

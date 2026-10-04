@@ -839,4 +839,20 @@ expiry remain bounded without renewal. `getSalesPartnerOutreachDraft`,
 `reviewSalesPartnerOutreachDraft` and `copySalesPartnerOutreachDraft` expose the
 existing own artifact services; copy requires exact current composition review.
 No callable sends outreach, approves platform claims or activates a provider.
-These are source changes pending scoped generation/build/backend verification.
+
+`recordSalesPartnerManualSend` records an explicit actor attestation after sending
+outside Catch. It requires an own exact current reviewed artifact, current
+assignment and established channel, and a sending time after composition review
+and no later than the fresh server clock. One immutable activity is retained per
+artifact; exact receipt recovery rechecks its ownership and material. It stores
+`providerConfirmed: false` and grants no sending authority.
+
+`getSalesPartnerPreparation` returns bounded approved wording, eligible contact
+names/roles and opportunity identifiers for the current accepted assignment.
+It withholds private notes, contact endpoints and employee identities. Underlying
+evidence is not implicitly shared by statement approval or source provenance.
+The existing Admin Owner clause review can explicitly approve selected safe
+public citation fingerprints. Private first-party sources, imports, human notes
+and URLs with credentials, query parameters or fragments cannot be granted.
+Changed fingerprints or sources expiring during final authorization are withheld.
+Browser preparation integration and full workflow release remain pending.

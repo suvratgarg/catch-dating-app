@@ -9,7 +9,12 @@ import {validateReviewSalesPartnerOutreachDraftCallablePayload} from "../../shar
 import {validateCopySalesPartnerOutreachDraftCallablePayload} from "../../shared/generated/validators/copySalesPartnerOutreachDraftInput";
 import {validateRecordSalesPartnerManualSendCallablePayload} from "../../shared/generated/validators/recordSalesPartnerManualSendInput";
 import {validateSalesActivityDocument} from "../../shared/generated/validators/salesActivityDocument";
+import {validateGetSalesPartnerPreparationCallablePayload} from "../../shared/generated/validators/getSalesPartnerPreparationInput";
+import {validateAdminGetSalesIntelligenceCatalogResponse} from "../../shared/generated/validators/adminGetSalesIntelligenceCatalogResponse";
 import {strict as assert} from "node:assert";
+import {readFileSync} from "node:fs";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import {execFileSync} from "node:child_process";
 import path from "node:path";
 import {test} from "node:test";
@@ -22,7 +27,7 @@ import {claimDraftJob, claimPartnerDraftJob, completePartnerDraftJob,
 import {generatePartnerOutreachDraft, generateSalesOutreachDraft} from "./runtime";
 import {buildOutreachInput, buildPartnerOutreachInput, recordPartnerOperationsDraft,
   getPartnerOutreachDraft, reviewPartnerOutreachDraft, copyPartnerOutreachDraft,
-  recordPartnerManualSend,
+  recordPartnerManualSend, getPartnerPreparation, getIntelligenceCatalog, reviewIntelligenceClause,
   type DraftRequest, type IntelligenceDeps} from "./service";
 import {PARTNER_TERMS_VERSION, type PartnerDeps} from "../../partners/model";
 
@@ -526,6 +531,7 @@ test("partner preparation callable payloads reject identity, provider, send and 
     [validateReviewSalesPartnerOutreachDraftCallablePayload, {...target, requestId: "review-own", expectedContentHash: "a".repeat(64), factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"}],
     [validateCopySalesPartnerOutreachDraftCallablePayload, {...target, requestId: "copy-own", expectedContentHash: "a".repeat(64)}],
     [validateRecordSalesPartnerManualSendCallablePayload, {...target, requestId: "manual-own", expectedContentHash: "a".repeat(64), channel: "email", occurredAt: started, attestation: "i_manually_sent_this_reviewed_draft"}],
+    [validateGetSalesPartnerPreparationCallablePayload, {organizerId: target.organizerId, expectedAssignmentRevision: target.expectedAssignmentRevision}],
   ];
   for (const [validator, data] of rows) {
     assert.equal(validator(data), true);
@@ -626,4 +632,100 @@ test("manual-send transaction retry rechecks revoked access without committing i
   await assert.rejects(recordPartnerManualSend(f.partnerDeps, f.principal, f.payload), {code: "permission-denied"});
   assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesActivities/")).length, 0);
   assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesIntelligenceReceipts/")).length, receiptsBefore);
+});
+
+function preparationFixture() {
+  const f = partnerFixture();
+  const relationshipPath = `salesContactRelationships/${salesRelationshipId("org-one", "contact-one")}`;
+  f.db.docs.set(relationshipPath, {...f.db.docs.get(relationshipPath),
+    relationshipId: salesRelationshipId("org-one", "contact-one"), endpoints: [{value: "private@example.test"}],
+    contactabilityReason: "Private employee assessment", updatedBy: "staff-private-uid"});
+  f.db.docs.set("salesContacts/contact-one", {...f.db.docs.get("salesContacts/contact-one"), displayName: "Synthetic contact"});
+  f.db.docs.set("organizerSalesAccounts/org-one", {...f.db.docs.get("organizerSalesAccounts/org-one"), summary: "Private staff summary"});
+  return {...f, target: {organizerId: "org-one", expectedAssignmentRevision: 2},
+    owner: {uid: "owner-one", roles: ["adminOwner"]}};
+}
+
+test("preparation keeps private evidence, staff context and contact endpoints outside partner projection", async () => {
+  const f = preparationFixture();
+  f.db.docs.set("salesEvidence/observation-evidence", {...f.db.docs.get("salesEvidence/observation-evidence"),
+    sourceRef: "https://private.example.test/contract?signature=SECRET", excerpt: "Confidential first-party contract"});
+  const result = await getPartnerPreparation(f.partnerDeps, f.principal, f.target);
+  const clauses = result.clauses as Array<{evidence: unknown[]}>;
+  assert.equal(clauses.length, 3); assert.ok(clauses.every((row) => row.evidence.length === 0));
+  for (const secret of ["SECRET", "Confidential", "Private staff", "Private employee", "private@example", "staff-private-uid", "owner-one"]) {
+    assert.ok(!JSON.stringify(result).includes(secret));
+  }
+  const ajv = new Ajv({strict: false}); addFormats(ajv);
+  const validate = ajv.compile(JSON.parse(readFileSync(path.resolve(__dirname,
+    "../../../../contracts/callable_responses/get_sales_partner_preparation_response.schema.json"), "utf8")));
+  assert.equal(validate(result), true, JSON.stringify(validate.errors));
+  await assert.rejects(getPartnerPreparation(f.partnerDeps, {uid: "other-partner", roles: []}, f.target), {code: "permission-denied"});
+  await assert.rejects(getPartnerPreparation(f.partnerDeps, f.principal,
+    {...f.target, expectedAssignmentRevision: 3}), {code: "aborted"});
+});
+
+test("only explicit owner-reviewed exact public citations reach assigned partners", async () => {
+  const f = preparationFixture();
+  const clausePath = "salesIntelligenceClauses/observation-one";
+  const sourcePath = "salesEvidence/observation-evidence";
+  f.db.docs.set(clausePath, {...f.db.docs.get(clausePath), state: "draft"});
+  f.db.docs.set(sourcePath, {...f.db.docs.get(sourcePath), sourceType: "public_web",
+    sourceRef: "https://public.example.test/events", excerpt: "Public applications page"});
+  const catalog = await getIntelligenceCatalog(f.deps, f.owner, {organizerId: "org-one"});
+  const clause = (catalog.clauses as Array<{clauseId: string; partnerCitationOptions: Array<{evidenceId: string; sourceHash: string}>}>).find((row) => row.clauseId === "observation-one")!;
+  const grant = clause.partnerCitationOptions[0]; assert.ok(grant);
+  assert.equal(validateAdminGetSalesIntelligenceCatalogResponse(catalog), true,
+    JSON.stringify(validateAdminGetSalesIntelligenceCatalogResponse.errors));
+  const invalidCatalog = structuredClone(catalog);
+  const invalidClause = (invalidCatalog.clauses as Array<{partnerCitationOptions: Array<Record<string, unknown>>}>).find((row) => row.partnerCitationOptions.length)!;
+  invalidClause.partnerCitationOptions[0].staffNote = "must not cross the response boundary";
+  assert.equal(validateAdminGetSalesIntelligenceCatalogResponse(invalidCatalog), false);
+  const review = {requestId: "public-citation-review", clauseId: "observation-one", expectedRevision: 1,
+    decision: "approve", partnerCitations: [{evidenceId: grant.evidenceId, sourceHash: grant.sourceHash}]};
+  await assert.rejects(reviewIntelligenceClause(f.deps, actor, review), {code: "permission-denied"});
+  await reviewIntelligenceClause(f.deps, f.owner, review);
+  const result = await getPartnerPreparation(f.partnerDeps, f.principal, f.target);
+  const observation = (result.clauses as Array<{clauseId: string; evidence: Array<{sourceRef: string; excerpt: string}>}>).find((row) => row.clauseId === "observation-one")!;
+  assert.equal(observation.evidence.length, 1); assert.equal(observation.evidence[0].excerpt, "Public applications page");
+  assert.ok(!JSON.stringify(result).includes("reviewedBy"));
+  f.db.docs.set(sourcePath, {...f.db.docs.get(sourcePath), excerpt: "Changed unreviewed source text"});
+  const changed = await getPartnerPreparation(f.partnerDeps, f.principal, f.target);
+  assert.equal((changed.clauses as Array<{clauseId: string; evidence: unknown[]}>).find((row) => row.clauseId === "observation-one")!.evidence.length, 0);
+});
+
+test("citation approval rejects confidential provenance, token URLs and changed source fingerprints", async () => {
+  for (const source of [{sourceType: "first_party", sourceRef: "https://private.example.test/doc"},
+    {sourceType: "public_web", sourceRef: "https://public.example.test/doc?token=SECRET"},
+    {sourceType: "public_web", sourceRef: "https://public.example.test/doc"}]) {
+    const f = preparationFixture();
+    f.db.docs.set("salesIntelligenceClauses/observation-one", {...f.db.docs.get("salesIntelligenceClauses/observation-one"), state: "draft"});
+    f.db.docs.set("salesEvidence/observation-evidence", {...f.db.docs.get("salesEvidence/observation-evidence"), ...source, excerpt: "Original source"});
+    await assert.rejects(reviewIntelligenceClause(f.deps, f.owner, {requestId: "reject-citation-review", clauseId: "observation-one",
+      expectedRevision: 1, decision: "approve", partnerCitations: [{evidenceId: "observation-evidence", sourceHash: "a".repeat(64)}]}),
+    {code: source.sourceType === "first_party" || source.sourceRef.includes("?") ? "failed-precondition" : "aborted"});
+    assert.equal(f.db.docs.get("salesIntelligenceClauses/observation-one")?.state, "draft");
+    assert.equal([...f.db.docs.keys()].filter((key) => key.startsWith("salesIntelligenceReceipts/")).length, 0);
+  }
+});
+
+test("preparation drops evidence and contacts expiring during final authorization and denies revoked retries", async () => {
+  const f = preparationFixture();
+  for (const key of ["salesEvidence/observation-evidence", "salesEvidence/contact-evidence"]) {
+    f.db.docs.set(key, {...f.db.docs.get(key), validThrough: "2026-09-28T10:00:01.000Z"});
+  }
+  const originalGet = f.db.docs.get.bind(f.db.docs); let contactRead = false;
+  f.db.docs.get = (key) => {if (key === "salesContacts/contact-one") contactRead = true; return originalGet(key);};
+  const auth = f.partnerDeps.checkAuth;
+  f.partnerDeps.checkAuth = async (...args) => {await auth(...args); if (contactRead) f.clock("2026-09-28T10:00:02.000Z");};
+  const result = await getPartnerPreparation(f.partnerDeps, f.principal, f.target);
+  assert.equal((result.contacts as unknown[]).length, 0);
+  assert.ok(!(result.clauses as Array<{clauseId: string}>).some((row) => row.clauseId === "observation-one"));
+  const retry = preparationFixture();
+  retry.db.runTransaction = async <T>(callback: (tx: MemoryTx) => Promise<T>): Promise<T> => {
+    await callback(new MemoryTx(retry.db));
+    retry.db.docs.set("salesPartnerAssignments/org-one", {...retry.db.docs.get("salesPartnerAssignments/org-one"), status: "revoked"});
+    const tx = new MemoryTx(retry.db); const value = await callback(tx); tx.commit(); return value;
+  };
+  await assert.rejects(getPartnerPreparation(retry.partnerDeps, retry.principal, retry.target), {code: "permission-denied"});
 });

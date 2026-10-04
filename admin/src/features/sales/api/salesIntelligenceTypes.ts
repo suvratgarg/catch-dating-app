@@ -25,6 +25,10 @@ export interface ApprovedClause {
   evidenceIds: string[]; validUntil: string;
   permission: "not_required" | "private_mention" | "withdrawn";
   reviewedAt: string | null;
+  partnerCitations?: Array<{evidenceId: string; sourceHash: string}>;
+  partnerCitationOptions?: Array<{evidenceId: string; sourceHash: string;
+    sourceRef: string; observedAt: string; validThrough: string | null;
+    excerpt: string | null; confidence: "high" | "medium" | "low"}>;
 }
 export interface IntelligenceCatalog {
   policy: IntelligencePolicy | null;
@@ -96,7 +100,8 @@ export interface IntelligenceApi {
     permission: ApprovedClause["permission"]}):
     Promise<{clause: ApprovedClause}>;
   reviewClause(input: {requestId: string; clauseId: string;
-    expectedRevision: number; decision: "approve" | "withdraw"}):
+    expectedRevision: number; decision: "approve" | "withdraw";
+    partnerCitations?: Array<{evidenceId: string; sourceHash: string}>}):
     Promise<{clause: ApprovedClause}>;
   generate(input: {requestId: string; sourceRequest: DraftSourceRequest}):
     Promise<{status: "running" | "completed" | "failed";

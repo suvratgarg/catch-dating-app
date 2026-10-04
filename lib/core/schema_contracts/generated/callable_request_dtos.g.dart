@@ -233,6 +233,7 @@ export 'callables/get_public_organizer_form_callable_request.g.dart';
 export 'callables/get_sales_demo_continuation_callable_request.g.dart';
 export 'callables/get_sales_partner_outreach_draft_callable_request.g.dart';
 export 'callables/get_sales_partner_outreach_job_callable_request.g.dart';
+export 'callables/get_sales_partner_preparation_callable_request.g.dart';
 export 'callables/get_sales_partner_workspace_callable_request.g.dart';
 export 'callables/grant_event_staff_callable_request.g.dart';
 export 'callables/grant_program_staff_callable_request.g.dart';

@@ -889,7 +889,7 @@ export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
 
 export {manageProgramLodging} from "./programs/programLodgingApi";
 export {generateSalesPartnerOutreach, getSalesPartnerOutreachJob, getSalesPartnerOutreachDraft,
-  reviewSalesPartnerOutreachDraft, copySalesPartnerOutreachDraft, recordSalesPartnerManualSend,
+  reviewSalesPartnerOutreachDraft, copySalesPartnerOutreachDraft, recordSalesPartnerManualSend, getSalesPartnerPreparation,
   registerSalesPartner, nominateSalesOrganizer, getSalesPartnerWorkspace,
   decideSalesPartnerAssignment, updateSalesPartnerAssignment, adminAssignSalesPartner,
   adminRevokeSalesPartnerAccess} from "./partners/callables";
