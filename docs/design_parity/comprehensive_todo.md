@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.329
-updated: 2026-10-03
+version: 0.2.330
+updated: 2026-10-04
 owner: product_design_parity
 status: active
 ---
@@ -772,6 +772,7 @@ here without copying the computed progress view.
 | P1 | `screen.programs.now_next` | Planned: Now/Next captures land with the program golden pass | `feature.programs_arrivals_ops` binds the function-lead Now/Next board: a pure client projection over the staff work-access payload bucketing functions in-progress, upcoming and earlier with expected/checked-in counts and door-roster navigation. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.attention` | Planned: attention captures land with the program golden pass | `feature.programs_arrivals_ops` binds the duty-filtered staff attention feed: program-scoped staffAttention sends filtered server-side to the caller's active duties, deduplicated per run and duty, rendered with severity, duty and recency. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.hotel_rooms` | Planned: room-board captures land with the program golden pass | `feature.programs_arrivals_ops` binds the hotel-scoped room board: stay rows with lifecycle marks, live block capacity, unplaced-guest rows opening the assign sheet, and `upsertProgramStay`/`upsertProgramRoomBlock` mutations through the desk's authority. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.lodging` | Repo specification and seven synthetic Widgetbook cases; dedicated routed references remain open | Keep the existing typed pushed-route owners and tested private setup/review lifecycle. Compile `feature.programs_lodging` under `PROGRAMS-LODGING-FEATURE-001`; add dedicated loading/error/empty/expired/editor/review route captures and accessibility variants. Existing marketing PNGs provide no lodging-route proof. |
 | P1 | `screen.host.event.moments` | Planned: routed captures land with the organizer moments golden pass | The organizer Moments workspace lists scope-bound send rules with approve-the-rule-once lifecycle controls (arm, pause, resume, manual run) and an inline editor covering manual, scheduled, anchored, and triggered initiation against the generated callable constraints. Event scope is routed today through the manage screen; program scope mounts when an organizer program workspace exists. Route captures remain the explicit follow-up. |
 | P1 | `screen.programs.moments` | Planned: program Moments route captures land with the program golden pass | The program route uses the same scoped Moments list and editor for lifecycle review, creation, and edits. Its route and states are implemented; visual captures remain open. |
 | P1 | `screen.host.work` | Planned: routed captures land with the staff work shell golden pass | The unified staff work picker lists the caller's live assignments grouped by organizer, forwards a lone workShell assignment straight into its scoped workspace, and renders the grant empty state otherwise. Route captures remain the explicit follow-up. |

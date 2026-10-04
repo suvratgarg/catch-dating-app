@@ -19,6 +19,7 @@ export 'src/semantic/catch_elevation.dart';
 export 'src/semantic/catch_gaps.dart';
 export 'src/semantic/catch_insets.dart';
 export 'src/semantic/catch_layout.dart';
+export 'src/semantic/catch_lodging_layout.dart';
 export 'src/semantic/catch_motion.dart';
 export 'src/semantic/catch_opacity.dart';
 export 'src/semantic/catch_platform_tokens.dart';

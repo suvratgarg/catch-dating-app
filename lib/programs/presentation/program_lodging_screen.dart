@@ -438,18 +438,30 @@ class ProgramLodgingExpiredPageBody extends StatelessWidget {
   final bool busy;
   final VoidCallback onRefresh;
   @override
-  Widget build(BuildContext context) => ProgramLodgingScaffold(
-    body: Column(
-      children: [
-        Text(
-          context.l10n.programsLodgingMembershipExpired,
-          style: CatchTextStyles.recordBody(context),
-        ),
-        CatchButton(
-          label: context.l10n.programsRoomsRefresh,
-          onPressed: busy ? null : onRefresh,
-        ),
-      ],
+  Widget build(BuildContext context) => CatchRouteScaffold(
+    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      title: context.l10n.programsLodgingTitle,
+      subtitle: context.l10n.programsLodgingSubtitle,
+      emphasis: scrolledUnder
+          ? CatchTopBarEmphasis.divided
+          : CatchTopBarEmphasis.plain,
+      navigation: const CatchTopBarNavigation(
+        mode: CatchTopBarNavigationMode.back,
+      ),
+    ),
+    body: CatchRouteBody.standardViewport(
+      child: Column(
+        children: [
+          Text(
+            context.l10n.programsLodgingMembershipExpired,
+            style: CatchTextStyles.recordBody(context),
+          ),
+          CatchButton(
+            label: context.l10n.programsRoomsRefresh,
+            onPressed: busy ? null : onRefresh,
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -502,102 +514,114 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
         for (final group in mapList(membership.json['groups'], 'groups'))
           requiredString(group, 'id'): requiredString(group, 'label'),
     };
-    return ProgramLodgingScaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchSection.containedFieldRows(
-            title: l10n.programsLodgingMembershipTitle,
-            children: [
-              Text(
-                l10n.programsLodgingMembershipHint,
-                style: CatchTextStyles.recordBody(context),
-              ),
-              CatchField<String>.choices(
-                copy: catchFieldCopy(l10n),
-                title: l10n.programsGuestsNameLabel,
-                contract: CatchContractConstraints
-                    .upsertProgramGuestCallablePayloadGuestId,
-                contractValueBuilder: (v) => v,
-                values: catalog
-                    .rows('guests')
-                    .map((g) => requiredString(g, 'id'))
-                    .toList(),
-                selected: {?membership?.guestId},
-                itemLabelBuilder: (id) =>
-                    requiredString(catalog.row('guests', id), 'label'),
-                onSelectionChanged: view.busy || !active
-                    ? null
-                    : (ids) {
-                        final id = ids.firstOrNull;
-                        if (id != null) {
-                          onChooseGuest(id);
-                        }
-                      },
-              ),
-              if (membership != null && active) ...[
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        title: context.l10n.programsLodgingTitle,
+        subtitle: context.l10n.programsLodgingSubtitle,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+      ),
+      body: CatchRouteBody.standardViewport(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSection.containedFieldRows(
+              title: l10n.programsLodgingMembershipTitle,
+              children: [
                 Text(
-                  membership.label,
+                  l10n.programsLodgingMembershipHint,
                   style: CatchTextStyles.recordBody(context),
                 ),
                 CatchField<String>.choices(
                   copy: catchFieldCopy(l10n),
-                  title: l10n.programsGuestsGroupsTitle,
+                  title: l10n.programsGuestsNameLabel,
                   contract: CatchContractConstraints
-                      .upsertProgramGuestCallablePayloadGroupIds,
+                      .upsertProgramGuestCallablePayloadGuestId,
                   contractValueBuilder: (v) => v,
-                  mode: CatchChipMode.multiple,
-                  allowEmptySelection: true,
-                  values: groups.keys.toList(),
-                  selected: selectedGroups,
-                  itemLabelBuilder: (id) => groups[id]!,
-                  onSelectionChanged: view.busy ? null : onGroupsChanged,
+                  values: catalog
+                      .rows('guests')
+                      .map((g) => requiredString(g, 'id'))
+                      .toList(),
+                  selected: {?membership?.guestId},
+                  itemLabelBuilder: (id) =>
+                      requiredString(catalog.row('guests', id), 'label'),
+                  onSelectionChanged: view.busy || !active
+                      ? null
+                      : (ids) {
+                          final id = ids.firstOrNull;
+                          if (id != null) {
+                            onChooseGuest(id);
+                          }
+                        },
                 ),
-                for (final row in membership.evidence)
+                if (membership != null && active) ...[
                   Text(
-                    l10n.programsLodgingMembershipEvidence(
-                      group: groups[requiredString(row, 'groupId')]!,
-                      source: requiredString(row, 'sourceLabel'),
-                      status: row['selected'] == true
-                          ? (row['included'] == true
-                                ? l10n.programsLodgingMembershipIncluded
-                                : l10n.programsLodgingMembershipExcluded)
-                          : l10n.programsLodgingMembershipSuggested,
-                    ),
+                    membership.label,
                     style: CatchTextStyles.recordBody(context),
                   ),
-                for (final groupId in membership.groupIds)
-                  if (!membership.evidence.any(
-                    (e) => e['selected'] == true && e['groupId'] == groupId,
-                  ))
+                  CatchField<String>.choices(
+                    copy: catchFieldCopy(l10n),
+                    title: l10n.programsGuestsGroupsTitle,
+                    contract: CatchContractConstraints
+                        .upsertProgramGuestCallablePayloadGroupIds,
+                    contractValueBuilder: (v) => v,
+                    mode: CatchChipMode.multiple,
+                    allowEmptySelection: true,
+                    values: groups.keys.toList(),
+                    selected: selectedGroups,
+                    itemLabelBuilder: (id) => groups[id]!,
+                    onSelectionChanged: view.busy ? null : onGroupsChanged,
+                  ),
+                  for (final row in membership.evidence)
                     Text(
                       l10n.programsLodgingMembershipEvidence(
-                        group: groups[groupId]!,
-                        source: l10n.programsLodgingMembershipCanonical,
-                        status: l10n.programsLodgingMembershipIncluded,
+                        group: groups[requiredString(row, 'groupId')]!,
+                        source: requiredString(row, 'sourceLabel'),
+                        status: row['selected'] == true
+                            ? (row['included'] == true
+                                  ? l10n.programsLodgingMembershipIncluded
+                                  : l10n.programsLodgingMembershipExcluded)
+                            : l10n.programsLodgingMembershipSuggested,
                       ),
                       style: CatchTextStyles.recordBody(context),
                     ),
+                  for (final groupId in membership.groupIds)
+                    if (!membership.evidence.any(
+                      (e) => e['selected'] == true && e['groupId'] == groupId,
+                    ))
+                      Text(
+                        l10n.programsLodgingMembershipEvidence(
+                          group: groups[groupId]!,
+                          source: l10n.programsLodgingMembershipCanonical,
+                          status: l10n.programsLodgingMembershipIncluded,
+                        ),
+                        style: CatchTextStyles.recordBody(context),
+                      ),
+                  CatchButton(
+                    label: l10n.programsLodgingMembershipSave,
+                    onPressed: view.busy || selectedGroups.length > 20
+                        ? null
+                        : onSave,
+                  ),
+                ],
+                if (view.error != null)
+                  CatchLocalizedErrorBanner(
+                    view.error!,
+                    context: AppErrorContext.event,
+                  ),
                 CatchButton(
-                  label: l10n.programsLodgingMembershipSave,
-                  onPressed: view.busy || selectedGroups.length > 20
-                      ? null
-                      : onSave,
+                  label: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: view.busy ? null : onCancel,
                 ),
               ],
-              if (view.error != null)
-                CatchLocalizedErrorBanner(
-                  view.error!,
-                  context: AppErrorContext.event,
-                ),
-              CatchButton(
-                label: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-                variant: CatchButtonVariant.secondary,
-                onPressed: view.busy ? null : onCancel,
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

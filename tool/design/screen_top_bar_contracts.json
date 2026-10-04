@@ -517,6 +517,15 @@
       "occurrences": 3
     },
     {
+      "path": "lib/programs/presentation/program_lodging_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 5
+    },
+    {
       "path": "lib/programs/presentation/program_trips_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",

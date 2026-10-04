@@ -285,7 +285,7 @@ class ProgramLodgingFloorLayout extends StatelessWidget {
         child: InteractiveViewer(
           constrained: false,
           child: SizedBox(
-            width: columns * CatchLayout.lodgingMapColumnExtent,
+            width: columns * CatchLodgingLayout.mapColumnExtent,
             height: rows * CatchSpacing.s16,
             child: Stack(
               children: [
@@ -294,12 +294,12 @@ class ProgramLodgingFloorLayout extends StatelessWidget {
                     left:
                         normalized[index].left *
                         columns *
-                        CatchLayout.lodgingMapColumnExtent,
+                        CatchLodgingLayout.mapColumnExtent,
                     top: normalized[index].top * rows * CatchSpacing.s16,
                     width:
                         normalized[index].width *
                         columns *
-                        CatchLayout.lodgingMapColumnExtent,
+                        CatchLodgingLayout.mapColumnExtent,
                     height: normalized[index].height * rows * CatchSpacing.s16,
                     child:
                         tiles[units

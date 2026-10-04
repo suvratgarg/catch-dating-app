@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-26",
+  "updated": "2026-10-04",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -13616,6 +13616,102 @@
           "id": "DP-PROGRAMS-PREVIEW-001",
           "status": "closed",
           "nextAction": "Widgetbook cases cover the five program screens and their row/tile/sheet widgets under '[P1 product surfaces]/Program *'."
+        }
+      ]
+    },
+    {
+      "id": "programs_lodging",
+      "name": "Socially aware program lodging",
+      "priority": "P1",
+      "status": "in_progress",
+      "nextPass": "programs-lodging-routed-state-proof",
+      "screens": [
+        {
+          "id": "programs.lodging",
+          "routeId": "hostProgramLodgingScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_lodging_screen.dart",
+            "lib/programs/presentation/program_lodging_controller.dart",
+            "lib/programs/presentation/program_lodging_setup_page_body.dart",
+            "lib/programs/presentation/program_lodging_setup_form.dart",
+            "lib/programs/presentation/program_lodging_layout.dart",
+            "lib/programs/data/program_lodging_repository.dart"
+          ],
+          "componentIds": [
+            "catch.button",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-lodging",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "Existing Programs lodging demand, room-sharing parties, source-labelled social groups, private dated inventory and explicit review lifecycle."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "The async controller boundary renders the registered pushed-route loading scaffold; dedicated loading capture proof remains open."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "The same-family scaffold wraps localized retryable read errors. Dedicated routed read-error capture proof remains open; uncertain write retry identity is covered by controller and routed tests."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "tested",
+              "captureIds": [],
+              "tests": [
+                "test/programs/program_lodging_screen_test.dart",
+                "test/programs/program_lodging_controller_test.dart",
+                "test/programs/program_lodging_setup_editor_test.dart",
+                "test/programs/program_lodging_board_test.dart"
+              ],
+              "notes": "Focused tests exercise the private proposal, manual allocation controls, separate approval/confirmation/publication, setup save/stale/session recovery and pending retry fences. This is widget/behavior proof, not a routed golden or feature-contract compilation claim."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "tested",
+              "captureIds": [],
+              "tests": [
+                "test/programs/program_lodging_screen_test.dart"
+              ],
+              "notes": "The missing-setup regression verifies an empty state without mutation; membership review remains available before configuration. Dedicated routed capture proof remains open."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-LODGING-ROUTED-001",
+              "status": "open",
+              "nextAction": "Add deterministic route captures for loading, read error, missing setup, expired authority, membership, editing and proposal review. The twelve marketing screenshots do not cover this route."
+            },
+            {
+              "id": "DP-PROGRAMS-LODGING-ACCESSIBILITY-001",
+              "status": "open",
+              "nextAction": "Verify and capture this private route in dark theme, large text and reduced motion with keyboard and screen-reader navigation."
+            }
+          ]
+        }
+      ],
+      "lintCandidates": [],
+      "previewPlan": [
+        {
+          "id": "DP-PROGRAMS-LODGING-WIDGETBOOK-001",
+          "status": "closed",
+          "nextAction": "Seven canonical Widgetbook use cases cover the public route/layout/scaffold/editor widgets using synthetic fixtures; routed golden proof remains separately open."
         }
       ]
     }
