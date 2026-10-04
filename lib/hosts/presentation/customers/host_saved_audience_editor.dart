@@ -426,6 +426,12 @@ class _HostSavedAudienceEditorFormState
     );
   }
 
+  void _showError(Object error) => showCatchNoticeError(
+    context,
+    error,
+    errorContext: AppErrorContext.customers,
+  );
+
   Future<void> _save() async {
     if (_busy || !(_formKey.currentState?.validate() ?? false)) return;
     final predicates = _static
@@ -434,11 +440,7 @@ class _HostSavedAudienceEditorFormState
           ]
         : _rules.map((rule) => rule.toPredicate()).toList();
     if (predicates.any((predicate) => predicate == null)) {
-      showCatchNoticeError(
-        context,
-        StateError(context.l10n.hostSavedAudienceCompleteRules),
-        errorContext: AppErrorContext.customers,
-      );
+      _showError(StateError(context.l10n.hostSavedAudienceCompleteRules));
       return;
     }
     setState(() => _busy = true);
@@ -475,12 +477,11 @@ class _HostSavedAudienceEditorFormState
       );
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
-      if (mounted) {
-        if (widget.onSaved case final onSaved?) {
-          onSaved(preview.audience);
-        } else {
-          context.pop(preview.audience);
-        }
+      if (!mounted) return;
+      if (widget.onSaved case final onSaved?) {
+        onSaved(preview.audience);
+      } else {
+        context.pop(preview.audience);
       }
     } on Object catch (error) {
       if (mounted && savedSuccessfully) {
@@ -489,11 +490,7 @@ class _HostSavedAudienceEditorFormState
           _previewFailedAfterSave = savedSuccessfully;
         });
       } else if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.customers,
-        );
+        _showError(error);
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -505,31 +502,27 @@ class _HostSavedAudienceEditorFormState
     if (_busy || audience == null) return;
     setState(() => _busy = true);
     try {
-      final preview = await ref
-          .read(hostAudienceControllerProvider)
-          .refreshAudiencePreview(
-            organizerId: widget.organizerId,
-            audience: audience,
-            isCurrent: () => mounted,
-          );
+      final controller = ref.read(hostAudienceControllerProvider);
+      final preview = await controller.refreshAudiencePreview(
+        organizerId: widget.organizerId,
+        audience: audience,
+        isCurrent: () => mounted,
+      );
       if (!mounted) return;
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
-      if (mounted) {
-        setState(() {
-          // Membership refresh does not rebase the editable draft. Save keeps
-          // its original expectedRevision so concurrent edits still conflict.
-          _previewAudience = preview.audience;
-          _previewError = null;
-        });
-      }
+      setState(() {
+        // Membership refresh does not rebase the editable draft. Save keeps
+        // its original expectedRevision so concurrent edits still conflict.
+        _previewAudience = preview.audience;
+        _previewError = null;
+      });
     } on Object catch (error) {
-      if (mounted) {
-        setState(() {
-          _previewError = error;
-          _previewFailedAfterSave = false;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _previewError = error;
+        _previewFailedAfterSave = false;
+      });
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -556,13 +549,7 @@ class _HostSavedAudienceEditorFormState
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
       if (mounted) context.pop(audience);
     } on Object catch (error) {
-      if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.customers,
-        );
-      }
+      if (mounted) _showError(error);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
