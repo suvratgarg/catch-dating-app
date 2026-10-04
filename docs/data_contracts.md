@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.163.0
-updated: 2026-10-03
+version: 1.163.1
+updated: 2026-10-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -579,8 +579,16 @@ payout state. Direct client reads and writes are denied.
 `listOrganizerAttentionItems` owns the read-through boundary. Before returning
 supported server items it must re-read every declared authoritative source,
 derive the desired open set, upsert changed rows, and resolve stale rows. Each
-source scan is bounded at 400 records and fails closed when exceeded; the
-callable must never label a truncated scan exhaustive. The response also
+source scan is bounded at 400 current records and fails closed when exceeded;
+the callable must never label a truncated scan exhaustive. Form automation
+reads at most 400 enabled rules, then one latest terminal run per matching
+organizer, form, rule and current revision. Runs order by `updatedAt` descending
+and document ID descending; succeeded and skipped outcomes resolve older
+failures, while pending and running retries do not hide terminal failures.
+Historical runs and disabled rules do not consume this current-state bound.
+The required composite index must be deployed and ready before releasing the
+reader; a missing index or failed source query cannot produce complete coverage.
+The response also
 contains one coverage row per catalog kind so clients and tests can distinguish
 complete server coverage, required local merging, shortcuts, and missing truth.
 
