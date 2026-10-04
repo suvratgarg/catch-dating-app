@@ -137,7 +137,7 @@ for (const signedIn of [false, true]) {
           }})}) as never});
         assert.equal(
           store.docs["organizerFormExports/privacy-export"].rowCount, 1);
-        assert.ok(csv.includes('"anonymous"'));
+        assert.ok(csv.includes("\"anonymous\""));
         if (volunteered) {
           for (const value of Object.values(answers)) {
             assert.ok(csv.includes(value));
