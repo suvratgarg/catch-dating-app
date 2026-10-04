@@ -1,16 +1,16 @@
 part of 'host_customers_screen.dart';
 
-class HostSavedAudienceWorkspace extends ConsumerStatefulWidget {
+class HostSavedAudienceWorkspace extends StatefulWidget {
   const HostSavedAudienceWorkspace({super.key, required this.audience});
   final HostSavedAudience audience;
 
   @override
-  ConsumerState<HostSavedAudienceWorkspace> createState() =>
+  State<HostSavedAudienceWorkspace> createState() =>
       _HostSavedAudienceWorkspaceState();
 }
 
 class _HostSavedAudienceWorkspaceState
-    extends ConsumerState<HostSavedAudienceWorkspace> {
+    extends State<HostSavedAudienceWorkspace> {
   late HostSavedAudience _audience = widget.audience;
   bool _editing = false;
 
@@ -37,13 +37,9 @@ class _HostSavedAudienceWorkspaceState
         )
       : HostSavedAudienceOverview(
           audience: _audience,
-          onEdit: () {
-            final current = ref
-                .read(hostSavedAudienceMembersControllerProvider(_audience))
-                .asData
-                ?.value;
+          onEdit: (audience) {
             setState(() {
-              _audience = current?.preview.audience ?? _audience;
+              _audience = audience;
               _editing = true;
             });
           },
@@ -58,7 +54,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
   });
 
   final HostSavedAudience audience;
-  final VoidCallback onEdit;
+  final ValueChanged<HostSavedAudience> onEdit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -147,7 +143,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                   CatchButton.command(
                     key: const ValueKey('host-saved-audience-edit'),
                     label: context.l10n.hostSavedAudienceEditRules,
-                    onPressed: onEdit,
+                    onPressed: () => onEdit(displayedAudience),
                   ),
                 ],
               ),
