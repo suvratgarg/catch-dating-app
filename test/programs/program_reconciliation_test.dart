@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
@@ -113,6 +114,7 @@ Future<void> _pumpLedger(
       retry: (_, _) => null,
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('account')),
+        programProjectionClockProvider.overrideWithValue(() => _now),
         programReadSnapshotStoreProvider.overrideWithValue(
           emptyProgramSnapshots(),
         ),
