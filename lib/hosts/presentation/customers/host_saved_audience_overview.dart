@@ -42,9 +42,8 @@ class _HostSavedAudienceWorkspaceState
                 .read(hostSavedAudienceMembersControllerProvider(_audience))
                 .asData
                 ?.value;
-            if (current == null) return;
             setState(() {
-              _audience = current.preview.audience;
+              _audience = current?.preview.audience ?? _audience;
               _editing = true;
             });
           },
@@ -148,9 +147,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                   CatchButton.command(
                     key: const ValueKey('host-saved-audience-edit'),
                     label: context.l10n.hostSavedAudienceEditRules,
-                    onPressed: current == null || !memberState.isSettledData
-                        ? null
-                        : onEdit,
+                    onPressed: onEdit,
                   ),
                 ],
               ),
