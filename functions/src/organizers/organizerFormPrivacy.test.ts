@@ -62,6 +62,9 @@ for (const signedIn of [false, true]) {
           sourceToken: null, requestId: "anonymous-start-request"}, auth), h.deps);
         assert.equal(begun.identityKind, "anonymous");
         assert.deepEqual(begun.prefillSuggestions, {});
+        assert.deepEqual(await begin(request({publicFormId: h.form.publicFormId,
+          sourceToken: null, requestId: "anonymous-start-request"},
+        {...ambient, uid: "changed-account"}), h.deps), begun);
         const answers = volunteered ? {name: "Volunteered Name",
           email: "volunteered@example.com", phone: "+919000000002"} : {};
         const identity = volunteered ? {displayName: "Volunteered Name",
@@ -165,4 +168,30 @@ test("anonymous policy rejects private response reuse before creating a draft", 
     sourceToken: null, requestId: "anonymous-reuse-request",
     reuseResponseId: "identified-source"}), h.deps), {code: "not-found"});
   assert.deepEqual([...h.store.records.keys()], before);
+});
+
+
+test("anonymous submission discards contact on an unreachable conditional path", async () => {
+  const h = fixture();
+  h.version.definition.logicRules = [{ruleId: "hide-contact", conditionMode: "all",
+    conditions: [{questionId: "name", operator: "equals", expectedValues: ["Skip"]}],
+    action: "hideQuestion", targetQuestionId: "email", targetSectionId: null}];
+  const begun = await begin(request({publicFormId: h.form.publicFormId,
+    sourceToken: null, requestId: "hidden-contact-start"}), h.deps);
+  const path = `organizerFormResponseDrafts/${begun.draftId}`;
+  h.store.records.set(path, {...h.store.records.get(path), consentAccepted: true,
+    answers: {name: "Skip", email: "stale@example.com"}});
+  const payload = {draftId: begun.draftId, draftToken: begun.draftToken,
+    expectedRevision: begun.revision, requestId: "hidden-contact-submit"};
+  h.store.failNextCommit = true;
+  await assert.rejects(submit(request(payload), h.deps), /Interrupted commit/u);
+  assert.equal([...h.store.records.keys()].some((key) =>
+    key.startsWith("organizerFormResponses/")), false);
+  const receipt = await submit(request(payload, {...ambient,
+    uid: "changed-account"}), h.deps);
+  const response = h.store.records.get(`organizerFormResponses/${receipt.responseId}`)!;
+  assert.deepEqual(response.answers, {name: "Skip"});
+  assert.deepEqual(response.identity, {displayName: "Skip", email: null,
+    phoneE164: null, searchName: "skip", origin: "organizerAcquired"});
+  assert.equal(response.respondentUid, null);
 });
