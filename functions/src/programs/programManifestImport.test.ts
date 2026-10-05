@@ -65,7 +65,7 @@ test("phone endpoint fails closed while general manifest import remains usable",
     assert.equal(phone.guestsCreated, 1);
   });
 
-test("phone kill switch also denies replay after a completed commit", async () => {
+test("phone readiness denies replay after a completed commit", async () => {
   const fixture = seed();
   fixture["organizerPrograms/program-1"].kind = "wedding";
   const store = new MiniFirestore(fixture);
