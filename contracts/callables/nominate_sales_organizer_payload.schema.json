@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/nominate_sales_organizer_payload.schema.json",
+  "title": "NominateSalesOrganizerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "name",
+    "city",
+    "url",
+    "relationshipContext"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "city": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "nominateSalesOrganizer"
+  ]
+}

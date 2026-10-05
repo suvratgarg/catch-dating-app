@@ -47,4 +47,9 @@ export interface SalesOutreachDraftsDocument {
   createdBy: string;
   reviewedAt: string | null;
   reviewedBy: string | null;
+  participantScope?: {
+    partnerUid: string;
+    assignmentRevision: number;
+    renderedDraftId: string;
+  };
 }

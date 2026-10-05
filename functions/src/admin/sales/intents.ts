@@ -95,7 +95,8 @@ export async function linkSalesInboundIntent(
     contactId: null,
     revision: 1,
     kind: "research",
-    title: "Review website host enquiry",
+    title: intent.source === "partner" ? "Review partner organizer nomination" :
+      "Review website host enquiry",
     dueAt: null,
     ownerUid: principal.uid,
     status: "open",
@@ -115,7 +116,9 @@ export async function linkSalesInboundIntent(
     providerConfirmed: false,
     occurredAt: now,
     recordedAt: now,
-    note: "Website host enquiry linked after canonical identity review.",
+    note: intent.source === "partner" ?
+      "Partner nomination linked after canonical identity review." :
+      "Website host enquiry linked after canonical identity review.",
     actorUid: principal.uid,
   };
   const linked = {
@@ -192,6 +195,7 @@ export async function listSalesInboundIntents(
       intentId: doc.id,
       revision: value.revision,
       status: value.status,
+      source: value.source,
       fullName: value.fullName,
       city: value.city,
       createdAt: value.createdAt?.toDate?.().toISOString() ?? null,

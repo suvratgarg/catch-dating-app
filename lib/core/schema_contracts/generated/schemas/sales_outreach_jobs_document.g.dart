@@ -799,6 +799,26 @@ const schemaSalesOutreachJobsDocumentSchema = <String, Object?>{
       ],
       'maxLength': 160,
     },
+    'participantScope': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'partnerUid',
+        'assignmentRevision',
+      ],
+      'properties': <String, Object?>{
+        'partnerUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'assignmentRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'id': <String, Object?>{

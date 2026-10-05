@@ -328,6 +328,7 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
   const [wording, setWording] = useState("");
   const [evidenceId, setEvidenceId] = useState("");
   const [expires, setExpires] = useState("");
+  const [citationSelections, setCitationSelections] = useState<Record<string, string[]>>({});
   const catalog = c.catalog.data;
   const save = async () => {
     const expiry = new Date(expires);
@@ -344,9 +345,22 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
     {catalog?.clauses.length ? catalog.clauses.map((row) =>
       <StateRow key={row.clauseId} label={`${label(row.kind)} · ${row.text}`}
         value={<>{label(row.state)} · valid until {date(row.validUntil)}{" "}
+          {isAdminOwner && row.state === "draft" ? (row.partnerCitationOptions ?? []).map((citation) => {
+            const selectionKey = `${row.clauseId}:${row.revision}`;
+            const selected = citationSelections[selectionKey] ?? [];
+            return <CheckboxField key={`${citation.evidenceId}:${citation.sourceHash}`}
+              label={`Share this exact public citation with assigned partners: ${citation.sourceRef}. Excerpt: ${citation.excerpt ?? "No excerpt"}`}
+              checked={selected.includes(citation.sourceHash)} disabled={c.busy || Boolean(c.pending)}
+              onChange={(checked) => setCitationSelections((current) => ({...current,
+                [selectionKey]: checked ? [...(current[selectionKey] ?? []), citation.sourceHash] :
+                  (current[selectionKey] ?? []).filter((value) => value !== citation.sourceHash)}))} />;
+          }) : null}
           {isAdminOwner && row.state === "draft" ? <AdminButton
             disabled={c.busy || Boolean(c.pending)} onClick={() => void
-              c.reviewClause(row.clauseId, row.revision, "approve")}>
+              c.reviewClause(row.clauseId, row.revision, "approve",
+                (row.partnerCitationOptions ?? []).filter((citation) =>
+                  (citationSelections[`${row.clauseId}:${row.revision}`] ?? []).includes(citation.sourceHash))
+                  .map((citation) => ({evidenceId: citation.evidenceId, sourceHash: citation.sourceHash})))}>
               Approve wording</AdminButton> : null}
           {isAdminOwner && row.state === "approved" ? <AdminButton
             disabled={c.busy || Boolean(c.pending)} onClick={() => void

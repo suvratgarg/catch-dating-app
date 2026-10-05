@@ -1,3 +1,5 @@
+import type {DraftSourceRequest, DraftArtifact, DraftJob} from "../../../shared/domain/salesOutreach";
+export type {DraftSourceRequest, DraftArtifact, DraftJob} from "../../../shared/domain/salesOutreach";
 import type {SalesAccountDetail, SalesContact, SalesEvidence,
   SalesPage} from "./salesTypes";
 
@@ -25,6 +27,10 @@ export interface ApprovedClause {
   evidenceIds: string[]; validUntil: string;
   permission: "not_required" | "private_mention" | "withdrawn";
   reviewedAt: string | null;
+  partnerCitations?: Array<{evidenceId: string; sourceHash: string}>;
+  partnerCitationOptions?: Array<{evidenceId: string; sourceHash: string;
+    sourceRef: string; observedAt: string; validThrough: string | null;
+    excerpt: string | null; confidence: "high" | "medium" | "low"}>;
 }
 export interface IntelligenceCatalog {
   policy: IntelligencePolicy | null;
@@ -39,37 +45,20 @@ export interface ScoreSnapshot {
   factors: Array<{factorId: string; state: FactorAssessment["state"];
     value: number | null; evidenceIds: string[]; reason: string | null}>;
 }
-export interface DraftSourceRequest {
-  organizerId: string; contactId: string; opportunityId: string;
-  observationIds: string[]; capabilityIds: string[];
-  referenceIds: string[]; ctaIds: string[];
-  channel: "email" | "message";
-  purpose: "first_message" | "follow_up";
-  priorActivityId?: string;
-}
+
 export interface DraftSummary {
   draftId: string; contactId: string; opportunityId: string;
   subject: string | null; status: "pending_review" | "approved";
   contentHash: string; createdAt: string; reviewedAt: string | null;
 }
-export interface DraftArtifact {
-  draftId: string; subject: string | null; text: string;
-  contentHash: string; sendAuthority: false;
-  model: {modelId: "deterministic"; usage: {inputTokens: 0;
-    outputTokens: 0; costMicros: 0}};
-  sentences: Array<{text: string; kind: string; sourceIds: string[]}>;
-}
+
 export interface DraftDetail {
   draftId: string; draft: DraftArtifact;
   status: DraftSummary["status"];
   reviewedAt: string | null; reviewedBy: string | null;
   sendAuthority: false;
 }
-export interface DraftJob {
-  status: "running" | "completed" | "failed";
-  result: {draftId: string; contentHash: string} | null;
-  failure: string | null; retryAfterSeconds: number | null;
-}
+
 export interface MutationResult {
   draftId: string; exactContentHash: string; sendAuthority: false;
   providerConfirmed: false;
@@ -96,7 +85,8 @@ export interface IntelligenceApi {
     permission: ApprovedClause["permission"]}):
     Promise<{clause: ApprovedClause}>;
   reviewClause(input: {requestId: string; clauseId: string;
-    expectedRevision: number; decision: "approve" | "withdraw"}):
+    expectedRevision: number; decision: "approve" | "withdraw";
+    partnerCitations?: Array<{evidenceId: string; sourceHash: string}>}):
     Promise<{clause: ApprovedClause}>;
   generate(input: {requestId: string; sourceRequest: DraftSourceRequest}):
     Promise<{status: "running" | "completed" | "failed";

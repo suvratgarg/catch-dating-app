@@ -62,7 +62,14 @@
         "commercial.quotes.accept",
         "commercial.finance.attest",
         "imports.compensation.apply",
-        "imports.history.apply"
+        "imports.history.apply",
+        "partner.register",
+        "partner.nominate",
+        "partner.assign",
+        "partner.assignment.decide",
+        "partner.revoke",
+        "partner.assignment.update",
+        "partner.demo.wording.propose"
       ]
     },
     "actorUid": {
@@ -128,7 +135,7 @@
     },
     "result": {
       "type": "object",
-      "maxProperties": 7,
+      "maxProperties": 8,
       "additionalProperties": {
         "anyOf": [
           {
@@ -772,5 +779,71 @@
         ]
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "partner.demo.wording.propose"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "blueprintId",
+              "proposalRevision",
+              "sourcePreviewHash",
+              "state",
+              "sendAuthority",
+              "capabilityApprovalAuthority",
+              "organizerControlAuthority"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{3,128}$"
+              },
+              "blueprintId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{3,128}$"
+              },
+              "proposalRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "sourcePreviewHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "state": {
+                "const": "pending_owner_review"
+              },
+              "sendAuthority": {
+                "const": false
+              },
+              "capabilityApprovalAuthority": {
+                "const": false
+              },
+              "organizerControlAuthority": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "result": {
+            "maxProperties": 7
+          }
+        }
+      }
+    }
+  ]
 }

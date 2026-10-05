@@ -417,7 +417,9 @@ function InboundReview({controller, onOpenIntake}: {
   const select = (intent: SalesInboundIntent) => {
     setSelectedId(intent.intentId);
     setMatchId("");
-    const firstWord = intent.fullName.trim().match(/[A-Za-z0-9]{2,80}/u)?.[0] ?? "";
+    const searchName = typeof intent.hostApplication?.organizationName === "string" ?
+      intent.hostApplication.organizationName : intent.fullName;
+    const firstWord = searchName.trim().match(/[A-Za-z0-9]{2,80}/u)?.[0] ?? "";
     controller.setIdentitySearch(firstWord);
   };
   const link = async () => {
@@ -429,7 +431,7 @@ function InboundReview({controller, onOpenIntake}: {
     if (linked) {setSelectedId(""); setMatchId("");
       controller.setIdentitySearch("");}
   };
-  return <Panel title="New website enquiries" icon={<Search size={18} />}>
+  return <Panel title="New enquiries and nominations" icon={<Search size={18} />}>
     <p>These details were entered by the sender. Review the identity before attaching
       an enquiry to a host; linking does not approve an organizer claim.</p>
     <QueryState loading={controller.inboundIntents.isPending}
@@ -437,9 +439,10 @@ function InboundReview({controller, onOpenIntake}: {
       empty={!controller.inboundIntents.data?.rows.length}
       onRetry={() => void controller.inboundIntents.refetch()} />
     {controller.inboundIntents.data?.rows.map((intent) =>
-      <StateRow key={intent.intentId} label={intent.fullName} value={<>
+      <StateRow key={intent.intentId} label={typeof intent.hostApplication?.organizationName === "string" ?
+        intent.hostApplication.organizationName : intent.fullName} value={<>
         {intent.city || "City not supplied"} · {dateLabel(intent.createdAt)} ·
-        Self reported{" "}
+        {intent.source === "partner" ? "Partner nomination" : "Website enquiry"} · Self reported{" "}
         <AdminButton onClick={() => select(intent)}>Review match</AdminButton>
       </>} />)}
     <Pagination hasPrevious={controller.hasPreviousInboundPage}

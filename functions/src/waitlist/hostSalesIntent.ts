@@ -5,7 +5,7 @@ export interface HostSalesIntentInput {
   waitlistId: string;
   requestId: string | null;
   fullName: string;
-  email: string;
+  email: string | null;
   city: string;
   role: string;
   hostApplication: Record<string, unknown> | null;

@@ -178,9 +178,10 @@ export function useSalesIntelligenceController({actorUid, organizerId,
       accept: () => {}});
   }, [api, organizerId, submit]);
   const reviewClause = useCallback((clauseId: string,
-    expectedRevision: number, decision: "approve" | "withdraw") => {
-    const frozen = {requestId: crypto.randomUUID(), clauseId,
-      expectedRevision, decision};
+    expectedRevision: number, decision: "approve" | "withdraw",
+    partnerCitations?: Array<{evidenceId: string; sourceHash: string}>) => {
+    const frozen = structuredClone({requestId: crypto.randomUUID(), clauseId,
+      expectedRevision, decision, ...(partnerCitations?.length ? {partnerCitations} : {})});
     return submit({label: decision === "approve" ?
       "Wording approval" : "Wording withdrawal", kind: "mutation",
     requestId: frozen.requestId, run: () => api.reviewClause(frozen),
