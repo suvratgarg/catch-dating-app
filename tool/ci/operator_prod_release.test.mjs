@@ -1,8 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
 import {execFileSync} from "node:child_process";
 import {captureFunctionIdentities} from "./firebase_functions_checkpoint.mjs";
-import {normalizeIndex} from "../firebase/wait_firestore_indexes_ready.mjs";
+import {normalizeIndex, indexSignature} from "../firebase/wait_firestore_indexes_ready.mjs";
 import {OPERATOR_PROD_RELEASE as release, prepareOperatorProdRelease,
   verifyOperatorProdBefore, completeOperatorProdRelease, readOperatorProdSnapshot} from "./operator_prod_release.mjs";
 
@@ -30,7 +31,11 @@ const baselineDeployment = {schema: "catch.firebase-functions-deployment/v1", sc
 const packagePlan = {sourceSha: release.candidateSha, baseSha: release.packageBaseSha,
   sourceCiRunId: release.sourceCiRunId, sourceCiRunAttempt: release.sourceCiRunAttempt,
   stages: ["firestore-indexes", "functions"], targets: ["firestore:indexes", targets.join(",")]};
-const liveIndexes = candidateIndexes.indexes.map((index) => ({...normalizeIndex(index, {desired: true}), state: "READY"}));
+const sha = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+const legacyIndex = {...normalizeIndex(candidateIndexes.indexes[0], {desired: true}),
+  collectionGroup: "legacyOnly", state: "READY"};
+const liveIndexes = [...candidateIndexes.indexes.map((index) =>
+  ({...normalizeIndex(index, {desired: true}), state: "READY"})), legacyIndex];
 const liveFields = candidateIndexes.fieldOverrides.map((field) => ({
   name: `projects/catch-dating-app-64e51/databases/(default)/collectionGroups/${field.collectionGroup}/fields/${field.fieldPath}`,
   indexConfig: {usesAncestorConfig: false, indexes: field.indexes.map((index) => ({
@@ -39,6 +44,20 @@ const liveFields = candidateIndexes.fieldOverrides.map((field) => ({
   }))},
   ...(field.ttl ? {ttlConfig: {state: "ACTIVE"}} : {}),
 }));
+const template = liveFields.find((field) => field.ttlConfig);
+const legacyField = {...template,
+  name: "projects/catch-dating-app-64e51/databases/(default)/collectionGroups/crossPathsSuggestionExposures/fields/expiresAt"};
+liveFields.push(legacyField);
+const retention = {
+  retainedLiveIndexCount: 1,
+  retainedLiveIndexesSha256: sha([indexSignature(legacyIndex)]),
+  retainedLiveFieldSha256: sha({name: "crossPathsSuggestionExposures/expiresAt",
+    indexes: legacyField.indexConfig.indexes.map((index) => JSON.stringify({
+      queryScope: index.queryScope,
+      ...(index.fields[0].order ? {order: index.fields[0].order} :
+        {arrayConfig: index.fields[0].arrayConfig}),
+    })).sort(), ttl: true}),
+};
 const prepared = () => prepareOperatorProdRelease({packagePlan, baselineIndexes, candidateIndexes, baselineDeployment});
 const error = /^Error: Invalid bounded PROD operator release evidence\.$/;
 
@@ -64,15 +83,19 @@ test("operator rejects changed package, baseline, added index, or target scope",
 
 test("preflight rejects changed retained Function, unrelated live index, and unready index", () => {
   const {additions} = prepared();
-  const input = {baselineDeployment, candidateIndexes, additions, liveFunctions: baselineLive, liveIndexes, liveFields};
+  const input = {baselineDeployment, candidateIndexes, additions, liveFunctions: baselineLive,
+    liveIndexes, liveFields, retention};
   assert.equal(verifyOperatorProdBefore(input).missingAdditions, 0);
   const changed = baselineLive.map((fn, index) => index === 4 ? liveFunction(targets[index], index, "revision-2") : fn);
   assert.throws(() => verifyOperatorProdBefore({...input, liveFunctions: changed}), error);
   assert.throws(() => verifyOperatorProdBefore({...input, liveIndexes: [...liveIndexes,
     {...liveIndexes[0], collectionGroup: "unreviewed"}]}), error);
+  assert.throws(() => verifyOperatorProdBefore({...input, retention: {...retention,
+    retainedLiveIndexesSha256: "0".repeat(64)}}), error);
   assert.throws(() => verifyOperatorProdBefore({...input, liveIndexes: [{...liveIndexes[0], state: "CREATING"},
     ...liveIndexes.slice(1)]}), error);
   assert.throws(() => verifyOperatorProdBefore({...input, liveFields: liveFields.slice(1)}), error);
+  assert.throws(() => verifyOperatorProdBefore({...input, liveFields: liveFields.slice(0, -1)}), error);
   assert.throws(() => verifyOperatorProdBefore({...input, liveFields: [...liveFields,
     {...liveFields[0], name: liveFields[0].name.replace("/fields/", "/fields/unreviewed-")}]}), error);
   assert.throws(() => verifyOperatorProdBefore({...input, liveFields: liveFields.map((field, index) =>
@@ -94,7 +117,7 @@ test("mixed-source receipt preserves 574 prior identities and only stamps four n
     provenance: {sourceSha: release.candidateSha}, targets: [...release.targets],
     functions: captureFunctionIdentities(after, scope, release.targets)};
   const input = {baselineDeployment, candidateDeployment, candidateIndexes, additions,
-    liveFunctions: after, liveIndexes, liveFields};
+    liveFunctions: after, liveIndexes, liveFields, retention};
   const receipt = completeOperatorProdRelease(input);
   assert.equal(receipt.functions.filter((row) => row.sourceSha === release.candidateSha).length, 4);
   assert.equal(receipt.functions.filter((row) => row.sourceSha === release.baselineSha).length, 574);
@@ -121,6 +144,13 @@ test("protected snapshot asks Google APIs only for deployment identity fields", 
   assert.equal(snapshot.functions.length, 1);
   assert.deepEqual(snapshot.fields, []);
   assert.equal(calls.length, 3);
-  assert.ok(calls.every((url) => url.includes("fields=")));
+  assert.ok(calls.slice(0, 2).every((url) => url.includes("fields=")));
+  assert.ok(!calls[2].includes("fields=") && calls[2].includes("filter="));
   assert.ok(calls.every((url) => !url.includes("environmentVariables") && !url.includes("secret")));
+  await assert.rejects(() => readOperatorProdSnapshot([release.targets[0]], {
+    runCommand: () => ({status: 0, stdout: "fake-workflow-token\n"}),
+    request: async (url) => url.startsWith("https://firestore.googleapis.com/") ?
+      {ok: false, status: 400} : request(url, {headers: {Authorization: "Bearer fake-workflow-token"}}),
+    listIndexes: () => [],
+  }), /Protected firestore-fields metadata read failed with HTTP 400/);
 });
