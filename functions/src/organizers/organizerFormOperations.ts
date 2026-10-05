@@ -627,9 +627,9 @@ function responseRow(
 // existence query here. Duplicate receipts never increase hydration work.
 const conversionKindSet:
   Record<ResponseRow["conversionKinds"][number], true> = {
-  crmContact: true, application: true,
-  eventAttendeeProposal: true, followUp: true,
-};
+    crmContact: true, application: true,
+    eventAttendeeProposal: true, followUp: true,
+  };
 
 async function completedConversionKinds(
   db: FirebaseFirestore.Firestore,
