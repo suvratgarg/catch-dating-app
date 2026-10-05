@@ -525,7 +525,7 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
           mode: CatchTopBarNavigationMode.back,
         ),
       ),
-      body: CatchRouteBody.standardViewport(
+      body: CatchRouteBody.standard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
