@@ -97,6 +97,9 @@ class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final phoneImportEnabled = ref.watch(
+      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
+    );
     final accessAsync = ref.watch(
       programWorkEntryProvider(widget.programId, widget.inviteId),
     );
@@ -124,28 +127,28 @@ class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
         access: result.value,
         now: widget.now?.call() ?? DateTime.now(),
         snapshotAt: result.snapshotAt,
+        phoneImportEnabled: phoneImportEnabled,
       ),
     );
   }
 }
 
-class ProgramWorkPageBody extends ConsumerWidget {
+class ProgramWorkPageBody extends StatelessWidget {
   const ProgramWorkPageBody({
     super.key,
     required this.access,
     required this.now,
     this.snapshotAt,
+    this.phoneImportEnabled = false,
   });
 
   final ProgramWorkAccess access;
   final DateTime now;
   final DateTime? snapshotAt;
+  final bool phoneImportEnabled;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final phoneImportEnabled = ref.watch(
-      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
-    );
+  Widget build(BuildContext context) {
     final dispatcherScope = access.stationScope(
       ProgramStaffDuty.transportDispatcher,
       now: now,

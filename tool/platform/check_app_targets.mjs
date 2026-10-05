@@ -1108,7 +1108,9 @@ export function validateHostReleaseVisibility({accessSource, routeSource,
     ["phone access", accessSource], ["phone route", routeSource],
     ["program work", workSource],
   ]) {
-    if (/AppConfig\.environment|kReleaseMode/u.test(source)) {
+    const compiledDenial = /if\s*\(\s*(?:AppConfig\.environment\.isProduction|AppConfig\.environment\s*==\s*AppEnvironment\.prod|kReleaseMode)\s*\)\s*(?:\{\s*)?return\s+false\b/u;
+    const compiledVisibility = /(?:!AppConfig\.environment\.isProduction|!kReleaseMode)\s*&&\s*(?:canImportWeddingPhoneContacts|phoneImport)/u;
+    if (compiledDenial.test(source) || compiledVisibility.test(source)) {
       findings.push(`${label}: compiled environment release hold is forbidden`);
     }
   }

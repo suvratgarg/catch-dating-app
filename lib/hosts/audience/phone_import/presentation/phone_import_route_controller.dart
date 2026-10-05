@@ -39,6 +39,9 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
         'The wedding or signed-in account changed.',
       );
     }
+    if (!_releaseEnabled) {
+      throw const PermissionException('Phone import is not available.');
+    }
   }
 
   Future<ProgramWorkAccess> refreshAccess({

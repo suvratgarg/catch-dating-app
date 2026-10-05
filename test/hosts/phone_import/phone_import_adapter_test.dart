@@ -344,6 +344,18 @@ void main() {
       },
     );
 
+    test('closing the flag after preview prevents commit transport', () async {
+      final batch = _batch();
+      await adapter.preview(batch);
+      final callsBeforeClosure = functions.calls.length;
+      phoneImportEnabled = false;
+      await expectLater(
+        adapter.commit(batch),
+        throwsA(isA<PermissionException>()),
+      );
+      expect(functions.calls.length, callsBeforeClosure);
+    });
+
     test(
       'preview and commit each use fresh access and the exact canonical payload',
       () async {

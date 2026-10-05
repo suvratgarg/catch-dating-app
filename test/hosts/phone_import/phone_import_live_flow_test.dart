@@ -225,6 +225,7 @@ class _Assignments implements HostWorkRepository {
 }
 
 class _Fixture {
+  bool releaseEnabled = true;
   final functions = _Functions();
   final auth = _Auth();
   final assignments = _Assignments();
@@ -249,12 +250,13 @@ class _Fixture {
     String program = 'wedding',
     bool phoneImportEnabled = true,
   }) async {
+    releaseEnabled = phoneImportEnabled;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           hostReleaseFlagProvider(
             hostWeddingPhoneImportFlagKey,
-          ).overrideWith((ref) => phoneImportEnabled),
+          ).overrideWith((ref) => releaseEnabled),
           authRepositoryProvider.overrideWithValue(AuthRepository(auth)),
           programWorkRepositoryProvider.overrideWithValue(work),
           programSetupRepositoryProvider.overrideWithValue(setup),
@@ -396,7 +398,11 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: ProgramWorkPageBody(access: access, now: _now),
+            home: ProgramWorkPageBody(
+              access: access,
+              now: _now,
+              phoneImportEnabled: true,
+            ),
           ),
         ),
       );
@@ -454,6 +460,27 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('a runtime flag closure closes an open review', (tester) async {
+    final f = _Fixture();
+    addTearDown(() => f.close(tester));
+    await f.mount(tester);
+    expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(PhoneImportScreen)),
+    );
+    f.releaseEnabled = false;
+    container.invalidate(
+      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.byType(PhoneImportReviewScreen), findsNothing);
+    expect(find.byKey(const ValueKey('phone-import-pick')), findsNothing);
+    expect(
+      f.functions.calls.where((call) => call.payload['mode'] == 'commit'),
+      isEmpty,
+    );
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'native selection needs explicit international review and shares only chosen phone',
     (tester) async {
@@ -691,6 +718,7 @@ void main() {
               access: access,
               now: _now,
               snapshotAt: state == 'cached' ? _now : null,
+              phoneImportEnabled: true,
             ),
           ),
         ),

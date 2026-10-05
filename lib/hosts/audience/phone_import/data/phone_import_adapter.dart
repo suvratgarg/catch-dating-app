@@ -127,8 +127,10 @@ class PhoneImportAdapter {
   }
 
   void _assertScope(PhoneImportBatch batch) {
+    if (!isEnabled()) {
+      throw const PermissionException('Phone import is not available.');
+    }
     if (_disposed ||
-        !isEnabled() ||
         currentAccountId() != batch.accountId ||
         currentProgramId() != batch.programId) {
       throw const PermissionException(

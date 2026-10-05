@@ -24,6 +24,8 @@ test("phone rollout rejects its retired compiled hold and open defaults", () => 
       CATCH_WEDDING_PHONE_IMPORT_READY: {defaultValue: {value: "false"}},
     }};
   assert.deepEqual(validateHostReleaseVisibility(sources), []);
+  assert.deepEqual(validateHostReleaseVisibility({...sources,
+    workSource: "final banner = AppConfig.environment.bannerLabel;"}), []);
   assert.match(validateHostReleaseVisibility({...sources,
     accessSource: "if (AppConfig.environment.isProduction) return false;"})[0],
   /compiled environment release hold/u);
