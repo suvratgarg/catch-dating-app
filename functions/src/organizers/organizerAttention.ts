@@ -152,7 +152,6 @@ export async function loadOrganizerAttentionSources(
     applications,
     providerRuns,
     automationRules,
-    automationRuns,
     momentAttentionSendDocs,
     offeredOffers,
   ] = await Promise.all([
@@ -207,11 +206,12 @@ export async function loadOrganizerAttentionSources(
       .orderBy("expiresAt")
       .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1).get(),
+    /* firestore-index: organizerFormAutomationRules (
+      organizerId:ASCENDING, enabled:ASCENDING
+    ) */
     db.collection("organizerFormAutomationRules")
       .where("organizerId", "==", organizerId)
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("organizerFormAutomationRuns")
-      .where("organizerId", "==", organizerId)
+      .where("enabled", "==", true)
       .limit(maxAttentionSourceRows + 1).get(),
     db.collection("organizerMomentSends")
       .where("organizerId", "==", organizerId)
@@ -254,7 +254,6 @@ export async function loadOrganizerAttentionSources(
   assertBoundedSnapshot(applications, "open organizer applications");
   assertBoundedSnapshot(providerRuns, "unexpired provider sync runs");
   assertBoundedSnapshot(automationRules, "form automation rules");
-  assertBoundedSnapshot(automationRuns, "form automation runs");
   assertBoundedSnapshot(
     momentAttentionSendDocs,
     "moment staff attention sends"
@@ -286,6 +285,12 @@ export async function loadOrganizerAttentionSources(
   assertBoundedAttentionRows(
     [...participationRows.values()],
     "pending event join requests"
+  );
+
+  const currentAutomationRules = automationRules.docs.map((doc) =>
+    sourceRow<OrganizerFormAutomationRuleDocument>(doc));
+  const currentAutomationRuns = await loadCurrentAutomationRuns(
+    db, organizerId, currentAutomationRules
   );
 
   const organizer = sourceRow<OrganizerDocument>(organizerSnap);
@@ -323,10 +328,8 @@ export async function loadOrganizerAttentionSources(
       sourceRow<OrganizerApplicationDocument>(doc)),
     providerSyncRuns: providerRuns.docs.map((doc) =>
       sourceRow<ProviderSyncRunDocument>(doc)),
-    automationRules: automationRules.docs.map((doc) =>
-      sourceRow<OrganizerFormAutomationRuleDocument>(doc)),
-    automationRuns: automationRuns.docs.map((doc) =>
-      sourceRow<OrganizerFormAutomationRunDocument>(doc)),
+    automationRules: currentAutomationRules,
+    automationRuns: currentAutomationRuns,
     paymentAccounts,
     momentAttentionSends: momentAttentionSendDocs.docs
       .map((doc) => momentAttentionSendRow(doc))
@@ -337,6 +340,46 @@ export async function loadOrganizerAttentionSources(
       .filter((row): row is
         AttentionSourceRow<OfferAttentionSource> => row !== null),
   };
+}
+
+/** Reads one terminal state per enabled revision, independent of history size.
+ * Success and skipped outcomes are needed to resolve an older failure. */
+async function loadCurrentAutomationRuns(
+  db: FirebaseFirestore.Firestore,
+  organizerId: string,
+  rules: Array<AttentionSourceRow<OrganizerFormAutomationRuleDocument>>
+): Promise<OrganizerAttentionSources["automationRuns"]> {
+  const runs: OrganizerAttentionSources["automationRuns"] = [];
+  // Keep fanout bounded as well as document reads (at most 400 queries/rows).
+  const concurrency = 10;
+  for (let offset = 0; offset < rules.length; offset += concurrency) {
+    const batch = rules.slice(offset, offset + concurrency);
+    const snapshots = await Promise.all(batch
+      .map((rule) => {
+        /* firestore-index: organizerFormAutomationRuns (
+          organizerId:ASCENDING, formId:ASCENDING, ruleId:ASCENDING,
+          ruleRevision:ASCENDING, status:ASCENDING,
+          updatedAt:DESCENDING, __name__:DESCENDING
+        ) */
+        return db.collection("organizerFormAutomationRuns")
+          .where("organizerId", "==", organizerId)
+          .where("formId", "==", rule.data.formId)
+          .where("ruleId", "==", rule.id)
+          .where("ruleRevision", "==", rule.data.revision)
+          .where("status", "in", [
+            "succeeded", "partiallyFailed", "failed", "skipped",
+          ])
+          .orderBy("updatedAt", "desc")
+          .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+          .limit(1).get();
+      }));
+    for (const snapshot of snapshots) {
+      for (const doc of snapshot.docs) {
+        runs.push(sourceRow<OrganizerFormAutomationRunDocument>(doc));
+      }
+    }
+  }
+  return runs;
 }
 
 /** Lenient journal parse: staffAttention sends missing projection fields

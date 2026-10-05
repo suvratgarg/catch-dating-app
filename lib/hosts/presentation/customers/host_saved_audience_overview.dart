@@ -15,8 +15,19 @@ class _HostSavedAudienceWorkspaceState
   bool _editing = false;
 
   @override
+  void didUpdateWidget(HostSavedAudienceWorkspace oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.audience.organizerId != widget.audience.organizerId ||
+        oldWidget.audience.audienceId != widget.audience.audienceId) {
+      _audience = widget.audience;
+      _editing = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) => _editing
       ? _HostSavedAudienceEditorForm(
+          key: ValueKey('${_audience.organizerId}:${_audience.audienceId}'),
           organizerId: _audience.organizerId,
           initialAudience: _audience,
           onSaved: (audience) => setState(() {
@@ -26,7 +37,12 @@ class _HostSavedAudienceWorkspaceState
         )
       : HostSavedAudienceOverview(
           audience: _audience,
-          onEdit: () => setState(() => _editing = true),
+          onEdit: (audience) {
+            setState(() {
+              _audience = audience;
+              _editing = true;
+            });
+          },
         );
 }
 
@@ -38,7 +54,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
   });
 
   final HostSavedAudience audience;
-  final VoidCallback onEdit;
+  final ValueChanged<HostSavedAudience> onEdit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +67,9 @@ class HostSavedAudienceOverview extends ConsumerWidget {
           ),
         ).value ??
         const HostSavedAudienceFilterOptions.empty();
-    final current = catchAsyncStateFromAsyncValue(members).value;
+    final memberState = catchAsyncStateFromAsyncValue(members);
+    final current = memberState.value;
+    final displayedAudience = current?.preview.audience ?? audience;
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostAudienceGroupTitle,
@@ -62,7 +80,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      footer: current == null
+      footer: current == null || !memberState.isSettledData
           ? null
           : CatchDockSurface.primary(
               buttonKey: const ValueKey('host-saved-audience-message'),
@@ -85,7 +103,10 @@ class HostSavedAudienceOverview extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(audience.name, style: CatchTextStyles.headline(context)),
+            Text(
+              displayedAudience.name,
+              style: CatchTextStyles.headline(context),
+            ),
             gapH8,
             Text(
               _savedAudienceDirectoryBody(
@@ -101,15 +122,17 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (!audience.definition.isStatic &&
-                      audience.definition.predicates.length > 1)
+                  if (!displayedAudience.definition.isStatic &&
+                      displayedAudience.definition.predicates.length > 1)
                     Text(
-                      audience.definition.join == HostSavedAudienceJoin.all
+                      displayedAudience.definition.join ==
+                              HostSavedAudienceJoin.all
                           ? context.l10n.hostSavedAudienceMatchAll
                           : context.l10n.hostSavedAudienceMatchAny,
                       style: CatchTextStyles.recordContext(context),
                     ),
-                  for (final predicate in audience.definition.predicates)
+                  for (final predicate
+                      in displayedAudience.definition.predicates)
                     Padding(
                       padding: CatchInsets.contentVerticalCompact,
                       child: Text(
@@ -120,7 +143,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                   CatchButton.command(
                     key: const ValueKey('host-saved-audience-edit'),
                     label: context.l10n.hostSavedAudienceEditRules,
-                    onPressed: onEdit,
+                    onPressed: () => onEdit(displayedAudience),
                   ),
                 ],
               ),
@@ -199,7 +222,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                     CatchButton.command(
                       key: const ValueKey('host-saved-audience-more-members'),
                       label: context.l10n.hostApplicationsLoadMore,
-                      onPressed: state.loadingMore
+                      onPressed: state.loadingMore || !memberState.isSettledData
                           ? null
                           : () => ref.read(provider.notifier).loadMore(),
                     ),
