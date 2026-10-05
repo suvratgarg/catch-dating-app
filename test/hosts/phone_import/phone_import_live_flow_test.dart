@@ -412,6 +412,9 @@ void main() {
         findsOneWidget,
       );
 
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
       final f = _Fixture();
       addTearDown(() => f.close(tester));
       await f.mount(tester);
@@ -450,6 +453,9 @@ void main() {
         find.byKey(const ValueKey('program-work-phone-import')),
         findsNothing,
       );
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
 
       final f = _Fixture();
       addTearDown(() => f.close(tester));
