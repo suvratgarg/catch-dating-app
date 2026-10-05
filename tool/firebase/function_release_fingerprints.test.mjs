@@ -15,6 +15,28 @@ const delta = (before, after) => compareFunctionFingerprints(snapshot(before), s
 test("shared file changes only the reachable exported behavior", () => {
   assert.deepEqual(delta(map(), map("function alpha() { return helper() + 1; }")).targets, ["functions:alpha"]);
 });
+test("noncanonical interop markers cannot hide a changed default import", () => {
+  const modules = new Map([
+    ["index.js", 'const api = require("./api"); exports.alpha = api.alpha; exports.beta = api.beta;'],
+    ["api.js", 'var __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { "default": mod };\n}; const m_1 = __importDefault(require("./m")); exports.alpha = () => m_1.default(); exports.beta = () => 2;'],
+    ["m.js", 'Object.defineProperty(exports,"__esModule",{value:true}); exports.default = () => 1;'],
+  ]);
+  const before = new Map(modules);
+  snapshot(modules);
+  modules.set("m.js", 'Object.defineProperty(exports,"__esModule",{value:false}); exports.default = () => 1;');
+  assert.throws(() => snapshot(modules), /Unsupported __esModule descriptor/);
+  modules.set("m.js", 'exports.default = () => 1;');
+  assert.ok(delta(before, modules).targets.includes("functions:alpha"));
+  modules.set("m.js", 'Object.defineProperty(exports,"__esModule",{value:true}, sideEffect()); exports.default = () => 1;');
+  assert.throws(() => snapshot(modules), /Unsupported __esModule descriptor/);
+});
+test("re-export descriptors cannot hide eager expression changes", () => {
+  const modules = map();
+  modules.set("index.js", 'const api=require("./api"); Object.defineProperty(exports,"alpha",{get:function(){return api.alpha},enumerable:(global.value=1)}); Object.defineProperty(exports,"beta",{get:function(){return api.beta}});');
+  assert.throws(() => snapshot(modules), /Unsupported export descriptor/);
+  modules.set("index.js", 'const api=require("./api"); Object.defineProperty(exports,"alpha",{get:function(){return api.alpha},get:function(){return api.beta}}); Object.defineProperty(exports,"beta",{get:function(){return api.beta}});');
+  assert.throws(() => snapshot(modules), /Unsupported export descriptor/);
+});
 test("transitive private helper changes select its consumer only", () => {
   assert.deepEqual(delta(map(), map(undefined, "function helper() { return 3; }")).targets, ["functions:alpha"]);
 });

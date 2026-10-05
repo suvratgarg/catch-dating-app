@@ -250,10 +250,30 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
                    expression.expression.expression.getText(source) === "Object" && expression.expression.name.text === "defineProperty" &&
                    expression.arguments[0]?.getText(source) === "exports" && ts.isStringLiteral(expression.arguments[1])) {
           const exported = expression.arguments[1].text;
-          if (exported === "__esModule") continue;
+          if (exported === "__esModule") {
+            const descriptor = expression.arguments[2];
+            assert.ok(expression.arguments.length === 3 && ts.isObjectLiteralExpression(descriptor) && descriptor.properties.length === 1 &&
+              ts.isPropertyAssignment(descriptor.properties[0]) &&
+              descriptor.properties[0].name?.getText(source) === "value" &&
+              descriptor.properties[0].initializer.kind === ts.SyntaxKind.TrueKeyword,
+            `Unsupported __esModule descriptor: ${name}`);
+            value.bootstrap.push(statement);
+            continue;
+          }
           const object = expression.arguments[2];
-          const getter = ts.isObjectLiteralExpression(object) && object.properties.find((item) => item.name?.getText(source) === "get");
-          const body = getter && (ts.isPropertyAssignment(getter) ? getter.initializer.body : getter.body);
+          assert.ok(expression.arguments.length === 3 && ts.isObjectLiteralExpression(object) &&
+            object.properties.length >= 1 && object.properties.length <= 2 &&
+            new Set(object.properties.map((item) => item.name?.getText(source))).size === object.properties.length &&
+            object.properties.every((item) => ts.isPropertyAssignment(item) &&
+              (item.name?.getText(source) === "get" ||
+                item.name?.getText(source) === "enumerable" && item.initializer.kind === ts.SyntaxKind.TrueKeyword)),
+          `Unsupported export descriptor: ${name}`);
+          const getter = object.properties.find((item) => item.name?.getText(source) === "get");
+          assert.ok(getter && ts.isPropertyAssignment(getter) && ts.isFunctionExpression(getter.initializer) &&
+            !getter.initializer.asteriskToken && !getter.initializer.modifiers?.length &&
+            getter.initializer.parameters.length === 0,
+          `Unsupported export getter: ${name}`);
+          const body = getter.initializer.body;
           const returned = body?.statements?.length === 1 && ts.isReturnStatement(body.statements[0]) && body.statements[0].expression;
           assert.ok(returned && ts.isPropertyAccessExpression(returned) && ts.isIdentifier(returned.expression), `Unsupported export getter: ${name}`);
           const imported = value.imports.get(returned.expression.text);
