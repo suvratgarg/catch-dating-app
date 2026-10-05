@@ -1206,7 +1206,12 @@ an admin bypass without that approval is insufficient.
 It verifies the successful CI producer, immutable package and its historical
 base SHA, the accepted PROD checkpoint, unchanged live serving identities, and
 the additive composite-index and unchanged field-override/TTL contract before
-mutation. The execution selector contains
+mutation. Read-only PROD metadata on 2026-10-05 showed all 307 accepted
+composite indexes and 23 source field overrides present, plus 28 earlier
+composite indexes and one TTL override outside the source file. The verifier
+pins those retained configurations by names-only hashes and requires them
+unchanged before and after; the index deploy runs without `--force`, so they
+are not deleted. The execution selector contains
 only `getOrganizerFormResponseDetail`, `listOrganizerAttentionItems`,
 `listOrganizerFormResponses`, and `submitOrganizerFormResponse`, after the five
 new composite indexes. The final receipt records four candidate deployments

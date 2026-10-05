@@ -18,6 +18,11 @@ export const OPERATOR_PROD_RELEASE = Object.freeze({
   baselineCheckpointArtifactId: 11311489270,
   baselineCheckpointDigest: "sha256:fd120a9874da4c2fb3e0016e7bbdfbef3a8c818bc873f69f403c3575eaa853ff",
   indexAdditionsSha256: "3f217fe07f72d743129deaa5e4b5c85be9df7df538a87f06044331c3b723ccb7",
+  // Observed before the 2026-10-05 operator run: existing PROD metadata
+  // omitted by the source index file. It must be retained exactly, not deleted.
+  retainedLiveIndexCount: 28,
+  retainedLiveIndexesSha256: "e8eb1b9dbe9517503b90fb32baa3bac2662992339297c5e18f00c88ae78dfc26",
+  retainedLiveFieldSha256: "4ac33eadbfbc441af6427ff297dfda76ed49c70cceed3dd5e4ba1bee8a6bf0f5",
   targets: Object.freeze([
     "functions:getOrganizerFormResponseDetail",
     "functions:listOrganizerAttentionItems",
@@ -86,17 +91,21 @@ export function prepareOperatorProdRelease({packagePlan, baselineIndexes, candid
   });
 }
 
-function liveIndexState(candidateIndexes, additions, liveIndexes) {
+function liveIndexState(candidateIndexes, additions, liveIndexes, retention = OPERATOR_PROD_RELEASE) {
   assert.ok(Array.isArray(liveIndexes));
   const expected = new Set(candidateIndexes.indexes.map((index) => indexSignature(index, {desired: true})));
   const added = new Set(additions.map((index) => indexSignature(index, {desired: true})));
   const live = new Map();
+  const retained = [];
   for (const index of liveIndexes) {
     const signature = indexSignature(index);
-    assert.ok(expected.has(signature), "Unexpected live composite index would be removed.");
+    if (!expected.has(signature)) retained.push(signature);
     assert.ok(!live.has(signature), "Duplicate live composite index.");
     live.set(signature, String(index.state ?? "UNKNOWN").toUpperCase());
+    assert.equal(live.get(signature), "READY", "A retained live index is not ready.");
   }
+  assert.equal(retained.length, retention.retainedLiveIndexCount);
+  assert.equal(hash(retained.sort()), retention.retainedLiveIndexesSha256);
   for (const signature of expected) {
     if (!live.has(signature)) assert.ok(added.has(signature), "Existing index is missing.");
     else assert.equal(live.get(signature), "READY", "Existing index is not ready.");
@@ -105,7 +114,7 @@ function liveIndexState(candidateIndexes, additions, liveIndexes) {
     missingAdditions: [...added].filter((signature) => !live.has(signature)).length};
 }
 
-function fieldOverrideState(candidateIndexes, liveFields) {
+function fieldOverrideState(candidateIndexes, liveFields, retention = OPERATOR_PROD_RELEASE) {
   assert.ok(Array.isArray(candidateIndexes.fieldOverrides));
   assert.ok(Array.isArray(liveFields));
   const prefix = "projects/catch-dating-app-64e51/databases/(default)/collectionGroups/";
@@ -147,21 +156,28 @@ function fieldOverrideState(candidateIndexes, liveFields) {
   const expected = new Map(candidateIndexes.fieldOverrides.map((field) =>
     [`${field.collectionGroup}/${field.fieldPath}`, {indexes: canonicalIndexes(field.indexes), ttl: field.ttl === true}]));
   assert.equal(expected.size, candidateIndexes.fieldOverrides.length);
-  assert.deepEqual([...actual.entries()].sort(), [...expected.entries()].sort());
+  const retained = [...actual].filter(([name]) => !expected.has(name));
+  assert.equal(retained.length, 1);
+  assert.equal(retained[0][0], "crossPathsSuggestionExposures/expiresAt");
+  assert.equal(hash({name: retained[0][0], ...retained[0][1]}),
+    retention.retainedLiveFieldSha256);
+  assert.deepEqual([...actual].filter(([name]) => expected.has(name)).sort(),
+    [...expected.entries()].sort());
 }
 
-export function verifyOperatorProdBefore({baselineDeployment, candidateIndexes, additions, liveFunctions, liveIndexes, liveFields}) {
+export function verifyOperatorProdBefore({baselineDeployment, candidateIndexes, additions, liveFunctions, liveIndexes,
+  liveFields, retention = OPERATOR_PROD_RELEASE}) {
   return safe(() => {
     const prior = baselineReceipt(baselineDeployment);
     const current = captureFunctionIdentities(liveFunctions, scope, prior.targets);
     assert.deepEqual(current, prior.functions);
-    fieldOverrideState(candidateIndexes, liveFields);
-    return liveIndexState(candidateIndexes, additions, liveIndexes);
+    fieldOverrideState(candidateIndexes, liveFields, retention);
+    return liveIndexState(candidateIndexes, additions, liveIndexes, retention);
   });
 }
 
 export function completeOperatorProdRelease({baselineDeployment, candidateDeployment, candidateIndexes,
-  additions, liveFunctions, liveIndexes, liveFields}) {
+  additions, liveFunctions, liveIndexes, liveFields, retention = OPERATOR_PROD_RELEASE}) {
   return safe(() => {
     const prior = baselineReceipt(baselineDeployment);
     assert.equal(candidateDeployment?.schema, "catch.firebase-functions-deployment/v1");
@@ -169,8 +185,8 @@ export function completeOperatorProdRelease({baselineDeployment, candidateDeploy
     assert.equal(candidateDeployment.provenance?.sourceSha, OPERATOR_PROD_RELEASE.candidateSha);
     assert.deepEqual(candidateDeployment.targets, OPERATOR_PROD_RELEASE.targets);
     assert.equal(candidateDeployment.functions?.length, OPERATOR_PROD_RELEASE.targets.length);
-    const state = liveIndexState(candidateIndexes, additions, liveIndexes);
-    fieldOverrideState(candidateIndexes, liveFields);
+    const state = liveIndexState(candidateIndexes, additions, liveIndexes, retention);
+    fieldOverrideState(candidateIndexes, liveFields, retention);
     assert.equal(state.missingAdditions, 0);
     const current = captureFunctionIdentities(liveFunctions, scope, prior.targets);
     const selected = new Map(OPERATOR_PROD_RELEASE.targets.map((target, index) => [target, candidateDeployment.functions[index]]));
@@ -205,10 +221,10 @@ export async function readOperatorProdSnapshot(targets, {runCommand = spawnSync,
   assert.equal(tokenResult.status, 0, "Cannot obtain protected workflow metadata access.");
   const token = String(tokenResult.stdout ?? "").trim();
   assert.ok(token && !/[\r\n]/.test(token), "Invalid protected workflow metadata token.");
-  const get = async (url) => {
+  const get = async (url, category) => {
     const response = await request(url, {headers: {Authorization: `Bearer ${token}`},
       signal: AbortSignal.timeout(30_000)});
-    assert.ok(response.ok, `Protected metadata read failed with HTTP ${response.status}.`);
+    assert.ok(response.ok, `Protected ${category} metadata read failed with HTTP ${response.status}.`);
     return response.json();
   };
   const fieldMask = "nextPageToken,functions(name,state,environment,updateTime,buildConfig(build,sourceProvenance(resolvedStorageSource(bucket,object,generation))),serviceConfig(service,revision))";
@@ -220,7 +236,8 @@ export async function readOperatorProdSnapshot(targets, {runCommand = spawnSync,
     seenPages.add(page);
     const query = new URLSearchParams({pageSize: "100", fields: fieldMask});
     if (page) query.set("pageToken", page);
-    const result = await get(`https://cloudfunctions.googleapis.com/v2/projects/${projectId}/locations/asia-south1/functions?${query}`);
+    const result = await get(`https://cloudfunctions.googleapis.com/v2/projects/${projectId}/locations/asia-south1/functions?${query}`,
+      "cloud-functions");
     assert.ok(Array.isArray(result.functions ?? []), "Invalid Function metadata inventory.");
     functions.push(...(result.functions ?? []));
     page = result.nextPageToken ?? "";
@@ -237,7 +254,8 @@ export async function readOperatorProdSnapshot(targets, {runCommand = spawnSync,
     while (cursor < selected.length) {
       const fn = selected[cursor++];
       assert.match(fn.serviceConfig?.service ?? "", /^projects\/catch-dating-app-64e51\/locations\/asia-south1\/services\/[a-z][a-z0-9-]*$/);
-      fn.runService = await get(`https://run.googleapis.com/v2/${fn.serviceConfig.service}?fields=${encodeURIComponent(serviceFields)}`);
+      fn.runService = await get(`https://run.googleapis.com/v2/${fn.serviceConfig.service}?fields=${encodeURIComponent(serviceFields)}`,
+        "cloud-run");
     }
   }));
   const fields = [];
@@ -248,10 +266,13 @@ export async function readOperatorProdSnapshot(targets, {runCommand = spawnSync,
     fieldPages.add(page);
     const query = new URLSearchParams({
       filter: "indexConfig.usesAncestorConfig=false OR ttlConfig:*", pageSize: "100",
-      fields: "nextPageToken,fields(name,indexConfig(indexes(queryScope,state,fields(order,arrayConfig)),usesAncestorConfig,reverting),ttlConfig(state,expirationOffset))",
     });
     if (page) query.set("pageToken", page);
-    const result = await get(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/collectionGroups/-/fields?${query}`);
+    // This Firestore endpoint returns configuration metadata only. Its
+    // unmasked form is used by the installed Firebase CLI and was verified
+    // read-only against PROD; no document data or secret payloads are returned.
+    const result = await get(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/collectionGroups/-/fields?${query}`,
+      "firestore-fields");
     assert.ok(Array.isArray(result.fields ?? []), "Invalid Firestore field metadata inventory.");
     fields.push(...(result.fields ?? []));
     page = result.nextPageToken ?? "";
