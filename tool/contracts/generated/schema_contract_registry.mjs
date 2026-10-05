@@ -187686,7 +187686,8 @@ export const importProgramManifestCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
   "x-callable-aliases": [
-    "importProgramManifest"
+    "importProgramManifest",
+    "importWeddingPhoneContacts"
   ],
   "required": [
     "programId",
@@ -192700,7 +192701,8 @@ export const programManifestImportCallableResponseSchema = {
   "type": "object",
   "additionalProperties": false,
   "x-callable-aliases": [
-    "importProgramManifest"
+    "importProgramManifest",
+    "importWeddingPhoneContacts"
   ],
   "required": [
     "mode",

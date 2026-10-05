@@ -312,15 +312,18 @@ void main() {
     late PhoneImportAdapter adapter;
     String? account;
     String? program;
+    bool phoneImportEnabled = true;
     setUp(() {
       SharedPreferences.setMockInitialValues({});
       account = 'client';
       program = 'wedding';
+      phoneImportEnabled = true;
       functions = _Functions();
       store = SharedPreferencesProgramReadSnapshotStore();
       functions.respond = (name, payload) async =>
           name == 'getProgramWorkAccess' ? _access() : _result(payload);
       adapter = PhoneImportAdapter(
+        isEnabled: () => phoneImportEnabled,
         workRepository: ProgramWorkRepository(functions, store, () => account),
         setupRepository: ProgramSetupRepository(functions),
         currentAccountId: () => account,
@@ -330,6 +333,18 @@ void main() {
     });
 
     test(
+      'a closed release flag rejects a frozen command before transport',
+      () async {
+        phoneImportEnabled = false;
+        await expectLater(
+          adapter.preview(_batch()),
+          throwsA(isA<PermissionException>()),
+        );
+        expect(functions.calls, isEmpty);
+      },
+    );
+
+    test(
       'preview and commit each use fresh access and the exact canonical payload',
       () async {
         final batch = _batch();
@@ -337,9 +352,9 @@ void main() {
         await adapter.commit(batch);
         expect(functions.calls.map((c) => c.name).toList(), [
           'getProgramWorkAccess',
-          'importProgramManifest',
+          'importWeddingPhoneContacts',
           'getProgramWorkAccess',
-          'importProgramManifest',
+          'importWeddingPhoneContacts',
         ]);
         for (final mode in ['preview', 'commit']) {
           final call = functions.calls.firstWhere(

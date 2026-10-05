@@ -1088,6 +1088,37 @@ function validateRemoteConfigOwnership({root, manifest, findings}) {
   if (!providerSource.includes("AppConfig.appRole")) {
     findings.push("force-update provider does not select keys by app role");
   }
+  findings.push(...validateHostReleaseVisibility({
+    accessSource: fs.readFileSync(path.join(root,
+      "lib/hosts/audience/phone_import/domain/phone_import_access.dart"), "utf8"),
+    routeSource: fs.readFileSync(path.join(root,
+      "lib/hosts/audience/phone_import/presentation/phone_import_route_controller.dart"), "utf8"),
+    workSource: fs.readFileSync(path.join(root,
+      "lib/programs/presentation/program_work_screen.dart"), "utf8"),
+    parameters,
+  }));
+}
+
+/** Prevent the retired binary production hold in the phone import path.
+ * App environment checks elsewhere retain their identity/security meaning. */
+export function validateHostReleaseVisibility({accessSource, routeSource,
+  workSource, parameters}) {
+  const findings = [];
+  for (const [label, source] of [
+    ["phone access", accessSource], ["phone route", routeSource],
+    ["program work", workSource],
+  ]) {
+    if (/AppConfig\.environment|kReleaseMode/u.test(source)) {
+      findings.push(`${label}: compiled environment release hold is forbidden`);
+    }
+  }
+  for (const key of ["host_wedding_phone_import_enabled",
+    "CATCH_WEDDING_PHONE_IMPORT_READY"]) {
+    if (parameters[key]?.defaultValue?.value !== "false") {
+      findings.push(`Host release template must default ${key} to false`);
+    }
+  }
+  return findings;
 }
 
 function checkRepoFile(root, relativePath, label, findings) {

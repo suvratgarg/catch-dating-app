@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_access.dart';
+import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
@@ -128,7 +129,7 @@ class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
   }
 }
 
-class ProgramWorkPageBody extends StatelessWidget {
+class ProgramWorkPageBody extends ConsumerWidget {
   const ProgramWorkPageBody({
     super.key,
     required this.access,
@@ -141,7 +142,10 @@ class ProgramWorkPageBody extends StatelessWidget {
   final DateTime? snapshotAt;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final phoneImportEnabled = ref.watch(
+      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
+    );
     final dispatcherScope = access.stationScope(
       ProgramStaffDuty.transportDispatcher,
       now: now,
@@ -233,7 +237,9 @@ class ProgramWorkPageBody extends StatelessWidget {
               ),
             ),
           ),
-          if (snapshotAt == null && canImportWeddingPhoneContacts(access, now))
+          if (snapshotAt == null &&
+              phoneImportEnabled &&
+              canImportWeddingPhoneContacts(access, now))
             CatchSectionListItem(
               child: CatchSection.contained(
                 title: context.l10n.phoneImportEntryTitle,

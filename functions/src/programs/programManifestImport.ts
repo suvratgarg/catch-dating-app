@@ -10,6 +10,8 @@ import {dutyAssignments, programProjectionExpiresAt, requireProgramAccess,
 import type {ProgramAccess} from "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
 import {hashRequest} from "../shared/programOperationHash";
+import {readWeddingPhoneImportReady} from
+  "../shared/privateEventReleaseConfig";
 import type {ImportProgramManifestCallablePayload} from
   "../shared/generated/importProgramManifestCallablePayload";
 import type {ProgramManifestImportCallableResponse} from
@@ -136,7 +138,8 @@ async function loadManifest(
 
 export async function importProgramManifestHandler(
   request: CallableRequest<unknown>,
-  deps: ImportDeps = defaultDeps
+  deps: ImportDeps = defaultDeps,
+  weddingOnly = false
 ): Promise<ProgramManifestImportCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<ImportProgramManifestCallablePayload>(
@@ -191,6 +194,9 @@ export async function importProgramManifestHandler(
       db, programId: data.programId, actorUid, now: deps.now(),
     });
     requireProgramMutable(access.program);
+    if (weddingOnly && access.program.kind !== "wedding") {
+      throw new HttpsError("permission-denied", "A wedding is required.");
+    }
     requireManifestImportAccess(access);
     let state = await loadManifest(db, data.programId,
       access.program.organizerId);
@@ -224,6 +230,9 @@ export async function importProgramManifestHandler(
         now: deps.now(), transaction: tx,
       });
       requireProgramMutable(access.program);
+      if (weddingOnly && access.program.kind !== "wedding") {
+        throw new HttpsError("permission-denied", "A wedding is required.");
+      }
       requireManifestImportAccess(access);
       const receipt = (await tx.get(receiptRef)).data() as
         TransportOperationReceiptDocument | undefined;
@@ -286,4 +295,24 @@ export async function importProgramManifestHandler(
 export const importProgramManifest = onCall(
   appCheckCallableOptionsWithLimits(importCallableLimits),
   async (request) => importProgramManifestHandler(request),
+);
+
+/** Phone-import release control is scoped to this endpoint. The general
+ * manifest-import callable retains its existing authorized workflows. */
+export async function importWeddingPhoneContactsHandler(
+  request: CallableRequest<unknown>,
+  deps: ImportDeps = defaultDeps,
+  readReady: () => Promise<boolean> = readWeddingPhoneImportReady
+): Promise<ProgramManifestImportCallableResponse> {
+  requireAuth(request);
+  if (!await readReady()) {
+    throw new HttpsError("failed-precondition",
+      "Wedding phone import is not available.");
+  }
+  return importProgramManifestHandler(request, deps, true);
+}
+
+export const importWeddingPhoneContacts = onCall(
+  appCheckCallableOptionsWithLimits(importCallableLimits),
+  async (request) => importWeddingPhoneContactsHandler(request),
 );

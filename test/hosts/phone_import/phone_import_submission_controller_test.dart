@@ -153,6 +153,7 @@ void main() {
     return PhoneImportSubmissionController(
       review: review,
       adapter: PhoneImportAdapter(
+        isEnabled: () => true,
         workRepository: ProgramWorkRepository(
           functions,
           SharedPreferencesProgramReadSnapshotStore(),

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {privateEventReleaseKeys, readPrivateEventReleaseReadiness} from
+import {privateEventReleaseKeys, readPrivateEventReleaseReadiness,
+  readWeddingPhoneImportReady, weddingPhoneImportReadyKey} from
   "./privateEventReleaseConfig";
 
 const parameter = (value: unknown) => ({defaultValue: {value}});
@@ -46,3 +47,16 @@ test("missing, failed and timed-out Admin reads are closed without caching",
     assert.deepEqual(await readPrivateEventReleaseReadiness(async () => ({})),
       {privacy: false, seatWriters: false, offers: false});
   });
+
+test("wedding phone import needs an exact fresh server default", async () => {
+  assert.equal(await readWeddingPhoneImportReady(async () => ({parameters: {
+    [weddingPhoneImportReadyKey]: parameter("true"),
+  }})), true);
+  assert.equal(await readWeddingPhoneImportReady(async () => ({parameters: {
+    [weddingPhoneImportReadyKey]: parameter(true),
+  }})), false);
+  assert.equal(await readWeddingPhoneImportReady(async () => ({})), false);
+  assert.equal(await readWeddingPhoneImportReady(async () => {
+    throw new Error("unavailable");
+  }), false);
+});
