@@ -260,6 +260,11 @@ jobs:
             --source-sha "$SOURCE_SHA" \
             --ci-run-id "$SOURCE_CI_RUN_ID" \
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
+          if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            printf '%s  %s\n' \
+              8d96961ceca63f4959b25097168ebddf01cb5280568f1b09829421c0ef089af1 \
+              build/delivery/source/firebase-backend.tar.gz | sha256sum --check --status
+          fi
           mkdir -p build/delivery/package
           tar -tzf build/delivery/source/firebase-backend.tar.gz | \
             awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'

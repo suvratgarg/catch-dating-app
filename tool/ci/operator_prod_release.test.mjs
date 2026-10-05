@@ -31,16 +31,14 @@ const packagePlan = {sourceSha: release.candidateSha, baseSha: release.packageBa
   sourceCiRunId: release.sourceCiRunId, sourceCiRunAttempt: release.sourceCiRunAttempt,
   stages: ["firestore-indexes", "functions"], targets: ["firestore:indexes", targets.join(",")]};
 const liveIndexes = candidateIndexes.indexes.map((index) => ({...normalizeIndex(index, {desired: true}), state: "READY"}));
-const liveFields = {indexes: candidateIndexes.fieldOverrides.map((field) => ({
+const liveFields = candidateIndexes.fieldOverrides.map((field) => ({
   name: `projects/catch-dating-app-64e51/databases/(default)/collectionGroups/${field.collectionGroup}/fields/${field.fieldPath}`,
   indexConfig: {usesAncestorConfig: false, indexes: field.indexes.map((index) => ({
     state: "READY", queryScope: index.queryScope,
     fields: [{...(index.order ? {order: index.order} : {arrayConfig: index.arrayConfig})}],
   }))},
-})), ttls: candidateIndexes.fieldOverrides.filter((field) => field.ttl).map((field) => ({
-  name: `projects/catch-dating-app-64e51/databases/(default)/collectionGroups/${field.collectionGroup}/fields/${field.fieldPath}`,
-  ttlConfig: {state: "ACTIVE"},
-}))};
+  ...(field.ttl ? {ttlConfig: {state: "ACTIVE"}} : {}),
+}));
 const prepared = () => prepareOperatorProdRelease({packagePlan, baselineIndexes, candidateIndexes, baselineDeployment});
 const error = /^Error: Invalid bounded PROD operator release evidence\.$/;
 
@@ -74,11 +72,17 @@ test("preflight rejects changed retained Function, unrelated live index, and unr
     {...liveIndexes[0], collectionGroup: "unreviewed"}]}), error);
   assert.throws(() => verifyOperatorProdBefore({...input, liveIndexes: [{...liveIndexes[0], state: "CREATING"},
     ...liveIndexes.slice(1)]}), error);
-  assert.throws(() => verifyOperatorProdBefore({...input, liveFields: {...liveFields,
-    ttls: liveFields.ttls.slice(1)}}), error);
-  assert.throws(() => verifyOperatorProdBefore({...input, liveFields: {...liveFields,
-    indexes: [...liveFields.indexes, {...liveFields.indexes[0], name: liveFields.indexes[0].name.replace(
-      "/fields/", "/fields/unreviewed-")}]}}), error);
+  assert.throws(() => verifyOperatorProdBefore({...input, liveFields: liveFields.slice(1)}), error);
+  assert.throws(() => verifyOperatorProdBefore({...input, liveFields: [...liveFields,
+    {...liveFields[0], name: liveFields[0].name.replace("/fields/", "/fields/unreviewed-")}]}), error);
+  assert.throws(() => verifyOperatorProdBefore({...input, liveFields: liveFields.map((field, index) =>
+    index === 3 ? {...field, ttlConfig: {state: "ACTIVE", expirationOffset: "86400s"}} : field)}), error);
+  assert.equal(verifyOperatorProdBefore({...input, liveFields: [...liveFields.map((field) => ({
+    ...field, indexConfig: {...field.indexConfig,
+      indexes: field.indexConfig.indexes.length ? [...field.indexConfig.indexes].reverse() : undefined,
+      usesAncestorConfig: undefined}})),
+  {name: "projects/catch-dating-app-64e51/databases/(default)/collectionGroups/__default__/fields/*",
+    indexConfig: {indexes: []}}]}).missingAdditions, 0);
 });
 
 test("mixed-source receipt preserves 574 prior identities and only stamps four new deployments", () => {
@@ -106,16 +110,17 @@ test("protected snapshot asks Google APIs only for deployment identity fields", 
     calls.push(url);
     assert.equal(options.headers.Authorization, "Bearer fake-workflow-token");
     const body = url.startsWith("https://cloudfunctions.googleapis.com/") ?
-      {functions: [{...fn, runService: undefined}]} : fn.runService;
+      {functions: [{...fn, runService: undefined}]} :
+      url.startsWith("https://firestore.googleapis.com/") ? {fields: []} : fn.runService;
     return {ok: true, json: async () => body};
   };
   const snapshot = await readOperatorProdSnapshot([release.targets[0]], {
     runCommand: () => ({status: 0, stdout: "fake-workflow-token\n"}),
-    request, listIndexes: () => [], listFields: () => ({indexes: [], ttls: []}),
+    request, listIndexes: () => [],
   });
   assert.equal(snapshot.functions.length, 1);
-  assert.deepEqual(snapshot.fields, {indexes: [], ttls: []});
-  assert.equal(calls.length, 2);
+  assert.deepEqual(snapshot.fields, []);
+  assert.equal(calls.length, 3);
   assert.ok(calls.every((url) => url.includes("fields=")));
   assert.ok(calls.every((url) => !url.includes("environmentVariables") && !url.includes("secret")));
 });

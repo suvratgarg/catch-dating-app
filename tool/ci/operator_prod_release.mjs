@@ -107,42 +107,45 @@ function liveIndexState(candidateIndexes, additions, liveIndexes) {
 
 function fieldOverrideState(candidateIndexes, liveFields) {
   assert.ok(Array.isArray(candidateIndexes.fieldOverrides));
-  assert.ok(Array.isArray(liveFields?.indexes) && Array.isArray(liveFields?.ttls));
+  assert.ok(Array.isArray(liveFields));
   const prefix = "projects/catch-dating-app-64e51/databases/(default)/collectionGroups/";
+  const canonicalIndexes = (indexes) => indexes.map((index) => {
+    const entry = {queryScope: index.queryScope ?? "COLLECTION"};
+    if (index.order) entry.order = index.order;
+    if (index.arrayConfig) entry.arrayConfig = index.arrayConfig;
+    assert.ok((entry.order != null) !== (entry.arrayConfig != null));
+    return JSON.stringify(entry);
+  }).sort();
   const nameOf = (field) => {
     assert.ok(typeof field.name === "string" && field.name.startsWith(prefix));
     const match = /^([^/]+)\/fields\/([^/]+)$/.exec(field.name.slice(prefix.length));
-    assert.ok(match && match[1] !== "__default__");
+    assert.ok(match);
     return `${decodeURIComponent(match[1])}/${decodeURIComponent(match[2])}`;
   };
   const actual = new Map();
-  for (const field of liveFields.indexes) {
+  for (const field of liveFields) {
     const name = nameOf(field);
-    assert.ok(!actual.has(name) && field.indexConfig?.usesAncestorConfig === false &&
-      field.indexConfig.reverting !== true);
-    const indexes = field.indexConfig.indexes;
+    // Firebase CLI's listFieldOverrides excludes this database-wide default.
+    if (name === "__default__/*") continue;
+    assert.ok(!actual.has(name) && field.indexConfig?.reverting !== true);
+    const indexes = field.indexConfig?.indexes ?? [];
     assert.ok(Array.isArray(indexes));
     const normalized = indexes.map((index) => {
       assert.equal(index.state, "READY");
-      assert.equal(index.fields?.length, 1);
-      const entry = {queryScope: index.queryScope};
-      if (index.fields[0].order) entry.order = index.fields[0].order;
-      if (index.fields[0].arrayConfig) entry.arrayConfig = index.fields[0].arrayConfig;
-      assert.ok(entry.order || entry.arrayConfig);
-      return entry;
+      assert.ok(index.fields?.length >= 1 &&
+        index.fields.slice(1).every((field) => field.fieldPath === "__name__"));
+      return {queryScope: index.queryScope,
+        order: index.fields[0].order, arrayConfig: index.fields[0].arrayConfig};
     });
-    actual.set(name, {indexes: normalized});
-  }
-  for (const field of liveFields.ttls) {
-    const name = nameOf(field);
-    assert.equal(field.ttlConfig?.state, "ACTIVE");
-    const entry = actual.get(name) ?? {indexes: []};
-    assert.ok(entry.ttl !== true);
-    entry.ttl = true;
-    actual.set(name, entry);
+    if (field.ttlConfig) {
+      assert.equal(field.ttlConfig.state, "ACTIVE");
+      assert.ok(field.ttlConfig.expirationOffset == null ||
+        field.ttlConfig.expirationOffset === "0s");
+    }
+    actual.set(name, {indexes: canonicalIndexes(normalized), ttl: !!field.ttlConfig});
   }
   const expected = new Map(candidateIndexes.fieldOverrides.map((field) =>
-    [`${field.collectionGroup}/${field.fieldPath}`, {indexes: field.indexes, ...(field.ttl ? {ttl: true} : {})}]));
+    [`${field.collectionGroup}/${field.fieldPath}`, {indexes: canonicalIndexes(field.indexes), ttl: field.ttl === true}]));
   assert.equal(expected.size, candidateIndexes.fieldOverrides.length);
   assert.deepEqual([...actual.entries()].sort(), [...expected.entries()].sort());
 }
@@ -194,7 +197,7 @@ export function completeOperatorProdRelease({baselineDeployment, candidateDeploy
 // payloads out of this verifier's response bodies. The fresh token comes from
 // the protected GitHub OIDC job; it is never written or logged.
 export async function readOperatorProdSnapshot(targets, {runCommand = spawnSync, request = fetch,
-  listIndexes = gcloudIndexList, listFields = listOperatorProdFields} = {}) {
+  listIndexes = gcloudIndexList} = {}) {
   const projectId = "catch-dating-app-64e51";
   assert.deepEqual(targets, [...targets].sort());
   const tokenResult = runCommand("gcloud", ["auth", "print-access-token"],
@@ -237,20 +240,24 @@ export async function readOperatorProdSnapshot(targets, {runCommand = spawnSync,
       fn.runService = await get(`https://run.googleapis.com/v2/${fn.serviceConfig.service}?fields=${encodeURIComponent(serviceFields)}`);
     }
   }));
-  return {functions: selected, indexes: listIndexes({projectId}), fields: listFields({projectId})};
-}
-
-function listOperatorProdFields({projectId}, runCommand = spawnSync) {
-  const list = (type) => {
-    const result = runCommand("gcloud", ["firestore", ...type, "list", `--project=${projectId}`,
-      "--database=(default)", "--format=json", "--quiet"],
-    {encoding: "utf8", timeout: 60_000, maxBuffer: 16 * 1024 * 1024});
-    assert.equal(result.status, 0, "Cannot list protected Firestore field metadata.");
-    const fields = JSON.parse(result.stdout);
-    assert.ok(Array.isArray(fields));
-    return fields;
-  };
-  return {indexes: list(["indexes", "fields"]), ttls: list(["fields", "ttls"])};
+  const fields = [];
+  const fieldPages = new Set();
+  page = "";
+  do {
+    assert.ok(!fieldPages.has(page) && fieldPages.size < 20, "Invalid field metadata pagination.");
+    fieldPages.add(page);
+    const query = new URLSearchParams({
+      filter: "indexConfig.usesAncestorConfig=false OR ttlConfig:*", pageSize: "100",
+      fields: "nextPageToken,fields(name,indexConfig(indexes(queryScope,state,fields(order,arrayConfig)),usesAncestorConfig,reverting),ttlConfig(state,expirationOffset))",
+    });
+    if (page) query.set("pageToken", page);
+    const result = await get(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/collectionGroups/-/fields?${query}`);
+    assert.ok(Array.isArray(result.fields ?? []), "Invalid Firestore field metadata inventory.");
+    fields.push(...(result.fields ?? []));
+    page = result.nextPageToken ?? "";
+    assert.equal(typeof page, "string");
+  } while (page);
+  return {functions: selected, indexes: listIndexes({projectId}), fields};
 }
 
 function read(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }

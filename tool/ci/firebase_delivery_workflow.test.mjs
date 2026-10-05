@@ -681,6 +681,7 @@ test("one-time PROD operator caller retains protected review and cannot borrow a
   assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /environment: \$\{\{ inputs\.approval_environment \|\| inputs\.environment \}\}/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release/);
+  assert.match(promotion, /8d96961ceca63f4959b25097168ebddf01cb5280568f1b09829421c0ef089af1[\s\S]*firebase-backend\.tar\.gz \| sha256sum --check --status/);
   assert.match(promotion, /test "\$APPROVAL_ENVIRONMENT" = prod[\s\S]*test "\$GITHUB_WORKFLOW_REF" = "\$GITHUB_REPOSITORY\/\.github\/workflows\/selective-backend-release\.yml@refs\/heads\/main"/);
   assert.match(promotion, /Prove the accepted PROD baseline is still serving/);
   assert.match(promotion, /Prove mixed-source PROD serving state without restamping retained Functions/);
