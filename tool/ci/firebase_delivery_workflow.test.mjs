@@ -660,12 +660,58 @@ test("promotion executes the reverified subset and handles empty Functions as a 
   const promotion = workflow("_firebase-promote.yml");
   assert.match(promotion, /npm ci --ignore-scripts --workspaces=false/);
   assert.equal((promotion.match(/--affected-functions true/g) ?? []).length, 3);
-  assert.equal((promotion.match(/cmp build\/delivery\/execution-plan.json build\/delivery\/reverified-plan.json/g) ?? []).length, 2);
+  assert.equal((promotion.match(/cmp build\/delivery\/package-plan.json build\/delivery\/reverified-plan.json/g) ?? []).length, 2);
+  assert.match(promotion, /cmp build\/delivery\/execution-plan.json build\/delivery\/reverified-plan.json/);
+  assert.match(promotion, /cmp build\/delivery\/execution-plan.json build\/delivery\/operator-reverified-execution.json/);
   assert.match(promotion, /' build\/delivery\/execution-plan.json\)"/);
   assert.doesNotMatch(promotion, /' "\$PACKAGE_DIR\/delivery-plan.json"\)"/);
   assert.match(promotion, /if \[\[ "\$stage" == "functions" && -z "\$target" \]\]; then[\s\S]*verified no-op stage[\s\S]*else[\s\S]*\.\/tool\/deploy_firebase_targets.sh/);
   assert.match(promotion, /if: \$\{\{ steps.verify.outputs.has_targets == 'true' \}\}/);
   assert.match(promotion, /\.targets \| any\(startswith\("functions:"\)\)/);
+});
+
+test("one-time PROD operator caller retains protected review and cannot borrow a DEV receipt", () => {
+  const caller = workflow("selective-backend-release.yml");
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(caller, /workflow_dispatch:/);
+  assert.match(caller, /group: backend-delivery/);
+  assert.match(caller, /source_sha: 656f093d1910afdbe4d93d31565d1782c39aab63/);
+  assert.match(caller, /base_sha: ea518ad0576829dbc505293d4edbd9f6710a2b8f/);
+  assert.match(caller, /operator_release: true/);
+  assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
+  assert.match(promotion, /environment: \$\{\{ inputs\.approval_environment \|\| inputs\.environment \}\}/);
+  assert.match(promotion, /Require recorded human PROD environment approval for operator release/);
+  assert.match(promotion, /8d96961ceca63f4959b25097168ebddf01cb5280568f1b09829421c0ef089af1[\s\S]*firebase-backend\.tar\.gz \| sha256sum --check --status/);
+  assert.match(promotion, /test "\$APPROVAL_ENVIRONMENT" = prod[\s\S]*test "\$GITHUB_WORKFLOW_REF" = "\$GITHUB_REPOSITORY\/\.github\/workflows\/selective-backend-release\.yml@refs\/heads\/main"/);
+  assert.match(promotion, /Prove the accepted PROD baseline is still serving/);
+  assert.match(promotion, /Prove mixed-source PROD serving state without restamping retained Functions/);
+  assert.match(promotion, /operator-prod-selective-\$\{\{ inputs\.source_sha \}\}/);
+  assert.doesNotMatch(caller, /firebase deploy|deploy_firebase_targets\.sh/);
+});
+
+test("one-time PROD approval rejects admin bypass and non-reviewer approvals", () => {
+  const step = extractSteps(workflow("_firebase-promote.yml")).find((entry) =>
+    entry.name === "Require recorded human PROD environment approval for operator release");
+  assert.ok(step?.run);
+  const filter = /--arg actor "\$GITHUB_ACTOR" '([\s\S]*?)' > \/dev\/null/.exec(step.run)?.[1];
+  assert.ok(filter);
+  const environment = {id: 123, protection_rules: [{type: "required_reviewers",
+    reviewers: [{type: "User", reviewer: {id: 42}}]}]};
+  const approval = {state: "approved", user: {id: 42, login: "human-reviewer"},
+    environments: [{id: 123, name: "prod"}]};
+  const accepted = (history, actor = "operator", settings = environment) => {
+    const result = spawnSync("jq", ["-en", "--argjson", "environment", JSON.stringify(settings),
+      "--argjson", "history", JSON.stringify(history), "--arg", "actor", actor, filter],
+    {encoding: "utf8"});
+    assert.equal(result.status === 0 || result.status === 1, true, result.stderr);
+    return result.status === 0;
+  };
+  assert.equal(accepted([approval]), true);
+  assert.equal(accepted([]), false);
+  assert.equal(accepted([approval], "human-reviewer"), false);
+  assert.equal(accepted([{...approval, user: {id: 99, login: "admin"}}]), false);
+  assert.equal(accepted([approval, {...approval, state: "rejected"}]), false);
+  assert.equal(accepted([approval], "operator", {...environment, protection_rules: []}), false);
 });
 
 test("live approval metadata does not change the package comparison and changed targets still fail", (t) => {

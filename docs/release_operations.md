@@ -1195,7 +1195,28 @@ ordered from dev through policy-selected production. Store, Hosting, and app
 releases retain their independent owners.
 
 Manual `Delivery` dispatch is bounded recovery, not an arbitrary deploy path.
-It selects `environment=dev|prod` and accepts only the id and full SHA of that
+
+The one-time `One-Time Selective Backend PROD Release` workflow is a separate
+operator path for the audited CAT52 source `656f093d1910afdbe4d93d31565d1782c39aab63`.
+It requires a main-branch dispatch with that exact SHA, an operator reason, and
+the explicit four-Function/five-index confirmation. Its promotion job uses the
+reviewer-protected `prod` environment and existing GitHub OIDC deploy identity.
+The protected job requires a recorded approval by a configured human reviewer;
+an admin bypass or approval by the dispatching actor is insufficient.
+It verifies the successful CI producer, immutable package and its historical
+base SHA, the accepted PROD checkpoint, unchanged live serving identities, and
+the additive composite-index and unchanged field-override/TTL contract before
+mutation. The execution selector contains
+only `getOrganizerFormResponseDetail`, `listOrganizerAttentionItems`,
+`listOrganizerFormResponses`, and `submitOrganizerFormResponse`, after the five
+new composite indexes. The final receipt records four candidate deployments
+and 574 retained baseline deployments. It does not publish a full-source cursor,
+claim that all Functions moved, or synthesize a DEV completion receipt. If the
+live baseline or index inventory has drifted, stop and review that state; do
+not broaden the selector. This workflow's OIDC identity is independent of
+local Firebase CLI login state.
+
+The manual `Delivery` recovery dispatch selects `environment=dev|prod` and accepts only the id and full SHA of that
 environment's oldest pending successful same-repository `main` CI attempt plus
 a terminal non-success Delivery run id and attempt. Production recovery also
 requires that exact attempt's completed dev receipt. If dev has not completed,
