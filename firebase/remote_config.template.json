@@ -125,6 +125,18 @@
         "value": ""
       },
       "description": "Host App Store URL used once the listing is public."
+    },
+    "host_wedding_phone_import_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Host client visibility for reviewed wedding phone import; server release authority remains separate."
+    },
+    "CATCH_WEDDING_PHONE_IMPORT_READY": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Server release authority for the dedicated wedding phone import callable."
     }
   }
 }

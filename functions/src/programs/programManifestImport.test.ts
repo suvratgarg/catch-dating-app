@@ -24,7 +24,8 @@ import {validateWorkspaceMembershipAssertionDocument} from
   "../shared/generated/validators/workspaceMembershipAssertionDocument";
 import {validateWorkspaceMembershipDecisionDocument} from
   "../shared/generated/validators/workspaceMembershipDecisionDocument";
-import {importProgramManifestHandler} from "./programManifestImport";
+import {importProgramManifestHandler, importWeddingPhoneContactsHandler} from
+  "./programManifestImport";
 import {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -43,6 +44,56 @@ const validators: Record<string, ValidateFunction> = {
   programGuestGroups: validateProgramGuestGroupDocument,
   transportOperationReceipts: validateTransportOperationReceiptDocument,
 };
+
+test("phone endpoint fails closed while general manifest import remains usable",
+  async () => {
+    const fixture = seed();
+    fixture["organizerPrograms/program-1"].kind = "wedding";
+    const store = new MiniFirestore(fixture);
+    const payload = {programId: "program-1", mode: "preview" as const,
+      clientOperationId: "phone-op-0001", rows: [row]};
+    await assert.rejects(importWeddingPhoneContactsHandler(
+      request(payload), deps(store), async () => false),
+    (error: unknown) => error instanceof HttpsError &&
+      error.code === "failed-precondition");
+    assert.equal(store.docs.size, 4);
+    const general = await importProgramManifestHandler(
+      request(payload), deps(store));
+    assert.equal(general.guestsCreated, 1);
+    const phone = await importWeddingPhoneContactsHandler(
+      request(payload), deps(store), async () => true);
+    assert.equal(phone.guestsCreated, 1);
+  });
+
+test("phone readiness denies replay after a completed commit", async () => {
+  const fixture = seed();
+  fixture["organizerPrograms/program-1"].kind = "wedding";
+  const store = new MiniFirestore(fixture);
+  const payload = {programId: "program-1", mode: "commit" as const,
+    clientOperationId: "phone-op-0003", rows: [row]};
+  await importWeddingPhoneContactsHandler(request(payload), deps(store),
+    async () => true);
+  const committedCount = store.docs.size;
+  await assert.rejects(importWeddingPhoneContactsHandler(request(payload),
+    deps(store), async () => false),
+  (error: unknown) => error instanceof HttpsError &&
+    error.code === "failed-precondition");
+  assert.equal(store.docs.size, committedCount);
+});
+
+test("phone endpoint requires a wedding even when rollout is enabled",
+  async () => {
+    const fixture = seed();
+    fixture["organizerPrograms/program-1"].kind = "conference";
+    const store = new MiniFirestore(fixture);
+    await assert.rejects(importWeddingPhoneContactsHandler(request({
+      programId: "program-1", mode: "preview",
+      clientOperationId: "phone-op-0002", rows: [row],
+    }), deps(store), async () => true),
+    (error: unknown) => error instanceof HttpsError &&
+      error.code === "permission-denied");
+    assert.equal(store.docs.size, 4);
+  });
 
 test("preview plans writes without touching storage", async () => {
   const store = new MiniFirestore(seed());

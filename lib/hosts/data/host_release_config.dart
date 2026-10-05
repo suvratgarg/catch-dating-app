@@ -12,12 +12,14 @@ part 'host_release_config.g.dart';
 const hostPrivateEventSetupFlagKey = 'host_private_event_setup_enabled';
 const hostProgressiveEventDefaultsFlagKey =
     'host_progressive_event_defaults_enabled';
+const hostWeddingPhoneImportFlagKey = 'host_wedding_phone_import_enabled';
 
 /// Bundled fallback until both the backend and the Remote Config rollout are
 /// ready. Auth, privacy, and payment checks remain server owned.
 const hostReleaseConfigDefaults = <String, dynamic>{
   hostPrivateEventSetupFlagKey: false,
   hostProgressiveEventDefaultsFlagKey: false,
+  hostWeddingPhoneImportFlagKey: false,
 };
 
 /// Re-read both cached values after an explicit fetch, including when the
@@ -27,6 +29,7 @@ void invalidateHostReleaseFlags(
 ) {
   invalidate(hostReleaseFlagProvider(hostPrivateEventSetupFlagKey));
   invalidate(hostReleaseFlagProvider(hostProgressiveEventDefaultsFlagKey));
+  invalidate(hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey));
 }
 
 // keepalive: Release values are shared across Host routes and updated in real

@@ -312,21 +312,48 @@ void main() {
     late PhoneImportAdapter adapter;
     String? account;
     String? program;
+    bool phoneImportEnabled = true;
     setUp(() {
       SharedPreferences.setMockInitialValues({});
       account = 'client';
       program = 'wedding';
+      phoneImportEnabled = true;
       functions = _Functions();
       store = SharedPreferencesProgramReadSnapshotStore();
       functions.respond = (name, payload) async =>
           name == 'getProgramWorkAccess' ? _access() : _result(payload);
       adapter = PhoneImportAdapter(
+        isEnabled: () => phoneImportEnabled,
         workRepository: ProgramWorkRepository(functions, store, () => account),
         setupRepository: ProgramSetupRepository(functions),
         currentAccountId: () => account,
         currentProgramId: () => program,
         now: () => _now,
       );
+    });
+
+    test(
+      'a closed release flag rejects a frozen command before transport',
+      () async {
+        phoneImportEnabled = false;
+        await expectLater(
+          adapter.preview(_batch()),
+          throwsA(isA<PermissionException>()),
+        );
+        expect(functions.calls, isEmpty);
+      },
+    );
+
+    test('closing the flag after preview prevents commit transport', () async {
+      final batch = _batch();
+      await adapter.preview(batch);
+      final callsBeforeClosure = functions.calls.length;
+      phoneImportEnabled = false;
+      await expectLater(
+        adapter.commit(batch),
+        throwsA(isA<PermissionException>()),
+      );
+      expect(functions.calls.length, callsBeforeClosure);
     });
 
     test(
@@ -337,9 +364,9 @@ void main() {
         await adapter.commit(batch);
         expect(functions.calls.map((c) => c.name).toList(), [
           'getProgramWorkAccess',
-          'importProgramManifest',
+          'importWeddingPhoneContacts',
           'getProgramWorkAccess',
-          'importProgramManifest',
+          'importWeddingPhoneContacts',
         ]);
         for (final mode in ['preview', 'commit']) {
           final call = functions.calls.firstWhere(

@@ -16,6 +16,7 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
+import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
 import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -224,6 +225,7 @@ class _Assignments implements HostWorkRepository {
 }
 
 class _Fixture {
+  bool releaseEnabled = true;
   final functions = _Functions();
   final auth = _Auth();
   final assignments = _Assignments();
@@ -243,10 +245,18 @@ class _Fixture {
     functions.respond = (name, payload) async =>
         name == 'getProgramWorkAccess' ? _liveAccess() : _result(payload);
   }
-  Future<void> mount(WidgetTester tester, {String program = 'wedding'}) async {
+  Future<void> mount(
+    WidgetTester tester, {
+    String program = 'wedding',
+    bool phoneImportEnabled = true,
+  }) async {
+    releaseEnabled = phoneImportEnabled;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          hostReleaseFlagProvider(
+            hostWeddingPhoneImportFlagKey,
+          ).overrideWith((ref) => releaseEnabled),
           authRepositoryProvider.overrideWithValue(AuthRepository(auth)),
           programWorkRepositoryProvider.overrideWithValue(work),
           programSetupRepositoryProvider.overrideWithValue(setup),
@@ -372,7 +382,7 @@ void main() {
     },
   );
   testWidgets(
-    'production holds phone entry and direct route until backend rollout',
+    'production exposes phone entry and reviewed route to wedding managers',
     (tester) async {
       AppConfig.configureEntrypointEnvironment(AppEnvironment.prod);
       addTearDown(AppConfig.resetEntrypointEnvironmentOverrideForTesting);
@@ -380,9 +390,62 @@ void main() {
         _access(role: 'manager'),
       );
       await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: ProgramWorkPageBody(access: access, now: _now),
+        ProviderScope(
+          overrides: [
+            hostReleaseFlagProvider(
+              hostWeddingPhoneImportFlagKey,
+            ).overrideWith((ref) => true),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: ProgramWorkPageBody(
+              access: access,
+              now: _now,
+              phoneImportEnabled: true,
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      expect(
+        find.byKey(const ValueKey('program-work-phone-import')),
+        findsOneWidget,
+      );
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      final f = _Fixture();
+      addTearDown(() => f.close(tester));
+      await f.mount(tester);
+      expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
+      expect(find.byKey(const ValueKey('phone-import-pick')), findsOneWidget);
+      expect(f.assignments.calls, 1);
+      expect(f.functions.calls.map((call) => call.name), [
+        'getProgramWorkAccess',
+      ]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'closed remote flag hides the entry and rejects the direct route',
+    (tester) async {
+      AppConfig.configureEntrypointEnvironment(AppEnvironment.prod);
+      addTearDown(AppConfig.resetEntrypointEnvironmentOverrideForTesting);
+      final access = ProgramWorkAccess.fromCallableData(
+        _access(role: 'manager'),
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            hostReleaseFlagProvider(
+              hostWeddingPhoneImportFlagKey,
+            ).overrideWith((ref) => false),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: ProgramWorkPageBody(access: access, now: _now),
+          ),
         ),
       );
       await pumpFeatureUi(tester);
@@ -391,18 +454,39 @@ void main() {
         findsNothing,
       );
 
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
       final f = _Fixture();
       addTearDown(() => f.close(tester));
-      await f.mount(tester);
+      await f.mount(tester, phoneImportEnabled: false);
       expect(find.byType(PhoneImportReviewScreen), findsNothing);
-      expect(find.byKey(const ValueKey('phone-import-pick')), findsNothing);
       expect(f.assignments.calls, 0);
-      expect(f.functions.calls.map((call) => call.name), [
-        'getProgramWorkAccess',
-      ]);
+      expect(f.functions.calls, isEmpty);
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('a runtime flag closure closes an open review', (tester) async {
+    final f = _Fixture();
+    addTearDown(() => f.close(tester));
+    await f.mount(tester);
+    expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(PhoneImportScreen)),
+    );
+    f.releaseEnabled = false;
+    container.invalidate(
+      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.byType(PhoneImportReviewScreen), findsNothing);
+    expect(find.byKey(const ValueKey('phone-import-pick')), findsNothing);
+    expect(
+      f.functions.calls.where((call) => call.payload['mode'] == 'commit'),
+      isEmpty,
+    );
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'native selection needs explicit international review and shares only chosen phone',
     (tester) async {
@@ -628,12 +712,20 @@ void main() {
         ),
       );
       await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: ProgramWorkPageBody(
-            access: access,
-            now: _now,
-            snapshotAt: state == 'cached' ? _now : null,
+        ProviderScope(
+          overrides: [
+            hostReleaseFlagProvider(
+              hostWeddingPhoneImportFlagKey,
+            ).overrideWith((ref) => true),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: ProgramWorkPageBody(
+              access: access,
+              now: _now,
+              snapshotAt: state == 'cached' ? _now : null,
+              phoneImportEnabled: true,
+            ),
           ),
         ),
       );
@@ -659,6 +751,7 @@ void main() {
           final submission = PhoneImportSubmissionController(
             review: review,
             adapter: PhoneImportAdapter(
+              isEnabled: () => true,
               workRepository: f.work,
               setupRepository: f.setup,
               currentAccountId: () => f.auth.account,
