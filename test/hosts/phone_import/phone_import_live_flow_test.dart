@@ -372,7 +372,7 @@ void main() {
     },
   );
   testWidgets(
-    'production holds phone entry and direct route until backend rollout',
+    'production exposes phone entry and reviewed route to wedding managers',
     (tester) async {
       AppConfig.configureEntrypointEnvironment(AppEnvironment.prod);
       addTearDown(AppConfig.resetEntrypointEnvironmentOverrideForTesting);
@@ -388,15 +388,15 @@ void main() {
       await pumpFeatureUi(tester);
       expect(
         find.byKey(const ValueKey('program-work-phone-import')),
-        findsNothing,
+        findsOneWidget,
       );
 
       final f = _Fixture();
       addTearDown(() => f.close(tester));
       await f.mount(tester);
-      expect(find.byType(PhoneImportReviewScreen), findsNothing);
-      expect(find.byKey(const ValueKey('phone-import-pick')), findsNothing);
-      expect(f.assignments.calls, 0);
+      expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
+      expect(find.byKey(const ValueKey('phone-import-pick')), findsOneWidget);
+      expect(f.assignments.calls, 1);
       expect(f.functions.calls.map((call) => call.name), [
         'getProgramWorkAccess',
       ]);
