@@ -26,6 +26,7 @@ Future<void> _pump(
   WidgetTester tester,
   FakeLodgingRepository repository, {
   DateTime Function()? clock,
+  double textScale = 1,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -40,6 +41,12 @@ Future<void> _pump(
         programLodgingRepositoryProvider.overrideWithValue(repository),
       ],
       child: MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
         theme: AppTheme.light,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -51,6 +58,30 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets(
+    'membership editor scrolls at double text size without overflow',
+    (tester) async {
+      final repository = FakeLodgingRepository();
+      await _pump(tester, repository, textScale: 2);
+      await tester.tap(find.text('Review social memberships'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Guest name'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Local guest'));
+      await pumpFeatureUi(tester);
+      expect(tester.takeException(), isNull);
+      expect(find.textContaining('Family contributor list'), findsOneWidget);
+      final cancel = find.text('Cancel');
+      await tester.ensureVisible(cancel);
+      await pumpFeatureUi(tester);
+      expect(cancel.hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(repository.membershipSaves, 0);
+      expect(repository.commands, isEmpty);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   testWidgets('expired refresh retains uncertain publication receipt fence', (
     tester,
   ) async {

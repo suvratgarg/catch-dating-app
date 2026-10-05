@@ -52,6 +52,8 @@ class CatchFieldDrawer extends StatelessWidget {
       child: GestureDetector(
         key: const ValueKey('catch-field-control-tap-barrier'),
         behavior: HitTestBehavior.opaque,
+        // The barrier absorbs pointer taps; only its controls are actions.
+        excludeFromSemantics: true,
         onTap: () {},
         child: Padding(
           padding: EdgeInsetsDirectional.only(
