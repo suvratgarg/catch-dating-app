@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {createRequire} from "node:module";
 import {fingerprintRuntimeExports, compareFunctionFingerprints} from "./function_release_fingerprints.mjs";
+
+const ts = createRequire(import.meta.url)("typescript");
 
 const exports = ["functions:alpha", "functions:beta"];
 function map(alpha = "function alpha() { return helper(); }", helper = "function helper() { return 1; }", extra = "") {
@@ -36,6 +39,18 @@ test("re-export descriptors cannot hide eager expression changes", () => {
   assert.throws(() => snapshot(modules), /Unsupported export descriptor/);
   modules.set("index.js", 'const api=require("./api"); Object.defineProperty(exports,"alpha",{get:function(){return api.alpha},get:function(){return api.beta}}); Object.defineProperty(exports,"beta",{get:function(){return api.beta}});');
   assert.throws(() => snapshot(modules), /Unsupported export descriptor/);
+});
+test("canonical TypeScript void export chains preserve namespace trust", () => {
+  const compiled = ts.transpileModule('import * as api from "./api"; export const alpha = () => api.value(); export const beta = () => 2;',
+    {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true}}).outputText;
+  const chain = 'exports.beta = exports.alpha = void 0;';
+  assert.ok(compiled.includes(chain));
+  const modules = new Map([["index.js", compiled], ["api.js", 'exports.value = () => 1;']]);
+  assert.deepEqual(snapshot(modules).functions["functions:alpha"].unknown, []);
+  modules.set("index.js", compiled.replace(chain, 'exports.beta = exports.alpha = global.sideEffect();'));
+  assert.throws(() => snapshot(modules), /Duplicate or computed export/);
+  modules.set("index.js", compiled.replace(chain, 'exports.beta = exports[(global.value = 1, "alpha")] = void 0;'));
+  assert.throws(() => snapshot(modules), /Unsupported compiler wrapper namespace|Duplicate or computed export/);
 });
 test("transitive private helper changes select its consumer only", () => {
   assert.deepEqual(delta(map(), map(undefined, "function helper() { return 3; }")).targets, ["functions:alpha"]);

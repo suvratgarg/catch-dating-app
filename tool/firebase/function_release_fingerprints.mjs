@@ -116,7 +116,7 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
     !untrustedNamespaces.has(namespaceKey(current.name, imported.specifier));
   const voidExports = (node) => ts.isVoidExpression(node) && ts.isNumericLiteral(node.expression) && node.expression.text === "0" ||
     ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
-      isExports(node.left) && voidExports(node.right);
+      isExports(node.left) && property(node.left) !== null && voidExports(node.right);
   const calleeOf = (node) => {
     let callee = node;
     if (ts.isParenthesizedExpression(callee) && ts.isBinaryExpression(callee.expression) &&
@@ -302,6 +302,15 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
     inspectNamespaces(source);
     // Re-export getters above are the only accepted getter form. Refuse
     // purity proofs if exports can escape or be mutated through another form.
+    const compilerVoidChain = (assignment) => {
+      let root = assignment;
+      while (ts.isBinaryExpression(root.parent) && root.parent.right === root &&
+          root.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken && isExports(root.parent.left) &&
+          property(root.parent.left) !== null) root = root.parent;
+      return ts.isExpressionStatement(root.parent) && root.parent.parent === source &&
+        root.operatorToken.kind === ts.SyntaxKind.EqualsToken && isExports(root.left) &&
+        property(root.left) !== null && voidExports(root.right);
+    };
     const inspectExports = (node) => {
       if (ts.isIdentifier(node) && node.text === "exports") {
         const parent = node.parent;
@@ -309,7 +318,8 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
           const use = parent.parent;
           if (ts.isBinaryExpression(use) && use.left === parent &&
               use.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && use.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
-            if (!ts.isExpressionStatement(use.parent) || use.parent.parent !== source || use.operatorToken.kind !== ts.SyntaxKind.EqualsToken)
+            if ((!ts.isExpressionStatement(use.parent) || use.parent.parent !== source ||
+                use.operatorToken.kind !== ts.SyntaxKind.EqualsToken) && !compilerVoidChain(use))
               value.plainExports = false;
           } else if (ts.isDeleteExpression(use) || ts.isPrefixUnaryExpression(use) || ts.isPostfixUnaryExpression(use)) value.plainExports = false;
         } else if (!(ts.isCallExpression(parent) && parent.arguments[0] === node &&
