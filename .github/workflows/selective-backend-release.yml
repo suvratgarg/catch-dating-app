@@ -58,10 +58,7 @@ jobs:
           git fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
           test "$(git rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
           git merge-base --is-ancestor "$REQUESTED_SHA" "$GITHUB_SHA"
-          git diff --quiet "$REQUESTED_SHA" "$GITHUB_SHA" -- \
-            functions/src functions/package.json functions/package-lock.json \
-            functions/scripts/set-callable-invokers-public.cjs \
-            firebase.json .firebaserc firestore.indexes.json
+          node tool/ci/operator_source_compatibility.mjs "$REQUESTED_SHA" "$GITHUB_SHA"
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/37247348530/attempts/1" | jq -e '
             .status == "completed" and .conclusion == "success" and
             .event == "push" and .head_branch == "main" and

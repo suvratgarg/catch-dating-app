@@ -684,6 +684,36 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "node --test tool/ci/operator_prod_release.test.mjs"
+      },
+      "alsoCheckIds": [
+        "ci:operator-source-compatibility"
+      ]
+    },
+    {
+      "id": "ci:operator-source-compatibility",
+      "category": "ci",
+      "path": "tool/ci/operator_source_compatibility.mjs",
+      "command": "node --test tool/ci/operator_source_compatibility.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
+      "impactPaths": [
+        "tool/ci/operator_source_compatibility.test.mjs",
+        ".github/workflows/selective-backend-release.yml",
+        ".github/workflows/_firebase-promote.yml"
+      ],
+      "description": "Verifies only the exact reviewed PR552 source delta against the immutable operator package; rejects all further guarded backend or index drift. No deployment authority.",
+      "checks": [
+        "node --check tool/ci/operator_source_compatibility.mjs",
+        "node --test tool/ci/operator_source_compatibility.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/operator_source_compatibility.test.mjs"
       }
     },
     {

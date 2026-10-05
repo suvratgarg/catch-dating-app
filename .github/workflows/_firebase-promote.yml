@@ -174,10 +174,8 @@ jobs:
           git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
           git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
           if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
-            git -C "$SOURCE_CHECKOUT" diff --quiet "$SOURCE_SHA" refs/remotes/origin/main -- \
-              functions/src functions/package.json functions/package-lock.json \
-              functions/scripts/set-callable-invokers-public.cjs \
-              firebase.json .firebaserc firestore.indexes.json
+            node tool/ci/operator_source_compatibility.mjs "$SOURCE_SHA" \
+              "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" "$SOURCE_CHECKOUT"
           fi
           if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
             test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
@@ -732,10 +730,8 @@ jobs:
             git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$CONTROL_PLANE_SHA" refs/remotes/origin/main
             git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
             if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
-              git -C "$SOURCE_CHECKOUT" diff --quiet "$SOURCE_SHA" refs/remotes/origin/main -- \
-                functions/src functions/package.json functions/package-lock.json \
-                functions/scripts/set-callable-invokers-public.cjs \
-                firebase.json .firebaserc firestore.indexes.json
+              node tool/ci/operator_source_compatibility.mjs "$SOURCE_SHA" \
+                "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" "$SOURCE_CHECKOUT"
               node tool/ci/operator_prod_release.mjs before \
                 --package-plan build/delivery/package-plan.json \
                 --baseline-indexes build/delivery/operator-baseline/indexes.json \
