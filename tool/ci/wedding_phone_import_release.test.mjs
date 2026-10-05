@@ -133,7 +133,10 @@ function metadataFixture({unreachable=false, selectedStatus=404, controls={}}={}
       body={functions:[fn],...(unreachable?{unreachable:["us-west1"]}:{})};
     } else if(u.hostname==="run.googleapis.com" && u.pathname.endsWith(":getIamPolicy")) body=fn.runIamPolicy;
     else if(u.hostname==="run.googleapis.com") body=fn.runService;
-    else if(u.hostname==="firestore.googleapis.com") body={fields:[]};
+    else if(u.hostname==="firestore.googleapis.com") {
+      assert.ok(["indexConfig.usesAncestorConfig:false","ttlConfig:*"].includes(u.searchParams.get("filter")));
+      body={fields:[]};
+    }
     else if(u.hostname==="firebaserules.googleapis.com") body={releases:[]};
     else if(u.hostname==="firebaseremoteconfig.googleapis.com") body=controls;
     else {assert.equal(u.pathname,"/v1/projects/catchdates-dev:getIamPolicy");assert.equal(init.method,"POST");body={bindings:[]};}
@@ -145,6 +148,7 @@ test("metadata reader uses read-only APIs and rejects incomplete inventories and
   const f=metadataFixture();const result=await readWeddingSnapshot("dev",f);
   assert.equal(result.selectedHttpStatus,404);assert.equal(result.functions.length,1);
   assert.equal(result.runtimeServiceAccountExists,true);
+  assert.equal(f.calls.filter(c=>new URL(c.url).hostname==="firestore.googleapis.com").length,2);
   assert.ok(f.calls.every(c=>c.method==="GET" || (c.method==="POST" && c.url.includes(":getIamPolicy"))));
   assert.ok(!JSON.stringify(result).includes("synthetic-test-token"));
   await assert.rejects(readWeddingSnapshot("dev",metadataFixture({unreachable:true})),/unreachable/);

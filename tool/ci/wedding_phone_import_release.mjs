@@ -230,8 +230,19 @@ export async function readWeddingSnapshot(environment, {run = spawnSync, request
         ({...binding, members: sorted(binding.members ?? [])})).sort((a, b) => JSON.stringify(canonical(a)).localeCompare(JSON.stringify(canonical(b))))};
     }
   }));
-  const fields = await pages(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/collectionGroups/-/fields`,
-    "fields", {filter: "indexConfig.usesAncestorConfig=false OR ttlConfig:*"});
+  const fieldMap = new Map();
+  // ListFields documents these two supported override filters. Query each,
+  // deduplicate stable names and reject changes observed between the reads.
+  for (const filter of ["indexConfig.usesAncestorConfig:false", "ttlConfig:*"]) {
+    const rows = await pages(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/collectionGroups/-/fields`,
+      "fields", {filter});
+    for (const field of rows) {
+      assert.equal(typeof field.name, "string");
+      if (fieldMap.has(field.name)) equal(fieldMap.get(field.name), field, "Field override changed during snapshot.");
+      fieldMap.set(field.name, field);
+    }
+  }
+  const fields = [...fieldMap.values()];
   const projectIam = await get(`https://cloudresourcemanager.googleapis.com/v1/projects/${projectId}:getIamPolicy`,
     {method: "POST", body: JSON.stringify({options: {requestedPolicyVersion: 3}})});
   const remoteConfig = await get(`https://firebaseremoteconfig.googleapis.com/v1/projects/${projectId}/remoteConfig`);
