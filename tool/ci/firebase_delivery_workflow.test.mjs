@@ -693,25 +693,26 @@ test("one-time PROD approval rejects admin bypass and non-reviewer approvals", (
   const step = extractSteps(workflow("_firebase-promote.yml")).find((entry) =>
     entry.name === "Require recorded human PROD environment approval for operator release");
   assert.ok(step?.run);
-  const filter = /--arg actor "\$GITHUB_ACTOR" '([\s\S]*?)' > \/dev\/null/.exec(step.run)?.[1];
+  const filter = /--argjson history "\$history" '([\s\S]*?)' > \/dev\/null/.exec(step.run)?.[1];
   assert.ok(filter);
   const environment = {id: 123, protection_rules: [{type: "required_reviewers",
     reviewers: [{type: "User", reviewer: {id: 42}}]}]};
   const approval = {state: "approved", user: {id: 42, login: "human-reviewer"},
     environments: [{id: 123, name: "prod"}]};
-  const accepted = (history, actor = "operator", settings = environment) => {
+  const accepted = (history, settings = environment) => {
     const result = spawnSync("jq", ["-en", "--argjson", "environment", JSON.stringify(settings),
-      "--argjson", "history", JSON.stringify(history), "--arg", "actor", actor, filter],
+      "--argjson", "history", JSON.stringify(history), filter],
     {encoding: "utf8"});
     assert.equal(result.status === 0 || result.status === 1, true, result.stderr);
     return result.status === 0;
   };
   assert.equal(accepted([approval]), true);
   assert.equal(accepted([]), false);
-  assert.equal(accepted([approval], "human-reviewer"), false);
+  // The sole configured reviewer may also be the dispatcher when prod permits self-review.
+  assert.equal(accepted([{...approval, user: {id: 42, login: "operator"}}]), true);
   assert.equal(accepted([{...approval, user: {id: 99, login: "admin"}}]), false);
   assert.equal(accepted([approval, {...approval, state: "rejected"}]), false);
-  assert.equal(accepted([approval], "operator", {...environment, protection_rules: []}), false);
+  assert.equal(accepted([approval], {...environment, protection_rules: []}), false);
 });
 
 test("live approval metadata does not change the package comparison and changed targets still fail", (t) => {
