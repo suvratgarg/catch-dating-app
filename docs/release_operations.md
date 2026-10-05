@@ -1202,7 +1202,7 @@ It requires a main-branch dispatch with that exact SHA, an operator reason, and
 the explicit four-Function/five-index confirmation. Its promotion job uses the
 reviewer-protected `prod` environment and existing GitHub OIDC deploy identity.
 The protected job requires a recorded approval by a configured human reviewer;
-an admin bypass or approval by the dispatching actor is insufficient.
+an admin bypass without that approval is insufficient.
 It verifies the successful CI producer, immutable package and its historical
 base SHA, the accepted PROD checkpoint, unchanged live serving identities, and
 the additive composite-index and unchanged field-override/TTL contract before

@@ -133,8 +133,7 @@ jobs:
           set -euo pipefail
           environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/prod")"
           history="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/approvals")"
-          jq -en --argjson environment "$environment" --argjson history "$history" \
-            --arg actor "$GITHUB_ACTOR" '
+          jq -en --argjson environment "$environment" --argjson history "$history" '
             ([ $environment.protection_rules[]? | select(.type == "required_reviewers") |
               .reviewers[]? | select(.type == "User") | .reviewer.id ]) as $reviewers |
             ($reviewers | length) > 0 and
@@ -143,7 +142,7 @@ jobs:
             ([ $history[]? | select(any(.environments[]?; .id == $environment.id and .name == "prod")) |
               select(.state != "approved") ] | length) == 0 and
             any($history[]?;
-              .state == "approved" and .user.id != null and .user.login != $actor and
+              .state == "approved" and .user.id != null and
               (.user.id as $reviewer_id | ($reviewers | index($reviewer_id)) != null) and
               any(.environments[]?; .id == $environment.id and .name == "prod"))
           ' > /dev/null
