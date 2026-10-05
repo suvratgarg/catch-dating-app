@@ -216,3 +216,18 @@ export function evaluateScore(policy: IntelligencePolicy, organizerId: string,
     status: disputed ? "review_required" : complete ? "complete" : "needs_research",
     score, priority, factors, evaluatedAt: now};
 }
+
+export function currentReviewedEvidence(row: FirebaseFirestore.DocumentData | undefined,
+  organizerId: string, now: string): boolean {
+  const at = Date.parse(now);
+  const observed = Date.parse(String(row?.observedAt ?? ""));
+  const reviewed = Date.parse(String(row?.reviewedAt ?? ""));
+  return row?.classification === "sales_private" &&
+    row.organizerId === organizerId &&
+    typeof row.reviewerUid === "string" && row.reviewerUid.length > 0 &&
+    Number.isFinite(observed) && observed <= at &&
+    Number.isFinite(reviewed) && reviewed <= at &&
+    (!row.validThrough ||
+      (Number.isFinite(Date.parse(row.validThrough)) &&
+        Date.parse(row.validThrough) > at));
+}

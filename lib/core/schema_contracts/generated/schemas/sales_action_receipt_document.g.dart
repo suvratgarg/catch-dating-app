@@ -76,6 +76,8 @@ const schemaSalesActionReceiptDocumentSchema = <String, Object?>{
         'partner.revoke',
         'partner.assignment.update',
         'partner.demo.wording.propose',
+        'partner.marketing.review',
+        'partner.marketing.revoke',
       ],
     },
     'actorUid': <String, Object?>{

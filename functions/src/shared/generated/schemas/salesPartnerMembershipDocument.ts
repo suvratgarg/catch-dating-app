@@ -82,7 +82,20 @@ export const salesPartnerMembershipDocumentSchema: Record<string, unknown> = {
           "campaignId",
           "channel",
           "assetIds",
-          "expiresAt"
+          "expiresAt",
+          "schemaVersion",
+          "grantId",
+          "revision",
+          "status",
+          "organizerId",
+          "assignmentRevision",
+          "sourceHash",
+          "reviewedAt",
+          "reviewedBy",
+          "reason",
+          "purpose",
+          "approvalReceiptId",
+          "approvedMembershipRevision"
         ],
         "properties": {
           "campaignId": {
@@ -99,19 +112,80 @@ export const salesPartnerMembershipDocumentSchema: Record<string, unknown> = {
           },
           "assetIds": {
             "type": "array",
-            "maxItems": 30,
+            "maxItems": 12,
             "uniqueItems": true,
             "items": {
               "type": "string",
               "minLength": 1,
               "maxLength": 128
-            }
+            },
+            "minItems": 1
           },
           "expiresAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "schemaVersion": {
+            "const": 1
+          },
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "status": {
+            "enum": [
+              "active",
+              "revoked"
+            ]
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "assignmentRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "purpose": {
+            "const": "manual_partner_outreach"
+          },
+          "approvalReceiptId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "approvedMembershipRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
           }
-        }
+        },
+        "description": "Explicit employee-reviewed capability scope for exact approved Sales wording, a canonical organizer, campaign and channel. Source drift, changed assignment, expiry or revocation blocks preview. It grants no delivery, publication, event, guest, consent or provider authority."
       }
     }
   }

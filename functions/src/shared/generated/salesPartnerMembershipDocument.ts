@@ -21,9 +21,23 @@ export interface SalesPartnerMembershipDocument {
     campaignId: string;
     channel: "email" | "whatsapp" | "other";
     /**
-     * @maxItems 30
+     * @minItems 1
+     * @maxItems 12
      */
     assetIds: string[];
     expiresAt: string;
+    schemaVersion: 1;
+    grantId: string;
+    revision: number;
+    status: "active" | "revoked";
+    organizerId: string;
+    assignmentRevision: number;
+    sourceHash: string;
+    reviewedAt: string;
+    reviewedBy: string;
+    reason: string;
+    purpose: "manual_partner_outreach";
+    approvalReceiptId: string;
+    approvedMembershipRevision: number;
   }[];
 }

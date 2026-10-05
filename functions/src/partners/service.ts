@@ -1,22 +1,28 @@
 import * as admin from "firebase-admin";
 import {prepareHostSalesIntent} from "../waitlist/hostSalesIntent";
 import {assertSalesPrivacyOpen} from "../admin/salesPrivacy/model";
+import {currentReviewedEvidence, uniqueIds} from "../admin/salesIntelligence/model";
 import {PARTNER_TERMS_VERSION, MEMBERSHIPS, ASSIGNMENTS,
   employee, expectRevision, fail, future, hash, id, iso, object, officialUrl,
   requestId, revision, text, type PartnerActor, type PartnerAssignment,
-  type PartnerDeps, type PartnerMembership} from "./model";
+  type PartnerDeps, type PartnerMembership, type PartnerMarketingGrant} from "./model";
 
 type Tx = FirebaseFirestore.Transaction;
 
 export async function requirePartner(deps: PartnerDeps, actor: PartnerActor,
   tx: Tx): Promise<PartnerMembership> {
   await deps.checkAuth(actor, false);
+  return readPartnerMembership(deps, tx, actor.uid);
+}
+
+async function readPartnerMembership(deps: PartnerDeps, tx: Tx,
+  uid: string): Promise<PartnerMembership> {
   const [snap, deleted] = await Promise.all([
-    tx.get(deps.db.collection(MEMBERSHIPS).doc(actor.uid)),
-    tx.get(deps.db.collection("deletedUsers").doc(actor.uid)),
+    tx.get(deps.db.collection(MEMBERSHIPS).doc(uid)),
+    tx.get(deps.db.collection("deletedUsers").doc(uid)),
   ]);
   const row = snap.data() as PartnerMembership | undefined;
-  if (deleted.exists || row?.uid !== actor.uid || row.schemaVersion !== 1 ||
+  if (deleted.exists || row?.uid !== uid || row.schemaVersion !== 1 ||
       row.classification !== "sales_private" || row.status !== "active" ||
       row.termsVersion !== PARTNER_TERMS_VERSION ||
       !Number.isFinite(Date.parse(row.expiresAt)) ||
@@ -30,6 +36,11 @@ export async function requirePartner(deps: PartnerDeps, actor: PartnerActor,
 export async function requireAssignment(deps: PartnerDeps, actor: PartnerActor,
   tx: Tx, organizerId: string, accepted = true, allowDeclined = false): Promise<PartnerAssignment> {
   await requirePartner(deps, actor, tx);
+  return readPartnerAssignment(deps, tx, actor.uid, organizerId, accepted, allowDeclined);
+}
+
+async function readPartnerAssignment(deps: PartnerDeps, tx: Tx, partnerUid: string,
+  organizerId: string, accepted = true, allowDeclined = false): Promise<PartnerAssignment> {
   await assertSalesPrivacyOpen(tx, deps.db, organizerId);
   const [snap, account, organizer] = await Promise.all([
     tx.get(deps.db.collection(ASSIGNMENTS).doc(organizerId)),
@@ -38,7 +49,7 @@ export async function requireAssignment(deps: PartnerDeps, actor: PartnerActor,
   ]);
   const row = snap.data() as PartnerAssignment | undefined;
   if (row?.classification !== "sales_private" || row.schemaVersion !== 1 ||
-      row.organizerId !== organizerId || row.partnerUid !== actor.uid ||
+      row.organizerId !== organizerId || row.partnerUid !== partnerUid ||
       !(allowDeclined ? ["offered", "accepted", "declined"] : ["offered", "accepted"]).includes(row.status) ||
       accepted && row.status !== "accepted" ||
       !Number.isFinite(Date.parse(row.expiresAt)) ||
@@ -60,6 +71,7 @@ export async function mutatePartnerAction(deps: PartnerDeps, actor: PartnerActor
   request: string, material: Record<string, unknown>, employeeReview: boolean,
   authorize: (tx: Tx) => Promise<unknown>,
   apply: (tx: Tx, now: string) => Promise<Record<string, unknown>>,
+  finalFence: () => void = () => undefined,
 ): Promise<Record<string, unknown>> {
   if (employeeReview) employee(actor);
   await deps.checkAuth(actor, employeeReview);
@@ -75,10 +87,14 @@ export async function mutatePartnerAction(deps: PartnerDeps, actor: PartnerActor
           prior.requestHash !== requestHash) {
         return fail("already-exists", "Request ID belongs to different partner work.");
       }
+      await deps.checkAuth(actor, employeeReview);
+      finalFence();
       return prior.result as Record<string, unknown>;
     }
     const now = deps.now().toISOString();
     const result = await apply(tx, now);
+    await deps.checkAuth(actor, employeeReview);
+    finalFence();
     tx.create(receipt, {schemaVersion: 1, classification: "sales_private",
       actorUid: actor.uid, action, requestId: request,
       requestHash, organizerId: material.organizerId ?? null,
@@ -349,5 +365,251 @@ export async function getPartnerWorkspace(deps: PartnerDeps, actor: PartnerActor
       termsVersion: membership.termsVersion, expiresAt: membership.expiresAt}, leads,
     submissions: ownSubmissions,
     nextCursor: page.size > 25 ? page.docs[24].id : null, sendAuthority: false};
+  });
+}
+
+interface MarketingScope {
+  partnerUid: string; organizerId: string; campaignId: string;
+  channel: PartnerMarketingGrant["channel"]; assetIds: string[];
+}
+function parseMarketingScope(input: Record<string, unknown>): MarketingScope {
+  const channel = input.channel;
+  if (!["email", "whatsapp", "other"].includes(String(channel))) {
+    fail("invalid-argument", "Choose the exact reviewed marketing channel.");
+  }
+  const assetIds = uniqueIds(input.assetIds, 12).map(id).sort();
+  if (!assetIds.length) fail("invalid-argument", "Choose at least one approved wording asset.");
+  return {partnerUid: id(input.partnerUid), organizerId: id(input.organizerId),
+    campaignId: id(input.campaignId), channel: channel as MarketingScope["channel"], assetIds};
+}
+function marketingGrantId(scope: MarketingScope): string {
+  return `marketing-${hash([scope.partnerUid, scope.organizerId,
+    scope.campaignId, scope.channel]).slice(0, 40)}`;
+}
+function marketingGrants(member: PartnerMembership): PartnerMarketingGrant[] {
+  const grants = member.marketingGrants;
+  if (!Array.isArray(grants) || grants.length > 30 || grants.some((g) =>
+    !g || g.schemaVersion !== 1 || typeof g.grantId !== "string" ||
+    !Number.isSafeInteger(g.revision) || g.revision < 1 ||
+    typeof g.approvalReceiptId !== "string" || !/^[a-f0-9]{64}$/u.test(g.approvalReceiptId) ||
+    !Number.isSafeInteger(g.approvedMembershipRevision) || g.approvedMembershipRevision < 1 ||
+    !Number.isSafeInteger(g.assignmentRevision) || g.assignmentRevision < 1 ||
+    !["active", "revoked"].includes(g.status) ||
+    typeof g.reviewedBy !== "string" || !g.reviewedBy ||
+    typeof g.reviewedAt !== "string" || !Number.isFinite(Date.parse(g.reviewedAt)) ||
+    typeof g.reason !== "string" || !g.reason.trim() ||
+    typeof g.sourceHash !== "string" || !/^[a-f0-9]{64}$/u.test(g.sourceHash) ||
+    g.purpose !== "manual_partner_outreach") ||
+    new Set(grants.map((g) => g.grantId)).size !== grants.length) {
+    fail("failed-precondition", "Marketing permissions need an explicit current review.");
+  }
+  return grants;
+}
+async function marketingContext(deps: PartnerDeps, tx: Tx, scope: MarketingScope) {
+  // Employee review reads target state without impersonating its Firebase user.
+  // Partner consumers authenticate themselves separately before using this helper.
+  const membership = await readPartnerMembership(deps, tx, scope.partnerUid);
+  const assignment = await readPartnerAssignment(deps, tx, scope.partnerUid, scope.organizerId);
+  const snapshots = await Promise.all(scope.assetIds.map((assetId) =>
+    tx.get(deps.db.collection("salesIntelligenceClauses").doc(assetId))));
+  const sourceRows = snapshots.map((snap, index) => {
+    const row = snap.data();
+    if (!row || row.schemaVersion !== 1 || row.classification !== "sales_private" ||
+        row.clauseId !== scope.assetIds[index] || row.organizerId !== scope.organizerId ||
+        row.state !== "approved" || !["capability", "reference", "cta"].includes(row.kind) ||
+        row.permission !== "not_required" || !Number.isSafeInteger(row.revision) ||
+        row.revision < 1 || typeof row.text !== "string" || !row.text.trim() ||
+        row.text.length > 2000 || typeof row.reviewedBy !== "string" || !row.reviewedBy ||
+        typeof row.reviewedAt !== "string" || !Number.isFinite(Date.parse(row.reviewedAt)) ||
+        Date.parse(row.reviewedAt) > deps.now().getTime() ||
+        typeof row.validUntil !== "string" || !Number.isFinite(Date.parse(row.validUntil)) ||
+        Date.parse(row.validUntil) <= deps.now().getTime()) {
+      fail("failed-precondition", "A wording asset is missing, private, changed or no longer approved.");
+    }
+    return row;
+  });
+  const evidenceIds = [...new Set(sourceRows.flatMap((row) => uniqueIds(row.evidenceIds, 8)))].sort();
+  const evidence = await Promise.all(evidenceIds.map(async (evidenceId) => {
+    const row = (await tx.get(deps.db.collection("salesEvidence").doc(evidenceId))).data();
+    if (!currentReviewedEvidence(row, scope.organizerId, deps.now().toISOString())) {
+      fail("failed-precondition", "A wording source is missing or no longer currently reviewed.");
+    }
+    return {evidenceId, row: row!};
+  }));
+  const sourceHash = hash({scope, assignmentRevision: assignment.revision, assets: sourceRows, evidence});
+  const validUntil = new Date(Math.min(Date.parse(membership.expiresAt),
+    Date.parse(assignment.expiresAt), ...sourceRows.map((row) => Date.parse(row.validUntil)),
+    ...evidence.filter(({row}) => row.validThrough).map(({row}) => Date.parse(row.validThrough)))).toISOString();
+  const assets = sourceRows.map((row) => ({assetId: row.clauseId as string,
+    kind: row.kind as string, text: row.text as string, validUntil: row.validUntil as string}));
+  return {membership, assignment, sourceHash, validUntil, assets};
+}
+
+function marketingTimeFence(deps: PartnerDeps, deadline: string): void {
+  if (!Number.isFinite(Date.parse(deadline)) || Date.parse(deadline) <= deps.now().getTime()) {
+    fail("permission-denied", "Marketing permission or reviewed source expired during this request.");
+  }
+}
+
+/** Campaign is a reviewed capability scope, not another CRM or delivery job. */
+export async function previewPartnerMarketingGrant(deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  employee(actor);
+  const input = object(payload, ["partnerUid", "organizerId", "campaignId", "channel", "assetIds"]);
+  const scope = parseMarketingScope(input);
+  return deps.db.runTransaction(async (tx) => {
+    await deps.checkAuth(actor, true);
+    const state = await marketingContext(deps, tx, scope);
+    const grantId = marketingGrantId(scope);
+    const prior = marketingGrants(state.membership).find((g) => g.grantId === grantId);
+    await deps.checkAuth(actor, true);
+    marketingTimeFence(deps, state.validUntil);
+    return {...scope, grantId, expectedMembershipRevision: state.membership.revision,
+      expectedGrantRevision: prior?.revision ?? 0, sourceHash: state.sourceHash,
+      expiresBefore: state.validUntil, assets: state.assets,
+      sendAuthority: false, publicationAuthority: false};
+  });
+}
+
+export async function reviewPartnerMarketingGrant(deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  const input = object(payload, ["requestId", "partnerUid", "organizerId", "campaignId", "channel",
+    "assetIds", "expectedMembershipRevision", "expectedGrantRevision", "sourceHash", "expiresAt", "reason"]);
+  const scope = parseMarketingScope(input);
+  const request = requestId(input.requestId);
+  const expectedMembershipRevision = revision(input.expectedMembershipRevision);
+  const expectedGrantRevision = revision(input.expectedGrantRevision);
+  const sourceHash = input.sourceHash;
+  if (typeof sourceHash !== "string" || !/^[a-f0-9]{64}$/u.test(sourceHash)) {
+    fail("invalid-argument", "Review the exact current asset fingerprint.");
+  }
+  const expiresAt = future(input.expiresAt, deps.now(), 30);
+  const reason = text(input.reason, 1000);
+  const grantId = marketingGrantId(scope);
+  let deadline = expiresAt;
+  return mutatePartnerAction(deps, actor, "partner.marketing.review", request,
+    {...scope, expectedMembershipRevision, expectedGrantRevision, sourceHash, expiresAt, reason}, true,
+    async (tx) => {
+      const state = await marketingContext(deps, tx, scope);
+      deadline = new Date(Math.min(Date.parse(expiresAt), Date.parse(state.validUntil))).toISOString();
+      const prior = marketingGrants(state.membership).find((g) => g.grantId === grantId);
+      if (state.sourceHash !== sourceHash || Date.parse(expiresAt) > Date.parse(state.validUntil)) {
+        fail("failed-precondition", "Assets or scope changed; review again before granting access.");
+      }
+      if (![expectedMembershipRevision, expectedMembershipRevision + 1].includes(state.membership.revision) ||
+          ![expectedGrantRevision, expectedGrantRevision + 1].includes(prior?.revision ?? 0)) {
+        fail("aborted", "Marketing permission generation changed; refresh before reviewing.");
+      }
+      if (prior?.revision === expectedGrantRevision + 1 && prior.status !== "active") {
+        fail("permission-denied", "The reviewed marketing permission was revoked.");
+      }
+    }, async (tx, now) => {
+      const state = await marketingContext(deps, tx, scope);
+      deadline = new Date(Math.min(Date.parse(expiresAt), Date.parse(state.validUntil))).toISOString();
+      const grants = marketingGrants(state.membership);
+      const prior = grants.find((g) => g.grantId === grantId);
+      expectRevision(state.membership.revision, expectedMembershipRevision);
+      expectRevision(prior?.revision ?? 0, expectedGrantRevision);
+      if (!prior && grants.length >= 30) {
+        fail("resource-exhausted", "Campaign scope capacity reached; review an existing scope or request an employee capacity review.");
+      }
+      const grant: PartnerMarketingGrant = {schemaVersion: 1, grantId,
+        revision: expectedGrantRevision + 1, status: "active", organizerId: scope.organizerId,
+        campaignId: scope.campaignId, channel: scope.channel, assetIds: scope.assetIds,
+        assignmentRevision: state.assignment.revision, sourceHash, expiresAt,
+        approvalReceiptId: hash(`${actor.uid}\u0000${request}`),
+        approvedMembershipRevision: expectedMembershipRevision + 1,
+        reviewedAt: now, reviewedBy: actor.uid, reason, purpose: "manual_partner_outreach"};
+      tx.set(deps.db.collection(MEMBERSHIPS).doc(scope.partnerUid), {...state.membership,
+        revision: expectedMembershipRevision + 1, updatedAt: now,
+        marketingGrants: [...grants.filter((g) => g.grantId !== grantId), grant]});
+      return {partnerUid: scope.partnerUid, grantId, revision: grant.revision,
+        membershipRevision: expectedMembershipRevision + 1, status: grant.status};
+    }, () => marketingTimeFence(deps, deadline));
+}
+
+/** Revocation works after expiry, suppression or membership revocation too. */
+export async function revokePartnerMarketingGrant(deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  const input = object(payload, ["requestId", "partnerUid", "grantId",
+    "expectedMembershipRevision", "expectedGrantRevision", "reason"]);
+  const partnerUid = id(input.partnerUid); const grantId = id(input.grantId);
+  const expectedMembershipRevision = revision(input.expectedMembershipRevision);
+  const expectedGrantRevision = revision(input.expectedGrantRevision);
+  const reason = text(input.reason, 1000);
+  const readState = async (tx: Tx) => {
+    const membership = (await tx.get(deps.db.collection(MEMBERSHIPS).doc(partnerUid))).data() as PartnerMembership | undefined;
+    if (!membership || membership.uid !== partnerUid || membership.schemaVersion !== 1 ||
+        membership.classification !== "sales_private") fail("not-found", "Partner permission record not found.");
+    const grants = marketingGrants(membership);
+    const grant = grants.find((g) => g.grantId === grantId);
+    if (!grant) fail("not-found", "Marketing permission record not found.");
+    return {membership, grants, grant};
+  };
+  return mutatePartnerAction(deps, actor, "partner.marketing.revoke", requestId(input.requestId),
+    {partnerUid, grantId, expectedMembershipRevision, expectedGrantRevision, reason}, true,
+    async (tx) => {
+      const state = await readState(tx);
+      if (![expectedMembershipRevision, expectedMembershipRevision + 1].includes(state.membership.revision) ||
+          ![expectedGrantRevision, expectedGrantRevision + 1].includes(state.grant.revision)) {
+        fail("aborted", "Marketing permission generation changed; refresh before revoking.");
+      }
+    }, async (tx, now) => {
+      const state = await readState(tx);
+      expectRevision(state.membership.revision, expectedMembershipRevision);
+      expectRevision(state.grant.revision, expectedGrantRevision);
+      const grant = {...state.grant, revision: expectedGrantRevision + 1,
+        status: "revoked" as const, reviewedAt: now, reviewedBy: actor.uid, reason};
+      tx.set(deps.db.collection(MEMBERSHIPS).doc(partnerUid), {...state.membership,
+        revision: expectedMembershipRevision + 1, updatedAt: now,
+        marketingGrants: state.grants.map((g) => g.grantId === grantId ? grant : g)});
+      return {partnerUid, grantId, revision: grant.revision,
+        membershipRevision: expectedMembershipRevision + 1, status: grant.status};
+    });
+}
+
+/** Grants return exact approved wording only; no recipients, guests or live authority. */
+export async function getPartnerMarketingAssets(deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  const input = object(payload, ["grantId", "expectedGrantRevision"]);
+  const grantId = id(input.grantId); const expected = revision(input.expectedGrantRevision);
+  return deps.db.runTransaction(async (tx) => {
+    const membership = await requirePartner(deps, actor, tx);
+    const grant = marketingGrants(membership).find((g) => g.grantId === grantId);
+    if (!grant || grant.status !== "active" || grant.purpose !== "manual_partner_outreach" ||
+        !Number.isFinite(Date.parse(grant.expiresAt)) || Date.parse(grant.expiresAt) <= deps.now().getTime()) {
+      fail("permission-denied", "Current reviewed marketing permission is required.");
+    }
+    expectRevision(grant.revision, expected);
+    const scope = parseMarketingScope({...grant, partnerUid: actor.uid});
+    if (marketingGrantId(scope) !== grantId) fail("permission-denied", "Marketing scope is inconsistent.");
+    const state = await marketingContext(deps, tx, scope);
+    if (state.sourceHash !== grant.sourceHash || state.assignment.revision !== grant.assignmentRevision ||
+        Date.parse(grant.expiresAt) > Date.parse(state.validUntil)) {
+      fail("failed-precondition", "Marketing assets changed; a new explicit review is required.");
+    }
+    const receipt = (await tx.get(deps.db.collection("salesActionReceipts").doc(grant.approvalReceiptId))).data();
+    const material = {...scope, expectedMembershipRevision: grant.approvedMembershipRevision - 1,
+      expectedGrantRevision: grant.revision - 1, sourceHash: grant.sourceHash,
+      expiresAt: grant.expiresAt, reason: grant.reason};
+    if (receipt?.schemaVersion !== 1 || receipt.classification !== "sales_private" ||
+        receipt.actorUid !== grant.reviewedBy || receipt.createdAt !== grant.reviewedAt ||
+        receipt.action !== "partner.marketing.review" ||
+        typeof receipt.requestId !== "string" ||
+        hash(`${grant.reviewedBy}\u0000${receipt.requestId}`) !== grant.approvalReceiptId ||
+        !receipt.result || typeof receipt.result !== "object" || Array.isArray(receipt.result) ||
+        receipt.requestHash !== hash({action: "partner.marketing.review", material}) ||
+        hash(receipt.result) !== hash({partnerUid: actor.uid, grantId, revision: grant.revision,
+          membershipRevision: grant.approvedMembershipRevision, status: "active"})) {
+      fail("failed-precondition", "Marketing permission does not match its immutable approval receipt.");
+    }
+    await requirePartner(deps, actor, tx);
+    await deps.checkAuth(actor, false);
+    marketingTimeFence(deps, state.validUntil);
+    marketingTimeFence(deps, grant.expiresAt);
+    return {grantId, revision: grant.revision, organizerId: grant.organizerId,
+      campaignId: grant.campaignId, channel: grant.channel, expiresAt: grant.expiresAt,
+      assets: state.assets, sendAuthority: false, publicationAuthority: false,
+      guestAuthority: false, providerAuthority: false};
   });
 }

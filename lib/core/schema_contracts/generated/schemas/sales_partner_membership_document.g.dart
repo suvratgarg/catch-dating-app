@@ -85,6 +85,19 @@ const schemaSalesPartnerMembershipDocumentSchema = <String, Object?>{
           'channel',
           'assetIds',
           'expiresAt',
+          'schemaVersion',
+          'grantId',
+          'revision',
+          'status',
+          'organizerId',
+          'assignmentRevision',
+          'sourceHash',
+          'reviewedAt',
+          'reviewedBy',
+          'reason',
+          'purpose',
+          'approvalReceiptId',
+          'approvedMembershipRevision',
         ],
         'properties': <String, Object?>{
           'campaignId': <String, Object?>{
@@ -101,19 +114,80 @@ const schemaSalesPartnerMembershipDocumentSchema = <String, Object?>{
           },
           'assetIds': <String, Object?>{
             'type': 'array',
-            'maxItems': 30,
+            'maxItems': 12,
             'uniqueItems': true,
             'items': <String, Object?>{
               'type': 'string',
               'minLength': 1,
               'maxLength': 128,
             },
+            'minItems': 1,
           },
           'expiresAt': <String, Object?>{
             'type': 'string',
             'format': 'date-time',
           },
+          'schemaVersion': <String, Object?>{
+            'const': 1,
+          },
+          'grantId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 128,
+          },
+          'revision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 1000000,
+          },
+          'status': <String, Object?>{
+            'enum': <Object?>[
+              'active',
+              'revoked',
+            ],
+          },
+          'organizerId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 128,
+          },
+          'assignmentRevision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 1000000,
+          },
+          'sourceHash': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{64}\$',
+          },
+          'reviewedAt': <String, Object?>{
+            'type': 'string',
+            'format': 'date-time',
+          },
+          'reviewedBy': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 128,
+          },
+          'reason': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 1000,
+          },
+          'purpose': <String, Object?>{
+            'const': 'manual_partner_outreach',
+          },
+          'approvalReceiptId': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{64}\$',
+          },
+          'approvedMembershipRevision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 1000000,
+          },
         },
+        'description': 'Explicit employee-reviewed capability scope for exact approved Sales wording, a canonical organizer, campaign and channel. Source drift, changed assignment, expiry or revocation blocks preview. It grants no delivery, publication, event, guest, consent or provider authority.',
       },
     },
   },

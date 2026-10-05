@@ -137926,7 +137926,7 @@ abstract final class CatchContractConstraints {
   static const salesActionReceiptDocumentAction = CatchContractFieldConstraints(
     path: 'salesActionReceiptDocument.action',
     required: true,
-    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply', 'partner.register', 'partner.nominate', 'partner.assign', 'partner.assignment.decide', 'partner.revoke', 'partner.assignment.update', 'partner.demo.wording.propose'],
+    enumValues: <String>['hosts.create', 'hosts.update', 'tasks.upsert', 'opportunities.upsert', 'activities.log', 'fields.create', 'fields.setValue', 'intents.link', 'imports.apply', 'contacts.upsert', 'evidence.add', 'accounts.setSuppression', 'contacts.setContactability', 'evidence.propose', 'evidence.reviewProposal', 'commercial.pilots.upsert', 'commercial.quotes.revise', 'commercial.quotes.approve', 'commercial.quotes.accept', 'commercial.finance.attest', 'imports.compensation.apply', 'imports.history.apply', 'partner.register', 'partner.nominate', 'partner.assign', 'partner.assignment.decide', 'partner.revoke', 'partner.assignment.update', 'partner.demo.wording.propose', 'partner.marketing.review', 'partner.marketing.revoke'],
   );
 
   static const salesActionReceiptDocumentActorUid = CatchContractFieldConstraints(
@@ -144718,12 +144718,28 @@ abstract final class CatchContractConstraints {
     maxItems: 30,
   );
 
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsApprovalReceiptId = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.approvalReceiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsApprovedMembershipRevision = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.approvedMembershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
   static const salesPartnerMembershipDocumentMarketingGrantsItemsAssetIds = CatchContractFieldConstraints(
     path: 'salesPartnerMembershipDocument.marketingGrants.items.assetIds',
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 30,
+    minItems: 1,
+    maxItems: 12,
     uniqueItems: true,
   );
 
@@ -144733,6 +144749,14 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsAssignmentRevision = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.assignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
   );
 
   static const salesPartnerMembershipDocumentMarketingGrantsItemsCampaignId = CatchContractFieldConstraints(
@@ -144754,6 +144778,76 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsGrantId = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.grantId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.organizerId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsPurpose = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.purpose',
+    required: true,
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsReason = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.reason',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsReviewedAt = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.reviewedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsReviewedBy = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.reviewedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsRevision = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.schemaVersion',
+    required: true,
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesPartnerMembershipDocumentMarketingGrantsItemsStatus = CatchContractFieldConstraints(
+    path: 'salesPartnerMembershipDocument.marketingGrants.items.status',
+    required: true,
+    enumValues: <String>['active', 'revoked'],
   );
 
   static const salesPartnerMembershipDocumentRevision = CatchContractFieldConstraints(
@@ -181248,11 +181342,24 @@ abstract final class CatchContractConstraints {
     'salesPartnerMembershipDocument.displayName': salesPartnerMembershipDocumentDisplayName,
     'salesPartnerMembershipDocument.expiresAt': salesPartnerMembershipDocumentExpiresAt,
     'salesPartnerMembershipDocument.marketingGrants': salesPartnerMembershipDocumentMarketingGrants,
+    'salesPartnerMembershipDocument.marketingGrants.items.approvalReceiptId': salesPartnerMembershipDocumentMarketingGrantsItemsApprovalReceiptId,
+    'salesPartnerMembershipDocument.marketingGrants.items.approvedMembershipRevision': salesPartnerMembershipDocumentMarketingGrantsItemsApprovedMembershipRevision,
     'salesPartnerMembershipDocument.marketingGrants.items.assetIds': salesPartnerMembershipDocumentMarketingGrantsItemsAssetIds,
     'salesPartnerMembershipDocument.marketingGrants.items.assetIds.items': salesPartnerMembershipDocumentMarketingGrantsItemsAssetIdsItems,
+    'salesPartnerMembershipDocument.marketingGrants.items.assignmentRevision': salesPartnerMembershipDocumentMarketingGrantsItemsAssignmentRevision,
     'salesPartnerMembershipDocument.marketingGrants.items.campaignId': salesPartnerMembershipDocumentMarketingGrantsItemsCampaignId,
     'salesPartnerMembershipDocument.marketingGrants.items.channel': salesPartnerMembershipDocumentMarketingGrantsItemsChannel,
     'salesPartnerMembershipDocument.marketingGrants.items.expiresAt': salesPartnerMembershipDocumentMarketingGrantsItemsExpiresAt,
+    'salesPartnerMembershipDocument.marketingGrants.items.grantId': salesPartnerMembershipDocumentMarketingGrantsItemsGrantId,
+    'salesPartnerMembershipDocument.marketingGrants.items.organizerId': salesPartnerMembershipDocumentMarketingGrantsItemsOrganizerId,
+    'salesPartnerMembershipDocument.marketingGrants.items.purpose': salesPartnerMembershipDocumentMarketingGrantsItemsPurpose,
+    'salesPartnerMembershipDocument.marketingGrants.items.reason': salesPartnerMembershipDocumentMarketingGrantsItemsReason,
+    'salesPartnerMembershipDocument.marketingGrants.items.reviewedAt': salesPartnerMembershipDocumentMarketingGrantsItemsReviewedAt,
+    'salesPartnerMembershipDocument.marketingGrants.items.reviewedBy': salesPartnerMembershipDocumentMarketingGrantsItemsReviewedBy,
+    'salesPartnerMembershipDocument.marketingGrants.items.revision': salesPartnerMembershipDocumentMarketingGrantsItemsRevision,
+    'salesPartnerMembershipDocument.marketingGrants.items.schemaVersion': salesPartnerMembershipDocumentMarketingGrantsItemsSchemaVersion,
+    'salesPartnerMembershipDocument.marketingGrants.items.sourceHash': salesPartnerMembershipDocumentMarketingGrantsItemsSourceHash,
+    'salesPartnerMembershipDocument.marketingGrants.items.status': salesPartnerMembershipDocumentMarketingGrantsItemsStatus,
     'salesPartnerMembershipDocument.revision': salesPartnerMembershipDocumentRevision,
     'salesPartnerMembershipDocument.schemaVersion': salesPartnerMembershipDocumentSchemaVersion,
     'salesPartnerMembershipDocument.status': salesPartnerMembershipDocumentStatus,

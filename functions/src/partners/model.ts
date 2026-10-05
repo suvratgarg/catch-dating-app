@@ -5,13 +5,21 @@ export {fail, hash, id, iso, object, requestId, revision, text};
 export const PARTNER_TERMS_VERSION = "referral-preview-v1";
 export const MEMBERSHIPS = "salesPartnerMemberships";
 export const ASSIGNMENTS = "salesPartnerAssignments";
+export interface PartnerMarketingGrant {
+  schemaVersion: 1; grantId: string; revision: number;
+  status: "active" | "revoked"; organizerId: string; campaignId: string;
+  channel: "email" | "whatsapp" | "other"; assetIds: string[];
+  approvalReceiptId: string; approvedMembershipRevision: number;
+  assignmentRevision: number; sourceHash: string; expiresAt: string;
+  reviewedAt: string; reviewedBy: string; reason: string;
+  purpose: "manual_partner_outreach";
+}
 export interface PartnerMembership {
   schemaVersion: 1; classification: "sales_private"; uid: string;
   revision: number; status: "active" | "revoked";
   termsVersion: string; acceptedAt: string; expiresAt: string;
   displayName: string; createdAt: string; updatedAt: string;
-  marketingGrants: Array<{campaignId: string; channel: string;
-    assetIds: string[]; expiresAt: string}>;
+  marketingGrants: PartnerMarketingGrant[];
 }
 export interface PartnerAssignment {
   schemaVersion: 1; classification: "sales_private";

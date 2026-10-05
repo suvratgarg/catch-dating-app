@@ -2,9 +2,15 @@ import {listSalesInboundIntents} from "../admin/sales/intents";
 import type {Timestamp} from "firebase-admin/firestore";
 import assert from "node:assert/strict";
 import test from "node:test";
+import {readFileSync} from "node:fs";
+import path from "node:path";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import {FakeFirestore} from "../operations/testFirestore";
 import {assignPartner, decideAssignment, getPartnerWorkspace, nominateOrganizer,
-  registerPartner, revokePartnerAccess, requireAssignment, updateAssignment} from "./service";
+  registerPartner, revokePartnerAccess, requireAssignment, updateAssignment,
+  previewPartnerMarketingGrant, reviewPartnerMarketingGrant,
+  revokePartnerMarketingGrant, getPartnerMarketingAssets} from "./service";
 import {PARTNER_TERMS_VERSION, type PartnerActor, type PartnerDeps} from "./model";
 
 const partner: PartnerActor = {uid: "partner-one", roles: []};
@@ -187,4 +193,217 @@ test("own accepted lead next steps are versioned self-report without claim, publ
     reviewAt: initial}), {code: "invalid-argument"});
   fake.write("salesPrivacyRestrictions/organizer-one", {status: "restricted"});
   await assert.rejects(updateAssignment(deps, partner, input), {code: "failed-precondition"});
+});
+
+const marketingScope = {partnerUid: partner.uid, organizerId: "organizer-one",
+  campaignId: "synthetic-introduction-campaign", channel: "email", assetIds: ["asset-one"]};
+async function marketingFixture() {
+  const f = fixture();
+  await registerPartner(f.deps, partner, registration);
+  await assignPartner(f.deps, employee, offer); await decideAssignment(f.deps, partner, accept);
+  f.fake.write("salesIntelligenceClauses/asset-one", {schemaVersion: 1,
+    classification: "sales_private", clauseId: "asset-one", organizerId: "organizer-one",
+    revision: 1, kind: "capability", state: "approved", text: "Synthetic reviewed wording for a bounded preview.",
+    evidenceIds: [], validUntil: "2026-10-09T00:00:00.000Z", permission: "not_required",
+    reviewedAt: initial, reviewedBy: employee.uid, updatedAt: initial, updatedBy: employee.uid});
+  const preview = await previewPartnerMarketingGrant(f.deps, employee, marketingScope);
+  const review = {...marketingScope, requestId: "marketing-review-one",
+    expectedMembershipRevision: preview.expectedMembershipRevision,
+    expectedGrantRevision: preview.expectedGrantRevision, sourceHash: preview.sourceHash,
+    expiresAt: "2026-10-08T00:00:00.000Z", reason: "Private staff review of this exact scope."};
+  return {...f, preview, review};
+}
+
+test("marketing review grants exact wording scope without employee, claim, publication or send rights", async () => {
+  const f = await marketingFixture(); const canonical = f.fake.read("organizers/organizer-one");
+  await assert.rejects(reviewPartnerMarketingGrant(f.deps, partner, f.review), {code: "permission-denied"});
+  const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+  assert.deepEqual(await reviewPartnerMarketingGrant(f.deps, employee, f.review), saved);
+  const result = await getPartnerMarketingAssets(f.deps, partner,
+    {grantId: saved.grantId, expectedGrantRevision: 1});
+  assert.equal(result.campaignId, marketingScope.campaignId);
+  assert.equal(result.channel, "email");
+  assert.deepEqual((result.assets as Array<Record<string, unknown>>).map((a) => a.assetId), ["asset-one"]);
+  for (const key of ["sendAuthority", "publicationAuthority", "guestAuthority", "providerAuthority"]) {
+    assert.equal(result[key], false);
+  }
+  assert.ok(!JSON.stringify(result).includes(employee.uid));
+  assert.ok(!JSON.stringify(result).includes("Private staff review"));
+  assert.ok(!JSON.stringify(result).includes("Private employee note"));
+  assert.deepEqual(f.fake.read("organizers/organizer-one"), canonical);
+  assert.equal(f.fake.entries().some(([path]) => /^(events|organizerCampaigns|eventAttendees|organizerContacts|salesOutreachDrafts)\//u.test(path)), false);
+  await assert.rejects(getPartnerMarketingAssets(f.deps, partner,
+    {grantId: saved.grantId, expectedGrantRevision: 1, channel: "whatsapp"}), {code: "invalid-argument"});
+});
+
+test("marketing source fences detect equal-text revision drift, private proof and changed assignment", async () => {
+  for (const change of ["revision", "wording", "private-proof", "withdrawal", "assignment"]) {
+    const f = await marketingFixture(); const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+    const asset = f.fake.read("salesIntelligenceClauses/asset-one")!;
+    if (change === "revision") f.fake.write("salesIntelligenceClauses/asset-one", {...asset, revision: 2});
+    if (change === "wording") f.fake.write("salesIntelligenceClauses/asset-one", {...asset, text: "Changed synthetic wording."});
+    if (change === "private-proof") f.fake.write("salesIntelligenceClauses/asset-one", {...asset, permission: "private_mention"});
+    if (change === "withdrawal") f.fake.write("salesIntelligenceClauses/asset-one", {...asset, state: "withdrawn"});
+    if (change === "assignment") f.fake.write("salesPartnerAssignments/organizer-one",
+      {...f.fake.read("salesPartnerAssignments/organizer-one"), revision: 3});
+    await assert.rejects(getPartnerMarketingAssets(f.deps, partner,
+      {grantId: saved.grantId, expectedGrantRevision: 1}), {code: "failed-precondition"});
+    await assert.rejects(reviewPartnerMarketingGrant(f.deps, employee, f.review), {code: "failed-precondition"});
+  }
+});
+
+test("marketing read is isolated and immediately rechecks membership, suppression, privacy, expiry and Auth", async () => {
+  for (const gate of ["foreign", "membership", "suppression", "privacy", "expiry", "auth"]) {
+    const f = await marketingFixture(); const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+    let actor = partner;
+    if (gate === "foreign") {
+      actor = {uid: "different-partner", roles: []};
+      await registerPartner(f.deps, actor, {...registration, requestId: "different-partner-register"});
+    }
+    if (gate === "membership") await revokePartnerAccess(f.deps, employee,
+      {requestId: "marketing-member-revoke", organizerId: null, partnerUid: partner.uid,
+        expectedRevision: 2, reason: "Access withdrawn."});
+    if (gate === "suppression") f.fake.write("organizerSalesAccounts/organizer-one",
+      {...f.fake.read("organizerSalesAccounts/organizer-one"), suppressionStatus: "suppressed"});
+    if (gate === "privacy") f.fake.write("salesPrivacyRestrictions/organizer-one", {status: "restricted"});
+    if (gate === "expiry") f.advance(5 * 86400000);
+    if (gate === "auth") f.revokeAuth();
+    await assert.rejects(getPartnerMarketingAssets(f.deps, actor,
+      {grantId: saved.grantId, expectedGrantRevision: 1}));
+  }
+});
+
+test("marketing review cannot extend source or assignment validity or select another organizer's asset", async () => {
+  const f = await marketingFixture();
+  await assert.rejects(reviewPartnerMarketingGrant(f.deps, employee,
+    {...f.review, expiresAt: "2026-10-10T00:00:00.000Z"}), {code: "failed-precondition"});
+  f.fake.write("salesIntelligenceClauses/asset-two", {...f.fake.read("salesIntelligenceClauses/asset-one"),
+    clauseId: "asset-two", organizerId: "foreign-organizer"});
+  await assert.rejects(previewPartnerMarketingGrant(f.deps, employee,
+    {...marketingScope, assetIds: ["asset-two"]}), {code: "failed-precondition"});
+  await assert.rejects(previewPartnerMarketingGrant(f.deps, employee,
+    {...marketingScope, assetIds: []}), {code: "invalid-argument"});
+  assert.deepEqual(f.fake.read("salesPartnerMemberships/partner-one")?.marketingGrants, []);
+});
+
+test("interrupted marketing review preserves no partial grant; exact retry recovers and changed material does not", async () => {
+  const f = await marketingFixture(); f.fake.failNextCommit = true;
+  await assert.rejects(reviewPartnerMarketingGrant(f.deps, employee, f.review));
+  assert.deepEqual(f.fake.read("salesPartnerMemberships/partner-one")?.marketingGrants, []);
+  assert.equal(f.fake.read("salesPartnerMemberships/partner-one")?.revision, 1);
+  const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+  assert.deepEqual(await reviewPartnerMarketingGrant(f.deps, employee, f.review), saved);
+  await assert.rejects(reviewPartnerMarketingGrant(f.deps, employee,
+    {...f.review, reason: "Changed review."}), {code: "already-exists"});
+  await assert.rejects(getPartnerMarketingAssets(f.deps, partner,
+    {grantId: saved.grantId, expectedGrantRevision: 0}), {code: "aborted"});
+});
+
+test("marketing revocation recovers exactly and is still possible after suppression or expired access", async () => {
+  const f = await marketingFixture(); const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+  f.fake.write("organizerSalesAccounts/organizer-one", {...f.fake.read("organizerSalesAccounts/organizer-one"), suppressionStatus: "suppressed"});
+  f.advance(7 * 86400000);
+  const revoke = {requestId: "marketing-revoke-one", partnerUid: partner.uid, grantId: saved.grantId,
+    expectedMembershipRevision: 2, expectedGrantRevision: 1, reason: "Campaign permission withdrawn."};
+  const result = await revokePartnerMarketingGrant(f.deps, employee, revoke);
+  assert.deepEqual(await revokePartnerMarketingGrant(f.deps, employee, revoke), result);
+  await assert.rejects(getPartnerMarketingAssets(f.deps, partner,
+    {grantId: saved.grantId, expectedGrantRevision: 2}), {code: "permission-denied"});
+});
+
+test("marketing reviewer authorizes its own Firebase identity without impersonating the assigned partner", async () => {
+  const f = await marketingFixture(); const seen: Array<{uid: string; staff: boolean}> = [];
+  const original = f.deps.checkAuth;
+  f.deps.checkAuth = async (actor, staff) => {
+    seen.push({uid: actor.uid, staff});
+    if (staff) assert.equal(actor.uid, employee.uid);
+    await original(actor, staff);
+  };
+  await previewPartnerMarketingGrant(f.deps, employee, marketingScope);
+  await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+  assert.ok(seen.length >= 4);
+  assert.ok(seen.every((entry) => entry.uid === employee.uid && entry.staff));
+});
+
+
+test("marketing underlying evidence edit, withdrawal and expiry invalidate the reviewed fingerprint", async () => {
+  for (const gate of ["edit", "withdrawal", "expiry", "missing"]) {
+    const f = await marketingFixture();
+    const source = {classification: "sales_private", organizerId: "organizer-one",
+      reviewerUid: employee.uid, reviewedAt: initial, observedAt: initial,
+      validThrough: "2026-10-09T00:00:00.000Z", summary: "Reviewed synthetic capability source"};
+    f.fake.write("salesEvidence/source-one", source);
+    f.fake.write("salesIntelligenceClauses/asset-one", {
+      ...f.fake.read("salesIntelligenceClauses/asset-one"), evidenceIds: ["source-one"]});
+    const preview = await previewPartnerMarketingGrant(f.deps, employee, marketingScope);
+    const review = {...f.review, sourceHash: preview.sourceHash};
+    const saved = await reviewPartnerMarketingGrant(f.deps, employee, review);
+    if (gate === "edit") f.fake.write("salesEvidence/source-one", {...source, summary: "Changed same-ID source"});
+    if (gate === "withdrawal") f.fake.write("salesEvidence/source-one", {...source, reviewerUid: null});
+    if (gate === "expiry") f.fake.write("salesEvidence/source-one", {...source, validThrough: initial});
+    if (gate === "missing") f.fake.write("salesEvidence/source-one", {});
+    await assert.rejects(getPartnerMarketingAssets(f.deps, partner,
+      {grantId: saved.grantId, expectedGrantRevision: 1}), {code: "failed-precondition"});
+    await assert.rejects(reviewPartnerMarketingGrant(f.deps, employee, review), {code: "failed-precondition"});
+  }
+});
+
+test("marketing final access and expiry fences reject changes across the last await and roll back grants", async () => {
+  for (const operation of ["review", "replay", "read", "preview"]) {
+    for (const gate of ["auth", "expiry"]) {
+      const f = await marketingFixture();
+      const saved = operation === "replay" || operation === "read" ?
+        await reviewPartnerMarketingGrant(f.deps, employee, f.review) : null;
+      const before = f.fake.read("salesPartnerMemberships/partner-one");
+      let checks = 0;
+      const last = operation === "review" ? 3 : operation === "preview" ? 2 : 3;
+      f.deps.checkAuth = async () => {
+        if (++checks !== last) return;
+        if (gate === "auth") throw new Error("Auth revoked at final boundary");
+        f.advance(10 * 86400000);
+      };
+      const action = operation === "read" ? getPartnerMarketingAssets(f.deps, partner,
+        {grantId: saved!.grantId, expectedGrantRevision: 1}) : operation === "preview" ?
+        previewPartnerMarketingGrant(f.deps, employee, marketingScope) :
+        reviewPartnerMarketingGrant(f.deps, employee, f.review);
+      await assert.rejects(action, gate === "auth" ? /Auth revoked at final boundary/u : {code: "permission-denied"});
+      assert.deepEqual(f.fake.read("salesPartnerMemberships/partner-one"), before);
+    }
+  }
+});
+
+test("persisted marketing grant material must match its immutable employee approval receipt", async () => {
+  for (const field of ["reason", "expiresAt", "reviewedBy", "approvedMembershipRevision", "approvalReceiptId"]) {
+    const f = await marketingFixture(); const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+    const membership = f.fake.read("salesPartnerMemberships/partner-one")!;
+    const grants = membership.marketingGrants as Array<Record<string, unknown>>;
+    const change = field === "expiresAt" ? "2026-10-07T00:00:00.000Z" :
+      field === "approvedMembershipRevision" ? 99 : field === "approvalReceiptId" ? "a".repeat(64) : "Changed reviewer material";
+    f.fake.write("salesPartnerMemberships/partner-one", {...membership,
+      marketingGrants: grants.map((g) => ({...g, [field]: change}))});
+    await assert.rejects(getPartnerMarketingAssets(f.deps, partner,
+      {grantId: saved.grantId, expectedGrantRevision: 1}), {code: "failed-precondition"});
+  }
+});
+
+
+test("marketing approval and revocation receipts and membership satisfy canonical source schemas", async () => {
+  const f = await marketingFixture(); const saved = await reviewPartnerMarketingGrant(f.deps, employee, f.review);
+  const ajv = new Ajv({strict: false, allErrors: true}); addFormats(ajv);
+  const root = path.resolve(__dirname, "../../../contracts/firestore");
+  const receipt = ajv.compile(JSON.parse(readFileSync(path.join(root,
+    "sales_action_receipts.schema.json"), "utf8")));
+  const membership = ajv.compile(JSON.parse(readFileSync(path.join(root,
+    "sales_partner_memberships.schema.json"), "utf8")));
+  assert.equal(membership(f.fake.read("salesPartnerMemberships/partner-one")), true,
+    JSON.stringify(membership.errors));
+  await revokePartnerMarketingGrant(f.deps, employee, {requestId: "schema-marketing-revoke",
+    partnerUid: partner.uid, grantId: saved.grantId, expectedMembershipRevision: 2,
+    expectedGrantRevision: 1, reason: "Synthetic permission withdrawal"});
+  assert.equal(membership(f.fake.read("salesPartnerMemberships/partner-one")), true,
+    JSON.stringify(membership.errors));
+  const rows = f.fake.entries().filter(([p, row]) => p.startsWith("salesActionReceipts/") &&
+    String(row.action).startsWith("partner.marketing."));
+  assert.equal(rows.length, 2);
+  for (const [, row] of rows) assert.equal(receipt(row), true, JSON.stringify(receipt.errors));
 });

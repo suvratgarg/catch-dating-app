@@ -10,7 +10,7 @@ import type {SalesPrincipal} from "../sales/types";
 import {requireAssignment} from "../../partners/service";
 import {expectRevision, type PartnerActor, type PartnerDeps} from "../../partners/model";
 import {Assessment, Clause, IntelligencePolicy, ScoreSnapshot,
-  evaluateScore, fail, hash, id, iso, object, parsePolicy, requestId,
+  currentReviewedEvidence, evaluateScore, fail, hash, id, iso, object, parsePolicy, requestId,
   revision, text, uniqueIds} from "./model";
 
 export interface IntelligenceDeps {
@@ -137,20 +137,6 @@ function accountOk(row: FirebaseFirestore.DocumentData | undefined,
   return row?.classification === "sales_private" &&
     row.organizerId === organizerId && row.researchStatus !== "archived" &&
     Number.isInteger(row.revision);
-}
-function currentReviewedEvidence(row: FirebaseFirestore.DocumentData | undefined,
-  organizerId: string, now: string): boolean {
-  const at = Date.parse(now);
-  const observed = Date.parse(String(row?.observedAt ?? ""));
-  const reviewed = Date.parse(String(row?.reviewedAt ?? ""));
-  return row?.classification === "sales_private" &&
-    row.organizerId === organizerId &&
-    typeof row.reviewerUid === "string" && row.reviewerUid.length > 0 &&
-    Number.isFinite(observed) && observed <= at &&
-    Number.isFinite(reviewed) && reviewed <= at &&
-    (!row.validThrough ||
-      (Number.isFinite(Date.parse(row.validThrough)) &&
-        Date.parse(row.validThrough) > at));
 }
 async function requireAccount(tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore, organizerId: string) {

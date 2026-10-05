@@ -41,7 +41,9 @@ export type SalesActionReceiptDocument = {
     | "partner.assignment.decide"
     | "partner.revoke"
     | "partner.assignment.update"
-    | "partner.demo.wording.propose";
+    | "partner.demo.wording.propose"
+    | "partner.marketing.review"
+    | "partner.marketing.revoke";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
