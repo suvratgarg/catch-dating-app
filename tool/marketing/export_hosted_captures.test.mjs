@@ -184,3 +184,33 @@ test("hosted workflow uses standard macOS with manual immutable source and read-
     assert.equal(result.status === 0, accepted);
   }
 });
+
+test("runner output path is initialized on the runner, never in job-level env", t => {
+  const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
+  const jobEnv = source.match(/^    env:\n([\s\S]*?)^    steps:/mu)?.[1];
+  assert.ok(jobEnv, "expected export job env block");
+  // GitHub evaluates job env before assigning a runner. These are its allowed
+  // contexts; runner belongs to step scope (GitHub context-availability table).
+  const allowed = new Set(["github", "needs", "strategy", "matrix", "vars", "secrets", "inputs"]);
+  const assertContexts = block => {
+    for (const match of block.matchAll(/\$\{\{\s*([a-z_]+)\./gu)) {
+      assert.ok(allowed.has(match[1]), `context ${match[1]} is unavailable in job-level env`);
+    }
+  };
+  assertContexts(jobEnv);
+  assert.throws(() => assertContexts(`${jobEnv}\n      CAPTURE_OUTPUT_DIR: \u0024{{ runner.temp }}/canonical-marketing-captures`), /runner is unavailable/);
+  const steps = extractSteps(source);
+  const initializeIndex = steps.findIndex(s => s.name === "Initialize runner output directory");
+  const exportIndex = steps.findIndex(s => s.name === "Render, frame, validate and package canonical outputs");
+  assert.ok(initializeIndex >= 0 && initializeIndex < exportIndex);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "capture-runner-env-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const envFile = path.join(directory, "env");
+  const runnerTemp = path.join(directory, "runner temp with spaces");
+  const result = spawnSync("bash", ["-c", steps[initializeIndex].run], {
+    env: {...process.env, RUNNER_TEMP: runnerTemp, GITHUB_ENV: envFile}, encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.readFileSync(envFile, "utf8"), `CAPTURE_OUTPUT_DIR=${runnerTemp}/canonical-marketing-captures\n`);
+  assert.match(source, /path: \$\{\{ env.CAPTURE_OUTPUT_DIR \}\}\//u);
+});

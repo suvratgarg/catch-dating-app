@@ -24,7 +24,6 @@ jobs:
     env:
       CAPTURE_SOURCE_SHA: ${{ inputs.source_sha }}
       CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
-      CAPTURE_OUTPUT_DIR: ${{ runner.temp }}/canonical-marketing-captures
       TZ: UTC
     steps:
       - name: Validate immutable source selection
@@ -35,6 +34,11 @@ jobs:
             echo 'A full lowercase commit SHA is required.' >&2
             exit 1
           }
+      - name: Initialize runner output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CAPTURE_OUTPUT_DIR=$RUNNER_TEMP/canonical-marketing-captures" >> "$GITHUB_ENV"
       - name: Checkout exporter at the workflow commit
         uses: actions/checkout@v6
         with:
