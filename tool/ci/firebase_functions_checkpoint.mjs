@@ -38,7 +38,8 @@ function projectFromScope(scope) {
     projectPattern.test(parts[2]), "Exact Firebase environment/project scope required.");
   return parts[2];
 }
-function paramsDigest(file, projectId) {
+export function readMaterializedParamsSha256(file, projectId) {
+  assert.match(projectId, projectPattern);
   assert.equal(path.basename(file), `.env.${projectId}`, "Expected materialized project params file.");
   const stat = fs.lstatSync(file);
   assert.ok(stat.isFile() && !stat.isSymbolicLink(), "Params must be a regular file.");
@@ -63,6 +64,10 @@ function deploymentIdentity(value, projectId, target) {
   string(value.serviceUid, "Cloud Run service uid");
   assert.match(value.serviceGeneration ?? "", /^[1-9][0-9]*$/, "Cloud Run generation required.");
   return structuredClone(value);
+}
+export function validateFunctionIdentity(value, {scope, target}) {
+  targets([target]);
+  return deploymentIdentity(value, projectFromScope(scope), target);
 }
 function revisionResource(service, revision) {
   string(revision, "Cloud Run revision");
@@ -148,8 +153,11 @@ export function verifyFunctionsDeployment(value, {functions, ...expected}) {
   return {postconditionsOnly: true};
 }
 
-export async function liveFunctions(projectId, selectedTargets, {runCommand = spawnSync, request = fetch} = {}) {
+export async function liveFunctions(projectId, selectedTargets, {runCommand = spawnSync, request = fetch, absentTargets = []} = {}) {
   assert.match(projectId, projectPattern);
+  assert.ok(Array.isArray(absentTargets));
+  if (absentTargets.length) targets(absentTargets);
+  assert.ok(absentTargets.every((target) => !selectedTargets.includes(target)));
   const expectedNames = new Set(targets(selectedTargets).map((target) =>
     `projects/${projectId}/locations/${region}/functions/${target.slice("functions:".length)}`));
   const tokenResult = runCommand("gcloud", ["auth", "print-access-token"], {encoding: "utf8", maxBuffer: 1024 * 1024});
@@ -162,17 +170,29 @@ export async function liveFunctions(projectId, selectedTargets, {runCommand = sp
   do {
     assert.ok(!seenPages.has(pageToken), "Repeated Function inventory page.");
     seenPages.add(pageToken);
-    const query = new URLSearchParams({pageSize: "100"});
+    const query = new URLSearchParams({pageSize: "100",
+      fields: "functions(name,state,environment,updateTime,buildConfig(build,sourceProvenance(resolvedStorageSource(bucket,object,generation))),serviceConfig(service,revision)),nextPageToken"});
     if (pageToken) query.set("pageToken", pageToken);
     const response = await request(`https://cloudfunctions.googleapis.com/v2/projects/${projectId}/locations/${region}/functions?${query}`,
       {headers: {Authorization: `Bearer ${token}`}, signal: AbortSignal.timeout(30_000)});
     assert.ok(response.ok, `Function deployment inventory failed with HTTP ${response.status}.`);
     const page = await response.json();
     assert.ok(Array.isArray(page.functions ?? []), "Invalid Function deployment inventory.");
-    functions.push(...(page.functions ?? []));
+    // Project metadata explicitly as well as requesting a server-side field
+    // mask. Unexpected API fields can never enter a returned receipt.
+    for (const fn of page.functions ?? []) {
+      const resolved = fn.buildConfig?.sourceProvenance?.resolvedStorageSource;
+      functions.push({name: fn.name, state: fn.state, environment: fn.environment, updateTime: fn.updateTime,
+        buildConfig: {build: fn.buildConfig?.build, sourceProvenance: {resolvedStorageSource: resolved &&
+          {bucket: resolved.bucket, object: resolved.object, generation: resolved.generation}}},
+        serviceConfig: {service: fn.serviceConfig?.service, revision: fn.serviceConfig?.revision}});
+    }
     pageToken = page.nextPageToken ?? "";
     assert.equal(typeof pageToken, "string");
   } while (pageToken);
+  assert.ok(absentTargets.every((target) => !functions.some((fn) =>
+    fn.name === `projects/${projectId}/locations/${region}/functions/${target.slice("functions:".length)}`)),
+  "An added Function already exists outside the accepted baseline.");
   const selected = functions.filter((fn) => expectedNames.has(fn?.name));
   assert.ok(selected.length === expectedNames.size && new Set(selected.map((fn) => fn.name)).size === expectedNames.size,
     "Selected Function inventory is missing or duplicated.");
@@ -183,10 +203,18 @@ export async function liveFunctions(projectId, selectedTargets, {runCommand = sp
       const service = fn.serviceConfig?.service;
       assert.match(service ?? "", new RegExp(`^projects/${projectId}/locations/${region}/services/[a-z][a-z0-9-]*$`),
         "Cloud Run service must remain in the approved Function project/region.");
-      const response = await request(`https://run.googleapis.com/v2/${service}`,
+      const fields = "name,uid,generation,observedGeneration,reconciling,terminalCondition(state),latestReadyRevision,latestCreatedRevision,trafficStatuses(type,percent,revision,tag)";
+      const response = await request(`https://run.googleapis.com/v2/${service}?${new URLSearchParams({fields})}`,
         {headers: {Authorization: `Bearer ${token}`}, signal: AbortSignal.timeout(30_000)});
       assert.ok(response.ok, `Cloud Run serving inventory failed with HTTP ${response.status}.`);
-      fn.runService = await response.json();
+      const metadata = await response.json();
+      fn.runService = Object.fromEntries(["name", "uid", "generation", "observedGeneration", "reconciling",
+        "latestReadyRevision", "latestCreatedRevision"].filter((key) => metadata[key] !== undefined)
+        .map((key) => [key, metadata[key]]));
+      fn.runService.terminalCondition = {state: metadata.terminalCondition?.state};
+      fn.runService.trafficStatuses = metadata.trafficStatuses?.map((traffic) =>
+        Object.fromEntries(["type", "percent", "revision", "tag"].filter((key) => traffic[key] !== undefined)
+          .map((key) => [key, traffic[key]])));
     }
   }));
   return selected;
@@ -201,6 +229,32 @@ export async function restoreCheckpointArchive({
   assert.equal(producer.status, "completed", "Recovery producer must be terminal.");
   assert.ok(["failure", "cancelled", "timed_out", "stale", "action_required", "startup_failure"].includes(producer.conclusion),
     "Recovery producer must be non-success.");
+  return readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
+    scope, manifest, request, producer});
+}
+
+// A successful rebaseline is immutable historical evidence, not failed-stage
+// recovery. Serving state and params must still be read afresh by its consumer.
+export async function readSuccessfulBaselineArchive(input) {
+  const {repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
+    scope, request = lanes.githubRequest} = input;
+  const manifest = structuredClone(input.manifest);
+  const producer = await lanes.verifyWorkflowRun({repository, repositoryId, runId, runAttempt, role: "cursor", request});
+  assert.equal(producer.path?.split("@")[0], ".github/workflows/backend-rebaseline.yml");
+  assert.equal(producer.event, "workflow_dispatch");
+  assert.equal(producer.status, "completed");
+  assert.equal(producer.conclusion, "success");
+  assert.equal(producer.head_sha, manifest.sourceSha, "Baseline producer/source mismatch.");
+  const entries = await readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId,
+    artifactDigest, manifest, scope, request, producer});
+  const state = validateCheckpointState(manifest, entries[checkpointFile], scope);
+  assert.equal(resolveFirstIncompleteStage(manifest, state, scope).complete, true);
+  assert.ok(Object.hasOwn(entries, FUNCTIONS_DEPLOYMENT_FILE), "Baseline Functions deployment proof required.");
+  return entries;
+}
+
+async function readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
+  scope, manifest, request, producer}) {
   assert.ok(Number.isSafeInteger(artifactId) && artifactId > 0);
   assert.match(artifactDigest ?? "", /^sha256:[0-9a-f]{64}$/);
   const [_, environment, projectId] = scope.split(":");
@@ -294,7 +348,7 @@ export async function executeFunctionsCheckpointCli(argv, {readFunctions = liveF
   }
   const expected = {manifest, scope, baseSha: required(args, "base-sha"),
     selectedTargets: required(args, "targets").split(","),
-    paramsSha256: paramsDigest(required(args, "params-file"), projectFromScope(scope))};
+    paramsSha256: readMaterializedParamsSha256(required(args, "params-file"), projectFromScope(scope))};
   assert.match(expected.baseSha, shaPattern);
   targets(expected.selectedTargets);
   if (command === "verify" && !fs.existsSync(proofPath)) return {postconditionsOnly: false};

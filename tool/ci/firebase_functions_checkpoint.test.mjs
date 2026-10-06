@@ -11,7 +11,8 @@ import {
 } from "./delivery_core.mjs";
 import {
   FUNCTIONS_DEPLOYMENT_FILE, captureFunctionIdentities, executeFunctionsCheckpointCli,
-  liveFunctions, prepareFunctionsDeployment, restoreCheckpointArchive, validateFunctionsDeployment, verifyFunctionsDeployment,
+  liveFunctions, prepareFunctionsDeployment, restoreCheckpointArchive, readSuccessfulBaselineArchive,
+  validateFunctionsDeployment, verifyFunctionsDeployment,
 } from "./firebase_functions_checkpoint.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -131,16 +132,27 @@ test("metadata reader paginates Functions and independently reads only selected 
       assert.equal(options.headers.Authorization, "Bearer fixture-private-token");
       requested.push(url);
       if (url.includes("cloudfunctions.googleapis.com")) {
-        const second = new URL(url).searchParams.get("pageToken") === "next";
+        const parsed = new URL(url);
+        assert.equal(parsed.searchParams.get("fields"), "functions(name,state,environment,updateTime,buildConfig(build,sourceProvenance(resolvedStorageSource(bucket,object,generation))),serviceConfig(service,revision)),nextPageToken");
+        const second = parsed.searchParams.get("pageToken") === "next";
         const functions = (second ? inventory.slice(1) : inventory.slice(0, 1)).map(({runService, ...fn}) => fn);
-        return {ok: true, json: async () => ({functions, ...(second ? {} : {nextPageToken: "next"})})};
+        return {ok: true, json: async () => ({functions: functions.map((fn) => ({...fn,
+          serviceConfig: {...fn.serviceConfig, environmentVariables: {PRIVATE_CANARY: "fixture-payload-never-return"}},
+          buildConfig: {...fn.buildConfig, environmentVariables: {PRIVATE_BUILD: "fixture-payload-never-return"}}})),
+          ...(second ? {} : {nextPageToken: "next"})})};
       }
-      const fn = inventory.find((candidate) => url === `https://run.googleapis.com/v2/${candidate.serviceConfig.service}`);
+      const parsed = new URL(url);
+      assert.equal(parsed.searchParams.get("fields"), "name,uid,generation,observedGeneration,reconciling,terminalCondition(state),latestReadyRevision,latestCreatedRevision,trafficStatuses(type,percent,revision,tag)");
+      const fn = inventory.find((candidate) => parsed.origin + parsed.pathname === `https://run.googleapis.com/v2/${candidate.serviceConfig.service}`);
       assert.ok(fn, `Unexpected service read: ${url}`);
-      return {ok: true, json: async () => structuredClone(fn.runService)};
+      return {ok: true, json: async () => ({...structuredClone(fn.runService),
+        template: {containers: [{env: [{name: "PRIVATE_CANARY", value: "fixture-payload-never-return"}]}]},
+        terminalCondition: {...fn.runService.terminalCondition, message: "fixture-payload-never-return"}})};
     },
   };
-  assert.deepEqual(await liveFunctions("demo-project", selectedTargets, dependencies), inventory.slice(0, 2));
+  const metadata = await liveFunctions("demo-project", selectedTargets, dependencies);
+  assert.deepEqual(metadata, inventory.slice(0, 2));
+  assert.equal(JSON.stringify(metadata).includes("fixture-payload-never-return"), false);
   assert.equal(requested.length, 4);
   assert.ok(requested.every((url) => !url.includes("unselected") && !url.includes("fixture-private-token")));
   requested = [];
@@ -152,6 +164,47 @@ test("metadata reader paginates Functions and independently reads only selected 
   await assert.rejects(liveFunctions("demo-project", selectedTargets, {...dependencies,
     request: async () => ({ok: true, json: async () => ({functions: [inventory[0], inventory[0]]})}),
   }), /missing or duplicated/);
+  requested = [];
+  await assert.rejects(liveFunctions("demo-project", selectedTargets, {...dependencies,
+    absentTargets: ["functions:unselected"]}), /added Function already exists/);
+  assert.equal(requested.some((url) => url.includes("run.googleapis.com")), false);
+});
+
+test("successful baseline archives require the exact trusted rebaseline producer and complete source-bound proof", async (t) => {
+  const f = await fixture(t);
+  let state = createCheckpointState(f.manifest, scope);
+  for (const stage of f.manifest.stages) state = recordStageCheckpoint({manifest: f.manifest,
+    state, scope, stage, status: "passed"}).state;
+  const entries = {"checkpoint.json": state, "functions-deployment.json": f.proof};
+  const g = githubFixture(f, entries);
+  Object.assign(g.run, {path: ".github/workflows/backend-rebaseline.yml", head_sha: sha,
+    event: "workflow_dispatch", conclusion: "success"});
+  g.metadata.workflow_run.head_sha = sha;
+  g.responses.set("repos/owner/catch/actions/workflows/backend-rebaseline.yml", {id: 88, path: g.run.path});
+  assert.deepEqual(await readSuccessfulBaselineArchive(g.args), entries);
+  await assert.rejects(restoreCheckpointArchive(g.args), /Unexpected producer workflow path/);
+  for (const [object, field, value] of [
+    [g.run, "conclusion", "failure"], [g.run, "status", "in_progress"],
+    [g.run, "event", "pull_request"], [g.run, "head_branch", "feature"],
+    [g.run, "head_sha", "d".repeat(40)], [g.run, "workflow_id", 99],
+    [g.run.head_repository, "id", 99], [g.metadata, "expired", true],
+    [g.metadata, "digest", `sha256:${hash("different bytes")}`],
+    [g.metadata.workflow_run, "head_sha", "d".repeat(40)],
+  ]) {
+    const previous = object[field]; object[field] = value;
+    await assert.rejects(readSuccessfulBaselineArchive(g.args)); object[field] = previous;
+  }
+  for (const invalidEntries of [
+    {"checkpoint.json": createCheckpointState(f.manifest, scope), "functions-deployment.json": f.proof},
+    {"checkpoint.json": state},
+    {"checkpoint.json": state, "functions-deployment.json": {...f.proof,
+      provenance: {...f.proof.provenance, sourceSha: "d".repeat(40)}}},
+  ]) {
+    const bytes = zipFiles(f.directory, invalidEntries);
+    g.metadata.digest = `sha256:${hash(bytes)}`;
+    g.responses.set("repos/owner/catch/actions/artifacts/123/zip", bytes);
+    await assert.rejects(readSuccessfulBaselineArchive({...g.args, artifactDigest: g.metadata.digest}));
+  }
 });
 
 test("changed source, attempt, project, base, targets, params or live revision cannot skip deployment", async (t) => {
