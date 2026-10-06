@@ -164,8 +164,16 @@ const _intakeReview = HostRosterIntakeReview(
       displayName: 'Maya Iyer',
       externalReference: 'ticket-4',
       kind: 'identityConflict',
-      changedFields: [],
-      issueCode: 'shared-phone-identity',
+      changedFields: ['phone'],
+      fieldChanges: [
+        HostRosterIntakeFieldChange(
+          field: 'phone',
+          currentValue: null,
+          proposedValue: '+919876543210',
+          origin: 'upload',
+        ),
+      ],
+      issueCode: 'contact-belongs-to-another-attendee',
     ),
     HostRosterIntakePreviewRow(
       rowId: '5',
