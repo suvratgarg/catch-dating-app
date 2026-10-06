@@ -5,11 +5,15 @@ import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostRosterIntakeRepositoryProvider = Provider<HostRosterIntakeRepository>(
-  (ref) => HostRosterIntakeRepository(ref.watch(firebaseFunctionsProvider)),
-);
+part 'host_roster_intake_repository.g.dart';
+
+// keepalive: one callable client owns saved review start, resume, revise, and
+// apply operations across the event-scoped intake surface.
+@Riverpod(keepAlive: true)
+HostRosterIntakeRepository hostRosterIntakeRepository(Ref ref) =>
+    HostRosterIntakeRepository(ref.watch(firebaseFunctionsProvider));
 
 class HostRosterIntakeRepository {
   const HostRosterIntakeRepository(this._functions);
