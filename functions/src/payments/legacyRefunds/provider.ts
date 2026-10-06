@@ -3,10 +3,18 @@ import {RazorpayPaymentProvider, FormPaymentProviderError} from
   "../formPayments/razorpayPaymentProvider";
 import {razorpayKeyId, razorpayKeySecret} from "../razorpay";
 import {stripeSecretKey} from "../stripe";
-import type {LegacyRefundAttempt, LegacyRefundIntent} from "./intent";
+import {assertLegacyRazorpayRefundAuthorization,
+  type LegacyRazorpayRefundAuthorization,
+  type LegacyRefundAttempt, type LegacyRefundIntent} from "./intent";
 import type {LegacyRefundObservation, LegacyRefundProvider} from "./processor";
 
 import {LegacyRefundReviewRequired} from "./errors";
+import {
+  assertRazorpayOrderOwnership,
+  type OwnedRazorpayOrderEvidence,
+  razorpayRuntimeProject,
+  resolveRazorpayOrderOwnership,
+} from "../razorpayOrderOwnership";
 
 /** Native checkout used Catch's platform credentials. Organizer routing changes
  * cannot redirect an existing refund to a different account or provider.
@@ -21,18 +29,24 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
   stripeSecret: () => stripeSecretKey.value()}) {}
 
   async verifyPayment(payment: PaymentDocument, intent: LegacyRefundIntent):
-    Promise<void> {
+    Promise<unknown> {
     if (intent.provider === "razorpay") {
       if (intent.currency !== "INR" || intent.attempts.some((attempt) =>
         attempt.state === "pending" && attempt.amountMinor < 100)) review();
       const {client, token} = this.razorpay();
-      const observed = await razorpayResult(client.fetchPayment(token,
-        intent.providerPaymentId));
+      const [authorization, observed] = await Promise.all([
+        this.authorizeRazorpayRefund(payment),
+        razorpayResult(client.fetchPayment(token, intent.providerPaymentId)),
+      ]);
+      assertLegacyRazorpayRefundAuthorization(payment, authorization);
+      if (intent.razorpayOwnership?.projectId !==
+          authorization.runtimeProjectId ||
+          intent.razorpayOwnership.schema !== "1") review();
       if (observed.orderId !== intent.orderId ||
           observed.amount !== payment.amount ||
           observed.currency !== intent.currency || !observed.captured ||
           !["captured", "refunded"].includes(observed.status)) review();
-      return;
+      return authorization;
     }
     if (!intent.stripeAccountId ||
         !/^acct_[A-Za-z0-9]+$/u.test(intent.stripeAccountId)) review();
@@ -48,11 +62,32 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
         observed.on_behalf_of !== intent.stripeAccountId ||
         (observed.application_fee_amount ?? 0) !==
           (payment.applicationFeeAmount ?? 0)) review();
+    return undefined;
   }
 
-  async createRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt):
+  /** Fresh order ownership proof used before any Razorpay refund intent or
+   * provider effect. Persisted payment context can constrain but never create
+   * this capability.
+   */
+  async authorizeRazorpayRefund(payment: PaymentDocument):
+    Promise<LegacyRazorpayRefundAuthorization> {
+    if ((payment.provider ?? "razorpay") !== "razorpay") review();
+    const order = await this.razorpayOrder(payment.orderId);
+    const runtimeProjectId = razorpayRuntimeProject();
+    const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
+      order, frozenContexts: [payment.razorpayOwnership,
+        payment.cancellationRefund?.razorpayOwnership]});
+    if (ownership.kind !== "owned") review();
+    const authorization = {evidence: ownership.evidence, runtimeProjectId};
+    assertLegacyRazorpayRefundAuthorization(payment, authorization);
+    return authorization;
+  }
+
+  async createRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt,
+    authorization?: unknown):
     Promise<LegacyRefundObservation> {
     if (intent.provider === "razorpay") {
+      requireRazorpayAuthorization(authorization, intent.orderId);
       const {client, token} = this.razorpay();
       const result = await razorpayResult(client.refundPayment(token, {
         paymentId: intent.providerPaymentId, amount: attempt.amountMinor,
@@ -67,11 +102,13 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
       attempt.idempotencyKey));
   }
 
-  async fetchRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt):
+  async fetchRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt,
+    authorization?: unknown):
     Promise<LegacyRefundObservation> {
     const id = attempt.providerRefundId;
     if (!id) review();
     if (intent.provider === "razorpay") {
+      requireRazorpayAuthorization(authorization, intent.orderId);
       const {client, token} = this.razorpay();
       const result = await razorpayResult(client.fetchRefund(token, id));
       return {id: result.id, paymentId: result.paymentId,
@@ -91,6 +128,36 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
       authorization: () => `Basic ${Buffer.from(
         `${credentials.keyId}:${credentials.secret}`).toString("base64")}`,
     }, this.config.fetchImpl), token: credentials.secret};
+  }
+
+  private async razorpayOrder(orderId: string): Promise<{
+    id: unknown; notes?: unknown;
+  }> {
+    if (!/^order_[A-Za-z0-9]+$/u.test(orderId)) review();
+    const credentials = this.config.razorpayCredentials();
+    if (!credentials.keyId || !credentials.secret) {
+      throw new Error("Native refund credentials are unavailable.");
+    }
+    let response: Response;
+    try {
+      response = await (this.config.fetchImpl ?? fetch)(
+        `https://api.razorpay.com/v1/orders/${orderId}`, {
+          method: "GET", redirect: "error", signal: AbortSignal.timeout(15_000),
+          headers: {Authorization: `Basic ${Buffer.from(
+            `${credentials.keyId}:${credentials.secret}`).toString("base64")}`,
+          },
+        });
+    } catch {
+      throw new Error("Native refund provider request failed.");
+    }
+    if (!response.ok) {
+      await response.body?.cancel().catch(() => undefined);
+      if (permanentRejection(response.status)) review();
+      throw new Error("Native refund provider request failed.");
+    }
+    const body = await boundedJson(response);
+    if (body.entity !== "order" || body.id !== orderId) review();
+    return {id: body.id, notes: body.notes};
   }
 
   /** Bounded transport never puts provider bodies or credentials in logs. */
@@ -130,6 +197,41 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
     }
     return record(JSON.parse(Buffer.concat(chunks).toString("utf8")));
   }
+}
+
+function requireRazorpayAuthorization(value: unknown, orderId: string): void {
+  try {
+    const authorization = value as LegacyRazorpayRefundAuthorization;
+    assertRazorpayOrderOwnership({
+      evidence: authorization.evidence as OwnedRazorpayOrderEvidence,
+      orderId,
+      runtimeProjectId: authorization.runtimeProjectId,
+    });
+    if (authorization.runtimeProjectId !== razorpayRuntimeProject()) review();
+  } catch {
+    review();
+  }
+}
+
+async function boundedJson(response: Response):
+  Promise<Record<string, unknown>> {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error("Native refund response is unavailable.");
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      size += value.length;
+      if (size > 64 * 1024) throw new Error("Refund response exceeds limit.");
+      chunks.push(value);
+    }
+  } finally {
+    await reader.cancel().catch(() => undefined);
+    reader.releaseLock();
+  }
+  return record(JSON.parse(Buffer.concat(chunks).toString("utf8")));
 }
 
 function stripeRefund(value: Record<string, unknown>): LegacyRefundObservation {

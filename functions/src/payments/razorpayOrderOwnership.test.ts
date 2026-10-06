@@ -12,14 +12,16 @@ const project = "catchdates-dev";
 const foreign = "catch-dating-app-64e51";
 const ownContext = {projectId: project, schema: "1"};
 
-test("runtime identity has no default and rejects ambiguous authorities", () => {
-  for (const input of [{}, {gcloudProject: ""}, {adminProjectId: "574779808785"},
-    {adminProjectId: project, gcloudProject: foreign}]) {
-    assert.throws(() => resolveRazorpayRuntimeProject(input), /unavailable/);
-  }
-  assert.equal(resolveRazorpayRuntimeProject({adminProjectId: project,
-    gcloudProject: project, legacyGcloudProject: project}), project);
-});
+test("runtime identity has no default and rejects ambiguous authorities",
+  () => {
+    for (const input of [{}, {gcloudProject: ""},
+      {adminProjectId: "574779808785"},
+      {adminProjectId: project, gcloudProject: foreign}]) {
+      assert.throws(() => resolveRazorpayRuntimeProject(input), /unavailable/);
+    }
+    assert.equal(resolveRazorpayRuntimeProject({adminProjectId: project,
+      gcloudProject: project, legacyGcloudProject: project}), project);
+  });
 
 test("foreign provider marker wins over cloned local origin/context", () => {
   const result = resolveRazorpayOrderOwnership({runtimeProjectId: project,
@@ -29,20 +31,23 @@ test("foreign provider marker wins over cloned local origin/context", () => {
   assert.equal(result.kind, "foreign");
 });
 
-test("bare legacy records never establish origin for an unmarked order", () => {
-  assert.equal(resolveRazorpayOrderOwnership({runtimeProjectId: project,
-    order: {id: "order_1", notes: {eventId: "local_event", userId: "local_user"}},
-    frozenContexts: [ownContext]}).kind, "unknown");
-});
+test("bare legacy records never establish origin for an unmarked order",
+  () => {
+    assert.equal(resolveRazorpayOrderOwnership({runtimeProjectId: project,
+      order: {id: "order_1", notes: {
+        eventId: "local_event", userId: "local_user"}},
+      frozenContexts: [ownContext]}).kind, "unknown");
+  });
 
-test("own new marker establishes origin without best-effort pending record", () => {
-  const result = resolveRazorpayOrderOwnership({runtimeProjectId: project,
-    order: {id: "order_1", notes: razorpayOwnershipNotes(project)}});
-  assert.equal(result.kind, "owned");
-  if (result.kind !== "owned") assert.fail("Expected owned evidence");
-  assert.deepEqual(assertRazorpayOrderOwnership({evidence: result.evidence,
-    orderId: "order_1", runtimeProjectId: project}), ownContext);
-});
+test("own new marker establishes origin without best-effort pending record",
+  () => {
+    const result = resolveRazorpayOrderOwnership({runtimeProjectId: project,
+      order: {id: "order_1", notes: razorpayOwnershipNotes(project)}});
+    assert.equal(result.kind, "owned");
+    if (result.kind !== "owned") assert.fail("Expected owned evidence");
+    assert.deepEqual(assertRazorpayOrderOwnership({evidence: result.evidence,
+      orderId: "order_1", runtimeProjectId: project}), ownContext);
+  });
 
 test("partial, unsupported or malformed markers never fall back to local rows",
   () => {

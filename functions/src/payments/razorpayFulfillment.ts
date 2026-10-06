@@ -8,6 +8,9 @@ import {
 import {VerifiedPaymentBooking} from "./paymentValidation";
 import {NativePaidBooking, stageRejectedNativeBooking} from "./nativeBooking";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
+import type {RazorpayOwnershipContext} from "./razorpayOrderOwnership";
+import type {LegacyRazorpayRefundAuthorization} from
+  "./legacyRefunds/intent";
 
 export interface RazorpayFulfillmentDeps {
   signUpForEvent: typeof signUpUserForEvent;
@@ -31,12 +34,16 @@ export async function fulfillRazorpayPayment({
   orderId,
   paymentId,
   booking,
+  razorpayOwnership,
+  razorpayAuthorization,
   deps,
 }: {
   db: FirebaseFirestore.Firestore;
   orderId: string;
   paymentId: string;
   booking: VerifiedPaymentBooking;
+  razorpayOwnership?: RazorpayOwnershipContext;
+  razorpayAuthorization?: LegacyRazorpayRefundAuthorization;
   deps: RazorpayFulfillmentDeps;
 }): Promise<{fulfilled: boolean; alreadyFinalized: boolean}> {
   const inviteAttribution = inviteAttributionFromBooking(booking);
@@ -59,6 +66,7 @@ export async function fulfillRazorpayPayment({
     userId: booking.userId, orderId, paymentId, eventId: booking.eventId,
     amount: booking.amountInPaise, amountMinor: booking.amountInPaise,
     currency: booking.currency, provider: "razorpay",
+    ...(razorpayOwnership ? {razorpayOwnership} : {}),
     ...(booking.inviteLinkId ? {inviteLinkId: booking.inviteLinkId} : {}),
     ...(booking.inviteSource ? {inviteSource: booking.inviteSource} : {}),
     ...(booking.crossPathsPairHoldId ?
@@ -81,7 +89,7 @@ export async function fulfillRazorpayPayment({
     });
   } catch (signUpError) {
     const outcome = await stageRejectedNativeBooking({db,
-      booking: paidBooking});
+      booking: paidBooking, razorpayAuthorization});
     if (outcome === "admitted") {
       await deletePendingOrderBestEffort(db, orderId);
       return {fulfilled: true, alreadyFinalized: true};
@@ -158,6 +166,7 @@ export async function writeRazorpayPendingOrder({
   currency,
   serverTimestamp,
   crossPathsPairHoldId,
+  razorpayOwnership,
 }: {
   db: FirebaseFirestore.Firestore;
   orderId: string;
@@ -167,6 +176,7 @@ export async function writeRazorpayPendingOrder({
   currency: string;
   serverTimestamp: () => unknown;
   crossPathsPairHoldId?: string | null;
+  razorpayOwnership: RazorpayOwnershipContext;
 }): Promise<void> {
   await db.collection("razorpayPendingOrders").doc(orderId).set({
     provider: "razorpay" as const,
@@ -176,6 +186,7 @@ export async function writeRazorpayPendingOrder({
     amountInPaise,
     currency,
     ...(crossPathsPairHoldId ? {crossPathsPairHoldId} : {}),
+    razorpayOwnership,
     status: "pending" as const,
     createdAt: serverTimestamp(),
   });

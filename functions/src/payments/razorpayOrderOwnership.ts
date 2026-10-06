@@ -42,7 +42,9 @@ export function razorpayRuntimeProject(): string {
   let adminProjectId: unknown;
   // Tests may not initialize the default Admin app. Production can resolve its
   // explicit environment authority, but disagreement with Admin always fails.
-  try { adminProjectId = admin.app().options.projectId; } catch {
+  try {
+    adminProjectId = admin.app().options.projectId;
+  } catch {
     adminProjectId = undefined;
   }
   return resolveRazorpayRuntimeProject({adminProjectId,

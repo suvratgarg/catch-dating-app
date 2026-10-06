@@ -25,6 +25,11 @@ import {
 import type {VerifyRazorpayPaymentCallablePayload} from
   "../shared/generated/verifyRazorpayPaymentCallablePayload";
 import {validateCallableWithAjv} from "../shared/validation";
+import {
+  assertRazorpayOrderOwnership,
+  razorpayRuntimeProject,
+  resolveRazorpayOrderOwnership,
+} from "./razorpayOrderOwnership";
 
 interface VerifyRazorpayPaymentDeps {
   createClient: () => Razorpay;
@@ -37,6 +42,7 @@ interface VerifyRazorpayPaymentDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  runtimeProjectId?: () => string;
 }
 
 const defaultDeps: VerifyRazorpayPaymentDeps = {
@@ -46,6 +52,7 @@ const defaultDeps: VerifyRazorpayPaymentDeps = {
   signUpForEvent: signUpUserForEvent,
   verifySignature: verifyPaymentSignature,
   checkRateLimit: defaultCheckRateLimit,
+  runtimeProjectId: razorpayRuntimeProject,
 };
 
 /**
@@ -78,10 +85,40 @@ export async function verifyRazorpayPaymentHandler(
   }
 
   const razorpay = deps.createClient();
-  const [order, payment] = await Promise.all([
+  const paymentRef = db.collection("payments").doc(paymentId);
+  const pendingRef = db.collection("razorpayPendingOrders").doc(orderId);
+  const [order, payment, localPayment, pendingOrder] = await Promise.all([
     razorpay.orders.fetch(orderId),
     razorpay.payments.fetch(paymentId),
+    paymentRef.get(),
+    pendingRef.get(),
   ]);
+  const runtimeProjectId =
+    (deps.runtimeProjectId ?? razorpayRuntimeProject)();
+  const ownership = resolveRazorpayOrderOwnership({
+    runtimeProjectId,
+    order,
+    frozenContexts: [
+      localPayment.data()?.razorpayOwnership,
+      pendingOrder.data()?.razorpayOwnership,
+    ],
+  });
+  if (ownership.kind !== "owned") {
+    throw new HttpsError("failed-precondition",
+      "This payment needs ownership reconciliation.");
+  }
+  const razorpayOwnership = assertRazorpayOrderOwnership({
+    evidence: ownership.evidence,
+    orderId,
+    runtimeProjectId,
+  });
+  const razorpayAuthorization = {evidence: ownership.evidence,
+    runtimeProjectId};
+
+  if (isExactTerminalRefundReplay({order, payment,
+    localPayment: localPayment.data(), orderId, paymentId, userId})) {
+    return {verified: true, eventId: orderNote(order, "eventId")!};
+  }
   const booking = verifyPaidEventBooking({
     order,
     payment,
@@ -96,6 +133,8 @@ export async function verifyRazorpayPaymentHandler(
     orderId,
     paymentId,
     booking,
+    razorpayOwnership,
+    razorpayAuthorization,
     deps: {
       signUpForEvent: deps.signUpForEvent,
       serverTimestamp: deps.serverTimestamp,
@@ -107,6 +146,39 @@ export async function verifyRazorpayPaymentHandler(
       "This booking was not admitted. Check its refund status in Payments.");
   }
   return {verified: true, eventId: booking.eventId};
+}
+
+function isExactTerminalRefundReplay(input: {
+  order: {id: string; amount: string | number; currency: string;
+    notes?: Record<string, string | number | null> | null};
+  payment: {id: string; order_id: string; amount: string | number;
+    currency: string; status: string; amount_refunded?: number};
+  localPayment: FirebaseFirestore.DocumentData | undefined;
+  orderId: string;
+  paymentId: string;
+  userId: string;
+}): boolean {
+  const {order, payment, localPayment, orderId, paymentId, userId} = input;
+  if (!localPayment || !["refunded", "refundFailed"]
+    .includes(String(localPayment.status))) return false;
+  const amount = Number(order.amount);
+  return order.id === orderId && payment.id === paymentId &&
+    payment.order_id === orderId && Number.isSafeInteger(amount) &&
+    amount > 0 &&
+    Number(payment.amount) === amount && payment.currency === order.currency &&
+    payment.status === "refunded" && payment.amount_refunded === amount &&
+    localPayment.provider === "razorpay" && localPayment.orderId === orderId &&
+    localPayment.paymentId === paymentId && localPayment.userId === userId &&
+    localPayment.eventId === orderNote(order, "eventId") &&
+    localPayment.amount === amount && localPayment.currency === order.currency;
+}
+
+function orderNote(
+  order: {notes?: Record<string, string | number | null> | null},
+  key: string
+): string | null {
+  const value = order.notes?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 /**

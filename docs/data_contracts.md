@@ -1808,9 +1808,23 @@ destination refunds reverse the original transfer and proportionate application
 fee when present. Historical refunded records without amount evidence are not
 assumed to prove a partial or full refund.
 
-The cancelled-event trigger stages every completed payment in bounded pages;
-a payment trigger covers captures observed after cancellation. A bounded oldest
-due queue retries pending intents without a payment-age cutoff. Guest/provider
+The cancelled-event trigger stages eligible Stripe payments in bounded pages;
+a payment trigger covers captures observed after cancellation. The
+unsecret-bound event path never stages Razorpay. The existing secret-bound recovery
+scheduler advances `nativeRefundRecoveryCursors/cancelledRazorpayPayments` and
+fetches fresh provider-order ownership before any Razorpay refund-intent write.
+A bounded oldest-due queue retries pending intents without a payment-age cutoff.
+It advances the server-only, project-bound
+`nativeRefundRecoveryCursors/pendingRefunds` cursor before provider work and
+wraps after a short page, so foreign, unknown, unavailable, or malformed oldest
+rows cannot starve later owned Razorpay or Stripe work across invocations.
+Cursor revision compare-and-set rejects stale concurrent progress, and malformed
+or foreign cursor authority stops before payment discovery. Due-order cursor
+keys use canonical tagged strings so fractional and non-finite Firestore numbers
+can advance without allowing raw non-finite values into the persisted schema;
+raw integer values retain exact signed-int64 decimals and resume as bigint rather
+than passing through JavaScript's lossy number range;
+payment document IDs up to Firestore's 1,500-byte limit remain representable. Guest/provider
 failure does not roll back the already committed cancellation. Existing historical
 cancelled events with no refund intent require reviewed reconciliation before
 activation; the trigger does not invent historical guest refund terms.

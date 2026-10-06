@@ -754,6 +754,7 @@ Do not edit it by hand.
 | HostAnalyticsEvent | `bigquery/host_analytics_event.schema.json` | `functions/src/shared/generated/hostAnalyticsEvent.ts` |
 | UserProfileExposureEvent | `bigquery/user_profile_exposure_event.schema.json` | `functions/src/shared/generated/userProfileExposureEvent.ts` |
 | PaymentDocument | `firestore/payments.schema.json` | `functions/src/shared/generated/paymentDocument.ts` |
+| NativeRefundRecoveryCursorDocument | `firestore/native_refund_recovery_cursor.schema.json` | `functions/src/shared/generated/nativeRefundRecoveryCursorDocument.ts` |
 | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `functions/src/shared/generated/hostPaymentAccountDocument.ts` |
 | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `functions/src/shared/generated/razorpayPendingOrderDocument.ts` |
 | SwipeDocument | `firestore/swipes.schema.json` | `functions/src/shared/generated/swipeDocument.ts` |
@@ -1937,6 +1938,7 @@ Do not edit it by hand.
 | `schemaHostAnalyticsEventSchema` | HostAnalyticsEvent | `bigquery/host_analytics_event.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_event.g.dart` |
 | `schemaUserProfileExposureEventSchema` | UserProfileExposureEvent | `bigquery/user_profile_exposure_event.schema.json` | `lib/core/schema_contracts/generated/schemas/user_profile_exposure_event.g.dart` |
 | `schemaPaymentDocumentSchema` | PaymentDocument | `firestore/payments.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_document.g.dart` |
+| `schemaNativeRefundRecoveryCursorDocumentSchema` | NativeRefundRecoveryCursorDocument | `firestore/native_refund_recovery_cursor.schema.json` | `lib/core/schema_contracts/generated/schemas/native_refund_recovery_cursor_document.g.dart` |
 | `schemaHostPaymentAccountDocumentSchema` | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_payment_account_document.g.dart` |
 | `schemaRazorpayPendingOrderDocumentSchema` | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `lib/core/schema_contracts/generated/schemas/razorpay_pending_order_document.g.dart` |
 | `schemaSwipeDocumentSchema` | SwipeDocument | `firestore/swipes.schema.json` | `lib/core/schema_contracts/generated/schemas/swipe_document.g.dart` |

@@ -95,6 +95,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/mark_notification_read_client_write.json", "markNotificationReadClientWriteSchema"],
   ["valid/match_doc.json", "matchDocumentSchema"],
   ["valid/moderation_flag_doc.json", "moderationFlagDocumentSchema"],
+  ["valid/native_refund_recovery_cursor.json", "nativeRefundRecoveryCursorDocumentSchema"],
   ["valid/onboarding_draft_doc.json", "onboardingDraftDocumentSchema"],
   ["valid/organizer_attention_item_doc.json", "organizerAttentionItemDocumentSchema"],
   ["valid/organizer_campaign_recipient_program_doc.json", "organizerCampaignRecipientDocumentSchema"],

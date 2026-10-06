@@ -3727,6 +3727,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaPaymentDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'NativeRefundRecoveryCursorDocument',
+    source: 'firestore/native_refund_recovery_cursor.schema.json',
+    schema: schemaNativeRefundRecoveryCursorDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'HostPaymentAccountDocument',
     source: 'firestore/host_payment_accounts.schema.json',
     schema: schemaHostPaymentAccountDocumentSchema,
@@ -6651,6 +6656,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'HostAnalyticsEvent': schemaHostAnalyticsEventSchema,
   'UserProfileExposureEvent': schemaUserProfileExposureEventSchema,
   'PaymentDocument': schemaPaymentDocumentSchema,
+  'NativeRefundRecoveryCursorDocument': schemaNativeRefundRecoveryCursorDocumentSchema,
   'HostPaymentAccountDocument': schemaHostPaymentAccountDocumentSchema,
   'RazorpayPendingOrderDocument': schemaRazorpayPendingOrderDocumentSchema,
   'SwipeDocument': schemaSwipeDocumentSchema,
@@ -7832,6 +7838,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'bigquery/host_analytics_event.schema.json': schemaHostAnalyticsEventSchema,
   'bigquery/user_profile_exposure_event.schema.json': schemaUserProfileExposureEventSchema,
   'firestore/payments.schema.json': schemaPaymentDocumentSchema,
+  'firestore/native_refund_recovery_cursor.schema.json': schemaNativeRefundRecoveryCursorDocumentSchema,
   'firestore/host_payment_accounts.schema.json': schemaHostPaymentAccountDocumentSchema,
   'firestore/razorpay_pending_orders.schema.json': schemaRazorpayPendingOrderDocumentSchema,
   'firestore/swipes.schema.json': schemaSwipeDocumentSchema,

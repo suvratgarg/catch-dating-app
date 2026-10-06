@@ -2,35 +2,64 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import type {PaymentDocument} from "../../shared/generated/firestoreAdminTypes";
-import {planLegacyCancellationRefund} from "./intent";
+import {planLegacyCancellationRefund,
+  type LegacyRazorpayRefundAuthorization} from "./intent";
 import {LegacyRefundReviewRequired} from "./errors";
 import {NativeCancellationRefundProvider} from "./provider";
+import {razorpayOwnershipNotes, resolveRazorpayOrderOwnership} from
+  "../razorpayOrderOwnership";
+
+process.env.GCLOUD_PROJECT = "catchdates-dev";
+process.env.GCLOUDPROJECT = "catchdates-dev";
+
+function ownedAuthorization(payment: PaymentDocument):
+  LegacyRazorpayRefundAuthorization {
+  const runtimeProjectId = "catchdates-dev";
+  const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
+    order: {id: payment.orderId,
+      notes: razorpayOwnershipNotes(runtimeProjectId)},
+    frozenContexts: [payment.razorpayOwnership]});
+  if (ownership.kind !== "owned") throw new Error("Expected owned order.");
+  return {evidence: ownership.evidence, runtimeProjectId};
+}
 
 function setup(provider: "stripe" | "razorpay" = "stripe") {
   const payment: PaymentDocument = {userId: "user1", eventId: "event1",
     orderId: "order_one", paymentId: "pay_one", providerPaymentId: "pi_one",
     provider, stripeAccountId: "acct_original", applicationFeeAmount: 100,
     amount: 1000, currency: "INR", status: "completed", signUpFailed: false,
-    createdAt: Timestamp.fromMillis(1)};
+    createdAt: Timestamp.fromMillis(1), ...(provider === "razorpay" ?
+      {razorpayOwnership: {projectId: "catchdates-dev" as const,
+        schema: "1" as const}} : {})};
   const intent = planLegacyCancellationRefund({payment,
-    reason: "eventCancelled", targetAmountMinor: 1000, nowMillis: 1});
+    reason: "eventCancelled", targetAmountMinor: 1000, nowMillis: 1,
+    razorpayAuthorization: provider === "razorpay" ?
+      ownedAuthorization(payment) : undefined});
   const attempt = {amountMinor: 1000, idempotencyKey: "refund_stable_key",
     state: "pending" as const, providerRefundId: null, startedAtMillis: 1};
   intent.attempts = [attempt];
   const calls: Array<{url: string; init: RequestInit}> = [];
   let response: unknown = {};
   let responseStatus = 200;
+  let responseFor: ((url: string, init: RequestInit) =>
+    {body: unknown; status?: number}) | undefined;
   const client = new NativeCancellationRefundProvider({
     razorpayCredentials: () => ({keyId: "rzp_test", secret: "rzp_secret"}),
     stripeSecret: () => "stripe_secret",
     fetchImpl: async (url, init) => {
       calls.push({url: String(url), init: init!});
-      return new Response(JSON.stringify(response), {status: responseStatus});
+      const selected = responseFor?.(String(url), init!) ??
+        {body: response, status: responseStatus};
+      return new Response(JSON.stringify(selected.body),
+        {status: selected.status ?? 200});
     },
   });
   return {payment, intent, attempt, client, calls,
     respond: (value: unknown, status = 200) => {
-      response = value; responseStatus = status;
+      response = value; responseStatus = status; responseFor = undefined;
+    },
+    respondWith: (next: typeof responseFor) => {
+      responseFor = next;
     }};
 }
 
@@ -44,6 +73,16 @@ function stripeRefund() {
   return {object: "refund", id: "re_one", payment_intent: "pi_one",
     amount: 1000, currency: "inr", status: "succeeded",
     transfer_reversal: "trr_one"};
+}
+function razorpayOrder() {
+  return {entity: "order", id: "order_one", amount: 1000, currency: "INR",
+    notes: {eventId: "event1", userId: "user1",
+      catchBookingProject: "catchdates-dev", catchBookingSchema: "1"}};
+}
+function razorpayPayment() {
+  return {entity: "payment", id: "pay_one", order_id: "order_one",
+    amount: 1000, currency: "INR", captured: true, status: "captured",
+    amount_refunded: 0};
 }
 
 test("Stripe pins destination, amount, fee and charge", async () => {
@@ -90,14 +129,15 @@ test("Stripe pending/action-required results never claim success", async () => {
 
 test("Razorpay pins platform credentials and captured order", async () => {
   const h = setup("razorpay");
-  h.respond({entity: "payment", id: "pay_one", order_id: "order_one",
-    amount: 1000, currency: "INR", captured: true, status: "captured",
-    amount_refunded: 0});
-  await h.client.verifyPayment(h.payment, h.intent);
-  h.respond({entity: "refund", id: "rfnd_one", payment_id: "pay_one",
-    amount: 1000, currency: "INR", status: "pending"});
-  assert.equal((await h.client.createRefund(h.intent, h.attempt)).state,
-    "pending");
+  h.respondWith((url, init) => ({body: url.includes("/orders/") ?
+    razorpayOrder() : init.method === "POST" ?
+      {entity: "refund", id: "rfnd_one", payment_id: "pay_one",
+        amount: 1000, currency: "INR", status: "pending"} :
+      razorpayPayment()}));
+  const authorization = await h.client.verifyPayment(h.payment, h.intent);
+  assert.equal((await h.client.createRefund(h.intent, h.attempt,
+    authorization)).state,
+  "pending");
   const headers = h.calls.at(-1)!.init.headers as Record<string, string>;
   assert.equal(headers["X-Refund-Idempotency"], "refund_stable_key");
   assert.equal(headers.Authorization,
@@ -109,15 +149,22 @@ test("definite provider rejection needs review while outages remain retryable",
   async () => {
     for (const provider of ["stripe", "razorpay"] as const) {
       const h = setup(provider);
+      const authorization = provider === "razorpay" ? await (async () => {
+        h.respondWith((url) => ({body: url.includes("/orders/") ?
+          razorpayOrder() : razorpayPayment()}));
+        return h.client.verifyPayment(h.payment, h.intent);
+      })() : undefined;
       for (const status of [400, 401, 403, 404, 422]) {
         h.respond({}, status);
-        await assert.rejects(h.client.createRefund(h.intent, h.attempt),
-          LegacyRefundReviewRequired);
+        await assert.rejects(h.client.createRefund(h.intent, h.attempt,
+          authorization),
+        LegacyRefundReviewRequired);
       }
       for (const status of [408, 409, 429, 500, 503]) {
         h.respond({}, status);
-        await assert.rejects(h.client.createRefund(h.intent, h.attempt),
-          (error: unknown) => !(error instanceof LegacyRefundReviewRequired));
+        await assert.rejects(h.client.createRefund(h.intent, h.attempt,
+          authorization),
+        (error: unknown) => !(error instanceof LegacyRefundReviewRequired));
       }
     }
   });

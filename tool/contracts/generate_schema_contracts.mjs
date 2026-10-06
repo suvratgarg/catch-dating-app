@@ -3166,6 +3166,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/paymentDocument.ts",
   },
   {
+    name: "NativeRefundRecoveryCursorDocument",
+    source: "firestore/native_refund_recovery_cursor.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/nativeRefundRecoveryCursorDocument.ts",
+  },
+  {
     name: "HostPaymentAccountDocument",
     source: "firestore/host_payment_accounts.schema.json",
     typeOutput: "functions/src/shared/generated/hostPaymentAccountDocument.ts",

@@ -7,6 +7,8 @@ import Razorpay from "razorpay";
 import {razorpayWebhookHandler} from "./razorpayWebhook";
 
 const WEBHOOK_SECRET = "whsec_razorpay_test";
+process.env.GCLOUD_PROJECT = "catchdates-dev";
+process.env.GCLOUDPROJECT = "catchdates-dev";
 
 test(
   "razorpayWebhookHandler signs up and completes a captured payment",
@@ -47,6 +49,8 @@ test(
     assert.equal(payment.signUpFailed, false);
     assert.equal(payment.orderId, "order_123");
     assert.equal(payment.amount, 25000);
+    assert.deepEqual(payment.razorpayOwnership,
+      {projectId: "catchdates-dev", schema: "1"});
     // The pending-order tracking doc is removed once fulfillment succeeds.
     assert.equal(firestore.data["razorpayPendingOrders/order_123"], undefined);
   }
@@ -102,9 +106,7 @@ test("razorpayWebhookHandler marks the pending order failed on payment.failed",
 
     await razorpayWebhookHandler(payload, sign(payload), WEBHOOK_SECRET, {
       firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
-      createClient: () => {
-        throw new Error("Razorpay client should not be created.");
-      },
+      createClient: () => razorpayClient(),
       serverTimestamp: () => "server-now",
       signUpForEvent: async () => {
         throw new Error("signUpForEvent should not be called.");
@@ -186,6 +188,8 @@ function razorpayClient(
         notes: {
           eventId: "trusted-event",
           userId: "runner-1",
+          catchBookingProject: "catchdates-dev",
+          catchBookingSchema: "1",
         },
       }),
     },
@@ -320,20 +324,26 @@ function matchesFilter(data: unknown, filter: QueryFilter): boolean {
 
 // SOURCE-ONLY regression draft for current main 43d4684. NOT EXECUTED.
 // Append to razorpayWebhook.test.ts; uses that file's existing fake helpers.
-// Runtime-project resolution must become injectable when implementation is claimed.
+// Runtime-project resolution must become injectable when implementation is
+// claimed.
 async function inReviewProject(run: () => Promise<void>): Promise<void> {
   const previous = process.env.GCLOUD_PROJECT;
   const previousLegacy = process.env.GCLOUDPROJECT;
   process.env.GCLOUD_PROJECT = "catchdates-dev";
   process.env.GCLOUDPROJECT = "catchdates-dev";
-  try { await run(); } finally {
+  try {
+    await run();
+  } finally {
     if (previous === undefined) delete process.env.GCLOUD_PROJECT;
     else process.env.GCLOUD_PROJECT = previous;
     if (previousLegacy === undefined) delete process.env.GCLOUDPROJECT;
     else process.env.GCLOUDPROJECT = previousLegacy;
   }
 }
-function ownershipReviewClient(notes: Record<string, string>, refunded = false) {
+function ownershipReviewClient(
+  notes: Record<string, string>,
+  refunded = false
+) {
   const base = razorpayClient();
   return {
     orders: {fetch: async () => ({
@@ -344,7 +354,9 @@ function ownershipReviewClient(notes: Record<string, string>, refunded = false) 
       fetch: async () => ({...await base.payments.fetch("pay_123"),
         ...(refunded ? {status: "refunded", refund_status: "full",
           amount_refunded: 25000} : {})}),
-      refund: async () => { throw new Error("No inline refund authorized"); },
+      refund: async () => {
+        throw new Error("No inline refund authorized");
+      },
     },
   } as unknown as Razorpay;
 }
@@ -364,7 +376,9 @@ test("ownership: foreign capture cannot admit or delete cloned local pending",
       firestore: () => db as unknown as FirebaseFirestore.Firestore,
       createClient: () => ownershipReviewClient(foreignReviewNotes),
       serverTimestamp: () => "server-now",
-      signUpForEvent: async () => { signUps++; },
+      signUpForEvent: async () => {
+        signUps++;
+      },
     });
     assert.equal(signUps, 0, "foreign capture must not reach admission");
     assert.deepEqual(db.data, {"razorpayPendingOrders/order_123": pending});
@@ -375,14 +389,18 @@ test("ownership: unknown unmarked capture cannot stage booking-failed refund",
     const db = new FakeFirestore({});
     let signUps = 0;
     const body = capturedEventPayload();
-    // Collect a rejection so the decisive assertion is zero effects, not status.
+    // Collect a rejection so the decisive assertion is zero effects, not
+    // status.
     await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
       firestore: () => db as unknown as FirebaseFirestore.Firestore,
       createClient: () => ownershipReviewClient({}),
       serverTimestamp: () => "server-now",
-      signUpForEvent: async () => { signUps++; throw new Error("Event missing"); },
+      signUpForEvent: async () => {
+        signUps++; throw new Error("Event missing");
+      },
     }).catch(() => undefined);
-    assert.deepEqual(db.data, {}, "unknown origin must not persist refund intent");
+    assert.deepEqual(db.data, {},
+      "unknown origin must not persist refund intent");
     assert.equal(signUps, 0);
   }));
 
@@ -395,7 +413,9 @@ test("ownership: foreign failed event leaves cloned pending untouched",
       firestore: () => db as unknown as FirebaseFirestore.Firestore,
       createClient: () => ownershipReviewClient(foreignReviewNotes),
       serverTimestamp: () => "server-now",
-      signUpForEvent: async () => { assert.fail("No admission on failed event"); },
+      signUpForEvent: async () => {
+        assert.fail("No admission on failed event");
+      },
     });
     assert.deepEqual(db.data, {"razorpayPendingOrders/order_123": pending});
   }));
@@ -415,7 +435,9 @@ test("ownership: terminal foreign clone cannot trigger pending cleanup",
       firestore: () => db as unknown as FirebaseFirestore.Firestore,
       createClient: () => ownershipReviewClient(foreignReviewNotes),
       serverTimestamp: () => "server-now",
-      signUpForEvent: async () => { assert.fail("No duplicate admission"); },
+      signUpForEvent: async () => {
+        assert.fail("No duplicate admission");
+      },
     });
     assert.deepEqual(db.data, initial);
   }));
@@ -424,44 +446,50 @@ const invalidReviewNotes: Array<Record<string, string>> = [
   {catchBookingProject: "catchdates-dev"},
   {catchBookingSchema: "1"},
   {catchBookingProject: "catchdates-dev", catchBookingSchema: "999"},
- ];
+];
 for (const notes of invalidReviewNotes) {
-  test(`ownership: partial/unsupported marker cannot fall back: ${JSON.stringify(notes)}`,
-    async () => inReviewProject(async () => {
-      const db = new FakeFirestore({});
-      let signUps = 0;
-      const body = capturedEventPayload();
-      await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
-        firestore: () => db as unknown as FirebaseFirestore.Firestore,
-        createClient: () => ownershipReviewClient(notes),
-        serverTimestamp: () => "server-now",
-        signUpForEvent: async () => { signUps++; },
-      }).catch(() => undefined);
-      assert.equal(signUps, 0);
-      assert.deepEqual(db.data, {});
-    }));
+  test("ownership: partial/unsupported marker cannot fall back: " +
+    JSON.stringify(notes),
+  async () => inReviewProject(async () => {
+    const db = new FakeFirestore({});
+    let signUps = 0;
+    const body = capturedEventPayload();
+    await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
+      firestore: () => db as unknown as FirebaseFirestore.Firestore,
+      createClient: () => ownershipReviewClient(notes),
+      serverTimestamp: () => "server-now",
+      signUpForEvent: async () => {
+        signUps++;
+      },
+    }).catch(() => undefined);
+    assert.equal(signUps, 0);
+    assert.deepEqual(db.data, {});
+  }));
 }
 
 for (const status of ["refunded", "refundFailed"]) {
-  test(`ownership compatibility: own terminal ${status} replay tolerates refunded readback`,
-    async () => inReviewProject(async () => {
-      const initial = {"payments/pay_123": {status, orderId: "order_123",
-        paymentId: "pay_123", eventId: "trusted-event", userId: "runner-1",
-        provider: "razorpay", amount: 25000, currency: "INR",
-        createdAt: Timestamp.fromMillis(1)}};
-      const db = new FakeFirestore({...initial});
-      const body = capturedEventPayload();
-      // Must ack only after exact terminal identity AND ownership binding.
-      await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
-        firestore: () => db as unknown as FirebaseFirestore.Firestore,
-        createClient: () => ownershipReviewClient({
-          catchBookingProject: "catchdates-dev", catchBookingSchema: "1",
-        }, true),
-        serverTimestamp: () => "server-now",
-        signUpForEvent: async () => { assert.fail("No terminal re-admission"); },
-      });
-      assert.deepEqual(db.data, initial);
-    }));
+  test(`ownership compatibility: own terminal ${status} replay tolerates ` +
+    "refunded readback",
+  async () => inReviewProject(async () => {
+    const initial = {"payments/pay_123": {status, orderId: "order_123",
+      paymentId: "pay_123", eventId: "trusted-event", userId: "runner-1",
+      provider: "razorpay", amount: 25000, currency: "INR",
+      createdAt: Timestamp.fromMillis(1)}};
+    const db = new FakeFirestore({...initial});
+    const body = capturedEventPayload();
+    // Must ack only after exact terminal identity AND ownership binding.
+    await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
+      firestore: () => db as unknown as FirebaseFirestore.Firestore,
+      createClient: () => ownershipReviewClient({
+        catchBookingProject: "catchdates-dev", catchBookingSchema: "1",
+      }, true),
+      serverTimestamp: () => "server-now",
+      signUpForEvent: async () => {
+        assert.fail("No terminal re-admission");
+      },
+    });
+    assert.deepEqual(db.data, initial);
+  }));
 }
 
 test("ownership compatibility: own new order recovers despite missing pending",
@@ -489,7 +517,9 @@ test("ownership compatibility: own new order recovers despite missing pending",
         catchBookingProject: "catchdates-dev", catchBookingSchema: "1",
       }),
       serverTimestamp: () => "server-now",
-      signUpForEvent: async () => { assert.fail("Duplicate must not re-admit"); },
+      signUpForEvent: async () => {
+        assert.fail("Duplicate must not re-admit");
+      },
     });
     assert.equal(signUps, 1);
     const payment = db.data["payments/pay_123"] as Record<string, unknown>;

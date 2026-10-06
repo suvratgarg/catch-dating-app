@@ -94583,6 +94583,60 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const nativeRefundRecoveryCursorDocumentCursorNextAttemptOrderKey = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.cursor.nextAttemptOrderKey',
+    maxLength: 32,
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['double:nan', 'double:negativeInfinity', 'double:positiveInfinity'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentCursorPaymentId = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.cursor.paymentId',
+    maxLength: 1500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentProjectId = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.projectId',
+    maxLength: 30,
+    minLength: 6,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const nativeRefundRecoveryCursorDocumentRevision = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const nativeRefundRecoveryCursorDocumentSchema = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.schema',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentStateId = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.stateId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pendingRefunds', 'cancelledRazorpayPayments'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const offerEventTargetListCallableResponseEvents = CatchContractFieldConstraints(
     path: 'offerEventTargetListCallableResponse.events',
     required: true,
@@ -171923,6 +171977,13 @@ abstract final class CatchContractConstraints {
     'mutateOrganizerContactNoteCallablePayload.expectedRevision': mutateOrganizerContactNoteCallablePayloadExpectedRevision,
     'mutateOrganizerContactNoteCallablePayload.noteId': mutateOrganizerContactNoteCallablePayloadNoteId,
     'mutateOrganizerContactNoteCallablePayload.organizerId': mutateOrganizerContactNoteCallablePayloadOrganizerId,
+    'nativeRefundRecoveryCursorDocument.cursor.nextAttemptOrderKey': nativeRefundRecoveryCursorDocumentCursorNextAttemptOrderKey,
+    'nativeRefundRecoveryCursorDocument.cursor.paymentId': nativeRefundRecoveryCursorDocumentCursorPaymentId,
+    'nativeRefundRecoveryCursorDocument.projectId': nativeRefundRecoveryCursorDocumentProjectId,
+    'nativeRefundRecoveryCursorDocument.revision': nativeRefundRecoveryCursorDocumentRevision,
+    'nativeRefundRecoveryCursorDocument.schema': nativeRefundRecoveryCursorDocumentSchema,
+    'nativeRefundRecoveryCursorDocument.stateId': nativeRefundRecoveryCursorDocumentStateId,
+    'nativeRefundRecoveryCursorDocument.updatedAtMillis': nativeRefundRecoveryCursorDocumentUpdatedAtMillis,
     'offerEventTargetListCallableResponse.events': offerEventTargetListCallableResponseEvents,
     'offerEventTargetListCallableResponse.events.items.eventId': offerEventTargetListCallableResponseEventsItemsEventId,
     'offerEventTargetListCallableResponse.events.items.name': offerEventTargetListCallableResponseEventsItemsName,

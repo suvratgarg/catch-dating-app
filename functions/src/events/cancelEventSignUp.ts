@@ -64,7 +64,9 @@ import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {requireEventTimeRange} from "./configuredEvent";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {stripeSecretKey} from "../payments/stripe";
-import {planLegacyCancellationRefund} from "../payments/legacyRefunds/intent";
+import {planLegacyCancellationRefund,
+  type LegacyRazorpayRefundAuthorization} from
+  "../payments/legacyRefunds/intent";
 import {processLegacyCancellationRefund} from
   "../payments/legacyRefunds/processor";
 import {NativeCancellationRefundProvider} from
@@ -90,6 +92,8 @@ interface CancelEventSignUpDeps {
   loadCurrentAuthPhone: (uid: string) => Promise<string | null>;
   processRefund: (db: FirebaseFirestore.Firestore, paymentId: string) =>
     Promise<void>;
+  authorizeRazorpayRefund: (payment: PaymentDocument) =>
+    Promise<LegacyRazorpayRefundAuthorization>;
   sendNotification: (push: PromotionPush) => Promise<void>;
 }
 
@@ -102,6 +106,8 @@ const defaultDeps: CancelEventSignUpDeps = {
   processRefund: async (db, paymentId) =>
     processLegacyCancellationRefund({db, paymentId,
       provider: new NativeCancellationRefundProvider()}),
+  authorizeRazorpayRefund: async (payment) =>
+    new NativeCancellationRefundProvider().authorizeRazorpayRefund(payment),
   sendNotification: async (push) => {
     await sendFcmNotification({
       token: push.token,
@@ -139,6 +145,9 @@ export async function cancelEventSignUpHandler(
 
   const db = deps.firestore();
   await deps.checkRateLimit(db, userId, "cancelEventSignUp");
+
+  const refundPreflight = await cancellationRefundPreflight({db, userId,
+    eventId, authorizeRazorpayRefund: deps.authorizeRazorpayRefund});
 
   const eventRef = db.collection("events").doc(eventId);
   const userRef = db.collection("users").doc(userId);
@@ -200,6 +209,17 @@ export async function cancelEventSignUpHandler(
     const paymentDoc = payments.docs[0];
     const payment = paymentDoc ? requireDoc<PaymentDocument>(paymentDoc,
       "PaymentDocument") : null;
+    const needsRazorpayAuthorization = payment &&
+      (participation?.status === "signedUp" ||
+        payment.cancellationRefund?.state === "pending");
+    if (needsRazorpayAuthorization &&
+        (payment.provider ?? "razorpay") === "razorpay" &&
+        (!refundPreflight || refundPreflight.paymentDocumentId !==
+          paymentDoc.id || refundPreflight.serializedPayment !==
+          JSON.stringify(payment) || !refundPreflight.authorization)) {
+      throw new HttpsError("failed-precondition",
+        "This payment needs ownership reconciliation.");
+    }
     // A replay resumes the saved refund without re-pricing the cancellation.
     if (participation?.status !== "signedUp") {
       refundPaymentId = participation?.status === "cancelled" &&
@@ -220,7 +240,8 @@ export async function cancelEventSignUpHandler(
         quoteAttendeeCancellation({policy, paidAmountInPaise: payment.amount,
           startTimeMillis: event.startTime.toMillis(),
           nowMillis: deps.nowMillis()}).refundAmountInPaise,
-      nowMillis: deps.nowMillis()}) : null;
+      nowMillis: deps.nowMillis(),
+      razorpayAuthorization: refundPreflight?.authorization}) : null;
     if (refundIntent?.state === "pending") refundPaymentId = paymentDoc.id;
 
     const seatTransaction = seatMode === "ready" ?
@@ -577,6 +598,46 @@ export async function cancelEventSignUpHandler(
     }
   }
   return {cancelled: committed.cancelled};
+}
+
+interface CancellationRefundPreflight {
+  paymentDocumentId: string;
+  serializedPayment: string;
+  authorization?: LegacyRazorpayRefundAuthorization;
+}
+
+/** Provider I/O stays outside Firestore retries. The mutation transaction
+ * later rebinds this proof to the exact payment serialization it rereads.
+ */
+async function cancellationRefundPreflight(input: {
+  db: FirebaseFirestore.Firestore;
+  userId: string;
+  eventId: string;
+  authorizeRazorpayRefund: (payment: PaymentDocument) =>
+    Promise<LegacyRazorpayRefundAuthorization>;
+}): Promise<CancellationRefundPreflight | null> {
+  const payments = await input.db.collection("payments")
+    .where("userId", "==", input.userId)
+    .where("eventId", "==", input.eventId)
+    .where("status", "==", "completed")
+    .limit(2).get();
+  if (payments.docs.length > 1) {
+    throw new HttpsError("failed-precondition",
+      "Multiple payments need reconciliation before cancellation.");
+  }
+  const snapshot = payments.docs[0];
+  if (!snapshot) return null;
+  const payment = requireDoc<PaymentDocument>(snapshot, "PaymentDocument");
+  const participation = await input.db.collection("eventParticipations")
+    .doc(eventParticipationId(input.eventId, input.userId)).get();
+  const needsAuthorization = participation.data()?.status === "signedUp" ||
+    payment.cancellationRefund?.state === "pending";
+  const authorization = needsAuthorization &&
+      (payment.provider ?? "razorpay") === "razorpay" ?
+    await input.authorizeRazorpayRefund(payment) : undefined;
+  return {paymentDocumentId: snapshot.id,
+    serializedPayment: JSON.stringify(payment),
+    ...(authorization ? {authorization} : {})};
 }
 
 export const cancelEventSignUp = onCall(

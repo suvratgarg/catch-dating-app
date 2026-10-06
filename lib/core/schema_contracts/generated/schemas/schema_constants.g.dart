@@ -701,6 +701,7 @@ export 'mutate_organizer_contact_callable_payload.g.dart';
 export 'mutate_organizer_contact_callable_response.g.dart';
 export 'mutate_organizer_contact_merge_callable_response.g.dart';
 export 'mutate_organizer_contact_note_callable_payload.g.dart';
+export 'native_refund_recovery_cursor_document.g.dart';
 export 'offer_event_target_list_callable_response.g.dart';
 export 'onboarding_draft_document.g.dart';
 export 'open_organizer_manual_send_task_callable_payload.g.dart';
