@@ -279,6 +279,11 @@ async function conversionContext(
     versionSnap,
     "OrganizerFormVersionDocument"
   );
+  const receipt = receiptSnap.exists ?
+    requireDoc<OrganizerFormConversionReceiptDocument>(
+      receiptSnap,
+      "OrganizerFormConversionReceiptDocument"
+    ) : null;
   if (form.organizerId !== data.organizerId ||
       version.organizerId !== data.organizerId ||
       version.formId !== response.formId) {
@@ -329,13 +334,21 @@ async function conversionContext(
         warnings.push("The selected event is not managed by this organizer.");
         allowed = false;
       } else {
-        const phone = normalizeRosterPhone(
-          stringField(fields, "phoneNumber")).value;
-        const email = stringField(fields, "email")?.trim().toLowerCase();
-        const key = phone ? `phone:${phone}` : email ? `email:${email}` :
-          `external:${data.responseId.toLowerCase()}`;
+        const currentAttendeeId = eventAttendeeId(data.eventId,
+          `external:${data.responseId.toLowerCase()}`);
+        const receiptEventId = receipt?.fields.find((field) =>
+          field.destinationField === "eventId")?.value;
+        const completedAttendeeId = receipt?.status === "completed" &&
+          receipt.organizerId === data.organizerId &&
+          receipt.formId === response.formId &&
+          receipt.responseId === data.responseId &&
+          receipt.kind === "eventAttendeeProposal" &&
+          receiptEventId === data.eventId ? receipt.resultId : null;
+        // Completed receipts are immutable provenance for legacy phone/email
+        // destinations. New and pending conversions use the response key.
+        const destinationId = completedAttendeeId ?? currentAttendeeId;
         const edge = await read(db.collection("organizerContactEventEdges")
-          .doc(eventAttendeeId(data.eventId, key)));
+          .doc(destinationId));
         const target = crmContactConversionTarget({
           existingResultId: crm.existingResultId, responseId: data.responseId,
           formId: response.formId, submittedAt: response.submittedAt,
@@ -348,9 +361,7 @@ async function conversionContext(
       }
     }
   }
-  let existingResultId = receiptSnap.exists ?
-    (receiptSnap.data() as OrganizerFormConversionReceiptDocument).resultId :
-    null;
+  let existingResultId = receipt?.resultId ?? null;
   if (!existingResultId && data.kind === "crmContact" && !tx) {
     existingResultId = await findExistingContact(db, response, fields, tx);
     if (existingResultId) {
@@ -549,8 +560,9 @@ async function applyEventAttendeeConversion(params: {
   const normalizedPhone = normalizeRosterPhone(phone).value;
   const email = (stringField(params.context.fields, "email") ??
     params.context.response.identity.email)?.toLocaleLowerCase("en") ?? null;
-  const stableKey = normalizedPhone ? `phone:${normalizedPhone}` :
-    email ? `email:${email}` : `external:${params.data.responseId}`;
+  // Form admission is one reviewed response/ticket. Keep its returned ID on
+  // the same attendee-level reference that the canonical import writes.
+  const stableKey = `external:${params.data.responseId.toLowerCase()}`;
   const result = await importEventAttendeesForHost({
     hostUid: params.actorUid,
     authorizeSource: async (tx, replayed) => {

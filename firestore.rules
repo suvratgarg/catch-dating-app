@@ -1657,6 +1657,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Upload evidence and reviewed payloads contain private guest contact data.
+    // Managers use the scoped callable; no SDK client reads or writes them.
+    match /hostRosterIntakeSessions/{sessionId} {
+      allow read, write: if false;
+    }
+
+    match /hostRosterIntakeSessions/{sessionId}/receipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     // Idempotency receipts reveal actor and operational state; the callable
     // returns the bounded result and no client reads or writes this ledger.
     match /eventAttendeeAttendanceReceipts/{receiptId} {

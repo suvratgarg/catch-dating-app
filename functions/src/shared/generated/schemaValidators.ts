@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateManageHostRosterIntakeCallablePayload} from "./validators/manageHostRosterIntakeInput";
+export {validateHostRosterIntakeSessionDocument} from "./validators/hostRosterIntakeSessionDocument";
+export {validateHostRosterIntakeReceiptDocument} from "./validators/hostRosterIntakeReceiptDocument";
 export {validateManageProgramLodgingCallablePayload} from "./validators/manageProgramLodgingInput";
 export {validateManageProgramLodgingCallableResponse} from "./validators/manageProgramLodgingOutput";
 export {validateProgramLodgingConfigDocument} from "./validators/programLodgingConfigDocument";

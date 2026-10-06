@@ -85795,6 +85795,1407 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const hostRosterIntakeReceiptDocumentAppliedAtMillis = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.appliedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostRosterIntakeReceiptDocumentImportId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.importId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadEventId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadFileName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.fileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadFormat = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx', 'manual'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadImportKey = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.importKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRows = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsArrivalGroup = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.arrivalGroup',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsCityMarketId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.cityMarketId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsEmail = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsExternalReference = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsPhone = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.phone',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsRevenueCurrency = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsRevenueSource = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsRowId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsStatus = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPayloadRowsItemsTicketType = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.payload.rows.items.ticketType',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewCountsAdd = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.counts.add',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewCountsExcluded = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.counts.excluded',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewCountsIdentityConflict = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.counts.identityConflict',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewCountsNeedsReview = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.counts.needsReview',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewCountsUnchanged = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.counts.unchanged',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewCountsUpdate = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.counts.update',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewEligibleForApply = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.eligibleForApply',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewReviewHash = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRevision = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRows = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 250,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.attendeeId',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsChangedFields = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.changedFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'phone', 'email', 'cityMarketId', 'externalReference', 'arrivalGroup', 'ticketType', 'revenueAmountMinor', 'revenueCurrency', 'revenueSource', 'status'],
+    maxItems: 11,
+    uniqueItems: true,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsChangedFieldsItems = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.changedFields.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'phone', 'email', 'cityMarketId', 'externalReference', 'arrivalGroup', 'ticketType', 'revenueAmountMinor', 'revenueCurrency', 'revenueSource', 'status'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsExternalReference = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChanges = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 11,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsCurrentValue = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.currentValue',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsField = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.field',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'phone', 'email', 'cityMarketId', 'externalReference', 'arrivalGroup', 'ticketType', 'revenueAmountMinor', 'revenueCurrency', 'revenueSource', 'status'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.origin',
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal', 'default'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsProposedValue = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.proposedValue',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsIssueCode = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.issueCode',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsKind = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['add', 'update', 'unchanged', 'excluded', 'needsReview', 'identityConflict'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsRowId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsSourceRowNumber = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.sourceRowNumber',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 100000,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewSessionId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.sessionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hri_[a-f0-9]{48}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftAppliedImportId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.appliedImportId',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftEventId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftExcludedRowIds = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.excludedRowIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 250,
+    uniqueItems: true,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftExcludedRowIdsItems = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.excludedRowIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftFileFingerprint = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.fileFingerprint',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftFileName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.fileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftFormat = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftHeaders = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.headers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftHeadersItems = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.headers.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftHostUid = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.hostUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingArrivalGroup = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.arrivalGroup',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingCity = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.city',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingDisplayName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.displayName',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingEmail = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.email',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingExternalReference = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.externalReference',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingPhone = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.phone',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingRevenueAmount = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.revenueAmount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingRevenueCurrency = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.revenueCurrency',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingStatus = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.status',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftMappingTicketType = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.mapping.ticketType',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftOrganizerId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRevision = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRows = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 250,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsIssues = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.issues',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsIssuesItems = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.issues.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{0,79}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsRawCells = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.rawCells',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsRawCellsItems = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.rawCells.items',
+    maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsSourceRowNumber = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.sourceRowNumber',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 100000,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueArrivalGroup = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.arrivalGroup',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueCityMarketId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.cityMarketId',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueDisplayName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueEmail = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueExternalReference = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValuePhone = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.phone',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueRevenueCurrency = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueRevenueSource = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueRowId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueStatus = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftRowsItemsValueTicketType = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.rows.items.value.ticketType',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSessionId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sessionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hri_[a-f0-9]{48}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifest = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 250,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeColumn = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeConfidence = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeHeader = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueArrivalGroup = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.arrivalGroup',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueCityMarketId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.cityMarketId',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueDisplayName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueEmail = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueExternalReference = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValuePhone = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.phone',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRevenueCurrency = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRevenueSource = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRowId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueStatus = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueTicketType = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.ticketType',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsRawEvidenceHash = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.rawEvidenceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsRowId = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftSourceManifestItemsSourceRowNumber = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.sourceRowNumber',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 100000,
+  );
+
+  static const hostRosterIntakeSessionDocumentDraftState = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.draft.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'applied'],
+  );
+
+  static const hostRosterIntakeSessionDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeSessionDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const importEventAttendeesCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'importEventAttendeesCallablePayload.eventId',
     maxLength: 180,
@@ -93517,6 +94918,620 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['start', 'get', 'revise', 'preview', 'apply'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadExcludedRowIds = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.excludedRowIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 250,
+    uniqueItems: true,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadExcludedRowIdsItems = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.excludedRowIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadFileFingerprint = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.fileFingerprint',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const manageHostRosterIntakeCallablePayloadFileName = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.fileName',
+    maxLength: 255,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadFormat = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.format',
+    valueTypes: <String>['string'],
+    enumValues: <String>['csv', 'xlsx'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadHeaders = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.headers',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadHeadersItems = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.headers.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingArrivalGroup = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.arrivalGroup',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingCity = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.city',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingDisplayName = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.displayName',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingEmail = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.email',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingExternalReference = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.externalReference',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingPhone = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.phone',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingRevenueAmount = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.revenueAmount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingRevenueCurrency = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.revenueCurrency',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingStatus = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.status',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadMappingTicketType = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.mapping.ticketType',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadReviewHash = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.reviewHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRows = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 250,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.email.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.email.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.email.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.email.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.status.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.status.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.status.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.status.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeColumn = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.column',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 39,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeConfidence = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeHeader = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.header',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeOrigin = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsIssues = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.issues',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsIssuesItems = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.issues.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{0,79}\$',
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsRawCells = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.rawCells',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsRawCellsItems = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.rawCells.items',
+    maxLength: 500,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsSourceRowNumber = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.sourceRowNumber',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 100000,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueArrivalGroup = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.arrivalGroup',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueCityMarketId = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.cityMarketId',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueDisplayName = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueEmail = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueExternalReference = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValuePhone = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.phone',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueRevenueAmountMinor = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.revenueAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueRevenueCurrency = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.revenueCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueRevenueSource = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.revenueSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostEstimate'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueRowId = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.rowId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueStatus = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'registered', 'waitlisted'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadRowsItemsValueTicketType = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.rows.items.value.ticketType',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageHostRosterIntakeCallablePayloadSessionId = CatchContractFieldConstraints(
+    path: 'manageHostRosterIntakeCallablePayload.sessionId',
+    valueTypes: <String>['string'],
+    pattern: '^hri_[a-f0-9]{48}\$',
   );
 
   static const manageOrganizerFormDomainCallablePayloadAction = CatchContractFieldConstraints(
@@ -171147,6 +173162,198 @@ abstract final class CatchContractConstraints {
     'hostProfileDocument.updatedAt._nanoseconds': hostProfileDocumentUpdatedAtNanoseconds,
     'hostProfileDocument.updatedAt._seconds': hostProfileDocumentUpdatedAtSeconds,
     'hostProfileDocument.verified': hostProfileDocumentVerified,
+    'hostRosterIntakeReceiptDocument.appliedAtMillis': hostRosterIntakeReceiptDocumentAppliedAtMillis,
+    'hostRosterIntakeReceiptDocument.importId': hostRosterIntakeReceiptDocumentImportId,
+    'hostRosterIntakeReceiptDocument.payload.eventId': hostRosterIntakeReceiptDocumentPayloadEventId,
+    'hostRosterIntakeReceiptDocument.payload.fileName': hostRosterIntakeReceiptDocumentPayloadFileName,
+    'hostRosterIntakeReceiptDocument.payload.format': hostRosterIntakeReceiptDocumentPayloadFormat,
+    'hostRosterIntakeReceiptDocument.payload.importKey': hostRosterIntakeReceiptDocumentPayloadImportKey,
+    'hostRosterIntakeReceiptDocument.payload.rows': hostRosterIntakeReceiptDocumentPayloadRows,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.arrivalGroup': hostRosterIntakeReceiptDocumentPayloadRowsItemsArrivalGroup,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.cityMarketId': hostRosterIntakeReceiptDocumentPayloadRowsItemsCityMarketId,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.displayName': hostRosterIntakeReceiptDocumentPayloadRowsItemsDisplayName,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.email': hostRosterIntakeReceiptDocumentPayloadRowsItemsEmail,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.externalReference': hostRosterIntakeReceiptDocumentPayloadRowsItemsExternalReference,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.phone': hostRosterIntakeReceiptDocumentPayloadRowsItemsPhone,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.revenueAmountMinor': hostRosterIntakeReceiptDocumentPayloadRowsItemsRevenueAmountMinor,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.revenueCurrency': hostRosterIntakeReceiptDocumentPayloadRowsItemsRevenueCurrency,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.revenueSource': hostRosterIntakeReceiptDocumentPayloadRowsItemsRevenueSource,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.rowId': hostRosterIntakeReceiptDocumentPayloadRowsItemsRowId,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.status': hostRosterIntakeReceiptDocumentPayloadRowsItemsStatus,
+    'hostRosterIntakeReceiptDocument.payload.rows.items.ticketType': hostRosterIntakeReceiptDocumentPayloadRowsItemsTicketType,
+    'hostRosterIntakeReceiptDocument.preview.counts.add': hostRosterIntakeReceiptDocumentPreviewCountsAdd,
+    'hostRosterIntakeReceiptDocument.preview.counts.excluded': hostRosterIntakeReceiptDocumentPreviewCountsExcluded,
+    'hostRosterIntakeReceiptDocument.preview.counts.identityConflict': hostRosterIntakeReceiptDocumentPreviewCountsIdentityConflict,
+    'hostRosterIntakeReceiptDocument.preview.counts.needsReview': hostRosterIntakeReceiptDocumentPreviewCountsNeedsReview,
+    'hostRosterIntakeReceiptDocument.preview.counts.unchanged': hostRosterIntakeReceiptDocumentPreviewCountsUnchanged,
+    'hostRosterIntakeReceiptDocument.preview.counts.update': hostRosterIntakeReceiptDocumentPreviewCountsUpdate,
+    'hostRosterIntakeReceiptDocument.preview.eligibleForApply': hostRosterIntakeReceiptDocumentPreviewEligibleForApply,
+    'hostRosterIntakeReceiptDocument.preview.reviewHash': hostRosterIntakeReceiptDocumentPreviewReviewHash,
+    'hostRosterIntakeReceiptDocument.preview.revision': hostRosterIntakeReceiptDocumentPreviewRevision,
+    'hostRosterIntakeReceiptDocument.preview.rows': hostRosterIntakeReceiptDocumentPreviewRows,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.attendeeId': hostRosterIntakeReceiptDocumentPreviewRowsItemsAttendeeId,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.changedFields': hostRosterIntakeReceiptDocumentPreviewRowsItemsChangedFields,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.changedFields.items': hostRosterIntakeReceiptDocumentPreviewRowsItemsChangedFieldsItems,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.displayName': hostRosterIntakeReceiptDocumentPreviewRowsItemsDisplayName,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.externalReference': hostRosterIntakeReceiptDocumentPreviewRowsItemsExternalReference,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChanges,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.currentValue': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsCurrentValue,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.field': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsField,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.origin': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsOrigin,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.proposedValue': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsProposedValue,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.issueCode': hostRosterIntakeReceiptDocumentPreviewRowsItemsIssueCode,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.kind': hostRosterIntakeReceiptDocumentPreviewRowsItemsKind,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.rowId': hostRosterIntakeReceiptDocumentPreviewRowsItemsRowId,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.sourceRowNumber': hostRosterIntakeReceiptDocumentPreviewRowsItemsSourceRowNumber,
+    'hostRosterIntakeReceiptDocument.preview.sessionId': hostRosterIntakeReceiptDocumentPreviewSessionId,
+    'hostRosterIntakeSessionDocument.createdAtMillis': hostRosterIntakeSessionDocumentCreatedAtMillis,
+    'hostRosterIntakeSessionDocument.draft.appliedImportId': hostRosterIntakeSessionDocumentDraftAppliedImportId,
+    'hostRosterIntakeSessionDocument.draft.eventId': hostRosterIntakeSessionDocumentDraftEventId,
+    'hostRosterIntakeSessionDocument.draft.excludedRowIds': hostRosterIntakeSessionDocumentDraftExcludedRowIds,
+    'hostRosterIntakeSessionDocument.draft.excludedRowIds.items': hostRosterIntakeSessionDocumentDraftExcludedRowIdsItems,
+    'hostRosterIntakeSessionDocument.draft.fileFingerprint': hostRosterIntakeSessionDocumentDraftFileFingerprint,
+    'hostRosterIntakeSessionDocument.draft.fileName': hostRosterIntakeSessionDocumentDraftFileName,
+    'hostRosterIntakeSessionDocument.draft.format': hostRosterIntakeSessionDocumentDraftFormat,
+    'hostRosterIntakeSessionDocument.draft.headers': hostRosterIntakeSessionDocumentDraftHeaders,
+    'hostRosterIntakeSessionDocument.draft.headers.items': hostRosterIntakeSessionDocumentDraftHeadersItems,
+    'hostRosterIntakeSessionDocument.draft.hostUid': hostRosterIntakeSessionDocumentDraftHostUid,
+    'hostRosterIntakeSessionDocument.draft.mapping.arrivalGroup': hostRosterIntakeSessionDocumentDraftMappingArrivalGroup,
+    'hostRosterIntakeSessionDocument.draft.mapping.city': hostRosterIntakeSessionDocumentDraftMappingCity,
+    'hostRosterIntakeSessionDocument.draft.mapping.displayName': hostRosterIntakeSessionDocumentDraftMappingDisplayName,
+    'hostRosterIntakeSessionDocument.draft.mapping.email': hostRosterIntakeSessionDocumentDraftMappingEmail,
+    'hostRosterIntakeSessionDocument.draft.mapping.externalReference': hostRosterIntakeSessionDocumentDraftMappingExternalReference,
+    'hostRosterIntakeSessionDocument.draft.mapping.phone': hostRosterIntakeSessionDocumentDraftMappingPhone,
+    'hostRosterIntakeSessionDocument.draft.mapping.revenueAmount': hostRosterIntakeSessionDocumentDraftMappingRevenueAmount,
+    'hostRosterIntakeSessionDocument.draft.mapping.revenueCurrency': hostRosterIntakeSessionDocumentDraftMappingRevenueCurrency,
+    'hostRosterIntakeSessionDocument.draft.mapping.status': hostRosterIntakeSessionDocumentDraftMappingStatus,
+    'hostRosterIntakeSessionDocument.draft.mapping.ticketType': hostRosterIntakeSessionDocumentDraftMappingTicketType,
+    'hostRosterIntakeSessionDocument.draft.organizerId': hostRosterIntakeSessionDocumentDraftOrganizerId,
+    'hostRosterIntakeSessionDocument.draft.revision': hostRosterIntakeSessionDocumentDraftRevision,
+    'hostRosterIntakeSessionDocument.draft.rows': hostRosterIntakeSessionDocumentDraftRows,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsArrivalGroupOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsCityMarketIdOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsDisplayNameOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsEmailOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsExternalReferenceOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsPhoneOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueAmountMinorOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueCurrencyOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsRevenueSourceOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsStatusOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.column': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeColumn,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.confidence': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeConfidence,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.header': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeHeader,
+    'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.origin': hostRosterIntakeSessionDocumentDraftRowsItemsFieldsTicketTypeOrigin,
+    'hostRosterIntakeSessionDocument.draft.rows.items.issues': hostRosterIntakeSessionDocumentDraftRowsItemsIssues,
+    'hostRosterIntakeSessionDocument.draft.rows.items.issues.items': hostRosterIntakeSessionDocumentDraftRowsItemsIssuesItems,
+    'hostRosterIntakeSessionDocument.draft.rows.items.rawCells': hostRosterIntakeSessionDocumentDraftRowsItemsRawCells,
+    'hostRosterIntakeSessionDocument.draft.rows.items.rawCells.items': hostRosterIntakeSessionDocumentDraftRowsItemsRawCellsItems,
+    'hostRosterIntakeSessionDocument.draft.rows.items.sourceRowNumber': hostRosterIntakeSessionDocumentDraftRowsItemsSourceRowNumber,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.arrivalGroup': hostRosterIntakeSessionDocumentDraftRowsItemsValueArrivalGroup,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.cityMarketId': hostRosterIntakeSessionDocumentDraftRowsItemsValueCityMarketId,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.displayName': hostRosterIntakeSessionDocumentDraftRowsItemsValueDisplayName,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.email': hostRosterIntakeSessionDocumentDraftRowsItemsValueEmail,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.externalReference': hostRosterIntakeSessionDocumentDraftRowsItemsValueExternalReference,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.phone': hostRosterIntakeSessionDocumentDraftRowsItemsValuePhone,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.revenueAmountMinor': hostRosterIntakeSessionDocumentDraftRowsItemsValueRevenueAmountMinor,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.revenueCurrency': hostRosterIntakeSessionDocumentDraftRowsItemsValueRevenueCurrency,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.revenueSource': hostRosterIntakeSessionDocumentDraftRowsItemsValueRevenueSource,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.rowId': hostRosterIntakeSessionDocumentDraftRowsItemsValueRowId,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.status': hostRosterIntakeSessionDocumentDraftRowsItemsValueStatus,
+    'hostRosterIntakeSessionDocument.draft.rows.items.value.ticketType': hostRosterIntakeSessionDocumentDraftRowsItemsValueTicketType,
+    'hostRosterIntakeSessionDocument.draft.sessionId': hostRosterIntakeSessionDocumentDraftSessionId,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest': hostRosterIntakeSessionDocumentDraftSourceManifest,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsArrivalGroupOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsCityMarketIdOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsDisplayNameOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsEmailOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsExternalReferenceOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsPhoneOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueAmountMinorOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueCurrencyOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsRevenueSourceOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsStatusOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.column': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeColumn,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.confidence': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeConfidence,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.header': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeHeader,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.origin': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalFieldsTicketTypeOrigin,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.arrivalGroup': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueArrivalGroup,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.cityMarketId': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueCityMarketId,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.displayName': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueDisplayName,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.email': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueEmail,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.externalReference': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueExternalReference,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.phone': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValuePhone,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.revenueAmountMinor': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRevenueAmountMinor,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.revenueCurrency': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRevenueCurrency,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.revenueSource': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRevenueSource,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.rowId': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueRowId,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.status': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueStatus,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalValue.ticketType': hostRosterIntakeSessionDocumentDraftSourceManifestItemsOriginalValueTicketType,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.rawEvidenceHash': hostRosterIntakeSessionDocumentDraftSourceManifestItemsRawEvidenceHash,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.rowId': hostRosterIntakeSessionDocumentDraftSourceManifestItemsRowId,
+    'hostRosterIntakeSessionDocument.draft.sourceManifest.items.sourceRowNumber': hostRosterIntakeSessionDocumentDraftSourceManifestItemsSourceRowNumber,
+    'hostRosterIntakeSessionDocument.draft.state': hostRosterIntakeSessionDocumentDraftState,
+    'hostRosterIntakeSessionDocument.updatedAtMillis': hostRosterIntakeSessionDocumentUpdatedAtMillis,
     'importEventAttendeesCallablePayload.eventId': importEventAttendeesCallablePayloadEventId,
     'importEventAttendeesCallablePayload.fileName': importEventAttendeesCallablePayloadFileName,
     'importEventAttendeesCallablePayload.format': importEventAttendeesCallablePayloadFormat,
@@ -172212,6 +174419,91 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallableResponse.payment.refundedAmountPaise': manageEventOfferCheckoutCallableResponsePaymentRefundedAmountPaise,
     'manageEventOfferCheckoutCallableResponse.payment.status': manageEventOfferCheckoutCallableResponsePaymentStatus,
     'manageEventOfferCheckoutCallableResponse.serverTimeMillis': manageEventOfferCheckoutCallableResponseServerTimeMillis,
+    'manageHostRosterIntakeCallablePayload.action': manageHostRosterIntakeCallablePayloadAction,
+    'manageHostRosterIntakeCallablePayload.eventId': manageHostRosterIntakeCallablePayloadEventId,
+    'manageHostRosterIntakeCallablePayload.excludedRowIds': manageHostRosterIntakeCallablePayloadExcludedRowIds,
+    'manageHostRosterIntakeCallablePayload.excludedRowIds.items': manageHostRosterIntakeCallablePayloadExcludedRowIdsItems,
+    'manageHostRosterIntakeCallablePayload.expectedRevision': manageHostRosterIntakeCallablePayloadExpectedRevision,
+    'manageHostRosterIntakeCallablePayload.fileFingerprint': manageHostRosterIntakeCallablePayloadFileFingerprint,
+    'manageHostRosterIntakeCallablePayload.fileName': manageHostRosterIntakeCallablePayloadFileName,
+    'manageHostRosterIntakeCallablePayload.format': manageHostRosterIntakeCallablePayloadFormat,
+    'manageHostRosterIntakeCallablePayload.headers': manageHostRosterIntakeCallablePayloadHeaders,
+    'manageHostRosterIntakeCallablePayload.headers.items': manageHostRosterIntakeCallablePayloadHeadersItems,
+    'manageHostRosterIntakeCallablePayload.mapping.arrivalGroup': manageHostRosterIntakeCallablePayloadMappingArrivalGroup,
+    'manageHostRosterIntakeCallablePayload.mapping.city': manageHostRosterIntakeCallablePayloadMappingCity,
+    'manageHostRosterIntakeCallablePayload.mapping.displayName': manageHostRosterIntakeCallablePayloadMappingDisplayName,
+    'manageHostRosterIntakeCallablePayload.mapping.email': manageHostRosterIntakeCallablePayloadMappingEmail,
+    'manageHostRosterIntakeCallablePayload.mapping.externalReference': manageHostRosterIntakeCallablePayloadMappingExternalReference,
+    'manageHostRosterIntakeCallablePayload.mapping.phone': manageHostRosterIntakeCallablePayloadMappingPhone,
+    'manageHostRosterIntakeCallablePayload.mapping.revenueAmount': manageHostRosterIntakeCallablePayloadMappingRevenueAmount,
+    'manageHostRosterIntakeCallablePayload.mapping.revenueCurrency': manageHostRosterIntakeCallablePayloadMappingRevenueCurrency,
+    'manageHostRosterIntakeCallablePayload.mapping.status': manageHostRosterIntakeCallablePayloadMappingStatus,
+    'manageHostRosterIntakeCallablePayload.mapping.ticketType': manageHostRosterIntakeCallablePayloadMappingTicketType,
+    'manageHostRosterIntakeCallablePayload.organizerId': manageHostRosterIntakeCallablePayloadOrganizerId,
+    'manageHostRosterIntakeCallablePayload.reviewHash': manageHostRosterIntakeCallablePayloadReviewHash,
+    'manageHostRosterIntakeCallablePayload.rows': manageHostRosterIntakeCallablePayloadRows,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsArrivalGroupOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsCityMarketIdOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsDisplayNameOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.email.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.email.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.email.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.email.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsEmailOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsExternalReferenceOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsPhoneOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueAmountMinorOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueCurrencyOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsRevenueSourceOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.status.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.status.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.status.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.status.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsStatusOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.column': manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeColumn,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.confidence': manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeConfidence,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.header': manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeHeader,
+    'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.origin': manageHostRosterIntakeCallablePayloadRowsItemsFieldsTicketTypeOrigin,
+    'manageHostRosterIntakeCallablePayload.rows.items.issues': manageHostRosterIntakeCallablePayloadRowsItemsIssues,
+    'manageHostRosterIntakeCallablePayload.rows.items.issues.items': manageHostRosterIntakeCallablePayloadRowsItemsIssuesItems,
+    'manageHostRosterIntakeCallablePayload.rows.items.rawCells': manageHostRosterIntakeCallablePayloadRowsItemsRawCells,
+    'manageHostRosterIntakeCallablePayload.rows.items.rawCells.items': manageHostRosterIntakeCallablePayloadRowsItemsRawCellsItems,
+    'manageHostRosterIntakeCallablePayload.rows.items.sourceRowNumber': manageHostRosterIntakeCallablePayloadRowsItemsSourceRowNumber,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.arrivalGroup': manageHostRosterIntakeCallablePayloadRowsItemsValueArrivalGroup,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.cityMarketId': manageHostRosterIntakeCallablePayloadRowsItemsValueCityMarketId,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.displayName': manageHostRosterIntakeCallablePayloadRowsItemsValueDisplayName,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.email': manageHostRosterIntakeCallablePayloadRowsItemsValueEmail,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.externalReference': manageHostRosterIntakeCallablePayloadRowsItemsValueExternalReference,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.phone': manageHostRosterIntakeCallablePayloadRowsItemsValuePhone,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.revenueAmountMinor': manageHostRosterIntakeCallablePayloadRowsItemsValueRevenueAmountMinor,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.revenueCurrency': manageHostRosterIntakeCallablePayloadRowsItemsValueRevenueCurrency,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.revenueSource': manageHostRosterIntakeCallablePayloadRowsItemsValueRevenueSource,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.rowId': manageHostRosterIntakeCallablePayloadRowsItemsValueRowId,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.status': manageHostRosterIntakeCallablePayloadRowsItemsValueStatus,
+    'manageHostRosterIntakeCallablePayload.rows.items.value.ticketType': manageHostRosterIntakeCallablePayloadRowsItemsValueTicketType,
+    'manageHostRosterIntakeCallablePayload.sessionId': manageHostRosterIntakeCallablePayloadSessionId,
     'manageOrganizerFormDomainCallablePayload.action': manageOrganizerFormDomainCallablePayloadAction,
     'manageOrganizerFormDomainCallablePayload.formId': manageOrganizerFormDomainCallablePayloadFormId,
     'manageOrganizerFormDomainCallablePayload.hostname': manageOrganizerFormDomainCallablePayloadHostname,
