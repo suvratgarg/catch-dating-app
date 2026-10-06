@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/programs/domain/program_calendar.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,8 +45,14 @@ class ProgramInventoryRepository {
         kind: kind,
         title: title.trim(),
         timezone: timezone.trim(),
-        startsAtMillis: startsAt.millisecondsSinceEpoch,
-        endsAtMillis: endsAt.millisecondsSinceEpoch,
+        startsAtMillis: programCalendarDateInstant(
+          startsAt,
+          timezone,
+        ).millisecondsSinceEpoch,
+        endsAtMillis: programCalendarDateInstant(
+          endsAt,
+          timezone,
+        ).millisecondsSinceEpoch,
         capabilities: const ['arrivalsTransport'],
       ).toJson(),
       action: 'create your program',

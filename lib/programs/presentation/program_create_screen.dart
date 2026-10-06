@@ -246,6 +246,8 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
                   .createOrganizerProgramCallablePayloadTimezone
                   .maxLength!,
       ),
+      ProgramCreateValidation.invalidTimezone =>
+        context.l10n.sharedValidationInvalid,
       ProgramCreateValidation.invalidDate =>
         context.l10n.programsCreateInvalidDate,
       ProgramCreateValidation.endAfterStart =>

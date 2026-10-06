@@ -1,10 +1,17 @@
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/programs/domain/program_calendar.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter/foundation.dart';
 
 enum ProgramCreateField { title, kind, timezone, start, end }
 
-enum ProgramCreateValidation { required, tooLong, invalidDate, endAfterStart }
+enum ProgramCreateValidation {
+  required,
+  tooLong,
+  invalidTimezone,
+  invalidDate,
+  endAfterStart,
+}
 
 /// The form and the submitted command use the same immutable values. A retry
 /// never substitutes later edits for a command whose response may be lost.
@@ -62,8 +69,14 @@ class ProgramCreateValues {
           .createOrganizerProgramCallablePayloadTimezone
           .maxLength!,
     );
-    if (kind == null)
+    if (!result.containsKey(ProgramCreateField.timezone) &&
+        !isProgramTimeZone(timezone)) {
+      result[ProgramCreateField.timezone] =
+          ProgramCreateValidation.invalidTimezone;
+    }
+    if (kind == null) {
       result[ProgramCreateField.kind] = ProgramCreateValidation.required;
+    }
     void date(ProgramCreateField field, DateTime? value) {
       if (value == null) {
         result[field] = ProgramCreateValidation.required;

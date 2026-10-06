@@ -100,6 +100,7 @@ void main() {
       for (final draft in [
         _draft.copyWith(title: 'x' * 141),
         _draft.copyWith(timezone: 'x' * 61),
+        _draft.copyWith(timezone: 'Not/A_Timezone'),
         _draft.copyWith(endsAt: _start),
         _draft.copyWith(endsAt: _start.subtract(const Duration(days: 1))),
       ]) {
@@ -250,7 +251,7 @@ void main() {
       expect(controller.requestId, 'replacement-request-1');
       expect(snapshots.last.submittedValues, isNull);
 
-      controller.edit(_draft.copyWith(timezone: 'Asia/Calcutta'));
+      controller.edit(_draft.copyWith(title: 'Corrected wedding weekend'));
       expect(await controller.submit(), 'saved-id');
       expect(commands, ['fixed-request-key', 'replacement-request-1']);
     },
