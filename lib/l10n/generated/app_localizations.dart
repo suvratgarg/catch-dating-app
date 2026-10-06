@@ -37585,12 +37585,6 @@ abstract class AppLocalizations {
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Configure event payment terms before creating offers.'**
-  String get hostEventOfferConfigurePayment;
-
-  /// Host forms to event offer action or state.
-  ///
-  /// In en, this message translates to:
   /// **'Open event settings'**
   String get hostEventOfferOpenSettings;
 

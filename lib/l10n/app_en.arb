@@ -30503,8 +30503,6 @@
   "@hostEventOfferUntitledEvent": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferLoadMoreEvents": "Load more events",
   "@hostEventOfferLoadMoreEvents": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
-  "hostEventOfferConfigurePayment": "Configure event payment terms before creating offers.",
-  "@hostEventOfferConfigurePayment": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferOpenSettings": "Open event settings",
   "@hostEventOfferOpenSettings": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferStatusDraft": "Draft",

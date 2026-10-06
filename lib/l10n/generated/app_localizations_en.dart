@@ -23369,10 +23369,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferLoadMoreEvents => 'Load more events';
 
   @override
-  String get hostEventOfferConfigurePayment =>
-      'Configure event payment terms before creating offers.';
-
-  @override
   String get hostEventOfferOpenSettings => 'Open event settings';
 
   @override
