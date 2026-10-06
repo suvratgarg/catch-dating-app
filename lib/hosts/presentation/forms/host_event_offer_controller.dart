@@ -102,8 +102,9 @@ class HostEventOfferController extends ChangeNotifier {
     );
     if (!_isCurrent(generation) ||
         isCurrent?.call() == false ||
-        pending == null)
+        pending == null) {
       return;
+    }
     _publish(
       HostOfferFlowView(
         status: HostOfferFlowStatus.failure,

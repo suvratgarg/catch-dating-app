@@ -106,7 +106,7 @@ class HostOfferWorkspacePolicy {
     final time = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
     final random = List.generate(
       3,
-      (_) => _entropy.nextInt(1 << 32).toRadixString(36),
+      (_) => _entropy.nextInt(0x100000000).toRadixString(36),
     ).join();
     return 'offer_${time}_$random';
   }

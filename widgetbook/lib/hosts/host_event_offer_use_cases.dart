@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import 'host_form_workspace_use_cases.dart';
+import 'operations/role_theme.dart';
 
 enum _PreviewMode { loading, empty, failure, needsContact, prepared, existing }
 
@@ -109,73 +110,79 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
   }
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 580,
-    height: 740,
-    child: Scaffold(
-      body: SingleChildScrollView(
-        child: _selected
-            ? HostEventOfferWorkspaceSection(
-                organizerId: 'org_demo',
-                accountId: 'manager_demo',
-                queryController: _query,
-                offerController: _offers,
-                listOffers:
-                    ({
-                      required organizerId,
-                      required eventId,
-                      afterOfferId,
-                    }) async => {
-                      'items': widget.mode == _PreviewMode.existing
-                          ? [
-                              {
-                                'offerId': 'offer_demo',
-                                'eventId': 'event_demo',
-                                'contactId': 'contact_demo',
-                                'effectiveStatus': 'offered',
-                              },
-                            ]
-                          : <Object>[],
-                      'nextCursor': null,
-                    },
-                getOffer:
-                    ({
-                      required organizerId,
-                      required eventId,
-                      required contactId,
-                    }) async => _previewOffer(),
-                prepareHandoff: ({required offer}) async =>
-                    const HostOfferHandoff(
-                      kind: 'blocked',
-                      offerId: 'offer_demo',
-                      blockers: ['fixture'],
-                    ),
-                copyMessage: (_) async {},
-                openHandoff: (_) async => false,
-                targets: _FixtureTargets(widget.mode),
-                getResponseDetail: (_) async => HostFormResponseDetail(
-                  response: hostFormResponsePreviewDetail.response,
-                  contactId: widget.mode == _PreviewMode.needsContact
-                      ? null
-                      : 'contact_demo',
-                  answers: hostFormResponsePreviewDetail.answers,
-                  consentVersion: hostFormResponsePreviewDetail.consentVersion,
-                  completionMillis:
-                      hostFormResponsePreviewDetail.completionMillis,
-                ),
-                openResponseForConversion: (_) async {},
-                openEventSettings: (_) async {},
-                copy: _copy,
-                now: () => DateTime.utc(2026, 9, 24),
-                initiallyReviewSelection: true,
-                initialEventId:
-                    widget.mode == _PreviewMode.needsContact ||
-                        widget.mode == _PreviewMode.prepared ||
-                        widget.mode == _PreviewMode.existing
-                    ? 'event_demo'
-                    : null,
-              )
-            : const Center(child: CircularProgressIndicator()),
+  Widget build(BuildContext context) => WidgetbookThemedHostPreview(
+    themeMode: Theme.of(context).brightness == Brightness.dark
+        ? ThemeMode.dark
+        : ThemeMode.light,
+    child: SizedBox(
+      width: 580,
+      height: 740,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: _selected
+              ? HostEventOfferWorkspaceSection(
+                  organizerId: 'org_demo',
+                  accountId: 'manager_demo',
+                  queryController: _query,
+                  offerController: _offers,
+                  listOffers:
+                      ({
+                        required organizerId,
+                        required eventId,
+                        afterOfferId,
+                      }) async => {
+                        'items': widget.mode == _PreviewMode.existing
+                            ? [
+                                {
+                                  'offerId': 'offer_demo',
+                                  'eventId': 'event_demo',
+                                  'contactId': 'contact_demo',
+                                  'effectiveStatus': 'offered',
+                                },
+                              ]
+                            : <Object>[],
+                        'nextCursor': null,
+                      },
+                  getOffer:
+                      ({
+                        required organizerId,
+                        required eventId,
+                        required contactId,
+                      }) async => _previewOffer(),
+                  prepareHandoff: ({required offer}) async =>
+                      const HostOfferHandoff(
+                        kind: 'blocked',
+                        offerId: 'offer_demo',
+                        blockers: ['fixture'],
+                      ),
+                  copyMessage: (_) async {},
+                  openHandoff: (_) async => false,
+                  targets: _FixtureTargets(widget.mode),
+                  getResponseDetail: (_) async => HostFormResponseDetail(
+                    response: hostFormResponsePreviewDetail.response,
+                    contactId: widget.mode == _PreviewMode.needsContact
+                        ? null
+                        : 'contact_demo',
+                    answers: hostFormResponsePreviewDetail.answers,
+                    consentVersion:
+                        hostFormResponsePreviewDetail.consentVersion,
+                    completionMillis:
+                        hostFormResponsePreviewDetail.completionMillis,
+                  ),
+                  openResponseForConversion: (_) async {},
+                  openEventSettings: (_) async {},
+                  copy: _copy,
+                  now: () => DateTime.utc(2026, 9, 24),
+                  initiallyReviewSelection: true,
+                  initialEventId:
+                      widget.mode == _PreviewMode.needsContact ||
+                          widget.mode == _PreviewMode.prepared ||
+                          widget.mode == _PreviewMode.existing
+                      ? 'event_demo'
+                      : null,
+                )
+              : const Center(child: CircularProgressIndicator()),
+        ),
       ),
     ),
   );

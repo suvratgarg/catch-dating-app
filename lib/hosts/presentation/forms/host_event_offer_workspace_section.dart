@@ -14,83 +14,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class HostEventOfferWorkspaceCopy {
-  const HostEventOfferWorkspaceCopy({
-    required this.create,
-    required this.selectEvent,
-    required this.chooseForRecipient,
-    required this.chooseForRecipients,
-    required this.loadingEvents,
-    required this.preparingOffer,
-    required this.loadingOffer,
-    required this.preparingMessage,
-    required this.cancelPreparation,
-    required this.emptyEvents,
-    required this.untitledEvent,
-    required this.loadMoreEvents,
-    required this.needsContact,
-    required this.convertContact,
-    required this.selectionChanged,
-    required this.loadFailed,
-    required this.issued,
-    required this.refresh,
-    required this.existing,
-    required this.noOffers,
-    required this.configurePayment,
-    required this.openSettings,
-    required this.statusDraft,
-    required this.statusOffered,
-    required this.statusWithdrawn,
-    required this.statusExpired,
-    required this.personalPaymentLink,
-    required this.openExisting,
-    required this.handoffPrepare,
-    required this.handoffBlocked,
-    required this.handoffDisclosure,
-    required this.openWhatsapp,
-    required this.copyMessage,
-    required this.messageCopied,
-    required this.handoffOpenFailed,
-    required this.review,
-  });
-
-  final String create;
-  final String selectEvent;
-  final String Function(String name) chooseForRecipient;
-  final String Function(int count) chooseForRecipients;
-  final String loadingEvents;
-  final String preparingOffer;
-  final String loadingOffer;
-  final String preparingMessage;
-  final String cancelPreparation;
-  final String emptyEvents;
-  final String untitledEvent;
-  final String loadMoreEvents;
-  final String needsContact;
-  final String convertContact;
-  final String selectionChanged;
-  final String loadFailed;
-  final String issued;
-  final String refresh;
-  final String existing;
-  final String noOffers;
-  final String configurePayment;
-  final String openSettings;
-  final String statusDraft;
-  final String statusOffered;
-  final String statusWithdrawn;
-  final String statusExpired;
-  final String Function(String name) personalPaymentLink;
-  final String openExisting;
-  final String handoffPrepare;
-  final String handoffBlocked;
-  final String handoffDisclosure;
-  final String openWhatsapp;
-  final String copyMessage;
-  final String messageCopied;
-  final String handoffOpenFailed;
-  final HostEventOfferReviewCopy review;
-}
+part 'host_event_offer_workspace_copy.dart';
 
 /// One manager's reviewed query selection. No offer is prepared from a list
 /// label alone: every selected response is read again and the materialized
@@ -274,12 +198,18 @@ class _HostEventOfferWorkspaceSectionState
   Widget build(BuildContext context) {
     final copy = widget.copy;
     final selected = _controller.selectedOffer;
-    if (_controller.event != null &&
+    final event = _controller.event;
+    final configuration = _controller.configuration;
+    final draft = _controller.draft;
+    final commitRequestId = _controller.commitRequestId;
+    if (event != null &&
         !_controller.preparing &&
         _controller.missingContacts.isEmpty &&
-        _controller.configuration?.suggestedExpiresAt != null &&
+        configuration != null &&
+        configuration.suggestedExpiresAt != null &&
         selected == null &&
-        _controller.draft != null) {
+        draft != null &&
+        commitRequestId != null) {
       return HostEventOfferReviewSection(
         layoutBuilder: (body, action) => HostEventOfferWorkspaceLayout(
           layoutBuilder: widget.layoutBuilder,
@@ -291,11 +221,11 @@ class _HostEventOfferWorkspaceSectionState
           action: action,
         ),
         controller: widget.offerController,
-        draft: _controller.draft!,
+        draft: draft,
         amountLabel: _amountLabel(context),
         showEvent: false,
-        eventTitle: _controller.event!.name?.trim().isNotEmpty == true
-            ? _controller.event!.name!
+        eventTitle: event.name?.trim().isNotEmpty == true
+            ? event.name!
             : copy.untitledEvent,
         contactLabel: (id) =>
             _controller.details
@@ -305,9 +235,9 @@ class _HostEventOfferWorkspaceSectionState
                 .identity
                 .primaryLabel ??
             context.l10n.hostFormResponsesAnonymous,
-        eventStartsAt: _controller.configuration!.startsAt,
+        eventStartsAt: configuration.startsAt,
         now: widget.now,
-        commitRequestId: _controller.commitRequestId!,
+        commitRequestId: commitRequestId,
         copy: copy.review,
       );
     }
@@ -428,8 +358,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
               .where((row) => row.responseId == controller.ids.single)
               .firstOrNull
         : null;
-    final recipient = (workspace.recipientLabel ?? selectedRow?.primaryLabel)
-        ?.trim();
+    final recipient =
+        (workspace.recipientLabel ?? selectedRow?.identity.primaryLabel)
+            ?.trim();
     final contextLabel = recipient?.isNotEmpty == true
         ? copy.chooseForRecipient(recipient!)
         : controller.ids.length > 1
@@ -577,7 +508,8 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
               )
             else if (controller.selectedOffer == null &&
                 !controller.preparing &&
-                controller.draft != null)
+                controller.draft != null &&
+                controller.commitRequestId != null)
               review!,
 
             if (controller.selectedOffer == null &&
