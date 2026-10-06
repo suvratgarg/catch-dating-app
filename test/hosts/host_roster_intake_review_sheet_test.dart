@@ -54,7 +54,7 @@ void main() {
                     externalReference: 'ticket-3',
                     kind: 'add',
                     changedFields: ['displayName'],
-                    fieldChanges: const [
+                    fieldChanges: [
                       HostRosterIntakeFieldChange(
                         field: 'displayName',
                         currentValue: null,
