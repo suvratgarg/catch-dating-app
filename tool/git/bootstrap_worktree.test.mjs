@@ -14,9 +14,12 @@ test("worktree bootstrap installs isolated dependencies in the required order", 
   context.after(() => fs.rmSync(fixtureRoot, {recursive: true, force: true}));
   fs.mkdirSync(path.join(fixtureRoot, "functions"));
   for (const relativePath of [
+    "package.json",
     "package-lock.json",
+    "functions/package.json",
     "functions/package-lock.json",
     "pubspec.yaml",
+    "pubspec.lock",
   ]) {
     fs.writeFileSync(path.join(fixtureRoot, relativePath), "fixture\n");
   }
@@ -52,6 +55,52 @@ printf '%s|flutter|%s\\n' "$PWD" "$*" >> "$CATCH_BOOTSTRAP_TEST_LOG"
     `${path.join(fixtureRoot, "functions")}|npm|ci`,
     `${fixtureRoot}|flutter|pub get`,
   ]);
+});
+
+test("targeted bootstrap installs only its selected locked dependency family", (context) => {
+  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-bootstrap-target-"));
+  context.after(() => fs.rmSync(fixtureRoot, {recursive: true, force: true}));
+  const binDirectory = path.join(fixtureRoot, "bin");
+  const logPath = path.join(fixtureRoot, "commands.log");
+  fs.mkdirSync(binDirectory);
+  fs.mkdirSync(path.join(fixtureRoot, "functions"));
+  writeExecutable(path.join(binDirectory, "git"), "#!/usr/bin/env bash\nprintf '%s\\n' \"$CATCH_BOOTSTRAP_TEST_ROOT\"\n");
+  writeExecutable(path.join(binDirectory, "npm"), "#!/usr/bin/env bash\nprintf '%s|npm|%s\\n' \"$PWD\" \"$*\" >> \"$CATCH_BOOTSTRAP_TEST_LOG\"\n");
+  writeExecutable(path.join(binDirectory, "flutter"), "#!/usr/bin/env bash\nprintf '%s|flutter|%s\\n' \"$PWD\" \"$*\" >> \"$CATCH_BOOTSTRAP_TEST_LOG\"\n");
+  const env = {...process.env, PATH: `${binDirectory}:${process.env.PATH}`,
+    CATCH_BOOTSTRAP_TEST_ROOT: fixtureRoot, CATCH_BOOTSTRAP_TEST_LOG: logPath};
+  const families = [
+    {target: "root", locks: ["package.json", "package-lock.json"], command: `${fixtureRoot}|npm|ci`},
+    {target: "functions", locks: ["functions/package.json", "functions/package-lock.json"],
+      command: `${path.join(fixtureRoot, "functions")}|npm|ci`},
+    {target: "flutter", locks: ["pubspec.yaml", "pubspec.lock"], command: `${fixtureRoot}|flutter|pub get`},
+  ];
+
+  for (const {target, locks, command} of families) {
+    for (const lock of locks) fs.writeFileSync(path.join(fixtureRoot, lock), "fixture\n");
+    const result = spawnSync("bash", [scriptPath, "--target", target],
+      {cwd: fixtureRoot, encoding: "utf8", env});
+    assert.equal(result.status, 0, `${target}: ${result.stderr}`);
+    assert.equal(fs.readFileSync(logPath, "utf8").trim(), command);
+    fs.rmSync(logPath);
+    for (const lock of locks) fs.rmSync(path.join(fixtureRoot, lock));
+  }
+
+  const missing = spawnSync("bash", [scriptPath, "--target", "flutter"],
+    {cwd: fixtureRoot, encoding: "utf8", env});
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /requires pubspec.yaml/u);
+  assert.equal(fs.existsSync(logPath), false);
+  fs.writeFileSync(path.join(fixtureRoot, "pubspec.yaml"), "fixture\n");
+  const missingLock = spawnSync("bash", [scriptPath, "--target", "flutter"],
+    {cwd: fixtureRoot, encoding: "utf8", env});
+  assert.equal(missingLock.status, 1);
+  assert.match(missingLock.stderr, /requires pubspec.lock/u);
+  assert.equal(fs.existsSync(logPath), false);
+  const invalid = spawnSync("bash", [scriptPath, "--target", "unknown"],
+    {cwd: fixtureRoot, encoding: "utf8", env});
+  assert.equal(invalid.status, 64);
+  assert.equal(fs.existsSync(logPath), false);
 });
 
 test("worktree bootstrap help is dependency-free", () => {
