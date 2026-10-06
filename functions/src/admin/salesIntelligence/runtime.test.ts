@@ -305,8 +305,10 @@ test("partner source hashes bind current assignment generation and reject stale 
   assert.notEqual(before.sourceHash, after.sourceHash);
   let checks = 0;
   f.partnerDeps.checkAuth = async () => {
-    if (++checks === 2) f.db.docs.set("salesPartnerMemberships/partner-one",
-      {...f.db.docs.get("salesPartnerMemberships/partner-one"), status: "revoked"});
+    if (++checks === 2) {
+      f.db.docs.set("salesPartnerMemberships/partner-one",
+        {...f.db.docs.get("salesPartnerMemberships/partner-one"), status: "revoked"});
+    }
   };
   await assert.rejects(buildPartnerOutreachInput(f.partnerDeps, f.principal, sampleRequest.sourceRequest, 3),
     {code: "permission-denied"});
@@ -480,11 +482,15 @@ test("participant completion rechecks lease expiry after awaited final authoriza
   const key = `salesOutreachDrafts/${f.saved.draftId}`;
   const originalGet = f.db.docs.get.bind(f.db.docs);
   let readArtifact = false;
-  f.db.docs.get = (path) => {if (path === key) readArtifact = true; return originalGet(path);};
+  f.db.docs.get = (path) => {
+    if (path === key) readArtifact = true; return originalGet(path);
+  };
   const auth = f.partnerDeps.checkAuth;
   f.partnerDeps.checkAuth = async (...args) => {
     await auth(...args);
-    if (readArtifact) {await Promise.resolve(); f.clock("2026-09-28T10:01:01.000Z");}
+    if (readArtifact) {
+      await Promise.resolve(); f.clock("2026-09-28T10:01:01.000Z");
+    }
   };
   await assert.rejects(completePartnerDraftJob(f.partnerDeps, f.principal, f.job, f.saved), {code: "aborted"});
   assert.equal(f.db.docs.get(`salesOutreachJobs/${f.job.jobId}`)?.status, "running");
@@ -554,7 +560,9 @@ test("partner callable Auth resolution rejects disabled, revoked, missing and ma
   await assert.rejects(currentPartnerActor(request, async () => ({...user, disabled: true, toJSON: () => ({})})), {code: "permission-denied"});
   await assert.rejects(currentPartnerActor(request, async () => ({...user, tokensValidAfterTime: "2026-09-28T10:00:01.000Z", toJSON: () => ({})})), {code: "permission-denied"});
   await assert.rejects(currentPartnerActor({...request, auth: {...request.auth!, token: {...request.auth!.token, auth_time: "stale"}}} as unknown as CallableRequest<unknown>, async () => user), {code: "permission-denied"});
-  await assert.rejects(currentPartnerActor(request, async () => {throw new Error("deleted Auth user");}), /deleted Auth user/u);
+  await assert.rejects(currentPartnerActor(request, async () => {
+    throw new Error("deleted Auth user");
+  }), /deleted Auth user/u);
 });
 
 async function manualSendFixture(approve = true) {
@@ -565,8 +573,10 @@ async function manualSendFixture(approve = true) {
   const stored = f.db.docs.get(`salesOutreachDrafts/${draftId}`)!;
   const draft = stored.draft as Record<string, unknown>;
   const target = {organizerId: "org-one", draftId, expectedAssignmentRevision: 2, expectedContentHash: draft.contentHash};
-  if (approve) await reviewPartnerOutreachDraft(f.partnerDeps, f.principal, {...target,
-    requestId: "manual-review", factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"});
+  if (approve) {
+    await reviewPartnerOutreachDraft(f.partnerDeps, f.principal, {...target,
+      requestId: "manual-review", factualValidity: "verified", tone: "approved", channelReadiness: "manual_copy_only"});
+  }
   return {...f, target, payload: {...target, requestId: "manual-send", channel: "email",
     occurredAt: started, attestation: "i_manually_sent_this_reviewed_draft"}};
 }
@@ -715,9 +725,13 @@ test("preparation drops evidence and contacts expiring during final authorizatio
     f.db.docs.set(key, {...f.db.docs.get(key), validThrough: "2026-09-28T10:00:01.000Z"});
   }
   const originalGet = f.db.docs.get.bind(f.db.docs); let contactRead = false;
-  f.db.docs.get = (key) => {if (key === "salesContacts/contact-one") contactRead = true; return originalGet(key);};
+  f.db.docs.get = (key) => {
+    if (key === "salesContacts/contact-one") contactRead = true; return originalGet(key);
+  };
   const auth = f.partnerDeps.checkAuth;
-  f.partnerDeps.checkAuth = async (...args) => {await auth(...args); if (contactRead) f.clock("2026-09-28T10:00:02.000Z");};
+  f.partnerDeps.checkAuth = async (...args) => {
+    await auth(...args); if (contactRead) f.clock("2026-09-28T10:00:02.000Z");
+  };
   const result = await getPartnerPreparation(f.partnerDeps, f.principal, f.target);
   assert.equal((result.contacts as unknown[]).length, 0);
   assert.ok(!(result.clauses as Array<{clauseId: string}>).some((row) => row.clauseId === "observation-one"));

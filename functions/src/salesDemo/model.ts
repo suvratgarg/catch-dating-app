@@ -1,4 +1,7 @@
-import type {PartnerDemoReviewGrant, PartnerDemoPreviewProposal} from "./partnerReview";
+import type {
+  PartnerDemoReviewGrant,
+  PartnerDemoPreviewProposal,
+} from "./partnerReview";
 import type {SetupPlan} from "./setupPlan";
 import {HttpsError} from "firebase-functions/v2/https";
 

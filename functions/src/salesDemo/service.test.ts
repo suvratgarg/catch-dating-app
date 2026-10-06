@@ -8,7 +8,8 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {Identity, CurrentUser} from "./model";
 import {DemoDeps, adminGetBlueprint, adminGetCapability, adminGetInvitation,
   adminListBlueprints, adminListInvitations,
-  advanceSession, createDemoContinuation, resumeDemoContinuation, getPreview, getSession,
+  advanceSession, createDemoContinuation, resumeDemoContinuation,
+  getPreview, getSession,
   issueInvitation, reviewBlueprint, revokeInvitation, saveBlueprint,
   salesDemoSetup, startSession, withdrawBlueprint} from "./service";
 
@@ -446,8 +447,10 @@ test("expiry and blueprint revision invalidate preview and trial",
     await blueprint(deps);
     const issued = await invite(deps);
     setTime("2026-10-01T00:00:00.000Z");
-    await rejectsCode(getPreview(deps,
-      {invitationId: issued.invitationId, grantToken: issued.grantToken}, intended), "permission-denied");
+    await rejectsCode(getPreview(deps, {
+      invitationId: issued.invitationId,
+      grantToken: issued.grantToken,
+    }, intended), "permission-denied");
     await rejectsCode(startSession(deps, intended, {invitationId:
       issued.invitationId, grantToken: issued.grantToken,
     requestId: "start-demo-001"}), "permission-denied");
@@ -463,16 +466,20 @@ test("trusted capability gate drift invalidates preview and future actions",
         grantToken: issued.grantToken, requestId: "start-demo-001"});
     const path = "salesDemoCapabilities/synthetic_forms_v1";
     db.put(path, {...db.docs.get(path), revision: "revision-002"});
-    await rejectsCode(getPreview(deps,
-      {invitationId: issued.invitationId, grantToken: issued.grantToken}, intended), "permission-denied");
+    await rejectsCode(getPreview(deps, {
+      invitationId: issued.invitationId,
+      grantToken: issued.grantToken,
+    }, intended), "permission-denied");
     await rejectsCode(advanceSession(deps, intended,
       {sessionId: started.sessionId, grantToken: issued.grantToken,
         requestId: "review-step-001", expectedRevision: 1,
         action: "reviewApplication", choice: "approve"}),
     "permission-denied");
     db.docs.delete(path);
-    await rejectsCode(getPreview(deps,
-      {invitationId: issued.invitationId, grantToken: issued.grantToken}, intended), "failed-precondition");
+    await rejectsCode(getPreview(deps, {
+      invitationId: issued.invitationId,
+      grantToken: issued.grantToken,
+    }, intended), "failed-precondition");
   });
 
 test("editing or withdrawing a reviewed blueprint invalidates invitation",
@@ -491,8 +498,10 @@ test("editing or withdrawing a reviewed blueprint invalidates invitation",
         branching: "unsupported", requiredFields: "manual",
         scoringApproval: "unsupported", uploads: "retained"},
       fieldMappings: [], preview: samplePreview});
-    await rejectsCode(getPreview(deps,
-      {invitationId: issued.invitationId, grantToken: issued.grantToken}, intended), "permission-denied");
+    await rejectsCode(getPreview(deps, {
+      invitationId: issued.invitationId,
+      grantToken: issued.grantToken,
+    }, intended), "permission-denied");
     await reviewBlueprint(deps, owner, {requestId: "review-demo-002",
       blueprintId: "blueprint-001", expectedRevision: 3});
     await withdrawBlueprint(deps, owner, {requestId: "withdraw-demo-001",
@@ -742,7 +751,10 @@ function demoActivities(db: MemoryDb) {
 function salesAccount(db: MemoryDb, researchStatus = "researching") {
   db.put("organizerSalesAccounts/organizer-001", {
     classification: "sales_private", organizerId: "organizer-001",
-    researchStatus, suppressionStatus: "clear", duplicateReviewRequired: false});
+    researchStatus,
+    suppressionStatus: "clear",
+    duplicateReviewRequired: false,
+  });
 }
 for (const choice of ["approve", "needs_info"] as const) {
   test(`confirmed ${choice} demo projects each transition once`, async () => {
@@ -1024,8 +1036,10 @@ test("privacy restriction follows invitation scope before reads and replay",
     await rejectsCode(invite(deps), "failed-precondition");
     await rejectsCode(adminGetInvitation(deps, owner,
       {invitationId: issued.invitationId}), "failed-precondition");
-    await rejectsCode(getPreview(deps,
-      {invitationId: issued.invitationId, grantToken: issued.grantToken}, intended), "failed-precondition");
+    await rejectsCode(getPreview(deps, {
+      invitationId: issued.invitationId,
+      grantToken: issued.grantToken,
+    }, intended), "failed-precondition");
   });
 
 
@@ -1037,7 +1051,8 @@ async function continuationFixture() {
     duplicateReviewRequired: false});
   return context;
 }
-test("own completed handoff recovers a lost response after session removal without renewal", async () => {
+test("own completed handoff recovers a lost response after session removal " +
+  "without renewal", async () => {
   const {db, deps, input, setTime} = await continuationFixture();
   const saved = await createDemoContinuation(deps, intended, input);
   const row = db.docs.get(`salesDemoContinuations/${saved.continuationId}`)!;
@@ -1051,16 +1066,21 @@ test("own completed handoff recovers a lost response after session removal witho
     {continuationId: saved.continuationId}, false);
   assert.equal(recovered.expiresAt, saved.expiresAt);
   assert.equal(db.writes, before);
-  assert.equal((recovered.organizer as {organizerId: string}).organizerId, "organizer-001");
+  assert.equal(
+    (recovered.organizer as {organizerId: string}).organizerId,
+    "organizer-001");
   await rejectsCode(resumeDemoContinuation(deps, other,
     {continuationId: saved.continuationId}, false), "permission-denied");
   setTime(String(saved.expiresAt));
-  await rejectsCode(createDemoContinuation(deps, intended, input), "permission-denied");
+  await rejectsCode(createDemoContinuation(deps, intended, input),
+    "permission-denied");
   assert.equal(db.writes, before);
 });
-test("preserved hidden organizer requires a real claim and never publishes or materializes early", async () => {
+test("preserved hidden organizer requires a real claim and never publishes " +
+  "or materializes early", async () => {
   const {db, deps, input} = await continuationFixture();
-  db.put("organizers/organizer-001", {name: "Private organizer", published: false,
+  db.put("organizers/organizer-001", {
+    name: "Private organizer", published: false,
     claim: {state: "unclaimed"}});
   const saved = await createDemoContinuation(deps, intended, input);
   const before = db.writes;
@@ -1068,41 +1088,75 @@ test("preserved hidden organizer requires a real claim and never publishes or ma
     {continuationId: saved.continuationId}, false);
   const setup = view.setup as {status: string; setupHash: string};
   assert.equal(setup.status, "claim_required");
-  await rejectsCode(resumeDemoContinuation(deps, intended,
-    {continuationId: saved.continuationId, setupHash: setup.setupHash}, true), "permission-denied");
+  await rejectsCode(resumeDemoContinuation(deps, intended, {
+    continuationId: saved.continuationId,
+    setupHash: setup.setupHash,
+  }, true), "permission-denied");
   assert.equal(db.writes, before);
   assert.deepEqual(db.docs.get("organizers/organizer-001"), {
     name: "Private organizer", published: false, claim: {state: "unclaimed"}});
 });
-for (const change of ["revocation", "review", "capability", "suppression", "privacy", "auth", "contact"] as const) {
-  test(`continuation recovery fails closed after current ${change} changes`, async () => {
-    const {db, deps, input, users, setTime} = await continuationFixture();
-    const saved = await createDemoContinuation(deps, intended, input);
-    const row = db.docs.get(`salesDemoContinuations/${saved.continuationId}`)!;
-    const invitePath = `salesDemoInvitations/${row.invitationId}`;
-    if (change === "revocation") db.put(invitePath, {...db.docs.get(invitePath)!, revoked: true});
-    if (change === "review") db.put("salesDemoBlueprints/blueprint-001", {
-      ...db.docs.get("salesDemoBlueprints/blueprint-001")!, revision: 100});
-    if (change === "capability") db.put("salesDemoCapabilities/synthetic_forms_v1", {
-      ...db.docs.get("salesDemoCapabilities/synthetic_forms_v1")!, enabled: false});
-    if (change === "suppression") db.put("organizerSalesAccounts/organizer-001", {
-      ...db.docs.get("organizerSalesAccounts/organizer-001")!, suppressionStatus: "suppressed"});
-    if (change === "privacy") db.put("deletedUsers/intended-uid", {deletedAt: "2026-09-28"});
-    if (change === "auth") users.set(intended.uid, {...users.get(intended.uid)!, disabled: true});
-    if (change === "contact") users.set(intended.uid, {...users.get(intended.uid)!, email: "changed@example.invalid"});
-    setTime("2026-10-10T10:00:00.000Z");
-    const before = db.writes;
-    await assert.rejects(createDemoContinuation(deps, intended, input));
-    await assert.rejects(resumeDemoContinuation(deps, intended,
-      {continuationId: saved.continuationId}, false));
-    assert.equal(db.writes, before);
-  });
+const continuationChanges = [
+  "revocation", "review", "capability", "suppression", "privacy", "auth",
+  "contact",
+] as const;
+for (const change of continuationChanges) {
+  test(`continuation recovery fails closed after current ${change} changes`,
+    async () => {
+      const {db, deps, input, users, setTime} = await continuationFixture();
+      const saved = await createDemoContinuation(deps, intended, input);
+      const row = db.docs.get(
+        `salesDemoContinuations/${saved.continuationId}`)!;
+      const invitePath = `salesDemoInvitations/${row.invitationId}`;
+      if (change === "revocation") {
+        db.put(invitePath, {...db.docs.get(invitePath)!, revoked: true});
+      }
+      if (change === "review") {
+        db.put("salesDemoBlueprints/blueprint-001", {
+          ...db.docs.get("salesDemoBlueprints/blueprint-001")!, revision: 100});
+      }
+      if (change === "capability") {
+        db.put("salesDemoCapabilities/synthetic_forms_v1", {
+          ...db.docs.get("salesDemoCapabilities/synthetic_forms_v1")!,
+          enabled: false,
+        });
+      }
+      if (change === "suppression") {
+        db.put("organizerSalesAccounts/organizer-001", {
+          ...db.docs.get("organizerSalesAccounts/organizer-001")!,
+          suppressionStatus: "suppressed",
+        });
+      }
+      if (change === "privacy") {
+        db.put("deletedUsers/intended-uid", {deletedAt: "2026-09-28"});
+      }
+      if (change === "auth") {
+        users.set(intended.uid, {
+          ...users.get(intended.uid)!, disabled: true,
+        });
+      }
+      if (change === "contact") {
+        users.set(intended.uid, {
+          ...users.get(intended.uid)!, email: "changed@example.invalid",
+        });
+      }
+      setTime("2026-10-10T10:00:00.000Z");
+      const before = db.writes;
+      await assert.rejects(createDemoContinuation(deps, intended, input));
+      await assert.rejects(resumeDemoContinuation(deps, intended,
+        {continuationId: saved.continuationId}, false));
+      assert.equal(db.writes, before);
+    });
 }
 
-test("personalized preview requires both the grant and current invited contact", async () => {
+test("personalized preview requires both the grant and current invited " +
+  "contact", async () => {
   const {db, deps, users} = fixture();
   await blueprint(deps); const issued = await invite(deps);
-  const input = {invitationId: issued.invitationId, grantToken: issued.grantToken};
+  const input = {
+    invitationId: issued.invitationId,
+    grantToken: issued.grantToken,
+  };
   const before = db.writes;
   const view = await getPreview(deps, input, intended);
   assert.equal(view.preview.brandName, samplePreview.brandName);

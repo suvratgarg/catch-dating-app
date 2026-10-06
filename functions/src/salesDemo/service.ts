@@ -1,5 +1,7 @@
 import {PARTNER_TERMS_VERSION, hash as partnerHash} from "../partners/model";
-import {partnerDemoPreviewMaterial, proposalWording, type PartnerDemoReviewGrant, type PartnerDemoPreviewProposal} from "./partnerReview";
+import {partnerDemoPreviewMaterial, proposalWording,
+  type PartnerDemoReviewGrant,
+  type PartnerDemoPreviewProposal} from "./partnerReview";
 import {assertSalesMaterialPrivacyOpen} from "../admin/sales/privacyBoundary";
 import {assertSalesPrivacyOpen, assertSalesPrivacyOpenRead} from
   "../admin/salesPrivacy/model";
@@ -129,9 +131,12 @@ async function availableSalesAccount(deps: DemoDeps,
   const ref = deps.db.collection("organizerSalesAccounts").doc(organizerId);
   const account = (tx ? await tx.get(ref) : await ref.get()).data();
   if (account && (account.classification !== "sales_private" ||
-      account.organizerId !== organizerId || account.researchStatus === "archived" ||
-      account.suppressionStatus !== "clear" || account.duplicateReviewRequired === true)) {
-    fail("failed-precondition", "This Sales account is unavailable for a private demo.");
+      account.organizerId !== organizerId ||
+      account.researchStatus === "archived" ||
+      account.suppressionStatus !== "clear" ||
+      account.duplicateReviewRequired === true)) {
+    fail("failed-precondition",
+      "This Sales account is unavailable for a private demo.");
   }
 }
 async function invitationPrivacy(deps: DemoDeps, blueprintId: unknown,
@@ -447,7 +452,10 @@ async function validInvitation(deps: DemoDeps,
   return invitation;
 }
 
-/** Anonymous unfurls show a generic sample; personalized material requires current contact and grant. */
+/**
+ * Anonymous unfurls show a generic sample; personalized material requires
+ * current contact and grant.
+ */
 export async function getPreview(deps: DemoDeps, raw: unknown,
   identity?: Identity): Promise<{
   schemaVersion: 1; invitationId: string; preview: Preview;
@@ -461,9 +469,11 @@ export async function getPreview(deps: DemoDeps, raw: unknown,
     return {schemaVersion: 1, invitationId, synthetic: true,
       interactiveAvailable: false, expiresAt: null,
       preview: {brandName: "Catch Host", headline: "Explore a private sample",
-        scenario: "Sign in with the invited contact to review your personalized example.",
+        scenario: "Sign in with the invited contact to review your " +
+          "personalized example.",
         steps: ["Review a fictional application", "Prepare an example reply"],
-        retainedTools: [], limitations: ["This is a synthetic practice workflow."],
+        retainedTools: [],
+        limitations: ["This is a synthetic practice workflow."],
         cta: "Review private sample"},
       notice: "Sample workflow only. No real messages, charges or admission."};
   }
@@ -473,9 +483,11 @@ export async function getPreview(deps: DemoDeps, raw: unknown,
     if (!invitation) return fail("permission-denied", "Preview unavailable.");
     const blueprint = (await tx.get(deps.db.collection(BLUEPRINTS)
       .doc(invitation.blueprintId))).data() as Blueprint | undefined;
-    await grant(deps, identity, invitation, blueprint, String(body.grantToken), tx);
+    await grant(deps, identity, invitation, blueprint,
+      String(body.grantToken), tx);
     return {schemaVersion: 1, invitationId, preview: blueprint!.preview,
-      interactiveAvailable: true, expiresAt: invitation.expiresAt, synthetic: true,
+      interactiveAvailable: true, expiresAt: invitation.expiresAt,
+      synthetic: true,
       notice: "Sample workflow only. No real messages, charges or admission."};
   });
 }
@@ -905,16 +917,20 @@ export async function salesDemoSetup(deps: DemoDeps, identity: Identity,
         session.blueprintRevision !== invitation.blueprintRevision) {
       return fail("permission-denied", "The reviewed setup changed.");
     }
-    return reviewedOrganizerSetup(deps, identity, blueprint, tx, prepare, body.setupHash);
-
+    return reviewedOrganizerSetup(
+      deps, identity, blueprint, tx, prepare, body.setupHash);
   });
 }
 
 
-/** Shared existing Forms materializer; callers must prove their own current demo scope. */
+/**
+ * Shared existing Forms materializer; callers must prove their own current
+ * demo scope.
+ */
 async function reviewedOrganizerSetup(deps: DemoDeps, identity: Identity,
   blueprint: Blueprint, tx: FirebaseFirestore.Transaction,
-  prepare: boolean, requestedSetupHash: unknown): Promise<Record<string, unknown>> {
+  prepare: boolean,
+  requestedSetupHash: unknown): Promise<Record<string, unknown>> {
   const publicFormId = randomBytes(24).toString("base64url");
   const plan = currentSetupPlan(blueprint.setupPlan);
   const setupHash = setupPlanHash(plan);
@@ -987,7 +1003,8 @@ async function reviewedOrganizerSetup(deps: DemoDeps, identity: Identity,
 
 interface DemoContinuation {
   schemaVersion: 1; classification: "sales_private"; continuationId: string;
-  actorUid: string; organizerId: string; invitationId: string; invitationRevision: number;
+  actorUid: string; organizerId: string; invitationId: string;
+  invitationRevision: number;
   invitationExpiresAt: string; blueprintId: string; blueprintRevision: number;
   sessionId: string; sessionRevision: number; setupHash: string;
   completedAt: string; createdAt: string; expiresAt: string;
@@ -1007,19 +1024,26 @@ async function continuationAccount(deps: DemoDeps, identity: Identity,
   ]);
   await assertSalesPrivacyOpen(tx, deps.db, organizerId);
   const sales = account.data(); const canonical = organizer.data();
-  if (user.disabled || deleted.exists || !canonical || canonical.archived === true ||
-      canonical.status === "archived" || sales?.classification !== "sales_private" ||
-      sales.organizerId !== organizerId || sales.researchStatus === "archived" ||
+  if (user.disabled || deleted.exists || !canonical ||
+      canonical.archived === true || canonical.status === "archived" ||
+      sales?.classification !== "sales_private" ||
+      sales.organizerId !== organizerId ||
+      sales.researchStatus === "archived" ||
       sales.suppressionStatus !== "clear" || sales.duplicateReviewRequired) {
-    fail("permission-denied", "Current organizer onboarding scope is unavailable.");
+    fail("permission-denied",
+      "Current organizer onboarding scope is unavailable.");
   }
 }
 
-/** Explicitly preserve completed practice for a bounded claim review delay; no bearer storage. */
+/**
+ * Explicitly preserve completed practice for a bounded claim review delay;
+ * no bearer storage.
+ */
 export async function createDemoContinuation(deps: DemoDeps, identity: Identity,
   raw: unknown): Promise<Record<string, unknown>> {
   const body = record(raw); only(body, ["sessionId", "grantToken"]);
-  const sessionId = id(body.sessionId); const token = grantToken(body.grantToken);
+  const sessionId = id(body.sessionId);
+  const token = grantToken(body.grantToken);
   return deps.db.runTransaction(async (tx) => {
     const continuationId = continuationIdFor(identity.uid, sessionId);
     const ref = deps.db.collection(CONTINUATIONS).doc(continuationId);
@@ -1027,231 +1051,396 @@ export async function createDemoContinuation(deps: DemoDeps, identity: Identity,
     if (existing) {
       const recovered = await resumeContinuationInTransaction(deps, identity,
         tx, continuationId, false, undefined);
-      return {continuationId, expiresAt: recovered.expiresAt, publicationAuthority: false};
+      return {
+        continuationId,
+        expiresAt: recovered.expiresAt,
+        publicationAuthority: false,
+      };
     }
-    const session = (await tx.get(deps.db.collection(SESSIONS).doc(sessionId))).data() as Session | undefined;
-    if (!session || session.actorUid !== identity.uid || session.status !== "completed" ||
-        !Number.isFinite(Date.parse(session.expiresAt)) || Date.parse(session.expiresAt) <= deps.now().getTime()) {
-      return fail("permission-denied", "Complete a current private sample before preserving its setup.");
+    const session = (await tx.get(
+      deps.db.collection(SESSIONS).doc(sessionId)
+    )).data() as Session | undefined;
+    if (!session || session.actorUid !== identity.uid ||
+        session.status !== "completed" ||
+        !Number.isFinite(Date.parse(session.expiresAt)) ||
+        Date.parse(session.expiresAt) <= deps.now().getTime()) {
+      return fail("permission-denied",
+        "Complete a current private sample before preserving its setup.");
     }
     const [inviteSnap, blueprintSnap] = await Promise.all([
       tx.get(deps.db.collection(INVITATIONS).doc(session.invitationId)),
       tx.get(deps.db.collection(BLUEPRINTS).doc(session.blueprintId)),
     ]);
     const blueprint = blueprintSnap.data() as Blueprint | undefined;
-    const invitation = await grant(deps, identity, inviteSnap.data() as Invitation | undefined, blueprint, token, tx);
-    if (!blueprint?.organizerId || blueprint.blueprintId !== session.blueprintId ||
+    const invitation = await grant(deps, identity,
+      inviteSnap.data() as Invitation | undefined, blueprint, token, tx);
+    if (!blueprint?.organizerId ||
+        blueprint.blueprintId !== session.blueprintId ||
         blueprint.revision !== session.blueprintRevision) {
-      return fail("failed-precondition", "A reviewed canonical organizer setup is required.");
+      return fail("failed-precondition",
+        "A reviewed canonical organizer setup is required.");
     }
     await continuationAccount(deps, identity, tx, blueprint.organizerId);
     const setupHash = setupPlanHash(currentSetupPlan(blueprint.setupPlan));
     const now = deps.now().toISOString();
-    const row: DemoContinuation = {schemaVersion: 1, classification: "sales_private", continuationId,
+    const row: DemoContinuation = {
+      schemaVersion: 1, classification: "sales_private", continuationId,
       actorUid: identity.uid, organizerId: blueprint.organizerId,
-      invitationId: invitation.invitationId, invitationRevision: invitation.revision,
-      invitationExpiresAt: invitation.expiresAt, blueprintId: blueprint.blueprintId,
-      blueprintRevision: blueprint.revision, sessionId, sessionRevision: session.revision,
+      invitationId: invitation.invitationId,
+      invitationRevision: invitation.revision,
+      invitationExpiresAt: invitation.expiresAt,
+      blueprintId: blueprint.blueprintId,
+      blueprintRevision: blueprint.revision,
+      sessionId, sessionRevision: session.revision,
       setupHash, completedAt: now, createdAt: now,
-      expiresAt: new Date(Date.parse(now) + CONTINUATION_DAYS * DAY).toISOString()};
+      expiresAt: new Date(
+        Date.parse(now) + CONTINUATION_DAYS * DAY
+      ).toISOString(),
+    };
     tx.create(ref, row);
-    return {continuationId, expiresAt: row.expiresAt, publicationAuthority: false};
+    return {
+      continuationId,
+      expiresAt: row.expiresAt,
+      publicationAuthority: false,
+    };
   });
 }
 
-/** Read or materialize only after current Auth, invitation review, Sales and Forms authority checks. */
+/**
+ * Read or materialize only after current Auth, invitation review, Sales and
+ * Forms authority checks.
+ */
 export async function resumeDemoContinuation(deps: DemoDeps, identity: Identity,
   raw: unknown, prepare: boolean): Promise<Record<string, unknown>> {
-  const body = record(raw); only(body, prepare ? ["continuationId", "setupHash"] : ["continuationId"]);
+  const body = record(raw);
+  only(body, prepare ?
+    ["continuationId", "setupHash"] : ["continuationId"]);
   const continuationId = id(body.continuationId);
   return deps.db.runTransaction((tx) => resumeContinuationInTransaction(deps,
     identity, tx, continuationId, prepare, body.setupHash));
 }
-async function resumeContinuationInTransaction(deps: DemoDeps, identity: Identity,
+async function resumeContinuationInTransaction(
+  deps: DemoDeps,
+  identity: Identity,
   tx: FirebaseFirestore.Transaction, continuationId: string, prepare: boolean,
   requestedSetupHash: unknown): Promise<Record<string, unknown>> {
-    const row = (await tx.get(deps.db.collection(CONTINUATIONS).doc(continuationId))).data() as DemoContinuation | undefined;
-    const now = deps.now().getTime();
-    if (!row || row.actorUid !== identity.uid || row.schemaVersion !== 1 || row.classification !== "sales_private" ||
-        row.continuationId !== continuationId || continuationIdFor(identity.uid, row.sessionId) !== continuationId ||
-        !Number.isFinite(Date.parse(row.expiresAt)) || !Number.isFinite(Date.parse(row.createdAt)) ||
-        !Number.isFinite(Date.parse(row.completedAt)) || !Number.isFinite(Date.parse(row.invitationExpiresAt)) || Date.parse(row.expiresAt) <= now ||
+  const row = (await tx.get(
+    deps.db.collection(CONTINUATIONS).doc(continuationId)
+  )).data() as DemoContinuation | undefined;
+  const now = deps.now().getTime();
+  if (!row || row.actorUid !== identity.uid || row.schemaVersion !== 1 ||
+        row.classification !== "sales_private" ||
+        row.continuationId !== continuationId ||
+        continuationIdFor(identity.uid, row.sessionId) !== continuationId ||
+        !Number.isFinite(Date.parse(row.expiresAt)) ||
+        !Number.isFinite(Date.parse(row.createdAt)) ||
+        !Number.isFinite(Date.parse(row.completedAt)) ||
+        !Number.isFinite(Date.parse(row.invitationExpiresAt)) ||
+        Date.parse(row.expiresAt) <= now ||
         Date.parse(row.createdAt) > now || row.completedAt !== row.createdAt ||
-        Date.parse(row.expiresAt) !== Date.parse(row.createdAt) + CONTINUATION_DAYS * DAY ||
+        Date.parse(row.expiresAt) !==
+          Date.parse(row.createdAt) + CONTINUATION_DAYS * DAY ||
         Date.parse(row.completedAt) >= Date.parse(row.invitationExpiresAt)) {
-      return fail("permission-denied", "Current preserved setup is required.");
-    }
-    const [inviteSnap, blueprintSnap, user] = await Promise.all([
-      tx.get(deps.db.collection(INVITATIONS).doc(row.invitationId)),
-      tx.get(deps.db.collection(BLUEPRINTS).doc(row.blueprintId)), deps.getUser(identity.uid),
-    ]);
-    currentToken(identity, user);
-    const invite = inviteSnap.data() as Invitation | undefined;
-    const blueprint = blueprintSnap.data() as Blueprint | undefined;
-    const gate = await currentCapability(deps, tx);
-    // The original interactive invitation may expire during claim review. Only
-    // the previously preserved completion authorizes this bounded own setup;
-    // revocation, contact binding and all current review gates remain required.
-    if (user.disabled || !invite || invite.revoked || !invite.contactBinding ||
-        invite.revision !== row.invitationRevision || invite.invitationId !== row.invitationId ||
-        invite.expiresAt !== row.invitationExpiresAt || invite.blueprintId !== row.blueprintId ||
-        invite.blueprintRevision !== row.blueprintRevision || !blueprint || blueprint.state !== "reviewed" ||
-        blueprint.blueprintId !== row.blueprintId || blueprint.revision !== row.blueprintRevision ||
-        blueprint.organizerId !== row.organizerId || blueprint.capability !== DEMO_CAPABILITY ||
-        blueprint.capabilityRevision !== gate.revision || blueprint.evidenceRevision !== gate.evidenceRevision ||
-        setupPlanHash(currentSetupPlan(blueprint.setupPlan)) !== row.setupHash ||
+    return fail("permission-denied", "Current preserved setup is required.");
+  }
+  const [inviteSnap, blueprintSnap, user] = await Promise.all([
+    tx.get(deps.db.collection(INVITATIONS).doc(row.invitationId)),
+    tx.get(deps.db.collection(BLUEPRINTS).doc(row.blueprintId)),
+    deps.getUser(identity.uid),
+  ]);
+  currentToken(identity, user);
+  const invite = inviteSnap.data() as Invitation | undefined;
+  const blueprint = blueprintSnap.data() as Blueprint | undefined;
+  const gate = await currentCapability(deps, tx);
+  // The original interactive invitation may expire during claim review. Only
+  // the previously preserved completion authorizes this bounded own setup;
+  // revocation, contact binding and all current review gates remain required.
+  if (user.disabled || !invite || invite.revoked || !invite.contactBinding ||
+        invite.revision !== row.invitationRevision ||
+        invite.invitationId !== row.invitationId ||
+        invite.expiresAt !== row.invitationExpiresAt ||
+        invite.blueprintId !== row.blueprintId ||
+        invite.blueprintRevision !== row.blueprintRevision || !blueprint ||
+        blueprint.state !== "reviewed" ||
+        blueprint.blueprintId !== row.blueprintId ||
+        blueprint.revision !== row.blueprintRevision ||
+        blueprint.organizerId !== row.organizerId ||
+        blueprint.capability !== DEMO_CAPABILITY ||
+        blueprint.capabilityRevision !== gate.revision ||
+        blueprint.evidenceRevision !== gate.evidenceRevision ||
+        setupPlanHash(currentSetupPlan(blueprint.setupPlan)) !==
+          row.setupHash ||
         !boundContact(identity, user, invite.contactBinding, key(deps))) {
-      return fail("permission-denied", "The preserved completion or current review changed.");
-    }
-    await continuationAccount(deps, identity, tx, row.organizerId);
-    const canonical = (await tx.get(deps.db.collection("organizers").doc(row.organizerId))).data()!;
-    const setup = await reviewedOrganizerSetup(deps, identity, blueprint, tx, prepare, requestedSetupHash);
-    return {continuationId, expiresAt: row.expiresAt, organizer: {organizerId: row.organizerId,
-      name: canonical.name ?? "Your organizer", claimState: canonical.claim?.state ?? "unclaimed"}, setup};
+    return fail("permission-denied",
+      "The preserved completion or current review changed.");
+  }
+  await continuationAccount(deps, identity, tx, row.organizerId);
+  const canonical = (await tx.get(
+    deps.db.collection("organizers").doc(row.organizerId)
+  )).data()!;
+  const setup = await reviewedOrganizerSetup(
+    deps, identity, blueprint, tx, prepare, requestedSetupHash);
+  return {
+    continuationId,
+    expiresAt: row.expiresAt,
+    organizer: {
+      organizerId: row.organizerId,
+      name: canonical.name ?? "Your organizer",
+      claimState: canonical.claim?.state ?? "unclaimed",
+    },
+    setup,
+  };
 }
 
 
-/** Review recipient state using the real Owner; target user lookup is not impersonation. */
+/**
+ * Review recipient state using the real Owner; target user lookup is not
+ * impersonation.
+ */
 async function ownerPartnerPreviewState(deps: DemoDeps, identity: Identity,
   tx: FirebaseFirestore.Transaction, blueprintId: string) {
-  const source = (await tx.get(deps.db.collection(BLUEPRINTS).doc(blueprintId))).data();
-  if (!source || source.blueprintId !== blueprintId || source.state !== "reviewed" ||
+  const source = (await tx.get(
+    deps.db.collection(BLUEPRINTS).doc(blueprintId)
+  )).data();
+  if (!source || source.blueprintId !== blueprintId ||
+      source.state !== "reviewed" ||
       source.classification !== "sales_private" || source.schemaVersion !== 1 ||
       source.candidateId !== null || typeof source.organizerId !== "string" ||
       !Number.isSafeInteger(source.revision) || Number(source.revision) < 1) {
-    return fail("failed-precondition", "A current reviewed canonical demo is required.");
+    return fail("failed-precondition",
+      "A current reviewed canonical demo is required.");
   }
   const organizerId = id(source.organizerId);
-  const [gate, assignmentSnap, organizerSnap, salesSnap] = await Promise.all([currentCapability(deps, tx),
+  const [gate, assignmentSnap, organizerSnap, salesSnap] = await Promise.all([
+    currentCapability(deps, tx),
     tx.get(deps.db.collection("salesPartnerAssignments").doc(organizerId)),
     tx.get(deps.db.collection("organizers").doc(organizerId)),
-    tx.get(deps.db.collection("organizerSalesAccounts").doc(organizerId))]);
-  const organizer = organizerSnap.data(); const sales = salesSnap.data();
-  if (!organizer || organizer.archived === true || organizer.status === "archived" ||
-      sales?.organizerId !== organizerId || sales.classification !== "sales_private") {
-    return fail("failed-precondition", "Current canonical organizer and Sales identity required.");
+    tx.get(deps.db.collection("organizerSalesAccounts").doc(organizerId)),
+  ]);
+  const organizer = organizerSnap.data();
+  const sales = salesSnap.data();
+  if (!organizer || organizer.archived === true ||
+      organizer.status === "archived" || sales?.organizerId !== organizerId ||
+      sales.classification !== "sales_private") {
+    return fail("failed-precondition",
+      "Current canonical organizer and Sales identity required.");
   }
   await availableSalesAccount(deps, organizerId, tx);
-  await checkDemoSalesLinks(tx, deps.db, organizerId, source.opportunityId ?? null);
+  await checkDemoSalesLinks(
+    tx, deps.db, organizerId, source.opportunityId ?? null);
   const assignment = assignmentSnap.data();
-  if (source.capability !== DEMO_CAPABILITY || source.capabilityRevision !== gate.revision ||
-      source.evidenceRevision !== gate.evidenceRevision || !source.reviewedByUid ||
-      !Number.isFinite(Date.parse(source.reviewedAt)) || assignment?.classification !== "sales_private" ||
-      assignment.schemaVersion !== 1 || assignment.organizerId !== organizerId ||
-      assignment.status !== "accepted" || typeof assignment.partnerUid !== "string" ||
+  if (source.capability !== DEMO_CAPABILITY ||
+      source.capabilityRevision !== gate.revision ||
+      source.evidenceRevision !== gate.evidenceRevision ||
+      !source.reviewedByUid ||
+      !Number.isFinite(Date.parse(source.reviewedAt)) ||
+      assignment?.classification !== "sales_private" ||
+      assignment.schemaVersion !== 1 ||
+      assignment.organizerId !== organizerId ||
+      assignment.status !== "accepted" ||
+      typeof assignment.partnerUid !== "string" ||
       !Number.isSafeInteger(assignment.revision)) {
-    return fail("failed-precondition", "Current reviewed demo and accepted partner assignment are required.");
+    return fail("failed-precondition",
+      "Current reviewed demo and accepted partner assignment are required.");
   }
   const partnerUid = assignment.partnerUid;
   const [membershipSnap, deleted, recipient] = await Promise.all([
     tx.get(deps.db.collection("salesPartnerMemberships").doc(partnerUid)),
-    tx.get(deps.db.collection("deletedUsers").doc(partnerUid)), deps.getUser(partnerUid)]);
+    tx.get(deps.db.collection("deletedUsers").doc(partnerUid)),
+    deps.getUser(partnerUid),
+  ]);
   const membership = membershipSnap.data();
-  // Owner Auth may change during recipient/source reads. No further awaits follow.
+  // Owner Auth may change during recipient/source reads. No further awaits
+  // follow.
   await owner(deps, identity);
   const evaluatedAt = deps.now();
   if (recipient.disabled || deleted.exists || membership?.uid !== partnerUid ||
-      membership.schemaVersion !== 1 || membership.classification !== "sales_private" ||
-      membership.status !== "active" || membership.termsVersion !== PARTNER_TERMS_VERSION ||
-      !Number.isFinite(Date.parse(membership.expiresAt)) || Date.parse(membership.expiresAt) <= evaluatedAt.getTime() ||
-      !Number.isFinite(Date.parse(assignment.expiresAt)) || Date.parse(assignment.expiresAt) <= evaluatedAt.getTime() ||
+      membership.schemaVersion !== 1 ||
+      membership.classification !== "sales_private" ||
+      membership.status !== "active" ||
+      membership.termsVersion !== PARTNER_TERMS_VERSION ||
+      !Number.isFinite(Date.parse(membership.expiresAt)) ||
+      Date.parse(membership.expiresAt) <= evaluatedAt.getTime() ||
+      !Number.isFinite(Date.parse(assignment.expiresAt)) ||
+      Date.parse(assignment.expiresAt) <= evaluatedAt.getTime() ||
       Date.parse(source.reviewedAt) > evaluatedAt.getTime()) {
-    return fail("failed-precondition", "Current recipient membership and assignment are required.");
+    return fail("failed-precondition",
+      "Current recipient membership and assignment are required.");
   }
   const material = partnerDemoPreviewMaterial(source);
   const prior = source.partnerReviewGrant as PartnerDemoReviewGrant | undefined;
   if (prior && (!Number.isSafeInteger(prior.revision) || prior.revision < 1 ||
-      !["active", "withdrawn"].includes(prior.state) || !Number.isFinite(Date.parse(prior.expiresAt)))) {
+      !["active", "withdrawn"].includes(prior.state) ||
+      !Number.isFinite(Date.parse(prior.expiresAt)))) {
     return fail("failed-precondition", "Current sharing state is unavailable.");
   }
   const sharingRevision = prior ? revision(prior.revision) : 0;
-  const proposal = source.partnerPreviewProposal as PartnerDemoPreviewProposal | undefined;
-  const proposalCurrent = proposal?.partnerUid === partnerUid && proposal.assignmentRevision === assignment.revision &&
-    proposal.blueprintRevision === source.revision && proposal.sourcePreviewHash === partnerHash(material) &&
+  const proposal = source.partnerPreviewProposal as
+    PartnerDemoPreviewProposal | undefined;
+  const proposalCurrent = proposal?.partnerUid === partnerUid &&
+    proposal.assignmentRevision === assignment.revision &&
+    proposal.blueprintRevision === source.revision &&
+    proposal.sourcePreviewHash === partnerHash(material) &&
     proposal.state === "pending_owner_review";
-  return {source, prior, organizerId, partnerUid, assignmentRevision: Number(assignment.revision),
-    blueprintId, blueprintRevision: Number(source.revision), preview: material.preview,
+  return {source, prior, organizerId, partnerUid,
+    assignmentRevision: Number(assignment.revision), blueprintId,
+    blueprintRevision: Number(source.revision), preview: material.preview,
     previewHash: partnerHash(material), sharingRevision,
-    proposedWording: proposalCurrent ? proposalWording(proposal) : null, proposalRevision: proposalCurrent ? proposal!.revision : 0,
+    proposedWording: proposalCurrent ? proposalWording(proposal) : null,
+    proposalRevision: proposalCurrent ? proposal!.revision : 0,
     maximumExpiresAt: new Date(Math.min(evaluatedAt.getTime() + 7 * DAY,
-      Date.parse(membership.expiresAt), Date.parse(assignment.expiresAt))).toISOString(),
+      Date.parse(membership.expiresAt),
+      Date.parse(assignment.expiresAt))).toISOString(),
     evaluatedAt: evaluatedAt.toISOString()};
 }
 
-export async function getOwnerPartnerDemoReview(deps: DemoDeps, identity: Identity,
+export async function getOwnerPartnerDemoReview(
+  deps: DemoDeps,
+  identity: Identity,
   raw: unknown): Promise<Record<string, unknown>> {
-  const body = record(raw); only(body, ["blueprintId"]); const blueprintId = id(body.blueprintId);
+  const body = record(raw);
+  only(body, ["blueprintId"]);
+  const blueprintId = id(body.blueprintId);
   await owner(deps, identity);
   return deps.db.runTransaction(async (tx) => {
-    const state = await ownerPartnerPreviewState(deps, identity, tx, blueprintId);
-    return {organizerId: state.organizerId, blueprintId, blueprintRevision: state.blueprintRevision,
-      partnerUid: state.partnerUid, assignmentRevision: state.assignmentRevision,
-      preview: state.preview, previewHash: state.previewHash, sharingRevision: state.sharingRevision,
-      proposedWording: state.proposedWording, proposalRevision: state.proposalRevision,
-      sharingState: state.prior?.state ?? "none", expiresAt: state.prior?.expiresAt ?? null,
-      sharingCurrent: state.prior?.state === "active" && state.prior.previewHash === state.previewHash &&
-        state.prior.partnerUid === state.partnerUid && state.prior.assignmentRevision === state.assignmentRevision &&
+    const state = await ownerPartnerPreviewState(
+      deps, identity, tx, blueprintId);
+    return {organizerId: state.organizerId, blueprintId,
+      blueprintRevision: state.blueprintRevision,
+      partnerUid: state.partnerUid,
+      assignmentRevision: state.assignmentRevision,
+      preview: state.preview,
+      previewHash: state.previewHash,
+      sharingRevision: state.sharingRevision,
+      proposedWording: state.proposedWording,
+      proposalRevision: state.proposalRevision,
+      sharingState: state.prior?.state ?? "none",
+      expiresAt: state.prior?.expiresAt ?? null,
+      sharingCurrent: state.prior?.state === "active" &&
+        state.prior.previewHash === state.previewHash &&
+        state.prior.partnerUid === state.partnerUid &&
+        state.prior.assignmentRevision === state.assignmentRevision &&
         state.prior.blueprintRevision === state.blueprintRevision &&
         Date.parse(state.prior.expiresAt) > Date.parse(state.evaluatedAt),
-      maximumExpiresAt: state.maximumExpiresAt, evaluatedAt: state.evaluatedAt,
-      sendAuthority: false, capabilityApprovalAuthority: false, organizerControlAuthority: false};
+      maximumExpiresAt: state.maximumExpiresAt,
+      evaluatedAt: state.evaluatedAt,
+      sendAuthority: false,
+      capabilityApprovalAuthority: false,
+      organizerControlAuthority: false};
   });
 }
 
-/** Share or withdraw one exact preview; core blueprint revision and invitations are unaffected. */
+/**
+ * Share or withdraw one exact preview; core blueprint revision and invitations
+ * are unaffected.
+ */
 export async function sharePartnerDemoReview(deps: DemoDeps, identity: Identity,
   raw: unknown): Promise<Record<string, unknown>> {
-  const body = record(raw); only(body, ["requestId", "blueprintId", "expectedBlueprintRevision",
-    "expectedSharingRevision", "partnerUid", "expectedAssignmentRevision", "expectedPreviewHash", "decision", "expiresAt"]);
-  const stableRequestId = requestId(body.requestId); const blueprintId = id(body.blueprintId);
+  const body = record(raw);
+  only(body, [
+    "requestId", "blueprintId", "expectedBlueprintRevision",
+    "expectedSharingRevision", "partnerUid", "expectedAssignmentRevision",
+    "expectedPreviewHash", "decision", "expiresAt",
+  ]);
+  const stableRequestId = requestId(body.requestId);
+  const blueprintId = id(body.blueprintId);
   const expectedBlueprintRevision = revision(body.expectedBlueprintRevision);
   const expectedSharingRevision = revision(body.expectedSharingRevision);
-  const partnerUid = id(body.partnerUid); const expectedAssignmentRevision = revision(body.expectedAssignmentRevision);
-  if (typeof body.expectedPreviewHash !== "string" || !/^[a-f0-9]{64}$/u.test(body.expectedPreviewHash) ||
+  const partnerUid = id(body.partnerUid);
+  const expectedAssignmentRevision =
+    revision(body.expectedAssignmentRevision);
+  if (typeof body.expectedPreviewHash !== "string" ||
+      !/^[a-f0-9]{64}$/u.test(body.expectedPreviewHash) ||
       !["share", "withdraw"].includes(String(body.decision))) {
-    return fail("invalid-argument", "Exact preview hash and sharing decision required.");
+    return fail("invalid-argument",
+      "Exact preview hash and sharing decision required.");
   }
   const decision = body.decision as "share" | "withdraw";
-  const expiresAt = decision === "share" && typeof body.expiresAt === "string" ? body.expiresAt : null;
-  if (decision === "share" ? !Number.isFinite(Date.parse(expiresAt ?? "")) : body.expiresAt !== null) {
+  const expiresAt = decision === "share" &&
+    typeof body.expiresAt === "string" ? body.expiresAt : null;
+  if (decision === "share" ?
+    !Number.isFinite(Date.parse(expiresAt ?? "")) :
+    body.expiresAt !== null) {
     return fail("invalid-argument", "Explicit sharing expiry required.");
   }
-  const material = {expectedBlueprintRevision, expectedSharingRevision, partnerUid,
-    expectedAssignmentRevision, expectedPreviewHash: body.expectedPreviewHash, decision, expiresAt};
-  const result = await adminMutation(deps, identity, "salesDemo.blueprint.partnerReview.share",
+  const material = {
+    expectedBlueprintRevision,
+    expectedSharingRevision,
+    partnerUid,
+    expectedAssignmentRevision,
+    expectedPreviewHash: body.expectedPreviewHash,
+    decision,
+    expiresAt,
+  };
+  const result = await adminMutation(
+    deps, identity, "salesDemo.blueprint.partnerReview.share",
     blueprintId, stableRequestId, material, async (tx) => {
-      const state = await ownerPartnerPreviewState(deps, identity, tx, blueprintId);
-      if (state.blueprintRevision !== expectedBlueprintRevision || state.sharingRevision !== expectedSharingRevision ||
-          state.partnerUid !== partnerUid || state.assignmentRevision !== expectedAssignmentRevision ||
+      const state = await ownerPartnerPreviewState(
+        deps, identity, tx, blueprintId);
+      if (state.blueprintRevision !== expectedBlueprintRevision ||
+          state.sharingRevision !== expectedSharingRevision ||
+          state.partnerUid !== partnerUid ||
+          state.assignmentRevision !== expectedAssignmentRevision ||
           state.previewHash !== body.expectedPreviewHash) {
-        return fail("failed-precondition", "Preview or partner sharing scope changed; review again.");
+        return fail("failed-precondition",
+          "Preview or partner sharing scope changed; review again.");
       }
-      if (decision === "share" && (Date.parse(expiresAt!) <= Date.parse(state.evaluatedAt) ||
+      if (decision === "share" &&
+          (Date.parse(expiresAt!) <= Date.parse(state.evaluatedAt) ||
           Date.parse(expiresAt!) > Date.parse(state.maximumExpiresAt))) {
-        return fail("invalid-argument", "Sharing must expire within current access and seven days.");
+        return fail("invalid-argument",
+          "Sharing must expire within current access and seven days.");
       }
-      if (decision === "withdraw" && !state.prior) return fail("failed-precondition", "No sharing grant to withdraw.");
-      const grant: PartnerDemoReviewGrant = {revision: expectedSharingRevision + 1,
-        state: decision === "share" ? "active" : "withdrawn", partnerUid,
-        assignmentRevision: expectedAssignmentRevision, blueprintRevision: expectedBlueprintRevision,
-        previewHash: state.previewHash, expiresAt: decision === "share" ? expiresAt! : state.evaluatedAt,
-        ownerReviewedByUid: identity.uid, ownerReviewedAt: state.evaluatedAt};
-      tx.update(deps.db.collection(BLUEPRINTS).doc(blueprintId), {partnerReviewGrant: grant});
-      return {result: {blueprintId, blueprintRevision: expectedBlueprintRevision,
-        sharingRevision: grant.revision, sharingState: grant.state, previewHash: grant.previewHash,
-        expiresAt: grant.expiresAt, sendAuthority: false, capabilityApprovalAuthority: false,
-        organizerControlAuthority: false}, beforeRevision: expectedSharingRevision, afterRevision: grant.revision};
+      if (decision === "withdraw" && !state.prior) {
+        return fail("failed-precondition", "No sharing grant to withdraw.");
+      }
+      const grant: PartnerDemoReviewGrant = {
+        revision: expectedSharingRevision + 1,
+        state: decision === "share" ? "active" : "withdrawn",
+        partnerUid,
+        assignmentRevision: expectedAssignmentRevision,
+        blueprintRevision: expectedBlueprintRevision,
+        previewHash: state.previewHash,
+        expiresAt: decision === "share" ? expiresAt! : state.evaluatedAt,
+        ownerReviewedByUid: identity.uid,
+        ownerReviewedAt: state.evaluatedAt,
+      };
+      tx.update(deps.db.collection(BLUEPRINTS).doc(blueprintId), {
+        partnerReviewGrant: grant,
+      });
+      return {
+        result: {
+          blueprintId,
+          blueprintRevision: expectedBlueprintRevision,
+          sharingRevision: grant.revision,
+          sharingState: grant.state,
+          previewHash: grant.previewHash,
+          expiresAt: grant.expiresAt,
+          sendAuthority: false,
+          capabilityApprovalAuthority: false,
+          organizerControlAuthority: false,
+        },
+        beforeRevision: expectedSharingRevision,
+        afterRevision: grant.revision,
+      };
     });
-  // Receipt replay must never re-establish stale, withdrawn or reassigned sharing.
+  // Receipt replay must never re-establish stale, withdrawn or reassigned
+  // sharing.
   await owner(deps, identity);
   await deps.db.runTransaction(async (tx) => {
-    const state = await ownerPartnerPreviewState(deps, identity, tx, blueprintId);
+    const state = await ownerPartnerPreviewState(
+      deps, identity, tx, blueprintId);
     const prior = state.prior;
-    if (!prior || state.sharingRevision !== result.sharingRevision || prior.state !== result.sharingState ||
-        prior.previewHash !== result.previewHash || state.partnerUid !== partnerUid ||
-        state.assignmentRevision !== expectedAssignmentRevision || state.previewHash !== body.expectedPreviewHash ||
-        decision === "share" && Date.parse(prior.expiresAt) <= Date.parse(state.evaluatedAt)) {
-      return fail("failed-precondition", "Sharing receipt is no longer current.");
+    if (!prior || state.sharingRevision !== result.sharingRevision ||
+        prior.state !== result.sharingState ||
+        prior.previewHash !== result.previewHash ||
+        state.partnerUid !== partnerUid ||
+        state.assignmentRevision !== expectedAssignmentRevision ||
+        state.previewHash !== body.expectedPreviewHash ||
+        decision === "share" &&
+          Date.parse(prior.expiresAt) <= Date.parse(state.evaluatedAt)) {
+      return fail("failed-precondition",
+        "Sharing receipt is no longer current.");
     }
   });
   return result;

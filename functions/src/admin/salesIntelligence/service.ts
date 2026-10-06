@@ -542,7 +542,9 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
   tx?: FirebaseFirestore.Transaction): Promise<Record<string, unknown>> {
   employee(principal);
   return buildOutreachInputCore(deps, payload, {
-    authorize: async () => {await deps.authorize(principal, false); return null;},
+    authorize: async () => {
+      await deps.authorize(principal, false); return null;
+    },
   }, tx);
 }
 
@@ -1157,13 +1159,15 @@ export async function recordPartnerManualSend(deps: PartnerDeps,
       if (Date.parse(occurredAt) > Date.parse(recordedAt)) {
         fail("invalid-argument", "Manual sending time cannot be in the future.");
       }
-      if (!existing.exists) tx.create(activityRef, {schemaVersion: 1,
-        classification: "sales_private", activityId, organizerId,
-        opportunityId: stored.draft.opportunityId, type: "outreach_sent_manual",
-        channel, outcome: "actor_attested_sent", providerConfirmed: false,
-        occurredAt, recordedAt,
-        note: `Partner attested manual sending of reviewed draft ${draftId}; content hash ${expectedContentHash}.`,
-        actorUid: actor.uid});
+      if (!existing.exists) {
+        tx.create(activityRef, {schemaVersion: 1,
+          classification: "sales_private", activityId, organizerId,
+          opportunityId: stored.draft.opportunityId, type: "outreach_sent_manual",
+          channel, outcome: "actor_attested_sent", providerConfirmed: false,
+          occurredAt, recordedAt,
+          note: `Partner attested manual sending of reviewed draft ${draftId}; content hash ${expectedContentHash}.`,
+          actorUid: actor.uid});
+      }
       return {organizerId, draftId, activityId, exactContentHash: expectedContentHash,
         occurredAt, outcome: "actor_attested_sent", providerConfirmed: false, sendAuthority: false};
     }, async (tx) => {
@@ -1216,15 +1220,18 @@ export async function getPartnerPreparation(deps: PartnerDeps, actor: PartnerAct
       let eligible = true;
       for (const evidenceId of uniqueIds(row.evidenceIds, 8)) {
         const source = evidenceById.get(evidenceId);
-        if (!currentReviewedEvidence(source, organizerId, at)) {eligible = false; break;}
+        if (!currentReviewedEvidence(source, organizerId, at)) {
+          eligible = false; break;
+        }
         if (source!.validThrough) sourceDeadlines.push(Date.parse(source!.validThrough));
         // Source provenance is not a disclosure grant. Only an owner-reviewed,
         // exact safe public citation fingerprint can authorize participant sharing.
         const grant = (row.partnerCitations ?? []).find((item: {evidenceId: string; sourceHash: string}) => item.evidenceId === evidenceId);
         if (!grant) continue;
         let citation: Record<string, unknown>;
-        try {citation = publicPartnerCitation(source!, organizerId);}
-        catch (error) {
+        try {
+          citation = publicPartnerCitation(source!, organizerId);
+        } catch (error) {
           if (error instanceof Error && "code" in error && error.code === "failed-precondition") continue;
           throw error;
         }
@@ -1278,7 +1285,11 @@ function publicPartnerCitation(source: FirebaseFirestore.DocumentData,
     fail("failed-precondition", "Only explicit public-web citations can be shared.");
   }
   let url: URL;
-  try {url = new URL(source.sourceRef);} catch {return fail("failed-precondition", "Public citation URL is invalid.");}
+  try {
+    url = new URL(source.sourceRef);
+  } catch {
+    return fail("failed-precondition", "Public citation URL is invalid.");
+  }
   if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash ||
       !url.hostname.includes(".") || url.hostname.endsWith(".local") || url.hostname.endsWith(".localhost")) {
     fail("failed-precondition", "A public citation cannot contain access credentials or query tokens.");

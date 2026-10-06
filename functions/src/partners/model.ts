@@ -28,7 +28,8 @@ export interface PartnerAssignment {
   originatorUid: string | null; introducingSenderUid: string | null;
   catchOwnerUid: string; activationOwnerUid: string | null;
   relationshipContext: string | null;
-  relationshipConfirmedAt: string | null; channel: "email" | "whatsapp" | "other" | null;
+  relationshipConfirmedAt: string | null;
+  channel: "email" | "whatsapp" | "other" | null;
   nextAction: string; reviewAt: string; expiresAt: string;
   assignedAt: string; updatedAt: string; reason: string;
 }
@@ -40,18 +41,26 @@ export interface PartnerDeps {
   checkAuth: (actor: PartnerActor, employee: boolean) => Promise<void>;
 }
 export function employee(actor: PartnerActor): void {
-  if (!actor.uid || !actor.roles.some((r) => r === "admin" || r === "adminOwner")) {
+  if (
+    !actor.uid ||
+    !actor.roles.some((r) => r === "admin" || r === "adminOwner")
+  ) {
     fail("permission-denied", "Current Sales employee review is required.");
   }
 }
 export function expectRevision(actual: unknown, expected: number): void {
-  if (actual !== expected) fail("aborted", "Record changed; refresh before reviewing.");
+  if (actual !== expected) {
+    fail("aborted", "Record changed; refresh before reviewing.");
+  }
 }
 export function future(value: unknown, now: Date, maxDays = 90): string {
   const result = iso(value);
   const span = Date.parse(result) - now.getTime();
   if (span <= 0 || span > maxDays * 86400000) {
-    fail("invalid-argument", "Choose a future review within the permitted window.");
+    fail(
+      "invalid-argument",
+      "Choose a future review within the permitted window.",
+    );
   }
   return result;
 }
@@ -62,5 +71,10 @@ export function officialUrl(value: unknown): string {
     if (url.protocol !== "https:" || url.username || url.password ||
         !url.hostname.includes(".") || url.hash) throw new Error();
     return url.href;
-  } catch { return fail("invalid-argument", "An HTTPS organizer or event URL is required."); }
+  } catch {
+    return fail(
+      "invalid-argument",
+      "An HTTPS organizer or event URL is required.",
+    );
+  }
 }

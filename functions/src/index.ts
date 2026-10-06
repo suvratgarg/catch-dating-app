@@ -890,13 +890,18 @@ export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
   from "./analytics/organizerTrackingSettings";
 
 export {manageProgramLodging} from "./programs/programLodgingApi";
-export {generateSalesPartnerOutreach, getSalesPartnerOutreachJob, getSalesPartnerOutreachDraft,
-  reviewSalesPartnerOutreachDraft, copySalesPartnerOutreachDraft, recordSalesPartnerManualSend, getSalesPartnerPreparation,
-  registerSalesPartner, nominateSalesOrganizer, getSalesPartnerWorkspace,
-  decideSalesPartnerAssignment, updateSalesPartnerAssignment, adminAssignSalesPartner,
+export {generateSalesPartnerOutreach, getSalesPartnerOutreachJob,
+  getSalesPartnerOutreachDraft, reviewSalesPartnerOutreachDraft,
+  copySalesPartnerOutreachDraft, recordSalesPartnerManualSend,
+  getSalesPartnerPreparation, registerSalesPartner, nominateSalesOrganizer,
+  getSalesPartnerWorkspace, decideSalesPartnerAssignment,
+  updateSalesPartnerAssignment, adminAssignSalesPartner,
   adminRevokeSalesPartnerAccess} from "./partners/callables";
 
-export {createSalesDemoContinuation, getSalesDemoContinuation, prepareSalesDemoContinuationForm} from "./salesDemo/callables";
+export {createSalesDemoContinuation, getSalesDemoContinuation,
+  prepareSalesDemoContinuationForm} from "./salesDemo/callables";
 
-export {adminGetSalesDemoPartnerReview, adminShareSalesDemoPartnerReview} from "./salesDemo/callables";
-export {getSalesPartnerDemoReviews, proposeSalesPartnerDemoWording} from "./partners/callables";
+export {adminGetSalesDemoPartnerReview,
+  adminShareSalesDemoPartnerReview} from "./salesDemo/callables";
+export {getSalesPartnerDemoReviews,
+  proposeSalesPartnerDemoWording} from "./partners/callables";
