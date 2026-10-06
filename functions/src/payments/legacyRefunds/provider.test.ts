@@ -121,3 +121,49 @@ test("definite provider rejection needs review while outages remain retryable",
       }
     }
   });
+
+// Append to legacyRefunds/provider.test.ts. NOT EXECUTED.
+// Entire verify-then-dispatch sequence is faked; no provider requests occur.
+test("ownership: persisted foreign refund intent cannot reach provider POST",
+  async () => {
+    const h = setup("razorpay");
+    const methods: string[] = [];
+    const client = new NativeCancellationRefundProvider({
+      razorpayCredentials: () => ({keyId: "fake_review_key", secret: "fake"}),
+      stripeSecret: () => "unused_fake",
+      fetchImpl: async (url, init) => {
+        methods.push(init?.method ?? "GET");
+        const path = new URL(String(url)).pathname;
+        const response = path.includes("/orders/") ? {
+          entity: "order", id: "order_one", amount: 1000, currency: "INR",
+          notes: {eventId: "event1", userId: "user1",
+            catchBookingProject: "catch-dating-app-64e51",
+            catchBookingSchema: "1"},
+        } : init?.method === "POST" ? {
+          entity: "refund", id: "rfnd_one", payment_id: "pay_one",
+          amount: 1000, currency: "INR", status: "processed",
+        } : {
+          entity: "payment", id: "pay_one", order_id: "order_one",
+          amount: 1000, currency: "INR", captured: true, status: "captured",
+          amount_refunded: 0,
+        };
+        return new Response(JSON.stringify(response), {status: 200});
+      },
+    });
+    const previous = process.env.GCLOUD_PROJECT;
+    const previousLegacy = process.env.GCLOUDPROJECT;
+    process.env.GCLOUD_PROJECT = "catchdates-dev";
+    process.env.GCLOUDPROJECT = "catchdates-dev";
+    try {
+      await assert.rejects(async () => {
+        await client.verifyPayment(h.payment, h.intent);
+        await client.createRefund(h.intent, h.attempt);
+      }, LegacyRefundReviewRequired);
+      assert.equal(methods.filter((method) => method === "POST").length, 0);
+    } finally {
+      if (previous === undefined) delete process.env.GCLOUD_PROJECT;
+      else process.env.GCLOUD_PROJECT = previous;
+      if (previousLegacy === undefined) delete process.env.GCLOUDPROJECT;
+      else process.env.GCLOUDPROJECT = previousLegacy;
+    }
+  });

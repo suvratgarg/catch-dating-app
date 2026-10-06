@@ -771,3 +771,37 @@ test("pair hold cannot bypass Razorpay membership checks", async () => {
     /Approved community membership/
   );
 });
+
+// Append to createRazorpayOrder.test.ts. NOT EXECUTED.
+test("ownership: server order carries trusted runtime project marker", async () => {
+  let capturedPayload: Record<string, unknown> | undefined;
+  const previous = process.env.GCLOUD_PROJECT;
+  const previousLegacy = process.env.GCLOUDPROJECT;
+  process.env.GCLOUD_PROJECT = "catchdates-dev";
+  process.env.GCLOUDPROJECT = "catchdates-dev";
+  try {
+    await createRazorpayOrderHandler(buildRequest({
+      data: {eventId: "event-1"}, auth: {uid: "runner-1"},
+    }), {
+      firestore: () => createEventFirestore(buildEventDoc()),
+      createClient: () => ({orders: {
+        create: async (payload: Record<string, unknown>) => {
+          capturedPayload = payload;
+          return {id: "order_123", amount: 25000, currency: "INR"};
+        },
+      }}) as unknown as Razorpay,
+      clientKeyId: () => "rzp_test_fake_review",
+      now: () => 123, serverTimestamp: () => "server-now",
+    });
+    const notes = capturedPayload?.notes as Record<string, unknown>;
+    assert.equal(notes.catchBookingProject, "catchdates-dev");
+    assert.equal(notes.catchBookingSchema, "1");
+    assert.equal(notes.eventId, "event-1");
+    assert.equal(notes.userId, "runner-1");
+  } finally {
+    if (previous === undefined) delete process.env.GCLOUD_PROJECT;
+    else process.env.GCLOUD_PROJECT = previous;
+    if (previousLegacy === undefined) delete process.env.GCLOUDPROJECT;
+    else process.env.GCLOUDPROJECT = previousLegacy;
+  }
+});

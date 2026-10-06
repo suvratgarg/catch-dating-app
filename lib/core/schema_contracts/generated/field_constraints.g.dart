@@ -86536,6 +86536,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const legacyPaymentRefundIntentRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const legacyPaymentRefundIntentRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.razorpayOwnership.schema',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const legacyPaymentRefundIntentReason = CatchContractFieldConstraints(
     path: 'legacyPaymentRefundIntent.reason',
     required: true,
@@ -118643,6 +118656,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const paymentDocumentCancellationRefundRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const paymentDocumentCancellationRefundRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.razorpayOwnership.schema',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const paymentDocumentCancellationRefundReason = CatchContractFieldConstraints(
     path: 'paymentDocument.cancellationRefund.reason',
     required: true,
@@ -118816,6 +118842,19 @@ abstract final class CatchContractConstraints {
   static const paymentDocumentProviderPaymentId = CatchContractFieldConstraints(
     path: 'paymentDocument.providerPaymentId',
     maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'paymentDocument.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const paymentDocumentRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'paymentDocument.razorpayOwnership.schema',
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -132950,6 +132989,19 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['razorpay'],
+  );
+
+  static const razorpayPendingOrderDocumentRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'razorpayPendingOrderDocument.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const razorpayPendingOrderDocumentRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'razorpayPendingOrderDocument.razorpayOwnership.schema',
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const razorpayPendingOrderDocumentStatus = CatchContractFieldConstraints(
@@ -170768,6 +170820,8 @@ abstract final class CatchContractConstraints {
     'legacyPaymentRefundIntent.paymentFingerprint': legacyPaymentRefundIntentPaymentFingerprint,
     'legacyPaymentRefundIntent.provider': legacyPaymentRefundIntentProvider,
     'legacyPaymentRefundIntent.providerPaymentId': legacyPaymentRefundIntentProviderPaymentId,
+    'legacyPaymentRefundIntent.razorpayOwnership.projectId': legacyPaymentRefundIntentRazorpayOwnershipProjectId,
+    'legacyPaymentRefundIntent.razorpayOwnership.schema': legacyPaymentRefundIntentRazorpayOwnershipSchema,
     'legacyPaymentRefundIntent.reason': legacyPaymentRefundIntentReason,
     'legacyPaymentRefundIntent.refundApplicationFee': legacyPaymentRefundIntentRefundApplicationFee,
     'legacyPaymentRefundIntent.requestedAtMillis': legacyPaymentRefundIntentRequestedAtMillis,
@@ -175211,6 +175265,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.cancellationRefund.paymentFingerprint': paymentDocumentCancellationRefundPaymentFingerprint,
     'paymentDocument.cancellationRefund.provider': paymentDocumentCancellationRefundProvider,
     'paymentDocument.cancellationRefund.providerPaymentId': paymentDocumentCancellationRefundProviderPaymentId,
+    'paymentDocument.cancellationRefund.razorpayOwnership.projectId': paymentDocumentCancellationRefundRazorpayOwnershipProjectId,
+    'paymentDocument.cancellationRefund.razorpayOwnership.schema': paymentDocumentCancellationRefundRazorpayOwnershipSchema,
     'paymentDocument.cancellationRefund.reason': paymentDocumentCancellationRefundReason,
     'paymentDocument.cancellationRefund.refundApplicationFee': paymentDocumentCancellationRefundRefundApplicationFee,
     'paymentDocument.cancellationRefund.requestedAtMillis': paymentDocumentCancellationRefundRequestedAtMillis,
@@ -175236,6 +175292,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.paymentId': paymentDocumentPaymentId,
     'paymentDocument.provider': paymentDocumentProvider,
     'paymentDocument.providerPaymentId': paymentDocumentProviderPaymentId,
+    'paymentDocument.razorpayOwnership.projectId': paymentDocumentRazorpayOwnershipProjectId,
+    'paymentDocument.razorpayOwnership.schema': paymentDocumentRazorpayOwnershipSchema,
     'paymentDocument.scenario': paymentDocumentScenario,
     'paymentDocument.seedPrefix': paymentDocumentSeedPrefix,
     'paymentDocument.signUpFailed': paymentDocumentSignUpFailed,
@@ -177158,6 +177216,8 @@ abstract final class CatchContractConstraints {
     'razorpayPendingOrderDocument.eventId': razorpayPendingOrderDocumentEventId,
     'razorpayPendingOrderDocument.orderId': razorpayPendingOrderDocumentOrderId,
     'razorpayPendingOrderDocument.provider': razorpayPendingOrderDocumentProvider,
+    'razorpayPendingOrderDocument.razorpayOwnership.projectId': razorpayPendingOrderDocumentRazorpayOwnershipProjectId,
+    'razorpayPendingOrderDocument.razorpayOwnership.schema': razorpayPendingOrderDocumentRazorpayOwnershipSchema,
     'razorpayPendingOrderDocument.status': razorpayPendingOrderDocumentStatus,
     'razorpayPendingOrderDocument.updatedAt._nanoseconds': razorpayPendingOrderDocumentUpdatedAtNanoseconds,
     'razorpayPendingOrderDocument.updatedAt._seconds': razorpayPendingOrderDocumentUpdatedAtSeconds,

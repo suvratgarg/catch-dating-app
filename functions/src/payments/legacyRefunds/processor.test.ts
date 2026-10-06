@@ -211,3 +211,58 @@ test("a definite provider rejection exits automatic recovery", async () => {
   assert.equal(h.refundCalls.length, 0);
   assert.equal(h.payment().status, "completed");
 });
+
+// Append to legacyRefunds/processor.test.ts. Source-only baseline regressions.
+// Fakes refuse verified ownership at the provider boundary. The original worker
+// currently mutates lease/attempt/review before and after that refusal.
+for (const origin of ["foreign", "unknown"] as const) {
+  test(`ownership worker: ${origin} persisted intent has zero local/provider effects`,
+    async () => {
+      const h = setup();
+      const before = JSON.stringify(h.store.get(h.path));
+      const beforeIntent = JSON.stringify(h.readIntent());
+      let verifies = 0;
+      h.api.verifyPayment = async () => {
+        verifies++;
+        throw new LegacyRefundReviewRequired(`${origin} order origin`);
+      };
+      const writesBefore = h.store.writes.length;
+      const timelineBefore = h.store.timeline.length;
+      // Rejection status is not the decisive assertion: domain effects are.
+      await h.run().catch(() => undefined);
+      assert.equal(JSON.stringify(h.store.get(h.path)), before);
+      assert.equal(JSON.stringify(h.readIntent()), beforeIntent);
+      assert.equal(h.store.writes.length - writesBefore, 0);
+      assert.deepEqual(h.store.timeline.slice(timelineBefore)
+        .filter((entry) => entry.startsWith("write:")), []);
+      assert.equal(h.refundCalls.length, 0);
+      assert.equal(h.observations(), 0);
+      assert.ok(verifies <= 1);
+    });
+}
+
+test("ownership worker control: own provider retry retains key and uses readback",
+  async () => {
+    const h = setup();
+    const create = h.api.createRefund;
+    let loseFirst = true;
+    h.api.createRefund = async (...args) => {
+      const result = await create(...args);
+      if (loseFirst) { loseFirst = false; throw new Error("Lost response"); }
+      result.state = "pending";
+      return result;
+    };
+    await assert.rejects(h.run(), /Lost response/);
+    const firstKey = h.readIntent().attempts[0].idempotencyKey;
+    h.advance(); await h.run();
+    assert.equal(h.issued.size, 1);
+    assert.equal(h.readIntent().attempts[0].idempotencyKey, firstKey);
+    assert.equal(new Set(h.refundCalls).size, 1);
+    const posts = h.refundCalls.length;
+    h.issued.values().next().value!.state = "processed";
+    h.advance(); await h.run();
+    assert.equal(h.refundCalls.length, posts);
+    assert.equal(h.observations(), 1);
+    assert.equal(h.readIntent().confirmedAmountMinor, 1000);
+    assert.equal(h.payment().status, "refunded");
+  });

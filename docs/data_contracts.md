@@ -1749,6 +1749,33 @@ not infer readiness from the recommendation badge alone.
 
 ### Native Payment and Refund Authority
 
+Native Razorpay ownership uses server-authored provider order notes
+`catchBookingProject` and `catchBookingSchema: "1"`, derived from the trusted
+runtime project. New pending orders, native payments and cancellation refund
+intents retain optional `razorpayOwnership: {projectId, schema: "1"}` context.
+The context is frozen independently of the existing version-1 refund fingerprint
+and idempotency keys. Stripe authority and client payload/response shapes remain
+unchanged. Optionality preserves historical document readability; it does not
+establish ownership of an unmarked legacy order.
+
+Provider notes are mutable and rely on trusted merchant credential custody.
+Fetched order context must match the current runtime and frozen local evidence
+before admission, refund intent staging or tracking cleanup. An explicit foreign,
+partial, unsupported or conflicting marker never falls back to matching local
+IDs. Bare local payment/pending/refund records may have been copied between
+projects and are not an independent legacy witness. Unknown unmarked history
+requires audited reconciliation; the runtime must not adopt or backfill it.
+
+A foreign or unknown webhook performs zero local writes/deletes and no refund.
+The native refund worker likewise validates ownership and provider context before
+lease, attempt, review or retry writes, and rebinds the reread payment/intent
+inside its claim transaction. Foreign or unknown persisted intent remains intact.
+Razorpay dispatch independently reclassifies the fetched order before POST;
+separate webhook signing secrets do not establish environment ownership.
+Exact owned terminal replay cannot re-admit, recreate refund intent, or interpret
+refunded provider truth as a new captured booking. Existing strict payment truth
+checks still apply to a nonterminal new admission.
+
 Native captured checkout commits its payment and admission in the same
 transaction. A second payment cannot claim an existing seat; a retried completed
 payment cannot re-admit a cancelled participation. Rejected bookings persist a

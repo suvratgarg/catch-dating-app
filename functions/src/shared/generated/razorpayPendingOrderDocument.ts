@@ -30,4 +30,11 @@ export interface RazorpayPendingOrderDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
+   */
+  razorpayOwnership?: {
+    projectId: string;
+    schema: "1";
+  };
 }

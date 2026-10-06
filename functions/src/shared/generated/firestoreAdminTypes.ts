@@ -16724,6 +16724,13 @@ export interface PaymentDocument {
   completedAt?: FirebaseFirestore.Timestamp;
   cancellationRefund?: LegacyPaymentRefundIntent;
   updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
+   */
+  razorpayOwnership?: {
+    projectId: string;
+    schema: "1";
+  };
 }
 
 /**
@@ -16776,6 +16783,13 @@ export interface RazorpayPendingOrderDocument {
   status: "pending" | "failed" | "expired";
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
+   */
+  razorpayOwnership?: {
+    projectId: string;
+    schema: "1";
+  };
 }
 
 /**

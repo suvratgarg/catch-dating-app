@@ -32461,6 +32461,26 @@ export const legacyPaymentRefundIntentSchema = {
         "null"
       ],
       "maxLength": 80
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
@@ -215903,6 +215923,26 @@ export const paymentDocumentSchema = {
             "null"
           ],
           "maxLength": 80
+        },
+        "razorpayOwnership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "schema"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "schema": {
+              "type": "string",
+              "const": "1"
+            }
+          },
+          "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+          "x-catch-ownership": "server-only"
         }
       },
       "x-catch-ownership": "callable-owned"
@@ -215927,6 +215967,26 @@ export const paymentDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
@@ -216234,6 +216294,26 @@ export const razorpayPendingOrderDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
