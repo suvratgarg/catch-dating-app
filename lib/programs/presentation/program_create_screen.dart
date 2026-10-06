@@ -115,7 +115,7 @@ class _ProgramCreateRouteState extends StatelessWidget {
           onBack: () => Navigator.of(context).pop(),
           leadingType: CatchTopBarNavigationMode.back,
         ),
-        Expanded(child: CatchRouteBody.standardViewport(child: child)),
+        Expanded(child: child),
       ],
     ),
   );
