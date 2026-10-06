@@ -19,6 +19,8 @@ export {validateCatchWhatsappReadinessIngressDocument} from "./validators/catchW
 export {validateCatchWhatsappReadinessAuditDocument} from "./validators/catchWhatsappReadinessAuditDocument";
 export {validateCatchWhatsappReplyOperationDocument} from "./validators/catchWhatsappReplyOperationDocument";
 export {validateCatchWhatsappEndpointStopDocument} from "./validators/catchWhatsappEndpointStopDocument";
+export {validateCatchWhatsappAppAuthorityDocument} from "./validators/catchWhatsappAppAuthorityDocument";
+export {validateCatchWhatsappIngressEvidenceDocument} from "./validators/catchWhatsappIngressEvidenceDocument";
 export {validateCatchWhatsappReplyReadinessDocument} from "./validators/catchWhatsappReplyReadinessDocument";
 export {validateAdminReviewCatchWhatsappInboundCallablePayload} from "./validators/adminReviewCatchWhatsappInboundInput";
 export {validateAdminReviewCatchWhatsappInboundCallableResponse} from "./validators/adminReviewCatchWhatsappInboundOutput";

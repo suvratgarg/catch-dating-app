@@ -18,6 +18,8 @@ import {CatchWhatsappReplyStore, CATCH_REPLY_OPERATIONS, CATCH_REPLY_READINESS,
 import {catchEndpointHash, catchReplyHash, catchReplyId, catchStopId,
   sendCatchWhatsappReply} from "./whatsappReply";
 import type {CatchReplyConfig} from "./whatsappReply";
+import {createSyntheticCatchAuthority} from "./whatsappAuthorityTestHarness";
+import {CATCH_INGRESS_EVIDENCE} from "./whatsappIngressStore";
 
 const now = 1800000000000;
 const webhook = {enabled: true, wabaId: "123", phoneNumberId: "456",
@@ -49,37 +51,59 @@ async function receive(db: Firestore, rawBody: Buffer, at = now,
   (events) => persistCatchWhatsappWebhookEvents(db, events, at));
 }
 function fakeDatabase() {
-  const fake = new FormPaymentTestStore();
-  const db = Object.assign(fake, {
-    bulkWriter: () => ({onWriteError: () => {}, close: async () => {},
-      create: async (ref: {path: string}, data: Record<string, unknown>) => {
-        if (fake.records.has(ref.path)) {
-          throw Object.assign(new Error("Already exists"), {code: 6});
-        }
-        fake.records.set(ref.path, data);
-      }}),
-  }) as unknown as Firestore;
+  const fake = Object.assign(new FormPaymentTestStore(), {
+    projectId: "demo-catch-authority", databaseId: "(default)"});
+  const db = fake as unknown as Firestore;
   return {fake, db};
 }
 function service(db: Firestore, inbound: ReturnType<
-  typeof parseCatchWhatsappWebhook>[number]) {
-  let sends = 0;
+  typeof parseCatchWhatsappWebhook>[number], hooks: {
+    beforeClaim?: () => Promise<void>; beforeSend?: () => Promise<void>;
+  } = {}) {
+  let sends = 0; let claims = 0;
+  const authority = createSyntheticCatchAuthority(db, () => now + 1000,
+    reply.recipientE164, String(Reflect.get(db, "projectId")));
+  const readiness = {schemaVersion: 1, readinessId: catchReadinessId(reply),
+    wabaId: reply.wabaId, phoneNumberId: reply.phoneNumberId,
+    recipientUid: reply.recipientUid,
+    endpointHash: catchEndpointHash(reply.recipientE164),
+    purpose: "serviceSupport", state: "ready", completeHistory: true,
+    appAuthorityBindings: authority.bindings,
+    historyFromMillis: 0, coveredThroughMillis: now,
+    atomicIngressStartedAtMillis: now, evidenceSha256: "d".repeat(64),
+    reviewedByUid: "owner", reviewedAtMillis: now,
+    expiresAtMillis: now + 24 * 60 * 60 * 1000};
+  if (db instanceof FormPaymentTestStore) {
+    authority.seedInto(db.records);
+    db.records.set(CATCH_REPLY_READINESS + "/" + catchReadinessId(reply),
+      readiness);
+  }
   const deps = {config: () => ({...reply}), now: () => now + 1000,
+    authority: authority.store,
     getUser: async (uid: string) => uid === "owner" ?
       {disabled: false, customClaims: {adminOwner: true}} : uid === "agent" ?
         {disabled: false, customClaims: {support: true}} :
         {disabled: false, phoneNumber: reply.recipientE164}};
   const request = {auth: {uid: "agent", token: {support: true,
-    auth_time: now / 1000}}, data: {purpose: "serviceSupport",
+    auth_time: now / 1000}},
+  rawRequest: {header: () => "Bearer synthetic-current-id-token"},
+  data: {purpose: "serviceSupport",
     inboundEventId: inbound.eventId, reviewedInboundTextHash:
       catchReplyHash(inbound.text), confirmSupportRequest: true,
     body: "Here is the requested support."}} as unknown as
     CallableRequest<unknown>;
   const store = new CatchWhatsappReplyStore(db, deps);
-  return {sends: () => sends, send: () => sendCatchWhatsappReply(request,
-    {...deps, store, prepare: async () => ({send: async () => {
-      sends++; return "wamid.mock-provider-result";
-    }})})};
+  const claim = store.claim.bind(store);
+  store.claim = async (...args) => {
+    claims++; await hooks.beforeClaim?.(); return claim(...args);
+  };
+  return {authority, readiness, claims: () => claims, sends: () => sends,
+    send: () => sendCatchWhatsappReply(request,
+      {...deps, store, prepare: async () => ({send: async () => {
+        sends++;
+        await hooks.beforeSend?.();
+        return "wamid.mock-provider-result";
+      }})})};
 }
 
 test("wired ingress commits STOP first and preserves original receipt TTL",
@@ -126,74 +150,122 @@ test("only untruncated dispatchable text commands enter the STOP path", () => {
   }
 });
 
+test("signed support ingress admits a real claim before STOP suppresses " +
+  "its replay", async () => {
+  const {fake, db} = fakeDatabase();
+  const support = payload([message("wamid.admitted", "Please help")]);
+  const [event] = parseCatchWhatsappWebhook(support, webhook);
+  assert.equal((await receive(db, support)).status, 200);
+  const sender = service(db, event);
+  const sent = await sender.send();
+  assert.equal(sent.providerMessageId, "wamid.mock-provider-result");
+  assert.equal(sender.claims(), 1);
+  assert.equal(sender.sends(), 1);
+  assert.equal(fake.records.get(
+    CATCH_REPLY_OPERATIONS + "/" + sent.operationId)!.state, "completed");
+  const stop = payload([message("wamid.admitted-stop", "STOP")]);
+  assert.equal((await receive(db, stop)).status, 200);
+  await assert.rejects(sender.send(), /Catch replies suppressed/);
+  assert.equal(sender.sends(), 1);
+});
+
 test("real signed ingress races claims and blocks new reviewed inbound replies",
-  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30000}, async () => {
     assert.match(process.env.FIRESTORE_EMULATOR_HOST!,
       /^(localhost|127\.0\.0\.1):[0-9]+$/u);
-    const app = initializeApp({projectId: "demo-catch-cat16-ingress"},
-      "cat16-ingress-" + Date.now());
-    const db = getFirestore(app);
-    const suffix = String(Date.now());
-    const support = payload([message("wamid.support" + suffix,
-      "Please help")]);
-    const stop = payload([message("wamid.stop" + suffix, "stop")]);
-    const later = payload([message("wamid.later" + suffix,
-      "Please help again")]);
-    const [supportEvent] = parseCatchWhatsappWebhook(support, webhook);
-    const [stopEvent] = parseCatchWhatsappWebhook(stop, webhook);
-    const [laterEvent] = parseCatchWhatsappWebhook(later, webhook);
-    const stopKey = CATCH_ENDPOINT_STOPS + "/" + catchStopId(reply,
-      catchEndpointHash(reply.recipientE164));
-    const claimKey = CATCH_REPLY_OPERATIONS + "/" + catchReplyId(reply,
-      supportEvent.messageId);
-    const laterClaimKey = CATCH_REPLY_OPERATIONS + "/" + catchReplyId(reply,
-      laterEvent.messageId);
-    const paths = [stopKey, claimKey, laterClaimKey,
-      ...[supportEvent, stopEvent, laterEvent].map((event) =>
-        CATCH_RECEIPTS + "/" + event.eventId)];
-    const readinessPath = CATCH_REPLY_READINESS + "/" + catchReadinessId(reply);
-    paths.push(readinessPath);
-    try {
-      await db.doc(readinessPath).set({schemaVersion: 1,
-        readinessId: catchReadinessId(reply), wabaId: reply.wabaId,
-        phoneNumberId: reply.phoneNumberId, recipientUid: reply.recipientUid,
-        endpointHash: catchEndpointHash(reply.recipientE164),
-        purpose: "serviceSupport", state: "ready", completeHistory: true,
-        historyFromMillis: 0, coveredThroughMillis: now,
-        atomicIngressStartedAtMillis: now, evidenceSha256: "d".repeat(64),
-        reviewedByUid: "owner", reviewedAtMillis: now,
-        expiresAtMillis: now + 24 * 60 * 60 * 1000});
-      assert.equal((await receive(db, support)).status, 200);
-      const sender = service(db, supportEvent);
-      const [claim, stopped] = await Promise.allSettled([
-        sender.send(), receive(db, stop),
-      ]);
-      assert.equal(stopped.status, "fulfilled");
-      if (stopped.status === "fulfilled") {
-        assert.equal(stopped.value.status, 200);
+    for (const order of ["claim-first", "stop-first"] as const) {
+      const app = initializeApp({projectId: "demo-catch-ingress-" + order},
+        "cat16-ingress-" + Date.now());
+      const db = getFirestore(app);
+      const suffix = String(Date.now());
+      const support = payload([message("wamid.support" + suffix,
+        "Please help")]);
+      const stop = payload([message("wamid.stop" + suffix, "stop")]);
+      const later = payload([message("wamid.later" + suffix,
+        "Please help again")]);
+      const [supportEvent] = parseCatchWhatsappWebhook(support, webhook);
+      const [stopEvent] = parseCatchWhatsappWebhook(stop, webhook);
+      const [laterEvent] = parseCatchWhatsappWebhook(later, webhook);
+      const stopKey = CATCH_ENDPOINT_STOPS + "/" + catchStopId(reply,
+        catchEndpointHash(reply.recipientE164));
+      const claimKey = CATCH_REPLY_OPERATIONS + "/" + catchReplyId(reply,
+        supportEvent.messageId);
+      const laterClaimKey = CATCH_REPLY_OPERATIONS + "/" + catchReplyId(reply,
+        laterEvent.messageId);
+      const paths = [stopKey, claimKey, laterClaimKey,
+        ...[supportEvent, stopEvent, laterEvent].map((event) =>
+          CATCH_RECEIPTS + "/" + event.eventId)];
+      const readinessPath = CATCH_REPLY_READINESS + "/" +
+        catchReadinessId(reply);
+      paths.push(readinessPath,
+        ...[supportEvent, stopEvent, laterEvent].map((event) =>
+          CATCH_INGRESS_EVIDENCE + "/" + event.eventId));
+      let reached!: () => void; let release!: () => void;
+      const boundary = new Promise<void>((resolve) => {
+        reached = resolve;
+      });
+      const resume = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const pause = async () => {
+        reached(); await resume;
+      };
+      const sender = service(db, supportEvent, order === "claim-first" ?
+        {beforeSend: pause} : {beforeClaim: pause});
+      let sending: ReturnType<typeof sender.send> | undefined;
+      try {
+        for (const [key, row] of sender.authority.rows) {
+          await db.doc(key).set(row); paths.push(key);
+        }
+        await db.doc(readinessPath).set(sender.readiness);
+        assert.equal((await receive(db, support)).status, 200);
+        sending = sender.send();
+        // A missing authority/session/evidence fails here instead of counting
+        // as a STOP-winning race. Both orders must reach the exact boundary.
+        await Promise.race([boundary, sending.then(() => {
+          throw new Error("Reply completed before the controlled " +
+            "race boundary");
+        })]);
+        assert.equal(sender.claims(), 1,
+          "preflight must reach the claim boundary");
+        const beforeStop = await db.doc(claimKey).get();
+        assert.equal(beforeStop.exists, order === "claim-first");
+        if (order === "claim-first") {
+          assert.equal(beforeStop.get("state"), "claimed");
+        }
+        assert.equal((await receive(db, stop)).status, 200);
+        release();
+        if (order === "claim-first") {
+          const sent = await sending;
+          assert.equal(sent.providerMessageId, "wamid.mock-provider-result");
+          const claimTime = (await db.doc(claimKey).get()).createTime!;
+          const stopTime = (await db.doc(stopKey).get()).createTime!;
+          assert.ok(claimTime.seconds < stopTime.seconds ||
+            (claimTime.seconds === stopTime.seconds &&
+              claimTime.nanoseconds <= stopTime.nanoseconds));
+          assert.equal(sender.sends(), 1);
+        } else {
+          await assert.rejects(sending, /Catch replies suppressed/);
+          assert.equal(sender.sends(), 0);
+          assert.equal((await db.doc(claimKey).get()).exists, false);
+        }
+        const original = (await db.doc(CATCH_RECEIPTS + "/" +
+          stopEvent.eventId).get()).data()!;
+        const results = await Promise.all(Array.from({length: 5}, () =>
+          receive(db, stop, now + 5000)));
+        assert.ok(results.every((result) => result.status === 200));
+        assert.deepEqual((await db.doc(CATCH_RECEIPTS + "/" + stopEvent.eventId)
+          .get()).data(), original);
+        assert.equal((await receive(db, later)).status, 200);
+        const next = service(db, laterEvent);
+        await assert.rejects(next.send(), /Catch replies suppressed/);
+        assert.equal(next.sends(), 0);
+        assert.equal((await db.doc(laterClaimKey).get()).exists, false);
+      } finally {
+        release();
+        if (sending) await Promise.allSettled([sending]);
+        for (const item of paths) await db.doc(item).delete();
+        await deleteApp(app);
       }
-      if (claim.status === "fulfilled") {
-        const claimTime = (await db.doc(claimKey).get()).createTime!;
-        const stopTime = (await db.doc(stopKey).get()).createTime!;
-        assert.ok(claimTime.seconds < stopTime.seconds ||
-          (claimTime.seconds === stopTime.seconds &&
-            claimTime.nanoseconds <= stopTime.nanoseconds));
-        assert.equal(sender.sends(), 1);
-      } else assert.equal(sender.sends(), 0);
-      const original = (await db.doc(CATCH_RECEIPTS + "/" +
-        stopEvent.eventId).get()).data()!;
-      const results = await Promise.all(Array.from({length: 5}, () =>
-        receive(db, stop, now + 5000)));
-      assert.ok(results.every((result) => result.status === 200));
-      assert.deepEqual((await db.doc(CATCH_RECEIPTS + "/" + stopEvent.eventId)
-        .get()).data(), original);
-      assert.equal((await receive(db, later)).status, 200);
-      const next = service(db, laterEvent);
-      await assert.rejects(next.send());
-      assert.equal(next.sends(), 0);
-      assert.equal((await db.doc(laterClaimKey).get()).exists, false);
-    } finally {
-      for (const item of paths) await db.doc(item).delete();
-      await deleteApp(app);
     }
   });

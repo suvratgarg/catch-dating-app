@@ -19,6 +19,8 @@ export {catchWhatsappReadinessIngressDocumentSchema} from "./schemas/catchWhatsa
 export {catchWhatsappReadinessAuditDocumentSchema} from "./schemas/catchWhatsappReadinessAuditDocument";
 export {catchWhatsappReplyOperationDocumentSchema} from "./schemas/catchWhatsappReplyOperationDocument";
 export {catchWhatsappEndpointStopDocumentSchema} from "./schemas/catchWhatsappEndpointStopDocument";
+export {catchWhatsappAppAuthorityDocumentSchema} from "./schemas/catchWhatsappAppAuthorityDocument";
+export {catchWhatsappIngressEvidenceDocumentSchema} from "./schemas/catchWhatsappIngressEvidenceDocument";
 export {catchWhatsappReplyReadinessDocumentSchema} from "./schemas/catchWhatsappReplyReadinessDocument";
 export {adminReviewCatchWhatsappInboundCallablePayloadSchema} from "./schemas/adminReviewCatchWhatsappInboundInput";
 export {adminReviewCatchWhatsappInboundCallableResponseSchema} from "./schemas/adminReviewCatchWhatsappInboundOutput";

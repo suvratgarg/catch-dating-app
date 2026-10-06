@@ -18048,6 +18048,208 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const catchWhatsappAppAuthorityDocumentAuthNotBeforeSeconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.authNotBeforeSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentCapabilities = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.capabilities',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['review', 'reply', 'receive'],
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentCapabilitiesItems = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.capabilities.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappAppAuthorityDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentGrantedByCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.grantedBy.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappAppAuthorityDocumentGrantedByEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.grantedBy.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentGrantedByIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.grantedBy.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentGrantedByProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.grantedBy.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentGrantedByRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.grantedBy.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentGrantedByUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.grantedBy.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.incarnation',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingCapabilities = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.capabilities',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['review', 'reply', 'receive'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingCapabilitiesItems = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.capabilities.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingIssuerCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.issuer.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingIssuerEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.issuer.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingIssuerIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.issuer.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingIssuerProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.issuer.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingIssuerRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.issuer.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingIssuerUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.issuer.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentPendingNonce = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.pending.nonce',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.schemaVersion',
+    required: true,
+  );
+
+  static const catchWhatsappAppAuthorityDocumentState = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['denied', 'granting', 'active'],
+  );
+
+  static const catchWhatsappAppAuthorityDocumentUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappAppAuthorityDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappAppAuthorityDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const catchWhatsappEndpointStopDocumentEndpointHash = CatchContractFieldConstraints(
     path: 'catchWhatsappEndpointStopDocument.endpointHash',
     maxLength: 64,
@@ -18120,6 +18322,80 @@ abstract final class CatchContractConstraints {
     path: 'catchWhatsappEndpointStopDocument.wabaId',
     maxLength: 32,
     minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentAmbiguity = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.ambiguity',
+    valueTypes: <String>['string'],
+    enumValues: <String>['unresolved-endpoint', 'truncated-text', 'unsupported-message', 'missing-text', 'invalid-status-errors'],
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentClassification = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['text', 'stop', 'status', 'ambiguous'],
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentEventId = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cwhe_[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentEventKind = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.eventKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inbound', 'status'],
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentMaterialSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.materialSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentPhoneNumberId = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.phoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentReceivedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.receivedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.schemaVersion',
+    required: true,
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentState = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['accepted', 'blocked'],
+  );
+
+  static const catchWhatsappIngressEvidenceDocumentWabaId = CatchContractFieldConstraints(
+    path: 'catchWhatsappIngressEvidenceDocument.wabaId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{1,32}\$',
@@ -18457,6 +18733,132 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{1,128}\$',
   );
 
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
   static const catchWhatsappReplyOperationDocumentBodyHash = CatchContractFieldConstraints(
     path: 'catchWhatsappReplyOperationDocument.bodyHash',
     maxLength: 64,
@@ -18641,6 +19043,90 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerCapability = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'reply', 'receive'],
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.endpointHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerIncarnation = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.incarnation',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
   );
 
   static const catchWhatsappReplyReadinessDocumentAtomicIngressStartedAtMillis = CatchContractFieldConstraints(
@@ -161554,6 +162040,34 @@ abstract final class CatchContractConstraints {
     'catchCommunicationPreferenceDocument.whatsappPurposes.marketing.termsVersion': catchCommunicationPreferenceDocumentWhatsappPurposesMarketingTermsVersion,
     'catchCommunicationPreferenceDocument.whatsappPurposes.marketing.updatedAt._nanoseconds': catchCommunicationPreferenceDocumentWhatsappPurposesMarketingUpdatedAtNanoseconds,
     'catchCommunicationPreferenceDocument.whatsappPurposes.marketing.updatedAt._seconds': catchCommunicationPreferenceDocumentWhatsappPurposesMarketingUpdatedAtSeconds,
+    'catchWhatsappAppAuthorityDocument.authNotBeforeSeconds': catchWhatsappAppAuthorityDocumentAuthNotBeforeSeconds,
+    'catchWhatsappAppAuthorityDocument.capabilities': catchWhatsappAppAuthorityDocumentCapabilities,
+    'catchWhatsappAppAuthorityDocument.capabilities.items': catchWhatsappAppAuthorityDocumentCapabilitiesItems,
+    'catchWhatsappAppAuthorityDocument.endpointHash': catchWhatsappAppAuthorityDocumentEndpointHash,
+    'catchWhatsappAppAuthorityDocument.grantedBy.capability': catchWhatsappAppAuthorityDocumentGrantedByCapability,
+    'catchWhatsappAppAuthorityDocument.grantedBy.endpointHash': catchWhatsappAppAuthorityDocumentGrantedByEndpointHash,
+    'catchWhatsappAppAuthorityDocument.grantedBy.incarnation': catchWhatsappAppAuthorityDocumentGrantedByIncarnation,
+    'catchWhatsappAppAuthorityDocument.grantedBy.projectId': catchWhatsappAppAuthorityDocumentGrantedByProjectId,
+    'catchWhatsappAppAuthorityDocument.grantedBy.revision': catchWhatsappAppAuthorityDocumentGrantedByRevision,
+    'catchWhatsappAppAuthorityDocument.grantedBy.uid': catchWhatsappAppAuthorityDocumentGrantedByUid,
+    'catchWhatsappAppAuthorityDocument.incarnation': catchWhatsappAppAuthorityDocumentIncarnation,
+    'catchWhatsappAppAuthorityDocument.pending.capabilities': catchWhatsappAppAuthorityDocumentPendingCapabilities,
+    'catchWhatsappAppAuthorityDocument.pending.capabilities.items': catchWhatsappAppAuthorityDocumentPendingCapabilitiesItems,
+    'catchWhatsappAppAuthorityDocument.pending.endpointHash': catchWhatsappAppAuthorityDocumentPendingEndpointHash,
+    'catchWhatsappAppAuthorityDocument.pending.expiresAtMillis': catchWhatsappAppAuthorityDocumentPendingExpiresAtMillis,
+    'catchWhatsappAppAuthorityDocument.pending.issuer.capability': catchWhatsappAppAuthorityDocumentPendingIssuerCapability,
+    'catchWhatsappAppAuthorityDocument.pending.issuer.endpointHash': catchWhatsappAppAuthorityDocumentPendingIssuerEndpointHash,
+    'catchWhatsappAppAuthorityDocument.pending.issuer.incarnation': catchWhatsappAppAuthorityDocumentPendingIssuerIncarnation,
+    'catchWhatsappAppAuthorityDocument.pending.issuer.projectId': catchWhatsappAppAuthorityDocumentPendingIssuerProjectId,
+    'catchWhatsappAppAuthorityDocument.pending.issuer.revision': catchWhatsappAppAuthorityDocumentPendingIssuerRevision,
+    'catchWhatsappAppAuthorityDocument.pending.issuer.uid': catchWhatsappAppAuthorityDocumentPendingIssuerUid,
+    'catchWhatsappAppAuthorityDocument.pending.nonce': catchWhatsappAppAuthorityDocumentPendingNonce,
+    'catchWhatsappAppAuthorityDocument.projectId': catchWhatsappAppAuthorityDocumentProjectId,
+    'catchWhatsappAppAuthorityDocument.revision': catchWhatsappAppAuthorityDocumentRevision,
+    'catchWhatsappAppAuthorityDocument.schemaVersion': catchWhatsappAppAuthorityDocumentSchemaVersion,
+    'catchWhatsappAppAuthorityDocument.state': catchWhatsappAppAuthorityDocumentState,
+    'catchWhatsappAppAuthorityDocument.uid': catchWhatsappAppAuthorityDocumentUid,
+    'catchWhatsappAppAuthorityDocument.updatedAtMillis': catchWhatsappAppAuthorityDocumentUpdatedAtMillis,
     'catchWhatsappEndpointStopDocument.endpointHash': catchWhatsappEndpointStopDocumentEndpointHash,
     'catchWhatsappEndpointStopDocument.observedAtMillis': catchWhatsappEndpointStopDocumentObservedAtMillis,
     'catchWhatsappEndpointStopDocument.payloadHash': catchWhatsappEndpointStopDocumentPayloadHash,
@@ -161563,6 +162077,17 @@ abstract final class CatchContractConstraints {
     'catchWhatsappEndpointStopDocument.sourceMessageId': catchWhatsappEndpointStopDocumentSourceMessageId,
     'catchWhatsappEndpointStopDocument.stopId': catchWhatsappEndpointStopDocumentStopId,
     'catchWhatsappEndpointStopDocument.wabaId': catchWhatsappEndpointStopDocumentWabaId,
+    'catchWhatsappIngressEvidenceDocument.ambiguity': catchWhatsappIngressEvidenceDocumentAmbiguity,
+    'catchWhatsappIngressEvidenceDocument.classification': catchWhatsappIngressEvidenceDocumentClassification,
+    'catchWhatsappIngressEvidenceDocument.endpointHash': catchWhatsappIngressEvidenceDocumentEndpointHash,
+    'catchWhatsappIngressEvidenceDocument.eventId': catchWhatsappIngressEvidenceDocumentEventId,
+    'catchWhatsappIngressEvidenceDocument.eventKind': catchWhatsappIngressEvidenceDocumentEventKind,
+    'catchWhatsappIngressEvidenceDocument.materialSha256': catchWhatsappIngressEvidenceDocumentMaterialSha256,
+    'catchWhatsappIngressEvidenceDocument.phoneNumberId': catchWhatsappIngressEvidenceDocumentPhoneNumberId,
+    'catchWhatsappIngressEvidenceDocument.receivedAtMillis': catchWhatsappIngressEvidenceDocumentReceivedAtMillis,
+    'catchWhatsappIngressEvidenceDocument.schemaVersion': catchWhatsappIngressEvidenceDocumentSchemaVersion,
+    'catchWhatsappIngressEvidenceDocument.state': catchWhatsappIngressEvidenceDocumentState,
+    'catchWhatsappIngressEvidenceDocument.wabaId': catchWhatsappIngressEvidenceDocumentWabaId,
     'catchWhatsappReadinessApprovalDocument.approval.action': catchWhatsappReadinessApprovalDocumentApprovalAction,
     'catchWhatsappReadinessApprovalDocument.approval.approvalId': catchWhatsappReadinessApprovalDocumentApprovalApprovalId,
     'catchWhatsappReadinessApprovalDocument.approval.atomicIngressStartedAtMillis': catchWhatsappReadinessApprovalDocumentApprovalAtomicIngressStartedAtMillis,
@@ -161603,6 +162128,24 @@ abstract final class CatchContractConstraints {
     'catchWhatsappReadinessIngressDocument.verifiedAtMillis': catchWhatsappReadinessIngressDocumentVerifiedAtMillis,
     'catchWhatsappReadinessIngressDocument.wabaId': catchWhatsappReadinessIngressDocumentWabaId,
     'catchWhatsappReplyOperationDocument.actorUid': catchWhatsappReplyOperationDocumentActorUid,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.capability': catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorCapability,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.endpointHash': catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorEndpointHash,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.incarnation': catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorIncarnation,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.projectId': catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorProjectId,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.revision': catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorRevision,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.actor.uid': catchWhatsappReplyOperationDocumentAppAuthorityBindingsActorUid,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.capability': catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientCapability,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.endpointHash': catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientEndpointHash,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.incarnation': catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientIncarnation,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.projectId': catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientProjectId,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.revision': catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientRevision,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.recipient.uid': catchWhatsappReplyOperationDocumentAppAuthorityBindingsRecipientUid,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.capability': catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerCapability,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.endpointHash': catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerEndpointHash,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.incarnation': catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerIncarnation,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.projectId': catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerProjectId,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.revision': catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerRevision,
+    'catchWhatsappReplyOperationDocument.appAuthorityBindings.reviewer.uid': catchWhatsappReplyOperationDocumentAppAuthorityBindingsReviewerUid,
     'catchWhatsappReplyOperationDocument.bodyHash': catchWhatsappReplyOperationDocumentBodyHash,
     'catchWhatsappReplyOperationDocument.createdAtMillis': catchWhatsappReplyOperationDocumentCreatedAtMillis,
     'catchWhatsappReplyOperationDocument.deadlineMillis': catchWhatsappReplyOperationDocumentDeadlineMillis,
@@ -161626,6 +162169,18 @@ abstract final class CatchContractConstraints {
     'catchWhatsappReplyOperationDocument.state': catchWhatsappReplyOperationDocumentState,
     'catchWhatsappReplyOperationDocument.updatedAtMillis': catchWhatsappReplyOperationDocumentUpdatedAtMillis,
     'catchWhatsappReplyOperationDocument.wabaId': catchWhatsappReplyOperationDocumentWabaId,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.capability': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientCapability,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.endpointHash': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientEndpointHash,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.incarnation': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientIncarnation,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.projectId': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientProjectId,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.revision': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientRevision,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.recipient.uid': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsRecipientUid,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.capability': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerCapability,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.endpointHash': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerEndpointHash,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.incarnation': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerIncarnation,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.projectId': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerProjectId,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.revision': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerRevision,
+    'catchWhatsappReplyReadinessDocument.appAuthorityBindings.reviewer.uid': catchWhatsappReplyReadinessDocumentAppAuthorityBindingsReviewerUid,
     'catchWhatsappReplyReadinessDocument.atomicIngressStartedAtMillis': catchWhatsappReplyReadinessDocumentAtomicIngressStartedAtMillis,
     'catchWhatsappReplyReadinessDocument.completeHistory': catchWhatsappReplyReadinessDocumentCompleteHistory,
     'catchWhatsappReplyReadinessDocument.coveredThroughMillis': catchWhatsappReplyReadinessDocumentCoveredThroughMillis,

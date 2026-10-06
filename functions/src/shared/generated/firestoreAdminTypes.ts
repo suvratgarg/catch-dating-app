@@ -911,6 +911,32 @@ export interface CatchWhatsappReplyOperationDocument {
   createdAtMillis: number;
   updatedAtMillis: number;
   readinessEvidenceHash: string;
+  appAuthorityBindings?: {
+    actor: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    reviewer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    recipient: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+  };
 }
 
 /**
@@ -926,6 +952,76 @@ export interface CatchWhatsappEndpointStopDocument {
   sourceMessageId: string;
   payloadHash: string;
   observedAtMillis: number;
+}
+
+/**
+ * Server-only durable project/UID/incarnation-bound capability authority. Missing records deny; no TTL, bootstrap, raw endpoint or credential. Mutations require an audited full-span Auth fence.
+ */
+export interface CatchWhatsappAppAuthorityDocument {
+  schemaVersion: 1;
+  projectId: string;
+  uid: string;
+  revision: number;
+  incarnation: string | null;
+  state: "denied" | "granting" | "active";
+  authNotBeforeSeconds: number;
+  updatedAtMillis: number;
+  /**
+   * @maxItems 3
+   */
+  capabilities: ("review" | "reply" | "receive")[];
+  endpointHash: string | null;
+  pending: {
+    nonce: string;
+    issuer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 3
+     */
+    capabilities: ("review" | "reply" | "receive")[];
+    endpointHash: string | null;
+    expiresAtMillis: number;
+  } | null;
+  grantedBy: {
+    projectId: string;
+    uid: string;
+    revision: number;
+    incarnation: string;
+    capability: "review" | "reply" | "receive";
+    endpointHash: string | null;
+  } | null;
+}
+
+/**
+ * Body-free durable semantic collision fence captured only after authenticated exact-sender ingress. Hashes never establish source completeness, consent or STOP absence. Blocked events cannot be reactivated; no TTL.
+ */
+export interface CatchWhatsappIngressEvidenceDocument {
+  schemaVersion: 1;
+  eventId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  endpointHash: string | null;
+  materialSha256: string;
+  eventKind: "inbound" | "status";
+  classification: "text" | "stop" | "status" | "ambiguous";
+  ambiguity:
+    | (
+        | "unresolved-endpoint"
+        | "truncated-text"
+        | "unsupported-message"
+        | "missing-text"
+        | "invalid-status-errors"
+      )
+    | null;
+  state: "accepted" | "blocked";
+  receivedAtMillis: number;
 }
 
 /**
@@ -948,6 +1044,24 @@ export interface CatchWhatsappReplyReadinessDocument {
   reviewedByUid: string;
   reviewedAtMillis: number;
   expiresAtMillis: number;
+  appAuthorityBindings?: {
+    reviewer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    recipient: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+  };
 }
 
 export interface OrganizerTrackingSettingsDocument {
