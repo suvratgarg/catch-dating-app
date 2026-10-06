@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 3.2.0
-updated: 2026-10-02
+version: 3.3.0
+updated: 2026-10-06
 owner: agent_operating_model
 status: active
 ---
@@ -34,7 +34,7 @@ tests and scanners prove correctness, and CI stores run evidence.
 5. Run the focused checks selected by the changed surface. Use
    `node tool/run.mjs check <id...>` when a registered check exists.
 6. Use a separate Git worktree for concurrent changes. New task worktrees use
-   `node tool/git/worktree_guard.mjs start`; use `doctor|finish|stale` for
+   `node tool/git/worktree_guard.mjs start`; use `doctor|finish|retire|stale` for
    inspection and closeout.
    The parent reviews and integrates each result; Git, PR, and CI output are
    the evidence.
@@ -125,6 +125,9 @@ A local contribution is ready for handoff when its intended source and contract
 changes are present, focused checks pass, compile-critical generated outputs
 are current, and the exact commit is preserved. Shipped task completion and
 retirement of the task's own worktree and branches follow the mandatory
-checklist in `docs/agent_operating_model.md#completion`; record an exact retention
-reason when safe retirement cannot finish. Ordinary product work must not
+checklist in `docs/agent_operating_model.md#completion`. Keep the guarded task's
+claim through acceptance, run the guard's dry-run `retire`, then its admitted
+`retire --apply` from outside the worktree. Record the returned exact retention
+reason, accountable owner and next action when blocked; a reminder or claim-only
+`finish` is not retirement. Ordinary product work must not
 recreate or replace the removed evidence layer.
