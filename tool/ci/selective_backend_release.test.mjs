@@ -150,7 +150,17 @@ test("runtime lock drift stays explicit across a bounded selector and an added e
   assert.deepEqual(assessment.selectedTargets, input.selectedTargets);
   assert.equal(assessment.deferredImpactedTargets.length, 5);
   assert.deepEqual(assessment.retainedBaselineTargets, f.targets.slice(1));
+  assert.deepEqual(assessment.deferredUnresolvedTargets, []);
   assert.equal(JSON.stringify(input), original);
+
+  const deferredUnknown = clone(input);
+  deferredUnknown.candidateEvidence.source.functions[f.targets[1]].unknown = ["index.js:dynamic-module-load"];
+  deferredUnknown.candidateEvidence.compiled = clone(deferredUnknown.candidateEvidence.source);
+  const deferred = assessSelectiveRuntimeImpact(deferredUnknown);
+  assert.ok(deferred.impactedTargets.includes(f.targets[1]));
+  assert.ok(deferred.deferredImpactedTargets.includes(f.targets[1]));
+  assert.deepEqual(deferred.deferredUnresolvedTargets, [f.targets[1]]);
+  assert.throws(() => assessSelectiveRuntimeImpact({...deferredUnknown, selectedTargets: [f.targets[1], added]}), invalid);
 
   const sameLock = clone(input); sameLock.candidateLockSha256 = sameLock.baselineLockSha256;
   const focused = assessSelectiveRuntimeImpact({...sameLock, selectedTargets: [...f.changed, added]});

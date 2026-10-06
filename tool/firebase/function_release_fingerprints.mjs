@@ -58,6 +58,22 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
     if (!name.endsWith(".js")) continue;
     const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
     assert.equal(source.parseDiagnostics.length, 0, `Cannot parse runtime namespace: ${name}`);
+    // A class member's receiver is its instance (or constructor for static
+    // members), not the CommonJS module receiver. Arrows inherit that receiver;
+    // an ordinary nested function starts a new, untrusted this binding.
+    const classReceiver = (node) => {
+      for (let current = node.parent; current && current !== source; current = current.parent) {
+        if (ts.isArrowFunction(current)) continue;
+        if (ts.isPropertyDeclaration(current) || ts.isClassStaticBlockDeclaration(current)) return true;
+        if (ts.isFunctionLike(current)) {
+          const owner = current.parent;
+          return (ts.isConstructorDeclaration(current) || ts.isMethodDeclaration(current) ||
+            ts.isGetAccessorDeclaration(current) || ts.isSetAccessorDeclaration(current)) &&
+            (ts.isClassDeclaration(owner) || ts.isClassExpression(owner));
+        }
+      }
+      return false;
+    };
     const bindings = new Map();
     const collect = (node) => {
       if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer) {
@@ -96,7 +112,7 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
       // compiler-style export forms understood by this analyzer.
       if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) &&
           node.expression.text === "module" && node.name.text === "exports") untrustedNamespaces.add("local:" + name);
-      if (node.kind === ts.SyntaxKind.ThisKeyword) {
+      if (node.kind === ts.SyntaxKind.ThisKeyword && !classReceiver(node)) {
         const parent = node.parent;
         if ((ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) && parent.expression === node) {
           const use = parent.parent;

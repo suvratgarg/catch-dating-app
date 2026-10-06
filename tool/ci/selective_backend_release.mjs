@@ -190,16 +190,14 @@ export function assessSelectiveRuntimeImpact(input) {
     const candidateSet = new Set(candidateTargets);
     assert.ok(baselineTargets.every((target) => candidateSet.has(target)), "Deletion needs separate authority.");
     const baselineSet = new Set(baselineTargets);
-    const common = (snapshot) => ({schema: snapshot.schema,
-      functions: Object.fromEntries(baselineTargets.map((target) => [target, snapshot.functions[target]]))});
-    const source = compareFunctionFingerprints(common(baselineEvidence.source), common(candidateEvidence.source),
-      {authorizedTargets: baselineTargets});
-    const compiled = compareFunctionFingerprints(common(baselineEvidence.compiled), common(candidateEvidence.compiled),
-      {authorizedTargets: baselineTargets});
-    assert.deepEqual(source, compiled);
+    // The full evidence was validated above, including matching source and
+    // compiled snapshots. An unresolved *deferred* closure must remain visible
+    // as impacted; only a selected closure needs resolution before selection.
+    const codeChangedTargets = baselineTargets.filter((target) =>
+      baselineEvidence.source.functions[target].sha256 !== candidateEvidence.source.functions[target].sha256);
     const dependencyDrift = baselineLockSha256 !== candidateLockSha256;
     const addedTargets = candidateTargets.filter((target) => !baselineSet.has(target));
-    const impactedTargets = [...new Set([...(dependencyDrift ? baselineTargets : source.targets), ...addedTargets])].sort();
+    const impactedTargets = [...new Set([...(dependencyDrift ? baselineTargets : codeChangedTargets), ...addedTargets])].sort();
     const impacted = new Set(impactedTargets);
     assert.ok(selectedTargets.every((target) => impacted.has(target)), "Selector includes an unaffected Function.");
     for (const target of selectedTargets) {
@@ -209,10 +207,14 @@ export function assessSelectiveRuntimeImpact(input) {
         "Selected baseline closure is unresolved.");
     }
     const selected = new Set(selectedTargets);
+    const deferredUnresolvedTargets = impactedTargets.filter((target) => !selected.has(target) &&
+      (candidateEvidence.source.functions[target].unknown.length ||
+        baselineSet.has(target) && baselineEvidence.source.functions[target].unknown.length));
     return {schema: SELECTIVE_IMPACT_SCHEMA, baseline: binding(baseline), candidate: binding(candidate),
       baselineLockSha256, candidateLockSha256, dependencyDrift,
-      codeChangedTargets: [...source.targets], addedTargets, impactedTargets,
+      codeChangedTargets, addedTargets, impactedTargets,
       selectedTargets: [...selectedTargets], deferredImpactedTargets: impactedTargets.filter((target) => !selected.has(target)),
+      deferredUnresolvedTargets,
       retainedBaselineTargets: baselineTargets.filter((target) => !selected.has(target))};
   });
 }

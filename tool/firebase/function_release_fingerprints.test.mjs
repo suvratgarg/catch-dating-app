@@ -52,6 +52,16 @@ test("canonical TypeScript void export chains preserve namespace trust", () => {
   modules.set("index.js", compiled.replace(chain, 'exports.beta = exports[(global.value = 1, "alpha")] = void 0;'));
   assert.throws(() => snapshot(modules), /Unsupported compiler wrapper namespace|Duplicate or computed export/);
 });
+test("class receivers do not impersonate a CommonJS wrapper namespace", () => {
+  const compiled = ts.transpileModule('import * as dep from "./dep"; class Provider { base() { return this.value; } value = 1; read() { return this.base() + dep.value(); } } const provider = new Provider(); export const alpha = () => provider.read(); export const beta = () => 2;',
+    {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true}}).outputText;
+  const modules = new Map([["index.js", compiled], ["dep.js", "exports.value = () => 1;"]]);
+  assert.deepEqual(snapshot(modules).functions["functions:alpha"].unknown, []);
+  modules.set("index.js", compiled + "\nthis.escaped = 1;");
+  assert.throws(() => snapshot(modules), /Unsupported compiler wrapper namespace/);
+  modules.set("index.js", compiled + "\nfunction escaped() { this.escaped = 1; }");
+  assert.throws(() => snapshot(modules), /Unsupported compiler wrapper namespace/);
+});
 test("transitive private helper changes select its consumer only", () => {
   assert.deepEqual(delta(map(), map(undefined, "function helper() { return 3; }")).targets, ["functions:alpha"]);
 });
