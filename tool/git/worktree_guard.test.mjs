@@ -677,6 +677,16 @@ test("retire refuses omitted filenames with leading Git pathspec magic", (contex
     accepted, "--", literalName, "owned/allowed.txt"]).status, 0);
   assertRetained(fixture, task, retirementArgs(task, head, accepted), "accepted_source_not_equivalent");
   assert.equal(fs.readFileSync(path.join(worktree, literalName), "utf8"), "unique omitted source\n");
+  fs.writeFileSync(path.join(fixture.root, literalName), "unique omitted source\n");
+  commitAll(fixture.root, "incorporate the literal magic filename");
+  git(fixture.root, ["push", "origin", "main"]);
+  const incorporated = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  const eligible = guard(fixture.root, retirementArgs(task, head, incorporated));
+  assert.equal(eligible.status, 0);
+  assert.equal(eligible.result.disposition, "eligible");
+  assert.equal(eligible.result.equivalence, "exact_task_paths");
+  assert.equal(fs.existsSync(task.result.claimPath), true);
+  assert.equal(fs.existsSync(worktree), true);
 });
 
 test("retire requires exact identity, external clearance and no foreign active claims", (context) => {
