@@ -62,6 +62,32 @@ test("class receivers do not impersonate a CommonJS wrapper namespace", () => {
   modules.set("index.js", compiled + "\nfunction escaped() { this.escaped = 1; }");
   assert.throws(() => snapshot(modules), /Unsupported compiler wrapper namespace/);
 });
+for (const [kind, members] of [
+  ["method", "[Object.defineProperty(this,'fn',{get(){global.value=1}})](){}[Object.defineProperty(this,'other',{get(){global.value=2}})](){}"],
+  ["field", "[Object.defineProperty(this,'fn',{get(){global.value=1}})];[Object.defineProperty(this,'other',{get(){global.value=2}})];"],
+]) {
+  test(`computed class ${kind} names retain enclosing CommonJS namespace effects`, () => {
+    const before = map(), after = map();
+    for (const [modules, name] of [[before, "fn"], [after, "other"]]) {
+      modules.set("m.js", 'exports.fn=fn;exports.other=other;function fn(){}function other(){}class Patch{' + members + '}');
+      modules.set("api.js", 'const m=require("./m");const unused={fn:m.' + name + '};exports.alpha=alpha;exports.beta=beta;function alpha(){return global.value}function beta(){return 2}');
+    }
+    assert.deepEqual(delta(before, after).targets, exports);
+  });
+  test(`computed class ${kind} names cannot preserve compiler wrapper namespace trust`, () => {
+    const compiled = ts.transpileModule('import * as dep from "./dep"; export const alpha = () => dep.value(); export const beta = () => 2;',
+      {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true}}).outputText;
+    const modules = new Map([["index.js", compiled + '\nclass Patch{' + members + '}'], ["dep.js", 'exports.value = () => 1;']]);
+    assert.throws(() => snapshot(modules), /Unsupported compiler wrapper namespace/);
+  });
+}
+test("ordinary class bodies and initializers keep their receivers across nested computed names", () => {
+  const compiled = ts.transpileModule('import * as dep from "./dep"; class Provider { value = (() => { this.ready = 1; return 1; })(); static label = this.name; static { this.ready = true; } constructor() { this.value = 1; } child = class { [this.value]() {} }; read() { class Nested { [this.value]() {} } return (() => this.value + dep.value())(); } get current() { return this.value; } set current(value) { this.value = value; } } const provider = new Provider(); export const alpha = () => provider.read(); export const beta = () => 2;',
+    {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true}}).outputText;
+  const modules = new Map([["index.js", compiled], ["dep.js", 'exports.value = () => 1;']]);
+  const result = snapshot(modules);
+  for (const target of exports) assert.deepEqual(result.functions[target].unknown, []);
+});
 test("transitive private helper changes select its consumer only", () => {
   assert.deepEqual(delta(map(), map(undefined, "function helper() { return 3; }")).targets, ["functions:alpha"]);
 });

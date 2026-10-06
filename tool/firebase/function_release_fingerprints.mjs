@@ -59,11 +59,14 @@ export function fingerprintRuntimeExports({modules, entrypoint = "index.js", tar
     const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
     assert.equal(source.parseDiagnostics.length, 0, `Cannot parse runtime namespace: ${name}`);
     // A class member's receiver is its instance (or constructor for static
-    // members), not the CommonJS module receiver. Arrows inherit that receiver;
-    // an ordinary nested function starts a new, untrusted this binding.
+    // members), not the CommonJS module receiver. Computed names evaluate in
+    // the enclosing scope; bodies and field initializers use the member's
+    // receiver. Arrows inherit it; ordinary nested functions start a new one.
     const classReceiver = (node) => {
-      for (let current = node.parent; current && current !== source; current = current.parent) {
+      for (let child = node, current = node.parent; current && current !== source;
+          child = current, current = current.parent) {
         if (ts.isArrowFunction(current)) continue;
+        if (ts.isComputedPropertyName(child) && current.name === child) continue;
         if (ts.isPropertyDeclaration(current) || ts.isClassStaticBlockDeclaration(current)) return true;
         if (ts.isFunctionLike(current)) {
           const owner = current.parent;
