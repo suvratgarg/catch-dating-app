@@ -85545,6 +85545,52 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['displayName', 'phone', 'email', 'cityMarketId', 'externalReference', 'arrivalGroup', 'ticketType', 'revenueAmountMinor', 'revenueCurrency', 'revenueSource', 'status'],
   );
 
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsExternalReference = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChanges = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 11,
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsCurrentValue = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.currentValue',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsField = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.field',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'phone', 'email', 'cityMarketId', 'externalReference', 'arrivalGroup', 'ticketType', 'revenueAmountMinor', 'revenueCurrency', 'revenueSource', 'status'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsOrigin = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.origin',
+    valueTypes: <String>['string'],
+    enumValues: <String>['upload', 'hostCorrection', 'modelProposal', 'default'],
+  );
+
+  static const hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsProposedValue = CatchContractFieldConstraints(
+    path: 'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.proposedValue',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
   static const hostRosterIntakeReceiptDocumentPreviewRowsItemsIssueCode = CatchContractFieldConstraints(
     path: 'hostRosterIntakeReceiptDocument.preview.rows.items.issueCode',
     maxLength: 80,
@@ -85765,7 +85811,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.arrivalGroup.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85795,7 +85841,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.cityMarketId.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85825,7 +85871,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.displayName.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85855,7 +85901,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.email.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85885,7 +85931,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.externalReference.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85915,7 +85961,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.phone.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85945,7 +85991,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueAmountMinor.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -85975,7 +86021,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueCurrency.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86005,7 +86051,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.revenueSource.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86035,7 +86081,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.status.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86065,7 +86111,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.rows.items.fields.ticketType.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86224,7 +86270,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.arrivalGroup.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86254,7 +86300,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.cityMarketId.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86284,7 +86330,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.displayName.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86314,7 +86360,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.email.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86344,7 +86390,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.externalReference.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86374,7 +86420,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.phone.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86404,7 +86450,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueAmountMinor.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86434,7 +86480,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueCurrency.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86464,7 +86510,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.revenueSource.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86494,7 +86540,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.status.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -86524,7 +86570,7 @@ abstract final class CatchContractConstraints {
     path: 'hostRosterIntakeSessionDocument.draft.sourceManifest.items.originalFields.ticketType.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94557,7 +94603,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.arrivalGroup.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94587,7 +94633,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.cityMarketId.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94617,7 +94663,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.displayName.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94647,7 +94693,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.email.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94677,7 +94723,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.externalReference.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94707,7 +94753,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.phone.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94737,7 +94783,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueAmountMinor.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94767,7 +94813,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueCurrency.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94797,7 +94843,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.revenueSource.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94827,7 +94873,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.status.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -94857,7 +94903,7 @@ abstract final class CatchContractConstraints {
     path: 'manageHostRosterIntakeCallablePayload.rows.items.fields.ticketType.column',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: -1,
     maximum: 39,
   );
 
@@ -172593,6 +172639,13 @@ abstract final class CatchContractConstraints {
     'hostRosterIntakeReceiptDocument.preview.rows.items.attendeeId': hostRosterIntakeReceiptDocumentPreviewRowsItemsAttendeeId,
     'hostRosterIntakeReceiptDocument.preview.rows.items.changedFields': hostRosterIntakeReceiptDocumentPreviewRowsItemsChangedFields,
     'hostRosterIntakeReceiptDocument.preview.rows.items.changedFields.items': hostRosterIntakeReceiptDocumentPreviewRowsItemsChangedFieldsItems,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.displayName': hostRosterIntakeReceiptDocumentPreviewRowsItemsDisplayName,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.externalReference': hostRosterIntakeReceiptDocumentPreviewRowsItemsExternalReference,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChanges,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.currentValue': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsCurrentValue,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.field': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsField,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.origin': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsOrigin,
+    'hostRosterIntakeReceiptDocument.preview.rows.items.fieldChanges.items.proposedValue': hostRosterIntakeReceiptDocumentPreviewRowsItemsFieldChangesItemsProposedValue,
     'hostRosterIntakeReceiptDocument.preview.rows.items.issueCode': hostRosterIntakeReceiptDocumentPreviewRowsItemsIssueCode,
     'hostRosterIntakeReceiptDocument.preview.rows.items.kind': hostRosterIntakeReceiptDocumentPreviewRowsItemsKind,
     'hostRosterIntakeReceiptDocument.preview.rows.items.rowId': hostRosterIntakeReceiptDocumentPreviewRowsItemsRowId,

@@ -73,7 +73,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
       fallbackRevenueCurrency: fallbackRevenueCurrency,
     );
     final canImport =
-        mapped.rows.isNotEmpty &&
+        widget.table.rows.isNotEmpty &&
         !mapped.hasBlockingMappingIssue &&
         mapped.truncatedCount == 0 &&
         !invalidFallback;

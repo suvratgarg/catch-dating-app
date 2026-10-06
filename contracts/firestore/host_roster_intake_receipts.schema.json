@@ -28,14 +28,28 @@
     "previewRow": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["rowId", "sourceRowNumber", "attendeeId", "kind", "changedFields", "issueCode"],
+      "required": ["rowId", "sourceRowNumber", "displayName", "externalReference", "attendeeId", "kind", "changedFields", "fieldChanges", "issueCode"],
       "properties": {
         "rowId": {"type": "string", "minLength": 1, "maxLength": 120},
         "sourceRowNumber": {"type": "integer", "minimum": 2, "maximum": 100000},
+        "displayName": {"type": "string", "maxLength": 120},
+        "externalReference": {"type": ["string", "null"], "maxLength": 180},
         "attendeeId": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
         "kind": {"$ref": "#/definitions/previewKind"},
         "changedFields": {"type": "array", "maxItems": 11, "uniqueItems": true, "items": {"$ref": "#/definitions/changedField"}},
+        "fieldChanges": {"type": "array", "maxItems": 11, "items": {"$ref": "#/definitions/fieldChange"}},
         "issueCode": {"type": ["string", "null"], "minLength": 1, "maxLength": 80}
+      }
+    },
+    "fieldChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "currentValue", "proposedValue", "origin"],
+      "properties": {
+        "field": {"$ref": "#/definitions/changedField"},
+        "currentValue": {"type": ["string", "null"], "maxLength": 500},
+        "proposedValue": {"type": ["string", "null"], "maxLength": 500},
+        "origin": {"type": ["string", "null"], "enum": ["upload", "hostCorrection", "modelProposal", "default", null]}
       }
     },
     "counts": {

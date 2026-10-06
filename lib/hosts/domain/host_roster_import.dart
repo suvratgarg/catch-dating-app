@@ -490,8 +490,21 @@ List<Map<String, Object?>> _buildIntakeRows({
           };
           fields[field] = evidence;
           if (entry.key == HostRosterField.revenueAmount) {
+            fields['revenueCurrency'] = evidence;
             fields['revenueSource'] = evidence;
           }
+        }
+        if (value['revenueAmountMinor'] != null &&
+            !fields.containsKey('revenueAmountMinor')) {
+          final hostEvidence = <String, Object?>{
+            'column': -1,
+            'header': 'Host per-guest revenue fallback',
+            'origin': 'hostCorrection',
+            'confidence': null,
+          };
+          fields['revenueAmountMinor'] = hostEvidence;
+          fields['revenueCurrency'] = hostEvidence;
+          fields['revenueSource'] = hostEvidence;
         }
         return <String, Object?>{
           'value': value,

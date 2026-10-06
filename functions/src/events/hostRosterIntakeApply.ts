@@ -166,7 +166,10 @@ export async function manageHostRosterIntakeHandler(
     throw new HttpsError("invalid-argument", "Invalid roster intake action.");
   }
   if (action === "start") {
-    const draft = await deps.store.createOrResume({
+    const mapping = numberMap(data.mapping, "mapping");
+    const rows = objectArray(data.rows, "rows") as unknown as
+      HostRosterIntakeRow[];
+    let draft = await deps.store.createOrResume({
       hostUid,
       organizerId: stringValue(data.organizerId, "organizerId"),
       eventId: stringValue(data.eventId, "eventId"),
@@ -174,10 +177,18 @@ export async function manageHostRosterIntakeHandler(
       fileName: stringValue(data.fileName, "fileName"),
       format: enumValue(data.format, ["csv", "xlsx"], "format"),
       headers: stringArray(data.headers, "headers"),
-      mapping: numberMap(data.mapping, "mapping"),
-      rows: objectArray(data.rows, "rows") as unknown as
-        HostRosterIntakeRow[],
+      mapping,
+      rows,
     }, deps.authorize);
+    if (draft.state === "review" &&
+        (JSON.stringify(draft.mapping) !== JSON.stringify(mapping) ||
+          JSON.stringify(draft.rows) !== JSON.stringify(rows))) {
+      draft = await deps.store.revise({sessionId: draft.sessionId, hostUid,
+        expectedRevision: draft.revision, rows,
+        excludedRowIds: draft.excludedRowIds.filter((rowId) =>
+          rows.some((row) => row.value.rowId === rowId)), mapping,
+      }, deps.authorize);
+    }
     return reviewResponse(draft, deps);
   }
   const sessionId = stringValue(data.sessionId, "sessionId");

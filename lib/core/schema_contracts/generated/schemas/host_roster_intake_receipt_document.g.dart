@@ -65,9 +65,12 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
             'required': <Object?>[
               'rowId',
               'sourceRowNumber',
+              'displayName',
+              'externalReference',
               'attendeeId',
               'kind',
               'changedFields',
+              'fieldChanges',
               'issueCode',
             ],
             'properties': <String, Object?>{
@@ -80,6 +83,17 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
                 'type': 'integer',
                 'minimum': 2,
                 'maximum': 100000,
+              },
+              'displayName': <String, Object?>{
+                'type': 'string',
+                'maxLength': 120,
+              },
+              'externalReference': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 180,
               },
               'attendeeId': <String, Object?>{
                 'type': <Object?>[
@@ -119,6 +133,65 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
                     'revenueSource',
                     'status',
                   ],
+                },
+              },
+              'fieldChanges': <String, Object?>{
+                'type': 'array',
+                'maxItems': 11,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'field',
+                    'currentValue',
+                    'proposedValue',
+                    'origin',
+                  ],
+                  'properties': <String, Object?>{
+                    'field': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'displayName',
+                        'phone',
+                        'email',
+                        'cityMarketId',
+                        'externalReference',
+                        'arrivalGroup',
+                        'ticketType',
+                        'revenueAmountMinor',
+                        'revenueCurrency',
+                        'revenueSource',
+                        'status',
+                      ],
+                    },
+                    'currentValue': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'maxLength': 500,
+                    },
+                    'proposedValue': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'maxLength': 500,
+                    },
+                    'origin': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'enum': <Object?>[
+                        'upload',
+                        'hostCorrection',
+                        'modelProposal',
+                        'default',
+                        null,
+                      ],
+                    },
+                  },
                 },
               },
               'issueCode': <String, Object?>{
@@ -362,9 +435,12 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
       'required': <Object?>[
         'rowId',
         'sourceRowNumber',
+        'displayName',
+        'externalReference',
         'attendeeId',
         'kind',
         'changedFields',
+        'fieldChanges',
         'issueCode',
       ],
       'properties': <String, Object?>{
@@ -377,6 +453,17 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
           'type': 'integer',
           'minimum': 2,
           'maximum': 100000,
+        },
+        'displayName': <String, Object?>{
+          'type': 'string',
+          'maxLength': 120,
+        },
+        'externalReference': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 180,
         },
         'attendeeId': <String, Object?>{
           'type': <Object?>[
@@ -418,6 +505,65 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
             ],
           },
         },
+        'fieldChanges': <String, Object?>{
+          'type': 'array',
+          'maxItems': 11,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'field',
+              'currentValue',
+              'proposedValue',
+              'origin',
+            ],
+            'properties': <String, Object?>{
+              'field': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'displayName',
+                  'phone',
+                  'email',
+                  'cityMarketId',
+                  'externalReference',
+                  'arrivalGroup',
+                  'ticketType',
+                  'revenueAmountMinor',
+                  'revenueCurrency',
+                  'revenueSource',
+                  'status',
+                ],
+              },
+              'currentValue': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 500,
+              },
+              'proposedValue': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 500,
+              },
+              'origin': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'enum': <Object?>[
+                  'upload',
+                  'hostCorrection',
+                  'modelProposal',
+                  'default',
+                  null,
+                ],
+              },
+            },
+          },
+        },
         'issueCode': <String, Object?>{
           'type': <Object?>[
             'string',
@@ -425,6 +571,61 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
           ],
           'minLength': 1,
           'maxLength': 80,
+        },
+      },
+    },
+    'fieldChange': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'field',
+        'currentValue',
+        'proposedValue',
+        'origin',
+      ],
+      'properties': <String, Object?>{
+        'field': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'displayName',
+            'phone',
+            'email',
+            'cityMarketId',
+            'externalReference',
+            'arrivalGroup',
+            'ticketType',
+            'revenueAmountMinor',
+            'revenueCurrency',
+            'revenueSource',
+            'status',
+          ],
+        },
+        'currentValue': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 500,
+        },
+        'proposedValue': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 500,
+        },
+        'origin': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'upload',
+            'hostCorrection',
+            'modelProposal',
+            'default',
+            null,
+          ],
         },
       },
     },
@@ -506,9 +707,12 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
             'required': <Object?>[
               'rowId',
               'sourceRowNumber',
+              'displayName',
+              'externalReference',
               'attendeeId',
               'kind',
               'changedFields',
+              'fieldChanges',
               'issueCode',
             ],
             'properties': <String, Object?>{
@@ -521,6 +725,17 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
                 'type': 'integer',
                 'minimum': 2,
                 'maximum': 100000,
+              },
+              'displayName': <String, Object?>{
+                'type': 'string',
+                'maxLength': 120,
+              },
+              'externalReference': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 180,
               },
               'attendeeId': <String, Object?>{
                 'type': <Object?>[
@@ -560,6 +775,65 @@ const schemaHostRosterIntakeReceiptDocumentSchema = <String, Object?>{
                     'revenueSource',
                     'status',
                   ],
+                },
+              },
+              'fieldChanges': <String, Object?>{
+                'type': 'array',
+                'maxItems': 11,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'field',
+                    'currentValue',
+                    'proposedValue',
+                    'origin',
+                  ],
+                  'properties': <String, Object?>{
+                    'field': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'displayName',
+                        'phone',
+                        'email',
+                        'cityMarketId',
+                        'externalReference',
+                        'arrivalGroup',
+                        'ticketType',
+                        'revenueAmountMinor',
+                        'revenueCurrency',
+                        'revenueSource',
+                        'status',
+                      ],
+                    },
+                    'currentValue': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'maxLength': 500,
+                    },
+                    'proposedValue': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'maxLength': 500,
+                    },
+                    'origin': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'enum': <Object?>[
+                        'upload',
+                        'hostCorrection',
+                        'modelProposal',
+                        'default',
+                        null,
+                      ],
+                    },
+                  },
                 },
               },
               'issueCode': <String, Object?>{

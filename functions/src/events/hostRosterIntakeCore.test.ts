@@ -111,6 +111,10 @@ test("preview classifies adds, updates, conflicts and exact stale review",
       currentRows: new Map([[id, existing]])});
     assert.equal(updated.counts.update, 1);
     assert.ok(updated.rows[0].changedFields.includes("displayName"));
+    assert.deepEqual(updated.rows[0].fieldChanges[0], {
+      field: "displayName", currentValue: "Old name",
+      proposedValue: "Asha Shah", origin: "upload",
+    });
     assert.deepEqual(updated.rows[0].changedFields, ["displayName"]);
     assert.notEqual(updated.reviewHash, added.reviewHash);
     const booking = previewHostRosterIntake({draft: current,
@@ -130,6 +134,34 @@ test("preview classifies adds, updates, conflicts and exact stale review",
       currentRows: new Map([[id, {...existing, updatedAtMillis: 101}]]),
       reviewHash: updated.reviewHash}), /stale/u);
   });
+
+test("email alone cannot update an existing ticket identity", () => {
+  const initial = draft();
+  const emailOnly = createHostRosterIntakeDraft({...initial, rows: [{
+    ...initial.rows[0],
+    value: {...initial.rows[0].value, phone: null,
+      externalReference: null, email: "buyer@example.com"},
+    fields: {displayName: initial.rows[0].fields.displayName,
+      email: initial.rows[0].fields.email,
+      arrivalGroup: initial.rows[0].fields.arrivalGroup,
+      ticketType: initial.rows[0].fields.ticketType},
+  }]});
+  const added = previewHostRosterIntake({draft: emailOnly,
+    currentRows: new Map()});
+  const id = added.rows[0].attendeeId!;
+  const existing = {eventId: "event-1", attendeeId: id,
+    source: "hostImport" as const, displayName: "Earlier Guest",
+    status: "registered" as const, linkedUid: null, phoneE164: null,
+    email: "buyer@example.com", cityMarketId: null,
+    externalReference: null, arrivalGroup: null, ticketType: null,
+    revenueAmountMinor: null, revenueCurrency: null, revenueSource: null,
+    updatedAtMillis: 1};
+  const conflict = previewHostRosterIntake({draft: emailOnly,
+    currentRows: new Map([[id, existing]])});
+  assert.equal(conflict.rows[0].kind, "identityConflict");
+  assert.equal(conflict.rows[0].issueCode, "email-only-identity");
+  assert.equal(conflict.eligibleForApply, false);
+});
 
 test("excluded shared contact clears exception; other attendee stays separate",
   () => {

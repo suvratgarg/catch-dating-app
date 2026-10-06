@@ -284,7 +284,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -322,7 +322,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -360,7 +360,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -398,7 +398,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -436,7 +436,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -474,7 +474,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -512,7 +512,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -550,7 +550,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -588,7 +588,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -626,7 +626,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -664,7 +664,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -836,7 +836,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -874,7 +874,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -912,7 +912,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -950,7 +950,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -988,7 +988,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1026,7 +1026,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1064,7 +1064,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1102,7 +1102,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1140,7 +1140,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1178,7 +1178,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1216,7 +1216,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -1304,7 +1304,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
       'properties': <String, Object?>{
         'column': <String, Object?>{
           'type': 'integer',
-          'minimum': 0,
+          'minimum': -1,
           'maximum': 39,
         },
         'header': <String, Object?>{
@@ -1346,7 +1346,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1384,7 +1384,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1422,7 +1422,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1460,7 +1460,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1498,7 +1498,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1536,7 +1536,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1574,7 +1574,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1612,7 +1612,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1650,7 +1650,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1688,7 +1688,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1726,7 +1726,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
           'properties': <String, Object?>{
             'column': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': -1,
               'maximum': 39,
             },
             'header': <String, Object?>{
@@ -1976,7 +1976,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2014,7 +2014,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2052,7 +2052,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2090,7 +2090,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2128,7 +2128,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2166,7 +2166,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2204,7 +2204,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2242,7 +2242,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2280,7 +2280,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2318,7 +2318,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2356,7 +2356,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2595,7 +2595,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2633,7 +2633,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2671,7 +2671,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2709,7 +2709,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2747,7 +2747,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2785,7 +2785,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2823,7 +2823,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2861,7 +2861,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2899,7 +2899,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2937,7 +2937,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -2975,7 +2975,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
               'properties': <String, Object?>{
                 'column': <String, Object?>{
                   'type': 'integer',
-                  'minimum': 0,
+                  'minimum': -1,
                   'maximum': 39,
                 },
                 'header': <String, Object?>{
@@ -3268,7 +3268,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3306,7 +3306,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3344,7 +3344,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3382,7 +3382,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3420,7 +3420,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3458,7 +3458,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3496,7 +3496,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3534,7 +3534,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3572,7 +3572,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3610,7 +3610,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3648,7 +3648,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3820,7 +3820,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3858,7 +3858,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3896,7 +3896,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3934,7 +3934,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -3972,7 +3972,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -4010,7 +4010,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -4048,7 +4048,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -4086,7 +4086,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -4124,7 +4124,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -4162,7 +4162,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{
@@ -4200,7 +4200,7 @@ const schemaHostRosterIntakeSessionDocumentSchema = <String, Object?>{
                     'properties': <String, Object?>{
                       'column': <String, Object?>{
                         'type': 'integer',
-                        'minimum': 0,
+                        'minimum': -1,
                         'maximum': 39,
                       },
                       'header': <String, Object?>{

@@ -120,6 +120,7 @@ test("roster document conversion retains authority and reported revenue",
 test("authenticated callable starts and previews a resumable session",
   async () => {
     let saved = fixture();
+    let created = false;
     const rateLimited: string[] = [];
     const deps: HostRosterIntakeManageDeps = {
       rateLimit: async (hostUid) => {
@@ -127,7 +128,10 @@ test("authenticated callable starts and previews a resumable session",
       },
       store: {
         createOrResume: async (input) => {
-          saved = createHostRosterIntakeDraft(input);
+          if (!created) {
+            saved = createHostRosterIntakeDraft(input);
+            created = true;
+          }
           return saved;
         },
         get: async () => saved,
@@ -163,4 +167,17 @@ test("authenticated callable starts and previews a resumable session",
     assert.deepEqual(rateLimited, ["host-1"]);
     assert.equal(response.preview?.counts.add, 1);
     assert.equal(response.preview?.eligibleForApply, true);
+    const remappedRows = fixture().rows.map((row) => ({...row,
+      value: {...row.value, displayName: "Asha Remapped"}}));
+    const remapped = await manageHostRosterIntakeHandler({
+      auth: {uid: "host-1"},
+      data: {action: "start", organizerId: "organizer-1",
+        eventId: "event-1", fileFingerprint: "d".repeat(64),
+        fileName: "guests.csv", format: "csv",
+        headers: ["Name", "Attendee ID"],
+        mapping: {displayName: 0, externalReference: 1},
+        rows: remappedRows},
+    } as unknown as CallableRequest<unknown>, deps);
+    assert.equal(remapped.draft.revision, 2);
+    assert.equal(remapped.draft.rows[0].value.displayName, "Asha Remapped");
   });

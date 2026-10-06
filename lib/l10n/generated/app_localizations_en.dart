@@ -24865,6 +24865,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterIntakeResume => 'Resume saved review';
 
   @override
+  String get hostsOperationalRosterIntakeCorrectMapping =>
+      'Correct mapping and upload again';
+
+  @override
+  String hostsOperationalRosterIntakeRowIdentity({
+    required String name,
+    required int row,
+  }) {
+    return '$name · source row $row';
+  }
+
+  @override
+  String hostsOperationalRosterIntakeReference({required String reference}) {
+    return 'Ticket/reference: $reference';
+  }
+
+  @override
+  String hostsOperationalRosterIntakeFieldChange({
+    required String field,
+    required String before,
+    required String after,
+    required String source,
+  }) {
+    return '$field: $before → $after · $source';
+  }
+
+  @override
+  String get hostsOperationalRosterIntakeValueMissing => 'Not provided';
+
+  @override
+  String get hostsOperationalRosterIntakeRevenueSource => 'Revenue authority';
+
+  @override
+  String get hostsOperationalRosterIntakeOriginUpload => 'uploaded value';
+
+  @override
+  String get hostsOperationalRosterIntakeOriginHostCorrection =>
+      'host correction or estimate';
+
+  @override
+  String get hostsOperationalRosterIntakeOriginModelProposal =>
+      'unverified proposal';
+
+  @override
+  String get hostsOperationalRosterIntakeOriginDefault => 'intake default';
+
+  @override
+  String get hostsOperationalRosterIntakeOriginExisting => 'existing roster';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueName =>
+      'Correct the guest-name mapping, then upload this file again, or exclude this row.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueTicketIdentity =>
+      'Add a distinct phone or ticket reference, then upload again. Email alone cannot prove that two tickets belong to one person.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssuePhoneIdentity =>
+      'Correct or remove the shared phone, then upload again. One phone cannot silently merge distinct tickets.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueEmail =>
+      'Correct the email address, then upload again, or exclude this row.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueCity =>
+      'Choose a supported city, then upload again, or exclude this row.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueRevenue =>
+      'Correct the amount and three-letter currency, then upload again. This remains host-reported revenue, not a verified Catch payment.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueStatus =>
+      'Map an explicit supported status, then upload again, or exclude this row.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueCatchBooking =>
+      'Catch booking and payment facts are authoritative. Exclude this row rather than replacing them.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueClaimedIdentity =>
+      'This conflicts with a verified guest identity. Correct the source identity or exclude the row.';
+
+  @override
+  String get hostsOperationalRosterIntakeIssueGeneric =>
+      'Correct this row and upload again, or explicitly exclude it before apply.';
+
+  @override
   String hostsOperationalRosterIntakeReviewSubtitle({
     required String fileName,
   }) {

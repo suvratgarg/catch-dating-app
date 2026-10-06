@@ -21,7 +21,7 @@
       "additionalProperties": false,
       "required": ["column", "header", "origin", "confidence"],
       "properties": {
-        "column": {"type": "integer", "minimum": 0, "maximum": 39},
+        "column": {"type": "integer", "minimum": -1, "maximum": 39},
         "header": {"type": "string", "minLength": 1, "maxLength": 120},
         "origin": {"type": "string", "enum": ["upload", "hostCorrection", "modelProposal"]},
         "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1}

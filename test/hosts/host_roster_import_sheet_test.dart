@@ -9,9 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
-  testWidgets('overflow rows cannot submit a partial import', (
-    tester,
-  ) async {
+  testWidgets('overflow rows cannot submit a partial import', (tester) async {
     final rows = List.generate(
       251,
       (index) => ['Guest $index', '+919${index.toString().padLeft(9, '0')}'],
@@ -74,6 +72,34 @@ void main() {
     await pumpFeatureUi(tester);
     final button = tester.widget<CatchButton>(
       find.widgetWithText(CatchButton, 'Review 1 ready guests'),
+    );
+    expect(button.onPressed, isNotNull);
+  });
+
+  testWidgets('an all-exception file can enter saved review', (tester) async {
+    const table = HostRosterTable(
+      fileName: 'names-only.csv',
+      format: EventAttendeeImportFormat.csv,
+      headers: ['Name'],
+      rows: [
+        ['Asha'],
+      ],
+      suggestedMapping: {HostRosterField.displayName: 0},
+      adapter: HostRosterAdapterDetection(
+        adapterId: HostRosterAdapterId.genericV1,
+        support: HostRosterAdapterSupport.generic,
+        confidence: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(body: HostRosterImportSheet(table: table)),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final button = tester.widget<CatchButton>(
+      find.widgetWithText(CatchButton, 'Review 0 ready guests'),
     );
     expect(button.onPressed, isNotNull);
   });

@@ -186,7 +186,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       );
       if (!sameScope() || !mounted) return;
       _setLocalState(() => _savedRosterIntakeSessionId = initial.sessionId);
-      final applied = await _reviewRosterIntake(initial);
+      final applied = await _reviewRosterIntake(initial, sameScope: sameScope);
       if (applied == null || !sameScope() || !mounted) return;
       await _completeRosterIntake(
         eventId: eventId,
@@ -251,7 +251,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
           .read(hostOperationalRosterControllerProvider)
           .resumeRosterIntake(sessionId);
       if (!sameScope() || !mounted) return;
-      final applied = await _reviewRosterIntake(review);
+      final applied = await _reviewRosterIntake(review, sameScope: sameScope);
       if (applied == null || !sameScope() || !mounted) return;
       await _completeRosterIntake(
         eventId: eventId,
@@ -269,16 +269,23 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
   }
 
   Future<HostRosterIntakeReview?> _reviewRosterIntake(
-    HostRosterIntakeReview initial,
-  ) => showHostRosterIntakeReview(
+    HostRosterIntakeReview initial, {
+    required bool Function() sameScope,
+  }) => showHostRosterIntakeReview(
     context,
     review: initial,
-    onExclude: (review, rowIds) => ref
-        .read(hostOperationalRosterControllerProvider)
-        .excludeRosterIntakeRows(review, rowIds),
-    onApply: (review) => ref
-        .read(hostOperationalRosterControllerProvider)
-        .applyRosterIntake(review),
+    onExclude: (review, rowIds) {
+      if (!sameScope()) throw StateError('Host event scope changed.');
+      return ref
+          .read(hostOperationalRosterControllerProvider)
+          .excludeRosterIntakeRows(review, rowIds);
+    },
+    onApply: (review) {
+      if (!sameScope()) throw StateError('Host event scope changed.');
+      return ref
+          .read(hostOperationalRosterControllerProvider)
+          .applyRosterIntake(review);
+    },
   );
 
   Future<void> _completeRosterIntake({

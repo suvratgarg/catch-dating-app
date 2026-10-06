@@ -249,7 +249,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -287,7 +287,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -325,7 +325,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -363,7 +363,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -401,7 +401,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -439,7 +439,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -477,7 +477,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -515,7 +515,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -553,7 +553,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -591,7 +591,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {
@@ -629,7 +629,7 @@ export const manageHostRosterIntakeCallablePayloadSchema: Record<string, unknown
                 "properties": {
                   "column": {
                     "type": "integer",
-                    "minimum": 0,
+                    "minimum": -1,
                     "maximum": 39
                   },
                   "header": {

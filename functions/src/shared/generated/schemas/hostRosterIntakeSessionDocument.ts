@@ -282,7 +282,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -320,7 +320,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -358,7 +358,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -396,7 +396,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -434,7 +434,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -472,7 +472,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -510,7 +510,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -548,7 +548,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -586,7 +586,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -624,7 +624,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -662,7 +662,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -834,7 +834,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -872,7 +872,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -910,7 +910,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -948,7 +948,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -986,7 +986,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1024,7 +1024,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1062,7 +1062,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1100,7 +1100,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1138,7 +1138,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1176,7 +1176,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1214,7 +1214,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -1302,7 +1302,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
       "properties": {
         "column": {
           "type": "integer",
-          "minimum": 0,
+          "minimum": -1,
           "maximum": 39
         },
         "header": {
@@ -1344,7 +1344,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1382,7 +1382,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1420,7 +1420,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1458,7 +1458,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1496,7 +1496,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1534,7 +1534,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1572,7 +1572,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1610,7 +1610,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1648,7 +1648,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1686,7 +1686,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1724,7 +1724,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
           "properties": {
             "column": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": -1,
               "maximum": 39
             },
             "header": {
@@ -1974,7 +1974,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2012,7 +2012,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2050,7 +2050,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2088,7 +2088,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2126,7 +2126,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2164,7 +2164,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2202,7 +2202,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2240,7 +2240,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2278,7 +2278,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2316,7 +2316,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2354,7 +2354,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2593,7 +2593,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2631,7 +2631,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2669,7 +2669,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2707,7 +2707,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2745,7 +2745,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2783,7 +2783,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2821,7 +2821,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2859,7 +2859,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2897,7 +2897,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2935,7 +2935,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -2973,7 +2973,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
               "properties": {
                 "column": {
                   "type": "integer",
-                  "minimum": 0,
+                  "minimum": -1,
                   "maximum": 39
                 },
                 "header": {
@@ -3266,7 +3266,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3304,7 +3304,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3342,7 +3342,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3380,7 +3380,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3418,7 +3418,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3456,7 +3456,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3494,7 +3494,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3532,7 +3532,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3570,7 +3570,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3608,7 +3608,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3646,7 +3646,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3818,7 +3818,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3856,7 +3856,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3894,7 +3894,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3932,7 +3932,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -3970,7 +3970,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -4008,7 +4008,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -4046,7 +4046,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -4084,7 +4084,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -4122,7 +4122,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -4160,7 +4160,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {
@@ -4198,7 +4198,7 @@ export const hostRosterIntakeSessionDocumentSchema: Record<string, unknown> = {
                     "properties": {
                       "column": {
                         "type": "integer",
-                        "minimum": 0,
+                        "minimum": -1,
                         "maximum": 39
                       },
                       "header": {

@@ -63,9 +63,12 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
             "required": [
               "rowId",
               "sourceRowNumber",
+              "displayName",
+              "externalReference",
               "attendeeId",
               "kind",
               "changedFields",
+              "fieldChanges",
               "issueCode"
             ],
             "properties": {
@@ -78,6 +81,17 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
                 "type": "integer",
                 "minimum": 2,
                 "maximum": 100000
+              },
+              "displayName": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "externalReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
               },
               "attendeeId": {
                 "type": [
@@ -117,6 +131,65 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
                     "revenueSource",
                     "status"
                   ]
+                }
+              },
+              "fieldChanges": {
+                "type": "array",
+                "maxItems": 11,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "currentValue",
+                    "proposedValue",
+                    "origin"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "enum": [
+                        "displayName",
+                        "phone",
+                        "email",
+                        "cityMarketId",
+                        "externalReference",
+                        "arrivalGroup",
+                        "ticketType",
+                        "revenueAmountMinor",
+                        "revenueCurrency",
+                        "revenueSource",
+                        "status"
+                      ]
+                    },
+                    "currentValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "proposedValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "origin": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "upload",
+                        "hostCorrection",
+                        "modelProposal",
+                        "default",
+                        null
+                      ]
+                    }
+                  }
                 }
               },
               "issueCode": {
@@ -360,9 +433,12 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
       "required": [
         "rowId",
         "sourceRowNumber",
+        "displayName",
+        "externalReference",
         "attendeeId",
         "kind",
         "changedFields",
+        "fieldChanges",
         "issueCode"
       ],
       "properties": {
@@ -375,6 +451,17 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
           "type": "integer",
           "minimum": 2,
           "maximum": 100000
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "externalReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
         },
         "attendeeId": {
           "type": [
@@ -416,6 +503,65 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
             ]
           }
         },
+        "fieldChanges": {
+          "type": "array",
+          "maxItems": 11,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "currentValue",
+              "proposedValue",
+              "origin"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "phone",
+                  "email",
+                  "cityMarketId",
+                  "externalReference",
+                  "arrivalGroup",
+                  "ticketType",
+                  "revenueAmountMinor",
+                  "revenueCurrency",
+                  "revenueSource",
+                  "status"
+                ]
+              },
+              "currentValue": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "proposedValue": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "origin": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "upload",
+                  "hostCorrection",
+                  "modelProposal",
+                  "default",
+                  null
+                ]
+              }
+            }
+          }
+        },
         "issueCode": {
           "type": [
             "string",
@@ -423,6 +569,61 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
           ],
           "minLength": 1,
           "maxLength": 80
+        }
+      }
+    },
+    "fieldChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "currentValue",
+        "proposedValue",
+        "origin"
+      ],
+      "properties": {
+        "field": {
+          "type": "string",
+          "enum": [
+            "displayName",
+            "phone",
+            "email",
+            "cityMarketId",
+            "externalReference",
+            "arrivalGroup",
+            "ticketType",
+            "revenueAmountMinor",
+            "revenueCurrency",
+            "revenueSource",
+            "status"
+          ]
+        },
+        "currentValue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "proposedValue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "origin": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "upload",
+            "hostCorrection",
+            "modelProposal",
+            "default",
+            null
+          ]
         }
       }
     },
@@ -504,9 +705,12 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
             "required": [
               "rowId",
               "sourceRowNumber",
+              "displayName",
+              "externalReference",
               "attendeeId",
               "kind",
               "changedFields",
+              "fieldChanges",
               "issueCode"
             ],
             "properties": {
@@ -519,6 +723,17 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
                 "type": "integer",
                 "minimum": 2,
                 "maximum": 100000
+              },
+              "displayName": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "externalReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
               },
               "attendeeId": {
                 "type": [
@@ -558,6 +773,65 @@ export const hostRosterIntakeReceiptDocumentSchema: Record<string, unknown> = {
                     "revenueSource",
                     "status"
                   ]
+                }
+              },
+              "fieldChanges": {
+                "type": "array",
+                "maxItems": 11,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "currentValue",
+                    "proposedValue",
+                    "origin"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "enum": [
+                        "displayName",
+                        "phone",
+                        "email",
+                        "cityMarketId",
+                        "externalReference",
+                        "arrivalGroup",
+                        "ticketType",
+                        "revenueAmountMinor",
+                        "revenueCurrency",
+                        "revenueSource",
+                        "status"
+                      ]
+                    },
+                    "currentValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "proposedValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "origin": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "upload",
+                        "hostCorrection",
+                        "modelProposal",
+                        "default",
+                        null
+                      ]
+                    }
+                  }
                 }
               },
               "issueCode": {

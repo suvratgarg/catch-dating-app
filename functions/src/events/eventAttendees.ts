@@ -341,6 +341,11 @@ export async function importEventAttendeesForHost(
     // document. A changed endpoint cannot inherit its former UID grant.
     for (const row of prepared) {
       const existing = existingById.get(row.attendeeId);
+      if (existing && row.email && !row.phoneE164 &&
+          !row.externalReference) {
+        throw new HttpsError("failed-precondition",
+          `Email-only identity needs separate review (${row.rowId}).`);
+      }
       // A host-supplied roster is never authority for a Catch booking's
       // identity, attendance, or payment facts.
       if (existing?.source === "catchBooking") {

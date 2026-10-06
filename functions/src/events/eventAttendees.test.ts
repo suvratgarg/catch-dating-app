@@ -683,6 +683,36 @@ test("phone-key upload cannot bypass an existing attendee reference",
     assert.equal(firestore.entries("eventAttendeeImports").length, 0);
   });
 
+test("email-only upload cannot overwrite an existing event attendee",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const attendeeId = eventAttendeeId("event-1",
+      "email:buyer@example.com");
+    const attendeePath = `eventAttendees/${attendeeId}`;
+    const firestore = new FakeFirestore({
+      "events/event-1": {clubId: "organizer-1",
+        organizerId: "organizer-1", status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      [attendeePath]: {eventId: "event-1", organizerId: "organizer-1",
+        source: "hostImport", status: "registered", phoneE164: null,
+        email: "buyer@example.com", externalReference: null,
+        displayName: "Earlier Guest"},
+    });
+    const payload = {eventId: "event-1", importKey: "later-email-ticket",
+      fileName: "guests.csv", format: "csv" as const, rows: [{
+        rowId: "2", displayName: "Different Guest", phone: null,
+        email: "buyer@example.com", externalReference: null,
+        arrivalGroup: null, ticketType: null, status: "registered" as const,
+      }]};
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload}, {firestore: () => firestore as never,
+      checkRateLimit: async () => undefined, timestamp: () => now}),
+    /Email-only identity needs separate review/u);
+    assert.equal(firestore.get(attendeePath)?.displayName, "Earlier Guest");
+    assert.equal(firestore.entries("eventAttendeeImports").length, 0);
+  });
+
 test("re-import cannot transfer a claimed attendee's verified endpoint",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);

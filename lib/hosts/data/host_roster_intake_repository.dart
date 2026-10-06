@@ -158,8 +158,11 @@ class HostRosterIntakePreviewRow {
   const HostRosterIntakePreviewRow({
     required this.rowId,
     required this.sourceRowNumber,
+    this.displayName = '',
+    this.externalReference,
     required this.kind,
     required this.changedFields,
+    this.fieldChanges = const [],
     required this.issueCode,
   });
 
@@ -167,16 +170,46 @@ class HostRosterIntakePreviewRow {
       HostRosterIntakePreviewRow(
         rowId: json['rowId'] as String,
         sourceRowNumber: (json['sourceRowNumber'] as num).toInt(),
+        displayName: json['displayName'] as String,
+        externalReference: json['externalReference'] as String?,
         kind: json['kind'] as String,
         changedFields: (json['changedFields'] as List<Object?>).cast<String>(),
+        fieldChanges: (json['fieldChanges'] as List<Object?>)
+            .map((value) => HostRosterIntakeFieldChange.fromJson(_map(value)))
+            .toList(growable: false),
         issueCode: json['issueCode'] as String?,
       );
 
   final String rowId;
   final int sourceRowNumber;
+  final String displayName;
+  final String? externalReference;
   final String kind;
   final List<String> changedFields;
+  final List<HostRosterIntakeFieldChange> fieldChanges;
   final String? issueCode;
+}
+
+class HostRosterIntakeFieldChange {
+  const HostRosterIntakeFieldChange({
+    required this.field,
+    required this.currentValue,
+    required this.proposedValue,
+    required this.origin,
+  });
+
+  factory HostRosterIntakeFieldChange.fromJson(Map<String, Object?> json) =>
+      HostRosterIntakeFieldChange(
+        field: json['field'] as String,
+        currentValue: json['currentValue'] as String?,
+        proposedValue: json['proposedValue'] as String?,
+        origin: json['origin'] as String?,
+      );
+
+  final String field;
+  final String? currentValue;
+  final String? proposedValue;
+  final String? origin;
 }
 
 Map<String, Object?> _map(Object? value) {

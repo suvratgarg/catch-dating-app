@@ -17,6 +17,7 @@ void main() {
         HostRosterIntakePreviewRow(
           rowId: '2',
           sourceRowNumber: 2,
+          displayName: 'Asha Shah',
           kind: 'needsReview',
           changedFields: [],
           issueCode: 'invalid-phone',
@@ -44,8 +45,18 @@ void main() {
                   HostRosterIntakePreviewRow(
                     rowId: '3',
                     sourceRowNumber: 3,
+                    displayName: 'Ravi Rao',
+                    externalReference: 'ticket-3',
                     kind: 'add',
                     changedFields: ['displayName'],
+                    fieldChanges: const [
+                      HostRosterIntakeFieldChange(
+                        field: 'displayName',
+                        currentValue: null,
+                        proposedValue: 'Ravi Rao',
+                        origin: 'upload',
+                      ),
+                    ],
                     issueCode: null,
                   ),
                 ],
@@ -62,6 +73,10 @@ void main() {
       find.byKey(const ValueKey('host-roster-intake-apply')),
     );
     expect(applyBefore.onPressed, isNull);
+    expect(
+      find.textContaining('Correct or remove the shared phone'),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const ValueKey('host-roster-intake-exclude')));
     await pumpFeatureUi(tester);
     expect(find.textContaining('invalid-phone'), findsNothing);
@@ -69,6 +84,8 @@ void main() {
       find.byKey(const ValueKey('host-roster-intake-apply')),
     );
     expect(applyAfter.onPressed, isNotNull);
+    expect(find.textContaining('Ravi Rao · source row 3'), findsOneWidget);
+    expect(find.textContaining('Not provided → Ravi Rao'), findsOneWidget);
   });
 }
 

@@ -83,10 +83,20 @@ export type HostRosterPreviewKind = "add" | "update" | "unchanged" |
 export interface HostRosterPreviewRow {
   rowId: string;
   sourceRowNumber: number;
+  displayName: string;
+  externalReference: string | null;
   attendeeId: string | null;
   kind: HostRosterPreviewKind;
   changedFields: FieldName[];
+  fieldChanges: HostRosterPreviewFieldChange[];
   issueCode: string | null;
+}
+
+export interface HostRosterPreviewFieldChange {
+  field: FieldName;
+  currentValue: string | null;
+  proposedValue: string | null;
+  origin: HostRosterSourceField["origin"] | "default" | null;
 }
 
 export interface HostRosterIntakePreview {
@@ -166,7 +176,7 @@ export function createHostRosterIntakeDraft(input: Omit<HostRosterIntakeDraft,
         throw new Error("Invalid private roster field provenance.");
       }
       if (!field || !Number.isSafeInteger(field.column) ||
-          field.column < 0 || field.column >= 40 ||
+          field.column < -1 || field.column >= 40 ||
           !field.header || field.header.length > 120 ||
           !["upload", "hostCorrection", "modelProposal"]
             .includes(field.origin) ||
@@ -255,6 +265,36 @@ export function reviseHostRosterIntakeDraft(params: {
 const comparedFields: FieldName[] = ["displayName", "phone", "email",
   "cityMarketId", "externalReference", "arrivalGroup", "ticketType",
   "revenueAmountMinor", "revenueCurrency", "revenueSource", "status"];
+type PreparedRow = ReturnType<typeof prepareImportRows>["prepared"][number];
+
+function displayValue(value: unknown): string | null {
+  if (value === null || value === undefined || value === "") return null;
+  return String(value);
+}
+
+function proposedValue(row: ImportRow | PreparedRow,
+  field: FieldName): string | null {
+  if (field === "phone") {
+    return displayValue("phoneE164" in row ? row.phoneE164 : row.phone);
+  }
+  return displayValue(row[field as keyof typeof row]);
+}
+
+function currentValue(row: HostRosterCurrentRow | null,
+  field: FieldName): string | null {
+  if (!row) return null;
+  return displayValue(field === "phone" ? row.phoneE164 : row[field]);
+}
+
+function fieldChanges(source: HostRosterIntakeRow,
+  row: ImportRow | PreparedRow, current: HostRosterCurrentRow | null,
+  fields: FieldName[]): HostRosterPreviewFieldChange[] {
+  return fields.map((field) => ({field,
+    currentValue: currentValue(current, field),
+    proposedValue: proposedValue(row, field),
+    origin: source.fields[field]?.origin ??
+      (field === "status" ? "default" : null)}));
+}
 
 /** Proposal from the complete, event-scoped authoritative roster snapshot. */
 export function previewHostRosterIntake(params: {
@@ -282,19 +322,29 @@ export function previewHostRosterIntake(params: {
   const rows: HostRosterPreviewRow[] = draft.rows.map((source) => {
     const value = source.value;
     const base = {rowId: value.rowId,
-      sourceRowNumber: source.sourceRowNumber};
+      sourceRowNumber: source.sourceRowNumber,
+      displayName: value.displayName,
+      externalReference: value.externalReference ?? null};
+    const sourceFields = comparedFields.filter((field) =>
+      proposedValue(value, field) !== null);
     if (excluded.has(value.rowId)) {
       return {...base, attendeeId: null, kind: "excluded" as const,
-        changedFields: [], issueCode: null};
+        changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, value, null, sourceFields),
+        issueCode: null};
     }
     if (source.issues?.length) {
       return {...base, attendeeId: null, kind: "needsReview" as const,
-        changedFields: [], issueCode: source.issues[0]};
+        changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, value, null, sourceFields),
+        issueCode: source.issues[0]};
     }
     const row = prepared.get(value.rowId);
     if (!row) {
       return {...base, attendeeId: null, kind: "needsReview" as const,
-        changedFields: [], issueCode: errors.get(value.rowId) ?? "invalid"};
+        changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, value, null, sourceFields),
+        issueCode: errors.get(value.rowId) ?? "invalid"};
     }
     const current = currentRows.get(row.attendeeId);
     const phoneKeyRow = row.phoneE164 ? currentRows.get(eventAttendeeId(
@@ -305,30 +355,40 @@ export function previewHostRosterIntake(params: {
     if (phoneKeyRow && phoneKeyRow.attendeeId !== row.attendeeId ||
         phoneConflict) {
       return {...base, attendeeId: row.attendeeId,
-        kind: "identityConflict" as const, changedFields: [],
+        kind: "identityConflict" as const, changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, row, null, sourceFields),
         issueCode: phoneKeyRow?.source === "catchBooking" ?
           "catch-booking-authority" :
           "contact-belongs-to-another-attendee"};
     }
     if (!current) {
+      const addedFields = comparedFields.filter((field) =>
+        proposedValue(row, field) !== null);
       return {...base, attendeeId: row.attendeeId, kind: "add" as const,
-        changedFields: comparedFields.filter((field) => field === "phone" ?
-          row.phoneE164 !== null :
-          row[field] !== null && row[field] !== undefined),
+        changedFields: addedFields,
+        fieldChanges: fieldChanges(source, row, null, addedFields),
         issueCode: null};
+    }
+    if (row.email && !row.phoneE164 && !row.externalReference) {
+      return {...base, attendeeId: row.attendeeId,
+        kind: "identityConflict" as const, changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, row, current, sourceFields),
+        issueCode: "email-only-identity"};
     }
     if (current.source === "catchBooking" ||
         current.linkedUid &&
           (row.phoneE164 && row.phoneE164 !== current.phoneE164 ||
             row.email && row.email !== current.email)) {
       return {...base, attendeeId: row.attendeeId,
-        kind: "identityConflict" as const, changedFields: [],
+        kind: "identityConflict" as const, changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, row, current, sourceFields),
         issueCode: current.source === "catchBooking" ?
           "catch-booking-authority" : "claimed-identity"};
     }
     if (current.status === "cancelled" && !source.fields.status) {
       return {...base, attendeeId: row.attendeeId,
-        kind: "needsReview" as const, changedFields: [],
+        kind: "needsReview" as const, changedFields: sourceFields,
+        fieldChanges: fieldChanges(source, row, current, sourceFields),
         issueCode: "cancelled-status-needs-explicit-review"};
     }
     const previousValues: Partial<Record<FieldName, unknown>> = {
@@ -355,7 +415,9 @@ export function previewHostRosterIntake(params: {
     });
     return {...base, attendeeId: row.attendeeId,
       kind: changedFields.length ? "update" as const : "unchanged" as const,
-      changedFields, issueCode: null};
+      changedFields,
+      fieldChanges: fieldChanges(source, row, current, changedFields),
+      issueCode: null};
   });
   const counts = {add: 0, update: 0, unchanged: 0, excluded: 0,
     needsReview: 0, identityConflict: 0};
