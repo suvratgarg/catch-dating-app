@@ -23759,10 +23759,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsCreateTimezoneHint => 'America/Los_Angeles';
 
   @override
-  String get programsCreateStartLabel => 'First day';
+  String get programsCreateStartLabel => 'Start date';
 
   @override
-  String get programsCreateEndLabel => 'Last day';
+  String get programsCreateEndLabel => 'End date';
 
   @override
   String get programsCreateSubmit => 'Create program';
@@ -24857,4 +24857,163 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$group: $status · $source';
   }
+
+  @override
+  String hostEventOfferChooseForRecipient({required String name}) {
+    return 'Choose an event for $name';
+  }
+
+  @override
+  String hostEventOfferChooseForRecipients({required int count}) {
+    return 'Choose an event for $count people';
+  }
+
+  @override
+  String get hostEventOfferLoadingEvents => 'Loading events…';
+
+  @override
+  String get hostEventOfferPreparing => 'Preparing offer…';
+
+  @override
+  String get hostEventOfferLoadingExisting => 'Loading offer…';
+
+  @override
+  String get hostEventOfferPreparingMessage => 'Preparing message…';
+
+  @override
+  String get hostEventOfferCancelPreparation => 'Cancel preparation';
+
+  @override
+  String get hostEventOfferSetupRequired =>
+      'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.';
+
+  @override
+  String get hostResponseAddReviewNote => 'Add note';
+
+  @override
+  String get programsEntryTitle => 'Create';
+
+  @override
+  String get programsEntryEventTab => 'Event';
+
+  @override
+  String get programsEntryProgramTab => 'Program';
+
+  @override
+  String get programsEntryProgramBody =>
+      'Coordinate a multi-day program and manage its events, travel and guest RSVP.';
+
+  @override
+  String get programsCreateKindLabel => 'Program type';
+
+  @override
+  String get programsCreateChooseKind => 'Choose a program type';
+
+  @override
+  String get programsCreateKindWedding => 'Wedding';
+
+  @override
+  String get programsCreateKindCorporate => 'Corporate';
+
+  @override
+  String get programsCreateKindSocial => 'Social';
+
+  @override
+  String get programsCreateKindOther => 'Other';
+
+  @override
+  String get programsCreateRequired => 'Required';
+
+  @override
+  String programsCreateTooLong({required int maximum}) {
+    return 'Use $maximum characters or fewer.';
+  }
+
+  @override
+  String get programsCreateInvalidDate => 'Choose a valid date.';
+
+  @override
+  String get programsCreateEndAfterStart =>
+      'End date must be after start date.';
+
+  @override
+  String get programsCreateRetry => 'Retry and confirm program';
+
+  @override
+  String get programsCreatePendingBody =>
+      'Your save may have reached Catch. Retry the same save to recover its result before changing these details.';
+
+  @override
+  String get programsCreateConfirmingBody =>
+      'Your program is saved. Confirming it appears in Events…';
+
+  @override
+  String get programsCreateNotVisibleBody =>
+      'Your program is saved, but Events has not confirmed it yet. Retry to refresh the list; this will not create another program.';
+
+  @override
+  String get programsCreateActorChangedTitle => 'Organizer access changed';
+
+  @override
+  String get programsCreateActorChangedBody =>
+      'Your account or selected organizer changed. Return to Events and start with the current organizer.';
+
+  @override
+  String get programsCreateLeaveTitle => 'Leave this program?';
+
+  @override
+  String get programsCreateLeaveDraftBody =>
+      'Your program details have not been saved. Stay to keep editing, or discard this draft.';
+
+  @override
+  String get programsCreateLeavePendingBody =>
+      'This save may have reached Catch. Stay and retry to confirm its result, or leave and check Events before starting another program.';
+
+  @override
+  String get programsCreateKeepEditing => 'Keep editing';
+
+  @override
+  String get programsCreateLeaveAction => 'Leave';
+
+  @override
+  String get programsEventRowLabel => 'Program';
+
+  @override
+  String programsEventDateRange({required String start, required String end}) {
+    return '$start – $end';
+  }
+
+  @override
+  String programsEventCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+      zero: 'No events',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get programsEventCountUnavailable => 'Event count unavailable';
+
+  @override
+  String get programsEventArchived => 'Archived';
+
+  @override
+  String get programsCreateSaving => 'Creating program…';
+
+  @override
+  String get programsCreateConfirming => 'Confirming program…';
+
+  @override
+  String get programsCreateViewEvents => 'View in Events';
+
+  @override
+  String get programsCreateSavedBody =>
+      'Your program is saved and available in Events.';
+
+  @override
+  String get programsEventsLoadMore => 'Load more programs';
 }
