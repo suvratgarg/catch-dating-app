@@ -155,6 +155,11 @@ test("invalid source row survives review, exclusion and correction",
     assert.equal(previewHostRosterIntake({draft: resolved,
       currentRows: new Map()}).counts.add, 2);
     assert.deepEqual(resolved.rows[1].rawCells, ["", "ticket-8"]);
+    assert.equal(resolved.sourceManifest[1].originalValue.displayName, "");
+    assert.equal(resolved.sourceManifest[1].originalFields.externalReference
+      ?.origin, "upload");
+    assert.equal(resolved.rows[1].fields.displayName?.origin,
+      "hostCorrection");
   });
 
 test("existing contact and default status require scoped review",

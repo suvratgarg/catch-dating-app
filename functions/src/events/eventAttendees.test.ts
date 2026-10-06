@@ -3,6 +3,8 @@ import test from "node:test";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
+import type {ImportEventAttendeesCallablePayload} from
+  "../shared/generated/importEventAttendeesCallablePayload";
 import {
   assertPublicRegistrationEligibility,
   attendanceReceiptId,
@@ -1216,7 +1218,8 @@ function sourceImportFixture() {
     }
   };
   const run = (changes: Partial<typeof payload> = {}, commitSource?: (
-    tx: FirebaseFirestore.Transaction, importId: string
+    tx: FirebaseFirestore.Transaction, importId: string,
+    canonicalPayload: ImportEventAttendeesCallablePayload, payloadHash: string
   ) => void) =>
     importEventAttendeesForHost({hostUid: "host-1", authorizeSource,
       commitSource,
@@ -1233,7 +1236,10 @@ test("private source completion shares the attendee and receipt commit",
     }), /draft revision changed/u);
     assert.equal(h.firestore.entries("eventAttendees").length, 0);
     assert.equal(h.firestore.entries("eventAttendeeImports").length, 0);
-    const first = await h.run({}, (tx, importId) => {
+    const first = await h.run({}, (tx, importId, canonicalPayload,
+      payloadHash) => {
+      assert.equal(canonicalPayload.rows[0].displayName, "Synthetic Person");
+      assert.match(payloadHash, /^[a-f0-9]{64}$/u);
       tx.set((h.firestore as unknown as FirebaseFirestore.Firestore)
         .collection("hostRosterIntakeSessions").doc("synthetic"),
       {state: "applied", importId});

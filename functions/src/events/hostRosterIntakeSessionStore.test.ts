@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {FakeFirestore} from "../operations/testFirestore";
-import {previewHostRosterIntake} from "./hostRosterIntakeCore";
+import {approveHostRosterIntakeApply, previewHostRosterIntake} from
+  "./hostRosterIntakeCore";
 import {
   AuthorizeHostRosterSession,
   HostRosterIntakeSessionStore,
@@ -80,12 +81,15 @@ test("revision, failed commit and receipt replay preserve every row",
     assert.deepEqual(revised.rows, first.rows);
     const preview = previewHostRosterIntake({draft: revised,
       currentRows: new Map()});
+    const approved = approveHostRosterIntakeApply({draft: revised,
+      currentRows: new Map(), reviewHash: preview.reviewHash});
     const complete = async (replayed: boolean) => db.runTransaction(
       async (tx) => {
         const commit = await store.prepareCompletion({
           tx: tx as unknown as Transaction,
           sessionId: first.sessionId, hostUid: "host-1",
           expectedDraft: revised, expectedReviewHash: preview.reviewHash,
+          committedPayload: approved.payload,
           importId: "receipt-1", replayed,
           authorize, loadCurrentRows: async () => new Map()});
         commit();
@@ -94,7 +98,17 @@ test("revision, failed commit and receipt replay preserve every row",
       await store.prepareCompletion({tx: tx as unknown as Transaction,
         sessionId: first.sessionId, hostUid: "host-1",
         expectedDraft: revised, expectedReviewHash: "stale-review",
+        committedPayload: approved.payload,
         importId: "receipt-1", replayed: false, authorize,
+        loadCurrentRows: async () => new Map()});
+    }), /changed after approval/u);
+    await assert.rejects(db.runTransaction(async (tx) => {
+      await store.prepareCompletion({tx: tx as unknown as Transaction,
+        sessionId: first.sessionId, hostUid: "host-1",
+        expectedDraft: revised, expectedReviewHash: preview.reviewHash,
+        committedPayload: {...approved.payload, rows: [{
+          ...approved.payload.rows[0], displayName: "Unreviewed name",
+        }]}, importId: "receipt-1", replayed: false, authorize,
         loadCurrentRows: async () => new Map()});
     }), /changed after approval/u);
     db.failNextCommit = true;
@@ -112,6 +126,7 @@ test("revision, failed commit and receipt replay preserve every row",
     assert.equal(reviewReceipt?.importId, "receipt-1");
     assert.equal(reviewReceipt?.preview.counts.add, 1);
     assert.equal(reviewReceipt?.preview.reviewHash, preview.reviewHash);
+    assert.deepEqual(reviewReceipt?.payload, approved.payload);
     await complete(true);
     await assert.rejects(store.revise({sessionId: first.sessionId,
       hostUid: "host-1", expectedRevision: 2, rows: first.rows,
@@ -120,6 +135,7 @@ test("revision, failed commit and receipt replay preserve every row",
       await store.prepareCompletion({tx: tx as unknown as Transaction,
         sessionId: first.sessionId, hostUid: "host-1",
         expectedDraft: revised, expectedReviewHash: preview.reviewHash,
+        committedPayload: approved.payload,
         importId: "wrong-receipt",
         replayed: true,
         authorize, loadCurrentRows: async () => new Map()});

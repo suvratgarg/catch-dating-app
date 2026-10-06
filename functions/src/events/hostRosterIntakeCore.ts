@@ -3,7 +3,8 @@ import type {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
 import {validateImportEventAttendeesCallablePayload} from
   "../shared/generated/validators/importEventAttendeesInput";
-import {eventAttendeeId, prepareImportRows} from "./eventAttendees";
+import {canonicalImportPayload, eventAttendeeId, prepareImportRows} from
+  "./eventAttendees";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type FieldName = keyof ImportRow;
@@ -42,6 +43,8 @@ export interface HostRosterIntakeDraft {
     rowId: string;
     sourceRowNumber: number;
     rawEvidenceHash: string;
+    originalValue: ImportRow;
+    originalFields: Partial<Record<FieldName, HostRosterSourceField>>;
   }>;
   revision: number;
   state: "review" | "applied";
@@ -185,7 +188,9 @@ export function createHostRosterIntakeDraft(input: Omit<HostRosterIntakeDraft,
   const sourceManifest = rows.map((row) => ({
     rowId: row.value.rowId,
     sourceRowNumber: row.sourceRowNumber,
-    rawEvidenceHash: hash(row.rawCells ?? null),
+    rawEvidenceHash: hash([row.rawCells ?? null, row.value, row.fields]),
+    originalValue: structuredClone(row.value),
+    originalFields: structuredClone(row.fields),
   }));
   return {...input, rows,
     sessionId: "hri_" + hash([input.hostUid, input.organizerId,
@@ -205,7 +210,15 @@ export function reviseHostRosterIntakeDraft(params: {
   const {draft, expectedRevision, rows, excludedRowIds} = params;
   const sourceById = new Map(draft.sourceManifest.map((source) =>
     [source.rowId, source]));
+  const validManifest = draft.sourceManifest.every((source) =>
+    source.rawEvidenceHash === hash([
+      draft.rows.find((row) => row.value.rowId === source.rowId)?.rawCells ??
+        null,
+      source.originalValue,
+      source.originalFields,
+    ]));
   if (draft.state !== "review" || draft.revision !== expectedRevision ||
+      !validManifest ||
       !Number.isSafeInteger(expectedRevision) ||
       expectedRevision >= Number.MAX_SAFE_INTEGER ||
       excludedRowIds.length !== new Set(excludedRowIds).size ||
@@ -213,7 +226,8 @@ export function reviseHostRosterIntakeDraft(params: {
       rows.some((row) => {
         const source = sourceById.get(row.value.rowId);
         return !source || source.sourceRowNumber !== row.sourceRowNumber ||
-          source.rawEvidenceHash !== hash(row.rawCells ?? null);
+          hash(row.rawCells ?? null) !== hash(draft.rows.find((original) =>
+            original.value.rowId === row.value.rowId)?.rawCells ?? null);
       }) ||
       excludedRowIds.some((id) => !rows.some((row) =>
         row.value.rowId === id))) {
@@ -376,14 +390,14 @@ export function approveHostRosterIntakeApply(params: {
       }
       return value;
     });
-  return {reviewHash, payload: {
+  return {reviewHash, payload: canonicalImportPayload({
     eventId: draft.eventId,
     importKey: "host-intake-" + hash([draft.sessionId, draft.revision,
       reviewHash]),
     fileName: draft.fileName,
     format: draft.format,
     rows,
-  }};
+  })};
 }
 
 /** Private model proposals are optional and have zero live provider binding. */

@@ -235,12 +235,16 @@ export async function importEventAttendeesForHost(
     // Read-only source/actor check, rerun in the destination transaction.
     // A proven import replay does not create or update an attendee.
     authorizeSource?: (
-      tx: FirebaseFirestore.Transaction, replayed: boolean
+      tx: FirebaseFirestore.Transaction, replayed: boolean,
+      importId: string
     ) => Promise<void>;
     // Join a private source receipt to the canonical attendee transaction.
     // This runs after all reads, before attendee/seat/import writes.
     commitSource?: (
-      tx: FirebaseFirestore.Transaction, importId: string
+      tx: FirebaseFirestore.Transaction,
+      importId: string,
+      canonicalPayload: ImportEventAttendeesCallablePayload,
+      payloadHash: string
     ) => Promise<void> | void;
   },
   deps: EventAttendeeDeps = defaultDeps
@@ -299,10 +303,10 @@ export async function importEventAttendeesForHost(
         throw new HttpsError("failed-precondition",
           "This import key was already used for different roster data.");
       }
-      await params.authorizeSource?.(tx, true);
+      await params.authorizeSource?.(tx, true, importId);
       return importResult(importId, existing, true);
     }
-    await params.authorizeSource?.(tx, false);
+    await params.authorizeSource?.(tx, false, importId);
     // A supplied contact must not bypass another attendee's phone key,
     // including a late write after a host reviewed this upload.
     const importedPhones = [...new Set(prepared
@@ -412,7 +416,7 @@ export async function importEventAttendeesForHost(
           rows: unlinkedRows, nowMillis: now.toMillis()});
       }
     }
-    await params.commitSource?.(tx, importId);
+    await params.commitSource?.(tx, importId, canonicalPayload, payloadHash);
     if (seatMode === "ready") {
       if (seatImport) {
         applyBatchImportSeats(seatImport.writer,
@@ -1441,7 +1445,7 @@ function eventAttendeeImportId(params: {
   ).slice(0, 48)}`;
 }
 
-function canonicalImportPayload(
+export function canonicalImportPayload(
   payload: ImportEventAttendeesCallablePayload
 ): ImportEventAttendeesCallablePayload {
   return {

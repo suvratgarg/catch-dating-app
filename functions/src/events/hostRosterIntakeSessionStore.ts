@@ -1,6 +1,9 @@
 import {isDeepStrictEqual} from "node:util";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
+import type {ImportEventAttendeesCallablePayload} from
+  "../shared/generated/importEventAttendeesCallablePayload";
 import {
+  approveHostRosterIntakeApply,
   createHostRosterIntakeDraft,
   HostRosterIntakeDraft,
   HostRosterIntakePreview,
@@ -24,6 +27,7 @@ export interface HostRosterAppliedReview {
   importId: string;
   appliedAtMillis: number;
   preview: HostRosterIntakePreview;
+  payload: ImportEventAttendeesCallablePayload;
 }
 
 /** Checks current manager authority inside every session transaction. */
@@ -138,6 +142,7 @@ export class HostRosterIntakeSessionStore {
     hostUid: string;
     expectedDraft: HostRosterIntakeDraft;
     expectedReviewHash: string;
+    committedPayload: ImportEventAttendeesCallablePayload;
     importId: string;
     replayed: boolean;
     authorize: AuthorizeHostRosterSession;
@@ -161,10 +166,16 @@ export class HostRosterIntakeSessionStore {
       stored.draft);
     const preview = previewHostRosterIntake({draft: stored.draft,
       currentRows});
+    const approved = preview.eligibleForApply &&
+      preview.reviewHash === params.expectedReviewHash ?
+      approveHostRosterIntakeApply({draft: stored.draft, currentRows,
+        reviewHash: params.expectedReviewHash}) : null;
     if (stored.draft.state !== "review" ||
         !isDeepStrictEqual(stored.draft, params.expectedDraft) ||
         !preview.eligibleForApply ||
-        preview.reviewHash !== params.expectedReviewHash) {
+        preview.reviewHash !== params.expectedReviewHash ||
+        !approved ||
+        !isDeepStrictEqual(approved.payload, params.committedPayload)) {
       throw new Error("Host roster intake changed after approval.");
     }
     const draft: HostRosterIntakeDraft = {...stored.draft,
@@ -173,7 +184,8 @@ export class HostRosterIntakeSessionStore {
       const appliedAtMillis = this.now();
       params.tx.update(ref, {draft, updatedAtMillis: appliedAtMillis,
         appliedReview: {importId: params.importId, appliedAtMillis,
-          preview} satisfies HostRosterAppliedReview});
+          preview, payload: approved.payload} satisfies
+          HostRosterAppliedReview});
     };
   }
 }
