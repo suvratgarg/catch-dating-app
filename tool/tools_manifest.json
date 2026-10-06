@@ -282,7 +282,7 @@
         "tool/git/bootstrap_worktree.test.mjs",
         "docs/agent_operating_model.md"
       ],
-      "description": "Bootstraps a fresh Git worktree with isolated root npm, Functions npm, and Flutter dependencies from committed lockfiles.",
+      "description": "Bootstraps a fresh Git worktree with only its selected isolated root npm, Functions npm, or Flutter dependencies from committed lockfiles; defaults to all three.",
       "checks": [
         "bash -n tool/git/bootstrap_worktree.sh",
         "node --test tool/git/bootstrap_worktree.test.mjs",

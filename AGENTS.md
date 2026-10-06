@@ -1,6 +1,6 @@
 ---
 doc_id: agent_entrypoint
-version: 3.3.0
+version: 3.4.0
 updated: 2026-10-06
 owner: agent_operating_model
 status: active
@@ -38,6 +38,29 @@ tests and scanners prove correctness, and CI stores run evidence.
    inspection and closeout.
    The parent reviews and integrates each result; Git, PR, and CI output are
    the evidence.
+
+## Execution Venue And Handoff
+
+Start new coding tasks in the saved Codex Cloud environment when its pinned
+toolchain and required checks are available. Use hosted GitHub Actions macOS
+jobs for native build and visual gates where the existing workflow supports
+them. Reserve the local iMac for connected-device checks and macOS-specific
+work that hosted runners cannot perform. On the saved cloud VM, source
+`/workspace/catch-cloud-setup/env.sh` when present and compare the actual Node,
+Flutter, and Java versions with `tool/ci/toolchain.env` before relying on it.
+Install only the dependency family needed for the selected check with
+`bash tool/git/bootstrap_worktree.sh --target <family>` (`root`, `functions`,
+or `flutter`). The default `all` remains available for tasks that need all
+three. Docs-only tasks with dependency-free checks need no bootstrap.
+
+Publish source through an exact commit and normal branch/PR handoff, then use
+required CI on that head. A downloaded or generated source snapshot is not a
+published handoff. Report draft PR admission errors separately from test
+failures. If an environment disconnects, recover its branch, command or CI run
+state before calling the task stopped or done. A blocked status names the exact
+commit, last observed running command or CI run, accountable owner, and next
+action. Keep the guarded claim until accepted closeout and follow the existing
+retirement checklist below.
 
 ## Source-Of-Truth Routing
 
