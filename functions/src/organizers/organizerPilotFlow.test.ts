@@ -29,7 +29,8 @@ import type {OrganizerContactDocument, OrganizerContactTraitDocument,
   OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {eventAttendeeId} from "../events/eventAttendees";
-import {formAdmissionContactId} from "./organizerFormAdmissionIdentity";
+import {formAdmissionContactId, formConversionReceiptId} from
+  "./organizerFormAdmissionIdentity";
 import {listOrganizerFormResponsesHandler} from "./organizerFormOperations";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 import type {UpdateOrganizerFormDraftCallablePayload} from
@@ -288,7 +289,8 @@ test("CRM conversion refuses conflicting phone and email matches", async () => {
 test("admission preview refuses an existing roster edge for another contact",
   async () => {
     const h = await submittedPilot(false);
-    const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
+    const attendeeId = eventAttendeeId("event-1",
+      `external:${h.responseId.toLowerCase()}`);
     h.store.docs[`organizerContactEventEdges/${attendeeId}`] = {
       contactId: "other-contact",
     };
@@ -303,6 +305,35 @@ test("admission preview refuses an existing roster edge for another contact",
     }), h.deps), {code: "failed-precondition"});
     assert.equal(Object.keys(h.store.docs).some((p) =>
       p.startsWith("organizerContacts/")), false);
+  });
+
+
+test("admission preview retains a completed legacy receipt destination",
+  async () => {
+    const h = await submittedPilot(false);
+    const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
+    h.store.docs[`organizerContactEventEdges/${attendeeId}`] = {
+      contactId: "other-contact",
+    };
+    const receiptId = formConversionReceiptId(h.responseId,
+      "eventAttendeeProposal", "event-1");
+    h.store.docs[`organizerFormConversionReceipts/${receiptId}`] = {
+      organizerId: "org-1", formId: h.response.formId,
+      responseId: h.responseId, kind: "eventAttendeeProposal",
+      requestId: "legacy-admission", actorUid: "host-1",
+      status: "completed", resultId: attendeeId,
+      fields: [{destinationField: "eventId", label: "Event",
+        value: "event-1", origin: "hostOverride", conflict: null}],
+      undoStatus: "notAvailable", createdAt: now, updatedAt: now,
+      completedAt: now,
+    };
+    const conversion = {organizerId: "org-1", responseId: h.responseId,
+      kind: "eventAttendeeProposal", eventId: "event-1", overrides: {}};
+    const preview = await previewOrganizerFormConversionHandler(
+      host(conversion), h.deps);
+    assert.equal(preview.existingResultId, attendeeId);
+    assert.equal(preview.allowed, false);
+    assert.match(preview.warnings.join(" "), /another CRM contact/);
   });
 
 
