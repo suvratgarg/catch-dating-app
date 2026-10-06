@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ManageHostRosterIntakeCallablePayload',
+    source: 'callables/manage_host_roster_intake_payload.schema.json',
+    schema: schemaManageHostRosterIntakeCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostRosterIntakeSessionDocument',
+    source: 'firestore/host_roster_intake_sessions.schema.json',
+    schema: schemaHostRosterIntakeSessionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostRosterIntakeReceiptDocument',
+    source: 'firestore/host_roster_intake_receipts.schema.json',
+    schema: schemaHostRosterIntakeReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ManageProgramLodgingCallablePayload',
     source: 'callables/manage_program_lodging_payload.schema.json',
     schema: schemaManageProgramLodgingCallablePayloadSchema,
@@ -85,6 +100,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'CatchWhatsappEndpointStopDocument',
     source: 'firestore/catch_whatsapp_endpoint_stops.schema.json',
     schema: schemaCatchWhatsappEndpointStopDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappAppAuthorityDocument',
+    source: 'firestore/catch_whatsapp_app_authorities.schema.json',
+    schema: schemaCatchWhatsappAppAuthorityDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappIngressEvidenceDocument',
+    source: 'firestore/catch_whatsapp_ingress_evidence.schema.json',
+    schema: schemaCatchWhatsappIngressEvidenceDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'CatchWhatsappReplyReadinessDocument',
@@ -5914,6 +5939,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ManageHostRosterIntakeCallablePayload': schemaManageHostRosterIntakeCallablePayloadSchema,
+  'HostRosterIntakeSessionDocument': schemaHostRosterIntakeSessionDocumentSchema,
+  'HostRosterIntakeReceiptDocument': schemaHostRosterIntakeReceiptDocumentSchema,
   'ManageProgramLodgingCallablePayload': schemaManageProgramLodgingCallablePayloadSchema,
   'ManageProgramLodgingCallableResponse': schemaManageProgramLodgingCallableResponseSchema,
   'ProgramLodgingConfigDocument': schemaProgramLodgingConfigDocumentSchema,
@@ -5928,6 +5956,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'CatchWhatsappReadinessAuditDocument': schemaCatchWhatsappReadinessAuditDocumentSchema,
   'CatchWhatsappReplyOperationDocument': schemaCatchWhatsappReplyOperationDocumentSchema,
   'CatchWhatsappEndpointStopDocument': schemaCatchWhatsappEndpointStopDocumentSchema,
+  'CatchWhatsappAppAuthorityDocument': schemaCatchWhatsappAppAuthorityDocumentSchema,
+  'CatchWhatsappIngressEvidenceDocument': schemaCatchWhatsappIngressEvidenceDocumentSchema,
   'CatchWhatsappReplyReadinessDocument': schemaCatchWhatsappReplyReadinessDocumentSchema,
   'AdminReviewCatchWhatsappInboundCallablePayload': schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema,
   'AdminReviewCatchWhatsappInboundCallableResponse': schemaAdminReviewCatchWhatsappInboundCallableResponseSchema,
@@ -7096,6 +7126,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/manage_host_roster_intake_payload.schema.json': schemaManageHostRosterIntakeCallablePayloadSchema,
+  'firestore/host_roster_intake_sessions.schema.json': schemaHostRosterIntakeSessionDocumentSchema,
+  'firestore/host_roster_intake_receipts.schema.json': schemaHostRosterIntakeReceiptDocumentSchema,
   'callables/manage_program_lodging_payload.schema.json': schemaManageProgramLodgingCallablePayloadSchema,
   'callable_responses/manage_program_lodging_response.schema.json': schemaManageProgramLodgingCallableResponseSchema,
   'firestore/program_lodging_configs.schema.json': schemaProgramLodgingConfigDocumentSchema,
@@ -7110,6 +7143,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/catch_whatsapp_readiness_audit.schema.json': schemaCatchWhatsappReadinessAuditDocumentSchema,
   'firestore/catch_whatsapp_reply_operations.schema.json': schemaCatchWhatsappReplyOperationDocumentSchema,
   'firestore/catch_whatsapp_endpoint_stops.schema.json': schemaCatchWhatsappEndpointStopDocumentSchema,
+  'firestore/catch_whatsapp_app_authorities.schema.json': schemaCatchWhatsappAppAuthorityDocumentSchema,
+  'firestore/catch_whatsapp_ingress_evidence.schema.json': schemaCatchWhatsappIngressEvidenceDocumentSchema,
   'firestore/catch_whatsapp_reply_readiness.schema.json': schemaCatchWhatsappReplyReadinessDocumentSchema,
   'callables/admin_review_catch_whatsapp_inbound_payload.schema.json': schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema,
   'callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json': schemaAdminReviewCatchWhatsappInboundCallableResponseSchema,

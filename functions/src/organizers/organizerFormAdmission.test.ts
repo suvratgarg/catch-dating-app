@@ -15,7 +15,8 @@ const eventId = "event1";
 const responseId = "response1";
 const contactId = "contact1";
 const phone = "+919876543210";
-const attendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+const attendeeId = eventAttendeeId(eventId,
+  `external:${responseId.toLowerCase()}`);
 const offerId = "applicationoffer_" + createHash("sha256")
   .update([organizerId, eventId, contactId].join("\u001f"))
   .digest("hex").slice(0, 40);
@@ -170,9 +171,37 @@ test("roster collision and receipt replay do not rewrite a guest", async () => {
   assert.equal(replay.historicallyAdmitted, true);
   assert.equal(replay.canCommit, false);
   assert.equal(db.writes, 0);
-  db.patch(`eventAttendees/${attendeeId}`, {phoneE164: "+919111111111"});
+  db.patch(`eventAttendees/${attendeeId}`, {
+    externalReference: "another-response",
+  });
   assert.ok((await review(db)).blockers.includes("rosterConflict"));
 });
+
+test("completed legacy receipt retains its phone-key attendee identity",
+  async () => {
+    const db = fixture();
+    const legacyAttendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+    db.set(`eventAttendees/${legacyAttendeeId}`, {organizerId, eventId,
+      externalReference: responseId, sourceRowId: responseId,
+      phoneE164: phone, email: null, status: "registered",
+      source: "hostManual"});
+    db.set(`organizerContactEventEdges/${legacyAttendeeId}`, {
+      organizerId, eventId, contactId,
+    });
+    db.set("organizerFormConversionReceipts/" +
+      formConversionReceiptId(responseId, "eventAttendeeProposal", eventId), {
+      organizerId, formId: "form1", responseId,
+      kind: "eventAttendeeProposal", status: "completed",
+      resultId: legacyAttendeeId,
+      fields: [{destinationField: "eventId", value: eventId}],
+    });
+
+    const result = await review(db);
+    assert.equal(result.attendeeId, legacyAttendeeId);
+    assert.equal(result.historicallyAdmitted, true);
+    assert.deepEqual(result.blockers,
+      ["capacityAuthorityMissing", "paymentPolicyMissing"]);
+  });
 
 test("observed final seat is not authoritative capacity", async () => {
   const db = fixture();

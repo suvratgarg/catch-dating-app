@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {manageHostRosterIntakeCallablePayloadSchema} from "./schemas/manageHostRosterIntakeInput";
+export {hostRosterIntakeSessionDocumentSchema} from "./schemas/hostRosterIntakeSessionDocument";
+export {hostRosterIntakeReceiptDocumentSchema} from "./schemas/hostRosterIntakeReceiptDocument";
 export {manageProgramLodgingCallablePayloadSchema} from "./schemas/manageProgramLodgingInput";
 export {manageProgramLodgingCallableResponseSchema} from "./schemas/manageProgramLodgingOutput";
 export {programLodgingConfigDocumentSchema} from "./schemas/programLodgingConfigDocument";
@@ -19,6 +22,8 @@ export {catchWhatsappReadinessIngressDocumentSchema} from "./schemas/catchWhatsa
 export {catchWhatsappReadinessAuditDocumentSchema} from "./schemas/catchWhatsappReadinessAuditDocument";
 export {catchWhatsappReplyOperationDocumentSchema} from "./schemas/catchWhatsappReplyOperationDocument";
 export {catchWhatsappEndpointStopDocumentSchema} from "./schemas/catchWhatsappEndpointStopDocument";
+export {catchWhatsappAppAuthorityDocumentSchema} from "./schemas/catchWhatsappAppAuthorityDocument";
+export {catchWhatsappIngressEvidenceDocumentSchema} from "./schemas/catchWhatsappIngressEvidenceDocument";
 export {catchWhatsappReplyReadinessDocumentSchema} from "./schemas/catchWhatsappReplyReadinessDocument";
 export {adminReviewCatchWhatsappInboundCallablePayloadSchema} from "./schemas/adminReviewCatchWhatsappInboundInput";
 export {adminReviewCatchWhatsappInboundCallableResponseSchema} from "./schemas/adminReviewCatchWhatsappInboundOutput";

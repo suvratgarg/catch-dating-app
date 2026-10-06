@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts` |
+| HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `functions/src/shared/generated/hostRosterIntakeSessionDocument.ts` |
+| HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `functions/src/shared/generated/hostRosterIntakeReceiptDocument.ts` |
 | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallablePayload.ts` |
 | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallableResponse.ts` |
 | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `functions/src/shared/generated/programLodgingConfigDocument.ts` |
@@ -26,6 +29,8 @@ Do not edit it by hand.
 | CatchWhatsappReadinessAuditDocument | `firestore/catch_whatsapp_readiness_audit.schema.json` | `functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts` |
 | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts` |
 | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts` |
+| CatchWhatsappAppAuthorityDocument | `firestore/catch_whatsapp_app_authorities.schema.json` | `functions/src/shared/generated/catchWhatsappAppAuthorityDocument.ts` |
+| CatchWhatsappIngressEvidenceDocument | `firestore/catch_whatsapp_ingress_evidence.schema.json` | `functions/src/shared/generated/catchWhatsappIngressEvidenceDocument.ts` |
 | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts` |
 | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `functions/src/shared/generated/adminReviewCatchWhatsappInboundCallablePayload.ts` |
 | AdminReviewCatchWhatsappInboundCallableResponse | `callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json` | `functions/src/shared/generated/adminReviewCatchWhatsappInboundCallableResponse.ts` |
@@ -1196,6 +1201,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaManageHostRosterIntakeCallablePayloadSchema` | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_roster_intake_callable_payload.g.dart` |
+| `schemaHostRosterIntakeSessionDocumentSchema` | HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_session_document.g.dart` |
+| `schemaHostRosterIntakeReceiptDocumentSchema` | HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_receipt_document.g.dart` |
 | `schemaManageProgramLodgingCallablePayloadSchema` | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_payload.g.dart` |
 | `schemaManageProgramLodgingCallableResponseSchema` | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_response.g.dart` |
 | `schemaProgramLodgingConfigDocumentSchema` | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_config_document.g.dart` |
@@ -1210,6 +1218,8 @@ Do not edit it by hand.
 | `schemaCatchWhatsappReadinessAuditDocumentSchema` | CatchWhatsappReadinessAuditDocument | `firestore/catch_whatsapp_readiness_audit.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_readiness_audit_document.g.dart` |
 | `schemaCatchWhatsappReplyOperationDocumentSchema` | CatchWhatsappReplyOperationDocument | `firestore/catch_whatsapp_reply_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_operation_document.g.dart` |
 | `schemaCatchWhatsappEndpointStopDocumentSchema` | CatchWhatsappEndpointStopDocument | `firestore/catch_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_endpoint_stop_document.g.dart` |
+| `schemaCatchWhatsappAppAuthorityDocumentSchema` | CatchWhatsappAppAuthorityDocument | `firestore/catch_whatsapp_app_authorities.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_app_authority_document.g.dart` |
+| `schemaCatchWhatsappIngressEvidenceDocumentSchema` | CatchWhatsappIngressEvidenceDocument | `firestore/catch_whatsapp_ingress_evidence.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_ingress_evidence_document.g.dart` |
 | `schemaCatchWhatsappReplyReadinessDocumentSchema` | CatchWhatsappReplyReadinessDocument | `firestore/catch_whatsapp_reply_readiness.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_reply_readiness_document.g.dart` |
 | `schemaAdminReviewCatchWhatsappInboundCallablePayloadSchema` | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_catch_whatsapp_inbound_callable_payload.g.dart` |
 | `schemaAdminReviewCatchWhatsappInboundCallableResponseSchema` | AdminReviewCatchWhatsappInboundCallableResponse | `callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_review_catch_whatsapp_inbound_callable_response.g.dart` |
@@ -2380,6 +2390,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| ManageHostRosterIntakeCallableRequest | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/callables/manage_host_roster_intake_callable_request.g.dart` |
 | AdminReviewCatchWhatsappInboundCallableRequest | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_catch_whatsapp_inbound_callable_request.g.dart` |
 | AdminSendCatchWhatsappReplyCallableRequest | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_send_catch_whatsapp_reply_callable_request.g.dart` |
 | GetOrganizerTrackingSettingsCallableRequest | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_tracking_settings_callable_request.g.dart` |

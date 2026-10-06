@@ -35,6 +35,8 @@ export function planPreCommitActions({graph, stagedPaths}) {
         generator.id === "contracts.schema-projections" &&
         generator.outputs.some((pattern) => matchesGlobPath(candidate, pattern)))),
     l10nInputChanged,
+    functionsSourceChanged: paths.some((candidate) =>
+      /^functions\/src\/.*\.(?:cts|mts|tsx?)$/u.test(candidate)),
     l10nOutputs: l10n?.outputs ?? [],
     l10nWriteCommand: l10n?.writeCommand ?? null,
     triggeredGenerators,
@@ -119,6 +121,17 @@ export function runPreCommitGeneratedArtifacts({
   }
 
   const checked = [];
+  if (plan.functionsSourceChanged) {
+    runRequiredCommand({
+      args: ["tool/firebase/check_functions_source_closure.mjs"],
+      command: "node",
+      failureMessage:
+        "Functions staged TypeScript dependency closure is incomplete.",
+      repoRoot: resolvedRoot,
+      runCommand,
+    });
+    checked.push("functions.source-closure");
+  }
   for (const generator of plan.triggeredGenerators) {
     runShellCommand({
       command: generator.checkCommand,

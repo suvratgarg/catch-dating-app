@@ -9,8 +9,9 @@ import type {CatchWebhookEvent} from "./whatsappWebhookProtocol";
 import {validateCatchWhatsappWebhookEventDocument} from
   "../shared/generated/validators/catchWhatsappWebhookEventDocument";
 
-import {CATCH_RECEIPTS, isCatchStopReceipt, persistCatchStopReceipt} from
+import {CATCH_RECEIPTS, isCatchStopReceipt} from
   "./whatsappEndpointStops";
+import {persistCatchVerifiedIngressEvent} from "./whatsappIngressStore";
 
 export const CATCH_WEBHOOK_COLLECTION = CATCH_RECEIPTS;
 const appSecret = defineSecret("CATCH_WHATSAPP_APP_SECRET");
@@ -36,30 +37,22 @@ export async function persistCatchWhatsappWebhookEvents(
   }
   // Validate the whole batch above before writing. STOP and its immutable
   // receipt commit together, before any other same-batch receipt can become
-  // eligible for a reply. Retries preserve the original receipt and TTL.
+  // eligible for a reply. A conflict still durably suppresses the signed STOP,
+  // and must not prevent later STOPs in this batch from being attempted.
+  let stopFailure: {error: unknown} | undefined;
   for (const event of events.filter(isCatchStopReceipt)) {
-    await persistCatchStopReceipt(db, event, nowMillis);
+    try {
+      await persistCatchVerifiedIngressEvent(db, event, nowMillis);
+    } catch (error) {
+      stopFailure ??= {error};
+    }
   }
-  const remaining = events.filter((event) => !isCatchStopReceipt(event));
-  if (remaining.length === 0) return;
-  const writer = db.bulkWriter();
-  // Retry transient failures a bounded number of times. A concurrent replay
-  // already persisted under this exact event id is a successful receipt.
-  writer.onWriteError((error) => error.code !== 6 &&
-    [4, 8, 10, 13, 14].includes(error.code) && error.failedAttempts < 3);
-  const writes = remaining.map((event) => writer.create(
-    db.collection(CATCH_WEBHOOK_COLLECTION).doc(event.eventId),
-    {...event, receivedAtMillis: nowMillis, expiresAt}
-  ).catch((error: unknown) => {
-    if (typeof error === "object" && error !== null &&
-        "code" in error && error.code === 6) return;
-    throw error;
-  }));
-  const completion = Promise.allSettled(writes);
-  await writer.close();
-  const outcomes = await completion;
-  const failure = outcomes.find((outcome) => outcome.status === "rejected");
-  if (failure?.status === "rejected") throw failure.reason;
+  if (stopFailure) throw stopFailure.error;
+  for (const event of events.filter((event) => !isCatchStopReceipt(event))) {
+    // Canonical evidence and the immutable receipt share a transaction; a
+    // duplicate receipt alone cannot establish eligibility or renew its TTL.
+    await persistCatchVerifiedIngressEvent(db, event, nowMillis);
+  }
 }
 
 export const catchWhatsappWebhook = onRequest({

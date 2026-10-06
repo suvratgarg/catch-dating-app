@@ -9,6 +9,101 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('overflow rows cannot submit a partial import', (tester) async {
+    final rows = List.generate(
+      251,
+      (index) => ['Guest $index', '+919${index.toString().padLeft(9, '0')}'],
+    );
+    final table = HostRosterTable(
+      fileName: 'large.csv',
+      format: EventAttendeeImportFormat.csv,
+      headers: const ['Name', 'Phone'],
+      rows: rows,
+      suggestedMapping: const {
+        HostRosterField.displayName: 0,
+        HostRosterField.phone: 1,
+      },
+      adapter: const HostRosterAdapterDetection(
+        adapterId: HostRosterAdapterId.genericV1,
+        support: HostRosterAdapterSupport.generic,
+        confidence: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(body: HostRosterImportSheet(table: table)),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final button = tester.widget<CatchButton>(
+      find.widgetWithText(CatchButton, 'Review 250 ready guests'),
+    );
+    expect(button.onPressed, isNull);
+  });
+
+  testWidgets('duplicate buyer emails continue to explicit saved review', (
+    tester,
+  ) async {
+    const table = HostRosterTable(
+      fileName: 'tickets.csv',
+      format: EventAttendeeImportFormat.csv,
+      headers: ['Name', 'Email'],
+      rows: [
+        ['Asha', 'buyer@example.com'],
+        ['Ravi', 'buyer@example.com'],
+      ],
+      suggestedMapping: {
+        HostRosterField.displayName: 0,
+        HostRosterField.email: 1,
+      },
+      adapter: HostRosterAdapterDetection(
+        adapterId: HostRosterAdapterId.genericV1,
+        support: HostRosterAdapterSupport.generic,
+        confidence: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(body: HostRosterImportSheet(table: table)),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final button = tester.widget<CatchButton>(
+      find.widgetWithText(CatchButton, 'Review 1 ready guests'),
+    );
+    expect(button.onPressed, isNotNull);
+  });
+
+  testWidgets('an all-exception file can enter saved review', (tester) async {
+    const table = HostRosterTable(
+      fileName: 'names-only.csv',
+      format: EventAttendeeImportFormat.csv,
+      headers: ['Name'],
+      rows: [
+        ['Asha'],
+      ],
+      suggestedMapping: {HostRosterField.displayName: 0},
+      adapter: HostRosterAdapterDetection(
+        adapterId: HostRosterAdapterId.genericV1,
+        support: HostRosterAdapterSupport.generic,
+        confidence: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(body: HostRosterImportSheet(table: table)),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final button = tester.widget<CatchButton>(
+      find.widgetWithText(CatchButton, 'Review 0 ready guests'),
+    );
+    expect(button.onPressed, isNotNull);
+  });
+
   for (final scale in [1.0, 2.0]) {
     testWidgets('phone import footer is reachable at text scale $scale', (
       tester,
@@ -44,7 +139,7 @@ void main() {
       await tester.tap(find.text('Open guest import'));
       await pumpFeatureUi(tester);
       expect(tester.takeException(), isNull);
-      final importAction = find.text('Import 2 guests');
+      final importAction = find.text('Review 2 ready guests');
       expect(importAction.hitTestable(), findsNothing);
       await tester.ensureVisible(importAction);
       await pumpFeatureUi(tester);

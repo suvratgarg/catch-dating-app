@@ -2268,8 +2268,14 @@ replaces `eventParticipations`:
   Catch-booking projection, OTP linking and public registration are
   server-owned operations;
 - deterministic contact/source keys make retry and re-import idempotent inside
-  one event. A phone/email match may converge rows inside that event only; it
-  does not build a cross-event identity graph;
+  one event. An attendee-level source reference takes precedence over a
+  contact value when present. Shared buyer phones across distinct references
+  require review before importing, because current ready-seat authority treats
+  a phone as one exclusive alias. The host may omit a buyer phone from guest
+  identity when each attendee has a distinct source reference. An email-only
+  collision is an explicit duplicate-row exception,
+  never evidence to merge distinct tickets; it does not build a cross-event
+  identity graph;
 - `arrivalGroup` retains an optional provider booking/order/group or
   ticket-buyer key shared by guests expected to arrive together. Adapters keep
   it separate from attendee-level external references, imports include it in
@@ -2288,6 +2294,24 @@ replaces `eventParticipations`:
 - `eventAttendeeImports` records actor, event, client idempotency key, format,
   canonical payload hash, counts, bounded row errors and terminal state. It is
   not a copy of the uploaded file.
+- the Host upload mapper retains invalid and ambiguous source rows for the
+  saved intake review and blocks any batch above the callable's 250-row limit;
+  it does not silently import a first page.
+  A host import that targets an existing Catch-booking attendee fails before
+  writing roster rows or a receipt; booking status and financial authority stay
+  with Catch. `manageHostRosterIntake` stores private, server-only sessions and
+  nested apply receipts. Each session binds the manager, organizer, event, file
+  fingerprint, mapping, complete row evidence, explicit exclusions and revision.
+  Preview labels additions, updates, unchanged rows, exclusions and identity
+  conflicts against the current event roster. Apply requires the exact review
+  hash, revalidates manager and event scope, recomputes the preview inside the
+  canonical import transaction and records an immutable receipt. Retries and
+  lost responses reuse the same session/import identities. The Flutter client
+  keeps only the opaque account/organizer/event-scoped session id locally for
+  resume; roster PII remains in the server-owned session. The extraction seam is
+  deterministic by default and has a synthetic provider for tests only. No live
+  model provider, credentials, paid inference or guest-data transmission is
+  enabled.
 
 Hosts may list operational attendees and import receipts only for events they
 manage. An attendee does not gain roster-list access when their UID is linked;

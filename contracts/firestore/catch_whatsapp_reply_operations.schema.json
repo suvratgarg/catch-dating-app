@@ -196,6 +196,26 @@
       "minLength": 1,
       "maxLength": 64,
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "appAuthorityBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor",
+        "reviewer",
+        "recipient"
+      ],
+      "properties": {
+        "actor": {
+          "$ref": "catch_whatsapp_app_authorities.schema.json#/definitions/binding"
+        },
+        "reviewer": {
+          "$ref": "catch_whatsapp_app_authorities.schema.json#/definitions/binding"
+        },
+        "recipient": {
+          "$ref": "catch_whatsapp_app_authorities.schema.json#/definitions/binding"
+        }
+      }
     }
   },
   "allOf": [
