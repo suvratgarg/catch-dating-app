@@ -132,6 +132,31 @@ export const adminSalesIntelligenceClauseMutationResponseSchema: Record<string, 
           "minLength": 1,
           "maxLength": 96,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "partnerCitations": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
         }
       },
       "definitions": {

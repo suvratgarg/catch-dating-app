@@ -453,6 +453,33 @@ export const salesOutreachDraftsDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ]
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision",
+        "renderedDraftId"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "renderedDraftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "definitions": {

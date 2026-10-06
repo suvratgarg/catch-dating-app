@@ -236,3 +236,41 @@ it("requires new factual and tone review for an automatically replaced draft", a
   await waitFor(() => expect(screen.getByRole("button", {name: "Approve exact draft"})).toHaveProperty("disabled", true));
   expect(api.review).not.toHaveBeenCalled();
 });
+
+it("shares public citations only after an owner's explicit selection", async () => {
+  const {api, view} = fixture();
+  const catalog = await api.catalog("org-one");
+  const option = {evidenceId: "evidence-public", sourceHash: hash,
+    sourceRef: "https://public.example.test/events", excerpt: "Public excerpt",
+    observedAt: evaluatedAt, validThrough: null, confidence: "high" as const};
+  vi.mocked(api.catalog).mockResolvedValue({...catalog, clauses: [{...catalog.clauses[0], state: "draft",
+    partnerCitationOptions: [option]}]});
+  view(true);
+  const choice = await screen.findByLabelText(/Share this exact public citation/u);
+  expect(choice).toHaveProperty("checked", false);
+  fireEvent.click(choice);
+  fireEvent.click(screen.getByRole("button", {name: "Approve wording"}));
+  await waitFor(() => expect(api.reviewClause).toHaveBeenCalledOnce());
+  expect(vi.mocked(api.reviewClause).mock.calls[0][0]).toMatchObject({
+    clauseId: catalog.clauses[0].clauseId, expectedRevision: 1, decision: "approve",
+    partnerCitations: [{evidenceId: option.evidenceId, sourceHash: hash}]});
+});
+
+it("does not carry citation sharing selection onto changed source content", async () => {
+  const {api, view, client} = fixture();
+  const catalog = await api.catalog("org-one");
+  const option = {evidenceId: "evidence-public", sourceHash: hash,
+    sourceRef: "https://public.example.test/events", excerpt: "Original public excerpt",
+    observedAt: evaluatedAt, validThrough: null, confidence: "high" as const};
+  const original = {...catalog, clauses: [{...catalog.clauses[0], state: "draft" as const, partnerCitationOptions: [option]}]};
+  vi.mocked(api.catalog).mockResolvedValue(original);
+  view(true);
+  fireEvent.click(await screen.findByLabelText(/Share this exact public citation/u));
+  const changed = {...original, clauses: [{...original.clauses[0],
+    partnerCitationOptions: [{...option, excerpt: "Changed public excerpt", sourceHash: "b".repeat(64)}]}]};
+  act(() => client.setQueryData(["sales-intelligence", "employee-one", "org-one", "catalog"], changed));
+  await waitFor(() => expect(screen.getByLabelText(/Share this exact public citation/u)).toHaveProperty("checked", false));
+  fireEvent.click(screen.getByRole("button", {name: "Approve wording"}));
+  await waitFor(() => expect(api.reviewClause).toHaveBeenCalledOnce());
+  expect(vi.mocked(api.reviewClause).mock.calls[0][0]).not.toHaveProperty("partnerCitations");
+});

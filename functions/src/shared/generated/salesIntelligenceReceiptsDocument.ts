@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.
+ * Immutable actor-scoped exact-retry receipt for private employee intelligence and assignment-bound partner composition actions. Never proof of sending.
  */
 export interface SalesIntelligenceReceiptDocument {
   schemaVersion: 1;
@@ -18,7 +18,11 @@ export interface SalesIntelligenceReceiptDocument {
     | "score.snapshot"
     | "draft.record"
     | "draft.review"
-    | "draft.copy";
+    | "draft.copy"
+    | "partner.draft.record"
+    | "partner.draft.review"
+    | "partner.draft.copy"
+    | "partner.draft.manual_send";
   requestId: string;
   materialHash: string;
   result: {

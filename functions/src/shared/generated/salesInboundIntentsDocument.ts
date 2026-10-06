@@ -12,7 +12,7 @@ export type SalesInboundIntentsDocument = {
   revision: number;
   classification: "sales_private";
   intentId: string;
-  source: "website";
+  source: "website" | "partner";
   submissionId: string;
   requestHash: string;
   waitlistId: string;
@@ -20,7 +20,7 @@ export type SalesInboundIntentsDocument = {
   organizerId: string | null;
   evidenceStatus: "self_reported";
   fullName: string;
-  email: string;
+  email: string | null;
   city: string;
   entryRoute: string | null;
   alreadyJoined: boolean;
@@ -74,4 +74,5 @@ export type SalesInboundIntentsDocument = {
   };
   linkedBy?: string;
   linkRequestId?: string;
+  partnerUid?: string;
 };
