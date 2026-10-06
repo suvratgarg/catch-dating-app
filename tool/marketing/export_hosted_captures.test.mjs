@@ -22,7 +22,8 @@ const requestOptions = event => ({eventName: "pull_request", event, repository,
 function evaluate(expression, options) {
   return vm.runInNewContext(expression, {
     github: {event_name: options.eventName, event: options.event, repository: options.repository,
-      sha: options.runSha, workflow_sha: options.workflowDefinitionSha},
+      sha: options.runSha, workflow_sha: options.workflowDefinitionSha, run_id: "123", run_attempt: "2"},
+    env: {CAPTURE_SOURCE_SHA: options.sourceSha},
     inputs: options.event.inputs ?? {}, cancelled: () => false,
     contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
   }, {timeout: 1000});
@@ -311,6 +312,22 @@ test("capture label does not admit full CI or replace the Required CI context", 
   assert.equal(isAdmissionEvent(event), true);
   assert.equal(evaluate(condition, requestOptions(event)), true);
   assert.equal(evaluate(name, requestOptions(event)), "Required CI");
+});
+
+test("actual artifact name includes exact selected source SHA for both dispatch and PR labels", () => {
+  const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
+  const selection = source.match(/^      CAPTURE_SOURCE_SHA: \$\{\{ (.*) \}\}$/mu)?.[1];
+  const template = source.match(/^          name: (canonical-marketing-.*)$/mu)?.[1];
+  assert.ok(selection && template);
+  const labeled = requestOptions(labelEvent());
+  const manual = {...labeled, eventName: "workflow_dispatch",
+    event: {inputs: {source_sha: "e".repeat(40)}}};
+  for (const context of [labeled, manual]) {
+    const sourceSha = evaluate(selection, context);
+    const name = template.replace(/\$\{\{\s*(.*?)\s*\}\}/gu,
+      (_, expression) => evaluate(expression, {...context, sourceSha}));
+    assert.equal(name, `canonical-marketing-${sourceSha}-123-2`);
+  }
 });
 
 test("actual request-check step verifies controller checkout and event binding before rendering", t => {

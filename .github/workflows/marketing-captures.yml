@@ -87,7 +87,7 @@ jobs:
         id: bundle
         uses: actions/upload-artifact@v7
         with:
-          name: canonical-marketing-${{ inputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: canonical-marketing-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.CAPTURE_OUTPUT_DIR }}/
           if-no-files-found: error
           retention-days: 7
