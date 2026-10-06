@@ -465,7 +465,7 @@ test(
   }
 );
 
-test("attendee references keep tickets distinct without an order column",
+test("shared buyer phone requires review even with distinct references",
   () => {
     const rows = ["ticket-a", "ticket-b"].map((reference, index) => ({
       rowId: String(index + 2), displayName: `Guest ${index + 1}`,
@@ -475,10 +475,9 @@ test("attendee references keep tickets distinct without an order column",
     }));
     const result = prepareImportRows({eventId: "event-1",
       importKey: "two-tickets", format: "csv", rows});
-    assert.equal(result.errors.length, 0);
-    assert.equal(result.prepared.length, 2);
-    assert.notEqual(result.prepared[0].attendeeId,
-      result.prepared[1].attendeeId);
+    assert.equal(result.prepared.length, 0);
+    assert.deepEqual(result.errors.map((error) => error.code),
+      ["shared-phone-identity", "shared-phone-identity"]);
   });
 
 test("email-only duplicate tickets require review instead of collapsing",
@@ -625,6 +624,63 @@ test("host import cannot replace a Catch booking's roster facts", async () => {
   assert.equal(firestore.entries("eventAttendeeImports").length, 0);
 });
 
+test("referenced host row cannot bypass a legacy phone-key booking",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const bookingId = eventAttendeeId("event-1", "phone:+919876543210");
+    const path = `eventAttendees/${bookingId}`;
+    const firestore = new FakeFirestore({
+      "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+        status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      [path]: {eventId: "event-1", organizerId: "organizer-1",
+        source: "catchBooking", status: "registered",
+        phoneE164: "+919876543210", displayName: "Booked Guest"},
+    });
+    const payload = {eventId: "event-1", importKey: "new-ticket-id",
+      fileName: "guests.csv", format: "csv" as const, rows: [{
+        rowId: "2", displayName: "Host Guest", phone: "+919876543210",
+        email: null, externalReference: "ticket-a", arrivalGroup: null,
+        ticketType: null, status: "registered" as const,
+      }]};
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload}, {firestore: () => firestore as never,
+      checkRateLimit: async () => undefined, timestamp: () => now}),
+    /matches another event attendee/u);
+    assert.equal(firestore.get(path)?.displayName, "Booked Guest");
+    assert.equal(firestore.entries("eventAttendees").length, 1);
+    assert.equal(firestore.entries("eventAttendeeImports").length, 0);
+  });
+
+test("phone-key upload cannot bypass an existing attendee reference",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const referencedId = eventAttendeeId("event-1", "external:ticket-a");
+    const firestore = new FakeFirestore({
+      "events/event-1": {clubId: "organizer-1",
+        organizerId: "organizer-1", status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      [`eventAttendees/${referencedId}`]: {eventId: "event-1",
+        organizerId: "organizer-1", source: "hostImport",
+        status: "registered", phoneE164: "+919876543210",
+        externalReference: "ticket-a", displayName: "Original Guest"},
+    });
+    const payload = {eventId: "event-1", importKey: "phone-only-retry",
+      fileName: "guests.csv", format: "csv" as const, rows: [{
+        rowId: "2", displayName: "Different Guest", phone: "+919876543210",
+        email: null, externalReference: null, arrivalGroup: null,
+        ticketType: null, status: "registered" as const,
+      }]};
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload}, {firestore: () => firestore as never,
+      checkRateLimit: async () => undefined, timestamp: () => now}),
+    /matches another event attendee/u);
+    assert.equal(firestore.entries("eventAttendees").length, 1);
+    assert.equal(firestore.entries("eventAttendeeImports").length, 0);
+  });
+
 test("re-import cannot transfer a claimed attendee's verified endpoint",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);
@@ -727,6 +783,41 @@ test("ready Host import reserves full batch or writes no attendee or receipt",
       "external:guest-3")}`), undefined);
     assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 2);
     assert.equal(firestore.get("events/event-1")?.bookedCount, 2);
+  });
+
+test("ready import rejects shared buyer phone without writing seats",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+      status: "active", capacityLimit: 2, bookedCount: 0,
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+    const policy = deriveEventSeatPolicy(event);
+    const firestore = new FakeFirestore({
+      "events/event-1": event,
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 2,
+        occupied: 0, revision: 1, capacityRevision: 1,
+        policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+        migrationRevision: 1, state: "ready"},
+    });
+    const rows = ["ticket-a", "ticket-b"].map((reference, index) => ({
+      rowId: String(index + 2), displayName: `Guest ${index + 1}`,
+      phone: "+919876543210", email: "buyer@example.com",
+      externalReference: reference, arrivalGroup: "order-a",
+      ticketType: "General", status: "registered" as const,
+    }));
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload: {eventId: "event-1", importKey: "shared-buyer-phone",
+        fileName: "tickets.csv", format: "csv", rows}},
+    {firestore: () => firestore as never,
+      checkRateLimit: async () => undefined, timestamp: () => now}),
+    /Shared contact phone needs attendee-level review/u);
+    assert.equal(firestore.entries("eventAttendees").length, 0);
+    assert.equal(firestore.entries("eventAttendeeImports").length, 0);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
   });
 
 test("import rejects unsupported city values before writing a row", () => {
@@ -1124,12 +1215,37 @@ function sourceImportFixture() {
       throw new HttpsError("failed-precondition", "Source withdrawn.");
     }
   };
-  const run = (changes: Partial<typeof payload> = {}) =>
+  const run = (changes: Partial<typeof payload> = {}, commitSource?: (
+    tx: FirebaseFirestore.Transaction, importId: string
+  ) => void) =>
     importEventAttendeesForHost({hostUid: "host-1", authorizeSource,
+      commitSource,
       payload: {...payload, ...changes}}, {firestore: () => db,
       checkRateLimit: async () => undefined, timestamp: () => now});
   return {firestore, run, checks};
 }
+
+test("private source completion shares the attendee and receipt commit",
+  async () => {
+    const h = sourceImportFixture();
+    await assert.rejects(h.run({}, () => {
+      throw new Error("draft revision changed");
+    }), /draft revision changed/u);
+    assert.equal(h.firestore.entries("eventAttendees").length, 0);
+    assert.equal(h.firestore.entries("eventAttendeeImports").length, 0);
+    const first = await h.run({}, (tx, importId) => {
+      tx.set((h.firestore as unknown as FirebaseFirestore.Firestore)
+        .collection("hostRosterIntakeSessions").doc("synthetic"),
+      {state: "applied", importId});
+    });
+    assert.equal(h.firestore.get("hostRosterIntakeSessions/synthetic")
+      ?.importId, first.importId);
+    assert.equal(h.firestore.entries("eventAttendeeImports").length, 1);
+    assert.equal(h.firestore.entries("eventAttendees").length, 1);
+    assert.deepEqual(await h.run({}, () => {
+      throw new Error("must not write on replay");
+    }), {...first, replayed: true});
+  });
 
 test("source adapter retries authority before attendee and seat writes",
   async () => {

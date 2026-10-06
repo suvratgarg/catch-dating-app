@@ -141,6 +141,17 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
   }
 
   Future<void> _pickRoster() async {
+    final operation = ++_importGeneration;
+    final eventId = widget.eventId;
+    final organizerId = widget.organizerId;
+    final accountId = ref.read(uidProvider).asData?.value;
+    if (accountId == null) return;
+    bool sameScope() =>
+        mounted &&
+        _importGeneration == operation &&
+        widget.eventId == eventId &&
+        widget.organizerId == organizerId &&
+        ref.read(uidProvider).asData?.value == accountId;
     _setLocalState(() {
       _importing = true;
       _mutationError = null;
@@ -149,53 +160,84 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       final table = await ref
           .read(hostOperationalRosterControllerProvider)
           .pickRosterFile(providerHint: widget.bookingProvider);
-      if (table == null || !mounted) return;
+      if (table == null || !sameScope() || !mounted) return;
       final plan = await showHostRosterMapping(
         context,
         table,
         suggestedRevenueAmountMinor: widget.suggestedRevenueAmountMinor,
         defaultRevenueCurrency: widget.revenueCurrency,
       );
-      if (plan == null || !mounted) return;
+      if (plan == null || !sameScope() || !mounted) return;
       await _importRows(
+        generation: operation,
+        eventId: eventId,
+        organizerId: organizerId,
+        accountId: accountId,
         fileName: table.fileName,
         format: table.format,
         rows: plan.rows,
       );
     } on HostRosterImportException catch (error) {
-      if (mounted) {
+      if (sameScope() && mounted) {
         showCatchNotice(
           context,
           hostRosterImportIssueCopy(context, error.issue),
         );
       }
     } catch (error) {
-      if (mounted) showCatchNoticeError(context, error);
+      if (sameScope() && mounted) showCatchNoticeError(context, error);
     } finally {
-      if (mounted) _setLocalState(() => _importing = false);
+      if (mounted && operation == _importGeneration) {
+        _setLocalState(() => _importing = false);
+      }
     }
   }
 
   Future<void> _showManualGuest() async {
+    final scopeGeneration = _importGeneration;
+    final eventId = widget.eventId;
+    final organizerId = widget.organizerId;
+    final accountId = ref.read(uidProvider).asData?.value;
+    if (accountId == null) return;
     final row = await showCatchBottomSheet<EventAttendeeImportRow>(
       context: context,
       builder: (context) => const HostManualAttendeeSheet(),
     );
-    if (row == null || !mounted) return;
+    if (row == null ||
+        !mounted ||
+        _importGeneration != scopeGeneration ||
+        widget.eventId != eventId ||
+        widget.organizerId != organizerId ||
+        ref.read(uidProvider).asData?.value != accountId) {
+      return;
+    }
+    final operation = ++_importGeneration;
     _setLocalState(() {
       _importing = true;
       _mutationError = null;
     });
     try {
       await _importRows(
+        generation: operation,
+        eventId: eventId,
+        organizerId: organizerId,
+        accountId: accountId,
         fileName: 'manual-entry',
         format: EventAttendeeImportFormat.manual,
         rows: [row],
       );
     } catch (error) {
-      if (mounted) showCatchNoticeError(context, error);
+      if (mounted &&
+          _importGeneration == operation &&
+          widget.eventId == eventId &&
+          widget.organizerId == organizerId &&
+          ref.read(uidProvider).asData?.value == accountId) {
+        showCatchNoticeError(context, error);
+      }
     } finally {
-      if (mounted) _setLocalState(() => _importing = false);
+      if (mounted && operation == _importGeneration) {
+        _setLocalState(() => _importing = false);
+      }
     }
   }
 
@@ -260,26 +302,37 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
   }
 
   Future<void> _importRows({
+    required int generation,
+    required String eventId,
+    required String organizerId,
+    required String accountId,
     required String fileName,
     required EventAttendeeImportFormat format,
     required List<EventAttendeeImportRow> rows,
   }) async {
+    bool sameScope() =>
+        mounted &&
+        _importGeneration == generation &&
+        widget.eventId == eventId &&
+        widget.organizerId == organizerId &&
+        ref.read(uidProvider).asData?.value == accountId;
+    if (!sameScope()) return;
     final importKey = format == EventAttendeeImportFormat.manual
         ? _newImportKey()
-        : hostRosterImportKey(format: format, rows: rows);
+        : hostRosterImportKey(format: format, rows: rows, fileName: fileName);
     try {
       final result = await ref
           .read(hostOperationalRosterControllerProvider)
           .importAttendees(
-            eventId: widget.eventId,
+            eventId: eventId,
             importKey: importKey,
             fileName: fileName,
             format: format,
             rows: rows,
           );
-      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
-      if (!mounted) return;
+      if (!sameScope() || !mounted) return;
+      ref.invalidate(watchEventAttendeesProvider(eventId));
+      ref.invalidate(hostEventRosterInsightsProvider(eventId));
       if (result.errors.isEmpty) {
         showCatchNotice(
           context,
@@ -322,7 +375,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         );
       }
     } catch (error) {
-      if (mounted) _setLocalState(() => _mutationError = error);
+      if (sameScope()) _setLocalState(() => _mutationError = error);
       rethrow;
     }
   }

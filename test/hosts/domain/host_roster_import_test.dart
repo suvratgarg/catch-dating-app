@@ -110,7 +110,7 @@ void main() {
     expect(rows.map((row) => row.arrivalGroup), ['order-7', 'order-7']);
   });
 
-  test('attendee references keep tickets distinct with a shared phone', () {
+  test('shared phone across attendee references requires review', () {
     final table = parseHostRosterFile(
       fileName: 'tickets.csv',
       bytes: Uint8List.fromList(
@@ -122,10 +122,11 @@ void main() {
       ),
     );
     final mapped = table.mapRows(table.suggestedMapping);
-    expect(mapped.issues, isEmpty);
-    expect(mapped.rows.map((row) => row.externalReference), [
-      'ticket-a',
-      'ticket-b',
+    expect(mapped.rows, isEmpty);
+    expect(mapped.needsReviewCount, 2);
+    expect(mapped.issues.map((issue) => issue.type), [
+      HostRosterRowIssueType.duplicateIdentity,
+      HostRosterRowIssueType.duplicateIdentity,
     ]);
   });
 
@@ -184,6 +185,28 @@ void main() {
             status: EventAttendeeStatus.registered,
           ),
         ],
+      ),
+      isNot(original),
+    );
+    expect(
+      hostRosterImportKey(
+        format: EventAttendeeImportFormat.csv,
+        rows: const [
+          EventAttendeeImportRow(
+            rowId: '2',
+            displayName: 'Asha Shah',
+            cityMarketId: 'in-ka-bengaluru',
+            status: EventAttendeeStatus.registered,
+          ),
+        ],
+      ),
+      isNot(original),
+    );
+    expect(
+      hostRosterImportKey(
+        format: EventAttendeeImportFormat.csv,
+        rows: const [first],
+        fileName: 'renamed.csv',
       ),
       isNot(original),
     );

@@ -237,6 +237,11 @@ export async function importEventAttendeesForHost(
     authorizeSource?: (
       tx: FirebaseFirestore.Transaction, replayed: boolean
     ) => Promise<void>;
+    // Join a private source receipt to the canonical attendee transaction.
+    // This runs after all reads, before attendee/seat/import writes.
+    commitSource?: (
+      tx: FirebaseFirestore.Transaction, importId: string
+    ) => Promise<void> | void;
   },
   deps: EventAttendeeDeps = defaultDeps
 ): Promise<EventAttendeeImportResult> {
@@ -260,6 +265,10 @@ export async function importEventAttendeesForHost(
     format: payload.format,
     rows: payload.rows,
   });
+  if (errors.some((error) => error.code === "shared-phone-identity")) {
+    throw new HttpsError("failed-precondition",
+      "Shared contact phone needs attendee-level review before import.");
+  }
   const attendeeRefs = prepared.map((row) =>
     db.collection("eventAttendees").doc(row.attendeeId)
   );
@@ -294,6 +303,25 @@ export async function importEventAttendeesForHost(
       return importResult(importId, existing, true);
     }
     await params.authorizeSource?.(tx, false);
+    // A supplied contact must not bypass another attendee's phone key,
+    // including a late write after a host reviewed this upload.
+    const importedPhones = [...new Set(prepared
+      .filter((row) => row.phoneE164)
+      .map((row) => row.phoneE164!))];
+    const phoneMatches = await Promise.all(importedPhones.map((phone) =>
+      tx.get(db.collection("eventAttendees")
+        .where("eventId", "==", payload.eventId)
+        .where("phoneE164", "==", phone).limit(2))));
+    for (let index = 0; index < importedPhones.length; index++) {
+      const matchingIds = new Set(prepared
+        .filter((row) => row.phoneE164 === importedPhones[index])
+        .map((row) => row.attendeeId));
+      if (phoneMatches[index].docs.some((snap) =>
+        !matchingIds.has(snap.id))) {
+        throw new HttpsError("failed-precondition",
+          "Imported contact matches another event attendee; review identity.");
+      }
+    }
     const existingAttendeeSnaps = await Promise.all(attendeeRefs.map((ref) =>
       tx.get(ref)));
     const existingById = new Map(existingAttendeeSnaps
@@ -321,6 +349,7 @@ export async function importEventAttendeesForHost(
     const now = deps.timestamp();
     let seatImport: Awaited<ReturnType<
       typeof prepareFirestoreBatchSeatImport>> | null = null;
+    let readyLedgerOccupied = 0;
     if (seatMode === "ready") {
       const organizerId = event.organizerId ?? event.clubId;
       const seatTx = new FirestoreSeatTransaction(db, tx);
@@ -333,6 +362,7 @@ export async function importEventAttendeesForHost(
         throw new HttpsError("failed-precondition",
           "Event seat policy needs reconciliation.");
       }
+      readyLedgerOccupied = ledger.occupied;
       const unlinkedRows = [] as Array<{
         attendeeId: string; rowId: string;
         status: "registered" | "checkedIn" | "invited" | "waitlisted";
@@ -376,11 +406,16 @@ export async function importEventAttendeesForHost(
           eventId: payload.eventId, organizerId, importId,
           rows: unlinkedRows, nowMillis: now.toMillis()});
       }
+    }
+    await params.commitSource?.(tx, importId);
+    if (seatMode === "ready") {
       if (seatImport) {
         applyBatchImportSeats(seatImport.writer,
           seatImport.plan);
       }
-      tx.update(eventRef, {bookedCount: ledger.occupied +
+      // The ledger was read and validated above.
+      tx.update(eventRef, {bookedCount:
+        readyLedgerOccupied +
         (seatImport?.plan.newSeats ?? 0)});
     }
     const source = payload.format === "manual" ? "hostManual" : "hostImport";
@@ -1223,6 +1258,15 @@ export function prepareImportRows(params: {
   const prepared: PreparedRow[] = [];
   const errors: ImportError[] = [];
   const seenAttendeeIds = new Set<string>();
+  const phoneIdentities = new Map<string, Set<string>>();
+  for (const row of params.rows) {
+    const phone = normalizeRosterPhone(row.phone).value;
+    if (!phone) continue;
+    const reference = stringOrNull(row.externalReference)?.toLowerCase();
+    const identities = phoneIdentities.get(phone) ?? new Set<string>();
+    identities.add(reference ? `external:${reference}` : `phone:${phone}`);
+    phoneIdentities.set(phone, identities);
+  }
   for (const row of params.rows) {
     const displayName = row.displayName.trim().replace(/\s+/g, " ");
     const phoneResult = normalizeRosterPhone(row.phone);
@@ -1232,6 +1276,13 @@ export function prepareImportRows(params: {
         code: "invalid-phone",
         message: phoneResult.issue,
       });
+      continue;
+    }
+    if (phoneResult.value &&
+        (phoneIdentities.get(phoneResult.value)?.size ?? 0) > 1) {
+      errors.push({rowId: row.rowId, code: "shared-phone-identity",
+        message: "This contact phone appears on distinct tickets. " +
+          "Review attendee phone identity before importing."});
       continue;
     }
     const email = stringOrNull(row.email)?.toLowerCase() ?? null;

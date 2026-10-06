@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
@@ -233,6 +234,7 @@ class _HostOperationalRosterPanelState
   void _setLocalState(VoidCallback callback) => setState(callback);
 
   var _importing = false;
+  var _importGeneration = 0;
   var _creatingHandoff = false;
   String? _pendingAttendanceId;
   String? _pendingClaimUid;
@@ -256,6 +258,17 @@ class _HostOperationalRosterPanelState
           unawaited(_flushAttendanceOutbox());
         }
       });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant HostOperationalRosterPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.eventId != widget.eventId ||
+        oldWidget.organizerId != widget.organizerId) {
+      _importGeneration += 1;
+      _importing = false;
+      _mutationError = null;
     }
   }
 

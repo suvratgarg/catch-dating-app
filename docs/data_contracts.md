@@ -2227,9 +2227,12 @@ replaces `eventParticipations`:
   Catch-booking projection, OTP linking and public registration are
   server-owned operations;
 - deterministic contact/source keys make retry and re-import idempotent inside
-  one event. An attendee-level source reference takes precedence over shared
-  phone/email when present, so two tickets using a buyer's contact remain
-  distinct. An email-only collision is an explicit duplicate-row exception,
+  one event. An attendee-level source reference takes precedence over a
+  contact value when present. Shared buyer phones across distinct references
+  require review before importing, because current ready-seat authority treats
+  a phone as one exclusive alias. The host may omit a buyer phone from guest
+  identity when each attendee has a distinct source reference. An email-only
+  collision is an explicit duplicate-row exception,
   never evidence to merge distinct tickets; it does not build a cross-event
   identity graph;
 - `arrivalGroup` retains an optional provider booking/order/group or

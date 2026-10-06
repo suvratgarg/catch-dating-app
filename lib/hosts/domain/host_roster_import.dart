@@ -319,8 +319,38 @@ class HostRosterTable {
         ),
       );
     }
+    final phoneIdentities = <String, Set<String>>{};
+    for (final row in mapped) {
+      final phone = row.phone;
+      if (phone == null) continue;
+      final normalized = _normalizedRosterPhone(phone)!;
+      phoneIdentities
+          .putIfAbsent(normalized, () => <String>{})
+          .add(
+            row.externalReference?.trim().toLowerCase() ?? 'phone:$normalized',
+          );
+    }
+    final ambiguousPhones = phoneIdentities.entries
+        .where((entry) => entry.value.length > 1)
+        .map((entry) => entry.key)
+        .toSet();
+    final ready = <EventAttendeeImportRow>[];
+    for (final row in mapped) {
+      if (row.phone != null &&
+          ambiguousPhones.contains(_normalizedRosterPhone(row.phone!))) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.duplicateIdentity,
+            rowNumber: int.tryParse(row.rowId),
+          ),
+        );
+        needsReviewCount += 1;
+      } else {
+        ready.add(row);
+      }
+    }
     return HostRosterMappedRows(
-      rows: mapped,
+      rows: ready,
       issues: issues,
       truncatedCount: rows.length > 250 ? rows.length - 250 : 0,
       excludedCount: excludedCount,
