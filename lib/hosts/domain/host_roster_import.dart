@@ -489,22 +489,39 @@ List<Map<String, Object?>> _buildIntakeRows({
             'confidence': null,
           };
           fields[field] = evidence;
-          if (entry.key == HostRosterField.revenueAmount) {
-            fields['revenueCurrency'] = evidence;
-            fields['revenueSource'] = evidence;
-          }
         }
+        Map<String, Object?> hostEvidence(String header) => {
+          'column': -1,
+          'header': header,
+          'origin': 'hostCorrection',
+          'confidence': null,
+        };
         if (value['revenueAmountMinor'] != null &&
             !fields.containsKey('revenueAmountMinor')) {
-          final hostEvidence = <String, Object?>{
-            'column': -1,
-            'header': 'Host per-guest revenue fallback',
-            'origin': 'hostCorrection',
-            'confidence': null,
-          };
-          fields['revenueAmountMinor'] = hostEvidence;
-          fields['revenueCurrency'] = hostEvidence;
-          fields['revenueSource'] = hostEvidence;
+          fields['revenueAmountMinor'] = hostEvidence(
+            'Host per-guest revenue fallback',
+          );
+        }
+        if (value['revenueCurrency'] != null &&
+            !fields.containsKey('revenueCurrency')) {
+          fields['revenueCurrency'] = hostEvidence(
+            'Host revenue currency fallback',
+          );
+        }
+        if (value['revenueSource'] case final source?) {
+          final amountColumn = mapping[HostRosterField.revenueAmount];
+          final uploadedAmount =
+              amountColumn != null &&
+              amountColumn < raw.length &&
+              raw[amountColumn].trim().isNotEmpty;
+          fields['revenueSource'] = uploadedAmount
+              ? <String, Object?>{
+                  'column': amountColumn,
+                  'header': table.headers[amountColumn],
+                  'origin': 'upload',
+                  'confidence': null,
+                }
+              : hostEvidence('Host revenue authority: $source');
         }
         return <String, Object?>{
           'value': value,

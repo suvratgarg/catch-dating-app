@@ -248,6 +248,7 @@ class _HostOperationalRosterPanelState
 
   var _importing = false;
   var _importGeneration = 0;
+  final _rosterIntakeScopeRevision = ValueNotifier<int>(0);
   var _creatingHandoff = false;
   String? _pendingAttendanceId;
   String? _pendingClaimUid;
@@ -277,19 +278,41 @@ class _HostOperationalRosterPanelState
         if (mounted) unawaited(_loadRosterIntakeDraft());
       });
     }
+    ref.listenManual(uidProvider, (previous, next) {
+      if (previous?.asData?.value == next.asData?.value) return;
+      _invalidateRosterIntakeScope();
+      if (mounted && widget._view == _HostOperationalRosterView.guestIntake) {
+        unawaited(_loadRosterIntakeDraft());
+      }
+    });
+  }
+
+  void _invalidateRosterIntakeScope() {
+    _importGeneration += 1;
+    _rosterIntakeScopeRevision.value += 1;
+    if (!mounted) return;
+    _setLocalState(() {
+      _importing = false;
+      _mutationError = null;
+      _savedRosterIntakeSessionId = null;
+    });
   }
 
   @override
   void didUpdateWidget(covariant HostOperationalRosterPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.eventId != widget.eventId ||
-        oldWidget.organizerId != widget.organizerId) {
-      _importGeneration += 1;
-      _importing = false;
-      _mutationError = null;
-      _savedRosterIntakeSessionId = null;
+        oldWidget.organizerId != widget.organizerId ||
+        oldWidget._view != widget._view) {
+      _invalidateRosterIntakeScope();
       unawaited(_loadRosterIntakeDraft());
     }
+  }
+
+  @override
+  void dispose() {
+    _rosterIntakeScopeRevision.dispose();
+    super.dispose();
   }
 
   @override

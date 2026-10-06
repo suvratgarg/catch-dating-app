@@ -24,14 +24,19 @@ void main() {
         ),
       ],
     );
+    final scopeRevision = ValueNotifier<int>(0);
+    addTearDown(scopeRevision.dispose);
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
           body: HostRosterIntakeReviewSheet(
             review: unresolved,
-            onExclude: (review, ids) async {
-              expect(ids, ['2']);
+            scopeRevision: scopeRevision,
+            onSetExcluded: (review, ids) async {
+              final excluded = ids.toList(growable: false);
+              if (excluded.isEmpty) return unresolved;
+              expect(excluded, ['2']);
               return _review(
                 eligible: true,
                 rows: const [
@@ -86,6 +91,49 @@ void main() {
     expect(applyAfter.onPressed, isNotNull);
     expect(find.textContaining('Ravi Rao · source row 3'), findsOneWidget);
     expect(find.textContaining('Not provided → Ravi Rao'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('host-roster-intake-restore')));
+    await pumpFeatureUi(tester);
+    expect(
+      find.textContaining('Correct or remove the shared phone'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('scope change immediately scrubs an open review', (tester) async {
+    final scopeRevision = ValueNotifier<int>(0);
+    addTearDown(scopeRevision.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: HostRosterIntakeReviewSheet(
+            review: _review(
+              eligible: false,
+              rows: const [
+                HostRosterIntakePreviewRow(
+                  rowId: '2',
+                  sourceRowNumber: 2,
+                  displayName: 'Private Guest',
+                  kind: 'needsReview',
+                  changedFields: [],
+                  issueCode: 'invalid-phone',
+                ),
+              ],
+            ),
+            scopeRevision: scopeRevision,
+            onSetExcluded: (review, ids) async => review,
+            onApply: (review) async => review,
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.textContaining('Private Guest'), findsOneWidget);
+
+    scopeRevision.value += 1;
+    await tester.pump();
+
+    expect(find.textContaining('Private Guest'), findsNothing);
   });
 }
 

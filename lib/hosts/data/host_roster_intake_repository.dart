@@ -44,7 +44,7 @@ class HostRosterIntakeRepository {
     ),
   );
 
-  Future<HostRosterIntakeReview> excludeRows(
+  Future<HostRosterIntakeReview> setExcludedRows(
     HostRosterIntakeReview review,
     Iterable<String> rowIds,
   ) => _call(
@@ -53,10 +53,7 @@ class HostRosterIntakeRepository {
       sessionId: review.sessionId,
       expectedRevision: review.revision,
       rows: review.evidenceRows,
-      excludedRowIds: {
-        ...review.excludedRowIds,
-        ...rowIds,
-      }.toList(growable: false),
+      excludedRowIds: rowIds.toList(growable: false),
     ),
   );
 

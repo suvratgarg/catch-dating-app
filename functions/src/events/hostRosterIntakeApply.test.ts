@@ -167,6 +167,8 @@ test("authenticated callable starts and previews a resumable session",
     assert.deepEqual(rateLimited, ["host-1"]);
     assert.equal(response.preview?.counts.add, 1);
     assert.equal(response.preview?.eligibleForApply, true);
+    saved = reviseHostRosterIntakeDraft({draft: saved,
+      expectedRevision: 1, rows: saved.rows, excludedRowIds: ["2"]});
     const remappedRows = fixture().rows.map((row) => ({...row,
       value: {...row.value, displayName: "Asha Remapped"}}));
     const remapped = await manageHostRosterIntakeHandler({
@@ -178,6 +180,7 @@ test("authenticated callable starts and previews a resumable session",
         mapping: {displayName: 0, externalReference: 1},
         rows: remappedRows},
     } as unknown as CallableRequest<unknown>, deps);
-    assert.equal(remapped.draft.revision, 2);
+    assert.equal(remapped.draft.revision, 3);
+    assert.deepEqual(remapped.draft.excludedRowIds, []);
     assert.equal(remapped.draft.rows[0].value.displayName, "Asha Remapped");
   });

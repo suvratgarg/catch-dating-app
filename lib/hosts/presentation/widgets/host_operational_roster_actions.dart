@@ -274,11 +274,12 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
   }) => showHostRosterIntakeReview(
     context,
     review: initial,
-    onExclude: (review, rowIds) {
+    scopeRevision: _rosterIntakeScopeRevision,
+    onSetExcluded: (review, rowIds) {
       if (!sameScope()) throw StateError('Host event scope changed.');
       return ref
           .read(hostOperationalRosterControllerProvider)
-          .excludeRosterIntakeRows(review, rowIds);
+          .setRosterIntakeExcludedRows(review, rowIds);
     },
     onApply: (review) {
       if (!sameScope()) throw StateError('Host event scope changed.');

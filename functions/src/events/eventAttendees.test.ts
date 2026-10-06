@@ -769,6 +769,66 @@ test("re-import cannot transfer a claimed attendee's verified endpoint",
     assert.equal(firestore.get(attendeePath)?.phoneE164, "+919876543210");
   });
 
+test("host import preserves provider and accountability facts on update",
+  async () => {
+    const createdAt = admin.firestore.Timestamp.fromMillis(500);
+    const checkedInAt = admin.firestore.Timestamp.fromMillis(700);
+    const resolvedAt = admin.firestore.Timestamp.fromMillis(800);
+    const providerSyncedAt = admin.firestore.Timestamp.fromMillis(900);
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const attendeeId = eventAttendeeId("event-1", "external:guest-7");
+    const attendeePath = `eventAttendees/${attendeeId}`;
+    const firestore = new FakeFirestore({
+      "events/event-1": {clubId: "organizer-1",
+        organizerId: "organizer-1", status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      [attendeePath]: {eventId: "event-1", clubId: "organizer-1",
+        organizerId: "organizer-1", displayName: "Earlier Name",
+        searchName: "earlier name", source: "providerSync",
+        status: "checkedIn", linkedUid: null,
+        phoneE164: "+919876543210", email: "guest@example.com",
+        externalReference: "guest-7", arrivalGroup: null, ticketType: null,
+        importId: null, sourceRowId: "guest-7", createdAt, updatedAt: createdAt,
+        registeredAt: createdAt, waitlistedAt: null, checkedInAt,
+        cancelledAt: null, checkedInBy: "host-1", linkedAt: null,
+        attendanceRevision: 4, preCheckInStatus: "registered",
+        accountabilityRevision: 2, accountabilityResolution: "returned",
+        accountabilityResolvedForCheckInAt: checkedInAt,
+        accountabilityResolvedAt: resolvedAt,
+        accountabilityResolvedBy: "host-2", provider: "luma",
+        providerConnectionId: "connection-1", providerGuestId: "luma-7",
+        providerSyncedAt, providerDataRevision: 3},
+    });
+    const payload = {eventId: "event-1", importKey: "host-correction",
+      fileName: "guests.csv", format: "csv" as const, rows: [{
+        rowId: "2", displayName: "Corrected Name", phone: "+919876543210",
+        email: null, externalReference: "guest-7", arrivalGroup: null,
+        ticketType: null, status: "registered" as const,
+      }]};
+
+    const result = await importEventAttendeesForHost({hostUid: "host-1",
+      payload}, {firestore: () => firestore as never,
+      checkRateLimit: async () => undefined, timestamp: () => now});
+
+    assert.equal(result.updatedCount, 1);
+    const updated = firestore.get(attendeePath)!;
+    assert.equal(updated.displayName, "Corrected Name");
+    assert.equal(updated.source, "providerSync");
+    assert.equal(updated.status, "checkedIn");
+    assert.equal(updated.email, "guest@example.com");
+    assert.equal(updated.provider, "luma");
+    assert.equal(updated.providerConnectionId, "connection-1");
+    assert.equal(updated.providerGuestId, "luma-7");
+    assert.equal(updated.providerSyncedAt, providerSyncedAt);
+    assert.equal(updated.providerDataRevision, 3);
+    assert.equal(updated.accountabilityRevision, 2);
+    assert.equal(updated.accountabilityResolution, "returned");
+    assert.equal(updated.accountabilityResolvedForCheckInAt, checkedInAt);
+    assert.equal(updated.accountabilityResolvedAt, resolvedAt);
+    assert.equal(updated.accountabilityResolvedBy, "host-2");
+  });
+
 test("ready Host import reserves full batch or writes no attendee or receipt",
   async () => {
     const now = admin.firestore.Timestamp.fromMillis(1000);

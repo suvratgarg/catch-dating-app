@@ -263,6 +263,8 @@ void main() {
         utf8.encode(
           'Name,Email,Amount Paid,Currency\n'
           'Asha,asha@example.com,"1,250.50",INR\n'
+          'Mira,mira@example.com,50.00,\n'
+          'Neha,neha@example.com,,INR\n'
           'Ravi,ravi@example.com,,',
         ),
       ),
@@ -280,6 +282,10 @@ void main() {
       mapped.rows.first.revenueSource,
       EventAttendeeRevenueSource.hostImport,
     );
+    expect(mapped.rows[1].revenueAmountMinor, 5000);
+    expect(mapped.rows[1].revenueCurrency, 'INR');
+    expect(mapped.rows[2].revenueAmountMinor, 90000);
+    expect(mapped.rows[2].revenueCurrency, 'INR');
     expect(mapped.rows.last.revenueAmountMinor, 90000);
     expect(
       mapped.rows.last.revenueSource,
@@ -294,6 +300,48 @@ void main() {
       plan.intakeRows.first['fields']! as Map,
     );
     expect(importedFields, contains('revenueCurrency'));
+    final amountWithFallbackCurrency = Map<String, Object?>.from(
+      plan.intakeRows[1]['fields']! as Map,
+    );
+    expect(
+      Map<String, Object?>.from(
+        amountWithFallbackCurrency['revenueAmountMinor']! as Map,
+      ),
+      containsPair('origin', 'upload'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        amountWithFallbackCurrency['revenueCurrency']! as Map,
+      ),
+      containsPair('origin', 'hostCorrection'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        amountWithFallbackCurrency['revenueSource']! as Map,
+      ),
+      containsPair('origin', 'upload'),
+    );
+    final fallbackAmountWithUploadedCurrency = Map<String, Object?>.from(
+      plan.intakeRows[2]['fields']! as Map,
+    );
+    expect(
+      Map<String, Object?>.from(
+        fallbackAmountWithUploadedCurrency['revenueAmountMinor']! as Map,
+      ),
+      containsPair('origin', 'hostCorrection'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        fallbackAmountWithUploadedCurrency['revenueCurrency']! as Map,
+      ),
+      containsPair('origin', 'upload'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        fallbackAmountWithUploadedCurrency['revenueSource']! as Map,
+      ),
+      containsPair('origin', 'hostCorrection'),
+    );
     final fallbackFields = Map<String, Object?>.from(
       plan.intakeRows.last['fields']! as Map,
     );

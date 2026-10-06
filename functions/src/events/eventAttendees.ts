@@ -440,12 +440,16 @@ export async function importEventAttendeesForHost(
       const status = existing?.status === "checkedIn" ?
         "checkedIn" : row.status;
       const document: EventAttendeeDocument = {
+        // Start from the transaction-read record so upload fields that are
+        // absent from this canonical payload cannot erase independent facts
+        // such as provider identity or post-event accountability results.
+        ...existing,
         eventId: payload.eventId,
         clubId: event.clubId,
         organizerId: event.organizerId ?? event.clubId,
         displayName: row.displayName,
         searchName: row.searchName,
-        source: existing?.source === "catchBooking" ? "catchBooking" : source,
+        source: existing?.source ?? source,
         status,
         linkedUid: existing?.linkedUid ?? null,
         phoneE164: row.phoneE164 ?? existing?.phoneE164 ?? null,

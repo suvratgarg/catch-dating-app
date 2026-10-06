@@ -31618,6 +31618,8 @@
   "@hostsOperationalRosterIntakeExceptions": {"description": "Count of unresolved or conflicting intake rows.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet", "placeholders": {"count": {"type": "int"}}},
   "hostsOperationalRosterIntakeExclude": "Exclude {count, plural, =1{1 unresolved row} other{{count} unresolved rows}}",
   "@hostsOperationalRosterIntakeExclude": {"description": "Explicitly excludes unresolved rows and refreshes preview.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet", "placeholders": {"count": {"type": "int"}}},
+  "hostsOperationalRosterIntakeRestore": "Restore {count, plural, =1{1 excluded row} other{{count} excluded rows}}",
+  "@hostsOperationalRosterIntakeRestore": {"description": "Restores explicitly excluded intake rows to exception review before apply.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet", "placeholders": {"count": {"type": "int"}}},
   "hostsOperationalRosterIntakeRetry": "The saved review could not be updated. Try again; no roster changes were applied.",
   "@hostsOperationalRosterIntakeRetry": {"description": "Retry-safe saved intake failure copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet"},
   "hostsOperationalRosterIntakeRow": "Source row {row}",

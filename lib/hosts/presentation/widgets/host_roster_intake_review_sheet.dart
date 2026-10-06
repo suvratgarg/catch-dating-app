@@ -4,16 +4,18 @@ import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 Future<HostRosterIntakeReview?> showHostRosterIntakeReview(
   BuildContext context, {
   required HostRosterIntakeReview review,
+  required ValueListenable<int> scopeRevision,
   required Future<HostRosterIntakeReview> Function(
     HostRosterIntakeReview review,
     Iterable<String> rowIds,
   )
-  onExclude,
+  onSetExcluded,
   required Future<HostRosterIntakeReview> Function(
     HostRosterIntakeReview review,
   )
@@ -22,7 +24,8 @@ Future<HostRosterIntakeReview?> showHostRosterIntakeReview(
   context: context,
   builder: (context) => HostRosterIntakeReviewSheet(
     review: review,
-    onExclude: onExclude,
+    scopeRevision: scopeRevision,
+    onSetExcluded: onSetExcluded,
     onApply: onApply,
   ),
 );
@@ -31,16 +34,18 @@ class HostRosterIntakeReviewSheet extends StatefulWidget {
   const HostRosterIntakeReviewSheet({
     super.key,
     required this.review,
-    required this.onExclude,
+    required this.scopeRevision,
+    required this.onSetExcluded,
     required this.onApply,
   });
 
   final HostRosterIntakeReview review;
+  final ValueListenable<int> scopeRevision;
   final Future<HostRosterIntakeReview> Function(
     HostRosterIntakeReview review,
     Iterable<String> rowIds,
   )
-  onExclude;
+  onSetExcluded;
   final Future<HostRosterIntakeReview> Function(HostRosterIntakeReview review)
   onApply;
 
@@ -52,8 +57,32 @@ class HostRosterIntakeReviewSheet extends StatefulWidget {
 class _HostRosterIntakeReviewSheetState
     extends State<HostRosterIntakeReviewSheet> {
   late HostRosterIntakeReview _review = widget.review;
+  late final int _initialScopeRevision;
   var _pending = false;
+  var _scopeInvalidated = false;
   Object? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialScopeRevision = widget.scopeRevision.value;
+    widget.scopeRevision.addListener(_handleScopeChange);
+  }
+
+  @override
+  void dispose() {
+    widget.scopeRevision.removeListener(_handleScopeChange);
+    super.dispose();
+  }
+
+  void _handleScopeChange() {
+    if (_scopeInvalidated ||
+        widget.scopeRevision.value == _initialScopeRevision) {
+      return;
+    }
+    setState(() => _scopeInvalidated = true);
+    Navigator.of(context).maybePop();
+  }
 
   Future<void> _excludeUnresolved() async {
     final ids = _review.unresolvedRowIds.toList(growable: false);
@@ -63,12 +92,31 @@ class _HostRosterIntakeReviewSheetState
       _error = null;
     });
     try {
-      final review = await widget.onExclude(_review, ids);
-      if (mounted) setState(() => _review = review);
+      final review = await widget.onSetExcluded(_review, {
+        ..._review.excludedRowIds,
+        ...ids,
+      });
+      if (mounted && !_scopeInvalidated) setState(() => _review = review);
     } catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (mounted && !_scopeInvalidated) setState(() => _error = error);
     } finally {
-      if (mounted) setState(() => _pending = false);
+      if (mounted && !_scopeInvalidated) setState(() => _pending = false);
+    }
+  }
+
+  Future<void> _restoreExcluded() async {
+    if (_pending || _review.excludedRowIds.isEmpty) return;
+    setState(() {
+      _pending = true;
+      _error = null;
+    });
+    try {
+      final review = await widget.onSetExcluded(_review, const []);
+      if (mounted && !_scopeInvalidated) setState(() => _review = review);
+    } catch (error) {
+      if (mounted && !_scopeInvalidated) setState(() => _error = error);
+    } finally {
+      if (mounted && !_scopeInvalidated) setState(() => _pending = false);
     }
   }
 
@@ -82,14 +130,15 @@ class _HostRosterIntakeReviewSheetState
       final applied = await widget.onApply(_review);
       if (mounted) Navigator.of(context).pop(applied);
     } catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (mounted && !_scopeInvalidated) setState(() => _error = error);
     } finally {
-      if (mounted) setState(() => _pending = false);
+      if (mounted && !_scopeInvalidated) setState(() => _pending = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_scopeInvalidated) return const SizedBox.shrink();
     final unresolved = _review.unresolvedRowIds.length;
     return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterIntakeReviewTitle,
@@ -149,6 +198,20 @@ class _HostRosterIntakeReviewSheetState
                   onPressed: _pending
                       ? null
                       : () => Navigator.of(context).pop(),
+                  variant: CatchButtonVariant.ghost,
+                ),
+              ),
+            ],
+            if (_review.excludedRowIds.isNotEmpty) ...[
+              gapH8,
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: CatchButton(
+                  key: const ValueKey('host-roster-intake-restore'),
+                  label: context.l10n.hostsOperationalRosterIntakeRestore(
+                    count: _review.excludedRowIds.length,
+                  ),
+                  onPressed: _pending ? null : _restoreExcluded,
                   variant: CatchButtonVariant.ghost,
                 ),
               ),

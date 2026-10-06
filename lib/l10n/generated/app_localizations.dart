@@ -40306,6 +40306,12 @@ abstract class AppLocalizations {
   /// **'Exclude {count, plural, =1{1 unresolved row} other{{count} unresolved rows}}'**
   String hostsOperationalRosterIntakeExclude({required int count});
 
+  /// Restores explicitly excluded intake rows to exception review before apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore {count, plural, =1{1 excluded row} other{{count} excluded rows}}'**
+  String hostsOperationalRosterIntakeRestore({required int count});
+
   /// Retry-safe saved intake failure copy.
   ///
   /// In en, this message translates to:

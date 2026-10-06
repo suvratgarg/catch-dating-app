@@ -185,8 +185,9 @@ export async function manageHostRosterIntakeHandler(
           JSON.stringify(draft.rows) !== JSON.stringify(rows))) {
       draft = await deps.store.revise({sessionId: draft.sessionId, hostUid,
         expectedRevision: draft.revision, rows,
-        excludedRowIds: draft.excludedRowIds.filter((rowId) =>
-          rows.some((row) => row.value.rowId === rowId)), mapping,
+        // A deliberate remap starts a fresh row decision pass. Keeping an old
+        // exclusion would make a corrected row impossible to restore in UI.
+        excludedRowIds: [], mapping,
       }, deps.authorize);
     }
     return reviewResponse(draft, deps);

@@ -24987,6 +24987,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostsOperationalRosterIntakeRestore({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count excluded rows',
+      one: '1 excluded row',
+    );
+    return 'Restore $_temp0';
+  }
+
+  @override
   String get hostsOperationalRosterIntakeRetry =>
       'The saved review could not be updated. Try again; no roster changes were applied.';
 

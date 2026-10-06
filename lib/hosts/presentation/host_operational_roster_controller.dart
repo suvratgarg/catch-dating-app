@@ -62,11 +62,12 @@ class HostOperationalRosterController {
       .read(hostRosterIntakeRepositoryProvider)
       .start(eventId: eventId, organizerId: organizerId, plan: plan);
 
-  Future<HostRosterIntakeReview> excludeRosterIntakeRows(
+  Future<HostRosterIntakeReview> setRosterIntakeExcludedRows(
     HostRosterIntakeReview review,
     Iterable<String> rowIds,
-  ) =>
-      _ref.read(hostRosterIntakeRepositoryProvider).excludeRows(review, rowIds);
+  ) => _ref
+      .read(hostRosterIntakeRepositoryProvider)
+      .setExcludedRows(review, rowIds);
 
   Future<HostRosterIntakeReview> resumeRosterIntake(String sessionId) =>
       _ref.read(hostRosterIntakeRepositoryProvider).resume(sessionId);
