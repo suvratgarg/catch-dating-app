@@ -15,6 +15,9 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ManageHostRosterIntakeCallablePayload", "source": "callables/manage_host_roster_intake_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts"},
+  {"name": "HostRosterIntakeSessionDocument", "source": "firestore/host_roster_intake_sessions.schema.json", "typeOutput": "functions/src/shared/generated/hostRosterIntakeSessionDocument.ts"},
+  {"name": "HostRosterIntakeReceiptDocument", "source": "firestore/host_roster_intake_receipts.schema.json", "typeOutput": "functions/src/shared/generated/hostRosterIntakeReceiptDocument.ts"},
   {"name": "ManageProgramLodgingCallablePayload", "source": "callables/manage_program_lodging_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallablePayload.ts"},
   {"name": "ManageProgramLodgingCallableResponse", "source": "callable_responses/manage_program_lodging_response.schema.json", "typeOutput": "functions/src/shared/generated/manageProgramLodgingCallableResponse.ts"},
   {"name": "ProgramLodgingConfigDocument", "source": "firestore/program_lodging_configs.schema.json", "typeOutput": "functions/src/shared/generated/programLodgingConfigDocument.ts"},
@@ -29,6 +32,8 @@ const schemaSpecs = [
   {"name": "CatchWhatsappReadinessAuditDocument", "source": "firestore/catch_whatsapp_readiness_audit.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts"},
   {"name": "CatchWhatsappReplyOperationDocument", "source": "firestore/catch_whatsapp_reply_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts"},
   {"name": "CatchWhatsappEndpointStopDocument", "source": "firestore/catch_whatsapp_endpoint_stops.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts"},
+  {"name": "CatchWhatsappAppAuthorityDocument", "source": "firestore/catch_whatsapp_app_authorities.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappAppAuthorityDocument.ts"},
+  {"name": "CatchWhatsappIngressEvidenceDocument", "source": "firestore/catch_whatsapp_ingress_evidence.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappIngressEvidenceDocument.ts"},
   {"name": "CatchWhatsappReplyReadinessDocument", "source": "firestore/catch_whatsapp_reply_readiness.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts"},
   {"name": "AdminReviewCatchWhatsappInboundCallablePayload", "source": "callables/admin_review_catch_whatsapp_inbound_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminReviewCatchWhatsappInboundCallablePayload.ts"},
   {"name": "AdminReviewCatchWhatsappInboundCallableResponse", "source": "callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json", "typeOutput": "functions/src/shared/generated/adminReviewCatchWhatsappInboundCallableResponse.ts"},

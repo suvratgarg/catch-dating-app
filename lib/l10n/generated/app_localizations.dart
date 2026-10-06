@@ -19223,10 +19223,10 @@ abstract class AppLocalizations {
   /// **'This workbook has {count} worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.'**
   String hostsOperationalRosterMultipleWorksheets({required int count});
 
-  /// Roster import confirmation CTA.
+  /// Continue mapped rows to saved roster review.
   ///
   /// In en, this message translates to:
-  /// **'Import {count} guests'**
+  /// **'Review {count} ready guests'**
   String hostsOperationalRosterImportAction({required int count});
 
   /// External event guest list field title.
@@ -40189,6 +40189,239 @@ abstract class AppLocalizations {
     required String status,
     required String source,
   });
+
+  /// Title for the saved Host roster intake review sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guest changes'**
+  String get hostsOperationalRosterIntakeReviewTitle;
+
+  /// Returns to the event-scoped Host roster intake draft saved on the server.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume saved review'**
+  String get hostsOperationalRosterIntakeResume;
+
+  /// Closes saved review so the Host can remap the same source file; the next start revises the saved session.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct mapping and upload again'**
+  String get hostsOperationalRosterIntakeCorrectMapping;
+
+  /// Guest and source row identity in exact intake review.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · source row {row}'**
+  String hostsOperationalRosterIntakeRowIdentity({
+    required String name,
+    required int row,
+  });
+
+  /// Source ticket identity in intake review.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket/reference: {reference}'**
+  String hostsOperationalRosterIntakeReference({required String reference});
+
+  /// Exact current to proposed field change with provenance.
+  ///
+  /// In en, this message translates to:
+  /// **'{field}: {before} → {after} · {source}'**
+  String hostsOperationalRosterIntakeFieldChange({
+    required String field,
+    required String before,
+    required String after,
+    required String source,
+  });
+
+  /// Missing side of an intake field comparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get hostsOperationalRosterIntakeValueMissing;
+
+  /// Labels the authority of reported roster revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue authority'**
+  String get hostsOperationalRosterIntakeRevenueSource;
+
+  /// Uploaded field provenance.
+  ///
+  /// In en, this message translates to:
+  /// **'uploaded value'**
+  String get hostsOperationalRosterIntakeOriginUpload;
+
+  /// Host-entered field provenance.
+  ///
+  /// In en, this message translates to:
+  /// **'host correction or estimate'**
+  String get hostsOperationalRosterIntakeOriginHostCorrection;
+
+  /// Synthetic or future model proposal provenance; never presented as verified.
+  ///
+  /// In en, this message translates to:
+  /// **'unverified proposal'**
+  String get hostsOperationalRosterIntakeOriginModelProposal;
+
+  /// Server intake default provenance.
+  ///
+  /// In en, this message translates to:
+  /// **'intake default'**
+  String get hostsOperationalRosterIntakeOriginDefault;
+
+  /// Existing roster field provenance fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'existing roster'**
+  String get hostsOperationalRosterIntakeOriginExisting;
+
+  /// Actionable intake name exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct the guest-name mapping, then upload this file again, or exclude this row.'**
+  String get hostsOperationalRosterIntakeIssueName;
+
+  /// Actionable email-only or duplicate ticket identity exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a distinct phone or ticket reference, then upload again. Email alone cannot prove that two tickets belong to one person.'**
+  String get hostsOperationalRosterIntakeIssueTicketIdentity;
+
+  /// Actionable phone identity exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct or remove the shared phone, then upload again. One phone cannot silently merge distinct tickets.'**
+  String get hostsOperationalRosterIntakeIssuePhoneIdentity;
+
+  /// Actionable email exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct the email address, then upload again, or exclude this row.'**
+  String get hostsOperationalRosterIntakeIssueEmail;
+
+  /// Actionable city exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a supported city, then upload again, or exclude this row.'**
+  String get hostsOperationalRosterIntakeIssueCity;
+
+  /// Actionable revenue exception and authority disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct the amount and three-letter currency, then upload again. This remains host-reported revenue, not a verified Catch payment.'**
+  String get hostsOperationalRosterIntakeIssueRevenue;
+
+  /// Actionable status exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Map an explicit supported status, then upload again, or exclude this row.'**
+  String get hostsOperationalRosterIntakeIssueStatus;
+
+  /// Catch booking authority conflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch booking and payment facts are authoritative. Exclude this row rather than replacing them.'**
+  String get hostsOperationalRosterIntakeIssueCatchBooking;
+
+  /// Verified identity conflict guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'This conflicts with a verified guest identity. Correct the source identity or exclude the row.'**
+  String get hostsOperationalRosterIntakeIssueClaimedIdentity;
+
+  /// Fallback actionable intake exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct this row and upload again, or explicitly exclude it before apply.'**
+  String get hostsOperationalRosterIntakeIssueGeneric;
+
+  /// Explains saved review-before-apply behavior.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} is saved. Review every proposed roster change before applying it.'**
+  String hostsOperationalRosterIntakeReviewSubtitle({required String fileName});
+
+  /// Applies the exact reviewed roster proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply reviewed changes'**
+  String get hostsOperationalRosterIntakeApply;
+
+  /// Count of unresolved or conflicting intake rows.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row needs a decision before apply.} other{{count} rows need a decision before apply.}}'**
+  String hostsOperationalRosterIntakeExceptions({required int count});
+
+  /// Explicitly excludes unresolved rows and refreshes preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Exclude {count, plural, =1{1 unresolved row} other{{count} unresolved rows}}'**
+  String hostsOperationalRosterIntakeExclude({required int count});
+
+  /// Restores explicitly excluded intake rows to exception review before apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore {count, plural, =1{1 excluded row} other{{count} excluded rows}}'**
+  String hostsOperationalRosterIntakeRestore({required int count});
+
+  /// Retry-safe saved intake failure copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved review could not be updated. Try again; no roster changes were applied.'**
+  String get hostsOperationalRosterIntakeRetry;
+
+  /// Source row label in intake review.
+  ///
+  /// In en, this message translates to:
+  /// **'Source row {row}'**
+  String hostsOperationalRosterIntakeRow({required int row});
+
+  /// Exact preview count by outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind}: {count}'**
+  String hostsOperationalRosterIntakeCount({
+    required String kind,
+    required int count,
+  });
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostsOperationalRosterIntakeKindAdd;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get hostsOperationalRosterIntakeKindUpdate;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Unchanged'**
+  String get hostsOperationalRosterIntakeKindUnchanged;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded'**
+  String get hostsOperationalRosterIntakeKindExcluded;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get hostsOperationalRosterIntakeKindNeedsReview;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity conflict'**
+  String get hostsOperationalRosterIntakeKindIdentityConflict;
 }
 
 class _AppLocalizationsDelegate

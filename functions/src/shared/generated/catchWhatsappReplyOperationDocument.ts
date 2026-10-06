@@ -38,4 +38,30 @@ export type CatchWhatsappReplyOperationDocument = {
   createdAtMillis: number;
   updatedAtMillis: number;
   readinessEvidenceHash: string;
+  appAuthorityBindings?: {
+    actor: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    reviewer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    recipient: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+  };
 };

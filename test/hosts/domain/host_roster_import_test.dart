@@ -34,11 +34,13 @@ void main() {
   test('roster city preview maps known aliases and flags unknown cities', () {
     final table = parseHostRosterFile(
       fileName: 'guests.csv',
-      bytes: Uint8List.fromList(utf8.encode(
-        'Name,Phone,Guest City,Status\n'
-        'Asha Shah,+919876543210,Bangalore,Confirmed\n'
-        'Ravi Rao,+919812345678,Atlantis,Confirmed',
-      )),
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Phone,Guest City,Status\n'
+          'Asha Shah,+919876543210,Bangalore,Confirmed\n'
+          'Ravi Rao,+919812345678,Atlantis,Confirmed',
+        ),
+      ),
     );
     expect(table.suggestedMapping[HostRosterField.city], 2);
     final mapped = table.mapRows(table.suggestedMapping);
@@ -108,6 +110,40 @@ void main() {
     expect(rows.map((row) => row.arrivalGroup), ['order-7', 'order-7']);
   });
 
+  test('shared phone across attendee references requires review', () {
+    final table = parseHostRosterFile(
+      fileName: 'tickets.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Phone,Email,Attendee ID\n'
+          'Asha,+919876543210,buyer@example.com,ticket-a\n'
+          'Ravi,+919876543210,buyer@example.com,ticket-b',
+        ),
+      ),
+    );
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.rows, isEmpty);
+    expect(mapped.needsReviewCount, 2);
+    expect(mapped.issues.map((issue) => issue.type), [
+      HostRosterRowIssueType.duplicateIdentity,
+      HostRosterRowIssueType.duplicateIdentity,
+    ]);
+    final plan = HostRosterImportPlan.fromMappedRows(
+      table: table,
+      mapped: mapped,
+      mapping: table.suggestedMapping,
+    );
+    expect(plan.intakeRows, hasLength(2));
+    expect(plan.intakeRows.first['issues'], ['duplicate-identity']);
+    expect(plan.intakeRows.first['rawCells'], contains('ticket-a'));
+    expect(
+      (plan.intakeRows.first['fields'] as Map<String, Object?>).containsKey(
+        'externalReference',
+      ),
+      isTrue,
+    );
+  });
+
   test('unverified provider hint keeps manual mapping available', () {
     final table = parseHostRosterFile(
       fileName: 'bookmyshow.csv',
@@ -173,6 +209,28 @@ void main() {
           EventAttendeeImportRow(
             rowId: '2',
             displayName: 'Asha Shah',
+            cityMarketId: 'in-ka-bengaluru',
+            status: EventAttendeeStatus.registered,
+          ),
+        ],
+      ),
+      isNot(original),
+    );
+    expect(
+      hostRosterImportKey(
+        format: EventAttendeeImportFormat.csv,
+        rows: const [first],
+        fileName: 'renamed.csv',
+      ),
+      isNot(original),
+    );
+    expect(
+      hostRosterImportKey(
+        format: EventAttendeeImportFormat.csv,
+        rows: const [
+          EventAttendeeImportRow(
+            rowId: '2',
+            displayName: 'Asha Shah',
             revenueAmountMinor: 125000,
             revenueCurrency: 'INR',
             revenueSource: EventAttendeeRevenueSource.hostEstimate,
@@ -205,6 +263,8 @@ void main() {
         utf8.encode(
           'Name,Email,Amount Paid,Currency\n'
           'Asha,asha@example.com,"1,250.50",INR\n'
+          'Mira,mira@example.com,50.00,\n'
+          'Neha,neha@example.com,,INR\n'
           'Ravi,ravi@example.com,,',
         ),
       ),
@@ -222,11 +282,79 @@ void main() {
       mapped.rows.first.revenueSource,
       EventAttendeeRevenueSource.hostImport,
     );
+    expect(mapped.rows[1].revenueAmountMinor, 5000);
+    expect(mapped.rows[1].revenueCurrency, 'INR');
+    expect(mapped.rows[2].revenueAmountMinor, 90000);
+    expect(mapped.rows[2].revenueCurrency, 'INR');
     expect(mapped.rows.last.revenueAmountMinor, 90000);
     expect(
       mapped.rows.last.revenueSource,
       EventAttendeeRevenueSource.hostEstimate,
     );
+    final plan = HostRosterImportPlan.fromMappedRows(
+      table: table,
+      mapped: mapped,
+      mapping: table.suggestedMapping,
+    );
+    final importedFields = Map<String, Object?>.from(
+      plan.intakeRows.first['fields']! as Map,
+    );
+    expect(importedFields, contains('revenueCurrency'));
+    final amountWithFallbackCurrency = Map<String, Object?>.from(
+      plan.intakeRows[1]['fields']! as Map,
+    );
+    expect(
+      Map<String, Object?>.from(
+        amountWithFallbackCurrency['revenueAmountMinor']! as Map,
+      ),
+      containsPair('origin', 'upload'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        amountWithFallbackCurrency['revenueCurrency']! as Map,
+      ),
+      containsPair('origin', 'hostCorrection'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        amountWithFallbackCurrency['revenueSource']! as Map,
+      ),
+      containsPair('origin', 'upload'),
+    );
+    final fallbackAmountWithUploadedCurrency = Map<String, Object?>.from(
+      plan.intakeRows[2]['fields']! as Map,
+    );
+    expect(
+      Map<String, Object?>.from(
+        fallbackAmountWithUploadedCurrency['revenueAmountMinor']! as Map,
+      ),
+      containsPair('origin', 'hostCorrection'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        fallbackAmountWithUploadedCurrency['revenueCurrency']! as Map,
+      ),
+      containsPair('origin', 'upload'),
+    );
+    expect(
+      Map<String, Object?>.from(
+        fallbackAmountWithUploadedCurrency['revenueSource']! as Map,
+      ),
+      containsPair('origin', 'hostCorrection'),
+    );
+    final fallbackFields = Map<String, Object?>.from(
+      plan.intakeRows.last['fields']! as Map,
+    );
+    for (final field in const [
+      'revenueAmountMinor',
+      'revenueCurrency',
+      'revenueSource',
+    ]) {
+      expect(
+        Map<String, Object?>.from(fallbackFields[field]! as Map),
+        containsPair('origin', 'hostCorrection'),
+      );
+    }
     expect(parseHostRosterRevenueAmountMinor('₹2,500'), 250000);
     expect(parseHostRosterRevenueAmountMinor('-5'), isNull);
   });
@@ -297,6 +425,20 @@ void main() {
         HostRosterRowIssueType.duplicateIdentity,
       ]),
     );
+  });
+
+  test('a 251-row upload retains an explicit overflow count', () {
+    final csv = StringBuffer('Name,Phone\n');
+    for (var i = 0; i < 251; i++) {
+      csv.writeln('Guest $i,+919000${i.toString().padLeft(6, '0')}');
+    }
+    final table = parseHostRosterFile(
+      fileName: 'large-roster.csv',
+      bytes: Uint8List.fromList(utf8.encode(csv.toString())),
+    );
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.readyCount, 250);
+    expect(mapped.truncatedCount, 1);
   });
 
   test('file size guard rejects oversized uploads before parsing', () {

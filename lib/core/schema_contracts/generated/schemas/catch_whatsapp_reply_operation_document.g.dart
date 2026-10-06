@@ -203,6 +203,167 @@ const schemaCatchWhatsappReplyOperationDocumentSchema = <String, Object?>{
       'maxLength': 64,
       'pattern': '^[a-f0-9]{64}\$',
     },
+    'appAuthorityBindings': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'actor',
+        'reviewer',
+        'recipient',
+      ],
+      'properties': <String, Object?>{
+        'actor': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'projectId',
+            'uid',
+            'revision',
+            'incarnation',
+            'capability',
+            'endpointHash',
+          ],
+          'properties': <String, Object?>{
+            'projectId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+            },
+            'uid': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Za-z0-9_-]{1,128}\$',
+            },
+            'revision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+            'incarnation': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'capability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'review',
+                'reply',
+                'receive',
+              ],
+            },
+            'endpointHash': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        'reviewer': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'projectId',
+            'uid',
+            'revision',
+            'incarnation',
+            'capability',
+            'endpointHash',
+          ],
+          'properties': <String, Object?>{
+            'projectId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+            },
+            'uid': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Za-z0-9_-]{1,128}\$',
+            },
+            'revision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+            'incarnation': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'capability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'review',
+                'reply',
+                'receive',
+              ],
+            },
+            'endpointHash': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        'recipient': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'projectId',
+            'uid',
+            'revision',
+            'incarnation',
+            'capability',
+            'endpointHash',
+          ],
+          'properties': <String, Object?>{
+            'projectId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+            },
+            'uid': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Za-z0-9_-]{1,128}\$',
+            },
+            'revision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+            'incarnation': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'capability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'review',
+                'reply',
+                'receive',
+              ],
+            },
+            'endpointHash': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{

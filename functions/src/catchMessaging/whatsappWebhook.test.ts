@@ -11,6 +11,11 @@ import {CATCH_WEBHOOK_COLLECTION, persistCatchWhatsappWebhookEvents} from
   "./whatsappWebhook";
 import {validateCatchWhatsappWebhookEventDocument} from
   "../shared/generated/validators/catchWhatsappWebhookEventDocument";
+import {FormPaymentTestStore} from
+  "../payments/formPayments/formPaymentTestStore";
+import {assertCatchIngressAccepted, CATCH_INGRESS_EVIDENCE} from
+  "./whatsappIngressStore";
+import {readCatchReceipt} from "./whatsappEndpointStops";
 
 const config: CatchWebhookConfig = {enabled: true, wabaId: "123",
   phoneNumberId: "456", appSecret: "test-app-secret-keep-private",
@@ -189,24 +194,20 @@ test("unsubscribed fields are ignored without storing their private payload",
   });
 
 function store() {
-  const docs = new Map<string, Record<string, unknown>>();
+  const fake = new FormPaymentTestStore();
   let errorCode: number | undefined;
-  const fake = {
-    collection: (name: string) => ({
-      doc: (id: string) => ({key: name + "/" + id}),
-    }),
-    bulkWriter: () => ({onWriteError: () => {}, close: async () => {},
-      create: async (ref: {key: string}, document: Record<string, unknown>) => {
-        if (errorCode !== undefined) {
-          throw Object.assign(new Error("Injected failure"), {code: errorCode});
-        }
-        if (docs.has(ref.key)) {
-          throw Object.assign(new Error("Already exists"), {code: 6});
-        }
-        docs.set(ref.key, document);
-      }}),
+  const db = {
+    collection: (name: string) => fake.collection(name),
+    runTransaction: async (
+      work: Parameters<FormPaymentTestStore["runTransaction"]>[0]
+    ) => {
+      if (errorCode !== undefined) {
+        throw Object.assign(new Error("Injected failure"), {code: errorCode});
+      }
+      return fake.runTransaction(work);
+    },
   };
-  return {docs, db: fake as unknown as FirebaseFirestore.Firestore,
+  return {docs: fake.records, db: db as unknown as FirebaseFirestore.Firestore,
     fail: (code: number) => {
       errorCode = code;
     }};
@@ -219,8 +220,14 @@ test("concurrent retries preserve one receipt and its original TTL",
     const now = 1790854245000;
     await Promise.all([persistCatchWhatsappWebhookEvents(db.db, events, now),
       persistCatchWhatsappWebhookEvents(db.db, events, now + 1000)]);
-    assert.equal(db.docs.size, 1);
-    const [key, document] = [...db.docs][0];
+    const receipts = [...db.docs].filter(([key]) =>
+      key.startsWith(CATCH_WEBHOOK_COLLECTION + "/"));
+    const evidence = [...db.docs].filter(([key]) =>
+      key.startsWith(CATCH_INGRESS_EVIDENCE + "/"));
+    assert.equal(receipts.length, 1);
+    assert.equal(evidence.length, 1);
+    assert.equal(db.docs.size, 2);
+    const [key, document] = receipts[0];
     assert.ok(key.startsWith(CATCH_WEBHOOK_COLLECTION + "/cwhe_"));
     assert.equal(document.receivedAtMillis, now);
     const expiresAt = document.expiresAt as FirebaseFirestore.Timestamp;
@@ -228,17 +235,36 @@ test("concurrent retries preserve one receipt and its original TTL",
     assert.ok(validateCatchWhatsappWebhookEventDocument({...document,
       expiresAt: {_seconds: expiresAt.seconds,
         _nanoseconds: expiresAt.nanoseconds}}));
+    await db.db.runTransaction((tx) =>
+      assertCatchIngressAccepted(tx, db.db, readCatchReceipt(document)));
   });
 
 test("only existing receipts count as successful persistence retries",
   async () => {
     const events = parseCatchWhatsappWebhook(payload(), config);
-    const duplicate = store(); duplicate.fail(6);
-    await persistCatchWhatsappWebhookEvents(duplicate.db, events);
-    for (const code of [7, 14]) {
+    const now = 1790854245000;
+    const duplicate = store();
+    await persistCatchWhatsappWebhookEvents(duplicate.db, events, now);
+    const original = new Map(duplicate.docs);
+    await persistCatchWhatsappWebhookEvents(duplicate.db, events, now + 1000);
+    assert.deepEqual(duplicate.docs, original);
+    const receiptKey = CATCH_WEBHOOK_COLLECTION + "/" + events[0].eventId;
+    const proofKey = CATCH_INGRESS_EVIDENCE + "/" + events[0].eventId;
+    await duplicate.db.runTransaction((tx) => assertCatchIngressAccepted(tx,
+      duplicate.db, readCatchReceipt(duplicate.docs.get(receiptKey))));
+    // A bare duplicate error is not evidence of an equivalent retained receipt.
+    for (const code of [6, 7, 14]) {
       const db = store(); db.fail(code);
-      await assert.rejects(persistCatchWhatsappWebhookEvents(db.db, events));
+      await assert.rejects(
+        persistCatchWhatsappWebhookEvents(db.db, events, now), {code});
+      assert.equal(db.docs.size, 0);
     }
+    const missingReceipt = store();
+    missingReceipt.docs.set(proofKey, {...original.get(proofKey)!});
+    await assert.rejects(persistCatchWhatsappWebhookEvents(missingReceipt.db,
+      events, now + 1000), /Catch ingress requires reconciliation/);
+    assert.equal(missingReceipt.docs.has(receiptKey), false);
+    assert.equal(missingReceipt.docs.get(proofKey)!.state, "blocked");
   });
 
 test("invalid internal receipts cannot reach the writer", async () => {
@@ -260,19 +286,28 @@ test("Firestore deduplicates Catch callbacks atomically",
     const events = parseCatchWhatsappWebhook(payload([{...incoming,
       id: "wamid.emulator." + Date.now()}]), config);
     const ref = db.collection(CATCH_WEBHOOK_COLLECTION).doc(events[0].eventId);
+    const proofRef = db.collection(CATCH_INGRESS_EVIDENCE)
+      .doc(events[0].eventId);
     const now = 1790854245000;
     try {
       await persistCatchWhatsappWebhookEvents(db, events, now);
+      const originalReceipt = (await ref.get()).data()!;
+      const originalProof = (await proofRef.get()).data()!;
+      assert.equal(originalProof.state, "accepted");
       await Promise.all(Array.from({length: 5}, () =>
         persistCatchWhatsappWebhookEvents(db, events, now + 1000)));
       const receipt = (await ref.get()).data()!;
+      assert.deepEqual(receipt, originalReceipt);
+      assert.deepEqual((await proofRef.get()).data(), originalProof);
       assert.equal(receipt.messageId, events[0].messageId);
       assert.equal(receipt.receivedAtMillis, now);
       assert.equal(receipt.expiresAt.toMillis(),
         now + WEBHOOK_RETENTION_MILLIS);
       assert.equal(receipt.organizerId, undefined);
+      await db.runTransaction((tx) =>
+        assertCatchIngressAccepted(tx, db, readCatchReceipt(receipt)));
     } finally {
-      await ref.delete();
+      await Promise.all([ref.delete(), proofRef.delete()]);
       await app.delete();
     }
   });

@@ -107,6 +107,22 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "appAuthorityBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer",
+        "recipient"
+      ],
+      "properties": {
+        "reviewer": {
+          "$ref": "catch_whatsapp_app_authorities.schema.json#/definitions/binding"
+        },
+        "recipient": {
+          "$ref": "catch_whatsapp_app_authorities.schema.json#/definitions/binding"
+        }
+      }
     }
   },
   "description": "Private externally reviewed historical STOP clearance for one Catch sender/recipient endpoint. Complete evidence from sender inception (coverage starts at epoch) through verified atomic STOP ingress is required; empty or expired receipt queries are never proof. This feature only reads the record; it cannot attest, provision, refresh or activate it. No TTL or raw endpoint.",

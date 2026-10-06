@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
@@ -21,6 +22,8 @@ import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_intake_draft_journal.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_intake_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
@@ -28,6 +31,7 @@ import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.d
 import 'package:catch_dating_app/hosts/presentation/widgets/host_booking_provider_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_luma_connection_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +81,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
     required this.mutationError,
     required this.onOpenChanged,
     required this.onImport,
+    required this.onResume,
     required this.onAddGuest,
     required this.onForward,
     required this.onRetryProvider,
@@ -94,6 +99,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
   final Object? mutationError;
   final ValueChanged<bool> onOpenChanged;
   final VoidCallback onImport;
+  final VoidCallback? onResume;
   final VoidCallback onAddGuest;
   final VoidCallback onForward;
   final VoidCallback onRetryProvider;
@@ -130,6 +136,14 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
                   variant: CatchButtonVariant.secondary,
                   leading: Icon(CatchIcons.cloudUploadOutlined),
                 ),
+                if (onResume != null)
+                  CatchButton(
+                    key: const ValueKey<String>('host-roster-intake-resume'),
+                    label: context.l10n.hostsOperationalRosterIntakeResume,
+                    onPressed: importing ? null : onResume,
+                    variant: CatchButtonVariant.secondary,
+                    leading: Icon(CatchIcons.refreshRounded),
+                  ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterAddGuest,
                   onPressed: importing ? null : onAddGuest,
@@ -233,6 +247,8 @@ class _HostOperationalRosterPanelState
   void _setLocalState(VoidCallback callback) => setState(callback);
 
   var _importing = false;
+  var _importGeneration = 0;
+  final _rosterIntakeScopeRevision = ValueNotifier<int>(0);
   var _creatingHandoff = false;
   String? _pendingAttendanceId;
   String? _pendingClaimUid;
@@ -240,6 +256,7 @@ class _HostOperationalRosterPanelState
   var _providerMutationPending = false;
   String? _providerSyncOperationId;
   Object? _mutationError;
+  String? _savedRosterIntakeSessionId;
   HostAttendanceOutboxSummary? _attendanceOutbox;
   HostRosterInsightFilter _insightFilter = HostRosterInsightFilter.all;
 
@@ -256,7 +273,46 @@ class _HostOperationalRosterPanelState
           unawaited(_flushAttendanceOutbox());
         }
       });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_loadRosterIntakeDraft());
+      });
     }
+    ref.listenManual(uidProvider, (previous, next) {
+      if (previous?.asData?.value == next.asData?.value) return;
+      _invalidateRosterIntakeScope();
+      if (mounted && widget._view == _HostOperationalRosterView.guestIntake) {
+        unawaited(_loadRosterIntakeDraft());
+      }
+    });
+  }
+
+  void _invalidateRosterIntakeScope() {
+    _importGeneration += 1;
+    _rosterIntakeScopeRevision.value += 1;
+    if (!mounted) return;
+    _setLocalState(() {
+      _importing = false;
+      _mutationError = null;
+      _savedRosterIntakeSessionId = null;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant HostOperationalRosterPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.eventId != widget.eventId ||
+        oldWidget.organizerId != widget.organizerId ||
+        oldWidget._view != widget._view) {
+      _invalidateRosterIntakeScope();
+      unawaited(_loadRosterIntakeDraft());
+    }
+  }
+
+  @override
+  void dispose() {
+    _rosterIntakeScopeRevision.dispose();
+    super.dispose();
   }
 
   @override
@@ -271,11 +327,15 @@ class _HostOperationalRosterPanelState
         bookingProvider: widget.bookingProvider,
         mutationError: _mutationError,
         onOpenChanged: (open) {
+          if (open) unawaited(_loadRosterIntakeDraft());
           if (open && _showsProviderSource) {
             unawaited(_loadProviderSetup());
           }
         },
         onImport: () => unawaited(_pickRoster()),
+        onResume: _savedRosterIntakeSessionId == null
+            ? null
+            : () => unawaited(_resumeRosterIntake()),
         onAddGuest: () => unawaited(_showManualGuest()),
         onForward: () => unawaited(_showRosterHandoff()),
         onRetryProvider: () => unawaited(_loadProviderSetup(force: true)),

@@ -433,6 +433,117 @@
       }
     },
     {
+      "id": "firebase:function-release-fingerprints",
+      "category": "firebase",
+      "path": "tool/firebase/function_release_fingerprints.mjs",
+      "command": "node --test tool/firebase/function_release_fingerprints.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/function_release_fingerprints.test.mjs"
+      ],
+      "description": "Tests per-export runtime dependency fingerprints with conservative unknown-impact rejection; promotion integration requires independent source and immutable package evidence.",
+      "checks": [
+        "node --check tool/firebase/function_release_fingerprints.mjs",
+        "node --test tool/firebase/function_release_fingerprints.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/function_release_fingerprints.test.mjs",
+        "contains": [
+          "shared file changes only the reachable exported behavior",
+          "changed dynamic-load consumer fails closed rather than deploying all",
+          "arbitrary dynamic loading cannot hide changes elsewhere in the package"
+        ]
+      }
+    },
+    {
+      "id": "ci:selective-backend-release",
+      "category": "ci",
+      "path": "tool/ci/selective_backend_release.mjs",
+      "command": "node --test tool/ci/selective_backend_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/selective_backend_release.test.mjs",
+        "tool/firebase/function_release_fingerprints.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/ci/backend_delivery_lanes.mjs",
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
+        "tool/ci/delivery_core.mjs"
+      ],
+      "alsoCheckIds": [
+        "firebase:function-release-fingerprints",
+        "ci:firebase-functions-checkpoint",
+        "firebase:index-readiness-waiter"
+      ],
+      "description": "Tests selective release plans, authenticated baseline adapters and mixed-source per-Function ledgers against independent source, package, materialized params, scoped index readiness and live deployment identities.",
+      "checks": [
+        "node --check tool/ci/selective_backend_release.mjs",
+        "node --test tool/ci/selective_backend_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/selective_backend_release.test.mjs",
+        "contains": [
+          "four changed Functions get candidate provenance while 574 real baseline rows remain byte-identical",
+          "authenticated baseline adapter selects five, preserves 574 and keeps index readiness outside Functions authority",
+          "completion rederives every plan field and exact evidence digest from independent preparation",
+          "all unchanged and selected live identities must match; no drift becomes coverage"
+        ]
+      }
+    },
+    {
+      "id": "firebase:functions-source-closure",
+      "category": "firebase",
+      "path": "tool/firebase/check_functions_source_closure.mjs",
+      "command": "node tool/firebase/check_functions_source_closure.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node",
+          "functions-npm"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/check_functions_source_closure.test.mjs",
+        "tool/git/pre_commit_generated_artifacts.mjs",
+        "tool/git/pre_commit_generated_artifacts.test.mjs"
+      ],
+      "description": "Fails when any staged Functions TypeScript module, including a test helper, has an unresolved relative import; reads exact index blobs so untracked working-tree files cannot mask an omitted source dependency.",
+      "checks": [
+        "node --check tool/firebase/check_functions_source_closure.mjs",
+        "node --test tool/firebase/check_functions_source_closure.test.mjs tool/git/pre_commit_generated_artifacts.test.mjs",
+        "node tool/firebase/check_functions_source_closure.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_functions_source_closure.test.mjs",
+        "contains": [
+          "reports every unresolved production and test import",
+          "checks the staged index so an untracked file cannot mask an omission"
+        ]
+      }
+    },
+    {
       "id": "ci:firebase-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_firebase_delivery.mjs",

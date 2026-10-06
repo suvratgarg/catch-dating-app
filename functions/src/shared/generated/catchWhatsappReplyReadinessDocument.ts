@@ -22,4 +22,22 @@ export interface CatchWhatsappReplyReadinessDocument {
   reviewedByUid: string;
   reviewedAtMillis: number;
   expiresAtMillis: number;
+  appAuthorityBindings?: {
+    reviewer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    recipient: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+  };
 }
