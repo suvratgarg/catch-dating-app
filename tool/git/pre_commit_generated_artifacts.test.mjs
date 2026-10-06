@@ -144,6 +144,37 @@ test("contract drift reports both exact regeneration commands", () => {
   );
 });
 
+test("Functions TypeScript changes require staged dependency closure", () => {
+  const calls = [];
+  const result = runPreCommitGeneratedArtifacts({
+    graph,
+    repoRoot: "/fixture",
+    runCommand: (spec) => {
+      calls.push({command: spec.command, args: spec.args});
+      return {status: 0, stderr: "", stdout: ""};
+    },
+    stagedPaths: ["functions/src/catchMessaging/whatsappReplyStore.ts"],
+    unstagedPaths: [],
+  });
+  assert.deepEqual(result.checked, ["functions.source-closure"]);
+  assert.deepEqual(calls, [{
+    command: "node",
+    args: ["tool/firebase/check_functions_source_closure.mjs"],
+  }]);
+});
+
+test("missing staged Functions dependencies reject the commit", () => {
+  assert.throws(() => runPreCommitGeneratedArtifacts({
+    graph,
+    repoRoot: "/fixture",
+    runCommand: ({command}) => ({status: command === "node" ? 1 : 0,
+      stderr: "unresolved", stdout: ""}),
+    stagedPaths: ["functions/src/index.ts"],
+    unstagedPaths: [],
+  }), (error) => error instanceof PreCommitGeneratedArtifactError &&
+    /dependency closure is incomplete/u.test(error.message));
+});
+
 
 test("schema-generated Dart keeps exact generator ownership while source formats", () => {
   const calls = [];

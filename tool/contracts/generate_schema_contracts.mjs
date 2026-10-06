@@ -32,6 +32,8 @@ const schemaSpecs = [
   {"name": "CatchWhatsappReadinessAuditDocument", "source": "firestore/catch_whatsapp_readiness_audit.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReadinessAuditDocument.ts"},
   {"name": "CatchWhatsappReplyOperationDocument", "source": "firestore/catch_whatsapp_reply_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyOperationDocument.ts"},
   {"name": "CatchWhatsappEndpointStopDocument", "source": "firestore/catch_whatsapp_endpoint_stops.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappEndpointStopDocument.ts"},
+  {"name": "CatchWhatsappAppAuthorityDocument", "source": "firestore/catch_whatsapp_app_authorities.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappAppAuthorityDocument.ts"},
+  {"name": "CatchWhatsappIngressEvidenceDocument", "source": "firestore/catch_whatsapp_ingress_evidence.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappIngressEvidenceDocument.ts"},
   {"name": "CatchWhatsappReplyReadinessDocument", "source": "firestore/catch_whatsapp_reply_readiness.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappReplyReadinessDocument.ts"},
   {"name": "AdminReviewCatchWhatsappInboundCallablePayload", "source": "callables/admin_review_catch_whatsapp_inbound_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminReviewCatchWhatsappInboundCallablePayload.ts"},
   {"name": "AdminReviewCatchWhatsappInboundCallableResponse", "source": "callable_responses/admin_review_catch_whatsapp_inbound_response.schema.json", "typeOutput": "functions/src/shared/generated/adminReviewCatchWhatsappInboundCallableResponse.ts"},

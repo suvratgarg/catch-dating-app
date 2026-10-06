@@ -20,6 +20,8 @@ import {
   catchWhatsappReadinessAuditDocumentSchema,
   catchWhatsappReplyOperationDocumentSchema,
   catchWhatsappEndpointStopDocumentSchema,
+  catchWhatsappAppAuthorityDocumentSchema,
+  catchWhatsappIngressEvidenceDocumentSchema,
   catchWhatsappReplyReadinessDocumentSchema,
   adminReviewCatchWhatsappInboundCallablePayloadSchema,
   adminReviewCatchWhatsappInboundCallableResponseSchema,
@@ -1225,6 +1227,8 @@ export const validateCatchWhatsappReadinessIngressDocument = ajv.compile(catchWh
 export const validateCatchWhatsappReadinessAuditDocument = ajv.compile(catchWhatsappReadinessAuditDocumentSchema);
 export const validateCatchWhatsappReplyOperationDocument = ajv.compile(catchWhatsappReplyOperationDocumentSchema);
 export const validateCatchWhatsappEndpointStopDocument = ajv.compile(catchWhatsappEndpointStopDocumentSchema);
+export const validateCatchWhatsappAppAuthorityDocument = ajv.compile(catchWhatsappAppAuthorityDocumentSchema);
+export const validateCatchWhatsappIngressEvidenceDocument = ajv.compile(catchWhatsappIngressEvidenceDocumentSchema);
 export const validateCatchWhatsappReplyReadinessDocument = ajv.compile(catchWhatsappReplyReadinessDocumentSchema);
 export const validateAdminReviewCatchWhatsappInboundCallablePayload = ajv.compile(adminReviewCatchWhatsappInboundCallablePayloadSchema);
 export const validateAdminReviewCatchWhatsappInboundCallableResponse = ajv.compile(adminReviewCatchWhatsappInboundCallableResponseSchema);

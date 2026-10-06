@@ -111,6 +111,116 @@ export const catchWhatsappReplyReadinessDocumentSchema: Record<string, unknown> 
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "appAuthorityBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer",
+        "recipient"
+      ],
+      "properties": {
+        "reviewer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "recipient": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "description": "Private externally reviewed historical STOP clearance for one Catch sender/recipient endpoint. Complete evidence from sender inception (coverage starts at epoch) through verified atomic STOP ingress is required; empty or expired receipt queries are never proof. This feature only reads the record; it cannot attest, provision, refresh or activate it. No TTL or raw endpoint.",

@@ -11731,6 +11731,167 @@ export const catchWhatsappReplyOperationDocumentSchema = {
       "minLength": 1,
       "maxLength": 64,
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "appAuthorityBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor",
+        "reviewer",
+        "recipient"
+      ],
+      "properties": {
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "reviewer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "recipient": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "allOf": [
@@ -11895,6 +12056,420 @@ export const catchWhatsappEndpointStopDocumentSchema = {
   }
 };
 
+export const catchWhatsappAppAuthorityDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_app_authorities.schema.json",
+  "title": "CatchWhatsappAppAuthorityDocument",
+  "description": "Server-only durable project/UID/incarnation-bound capability authority. Missing records deny; no TTL, bootstrap, raw endpoint or credential. Mutations require an audited full-span Auth fence.",
+  "x-firestore-collection": "catchWhatsappAppAuthorities",
+  "x-firestore-path": "catchWhatsappAppAuthorities/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "Catch support authority service",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "uid",
+    "revision",
+    "incarnation",
+    "state",
+    "authNotBeforeSeconds",
+    "updatedAtMillis",
+    "capabilities",
+    "endpointHash",
+    "pending",
+    "grantedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "incarnation": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "granting",
+        "active"
+      ]
+    },
+    "authNotBeforeSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "review",
+          "reply",
+          "receive"
+        ]
+      }
+    },
+    "endpointHash": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pending": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "nonce",
+            "issuer",
+            "capabilities",
+            "endpointHash",
+            "expiresAtMillis"
+          ],
+          "properties": {
+            "nonce": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "issuer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "projectId",
+                "uid",
+                "revision",
+                "incarnation",
+                "capability",
+                "endpointHash"
+              ],
+              "properties": {
+                "projectId": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+                },
+                "uid": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{1,128}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "incarnation": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "capability": {
+                  "type": "string",
+                  "enum": [
+                    "review",
+                    "reply",
+                    "receive"
+                  ]
+                },
+                "endpointHash": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "capabilities": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "review",
+                  "reply",
+                  "receive"
+                ]
+              }
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "grantedBy": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "uid",
+        "revision",
+        "incarnation",
+        "capability",
+        "endpointHash"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "uid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "incarnation": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capability": {
+          "type": "string",
+          "enum": [
+            "review",
+            "reply",
+            "receive"
+          ]
+        },
+        "endpointHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const catchWhatsappIngressEvidenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_ingress_evidence.schema.json",
+  "title": "CatchWhatsappIngressEvidenceDocument",
+  "description": "Body-free durable semantic collision fence captured only after authenticated exact-sender ingress. Hashes never establish source completeness, consent or STOP absence. Blocked events cannot be reactivated; no TTL.",
+  "x-firestore-collection": "catchWhatsappIngressEvidence",
+  "x-firestore-path": "catchWhatsappIngressEvidence/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "Catch signed webhook ingress",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "wabaId",
+    "phoneNumberId",
+    "endpointHash",
+    "materialSha256",
+    "eventKind",
+    "classification",
+    "ambiguity",
+    "state",
+    "receivedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "wabaId": {
+      "type": "string",
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "phoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "endpointHash": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "materialSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "eventKind": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "status"
+      ]
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "text",
+        "stop",
+        "status",
+        "ambiguous"
+      ]
+    },
+    "ambiguity": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "unresolved-endpoint",
+            "truncated-text",
+            "unsupported-message",
+            "missing-text",
+            "invalid-status-errors"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "blocked"
+      ]
+    },
+    "receivedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const catchWhatsappReplyReadinessDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_reply_readiness.schema.json",
@@ -12004,6 +12579,116 @@ export const catchWhatsappReplyReadinessDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "appAuthorityBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer",
+        "recipient"
+      ],
+      "properties": {
+        "reviewer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "recipient": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "description": "Private externally reviewed historical STOP clearance for one Catch sender/recipient endpoint. Complete evidence from sender inception (coverage starts at epoch) through verified atomic STOP ingress is required; empty or expired receipt queries are never proof. This feature only reads the record; it cannot attest, provision, refresh or activate it. No TTL or raw endpoint.",
