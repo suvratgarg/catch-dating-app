@@ -163,6 +163,20 @@ Future<void> _settleRoute(WidgetTester tester) async {
 }
 
 void main() {
+  test(
+    'legacy Programs URL preserves organizer, saved ID and remaining query on Events',
+    () {
+      final original = Uri.parse(
+        '/host/programs?organizerId=org-1&programId=program-1&tag=a&tag=b',
+      );
+      final redirected = Uri.parse(
+        app_router.hostProgramsLegacyRedirect(original),
+      );
+      expect(redirected.path, '/host/events');
+      expect(redirected.queryParametersAll, original.queryParametersAll);
+    },
+  );
+
   test('host Audience route resolves all four peer workspaces', () {
     final audiences =
         app_router.hostAudienceScreenForUri(

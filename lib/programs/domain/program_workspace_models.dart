@@ -13,6 +13,9 @@ class OrganizerProgramListRow {
     required this.kind,
     required this.status,
     required this.revision,
+    this.startsAt,
+    this.endsAt,
+    this.functionCount,
     this.archivedAt,
     this.anonymizeAt,
     this.anonymizedAt,
@@ -25,6 +28,11 @@ class OrganizerProgramListRow {
         kind: requiredString(map, 'kind'),
         status: requiredString(map, 'status'),
         revision: requiredInt(map, 'revision'),
+        startsAt: requiredDateTime(map, 'startsAtMillis'),
+        endsAt: requiredDateTime(map, 'endsAtMillis'),
+        functionCount: map['functionCount'] is num
+            ? (map['functionCount']! as num).toInt()
+            : null,
         archivedAt: map['archivedAtMillis'] is num
             ? DateTime.fromMillisecondsSinceEpoch(
                 (map['archivedAtMillis']! as num).toInt(),
@@ -47,9 +55,53 @@ class OrganizerProgramListRow {
   final String kind;
   final String status;
   final int revision;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
+  final int? functionCount;
   final DateTime? archivedAt;
   final DateTime? anonymizeAt;
   final DateTime? anonymizedAt;
+
+  bool get isArchived => status == 'archived';
+
+  bool canUnarchiveAt(DateTime now) =>
+      isArchived &&
+      anonymizedAt == null &&
+      (anonymizeAt == null || anonymizeAt!.isAfter(now));
+}
+
+/// An authorized inventory response handed from creation to Events. The route
+/// rechecks account and organizer before rendering it; URL reopen reads the ID.
+class OrganizerProgramListAnchor {
+  const OrganizerProgramListAnchor({
+    required this.accountId,
+    required this.organizerId,
+    required this.row,
+  });
+  final String accountId;
+  final String organizerId;
+  final OrganizerProgramListRow row;
+}
+
+class OrganizerProgramInventoryPage {
+  const OrganizerProgramInventoryPage({
+    required this.programs,
+    this.nextCursor,
+  });
+
+  factory OrganizerProgramInventoryPage.fromCallableData(Object? value) {
+    final map = requiredMap(value, 'program inventory');
+    return OrganizerProgramInventoryPage(
+      programs: mapList(
+        map['programs'],
+        'programs',
+      ).map(OrganizerProgramListRow.fromMap).toList(growable: false),
+      nextCursor: map['nextCursor'] as String?,
+    );
+  }
+
+  final List<OrganizerProgramListRow> programs;
+  final String? nextCursor;
 }
 
 class OrganizerProgramSummary {

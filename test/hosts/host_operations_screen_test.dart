@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';

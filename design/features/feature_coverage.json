@@ -710,10 +710,10 @@
     },
     {
       "authority": "flutter_screens",
-      "authorityId": "screen.programs.list",
+      "authorityId": "screen.programs.create",
       "status": "planned",
       "priority": "P1",
-      "reason": "Organizer program index with create-program entry and workspace navigation.",
+      "reason": "Full program form with canonical validation, keyed persistence, receipt recovery and exact Events inventory visibility.",
       "targetFeature": "feature.programs_arrivals_ops",
       "debtId": "PROGRAMS-FEATURE-007"
     },

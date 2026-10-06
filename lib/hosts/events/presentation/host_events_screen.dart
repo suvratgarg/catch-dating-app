@@ -14,6 +14,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_view_mode
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -22,9 +23,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class HostEventsScreen extends ConsumerWidget {
-  const HostEventsScreen({super.key, this.initialOrganizerId, this.now});
+  const HostEventsScreen({
+    super.key,
+    this.initialOrganizerId,
+    this.initialProgramId,
+    this.initialProgramAnchor,
+    this.now,
+  });
 
   final String? initialOrganizerId;
+  final String? initialProgramId;
+  final OrganizerProgramListAnchor? initialProgramAnchor;
   final DateTime? now;
 
   @override
@@ -88,6 +97,8 @@ class HostEventsScreen extends ConsumerWidget {
         organizers: routeState.organizers,
         currentUid: routeState.uid!,
         initialOrganizerId: initialOrganizerId,
+        initialProgramId: initialProgramId,
+        initialProgramAnchor: initialProgramAnchor,
         now: now,
       ),
     };
@@ -100,12 +111,16 @@ class HostEventsRouteScaffold extends ConsumerStatefulWidget {
     required this.organizers,
     required this.currentUid,
     this.initialOrganizerId,
+    this.initialProgramId,
+    this.initialProgramAnchor,
     this.now,
   });
 
   final List<Club> organizers;
   final String currentUid;
   final String? initialOrganizerId;
+  final String? initialProgramId;
+  final OrganizerProgramListAnchor? initialProgramAnchor;
   final DateTime? now;
 
   @override
@@ -177,6 +192,16 @@ class _HostEventsRouteScaffoldState
     if (selectedClub != null) {
       return HostEventsClubCard(
         club: selectedClub,
+        initialProgramRow:
+            widget.initialProgramAnchor?.accountId == widget.currentUid &&
+                widget.initialProgramAnchor?.organizerId == selectedClub.id &&
+                widget.initialProgramAnchor?.row.programId ==
+                    widget.initialProgramId
+            ? widget.initialProgramAnchor!.row
+            : null,
+        initialProgramId: selectedClub.id == widget.initialOrganizerId
+            ? widget.initialProgramId
+            : null,
         onEventEntrySelected: _handleEventEntrySelected,
         onManageEvent: _openEvent,
         now: _clockNow,

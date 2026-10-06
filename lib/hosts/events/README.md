@@ -80,3 +80,8 @@ node tool/design/build_host_feature_responsibilities.mjs --check
 ```
 
 The generator cross-checks the Host shell order, typed route contract, feature-contract action owners, Dart symbols, data-contract paths, and focused tests.
+
+
+Programs are part of the Events inventory. The former `/host/programs` URL redirects here with its organizer query preserved. A program has one date-range/event-count row opening its existing workspace; constituent functions remain managed there, and scheduled calendar events retain their domain behavior.
+
+The create entry sheet has Event and Program tabs. Program opens `ProgramCreateScreen`, whose plain controller validates canonical required fields, locks a recoverable request during submission, retains receipt/draft on failures, verifies persistence and the exact inventory ID, then returns to Events with a scoped program anchor. `ProgramEventsController` reads a bounded first page and optional exact anchor, exposes real cursor paging, and discards completion after account/organizer changes. No title-based de-duplication is used.

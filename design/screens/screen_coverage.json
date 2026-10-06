@@ -530,10 +530,10 @@
     },
     {
       "routeId": "hostProgramsScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "screenId": "screen.programs.list",
-      "reason": "Covered by screen.programs.list as the organizer program discovery surface."
+      "canonicalRouteId": "hostEventsScreen",
+      "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
     },
     {
       "routeId": "hostProgramWorkspaceScreen",
@@ -716,6 +716,13 @@
       "priority": "P1",
       "reason": "Covered by screen.host.chat as the professional host conversation thread.",
       "screenId": "screen.host.chat"
+    },
+    {
+      "routeId": "hostCreateProgramScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.create",
+      "reason": "Full program creation form replaces the modal; genuine form-state captures are pending verification."
     }
   ]
 }

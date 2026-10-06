@@ -1,14 +1,14 @@
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../clubs/clubs_test_helpers.dart';
@@ -191,18 +191,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Programs header action opens the program index', (tester) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (_, _) => HostEventsClubSection(
+  testWidgets(
+    'Events shows one identifiable program row with dates and count',
+    (tester) async {
+      String? opened;
+      final program = OrganizerProgramListRow(
+        programId: 'program',
+        title: 'Wedding weekend',
+        kind: 'wedding',
+        status: 'draft',
+        revision: 1,
+        startsAt: _now,
+        endsAt: _now.add(const Duration(days: 3)),
+        functionCount: 4,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: HostEventsClubSection(
             club: _club,
+            now: _now,
             state: HostEventsWorkspaceState.fromEvents(
               events: const [],
               now: _now,
             ),
             entryState: HostEventEntryState.resolve(organizerId: _club.id),
+            programs: CatchAsyncState.data([program]),
+            onOpenProgram: (p) => opened = p.programId,
             onLoadMoreActive: () {},
             onLoadMorePast: () {},
             onRetryPast: () {},
@@ -210,31 +227,22 @@ void main() {
             onManageEvent: (_, _) {},
           ),
         ),
-        GoRoute(
-          path: Routes.hostProgramsScreen.path,
-          name: Routes.hostProgramsScreen.name,
-          builder: (_, _) => const Scaffold(body: Text('Programs index')),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-      ),
-    );
-    await tester.pump();
-    final action = find.byKey(const ValueKey('host-events-view-programs'));
-    expect(action, findsOneWidget);
-    await tester.tap(action);
-    await pumpFeatureUi(tester);
-    expect(router.state.uri.path, '/host/programs');
-    expect(router.state.uri.queryParameters['organizerId'], 'club-1');
-    expect(tester.takeException(), isNull);
-  });
+      );
+      await tester.pump();
+      final row = find.byKey(const ValueKey('host-program-row-program'));
+      expect(row, findsOneWidget);
+      expect(find.text('Program'), findsOneWidget);
+      expect(find.text('4 events'), findsOneWidget);
+      expect(find.textContaining('4 Sep'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-events-view-programs')),
+        findsNothing,
+      );
+      await tester.tap(row);
+      expect(opened, 'program');
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 Future<void> _pump(

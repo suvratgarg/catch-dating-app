@@ -161,7 +161,12 @@ enum Routes {
     AppRouteAudience.host,
   ),
   hostWorkCountsScreen('/host/work/:programId/counts', AppRouteAudience.host),
+  // Compatibility redirect for existing program-index links.
   hostProgramsScreen('/host/programs', AppRouteAudience.host),
+  hostCreateProgramScreen(
+    '/host/organizers/:clubId/create-program',
+    AppRouteAudience.host,
+  ),
   hostProgramWorkspaceScreen(
     '/host/programs/:programId',
     AppRouteAudience.host,
