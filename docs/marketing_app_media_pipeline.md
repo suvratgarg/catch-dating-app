@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.5.0
-updated: 2026-10-02
+version: 1.6.0
+updated: 2026-10-06
 owner: marketing_website
 status: active
 ---
@@ -73,8 +73,8 @@ bytes are distributed.
 
 This check proves the recorded render still matches its inputs and rejects
 stale committed copies; it does not perform a fresh render in Linux CI or
-automatically approve a visual change. Native-font rendering and review remain
-explicit local operations. The Marketing Website workflow also triggers on app
+automatically approve a visual change. Native-font rendering can use the manual hosted exporter below; review remains
+an explicit operation. The Marketing Website workflow also triggers on app
 source, test/capture support, local package source/assets, dependency manifests,
 synthetic scenario/persona inputs, and framed source PNGs. Its existing media
 check rejects stale inputs before packaging; it does not silently regenerate or
@@ -155,3 +155,48 @@ review summary.
 They are not six wizard steps. Location scrolls to `WhereStep`; Guide opens the
 production customization disclosure. Catalog ids and website slot ids remain
 stable so existing consumers keep their coverage.
+
+## Manual Hosted Export (CAT159 Enabling Slice)
+
+`.github/workflows/marketing-captures.yml` runs the existing canonical exporter
+on a standard GitHub-hosted `macos-26` runner, with repository-pinned Flutter
+and Node and the runner's local SFNS font. It accepts only a full lowercase
+40-character source commit SHA from this repository, and checks it out
+separately from the immutable workflow/exporter commit. Source and exporter
+toolchain pins must match; dependency resolution enforces the source lockfile.
+A clean source checkout and all 12 active canonical slots are required.
+
+Execution prerequisite: GitHub requires the workflow file on the default
+branch before `workflow_dispatch` can run it. Admit and integrate this enabling
+PR through the existing owner-controlled queue first. A draft PR does not
+establish hosted rendering success. After registration:
+
+```sh
+gh workflow run marketing-captures.yml --ref main -f source_sha=<full-source-sha>
+```
+
+Use the currently published exact head of each product PR; short SHAs and local
+unpublished Programs commits cannot be dispatched. The job runs at most 12
+canonical catalog entries through the real iOS/SF Flutter capture path, frames
+the 12 light marketing exports, regenerates design context, syncs website
+copies, then runs the existing provenance, input freshness, framing and
+copy-byte checks. All old final outputs are removed first. Any render/check
+failure prevents artifact upload; there is no stale image fallback.
+
+The seven-day immutable artifact is named
+`canonical-marketing-<source-sha>-<run-id>-<attempt>`. It contains exactly the
+12 framed source PNGs, their 12 website copies, authored capture manifest,
+website manifest, design context, and `capture-receipt.json`. The receipt
+records per-file hashes/sizes, embedded PNG provenance, exact source SHA/tree,
+workflow SHA, helper hash, toolchain/runner identity and run/attempt URL.
+The job summary records the upload's artifact ID, digest and download URL;
+retain that identity together with the receipt when reviewing or handing off.
+SF font bytes, dependency caches and arbitrary checkout files are excluded.
+
+Tracked changes outside the declared media/design outputs fail packaging,
+including source and golden baseline changes. Existing CI freshness and real
+regression golden obligations remain independent and unchanged. This workflow
+only exports reviewable synthetic media: it does not commit it, import it into
+another branch, publish a website, or prove product/backend availability.
+Automatic producer/consumer wiring, screenshot promotion and generated widget
+or route inventory ownership remain the wider CAT159 follow-on.
