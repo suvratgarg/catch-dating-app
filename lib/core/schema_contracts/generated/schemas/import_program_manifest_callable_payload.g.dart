@@ -13,6 +13,7 @@ const schemaImportProgramManifestCallablePayloadSchema = <String, Object?>{
   'additionalProperties': false,
   'x-callable-aliases': <Object?>[
     'importProgramManifest',
+    'importWeddingPhoneContacts',
   ],
   'required': <Object?>[
     'programId',

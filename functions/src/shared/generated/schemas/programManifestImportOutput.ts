@@ -10,7 +10,8 @@ export const programManifestImportCallableResponseSchema: Record<string, unknown
   "type": "object",
   "additionalProperties": false,
   "x-callable-aliases": [
-    "importProgramManifest"
+    "importProgramManifest",
+    "importWeddingPhoneContacts"
   ],
   "required": [
     "mode",

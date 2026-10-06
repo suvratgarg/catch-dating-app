@@ -15,21 +15,21 @@ class ProgramSetupRepository {
 
   final FirebaseFunctions _functions;
 
-  Future<List<OrganizerProgramListRow>> listPrograms(
-    String organizerId,
-  ) => _call(
-    name: 'listOrganizerPrograms',
-    payload: ListOrganizerProgramsCallableRequest(
-      organizerId: organizerId,
-    ).toJson(),
-    action: 'load your programs',
-    parse: (value) {
-      final map = requiredMap(value, 'organizer programs');
-      return mapList(map['programs'], 'programs')
-          .map(OrganizerProgramListRow.fromMap)
-          .toList(growable: false);
-    },
-  );
+  Future<List<OrganizerProgramListRow>> listPrograms(String organizerId) =>
+      _call(
+        name: 'listOrganizerPrograms',
+        payload: ListOrganizerProgramsCallableRequest(
+          organizerId: organizerId,
+        ).toJson(),
+        action: 'load your programs',
+        parse: (value) {
+          final map = requiredMap(value, 'organizer programs');
+          return mapList(
+            map['programs'],
+            'programs',
+          ).map(OrganizerProgramListRow.fromMap).toList(growable: false);
+        },
+      );
 
   /// `archiveProgram`: starts the 14-day anonymization grace window; the
   /// program keeps reading but every mutation surface rejects writes.
@@ -401,8 +401,37 @@ class ProgramSetupRepository {
     required String mode,
     required String clientOperationId,
     required List<Map<String, Object?>> rows,
+  }) => _importManifestWithCallable(
+    callable: 'importProgramManifest',
+    programId: programId,
+    mode: mode,
+    clientOperationId: clientOperationId,
+    rows: rows,
+  );
+
+  /// The phone picker uses a separately gated server entry point. Both
+  /// endpoints share the canonical manifest schema and authority checks.
+  Future<ProgramManifestImportResult> importWeddingPhoneContacts({
+    required String programId,
+    required String mode,
+    required String clientOperationId,
+    required List<Map<String, Object?>> rows,
+  }) => _importManifestWithCallable(
+    callable: 'importWeddingPhoneContacts',
+    programId: programId,
+    mode: mode,
+    clientOperationId: clientOperationId,
+    rows: rows,
+  );
+
+  Future<ProgramManifestImportResult> _importManifestWithCallable({
+    required String callable,
+    required String programId,
+    required String mode,
+    required String clientOperationId,
+    required List<Map<String, Object?>> rows,
   }) => _call(
-    name: 'importProgramManifest',
+    name: callable,
     payload: ImportProgramManifestCallableRequest(
       programId: programId,
       mode: mode,

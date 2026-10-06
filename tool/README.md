@@ -902,7 +902,14 @@ work. `finish` refuses to drop the local claim while unique work is uncommitted
 or unpushed. `finish --abandon --reason <why>` releases a deliberately
 superseded claim only when its worktree is clean, retaining an attributable
 local record under Git's common directory. `stale` reports candidates and
-never deletes them.
+never deletes them. After merge/release acceptance, `retire` checks the exact
+owned task/head against current remote main, proves ancestry or exact squash
+path equivalence, and verifies unique history has a live remote recovery ref.
+Dirty, untracked and ignored files block removal. Keep the claim until admitted
+`retire --apply` confirms ordinary non-forced Git removal; all refs and stashes
+remain preserved. Current external acceptance, owners/cross-clone claims,
+users/runtime consumers and deletion authority are explicit manual checks in
+`docs/agent_operating_model.md#completion`, identified by `--by` and `--clearance`.
 
 ```sh
 node tool/git/worktree_guard.mjs start \
@@ -912,17 +919,27 @@ node tool/git/worktree_guard.mjs finish --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path> \
   --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs stale --stale-days 7
+node tool/git/worktree_guard.mjs retire \
+  --task-id <task-id> --worktree <path> --head-sha <task-head> \
+  --accepted-sha <verified-integrating-commit> \
+  --by <task-owner> --clearance <current-acceptance-ownership-and-recovery-evidence>
+# Repeat the exact report command with --apply only in its normal cleanup slot.
 ```
 
 The guard does not fetch, install dependencies, execute checks, push, merge,
-remove worktrees, or authorize commands. Its local claims are disposable; Git
+delete refs, or authorize commands. Retirement uses read-only live ref queries
+and refuses stale/unavailable remote evidence. Its local claims are disposable; Git
 branches and commits remain authoritative.
 
-A newly created worktree contains tracked files only. Give it independent root
-npm, Functions npm, and Flutter dependencies before building:
+A newly created worktree contains tracked files only. Install the selected
+locked dependency family before its checks; omit bootstrap for dependency-free
+checks:
 
 ```sh
-bash tool/git/bootstrap_worktree.sh
+bash tool/git/bootstrap_worktree.sh --target root
+bash tool/git/bootstrap_worktree.sh --target functions
+bash tool/git/bootstrap_worktree.sh --target flutter
+# No --target installs all three families when required.
 ```
 
 The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with

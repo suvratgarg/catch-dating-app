@@ -1,5 +1,8 @@
 import 'package:catch_dating_app/hosts/data/host_release_config.dart'
-    show hostReleaseFlagProvider, invalidateHostReleaseFlags;
+    show
+        hostReleaseFlagProvider,
+        hostWeddingPhoneImportFlagKey,
+        invalidateHostReleaseFlags;
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +24,7 @@ void main() {
         hostReleaseConfigDefaults[hostProgressiveEventDefaultsFlagKey],
         false,
       );
+      expect(hostReleaseConfigDefaults[hostWeddingPhoneImportFlagKey], false);
 
       final remote = _RemoteConfig();
       final container = ProviderContainer();
@@ -44,6 +48,8 @@ void main() {
 
       remote.values[hostPrivateEventSetupFlagKey] = false;
       expect(hostReleaseFlagValue(remote, hostPrivateEventSetupFlagKey), false);
+      remote.values[hostWeddingPhoneImportFlagKey] = true;
+      expect(hostReleaseFlagValue(remote, hostWeddingPhoneImportFlagKey), true);
     },
   );
 
@@ -88,10 +94,11 @@ void main() {
     },
   );
 
-  test('resume invalidation refreshes both cached release capabilities', () {
+  test('resume invalidation refreshes cached Host release capabilities', () {
     final sourceValues = <String, bool>{
       hostPrivateEventSetupFlagKey: false,
       hostProgressiveEventDefaultsFlagKey: false,
+      hostWeddingPhoneImportFlagKey: false,
     };
     final container = ProviderContainer(
       overrides: [
@@ -103,18 +110,33 @@ void main() {
         ).overrideWith(
           (ref) => sourceValues[hostProgressiveEventDefaultsFlagKey]!,
         ),
+        hostReleaseFlagProvider(
+          hostWeddingPhoneImportFlagKey,
+        ).overrideWith((ref) => sourceValues[hostWeddingPhoneImportFlagKey]!),
       ],
     );
     addTearDown(container.dispose);
 
     expect(container.read(privateEventSetupAvailableProvider), false);
     expect(container.read(progressiveEventDefaultsAvailableProvider), false);
+    expect(
+      container.read(hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey)),
+      false,
+    );
     sourceValues.updateAll((key, value) => true);
     // A fetch activated new values, but the keepalive data providers still
     // serve their cached reads until the foreground refresh invalidates them.
     expect(container.read(privateEventSetupAvailableProvider), false);
+    expect(
+      container.read(hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey)),
+      false,
+    );
     invalidateHostReleaseFlags(container.invalidate);
     expect(container.read(privateEventSetupAvailableProvider), true);
     expect(container.read(progressiveEventDefaultsAvailableProvider), true);
+    expect(
+      container.read(hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey)),
+      true,
+    );
   });
 }

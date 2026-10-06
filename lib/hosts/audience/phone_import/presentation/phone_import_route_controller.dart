@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
+import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
 import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
@@ -26,6 +27,9 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
   @override
   void build() {}
 
+  bool get _releaseEnabled =>
+      ref.read(hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey));
+
   String? readAccountId() =>
       ref.mounted ? ref.read(authRepositoryProvider).currentUser?.uid : null;
 
@@ -35,6 +39,9 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
         'The wedding or signed-in account changed.',
       );
     }
+    if (!_releaseEnabled) {
+      throw const PermissionException('Phone import is not available.');
+    }
   }
 
   Future<ProgramWorkAccess> refreshAccess({
@@ -43,6 +50,9 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
     String? organizerId,
     required bool Function() isCurrent,
   }) async {
+    if (!_releaseEnabled) {
+      throw const PermissionException('Phone import is not available.');
+    }
     if (accountId == null) {
       throw const SignInRequiredException('import wedding guests');
     }
@@ -53,6 +63,7 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
     _assertCurrent(accountId, isCurrent);
     if (access.programId != programId ||
         (organizerId != null && organizerId != access.organizerId) ||
+        !_releaseEnabled ||
         !canImportWeddingPhoneContacts(access, DateTime.now())) {
       throw const PermissionException(
         'Current wedding-wide guest access is required.',
@@ -105,6 +116,7 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
     final submission = PhoneImportSubmissionController(
       review: review,
       adapter: PhoneImportAdapter(
+        isEnabled: () => ref.mounted && _releaseEnabled,
         workRepository: ref.read(programWorkRepositoryProvider),
         setupRepository: ref.read(programSetupRepositoryProvider),
         currentAccountId: readAccountId,

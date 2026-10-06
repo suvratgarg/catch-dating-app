@@ -22,6 +22,11 @@ on:
         required: false
         default: ""
         type: string
+      dev_completion_receipt_sha256:
+        description: Exact one-callable DEV receipt bytes from the trusted caller job output.
+        required: false
+        default: ""
+        type: string
       base_sha:
         description: Exact base SHA recorded by the trusted CI impact plan.
         required: true
@@ -47,6 +52,16 @@ on:
         required: false
         default: false
         type: boolean
+      operator_release:
+        description: One pinned, reviewer-protected PROD release of four Functions and five indexes.
+        required: false
+        default: false
+        type: boolean
+      wedding_phone_import_release:
+        description: One pinned additive wedding import callable; DEV then human-approved PROD.
+        required: false
+        default: false
+        type: boolean
       resume_delivery_run_id:
         description: Optional terminal non-success Delivery run id containing the exact recovery authorization/checkpoint.
         required: false
@@ -56,6 +71,16 @@ on:
         required: false
         default: "1"
         type: string
+    outputs:
+      wedding_receipt_sha256:
+        description: Exact one-callable completion JSON SHA-256.
+        value: ${{ jobs.promote.outputs.wedding_receipt_sha256 }}
+      wedding_artifact_id:
+        description: Exact one-callable completion artifact.
+        value: ${{ jobs.promote.outputs.wedding_artifact_id }}
+      wedding_artifact_digest:
+        description: Digest of the exact one-callable completion artifact.
+        value: ${{ jobs.promote.outputs.wedding_artifact_digest }}
 
 permissions:
   actions: read
@@ -68,6 +93,10 @@ jobs:
     name: Firebase ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
+    outputs:
+      wedding_receipt_sha256: ${{ steps.wedding_proof.outputs.receipt_sha256 }}
+      wedding_artifact_id: ${{ steps.wedding_receipt.outputs.artifact-id }}
+      wedding_artifact_digest: ${{ steps.wedding_receipt.outputs.artifact-digest && format('sha256:{0}', steps.wedding_receipt.outputs.artifact-digest) || '' }}
     environment: ${{ inputs.approval_environment || inputs.environment }}
     concurrency:
       group: firebase-${{ inputs.environment }}
@@ -84,6 +113,8 @@ jobs:
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
           REQUIRE_CURRENT_MAIN: ${{ inputs.require_current_main }}
+          OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
           if (( GITHUB_RUN_ATTEMPT > 1 )); then
@@ -97,6 +128,33 @@ jobs:
           [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$REQUIRE_CURRENT_MAIN" =~ ^(true|false)$ ]]
+          [[ "$WEDDING_RELEASE" =~ ^(true|false)$ ]]
+          if [[ "$WEDDING_RELEASE" == true ]]; then
+            test "$OPERATOR_RELEASE" = false
+            [[ "$DEPLOY_ENVIRONMENT" =~ ^(dev|prod)$ ]]
+            test "$APPROVAL_ENVIRONMENT" = "$DEPLOY_ENVIRONMENT"
+            test "$GITHUB_REF" = refs/heads/main
+            test "$GITHUB_EVENT_NAME" = workflow_dispatch
+            test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/wedding-phone-import-release.yml@refs/heads/main"
+            test "$SOURCE_SHA" = f509e144579403bd3dd66fc39ae0ee821ca0ab30
+            test "$BASE_SHA" = f7d2605cabbef640212b88a95002f515028437a3
+            test "$SOURCE_CI_RUN_ID" = 37349803226
+            test "$SOURCE_CI_RUN_ATTEMPT" = 1
+            test "$REQUIRE_CURRENT_MAIN" = false
+            test -z "$RESUME_RUN_ID"
+          fi
+          if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            test "$DEPLOY_ENVIRONMENT" = prod
+            test "$APPROVAL_ENVIRONMENT" = prod
+            test "$GITHUB_REF" = refs/heads/main
+            test "$GITHUB_EVENT_NAME" = workflow_dispatch
+            test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
+            test "$SOURCE_SHA" = 656f093d1910afdbe4d93d31565d1782c39aab63
+            test "$BASE_SHA" = ea518ad0576829dbc505293d4edbd9f6710a2b8f
+            test "$SOURCE_CI_RUN_ID" = 37247348530
+            test "$SOURCE_CI_RUN_ATTEMPT" = 1
+            test -z "$RESUME_RUN_ID"
+          fi
           if [[ "$APPROVAL_ENVIRONMENT" != "$DEPLOY_ENVIRONMENT" ]]; then
             test "$DEPLOY_ENVIRONMENT" = prod
             test "$APPROVAL_ENVIRONMENT" = prod-backend
@@ -106,6 +164,28 @@ jobs:
             test "$REQUIRE_CURRENT_MAIN" = false
             test -z "$RESUME_RUN_ID"
           fi
+
+      - name: Require recorded human PROD environment approval for operator release
+        if: ${{ inputs.operator_release || (inputs.wedding_phone_import_release && inputs.environment == 'prod') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/prod")"
+          history="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/approvals")"
+          jq -en --argjson environment "$environment" --argjson history "$history" '
+            ([ $environment.protection_rules[]? | select(.type == "required_reviewers") |
+              .reviewers[]? | select(.type == "User") | .reviewer.id ]) as $reviewers |
+            ($reviewers | length) > 0 and
+            ([ $history[]? | select(any(.environments[]?; .id == $environment.id and .name == "prod")) ]
+              | length) > 0 and
+            ([ $history[]? | select(any(.environments[]?; .id == $environment.id and .name == "prod")) |
+              select(.state != "approved") ] | length) == 0 and
+            any($history[]?;
+              .state == "approved" and .user.id != null and
+              (.user.id as $reviewer_id | ($reviewers | index($reviewer_id)) != null) and
+              any(.environments[]?; .id == $environment.id and .name == "prod"))
+          ' > /dev/null
 
       - name: Checkout the immutable Delivery control plane
         uses: actions/checkout@v6
@@ -126,12 +206,23 @@ jobs:
           REQUIRE_CURRENT_MAIN: ${{ inputs.require_current_main }}
           SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_SHA: ${{ inputs.source_sha }}
+          OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"
           test "$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)" = "$SOURCE_SHA"
           git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
           git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+          if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            node tool/ci/operator_source_compatibility.mjs "$SOURCE_SHA" \
+              "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" "$SOURCE_CHECKOUT"
+          fi
+          if [[ "${WEDDING_RELEASE:-false}" == true ]]; then
+            node tool/ci/wedding_phone_import_release.mjs source \
+              --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
+              --source-root "$SOURCE_CHECKOUT"
+          fi
           if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
             test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
           fi
@@ -143,6 +234,44 @@ jobs:
           run-id: ${{ inputs.source_ci_run_id }}
           name: firebase-delivery-${{ inputs.source_sha }}-${{ inputs.source_ci_run_attempt }}
           path: build/delivery/source
+
+      - name: Verify the pinned accepted PROD baseline receipt
+        if: ${{ inputs.operator_release || (inputs.wedding_phone_import_release && inputs.environment == 'prod') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11311489270" | jq -e '
+            .id == 11311489270 and
+            .name == "firebase-checkpoint-prod-catch-dating-app-64e51-647e39e4476693d6565318cb1d5c5223f3b781f7-1" and
+            .digest == "sha256:fd120a9874da4c2fb3e0016e7bbdfbef3a8c818bc873f69f403c3575eaa853ff" and
+            .expired == false and .workflow_run.id == 37206844099
+          ' > /dev/null
+
+      - name: Download the exact accepted PROD baseline checkpoint
+        if: ${{ inputs.operator_release || (inputs.wedding_phone_import_release && inputs.environment == 'prod') }}
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: 37206844099
+          name: firebase-checkpoint-prod-catch-dating-app-64e51-647e39e4476693d6565318cb1d5c5223f3b781f7-1
+          path: build/delivery/operator-baseline
+
+      - name: Bind downloaded baseline receipt bytes and completed scope
+        if: ${{ inputs.operator_release || (inputs.wedding_phone_import_release && inputs.environment == 'prod') }}
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' \
+            06ab3ea780b0a6ba057b7b3ea29dc8e2dad42a88a070e2755d08ec543eb1f8ba \
+            build/delivery/operator-baseline/checkpoint.json \
+            9f411302df3f0c913157893ec7aba8dbf3a6172926311f085f617f316c8b2875 \
+            build/delivery/operator-baseline/functions-deployment.json | sha256sum --check --status
+          jq -e '
+            .schema == "catch.delivery-checkpoints/v2" and
+            .scope == "firebase:prod:catch-dating-app-64e51" and
+            .provenance.sourceSha == "647e39e4476693d6565318cb1d5c5223f3b781f7" and
+            any(.stageCheckpoints[]; .stage == "functions" and .postcondition.status == "passed")
+          ' build/delivery/operator-baseline/checkpoint.json > /dev/null
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -162,6 +291,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ inputs.base_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -173,6 +304,16 @@ jobs:
             --source-sha "$SOURCE_SHA" \
             --ci-run-id "$SOURCE_CI_RUN_ID" \
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT"
+          if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            printf '%s  %s\n' \
+              8d96961ceca63f4959b25097168ebddf01cb5280568f1b09829421c0ef089af1 \
+              build/delivery/source/firebase-backend.tar.gz | sha256sum --check --status
+          fi
+          if [[ "${WEDDING_RELEASE:-false}" == true ]]; then
+            printf '%s  %s\n' \
+              b9c6be577d1aab3d95189c104387580baa46e32c6df01b70da62fc63edf18ac9 \
+              build/delivery/source/firebase-backend.tar.gz | sha256sum --check --status
+          fi
           mkdir -p build/delivery/package
           tar -tzf build/delivery/source/firebase-backend.tar.gz | \
             awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
@@ -198,14 +339,74 @@ jobs:
           test "$control_project_id" = "$project_id"
           # Keep live approval evidence separate from the deterministic package
           # plan compared again at each deployment boundary.
-          printf '%s\n' "$result" > build/delivery/execution-plan.json
+          printf '%s\n' "$result" > build/delivery/package-plan.json
+          if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            git -C build/delivery/source-checkout show \
+              647e39e4476693d6565318cb1d5c5223f3b781f7:firestore.indexes.json \
+              > build/delivery/operator-baseline/indexes.json
+            node tool/ci/operator_prod_release.mjs prepare \
+              --package-plan build/delivery/package-plan.json \
+              --baseline-indexes build/delivery/operator-baseline/indexes.json \
+              --candidate-indexes build/delivery/package/firestore.indexes.json \
+              --baseline-deployment build/delivery/operator-baseline/functions-deployment.json \
+              --output-plan build/delivery/execution-plan.json \
+              --output-preparation build/delivery/operator-preparation.json
+          elif [[ "${WEDDING_RELEASE:-false}" == true ]]; then
+            node tool/ci/wedding_phone_import_release.mjs prepare \
+              --manifest build/delivery/source/firebase-provenance.json \
+              --package-plan build/delivery/package/delivery-plan.json \
+              --verified-plan build/delivery/package-plan.json \
+              --output build/delivery/execution-plan.json
+          else
+            cp build/delivery/package-plan.json build/delivery/execution-plan.json
+          fi
           jq '.productionPromotion' <<< "$reviewed_result" > build/delivery/production-approval.json
-          jq '{stages, targets, functionSelection, productionPromotion}' <<< "$reviewed_result"
-          echo "targets=$(jq -r '.targets | map(select(length > 0)) | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
-          echo "has_targets=$(jq -r '.targets | any(length > 0)' <<< "$result")" >> "$GITHUB_OUTPUT"
-          echo "has_functions=$(jq -r '.targets | any(startswith("functions:"))' <<< "$result")" >> "$GITHUB_OUTPUT"
+          jq '{stages, targets}' build/delivery/execution-plan.json
+          echo "targets=$(jq -r '.targets | map(select(length > 0)) | join(",")' build/delivery/execution-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "has_targets=$(jq -r '.targets | any(length > 0)' build/delivery/execution-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "has_functions=$(jq -r '.targets | any(startswith("functions:"))' build/delivery/execution-plan.json)" >> "$GITHUB_OUTPUT"
           echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
           echo "checkpoint_scope=firebase:${DEPLOY_ENVIRONMENT}:${project_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify same-run exact one-callable DEV receipt before PROD authentication
+        if: ${{ inputs.wedding_phone_import_release && inputs.environment == 'prod' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ inputs.dev_completion_artifact_id }}
+          ARTIFACT_DIGEST: ${{ inputs.dev_completion_artifact_digest }}
+        run: |
+          set -euo pipefail
+          [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$ARTIFACT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID" | jq -e \
+            --arg digest "$ARTIFACT_DIGEST" --argjson id "$ARTIFACT_ID" --argjson run "$GITHUB_RUN_ID" \
+            '.id == $id and .digest == $digest and .expired == false and
+             .workflow_run.id == $run and
+             .name == "wedding-phone-import-dev-f509e144579403bd3dd66fc39ae0ee821ca0ab30-1"' > /dev/null
+
+      - name: Download exact same-run one-callable DEV receipt
+        if: ${{ inputs.wedding_phone_import_release && inputs.environment == 'prod' }}
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ github.run_id }}
+          artifact-ids: ${{ inputs.dev_completion_artifact_id }}
+          path: build/delivery/wedding-dev
+          merge-multiple: true
+
+      - name: Verify one-callable DEV package and serving receipt
+        if: ${{ inputs.wedding_phone_import_release && inputs.environment == 'prod' }}
+        env:
+          EXPECTED_RECEIPT_SHA256: ${{ inputs.dev_completion_receipt_sha256 }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_RECEIPT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          test "$(sha256sum build/delivery/wedding-dev/wedding-phone-import-receipt.json | cut -d ' ' -f1)" = "$EXPECTED_RECEIPT_SHA256"
+          node tool/ci/wedding_phone_import_release.mjs verify-dev \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --package-plan build/delivery/package/delivery-plan.json \
+            --verified-plan build/delivery/package-plan.json \
+            --receipt build/delivery/wedding-dev/wedding-phone-import-receipt.json
 
       - name: Independently verify exact dev completion before production authentication
         if: ${{ inputs.environment == 'prod' && endsWith(github.workflow_ref, '/.github/workflows/delivery.yml@refs/heads/main') }}
@@ -359,6 +560,33 @@ jobs:
       - name: Install authenticated Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v3
 
+      - name: Prove the accepted PROD baseline is still serving
+        if: ${{ inputs.operator_release }}
+        run: |
+          set -euo pipefail
+          node tool/ci/operator_prod_release.mjs before \
+            --package-plan build/delivery/package-plan.json \
+            --baseline-indexes build/delivery/operator-baseline/indexes.json \
+            --candidate-indexes build/delivery/package/firestore.indexes.json \
+            --baseline-deployment build/delivery/operator-baseline/functions-deployment.json
+
+      - name: Snapshot additive callable absence and every retained resource
+        if: ${{ inputs.wedding_phone_import_release }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          baseline=()
+          if [[ "$DEPLOY_ENVIRONMENT" == prod ]]; then
+            baseline=(--baseline-deployment build/delivery/operator-baseline/functions-deployment.json)
+          fi
+          node tool/ci/wedding_phone_import_release.mjs before \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --package-plan build/delivery/package/delivery-plan.json \
+            --verified-plan build/delivery/package-plan.json \
+            --environment "$DEPLOY_ENVIRONMENT" "${baseline[@]}" \
+            --output build/delivery/wedding-before.json
+
       - name: Record names-only Functions parameter provenance
         if: ${{ steps.verify.outputs.has_functions == 'true' }}
         env:
@@ -431,6 +659,8 @@ jobs:
       - name: Reverify every authored byte immediately before deployment
         env:
           BASE_SHA: ${{ inputs.base_sha }}
+          OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -451,7 +681,7 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json \
             --affected-functions true > build/delivery/reverified-plan.json
-          cmp build/delivery/execution-plan.json build/delivery/reverified-plan.json
+          cmp build/delivery/package-plan.json build/delivery/reverified-plan.json
           node tool/ci/package_firebase_delivery.mjs verify \
             --source-root build/delivery/source-checkout \
             --package-dir build/delivery/deploy-tree \
@@ -463,7 +693,27 @@ jobs:
             --allow-runtime-dependencies true \
             --trusted-package-dir build/delivery/package \
             --affected-functions true > build/delivery/reverified-plan.json
-          cmp build/delivery/execution-plan.json build/delivery/reverified-plan.json
+          cmp build/delivery/package-plan.json build/delivery/reverified-plan.json
+          if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            node tool/ci/operator_prod_release.mjs prepare \
+              --package-plan build/delivery/reverified-plan.json \
+              --baseline-indexes build/delivery/operator-baseline/indexes.json \
+              --candidate-indexes build/delivery/package/firestore.indexes.json \
+              --baseline-deployment build/delivery/operator-baseline/functions-deployment.json \
+              --output-plan build/delivery/operator-reverified-execution.json \
+              --output-preparation build/delivery/operator-reverified-preparation.json
+            cmp build/delivery/execution-plan.json build/delivery/operator-reverified-execution.json
+            cmp build/delivery/operator-preparation.json build/delivery/operator-reverified-preparation.json
+          elif [[ "${WEDDING_RELEASE:-false}" == true ]]; then
+            node tool/ci/wedding_phone_import_release.mjs prepare \
+              --manifest build/delivery/source/firebase-provenance.json \
+              --package-plan build/delivery/package/delivery-plan.json \
+              --verified-plan build/delivery/package-plan.json \
+              --output build/delivery/wedding-reverified-execution.json
+            cmp build/delivery/execution-plan.json build/delivery/wedding-reverified-execution.json
+          else
+            cmp build/delivery/execution-plan.json build/delivery/reverified-plan.json
+          fi
 
       - name: Remove obsolete and identical duplicate indexes from the deploy copy
         run: |
@@ -564,6 +814,8 @@ jobs:
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
+          OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
           mkdir -p "$(dirname "$CHECKPOINT")"
@@ -601,6 +853,34 @@ jobs:
             git -C "$SOURCE_CHECKOUT" fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
             git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$CONTROL_PLANE_SHA" refs/remotes/origin/main
             git -C "$SOURCE_CHECKOUT" merge-base --is-ancestor "$SOURCE_SHA" refs/remotes/origin/main
+            if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+              node tool/ci/operator_source_compatibility.mjs "$SOURCE_SHA" \
+                "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" "$SOURCE_CHECKOUT"
+              node tool/ci/operator_prod_release.mjs before \
+                --package-plan build/delivery/package-plan.json \
+                --baseline-indexes build/delivery/operator-baseline/indexes.json \
+                --candidate-indexes build/delivery/package/firestore.indexes.json \
+                --baseline-deployment build/delivery/operator-baseline/functions-deployment.json
+            fi
+            if [[ "${WEDDING_RELEASE:-false}" == true ]]; then
+            node tool/ci/wedding_phone_import_release.mjs source \
+              --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
+              --source-root "$SOURCE_CHECKOUT"
+          fi
+            if [[ "${WEDDING_RELEASE:-false}" == true ]]; then
+              test "$stage" = functions
+              test "$target" = functions:importWeddingPhoneContacts
+              baseline=()
+              if [[ "$DEPLOY_ENVIRONMENT" == prod ]]; then
+                baseline=(--baseline-deployment build/delivery/operator-baseline/functions-deployment.json)
+              fi
+              node tool/ci/wedding_phone_import_release.mjs unchanged \
+                --manifest build/delivery/source/firebase-provenance.json \
+                --package-plan build/delivery/package/delivery-plan.json \
+                --verified-plan build/delivery/package-plan.json \
+                --environment "$DEPLOY_ENVIRONMENT" "${baseline[@]}" \
+                --before build/delivery/wedding-before.json
+            fi
             if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
               test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
               export CATCH_DEPLOY_ALLOW_BEHIND=0
@@ -620,7 +900,9 @@ jobs:
               # Firebase requires this acknowledgement when an exact target
               # newly enables retry-on-failure. Exact selectors keep unrelated
               # and environment-only Functions outside the mutation set.
-              deploy_args+=(--force)
+              if [[ "${WEDDING_RELEASE:-false}" != true ]]; then
+                deploy_args+=(--force)
+              fi
             fi
             if [[ "$stage" == "functions" && -z "$target" ]]; then
               echo "No Functions runtime dependency changed; recording the verified no-op stage."
@@ -650,7 +932,10 @@ jobs:
               else
                 echo "Exact Functions deployment is still active; resuming callable permissions and parity only."
               fi
-              if [[ "$stage_status" == "0" ]]; then
+              # The additive caller requires the source-declared public IAM
+              # policy already established by Firebase deployment. It never runs
+              # an IAM repair command or relaxes ordinary full parity.
+              if [[ "$stage_status" == "0" && "${WEDDING_RELEASE:-false}" != true ]]; then
                 CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
                   CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
                   ./tool/deploy_firebase_targets.sh --functions-postconditions-only \
@@ -735,7 +1020,37 @@ jobs:
             --source-root build/delivery/source-checkout --source-sha "$SOURCE_SHA" \
             --candidate build/delivery/secret-bindings.json --phase deployed
 
+      - id: wedding_proof
+        name: Prove exact-one serving identity and unchanged retained state
+        if: ${{ inputs.wedding_phone_import_release }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+        run: |
+          set -euo pipefail
+          node tool/ci/wedding_phone_import_release.mjs complete \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --package-plan build/delivery/package/delivery-plan.json \
+            --verified-plan build/delivery/package-plan.json \
+            --environment "$DEPLOY_ENVIRONMENT" \
+            --before build/delivery/wedding-before.json \
+            --deployment build/delivery/checkpoint/functions-deployment.json \
+            --params-file "build/delivery/deploy-tree/functions/.env.$PROJECT_ID" \
+            --output build/delivery/wedding-phone-import-receipt.json
+          echo "receipt_sha256=$(sha256sum build/delivery/wedding-phone-import-receipt.json | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - id: wedding_receipt
+        name: Upload isolated exact-one completion receipt
+        if: ${{ inputs.wedding_phone_import_release && success() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: wedding-phone-import-${{ inputs.environment }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: build/delivery/wedding-phone-import-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Verify active rules match the exact approved source
+        if: ${{ !inputs.wedding_phone_import_release }}
         env:
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
         run: >-
@@ -745,11 +1060,32 @@ jobs:
           --wait-seconds 180
           --poll-seconds 10
 
+      - name: Prove mixed-source PROD serving state without restamping retained Functions
+        if: ${{ inputs.operator_release }}
+        run: |
+          set -euo pipefail
+          node tool/ci/operator_prod_release.mjs complete \
+            --package-plan build/delivery/package-plan.json \
+            --baseline-indexes build/delivery/operator-baseline/indexes.json \
+            --candidate-indexes build/delivery/package/firestore.indexes.json \
+            --baseline-deployment build/delivery/operator-baseline/functions-deployment.json \
+            --candidate-deployment build/delivery/checkpoint/functions-deployment.json \
+            --output build/delivery/operator-prod-receipt.json
+
+      - name: Upload exact selective PROD receipt
+        if: ${{ inputs.operator_release && hashFiles('build/delivery/operator-prod-receipt.json') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: operator-prod-selective-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: build/delivery/operator-prod-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Upload resumable checkpoint
         if: ${{ always() && hashFiles('build/delivery/checkpoint/checkpoint.json') != '' }}
         uses: actions/upload-artifact@v7
         with:
-          name: firebase-checkpoint-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          name: ${{ inputs.wedding_phone_import_release && 'wedding-firebase-checkpoint' || inputs.operator_release && 'operator-firebase-checkpoint' || 'firebase-checkpoint' }}-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
           path: |
             build/delivery/checkpoint/checkpoint.json
             build/delivery/checkpoint/functions-deployment.json

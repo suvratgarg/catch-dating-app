@@ -67,6 +67,40 @@ class HostSavedAudienceRepository {
     parse: HostSavedAudiencePage.fromCallableData,
   );
 
+  /// Reload one active definition through the existing bounded directory API.
+  /// Never fall back to the supplied revision when it is missing or unavailable.
+  Future<HostSavedAudience> reloadSavedAudience({
+    required String organizerId,
+    required String audienceId,
+    required bool Function() isCurrent,
+  }) async {
+    String? cursor;
+    final seenCursors = <String>{};
+    var count = 0;
+    do {
+      if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+      final page = await listSavedAudiences(
+        organizerId,
+        cursor: cursor,
+        limit: 50,
+      );
+      if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+      for (final item in page.audiences) {
+        if (item.audienceId == audienceId &&
+            item.organizerId == organizerId &&
+            item.status == 'active') {
+          return item;
+        }
+      }
+      count += page.audiences.length;
+      cursor = page.nextCursor;
+      if (cursor != null && (count >= 2500 || !seenCursors.add(cursor))) {
+        throw StateError('Saved group directory could not be exhausted.');
+      }
+    } while (cursor != null);
+    throw StateError('Saved group is no longer available.');
+  }
+
   Future<HostSavedAudience> upsertSavedAudience({
     required String organizerId,
     required String requestId,

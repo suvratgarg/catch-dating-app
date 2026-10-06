@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_access.dart';
+import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
@@ -96,6 +97,9 @@ class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final phoneImportEnabled = ref.watch(
+      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
+    );
     final accessAsync = ref.watch(
       programWorkEntryProvider(widget.programId, widget.inviteId),
     );
@@ -123,6 +127,7 @@ class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
         access: result.value,
         now: widget.now?.call() ?? DateTime.now(),
         snapshotAt: result.snapshotAt,
+        phoneImportEnabled: phoneImportEnabled,
       ),
     );
   }
@@ -134,11 +139,13 @@ class ProgramWorkPageBody extends StatelessWidget {
     required this.access,
     required this.now,
     this.snapshotAt,
+    this.phoneImportEnabled = false,
   });
 
   final ProgramWorkAccess access;
   final DateTime now;
   final DateTime? snapshotAt;
+  final bool phoneImportEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +240,9 @@ class ProgramWorkPageBody extends StatelessWidget {
               ),
             ),
           ),
-          if (snapshotAt == null && canImportWeddingPhoneContacts(access, now))
+          if (snapshotAt == null &&
+              phoneImportEnabled &&
+              canImportWeddingPhoneContacts(access, now))
             CatchSectionListItem(
               child: CatchSection.contained(
                 title: context.l10n.phoneImportEntryTitle,

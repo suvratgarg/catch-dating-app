@@ -7,6 +7,8 @@ export const privateEventReleaseKeys = Object.freeze({
   seatWriters: "CATCH_PRIVATE_EVENT_SEAT_WRITERS_READY",
   offers: "CATCH_EVENT_OFFER_INTEGRATION_READY",
 });
+export const weddingPhoneImportReadyKey =
+  "CATCH_WEDDING_PHONE_IMPORT_READY";
 
 export interface PrivateEventReleaseReadiness {
   privacy: boolean;
@@ -30,29 +32,46 @@ function enabledDefault(template: unknown, key: string): boolean {
 }
 
 /** A fresh Admin read per request; failed or late reads stay closed. */
-export async function readPrivateEventReleaseReadiness(
+async function readReleaseTemplate(
   fetchTemplate: () => Promise<unknown> = () => getRemoteConfig().getTemplate(),
   timeoutMillis = 2000
-): Promise<PrivateEventReleaseReadiness> {
-  if (!Number.isSafeInteger(timeoutMillis) || timeoutMillis < 1) return closed;
+): Promise<unknown | null> {
+  if (!Number.isSafeInteger(timeoutMillis) || timeoutMillis < 1) return null;
   let timeout: ReturnType<typeof setTimeout> | undefined;
   try {
-    const template = await Promise.race([
+    return await Promise.race([
       fetchTemplate(),
       new Promise<never>((_resolve, reject) => {
         timeout = setTimeout(() => reject(new Error("Remote Config timed out")),
           timeoutMillis);
       }),
     ]);
-    return {
-      privacy: enabledDefault(template, privateEventReleaseKeys.privacy),
-      seatWriters: enabledDefault(template,
-        privateEventReleaseKeys.seatWriters),
-      offers: enabledDefault(template, privateEventReleaseKeys.offers),
-    };
   } catch {
-    return closed;
+    return null;
   } finally {
     if (timeout) clearTimeout(timeout);
   }
+}
+
+export async function readPrivateEventReleaseReadiness(
+  fetchTemplate: () => Promise<unknown> = () => getRemoteConfig().getTemplate(),
+  timeoutMillis = 2000
+): Promise<PrivateEventReleaseReadiness> {
+  const template = await readReleaseTemplate(fetchTemplate, timeoutMillis);
+  if (template === null) return closed;
+  return {
+    privacy: enabledDefault(template, privateEventReleaseKeys.privacy),
+    seatWriters: enabledDefault(template, privateEventReleaseKeys.seatWriters),
+    offers: enabledDefault(template, privateEventReleaseKeys.offers),
+  };
+}
+
+/** Server release authority; client Remote Config cannot grant access. */
+export async function readWeddingPhoneImportReady(
+  fetchTemplate: () => Promise<unknown> = () => getRemoteConfig().getTemplate(),
+  timeoutMillis = 2000
+): Promise<boolean> {
+  const template = await readReleaseTemplate(fetchTemplate, timeoutMillis);
+  return template !== null && enabledDefault(template,
+    weddingPhoneImportReadyKey);
 }

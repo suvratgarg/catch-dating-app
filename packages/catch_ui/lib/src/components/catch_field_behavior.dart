@@ -363,15 +363,18 @@ extension _CatchFieldBehavior on _CatchFieldState {
   }
 
   void _handleExpansionAnimationEnd() {
-    if (!_isOpen && !_disclosureOffstage) {
-      _update(() => _disclosureOffstage = true);
-    } else if (_isOpen) {
-      // The Align height factor reaches its final scroll extent only at the
-      // end of the reveal. Correct any earlier clamp without introducing a
-      // second visible animation.
-      _scheduleExpandedContentReveal(duration: Duration.zero);
-    }
-    _requestPendingExpansionFocus();
+    // A zero-duration reveal can complete synchronously during widget update.
+    // Wait until layout ends and recheck the current field before changing it.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!_isOpen && !_disclosureOffstage) {
+        _update(() => _disclosureOffstage = true);
+      } else if (_isOpen) {
+        // Correct the final scroll extent without a second visible animation.
+        _scheduleExpandedContentReveal(duration: Duration.zero);
+      }
+      _requestPendingExpansionFocus();
+    });
   }
 
   void _handlePointerDown(PointerDownEvent event) {

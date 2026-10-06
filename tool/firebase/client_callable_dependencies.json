@@ -7,6 +7,13 @@
       "environment": "prod",
       "callable": "sendEventBroadcast",
       "region": "asia-south1"
+    },
+    {
+      "id": "host-wedding-phone-import",
+      "appRole": "host",
+      "environment": "prod",
+      "callable": "importWeddingPhoneContacts",
+      "region": "asia-south1"
     }
   ]
 }

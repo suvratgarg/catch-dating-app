@@ -7,6 +7,65 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('drawer exposes labeled controls without a barrier action', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final focus = FocusNode();
+    var activations = 0;
+    try {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: CatchFieldDrawer(
+              open: true,
+              offstage: false,
+              startPadding: 0,
+              endPadding: 0,
+              bottomPadding: 48,
+              revealDuration: Duration.zero,
+              opacityDuration: Duration.zero,
+              onRevealEnd: _noop,
+              body: TextButton(
+                focusNode: focus,
+                onPressed: () => activations++,
+                child: const Text('Choose guest'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      final action = tester.getSemantics(find.bySemanticsLabel('Choose guest'));
+      expect(action.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+      tester.binding.renderViews.single.owner!.semanticsOwner!.performAction(
+        action.id,
+        SemanticsAction.tap,
+      );
+      await tester.pump();
+      expect(activations, 1);
+      focus.requestFocus();
+      await tester.pump();
+      expect(focus.hasFocus, isTrue);
+      await tester.tap(find.text('Choose guest'));
+      await tester.pump();
+      expect(activations, 2);
+      final barrier = tester.getRect(
+        find.byKey(const ValueKey('catch-field-control-tap-barrier')),
+      );
+      await tester.tapAt(Offset(barrier.center.dx, barrier.bottom - 8));
+      await tester.pump();
+      expect(activations, 2);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      focus.dispose();
+      semantics.dispose();
+    }
+  });
+
   testWidgets('drawer preserves content order, gaps and metadata alignment', (
     tester,
   ) async {

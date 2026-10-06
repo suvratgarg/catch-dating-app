@@ -554,6 +554,12 @@ extension _CatchFieldRendering on _CatchFieldState {
               onPointerCancel: canInteract ? _handlePointerCancel : null,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
+                // Native text entry owns ordinary focus actions. Disclosures
+                // and custom activations retain their separate gesture action.
+                excludeFromSemantics:
+                    canFocusTextEntry &&
+                    !widget.readOnly &&
+                    widget.onTap == null,
                 onTap: action,
                 child: tapRegion,
               ),

@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.2.0
-updated: 2026-10-02
+version: 3.4.0
+updated: 2026-10-06
 owner: agent_operating_model
 status: active
 ---
@@ -26,7 +26,8 @@ deployment history. Catch adds only three repository-specific layers:
    stdout for a supplied path set.
 3. `tool/git/worktree_guard.mjs` is an optional thin safety wrapper around
    ordinary Git worktrees. It protects exact-base creation, claimed-path
-   overlap, dirty or out-of-scope work, and unpushed closeout.
+   overlap, dirty or out-of-scope work, unpushed handoff, and guarded retirement
+   through ordinary non-forced Git after verified acceptance.
 
 None of these layers schedules agents, runs a hidden command pipeline, owns
 product state, or replaces Git and CI.
@@ -71,6 +72,39 @@ have been removed. Put recurring protection in the owning test or scanner.
    completion condition.
 6. State the intended outcome, included and excluded paths, relevant owner
    docs, focused checks, and acceptance criteria before a broad edit.
+
+## Execution Venue And Source Handoff
+
+Default new source tasks to the saved Codex Cloud VM after checking its actual
+toolchain against `tool/ci/toolchain.env`. On that VM, source
+`/workspace/catch-cloud-setup/env.sh` when it exists. Install only the dependency
+family selected by the task's checks with `bootstrap_worktree.sh --target
+<family>` (`root`, `functions`, or `flutter`). Omit bootstrap for checks that
+need no packages. Use `all` only when all three families are needed.
+Each task still has one guarded worktree and its own dependencies; do not copy
+or symlink another checkout's installed packages. Close accepted worktrees with
+the existing retirement procedure instead of accumulating completed checkouts.
+
+Run Linux and Android checks in cloud or CI when their pinned inputs are
+available. Prefer the existing hosted macOS CI build and visual lanes for iOS
+and macOS source verification. Use the local iMac for connected devices and
+macOS-specific local work that the hosted lane cannot prove. Keep required CI,
+security/ownership review, user approval, and live-provider release gates.
+
+Commit the exact source tree, publish the branch through ordinary Git/PR
+tooling, and ask CI to verify that head. Cross-environment handoff uses that
+commit, not a downloaded/generated snapshot whose origin or completeness is
+unverified. If push is unavailable, retain the commit and report the exact
+publication barrier to the integration owner. This repository's PR admission
+requires a non-draft PR, the sole `ci:admitted` label, and the current head and
+main. A draft intentionally skips the selected CI lanes: report `draft_pr` as
+an admission blocker, give the integration owner the review/readiness and label
+action, and do not call the skipped lanes test failures. A disconnected
+agent or VM does not establish task termination: inspect the branch, running
+process/command or CI run, and latest output after reconnecting. Report a
+blocked task with its exact commit, last observed command or run evidence,
+accountable owner, and specific next action. Do not mark work done based on
+elapsed time, a stale status label, or an unverified command assumption.
 
 ## Enforcement Integrity
 
@@ -197,16 +231,20 @@ integrated result. Assign disjoint file sets. Keep shared architecture
 decisions, canonical owner documents, common manifests, and final verification
 with the parent unless a child is explicitly assigned the whole file set.
 
-After creating a worktree, bootstrap its own pinned dependencies with one
-repository command:
+After creating a worktree, install only its required pinned dependency family
+with the repository command:
 
 ```sh
-bash tool/git/bootstrap_worktree.sh
+bash tool/git/bootstrap_worktree.sh --target root       # root npm checks
+bash tool/git/bootstrap_worktree.sh --target functions  # Functions checks
+bash tool/git/bootstrap_worktree.sh --target flutter    # Flutter checks
+# Omit --target to install all three when the task needs all three.
 ```
 
-The command runs root `npm ci`, Functions `npm ci`, and `flutter pub get` in
-that worktree. Keep these installs local to the worktree; do not symlink
-another checkout's `node_modules` or invent `NODE_PATH` overrides.
+The command checks the selected committed manifests and lockfiles, then runs
+their `npm ci` or `flutter pub get` in that worktree. Keep installs local to the
+worktree; do not symlink another checkout's `node_modules` or invent `NODE_PATH`
+overrides. A docs-only worktree with dependency-free checks needs no install.
 
 Use the worktree guard to create every new task worktree. It also provides the
 overlap and closeout checks needed when several local tasks are active:
@@ -221,6 +259,9 @@ node tool/git/worktree_guard.mjs scope --paths <additional-paths> --worktree <pa
 node tool/git/worktree_guard.mjs finish --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path> \
   --abandon --reason <why> [--by <identity>]
+node tool/git/worktree_guard.mjs retire --task-id <task-id> --worktree <path> \
+  --head-sha <task-head> --accepted-sha <verified-integrating-commit> \
+  --by <task-owner> --clearance <current-closeout-evidence>
 node tool/git/worktree_guard.mjs stale --stale-days 7
 ```
 
@@ -248,8 +289,18 @@ worktree is clean. It requires a reason, records `--by` or the local Git
 identity in a disposable file under Git's common directory, and leaves the
 branch and worktree untouched.
 
-The guard does not fetch, install dependencies, run checks, push, merge, remove
-a worktree, or authorize commands. Ordinary Git remains appropriate inside an
+For a task awaiting acceptance, keep the claim until `retire` rather than
+releasing it with `finish`. `retire` reports eligibility and exact retention
+reasons; its explicit `--apply` performs only non-forced `git worktree remove`
+and releases the own claim after verifying path and registration absence.
+It preserves every branch, recovery ref and stash. Repeat after successful
+closure returns `already_absent` without another removal; absence alone never
+claims acceptance or a newly retired task. Missing claims on existing worktrees
+remain blocked and must not be recreated to bypass ownership review.
+
+The guard does not fetch, install dependencies, run checks, push, merge, delete
+refs, or authorize commands. `retire` checks live remote refs read-only and
+requires manual owner clearance and normal cleanup admission. Ordinary Git remains appropriate inside an
 existing task worktree; new task creation goes through the guard.
 
 ### Delegation Flow
@@ -273,10 +324,10 @@ existing task worktree; new task creation goes through the guard.
    Every required review, branch protection, and current-source gate still
    applies. Isolate a failing task and reverify the resulting tree before
    delivery; do not waive a failure to keep the batch together.
-5. When using the guard, run `finish` after clean, pushed closeout. If the task
-   was superseded, use the explicit clean-only `finish --abandon` path. Remove
-   the disposable worktree separately only after the manual retirement checks
-   below.
+5. Keep the own claim through merge and required release acceptance, then use
+   `retire` and its normally admitted `--apply` path under the completion checks
+   below. A deliberately superseded task may use clean-only `finish --abandon`;
+   that releases its claim, preserves all work and is not shipped completion.
 
 If a child appears on the parent's worktree or edits an overlapping file set,
 stop it and preserve only a reviewed Git diff. If the parent base advances,
@@ -408,20 +459,40 @@ Retirement is part of closeout, using existing Git and the guard:
 3. Preserve unincorporated work and verify recovery references before removing
    anything. A merge, Done status or stale claim never permits discarding other
    work. Retain the worktree when another active owner or dependency needs it.
-4. Run the guard's `doctor`, then `finish` when clean/pushed requirements pass.
-   For a deliberately superseded task, use the existing clean-only
-   `finish --abandon` with a reason; abandonment is not shipped Done. Never
-   release another owner's claim or bypass a refused closeout.
-5. From outside the worktree, remove only the verified obsolete worktree and
-   eligible single-use branches through authorized, non-forced commands:
-   `git worktree remove <path>`, `git branch -d <branch>`, and, when the remote
+4. Run the guard's `doctor`, then `retire` from outside the own guarded worktree
+   while its original claim still exists. Supply exact `--task-id`, `--worktree`,
+   `--head-sha` and the verified integrating `--accepted-sha`. The guard checks
+   current live main, accepted-commit ancestry, all task paths after squash
+   (including additions/deletions/modes), exact local recovery tip and live
+   remote preservation of unique commits. Any differing or empty unmerged task
+   delta is retained for integration review, not assumed equivalent. Dirty,
+   untracked and ignored files, conflicting local claims, changed identity,
+   locked worktrees and unavailable evidence block retirement.
+5. The task owner supplies `--by` and current `--clearance` evidence after the
+   explicitly manual review of exact CI/release acceptance, cross-clone claims,
+   other active owners/users, current and planned processes/runtime consumers,
+   stashes and recovery, and existing deletion authority/queue admission. A
+   claim, stale timestamp, typed flag or previously denied deletion is not
+   authority. Preserve denied targets and route their blocker to the existing
+   owner; never try another actor or cleanup path. Preserve unique ignored files
+   and verify external recovery; have the existing storage owner normally dispose
+   of proven regenerable caches before retrying. There is no ignored-file bypass.
+6. In the normal admitted cleanup slot, repeat the exact `retire` command with
+   `--apply`. It rechecks and runs `git worktree remove <path>` without force,
+   verifies path/registration absence, then releases only its own claim. A Git
+   refusal preserves the claim and reports the exact error. Legacy unguarded or
+   already claim-released worktrees follow these same manual eligibility checks
+   and existing normal Git cleanup with the owner; do not manufacture a claim.
+   Review eligible single-use branches separately with `git branch -d <branch>`
+   and, when the remote
    branch has no active owner, open proposal or unique work requiring retention,
    `git push origin --delete <branch>`. Do not delete main, shared branches or
    recovery references. Squash incorporation alone may make `branch -d` refuse;
    preserve the branch and record that retention reason rather than force it.
-6. Verify the resulting worktree/branch/claim state and report it. If ownership,
+7. Verify the resulting worktree/branch/claim state and report it. If ownership,
    recovery, authorization, dirty state or a Git/guard check blocks any step,
-   preserve the work and name the exact retained path/ref and reason. A blocked
+   preserve the work and name the exact retained path/ref, reason, accountable
+   owner and next action in the existing task handoff. A blocked
    retirement remains an explicit closeout item, not a claim of cleanup.
 
 The harness remains healthy when the planner explains affected work without

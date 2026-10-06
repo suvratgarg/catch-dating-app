@@ -11,6 +11,197 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('reduced-motion disclosure closes safely during widget update', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final focus = FocusNode();
+    try {
+      await tester.pumpWidget(_disclosure(open: true, childFocus: focus));
+      focus.requestFocus();
+      await tester.pump();
+      expect(focus.hasFocus, isTrue);
+      expect(find.text('Choose guest'), findsOneWidget);
+
+      await tester.pumpWidget(_disclosure(open: false, childFocus: focus));
+      expect(tester.takeException(), isNull);
+      await tester.pump();
+      expect(focus.hasFocus, isFalse);
+      expect(find.text('Choose guest'), findsNothing);
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(_disclosure(open: true, childFocus: focus));
+      await tester.pump();
+      expect(find.text('Choose guest'), findsOneWidget);
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      focus.dispose();
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('disclosure completion after removal cannot rebuild the field', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_disclosure(open: true, reducedMotion: false));
+    await tester.pumpWidget(_disclosure(open: false, reducedMotion: false));
+    final completion = tester
+        .widget<TweenAnimationBuilder<double>>(
+          find.byKey(const ValueKey('catch-field-expansion')),
+        )
+        .onEnd!;
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(completion, returnsNormally);
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('empty row input exposes one labeled native tap action', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = TextEditingController();
+    final focus = FocusNode();
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Arrival date',
+              labelMode: CatchFieldLabelTextMode.optional,
+              controller: controller,
+              focusNode: focus,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      final input = tester.getSemantics(find.byType(TextField));
+      expect(input.label, 'Add arrival date, optional');
+      expect(input.flagsCollection.isTextField, isTrue);
+      expect(input.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+      tester.binding.renderViews.single.owner!.semanticsOwner!.performAction(
+        input.id,
+        SemanticsAction.tap,
+      );
+      await tester.pump();
+      expect(focus.hasFocus, isTrue);
+      await tester.enterText(find.byType(TextField), '2026-10-05');
+      expect(controller.text, '2026-10-05');
+      focus.unfocus();
+      await tester.pump();
+      await tester.tap(find.byType(CatchField));
+      await tester.pump();
+      expect(focus.hasFocus, isTrue);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      focus.dispose();
+      controller.dispose();
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('custom read-only row retains its accessible activation', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = TextEditingController(text: 'Choose a date');
+    var activations = 0;
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Arrival date',
+              controller: controller,
+              inputMode: CatchTextInputMode.readOnlyWithoutSelection,
+              onTap: () => activations++,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final row = tester.getSemantics(find.text('Arrival date'));
+      expect(row.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+      tester.binding.renderViews.single.owner!.semanticsOwner!.performAction(
+        row.id,
+        SemanticsAction.tap,
+      );
+      await tester.pump();
+      expect(activations, 1);
+      expect(controller.text, 'Choose a date');
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      controller.dispose();
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('explicit-save disclosure retains its accessible open action', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = TextEditingController(text: 'Draft');
+    final focus = FocusNode();
+    var open = false;
+    var changes = 0;
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => CatchField.inputActions(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Prompt',
+                controller: controller,
+                focusNode: focus,
+                open: open,
+                onOpenChanged: (value) {
+                  changes++;
+                  setState(() => open = value);
+                },
+                onCancel: () => setState(() => open = false),
+                onSubmit: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final disclosure = tester.getSemantics(find.text('Prompt'));
+      expect(disclosure.label, contains('Prompt'));
+      expect(
+        disclosure.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+      );
+      tester.binding.renderViews.single.owner!.semanticsOwner!.performAction(
+        disclosure.id,
+        SemanticsAction.tap,
+      );
+      await pumpFeatureUi(tester);
+      expect(open, isTrue);
+      expect(changes, 1);
+      expect(focus.hasFocus, isTrue);
+      expect(find.byType(TextField), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      focus.dispose();
+      controller.dispose();
+      semantics.dispose();
+    }
+  });
+
   testWidgets('external focus node remains caller-owned', (tester) async {
     final controller = TextEditingController();
     final focusNode = FocusNode();
@@ -742,3 +933,34 @@ Future<void> _pumpField(
     ),
   );
 }
+
+Widget _disclosure({
+  required bool open,
+  bool reducedMotion = true,
+  FocusNode? childFocus,
+}) => MaterialApp(
+  theme: AppTheme.dark,
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(
+      disableAnimations: reducedMotion,
+      textScaler: const TextScaler.linear(2),
+    ),
+    child: child!,
+  ),
+  home: Scaffold(
+    body: CatchField.control(
+      key: const ValueKey('disclosure-lifecycle'),
+      copy: catchFieldCopy(AppLocalizationsEn()),
+      title: 'Guest name',
+      disclosureMode: open
+          ? CatchFieldMode.controlledExpanded
+          : CatchFieldMode.controlledCollapsed,
+      onOpenChanged: (_) {},
+      child: TextButton(
+        focusNode: childFocus,
+        onPressed: () {},
+        child: const Text('Choose guest'),
+      ),
+    ),
+  ),
+);
