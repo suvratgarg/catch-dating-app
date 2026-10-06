@@ -38,8 +38,15 @@ export async function formAdmissionContactId(params: {
   const eventField = receipt.fields.find((entry) =>
     entry.destinationField === "eventId")?.value;
   if (eventField !== attendee.eventId) return null;
-  const key = `external:${responseId.toLowerCase()}`;
-  if (eventAttendeeId(attendee.eventId, key) !== attendeeId) return null;
+  const currentAttendeeId = eventAttendeeId(attendee.eventId,
+    `external:${responseId.toLowerCase()}`);
+  const pendingCurrentReceipt = receipt.status === "pending" &&
+    receipt.resultId === null;
+  const expectedAttendeeId = receipt.status === "completed" ?
+    receipt.resultId : pendingCurrentReceipt ? currentAttendeeId : null;
+  // A completed immutable receipt may point at the legacy phone/email key.
+  // Pending writes must use the current attendee-level reference identity.
+  if (!expectedAttendeeId || expectedAttendeeId !== attendeeId) return null;
   const origin = (await db.collection("organizerContactOrigins")
     .doc(organizerContactOriginId({organizerId: attendee.organizerId,
       sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",

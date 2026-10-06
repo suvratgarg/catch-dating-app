@@ -185,7 +185,22 @@ export async function reviewOrganizerFormAdmission(params: {
           blockers.add("contactUnavailable");
         }
         const stableKey = responseStableKey(responseId);
-        attendeeId = eventAttendeeId(eventId, stableKey);
+        const currentAttendeeId = eventAttendeeId(eventId, stableKey);
+        const receiptMatchesScope = admission?.status === "completed" &&
+          admission.organizerId === organizerId &&
+          admission.formId === response.formId &&
+          admission.responseId === responseId &&
+          admission.kind === "eventAttendeeProposal" &&
+          admission.resultId !== null &&
+          validId(admission.resultId) &&
+          Array.isArray(admission.fields) &&
+          admission.fields.some((field) =>
+            field.destinationField === "eventId" && field.value === eventId);
+        // Completed receipts predate attendee-level reference keys. Their
+        // exact resultId is immutable provenance for the legacy roster row.
+        const receiptAttendeeId = receiptMatchesScope ?
+          admission?.resultId : null;
+        attendeeId = receiptAttendeeId ?? currentAttendeeId;
         const offerId = responseOfferId(organizerId, eventId, contactId);
         const [attendeeSnap, edgeSnap, offerSnap] = await Promise.all([
           tx.get(ref("eventAttendees", attendeeId)),
@@ -213,16 +228,8 @@ export async function reviewOrganizerFormAdmission(params: {
             edge.eventId !== eventId || edge.contactId !== contactId)) {
           blockers.add("rosterConflict");
         }
-        if (admission?.status === "completed" &&
-            admission.organizerId === organizerId &&
-            admission.formId === response.formId &&
-            admission.responseId === responseId &&
-            admission.kind === "eventAttendeeProposal" &&
-            admission.resultId === attendeeId && attendee &&
-            Array.isArray(admission.fields) &&
-            admission.fields.some((field) =>
-              field.destinationField === "eventId" &&
-                field.value === eventId) &&
+        if (receiptMatchesScope && admission.resultId === attendeeId &&
+            attendee &&
             !blockers.has("rosterConflict")) {
           historicallyAdmitted = true;
         } else if (admission) {
