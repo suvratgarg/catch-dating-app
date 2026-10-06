@@ -131,10 +131,14 @@ class HostOfferWorkspacePolicy {
     required Future<HostFormResponseDetail> Function(String) getResponseDetail,
     required bool queryConfigured,
     required HostResponseQueryRequest? Function() currentRequest,
+    bool Function()? isCurrent,
   }) async {
     final details = <HostFormResponseDetail>[];
     // Four bounded callable reads at a time, no partial batch acceptance.
     for (var offset = 0; offset < ids.length; offset += 4) {
+      if (isCurrent?.call() == false) {
+        throw StateError('Offer preparation cancelled.');
+      }
       final end = min(offset + 4, ids.length);
       details.addAll(
         await Future.wait(ids.sublist(offset, end).map(getResponseDetail)),
@@ -156,6 +160,30 @@ class HostOfferWorkspacePolicy {
       throw StateError('Selected responses changed.');
     }
     return details;
+  }
+
+  static Future<List<HostFormResponseDetail>> missingContacts({
+    required List<HostFormResponseDetail> details,
+    required Future<bool> Function(HostFormResponseDetail)? isResponseReviewed,
+    required bool Function() isCurrent,
+  }) async {
+    final missing = <HostFormResponseDetail>[];
+    // Application approval reads have the same bound as response reads.
+    for (var offset = 0; offset < details.length; offset += 4) {
+      if (!isCurrent()) throw StateError('Offer preparation cancelled.');
+      final batch = details.sublist(offset, min(offset + 4, details.length));
+      final reviewed = await Future.wait(
+        batch.map(
+          (detail) async =>
+              detail.contactId?.isNotEmpty == true &&
+              (isResponseReviewed == null || await isResponseReviewed(detail)),
+        ),
+      );
+      for (var index = 0; index < batch.length; index++) {
+        if (!reviewed[index]) missing.add(batch[index]);
+      }
+    }
+    return List.unmodifiable(missing);
   }
 
   static Future<({HostEventOffer offer, HostOfferHandoff handoff})?>

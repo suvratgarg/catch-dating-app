@@ -236,35 +236,40 @@ class _Targets implements HostOfferEventTargetsGateway {
 
 final _start = DateTime.fromMillisecondsSinceEpoch(1800000000000);
 
-HostFormResponseDetail _detail(String? contactId, {String? applicationId}) =>
-    HostFormResponseDetail(
-      applicationId: applicationId,
-      response: HostFormResponseSummary(
-        responseId: 'response-one',
-        formId: 'form',
-        formTitle: 'Form',
-        versionId: 'form_v1',
-        version: 1,
-        status: HostFormResponseStatus.submitted,
-        identityKind: HostFormResponseIdentityKind.phoneVerified,
-        identity: const HostFormResponseIdentity(
-          displayName: 'Maya',
-          email: null,
-          phoneE164: null,
-          origin: HostFormDataOrigin.respondentGranted,
-        ),
-        sourceLinkId: null,
-        sourceLabel: null,
-        submittedAt: DateTime.fromMillisecondsSinceEpoch(1790000000000),
-        withdrawnAt: null,
-        highlights: const [],
-        conversionKinds: const {},
-      ),
-      contactId: contactId,
-      answers: const [],
-      consentVersion: 'v1',
-      completionMillis: 1790000000000,
-    );
+HostFormResponseDetail _detail(
+  String? contactId, {
+  String? applicationId,
+  String responseId = 'response-one',
+  HostFormResponseStatus status = HostFormResponseStatus.submitted,
+  HostFormDataOrigin origin = HostFormDataOrigin.respondentGranted,
+}) => HostFormResponseDetail(
+  applicationId: applicationId,
+  response: HostFormResponseSummary(
+    responseId: responseId,
+    formId: 'form',
+    formTitle: 'Form',
+    versionId: 'form_v1',
+    version: 1,
+    status: status,
+    identityKind: HostFormResponseIdentityKind.phoneVerified,
+    identity: HostFormResponseIdentity(
+      displayName: 'Maya',
+      email: null,
+      phoneE164: null,
+      origin: origin,
+    ),
+    sourceLinkId: null,
+    sourceLabel: null,
+    submittedAt: DateTime.fromMillisecondsSinceEpoch(1790000000000),
+    withdrawnAt: null,
+    highlights: const [],
+    conversionKinds: const {},
+  ),
+  contactId: contactId,
+  answers: const [],
+  consentVersion: 'v1',
+  completionMillis: 1790000000000,
+);
 
 class _Offers implements HostEventOfferGateway {
   int previewCalls = 0;
@@ -314,6 +319,13 @@ class _Offers implements HostEventOfferGateway {
 final _copy = HostEventOfferWorkspaceCopy(
   create: 'Create event offers',
   selectEvent: 'Choose an event',
+  chooseForRecipient: (name) => 'Choose an event for $name',
+  chooseForRecipients: (count) => 'Choose an event for $count people',
+  loadingEvents: 'Loading events',
+  preparingOffer: 'Preparing offer',
+  loadingOffer: 'Loading offer',
+  preparingMessage: 'Preparing message',
+  cancelPreparation: 'Cancel preparation',
   emptyEvents: 'No events',
   untitledEvent: 'Untitled event',
   loadMoreEvents: 'Load more events',
@@ -406,16 +418,21 @@ HostEventOffer _existingOffer({
 );
 
 class _RouteFunctions extends Fake implements FirebaseFunctions {
+  Future<void>? configurationGate;
   @override
   HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
-      _RouteCallable(name);
+      _RouteCallable(name, configurationGate);
 }
 
 class _RouteCallable extends Fake implements HttpsCallable {
-  _RouteCallable(this.name);
+  _RouteCallable(this.name, this.configurationGate);
   final String name;
+  final Future<void>? configurationGate;
   @override
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    if (name == 'getEventOfferConfiguration' && configurationGate != null) {
+      await configurationGate;
+    }
     final now = DateTime.now().millisecondsSinceEpoch;
     final Object data = switch (name) {
       'listOfferEventTargets' => {

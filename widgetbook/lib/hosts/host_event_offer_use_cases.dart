@@ -304,6 +304,13 @@ class _FixtureOffers implements HostEventOfferGateway {
 final _copy = HostEventOfferWorkspaceCopy(
   create: 'Create event offers',
   selectEvent: 'Choose an event',
+  chooseForRecipient: (name) => 'Choose an event for $name',
+  chooseForRecipients: (count) => 'Choose an event for $count people',
+  loadingEvents: 'Loading events',
+  preparingOffer: 'Preparing offer',
+  loadingOffer: 'Loading offer',
+  preparingMessage: 'Preparing message',
+  cancelPreparation: 'Cancel preparation',
   emptyEvents: 'No eligible upcoming events',
   untitledEvent: 'Untitled event',
   loadMoreEvents: 'Load more events',

@@ -18,6 +18,13 @@ class HostEventOfferWorkspaceCopy {
   const HostEventOfferWorkspaceCopy({
     required this.create,
     required this.selectEvent,
+    required this.chooseForRecipient,
+    required this.chooseForRecipients,
+    required this.loadingEvents,
+    required this.preparingOffer,
+    required this.loadingOffer,
+    required this.preparingMessage,
+    required this.cancelPreparation,
     required this.emptyEvents,
     required this.untitledEvent,
     required this.loadMoreEvents,
@@ -49,6 +56,13 @@ class HostEventOfferWorkspaceCopy {
 
   final String create;
   final String selectEvent;
+  final String Function(String name) chooseForRecipient;
+  final String Function(int count) chooseForRecipients;
+  final String loadingEvents;
+  final String preparingOffer;
+  final String loadingOffer;
+  final String preparingMessage;
+  final String cancelPreparation;
   final String emptyEvents;
   final String untitledEvent;
   final String loadMoreEvents;
@@ -88,6 +102,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     required this.accountId,
     this.queryController,
     this.responseId,
+    this.recipientLabel,
     required this.offerController,
     required this.listOffers,
     required this.getOffer,
@@ -114,6 +129,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   final String? accountId;
   final HostResponseQueryController? queryController;
   final String? responseId;
+  final String? recipientLabel;
   final HostEventOfferController offerController;
   final Future<Map<String, Object?>> Function({
     required String organizerId,
@@ -259,6 +275,7 @@ class _HostEventOfferWorkspaceSectionState
     final copy = widget.copy;
     final selected = _controller.selectedOffer;
     if (_controller.event != null &&
+        !_controller.preparing &&
         _controller.missingContacts.isEmpty &&
         _controller.configuration?.suggestedExpiresAt != null &&
         selected == null &&
@@ -398,21 +415,33 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
 
   String _eventTimeLabel(HostOfferEventTarget event) {
     final local = event.startTime.toLocal();
-    final displayed =
-        '${AppTimeFormatters.dateTime(local)} '
-        '${local.timeZoneName}';
-    final eventZone = event.timezone?.trim();
-    return eventZone == null ||
-            eventZone.isEmpty ||
-            eventZone == local.timeZoneName
-        ? displayed
-        : '$displayed · $eventZone';
+    // The clock is shown in the device's local zone, with one matching label.
+    return '${AppTimeFormatters.dateTime(local)} ${local.timeZoneName}';
   }
 
   @override
   Widget build(BuildContext context) {
     final copy = workspace.copy;
     final intent = workspace.queryController?.selectionIntent;
+    final selectedRow = controller.ids.length == 1
+        ? workspace.queryController?.view.rows
+              .where((row) => row.responseId == controller.ids.single)
+              .firstOrNull
+        : null;
+    final recipient = (workspace.recipientLabel ?? selectedRow?.primaryLabel)
+        ?.trim();
+    final contextLabel = recipient?.isNotEmpty == true
+        ? copy.chooseForRecipient(recipient!)
+        : controller.ids.length > 1
+        ? copy.chooseForRecipients(controller.ids.length)
+        : copy.selectEvent;
+    final stageLabel = switch (controller.stage) {
+      HostOfferWorkspaceStage.loadingEvents => copy.loadingEvents,
+      HostOfferWorkspaceStage.preparingOffer => copy.preparingOffer,
+      HostOfferWorkspaceStage.loadingOffer => copy.loadingOffer,
+      HostOfferWorkspaceStage.preparingMessage => copy.preparingMessage,
+      HostOfferWorkspaceStage.idle => null,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -427,26 +456,13 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
             ),
           ),
         if (controller.ids.isNotEmpty) ...[
-          if (controller.event == null) ...[
-            CatchSection.plain(
-              child: Text(
-                copy.selectEvent,
-                style: CatchTextStyles.sectionTitle(context),
-              ),
+          CatchSection.plain(
+            child: Text(
+              contextLabel,
+              style: CatchTextStyles.sectionTitle(context),
             ),
-            if (workspace.onCreateEvent != null) gapH12,
-            if (workspace.onCreateEvent != null)
-              CatchSection.plain(
-                child: CatchButton(
-                  key: const ValueKey('offer-create-event'),
-                  label: context.l10n.hostsHostEventsListLabelNewEvent,
-                  fullWidth: true,
-                  variant: CatchButtonVariant.secondary,
-                  onPressed: controller.loading
-                      ? null
-                      : workspace.onCreateEvent,
-                ),
-              ),
+          ),
+          if (controller.event == null) ...[
             if (controller.events.isEmpty && !controller.loading)
               CatchSection.plain(
                 child: Text(
@@ -480,6 +496,19 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   onPressed: controller.loading ? null : controller.loadEvents,
                 ),
               ),
+            if (workspace.onCreateEvent != null) gapH12,
+            if (workspace.onCreateEvent != null)
+              CatchSection.plain(
+                child: CatchButton(
+                  key: const ValueKey('offer-create-event'),
+                  label: context.l10n.hostsHostEventsListLabelNewEvent,
+                  fullWidth: true,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: controller.loading
+                      ? null
+                      : workspace.onCreateEvent,
+                ),
+              ),
           ],
           if (controller.event != null) ...[
             CatchSection.fieldRows(
@@ -491,9 +520,8 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   body:
                       '${_eventTimeLabel(controller.event!)} · ${context.l10n.hostEventOfferChangeEvent}',
                   onTap:
-                      controller.loading ||
-                          workspace.offerController.view.pendingRequestId !=
-                              null
+                      controller.loading && !controller.canCancelPreparation ||
+                          controller.hasUnresolvedCommand
                       ? null
                       : controller.changeEvent,
                 ),
@@ -527,7 +555,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     ),
                 ],
               ),
-            ] else if (controller.configuration?.suggestedExpiresAt == null)
+            ] else if (!controller.preparing &&
+                controller.configuration != null &&
+                controller.configuration!.suggestedExpiresAt == null)
               CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -546,6 +576,7 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                 ),
               )
             else if (controller.selectedOffer == null &&
+                !controller.preparing &&
                 controller.draft != null)
               review!,
 
@@ -749,11 +780,19 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
             ],
           ],
         ],
-        if (controller.loading)
+        if (stageLabel != null)
           CatchSection.plain(
-            child: Text(
-              copy.review.previewing,
-              style: CatchTextStyles.supporting(context),
+            child: Text(stageLabel, style: CatchTextStyles.supporting(context)),
+          ),
+        if (controller.preparing)
+          CatchSection.plain(
+            child: CatchButton(
+              key: const ValueKey('offer-cancel-preparation'),
+              label: copy.cancelPreparation,
+              variant: CatchButtonVariant.secondary,
+              onPressed: controller.canCancelPreparation
+                  ? controller.cancelPreparation
+                  : null,
             ),
           ),
         if (controller.hasError || controller.selectionStale) ...[
@@ -765,12 +804,13 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
               style: CatchTextStyles.supporting(context),
             ),
           ),
-          CatchSection.plain(
-            child: CatchButton(
-              label: context.l10n.sharedActionTryAgain,
-              onPressed: controller.loading ? null : controller.start,
+          if (!controller.hasUnresolvedCommand)
+            CatchSection.plain(
+              child: CatchButton(
+                label: context.l10n.sharedActionTryAgain,
+                onPressed: controller.loading ? null : controller.retry,
+              ),
             ),
-          ),
         ],
       ],
     );

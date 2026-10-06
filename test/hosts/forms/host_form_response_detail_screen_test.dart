@@ -26,6 +26,36 @@ import '../../test_pump_helpers.dart';
 
 void main() {
   setUpAll(loadCatchTestFonts);
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('optional note remains readable at text scale $scale', (
+      tester,
+    ) async {
+      await _pumpDetail(
+        tester,
+        applicationStatus: HostApplicationReviewStatus.submitted,
+        textScale: scale,
+      );
+      final field = find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchField && widget.title == 'Private review note',
+      );
+      await tester.ensureVisible(field);
+      await pumpFeatureUi(tester);
+      final add = find.descendant(
+        of: field,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is RichText &&
+              widget.text.toPlainText().contains('Add note'),
+        ),
+      );
+      expect(add, findsOneWidget);
+      final rendered = tester.renderObject<RenderParagraph>(add);
+      expect(rendered.didExceedMaxLines, isFalse);
+      expect(rendered.text.toPlainText(), contains('Optional'));
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final status in ['submitted', 'refunded', 'reviewRequired']) {
     for (final dark in [false, true]) {
       for (final scale in [1.0, 2.0]) {

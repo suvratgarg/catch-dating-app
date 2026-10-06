@@ -23303,6 +23303,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'No eligible upcoming events are available.';
 
   @override
+  String hostEventOfferChooseForRecipient({required String name}) {
+    return 'Choose an event for $name';
+  }
+
+  @override
+  String hostEventOfferChooseForRecipients({required int count}) {
+    return 'Choose an event for $count people';
+  }
+
+  @override
+  String get hostEventOfferLoadingEvents => 'Loading events…';
+
+  @override
+  String get hostEventOfferPreparing => 'Preparing offer…';
+
+  @override
+  String get hostEventOfferLoadingExisting => 'Loading offer…';
+
+  @override
+  String get hostEventOfferPreparingMessage => 'Preparing message…';
+
+  @override
+  String get hostEventOfferCancelPreparation => 'Cancel preparation';
+
+  @override
+  String get hostEventOfferSetupRequired =>
+      'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.';
+
+  @override
+  String get hostResponseAddReviewNote => 'Add note';
+
+  @override
   String get hostEventOfferNeedsContact =>
       'Review these responses and add them to People before offering an event.';
 
