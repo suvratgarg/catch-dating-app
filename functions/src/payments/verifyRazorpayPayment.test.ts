@@ -244,7 +244,10 @@ test(
   "verifyRazorpayPaymentHandler is a no-op for an already-completed payment",
   async () => {
     const paymentDoc = createPaymentDocRecorder({
-      existing: {status: "completed"},
+      existing: {status: "completed", userId: "runner-1",
+        eventId: "trusted-event", orderId: "order_123",
+        paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+        currency: "INR", provider: "razorpay"},
     });
     let signUpCalled = false;
 
@@ -304,6 +307,42 @@ test(
     assert.deepEqual(result, {verified: true, eventId: "trusted-event"});
   }
 );
+
+test("a fully refunded replay cannot confirm checkout", async () => {
+  const existing = {status: "refundFailed", userId: "runner-1",
+    eventId: "trusted-event", orderId: "order_123",
+    paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+    currency: "INR", provider: "razorpay",
+    razorpayOwnership: {projectId: "catchdates-dev", schema: "1"}};
+  const paymentDoc = createPaymentDocRecorder({existing});
+  let signUpCalled = false;
+
+  await assert.rejects(verifyRazorpayPaymentHandler(buildRequest({
+    auth: {uid: "runner-1"},
+    data: {paymentId: "pay_123", orderId: "order_123",
+      signature: "sig_123"},
+  }), {
+    firestore: () => createPaymentsFirestore(paymentDoc),
+    createClient: () => ({
+      orders: {fetch: async () => ({id: "order_123", amount: 25000,
+        currency: "INR", amount_paid: 25000, amount_due: 0,
+        notes: {eventId: "trusted-event", userId: "runner-1",
+          catchBookingProject: "catchdates-dev", catchBookingSchema: "1"}})},
+      payments: {fetch: async () => ({id: "pay_123",
+        order_id: "order_123", amount: 25000, currency: "INR",
+        status: "refunded", amount_refunded: 25000})},
+    }) as unknown as Razorpay,
+    serverTimestamp: () => "server-now",
+    signUpForEvent: async () => {
+      signUpCalled = true;
+    },
+    verifySignature: () => true,
+  }), isHttpsError("failed-precondition",
+    "This booking was not admitted. Check its refund status in Payments."));
+
+  assert.equal(signUpCalled, false);
+  assert.deepEqual(paymentDoc.setCalls, []);
+});
 
 test(
   "verifyRazorpayPaymentHandler rejects invalid signatures before fetching",

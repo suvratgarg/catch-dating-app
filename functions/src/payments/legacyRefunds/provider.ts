@@ -88,6 +88,7 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
     Promise<LegacyRefundObservation> {
     if (intent.provider === "razorpay") {
       requireRazorpayAuthorization(authorization, intent.orderId);
+      await this.refreshRazorpayAuthorization(intent);
       const {client, token} = this.razorpay();
       const result = await razorpayResult(client.refundPayment(token, {
         paymentId: intent.providerPaymentId, amount: attempt.amountMinor,
@@ -109,6 +110,7 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
     if (!id) review();
     if (intent.provider === "razorpay") {
       requireRazorpayAuthorization(authorization, intent.orderId);
+      await this.refreshRazorpayAuthorization(intent);
       const {client, token} = this.razorpay();
       const result = await razorpayResult(client.fetchRefund(token, id));
       return {id: result.id, paymentId: result.paymentId,
@@ -128,6 +130,20 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
       authorization: () => `Basic ${Buffer.from(
         `${credentials.keyId}:${credentials.secret}`).toString("base64")}`,
     }, this.config.fetchImpl), token: credentials.secret};
+  }
+
+  /** Reclassify the mutable provider marker after the local claim and before
+   * any refund dispatch or refund observation can affect local state.
+   */
+  private async refreshRazorpayAuthorization(intent: LegacyRefundIntent):
+    Promise<void> {
+    const runtimeProjectId = razorpayRuntimeProject();
+    const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
+      order: await this.razorpayOrder(intent.orderId),
+      frozenContexts: [intent.razorpayOwnership]});
+    if (ownership.kind !== "owned") review();
+    assertRazorpayOrderOwnership({evidence: ownership.evidence,
+      orderId: intent.orderId, runtimeProjectId});
   }
 
   private async razorpayOrder(orderId: string): Promise<{

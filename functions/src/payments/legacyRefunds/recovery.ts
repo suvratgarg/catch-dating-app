@@ -154,33 +154,42 @@ export async function reconcileNativeCancellationRefunds(input: {
     // Advance durable discovery before provider work. Refund dispatch is
     // independently idempotent, and a wrap revisits work skipped by a crash.
     await input.checkpoint?.(pageContinuation);
+    const jobs: string[] = [];
     for (const job of page.docs) {
-      const value = job.data();
       cursor = {nextAttemptOrderKey: refundOrderKey(job), paymentId: job.id};
       scanned++;
+      const value = job.data();
       if (!validatePaymentDocument(value)) {
         failed++;
-        if (processed + failed >= workLimit) {
-          return pageContinuation ? {processed, failed,
-            continuation: pageContinuation} : {processed, failed};
+      } else if (hasLocalRefundOwnership(
+        value as unknown as PaymentDocument)) {
+        jobs.push(job.id);
+      }
+      if (jobs.length + failed >= workLimit) break;
+    }
+    let jobIndex = 0;
+    // Eight workers bound a worst-case 40-job Razorpay pass to five waves.
+    // Each job can spend three serial 15s provider phases (verification,
+    // post-claim ownership refresh, and refund dispatch/observation), leaving
+    // the scheduler enough of its 540s budget for cancellation staging.
+    await Promise.all(Array.from({length: Math.min(8, jobs.length)},
+      async () => {
+        while (jobIndex < jobs.length) {
+          const paymentId = jobs[jobIndex++];
+          try {
+            await process(paymentId);
+            processed++;
+          } catch {
+            // Ownership/provider preflight owns retry classification. Recovery
+            // never turns an unresolved row into a local review write merely
+            // to advance the oldest-due page.
+            failed++;
+          }
         }
-        continue;
-      }
-      const payment = value as unknown as PaymentDocument;
-      if (!hasLocalRefundOwnership(payment)) continue;
-      try {
-        await process(job.id);
-        processed++;
-      } catch {
-        // Ownership/provider preflight owns retry classification. Recovery must
-        // never turn an unresolved row into a local review write merely to
-        // advance the oldest-due page.
-        failed++;
-      }
-      if (processed + failed >= workLimit) {
-        return pageContinuation ? {processed, failed,
-          continuation: pageContinuation} : {processed, failed};
-      }
+      }));
+    if (processed + failed >= workLimit) {
+      return pageContinuation ? {processed, failed,
+        continuation: pageContinuation} : {processed, failed};
     }
     if (page.docs.length < limit) return {processed, failed};
   }

@@ -144,6 +144,37 @@ test("Razorpay pins platform credentials and captured order", async () => {
     `Basic ${Buffer.from("rzp_test:rzp_secret").toString("base64")}`);
 });
 
+test("Razorpay reclassifies ownership after claim and before refund POST",
+  async () => {
+    const h = setup("razorpay");
+    let orderReads = 0;
+    let refundPosts = 0;
+    h.respondWith((url, init) => {
+      if (url.includes("/orders/")) {
+        orderReads++;
+        return {body: orderReads === 1 ? razorpayOrder() : {
+          ...razorpayOrder(), notes: {
+            ...razorpayOrder().notes,
+            catchBookingProject: "catch-dating-app-64e51",
+          },
+        }};
+      }
+      if (init.method === "POST") {
+        refundPosts++;
+        return {body: {entity: "refund", id: "rfnd_one",
+          payment_id: "pay_one", amount: 1000, currency: "INR",
+          status: "pending"}};
+      }
+      return {body: razorpayPayment()};
+    });
+
+    const authorization = await h.client.verifyPayment(h.payment, h.intent);
+    await assert.rejects(h.client.createRefund(h.intent, h.attempt,
+      authorization), LegacyRefundReviewRequired);
+    assert.equal(orderReads, 2);
+    assert.equal(refundPosts, 0);
+  });
+
 
 test("definite provider rejection needs review while outages remain retryable",
   async () => {
@@ -155,13 +186,23 @@ test("definite provider rejection needs review while outages remain retryable",
         return h.client.verifyPayment(h.payment, h.intent);
       })() : undefined;
       for (const status of [400, 401, 403, 404, 422]) {
-        h.respond({}, status);
+        if (provider === "razorpay") {
+          h.respondWith((url) => url.includes("/orders/") ?
+            {body: razorpayOrder()} : {body: {}, status});
+        } else {
+          h.respond({}, status);
+        }
         await assert.rejects(h.client.createRefund(h.intent, h.attempt,
           authorization),
         LegacyRefundReviewRequired);
       }
       for (const status of [408, 409, 429, 500, 503]) {
-        h.respond({}, status);
+        if (provider === "razorpay") {
+          h.respondWith((url) => url.includes("/orders/") ?
+            {body: razorpayOrder()} : {body: {}, status});
+        } else {
+          h.respond({}, status);
+        }
         await assert.rejects(h.client.createRefund(h.intent, h.attempt,
           authorization),
         (error: unknown) => !(error instanceof LegacyRefundReviewRequired));

@@ -117,7 +117,8 @@ export async function verifyRazorpayPaymentHandler(
 
   if (isExactTerminalRefundReplay({order, payment,
     localPayment: localPayment.data(), orderId, paymentId, userId})) {
-    return {verified: true, eventId: orderNote(order, "eventId")!};
+    throw new HttpsError("failed-precondition",
+      "This booking was not admitted. Check its refund status in Payments.");
   }
   const booking = verifyPaidEventBooking({
     order,

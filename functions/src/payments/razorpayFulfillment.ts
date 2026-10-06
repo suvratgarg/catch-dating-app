@@ -11,6 +11,7 @@ import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
 import type {RazorpayOwnershipContext} from "./razorpayOrderOwnership";
 import type {LegacyRazorpayRefundAuthorization} from
   "./legacyRefunds/intent";
+import {HttpsError} from "firebase-functions/v2/https";
 
 export interface RazorpayFulfillmentDeps {
   signUpForEvent: typeof signUpUserForEvent;
@@ -18,9 +19,9 @@ export interface RazorpayFulfillmentDeps {
 }
 
 /**
- * Terminal payment states. Re-running fulfillment for any of these is a no-op
- * so the client callback, webhook, and reconciliation sweep can all race
- * without double-fulfilling or double-charging.
+ * Terminal payment states. Re-running fulfillment for the exact same checkout
+ * is a no-op so the client callback, webhook, and reconciliation sweep can all
+ * race without double-fulfilling or double-charging.
  */
 const terminalPaymentStatuses = new Set([
   "completed",
@@ -49,15 +50,30 @@ export async function fulfillRazorpayPayment({
   const inviteAttribution = inviteAttributionFromBooking(booking);
   const paymentRef = db.collection("payments").doc(paymentId);
   const existingPaymentSnap = await paymentRef.get();
-  const existingStatus = existingPaymentSnap.data()?.status as
+  const existingPayment = existingPaymentSnap.data();
+  const existingStatus = existingPayment?.status as
     | string
     | undefined;
 
-  // Idempotency: any already-finalized payment is a no-op for every caller.
+  // Idempotency applies only to the exact already-finalized checkout.
   if (
     existingStatus !== undefined &&
     terminalPaymentStatuses.has(existingStatus)
   ) {
+    if (!sameTerminalPaymentIdentity(existingPayment, {
+      userId: booking.userId,
+      eventId: booking.eventId,
+      orderId,
+      paymentId,
+      amount: booking.amountInPaise,
+      amountMinor: booking.amountInPaise,
+      currency: booking.currency,
+      provider: "razorpay",
+      ...(razorpayOwnership ? {razorpayOwnership} : {}),
+    })) {
+      throw new HttpsError("failed-precondition",
+        "Payment authority changed.");
+    }
     await deletePendingOrderBestEffort(db, orderId);
     return {fulfilled: existingStatus === "completed", alreadyFinalized: true};
   }
@@ -111,6 +127,27 @@ export async function fulfillRazorpayPayment({
   await deletePendingOrderBestEffort(db, orderId);
 
   return {fulfilled: true, alreadyFinalized: false};
+}
+
+/** Terminal status is idempotent only for the exact captured checkout. */
+function sameTerminalPaymentIdentity(
+  existing: FirebaseFirestore.DocumentData | undefined,
+  booking: NativePaidBooking
+): boolean {
+  if (!existing) return false;
+  if (existing.userId !== booking.userId ||
+      existing.eventId !== booking.eventId ||
+      existing.orderId !== booking.orderId ||
+      existing.paymentId !== booking.paymentId ||
+      existing.amount !== booking.amount ||
+      existing.currency !== booking.currency ||
+      (existing.provider ?? "razorpay") !== booking.provider ||
+      (existing.amountMinor !== undefined &&
+        existing.amountMinor !== booking.amountMinor)) return false;
+  if (existing.razorpayOwnership === undefined) return true;
+  return existing.razorpayOwnership?.projectId ===
+      booking.razorpayOwnership?.projectId &&
+    existing.razorpayOwnership?.schema === booking.razorpayOwnership?.schema;
 }
 
 /**

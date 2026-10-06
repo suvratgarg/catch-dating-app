@@ -305,6 +305,31 @@ test("recovery selects oldest due work without a purchase-age cutoff",
     assert.equal(processed.at(-1), "pay39");
   });
 
+test("due recovery bounds unavailable reads with eight workers", async () => {
+  const h = fixture(); h.store.rows.delete("payments/payment1");
+  for (let index = 0; index < 39; index++) {
+    const cancellationRefund = planLegacyCancellationRefund({
+      payment: h.payment, reason: "guestCancelled", targetAmountMinor: 1000,
+      nowMillis: index + 1});
+    h.store.put(`payments/pay${String(index).padStart(2, "0")}`,
+      {...h.payment, cancellationRefund});
+  }
+  let active = 0; let maxActive = 0;
+  const result = await reconcileNativeCancellationRefunds({
+    db: queryDatabase(h.store).db,
+    nowMillis: 1000,
+    process: async () => {
+      active++;
+      maxActive = Math.max(maxActive, active);
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      active--;
+      throw new Error("Provider unavailable");
+    },
+  });
+  assert.deepEqual(result, {processed: 0, failed: 39});
+  assert.equal(maxActive, 8);
+});
+
 test("a failed refund preflight leaves the due queue byte-for-byte intact",
   async () => {
     const h = fixture(); h.store.put("events/event1", {status: "cancelled"});

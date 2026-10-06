@@ -59,9 +59,14 @@ test(
 test(
   "razorpayWebhookHandler is idempotent when the callback already fulfilled",
   async () => {
+    const completed = {status: "completed", userId: "runner-1",
+      eventId: "trusted-event", orderId: "order_123",
+      paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+      currency: "INR", provider: "razorpay",
+      razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
+      createdAt: Timestamp.fromMillis(1)};
     const firestore = new FakeFirestore({
-      "payments/pay_123": {status: "completed",
-        createdAt: Timestamp.fromMillis(1)},
+      "payments/pay_123": completed,
       "razorpayPendingOrders/order_123": {
         status: "pending",
         orderId: "order_123",
@@ -85,10 +90,7 @@ test(
 
     assert.equal(signUpCalled, false);
     // The already-completed payment doc is left untouched.
-    assert.deepEqual(firestore.data["payments/pay_123"], {
-      status: "completed",
-      createdAt: Timestamp.fromMillis(1),
-    });
+    assert.deepEqual(firestore.data["payments/pay_123"], completed);
     // The leftover pending-order doc is cleaned up.
     assert.equal(firestore.data["razorpayPendingOrders/order_123"], undefined);
   }
