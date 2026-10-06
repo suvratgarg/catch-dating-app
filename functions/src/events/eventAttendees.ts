@@ -304,6 +304,12 @@ export async function importEventAttendeesForHost(
     // document. A changed endpoint cannot inherit its former UID grant.
     for (const row of prepared) {
       const existing = existingById.get(row.attendeeId);
+      // A host-supplied roster is never authority for a Catch booking's
+      // identity, attendance, or payment facts.
+      if (existing?.source === "catchBooking") {
+        throw new HttpsError("failed-precondition",
+          `Catch booking needs separate review (${row.rowId}).`);
+      }
       if (existing?.linkedUid &&
           ((row.phoneE164 && row.phoneE164 !== existing.phoneE164) ||
           (row.email && row.email !== existing.email))) {
@@ -1247,14 +1253,12 @@ export function prepareImportRows(params: {
     const externalReference = stringOrNull(row.externalReference);
     const arrivalGroup = stringOrNull(row.arrivalGroup);
     let stableKey = `row:${params.importKey}:${row.rowId}`;
-    if (arrivalGroup !== null && externalReference !== null) {
+    if (externalReference !== null) {
       stableKey = `external:${externalReference.toLowerCase()}`;
     } else if (phoneResult.value !== null) {
       stableKey = `phone:${phoneResult.value}`;
     } else if (email !== null) {
       stableKey = `email:${email}`;
-    } else if (externalReference !== null) {
-      stableKey = `external:${externalReference.toLowerCase()}`;
     } else if (params.format !== "manual") {
       errors.push({
         rowId: row.rowId,

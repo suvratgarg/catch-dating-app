@@ -465,6 +465,37 @@ test(
   }
 );
 
+test("attendee references keep tickets distinct without an order column",
+  () => {
+    const rows = ["ticket-a", "ticket-b"].map((reference, index) => ({
+      rowId: String(index + 2), displayName: `Guest ${index + 1}`,
+      phone: "+919876543210", email: "buyer@example.com",
+      externalReference: reference, arrivalGroup: null, ticketType: "General",
+      status: "registered" as const,
+    }));
+    const result = prepareImportRows({eventId: "event-1",
+      importKey: "two-tickets", format: "csv", rows});
+    assert.equal(result.errors.length, 0);
+    assert.equal(result.prepared.length, 2);
+    assert.notEqual(result.prepared[0].attendeeId,
+      result.prepared[1].attendeeId);
+  });
+
+test("email-only duplicate tickets require review instead of collapsing",
+  () => {
+    const rows = ["Asha", "Ravi"].map((displayName, index) => ({
+      rowId: String(index + 2), displayName, phone: null,
+      email: "buyer@example.com", externalReference: null,
+      arrivalGroup: null, ticketType: "General",
+      status: "registered" as const,
+    }));
+    const result = prepareImportRows({eventId: "event-1",
+      importKey: "buyer-tickets", format: "csv", rows});
+    assert.equal(result.prepared.length, 1);
+    assert.deepEqual(result.errors.map((error) => error.code),
+      ["duplicate-row"]);
+  });
+
 test("shared imported order totals are allocated once across guests", () => {
   const result = prepareImportRows({
     eventId: "event-1",
@@ -559,6 +590,39 @@ test("manual rows may use an import-scoped row identity", () => {
 
   assert.equal(result.errors.length, 0);
   assert.equal(result.prepared.length, 1);
+});
+
+test("host import cannot replace a Catch booking's roster facts", async () => {
+  const now = admin.firestore.Timestamp.fromMillis(1000);
+  const attendeeId = eventAttendeeId("event-1", "phone:+919876543210");
+  const path = `eventAttendees/${attendeeId}`;
+  const firestore = new FakeFirestore({
+    "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+      status: "active"},
+    "organizers/organizer-1": {hostUserId: "host-1",
+      ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+    [path]: {eventId: "event-1", clubId: "organizer-1",
+      organizerId: "organizer-1", displayName: "Booked Guest",
+      source: "catchBooking", status: "registered",
+      phoneE164: "+919876543210", email: "booked@example.com",
+      revenueAmountMinor: 50000, revenueCurrency: "INR",
+      revenueSource: "providerOrder", linkedUid: "person-1"},
+  });
+  const payload = {eventId: "event-1", importKey: "host-report",
+    fileName: "guests.csv", format: "csv" as const, rows: [{
+      rowId: "2", displayName: "Different Guest",
+      phone: "+919876543210", email: "other@example.com",
+      externalReference: null, arrivalGroup: null, ticketType: null,
+      status: "waitlisted" as const,
+    }]};
+  await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+    payload}, {firestore: () => firestore as never,
+    checkRateLimit: async () => undefined, timestamp: () => now}),
+  /Catch booking needs separate review/u);
+  assert.equal(firestore.get(path)?.displayName, "Booked Guest");
+  assert.equal(firestore.get(path)?.status, "registered");
+  assert.equal(firestore.get(path)?.revenueAmountMinor, 50000);
+  assert.equal(firestore.entries("eventAttendeeImports").length, 0);
 });
 
 test("re-import cannot transfer a claimed attendee's verified endpoint",

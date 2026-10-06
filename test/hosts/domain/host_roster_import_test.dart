@@ -34,11 +34,13 @@ void main() {
   test('roster city preview maps known aliases and flags unknown cities', () {
     final table = parseHostRosterFile(
       fileName: 'guests.csv',
-      bytes: Uint8List.fromList(utf8.encode(
-        'Name,Phone,Guest City,Status\n'
-        'Asha Shah,+919876543210,Bangalore,Confirmed\n'
-        'Ravi Rao,+919812345678,Atlantis,Confirmed',
-      )),
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Phone,Guest City,Status\n'
+          'Asha Shah,+919876543210,Bangalore,Confirmed\n'
+          'Ravi Rao,+919812345678,Atlantis,Confirmed',
+        ),
+      ),
     );
     expect(table.suggestedMapping[HostRosterField.city], 2);
     final mapped = table.mapRows(table.suggestedMapping);
@@ -106,6 +108,25 @@ void main() {
       'attendee-7b',
     ]);
     expect(rows.map((row) => row.arrivalGroup), ['order-7', 'order-7']);
+  });
+
+  test('attendee references keep tickets distinct with a shared phone', () {
+    final table = parseHostRosterFile(
+      fileName: 'tickets.csv',
+      bytes: Uint8List.fromList(
+        utf8.encode(
+          'Name,Phone,Email,Attendee ID\n'
+          'Asha,+919876543210,buyer@example.com,ticket-a\n'
+          'Ravi,+919876543210,buyer@example.com,ticket-b',
+        ),
+      ),
+    );
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.issues, isEmpty);
+    expect(mapped.rows.map((row) => row.externalReference), [
+      'ticket-a',
+      'ticket-b',
+    ]);
   });
 
   test('unverified provider hint keeps manual mapping available', () {
@@ -297,6 +318,20 @@ void main() {
         HostRosterRowIssueType.duplicateIdentity,
       ]),
     );
+  });
+
+  test('a 251-row upload retains an explicit overflow count', () {
+    final csv = StringBuffer('Name,Phone\n');
+    for (var i = 0; i < 251; i++) {
+      csv.writeln('Guest $i,+919000${i.toString().padLeft(6, '0')}');
+    }
+    final table = parseHostRosterFile(
+      fileName: 'large-roster.csv',
+      bytes: Uint8List.fromList(utf8.encode(csv.toString())),
+    );
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.readyCount, 250);
+    expect(mapped.truncatedCount, 1);
   });
 
   test('file size guard rejects oversized uploads before parsing', () {

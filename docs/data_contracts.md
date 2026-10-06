@@ -2227,8 +2227,11 @@ replaces `eventParticipations`:
   Catch-booking projection, OTP linking and public registration are
   server-owned operations;
 - deterministic contact/source keys make retry and re-import idempotent inside
-  one event. A phone/email match may converge rows inside that event only; it
-  does not build a cross-event identity graph;
+  one event. An attendee-level source reference takes precedence over shared
+  phone/email when present, so two tickets using a buyer's contact remain
+  distinct. An email-only collision is an explicit duplicate-row exception,
+  never evidence to merge distinct tickets; it does not build a cross-event
+  identity graph;
 - `arrivalGroup` retains an optional provider booking/order/group or
   ticket-buyer key shared by guests expected to arrive together. Adapters keep
   it separate from attendee-level external references, imports include it in
@@ -2247,6 +2250,12 @@ replaces `eventParticipations`:
 - `eventAttendeeImports` records actor, event, client idempotency key, format,
   canonical payload hash, counts, bounded row errors and terminal state. It is
   not a copy of the uploaded file.
+- the existing Host upload mapper blocks apply while rows need review or exceed
+  the callable's 250-row batch limit; it does not silently import a first page.
+  A host import that targets an existing Catch-booking attendee fails before
+  writing roster rows or a receipt; booking status and financial authority stay
+  with Catch. A saved review session and pre-apply reconciliation belong to the
+  separately scoped CAT-154 implementation, not to this legacy mapping sheet.
 
 Hosts may list operational attendees and import receipts only for events they
 manage. An attendee does not gain roster-list access when their UID is linked;

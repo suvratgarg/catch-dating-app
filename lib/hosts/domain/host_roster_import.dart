@@ -165,11 +165,13 @@ class HostRosterTable {
       final rawCity = _nullableValueAt(source, mapping[HostRosterField.city]);
       final city = rawCity == null ? null : cityOptionByName(rawCity);
       if (rawCity != null && city == null) {
-        issues.add(HostRosterRowIssue(
-          HostRosterRowIssueType.invalidCity,
-          rowNumber: index + 2,
-          value: rawCity,
-        ));
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.invalidCity,
+            rowNumber: index + 2,
+            value: rawCity,
+          ),
+        );
         needsReviewCount += 1;
         continue;
       }
@@ -272,7 +274,6 @@ class HostRosterTable {
         phone: phone,
         email: email,
         externalReference: externalReference,
-        arrivalGroup: arrivalGroup,
       );
       if (identity == null) {
         issues.add(
@@ -655,14 +656,10 @@ String? _stableRosterIdentity({
   required String? phone,
   required String? email,
   required String? externalReference,
-  required String? arrivalGroup,
 }) {
   final reference = externalReference?.trim().toLowerCase();
-  if (arrivalGroup != null && reference != null && reference.isNotEmpty) {
-    return 'external:$reference';
-  }
+  if (reference != null && reference.isNotEmpty) return 'external:$reference';
   if (phone != null) return 'phone:${_normalizedRosterPhone(phone)}';
   if (email != null) return 'email:${email.trim().toLowerCase()}';
-  if (reference != null && reference.isNotEmpty) return 'external:$reference';
   return null;
 }
