@@ -54,6 +54,16 @@ test("upload resumes a durable event/account scoped private draft",
     await assert.rejects(restarted.revise({sessionId: first.sessionId,
       hostUid: "host-1", expectedRevision: 0, rows: first.rows,
       excludedRowIds: []}, authorize), /Stale/u);
+    const secondRow = {...structuredClone(row),
+      value: {...row.value, rowId: "3", externalReference: "ticket-8"},
+      sourceRowNumber: 3};
+    const two = await restarted.createOrResume({...input,
+      fileFingerprint: "c".repeat(64), rows: [row, secondRow]}, authorize);
+    await assert.rejects(restarted.revise({sessionId: two.sessionId,
+      hostUid: "host-1", expectedRevision: 1, rows: [two.rows[0]],
+      excludedRowIds: []}, authorize), /Stale/u);
+    assert.equal((await restarted.get({sessionId: two.sessionId,
+      hostUid: "host-1"}, authorize))?.rows.length, 2);
     revoke();
     await assert.rejects(restarted.get({sessionId: first.sessionId,
       hostUid: "host-1"}, authorize), /manager revoked/u);
@@ -75,11 +85,18 @@ test("revision, failed commit and receipt replay preserve every row",
         const commit = await store.prepareCompletion({
           tx: tx as unknown as Transaction,
           sessionId: first.sessionId, hostUid: "host-1",
-          expectedDraft: revised, preview,
+          expectedDraft: revised, expectedReviewHash: preview.reviewHash,
           importId: "receipt-1", replayed,
-          authorize});
+          authorize, loadCurrentRows: async () => new Map()});
         commit();
       });
+    await assert.rejects(db.runTransaction(async (tx) => {
+      await store.prepareCompletion({tx: tx as unknown as Transaction,
+        sessionId: first.sessionId, hostUid: "host-1",
+        expectedDraft: revised, expectedReviewHash: "stale-review",
+        importId: "receipt-1", replayed: false, authorize,
+        loadCurrentRows: async () => new Map()});
+    }), /changed after approval/u);
     db.failNextCommit = true;
     await assert.rejects(complete(false), /transaction interruption/u);
     assert.equal((await store.get({sessionId: first.sessionId,
@@ -102,8 +119,9 @@ test("revision, failed commit and receipt replay preserve every row",
     await assert.rejects(db.runTransaction(async (tx) => {
       await store.prepareCompletion({tx: tx as unknown as Transaction,
         sessionId: first.sessionId, hostUid: "host-1",
-        expectedDraft: revised, preview, importId: "wrong-receipt",
+        expectedDraft: revised, expectedReviewHash: preview.reviewHash,
+        importId: "wrong-receipt",
         replayed: true,
-        authorize});
+        authorize, loadCurrentRows: async () => new Map()});
     }), /Unmatched/u);
   });

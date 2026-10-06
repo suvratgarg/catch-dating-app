@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {eventAttendeeId} from "./eventAttendees";
 import {
   approveHostRosterIntakeApply,
   createHostRosterIntakeDraft,
@@ -105,15 +106,14 @@ test("excluded shared contact clears exception; other attendee stays separate",
       rowId: "3", displayName: "Mira Shah",
       externalReference: "ticket-8"}, sourceRowNumber: 3,
     fields: structuredClone(source.fields)};
-    const both = reviseHostRosterIntakeDraft({draft: first,
-      expectedRevision: 1, rows: [...first.rows, secondRow],
-      excludedRowIds: []});
+    const both = createHostRosterIntakeDraft({...first,
+      rows: [...first.rows, secondRow]});
     const blocked = previewHostRosterIntake({draft: both,
       currentRows: new Map()});
     assert.equal(blocked.counts.needsReview, 2);
     assert.equal(blocked.eligibleForApply, false);
     const excluded = reviseHostRosterIntakeDraft({draft: both,
-      expectedRevision: 2, rows: both.rows, excludedRowIds: ["3"]});
+      expectedRevision: 1, rows: both.rows, excludedRowIds: ["3"]});
     const preview = previewHostRosterIntake({draft: excluded,
       currentRows: new Map()});
     assert.equal(preview.counts.add, 1);
@@ -132,9 +132,8 @@ test("invalid source row survives review, exclusion and correction",
     fields: {externalReference: {column: 1, header: "Attendee ID",
       origin: "upload", confidence: null}},
     rawCells: ["", "ticket-8"], issues: ["missing-name"]};
-    const unresolved = reviseHostRosterIntakeDraft({draft: first,
-      expectedRevision: 1, rows: [...first.rows, missing],
-      excludedRowIds: []});
+    const unresolved = createHostRosterIntakeDraft({...first,
+      rows: [...first.rows, missing]});
     const preview = previewHostRosterIntake({draft: unresolved,
       currentRows: new Map()});
     assert.equal(preview.counts.add, 1);
@@ -142,7 +141,7 @@ test("invalid source row survives review, exclusion and correction",
     assert.equal(preview.eligibleForApply, false);
     assert.deepEqual(unresolved.rows[1].rawCells, ["", "ticket-8"]);
     const excluded = reviseHostRosterIntakeDraft({draft: unresolved,
-      expectedRevision: 2, rows: unresolved.rows,
+      expectedRevision: 1, rows: unresolved.rows,
       excludedRowIds: ["3"]});
     assert.equal(previewHostRosterIntake({draft: excluded,
       currentRows: new Map()}).counts.excluded, 1);
@@ -151,7 +150,7 @@ test("invalid source row survives review, exclusion and correction",
       fields: {...missing.fields, displayName: {column: 0,
         header: "Name", origin: "hostCorrection", confidence: null}}};
     const resolved = reviseHostRosterIntakeDraft({draft: unresolved,
-      expectedRevision: 2, rows: [first.rows[0], corrected],
+      expectedRevision: 1, rows: [first.rows[0], corrected],
       excludedRowIds: []});
     assert.equal(previewHostRosterIntake({draft: resolved,
       currentRows: new Map()}).counts.add, 2);
@@ -175,6 +174,13 @@ test("existing contact and default status require scoped review",
       currentRows: new Map([[otherId, current]])});
     assert.equal(conflict.counts.identityConflict, 1);
     assert.equal(conflict.eligibleForApply, false);
+    const phoneKeyId = eventAttendeeId("event-1", "phone:+919876543210");
+    const privateBooking = previewHostRosterIntake({draft: first,
+      currentRows: new Map([[phoneKeyId, {...current,
+        attendeeId: phoneKeyId, phoneE164: null}]])});
+    assert.equal(privateBooking.counts.identityConflict, 1);
+    assert.equal(privateBooking.rows[0].issueCode,
+      "catch-booking-authority");
     const selectedId = added.rows[0].attendeeId!;
     const cancelled = previewHostRosterIntake({draft: first,
       currentRows: new Map([[selectedId, {...current,
@@ -202,6 +208,19 @@ test("revision fences edits and excludes without losing source evidence",
     assert.throws(() => reviseHostRosterIntakeDraft({draft: second,
       expectedRevision: 1, rows: second.rows,
       excludedRowIds: []}), /Stale/u);
+    const expanded = createHostRosterIntakeDraft({...first,
+      rows: [first.rows[0], {
+        ...structuredClone(first.rows[0]),
+        value: {...first.rows[0].value, rowId: "3"}, sourceRowNumber: 3,
+      }]});
+    assert.equal(expanded.rows.length, 2);
+    assert.throws(() => reviseHostRosterIntakeDraft({draft: expanded,
+      expectedRevision: 1, rows: [expanded.rows[0]],
+      excludedRowIds: []}), /Stale/u);
+    assert.throws(() => reviseHostRosterIntakeDraft({draft: expanded,
+      expectedRevision: 1, rows: [expanded.rows[0], {
+        ...expanded.rows[1], rawCells: ["different source evidence"],
+      }], excludedRowIds: []}), /Stale/u);
   });
 
 test("private extraction seam prefers deterministic and validates fake model",

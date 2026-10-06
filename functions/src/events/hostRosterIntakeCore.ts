@@ -3,7 +3,7 @@ import type {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
 import {validateImportEventAttendeesCallablePayload} from
   "../shared/generated/validators/importEventAttendeesInput";
-import {prepareImportRows} from "./eventAttendees";
+import {eventAttendeeId, prepareImportRows} from "./eventAttendees";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type FieldName = keyof ImportRow;
@@ -38,6 +38,11 @@ export interface HostRosterIntakeDraft {
   format: "csv" | "xlsx";
   headers: string[];
   mapping: Record<string, number>;
+  sourceManifest: Array<{
+    rowId: string;
+    sourceRowNumber: number;
+    rawEvidenceHash: string;
+  }>;
   revision: number;
   state: "review" | "applied";
   rows: HostRosterIntakeRow[];
@@ -101,7 +106,7 @@ function hash(value: unknown): string {
 /** Bounded session input for private trusted persistence. */
 export function createHostRosterIntakeDraft(input: Omit<HostRosterIntakeDraft,
   "sessionId" | "revision" | "state" | "excludedRowIds" |
-  "appliedImportId">): HostRosterIntakeDraft {
+  "appliedImportId" | "sourceManifest">): HostRosterIntakeDraft {
   if (![input.hostUid, input.organizerId, input.eventId].every((id) =>
     ID.test(id)) || !HASH.test(input.fileFingerprint) ||
     typeof input.fileName !== "string" ||
@@ -177,11 +182,16 @@ export function createHostRosterIntakeDraft(input: Omit<HostRosterIntakeDraft,
     }
   }
   const rows = structuredClone(input.rows);
+  const sourceManifest = rows.map((row) => ({
+    rowId: row.value.rowId,
+    sourceRowNumber: row.sourceRowNumber,
+    rawEvidenceHash: hash(row.rawCells ?? null),
+  }));
   return {...input, rows,
     sessionId: "hri_" + hash([input.hostUid, input.organizerId,
       input.eventId, input.fileFingerprint]).slice(0, 48),
     revision: 1, state: "review", excludedRowIds: [],
-    appliedImportId: null};
+    sourceManifest, appliedImportId: null};
 }
 
 /** A revision change invalidates any earlier preview or approval. */
@@ -193,10 +203,18 @@ export function reviseHostRosterIntakeDraft(params: {
   mapping?: Record<string, number>;
 }): HostRosterIntakeDraft {
   const {draft, expectedRevision, rows, excludedRowIds} = params;
+  const sourceById = new Map(draft.sourceManifest.map((source) =>
+    [source.rowId, source]));
   if (draft.state !== "review" || draft.revision !== expectedRevision ||
       !Number.isSafeInteger(expectedRevision) ||
       expectedRevision >= Number.MAX_SAFE_INTEGER ||
       excludedRowIds.length !== new Set(excludedRowIds).size ||
+      rows.length !== draft.sourceManifest.length ||
+      rows.some((row) => {
+        const source = sourceById.get(row.value.rowId);
+        return !source || source.sourceRowNumber !== row.sourceRowNumber ||
+          source.rawEvidenceHash !== hash(row.rawCells ?? null);
+      }) ||
       excludedRowIds.some((id) => !rows.some((row) =>
         row.value.rowId === id))) {
     throw new Error("Stale or invalid roster intake revision.");
@@ -205,6 +223,7 @@ export function reviseHostRosterIntakeDraft(params: {
     mapping: params.mapping ?? draft.mapping});
   return {...checked, sessionId: draft.sessionId,
     revision: expectedRevision + 1,
+    sourceManifest: structuredClone(draft.sourceManifest),
     excludedRowIds: [...excludedRowIds]};
 }
 
@@ -253,13 +272,18 @@ export function previewHostRosterIntake(params: {
         changedFields: [], issueCode: errors.get(value.rowId) ?? "invalid"};
     }
     const current = currentRows.get(row.attendeeId);
+    const phoneKeyRow = row.phoneE164 ? currentRows.get(eventAttendeeId(
+      draft.eventId, `phone:${row.phoneE164}`)) : null;
     const phoneConflict = row.phoneE164 && [...currentRows.values()]
       .some((other) => other.attendeeId !== row.attendeeId &&
         other.phoneE164 === row.phoneE164);
-    if (phoneConflict) {
+    if (phoneKeyRow && phoneKeyRow.attendeeId !== row.attendeeId ||
+        phoneConflict) {
       return {...base, attendeeId: row.attendeeId,
         kind: "identityConflict" as const, changedFields: [],
-        issueCode: "contact-belongs-to-another-attendee"};
+        issueCode: phoneKeyRow?.source === "catchBooking" ?
+          "catch-booking-authority" :
+          "contact-belongs-to-another-attendee"};
     }
     if (!current) {
       return {...base, attendeeId: row.attendeeId, kind: "add" as const,

@@ -5,6 +5,8 @@ import {
   HostRosterIntakeDraft,
   HostRosterIntakePreview,
   HostRosterIntakeRow,
+  HostRosterCurrentRow,
+  previewHostRosterIntake,
   reviseHostRosterIntakeDraft,
 } from "./hostRosterIntakeCore";
 
@@ -135,10 +137,12 @@ export class HostRosterIntakeSessionStore {
     sessionId: string;
     hostUid: string;
     expectedDraft: HostRosterIntakeDraft;
-    preview: HostRosterIntakePreview;
+    expectedReviewHash: string;
     importId: string;
     replayed: boolean;
     authorize: AuthorizeHostRosterSession;
+    loadCurrentRows: (tx: Transaction, draft: HostRosterIntakeDraft) =>
+      Promise<ReadonlyMap<string, HostRosterCurrentRow>>;
   }): Promise<() => void> {
     const ref = this.ref(params.sessionId);
     const snap = await params.tx.get(ref);
@@ -153,11 +157,14 @@ export class HostRosterIntakeSessionStore {
       }
       return () => {};
     }
+    const currentRows = await params.loadCurrentRows(params.tx,
+      stored.draft);
+    const preview = previewHostRosterIntake({draft: stored.draft,
+      currentRows});
     if (stored.draft.state !== "review" ||
         !isDeepStrictEqual(stored.draft, params.expectedDraft) ||
-        !params.preview.eligibleForApply ||
-        params.preview.sessionId !== stored.draft.sessionId ||
-        params.preview.revision !== stored.draft.revision) {
+        !preview.eligibleForApply ||
+        preview.reviewHash !== params.expectedReviewHash) {
       throw new Error("Host roster intake changed after approval.");
     }
     const draft: HostRosterIntakeDraft = {...stored.draft,
@@ -166,7 +173,7 @@ export class HostRosterIntakeSessionStore {
       const appliedAtMillis = this.now();
       params.tx.update(ref, {draft, updatedAtMillis: appliedAtMillis,
         appliedReview: {importId: params.importId, appliedAtMillis,
-          preview: params.preview} satisfies HostRosterAppliedReview});
+          preview} satisfies HostRosterAppliedReview});
     };
   }
 }

@@ -308,16 +308,21 @@ export async function importEventAttendeesForHost(
     const importedPhones = [...new Set(prepared
       .filter((row) => row.phoneE164)
       .map((row) => row.phoneE164!))];
-    const phoneMatches = await Promise.all(importedPhones.map((phone) =>
-      tx.get(db.collection("eventAttendees")
-        .where("eventId", "==", payload.eventId)
-        .where("phoneE164", "==", phone).limit(2))));
+    const phoneMatches = await Promise.all(importedPhones.map(async (phone) =>
+      ({
+        phoneKey: await tx.get(db.collection("eventAttendees").doc(
+          eventAttendeeId(payload.eventId, `phone:${phone}`))),
+        query: await tx.get(db.collection("eventAttendees")
+          .where("eventId", "==", payload.eventId)
+          .where("phoneE164", "==", phone).limit(2)),
+      })));
     for (let index = 0; index < importedPhones.length; index++) {
       const matchingIds = new Set(prepared
         .filter((row) => row.phoneE164 === importedPhones[index])
         .map((row) => row.attendeeId));
-      if (phoneMatches[index].docs.some((snap) =>
-        !matchingIds.has(snap.id))) {
+      const match = phoneMatches[index];
+      if (match.phoneKey.exists && !matchingIds.has(match.phoneKey.id) ||
+          match.query.docs.some((snap) => !matchingIds.has(snap.id))) {
         throw new HttpsError("failed-precondition",
           "Imported contact matches another event attendee; review identity.");
       }

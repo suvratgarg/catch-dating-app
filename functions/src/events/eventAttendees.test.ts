@@ -636,7 +636,7 @@ test("referenced host row cannot bypass a legacy phone-key booking",
         ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
       [path]: {eventId: "event-1", organizerId: "organizer-1",
         source: "catchBooking", status: "registered",
-        phoneE164: "+919876543210", displayName: "Booked Guest"},
+        phoneE164: null, displayName: "Booked Guest"},
     });
     const payload = {eventId: "event-1", importKey: "new-ticket-id",
       fileName: "guests.csv", format: "csv" as const, rows: [{
