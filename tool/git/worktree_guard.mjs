@@ -21,13 +21,18 @@ Commands:
   scope   --paths <additional-paths> [--worktree <path>]
   finish  [--worktree <path>]
           [--abandon --reason <why> [--by <identity>]]
+  retire  --task-id <id> --worktree <path> --head-sha <40-char-sha>
+          --accepted-sha <40-char-sha> [--by <owner> --clearance <evidence>]
+          [--apply]
   stale   [--stale-days <days>]
 
 The guard stores one disposable scope claim under Git's common directory for
 each active worktree. Claims are removed on successful finish. Explicit
 abandonment removes a clean worktree's claim and keeps a local record of who
 abandoned it and why. The guard never installs dependencies, runs checks,
-pushes branches, removes worktrees, or deletes stale state. Start is for new
+pushes branches or deletes refs/stale state. Retire reports first; --apply uses
+only non-forced git worktree remove after Git checks and explicit owner
+clearance. It is not deletion authority. Start is for new
 tasks and requires --base-sha to match the locally fetched origin/main exactly.`;
 }
 
@@ -41,11 +46,16 @@ export function executeTaskCommand({
   if (["help", "--help", "-h"].includes(command)) {
     return {status: 0, result: {operation: "help", help: taskHelp()}};
   }
+  const options = parseTaskOptions(args.slice(1));
+  if (command !== "retire" && ["headSha", "acceptedSha", "clearance", "apply"]
+    .some((key) => options[key] != null)) {
+    throw new TaskUsageError("Retirement options require the retire command.");
+  }
   const repository = resolveRepository({cwd, runner});
   if (command === "start") {
     return startTask({
       repository,
-      options: parseTaskOptions(args.slice(1)),
+      options,
       now,
       runner,
     });
@@ -53,29 +63,32 @@ export function executeTaskCommand({
   if (command === "doctor") {
     return doctorTask({
       repository,
-      options: parseTaskOptions(args.slice(1)),
+      options,
       runner,
     });
   }
   if (command === "scope") {
     return extendTaskScope({
       repository,
-      options: parseTaskOptions(args.slice(1)),
+      options,
       runner,
     });
   }
   if (command === "finish") {
     return finishTask({
       repository,
-      options: parseTaskOptions(args.slice(1)),
+      options,
       now,
       runner,
     });
   }
+  if (command === "retire") {
+    return retireTask({repository, options, runner});
+  }
   if (command === "stale") {
     return staleTasks({
       repository,
-      options: parseTaskOptions(args.slice(1)),
+      options,
       now,
       runner,
     });
@@ -327,6 +340,183 @@ export function finishTask({
   });
 }
 
+// Retirement retains the existing claim until ordinary Git confirms removal.
+// External acceptance/ownership cannot be inferred from Git: the task owner
+// supplies current evidence after the manual review in the completion runbook.
+export function retireTask({repository, options, runner = runGit}) {
+  const allowed = ["paths", "taskId", "worktree", "headSha", "acceptedSha",
+    "by", "clearance", "apply"];
+  if (Object.keys(options).some((key) => !allowed.includes(key)) || options.paths.length > 0) {
+    throw new TaskUsageError("retire accepts only the options listed in its help.");
+  }
+  const taskId = requireOption(options, "taskId", "--task-id");
+  const worktreePath = path.resolve(requireOption(options, "worktree", "--worktree"));
+  const headSha = requireOption(options, "headSha", "--head-sha");
+  const acceptedSha = requireOption(options, "acceptedSha", "--accepted-sha");
+  if (!TASK_ID.test(taskId) || !SHA_40.test(headSha) || !SHA_40.test(acceptedSha)) {
+    throw new TaskUsageError("retire requires a valid task id and exact 40-character commit SHAs.");
+  }
+  if (!samePath(path.dirname(worktreePath), repository.canonicalWorktreeRoot)) {
+    throw new TaskUsageError("retire requires a direct repository-owned task worktree.");
+  }
+  for (const entry of [path.dirname(repository.canonicalWorktreeRoot),
+    repository.canonicalWorktreeRoot, worktreePath]) {
+    let stat;
+    try { stat = fs.lstatSync(entry); } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    if (stat != null && (stat.isSymbolicLink() || fs.realpathSync(entry) !== path.resolve(entry))) {
+      throw new TaskUsageError(`Refusing nonphysical retirement path: ${entry}`);
+    }
+  }
+  return withClaimsLock(repository, () => {
+    const blockers = new Map();
+    const block = (reason, nextAction) => blockers.set(reason, nextAction);
+    const claims = readClaims(repository);
+    const matches = claims.filter((claim) => samePath(claim.worktreePath, worktreePath));
+    const records = registeredWorktrees(repository, runner);
+    const record = records.find((entry) => samePath(entry.path, worktreePath));
+    const present = fs.existsSync(worktreePath);
+    const baseResult = {operation: "retire", taskId, worktreePath, headSha, acceptedSha,
+      applied: options.apply === true, retired: false, accountableOwner: options.by ?? taskId,
+      clearance: options.clearance ?? null, refsDeleted: false};
+    const result = (extra = {}) => ({
+      status: blockers.size === 0 ? 0 : 1,
+      result: {...baseResult, ...extra, blockers: [...blockers.keys()].sort(),
+        retention: [...blockers].map(([reason, nextAction]) => ({
+          path: worktreePath, accountableOwner: baseResult.accountableOwner, reason, nextAction,
+        }))},
+    });
+    // Absence is idempotent, not evidence that this command retired or shipped a task.
+    if (matches.length === 0 && record == null && !present) {
+      return result({disposition: "already_absent", note: "No removal performed; task acceptance is not established by absence."});
+    }
+    if (matches.length !== 1) {
+      block("task_claim_unavailable", "Resolve the exact task's existing claim with its owner; do not recreate or release another owner's claim.");
+      return result({disposition: "retained"});
+    }
+    const claim = matches[0];
+    if (present && typeof process.getuid === "function" && fs.lstatSync(worktreePath).uid !== process.getuid()) {
+      block("other_user_worktree", "Have the owning OS user handle this worktree; do not remove another user's checkout.");
+    }
+    if (claim.taskId !== taskId) block("task_identity_mismatch", `Use the owning task ${claim.taskId}; preserve its claim.`);
+    if (!claim.branch.startsWith("codex/") || claim.branch.startsWith("codex/backup/")) {
+      block("protected_branch", "Retain shared/main/recovery branches; use the task's disposable branch only.");
+    }
+    if (samePath(repository.currentRoot, worktreePath)) {
+      block("retirement_from_target", "Run closeout from a different registered checkout after stopping this task's consumers.");
+    }
+    if (record?.locked) block("worktree_locked", "Have the owner resolve the Git worktree lock; do not force removal.");
+    const overlappingClaims = claims.filter((other) => other.claimPath !== claim.claimPath &&
+      scopeSetsOverlap(claim.claimedPaths, other.claimedPaths));
+    if (overlappingClaims.length > 0) {
+      block("other_active_claims", `Coordinate with ${overlappingClaims.map((other) => other.taskId).join(", ")} before closeout.`);
+    }
+    const inspection = inspectClaim({repository, claim, runner});
+    for (const reason of inspection.blockers) block(reason, "Resolve doctor with the task owner while preserving this worktree and claim.");
+    if (inspection.headSha !== headSha) block("head_changed", "Reinspect the current exact head and its accepted/recovery evidence; do not reuse this closure request.");
+    const branchHead = runner({cwd: repository.primaryRoot,
+      args: ["rev-parse", "--verify", `refs/heads/${claim.branch}^{commit}`]});
+    if (branchHead.status !== 0 || branchHead.stdout.trim() !== headSha) {
+      block("recovery_branch_changed", "Preserve and verify the exact local task branch before removing its worktree.");
+    }
+    const main = runner({cwd: repository.primaryRoot,
+      args: ["rev-parse", "--verify", `${NEW_TASK_BASE_REF}^{commit}`]});
+    const liveMain = runner({cwd: repository.primaryRoot,
+      args: ["ls-remote", "--exit-code", "origin", "refs/heads/main"]});
+    const mainSha = main.stdout.trim();
+    if (main.status !== 0 || !SHA_40.test(mainSha) || liveMain.status !== 0 ||
+      liveMain.stdout.trim() !== `${mainSha}\trefs/heads/main`) {
+      block("main_not_current", "Fetch origin/main and repeat exact accepted-source verification; remote failure is not merge evidence.");
+    }
+    let equivalence = null;
+    let uniqueCommits = null;
+    if (!blockers.has("main_not_current") && inspection.headSha === headSha) {
+      const accepted = runner({cwd: repository.primaryRoot,
+        args: ["merge-base", "--is-ancestor", acceptedSha, mainSha]});
+      const incorporated = runner({cwd: repository.primaryRoot,
+        args: ["merge-base", "--is-ancestor", headSha, acceptedSha]});
+      if (accepted.status !== 0) {
+        block("accepted_commit_not_on_main", "Verify the integrating commit on fetched origin/main before retirement.");
+      } else if (incorporated.status === 0) {
+        equivalence = "ancestor";
+      } else {
+        // Include additions, deletions, modes and both sides of renames; never
+        // infer squash incorporation from a PR status, patch id, or subject.
+        const changed = runner({cwd: repository.primaryRoot,
+          args: ["diff", "--no-renames", "--name-only", "-z", inspection.scopeBaseSha, headSha]});
+        const taskPaths = parseNulPaths(changed.stdout);
+        if (changed.status !== 0 || taskPaths.length === 0) {
+          block("squash_delta_unproven", "Retain the branch and review the complete task delta; an empty final diff does not prove its unique history was accepted.");
+        } else {
+          const equivalent = runner({cwd: repository.primaryRoot,
+            args: ["diff", "--quiet", "--no-renames", headSha, acceptedSha, "--",
+              ...taskPaths.map((entry) => `:(literal)${entry}`)]});
+          if (equivalent.status === 0) equivalence = "exact_task_paths";
+          else block("accepted_source_not_equivalent", "Have integration review every differing task path; preserve unique work and do not force retirement.");
+        }
+      }
+      const unique = runner({cwd: repository.primaryRoot,
+        args: ["rev-list", "--count", `${mainSha}..${headSha}`]});
+      if (unique.status !== 0 || !/^\d+$/u.test(unique.stdout.trim())) {
+        block("unique_commit_check_failed", "Verify every unique task commit and its recovery ref before retrying.");
+      } else {
+        uniqueCommits = Number(unique.stdout.trim());
+        if (uniqueCommits > 0) {
+          const recovery = runner({cwd: repository.primaryRoot,
+            args: ["ls-remote", "--exit-code", "origin", `refs/heads/${claim.branch}`]});
+          if (recovery.status !== 0 || recovery.stdout.trim() !== `${headSha}\trefs/heads/${claim.branch}`) {
+            block("unique_history_not_remotely_preserved", "Push and verify the exact task branch as recovery; a stale tracking ref or squash commit does not preserve its unique commits.");
+          }
+        }
+      }
+    }
+    const stashes = runner({cwd: repository.primaryRoot, args: ["stash", "list", "--format=%H"]});
+    if (stashes.status !== 0) block("stash_inspection_failed", "Inspect and preserve task recovery in the common Git store before retirement.");
+    // Scan after remote queries, including ignored files that worktree remove
+    // would otherwise silently discard. No broad clean or cache exemptions.
+    let ignoredPaths = [];
+    if (record != null && present) {
+      const dirtyPaths = dirtyPathsAt(worktreePath, runner);
+      if (dirtyPaths.length > 0) block("uncommitted_changes", `Preserve and resolve staged, unstaged and untracked files: ${dirtyPaths.join(", ")}.`);
+      const ignored = runner({cwd: worktreePath,
+        args: ["ls-files", "--others", "--ignored", "--exclude-standard", "-z"]});
+      ignoredPaths = parseNulPaths(ignored.stdout);
+      if (ignored.status !== 0) block("ignored_file_scan_failed", "Verify all local files and recovery before removal.");
+      else if (ignoredPaths.length > 0) block("ignored_files_require_preservation", "Have the storage/task owner preserve unique ignored files and verify recovery or normally dispose of regenerable caches; then repeat this scan.");
+      const currentHead = runner({cwd: worktreePath, args: ["rev-parse", "HEAD"]});
+      if (currentHead.status !== 0 || currentHead.stdout.trim() !== headSha) block("head_changed", "Reinspect the changed exact head before retrying closeout.");
+      const currentBranch = runner({cwd: worktreePath, args: ["symbolic-ref", "--quiet", "--short", "HEAD"]});
+      if (currentBranch.status !== 0 || currentBranch.stdout.trim() !== claim.branch) {
+        block("branch_mismatch", "Reinspect changed task branch ownership before retrying closeout.");
+      }
+    }
+    const hasClearance = [options.by, options.clearance].every((value) =>
+      typeof value === "string" && value.trim() !== "" && value.length <= 1000 &&
+      !/[\u0000-\u001f\u007f]/u.test(value));
+    if (!hasClearance) {
+      block("manual_clearance_required", "The task owner must provide --by and --clearance evidence for CI/release acceptance, current owners/cross-clone claims, other users/runtime consumers, recovery, and deletion authority. Preserve previously denied targets.");
+    }
+    const evidence = {branch: claim.branch, equivalence, uniqueCommits, ignoredPaths,
+      retainedLocalRef: `refs/heads/${claim.branch}`, retainedRemoteRef: uniqueCommits > 0 ? `refs/heads/${claim.branch}` : "refs/heads/main",
+      retainedStashes: parseNulPaths(stashes.stdout.replaceAll("\n", "\0"))};
+    if (blockers.size > 0) return result({...evidence, disposition: "retained"});
+    if (options.apply !== true) return result({...evidence, disposition: "eligible", note: "Report only. --apply requires normal owner/queue deletion admission."});
+    const removed = runner({cwd: repository.primaryRoot, args: ["worktree", "remove", worktreePath]});
+    if (removed.status !== 0) {
+      block("git_remove_refused", "Keep the claim and worktree; resolve this exact Git refusal with its owner. Do not force or retry a denied deletion through another route.");
+      return result({...evidence, disposition: "retained", gitError: (removed.stderr || removed.stdout).trim()});
+    }
+    if (fs.existsSync(worktreePath) || registeredWorktrees(repository, runner).some((entry) => samePath(entry.path, worktreePath))) {
+      block("removal_unverified", "Inspect exact path/registration and claim after this attempt; preserve recovery refs and do not repeat deletion blindly.");
+      return result({...evidence, disposition: "unverified"});
+    }
+    fs.unlinkSync(claim.claimPath);
+    return result({...evidence, disposition: "retired", retired: true,
+      note: "Worktree and own claim removed. All branches/recovery/stashes retained; review eligible branch -d separately, never force squash-history deletion."});
+  });
+}
+
 function abandonClaim({repository, claim, inspection, options, now, runner}) {
   const reason = requireRecordedValue(options.reason, "--reason", 500);
   const abandonedBy = options.by == null
@@ -562,6 +752,7 @@ export function parseWorktreePorcelain(source) {
         : branch;
     }
     else if (line === "detached") current.detached = true;
+    else if (line === "locked" || line.startsWith("locked ")) current.locked = true;
     else if (line === "prunable" || line.startsWith("prunable ")) current.prunable = true;
   }
   if (current != null) records.push(current);
@@ -593,10 +784,17 @@ function parseTaskOptions(args) {
     ["--stale-days", "staleDays"],
     ["--reason", "reason"],
     ["--by", "by"],
+    ["--head-sha", "headSha"],
+    ["--accepted-sha", "acceptedSha"],
+    ["--clearance", "clearance"],
   ]);
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--json") continue;
+    if (arg === "--apply") {
+      options.apply = true;
+      continue;
+    }
     if (arg === "--abandon") {
       options.abandon = true;
       continue;

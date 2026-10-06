@@ -159,7 +159,7 @@
         "lib/**",
         "test/**"
       ],
-      "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse ordinary close while unique work is uncommitted or unpushed, and run final verification in the integration branch. A deliberately superseded claim may be abandoned only from a clean worktree with an attributable local reason record. Keep coordination state local and disposable; do not write delegation metrics or tracked receipts.",
+      "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse ordinary handoff while unique work is uncommitted or unpushed, and run final verification in the integration branch. Keep the task claim through acceptance, then use the existing dry-run retire and normally admitted non-forced apply path. Prove accepted-source equivalence and exact recovery, preserve dirty/untracked/ignored files and active ownership, and report retirement or its exact accountable retention reason and next action. External acceptance, cross-clone ownership/runtime clearance and deletion authority are named manual completion checks. A deliberately superseded claim may be abandoned only from a clean worktree with an attributable local reason record. Keep coordination state local and disposable; do not write delegation metrics or tracked receipts.",
       "sunset_when": [
         "The thin guard enforces exact base, overlap refusal, scope cleanliness, and unpushed-work protection without a task orchestration layer"
       ],

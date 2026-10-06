@@ -539,6 +539,231 @@ test("stale reports old claims and unclaimed worktrees without deleting either",
   assert.equal(gitText(fixture.root, ["worktree", "list", "--porcelain"]), worktreesBefore);
 });
 
+test("retire reports before applying and repeated merged closeout is idempotent", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-merged", ["owned"]);
+  const worktree = task.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "accepted\n");
+  commitAll(worktree, "accepted work");
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  git(fixture.root, ["merge", "--no-ff", task.result.branch, "-m", "integrate"]);
+  git(fixture.root, ["push", "origin", "main"]);
+  const args = retirementArgs(task, head, gitText(fixture.root, ["rev-parse", "HEAD"]));
+  const report = guard(fixture.root, args);
+  assert.equal(report.status, 0);
+  assert.equal(report.result.disposition, "eligible");
+  assert.equal(report.result.equivalence, "ancestor");
+  assert.equal(report.result.retired, false);
+  assert.equal(fs.existsSync(worktree), true);
+  assert.equal(fs.existsSync(task.result.claimPath), true);
+
+  const applied = guard(fixture.root, [...args, "--apply"]);
+  assert.equal(applied.status, 0);
+  assert.equal(applied.result.retired, true);
+  assert.equal(fs.existsSync(worktree), false);
+  assert.equal(fs.existsSync(task.result.claimPath), false);
+  assert.equal(gitText(fixture.root, ["rev-parse", `refs/heads/${task.result.branch}`]), head);
+  const calls = [];
+  const repeated = guard(fixture.root, [...args, "--apply"], {runner: recordingGitRunner(calls)});
+  assert.equal(repeated.status, 0);
+  assert.equal(repeated.result.disposition, "already_absent");
+  assert.equal(repeated.result.retired, false);
+  assert.equal(calls.some((args) => args[0] === "worktree" && args[1] === "remove"), false);
+  assert.equal(calls.some((args) => ["push", "branch", "update-ref"].includes(args[0])), false);
+});
+
+test("retire proves full squash paths and keeps unique history in local and live remote refs", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-squash", ["owned"]);
+  const worktree = task.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "first\n");
+  commitAll(worktree, "first");
+  git(worktree, ["mv", "owned/allowed.txt", "owned/renamed.txt"]);
+  fs.writeFileSync(path.join(worktree, "owned/new.txt"), "new\n");
+  commitAll(worktree, "rename and add");
+  git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  git(fixture.root, ["merge", "--squash", task.result.branch]);
+  commitAll(fixture.root, "squash accepted work");
+  git(fixture.root, ["push", "origin", "main"]);
+  const accepted = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  assert.equal(gitResult(fixture.root, ["merge-base", "--is-ancestor", head, accepted]).status, 1);
+  const applied = guard(fixture.root, [...retirementArgs(task, head, accepted), "--apply"]);
+  assert.equal(applied.status, 0);
+  assert.equal(applied.result.equivalence, "exact_task_paths");
+  assert.equal(applied.result.uniqueCommits, 2);
+  assert.equal(applied.result.retired, true);
+  assert.equal(gitText(fixture.root, ["rev-parse", `refs/heads/${task.result.branch}`]), head);
+  assert.equal(gitText(fixture.remote, ["rev-parse", `refs/heads/${task.result.branch}`]), head);
+  assert.equal(applied.result.refsDeleted, false);
+});
+
+test("retire refuses partial squash incorporation, stale main and stale remote recovery", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-unproven", ["owned"]);
+  const worktree = task.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "accepted?\n");
+  fs.writeFileSync(path.join(worktree, "owned/missing.txt"), "unique\n");
+  commitAll(worktree, "unique work");
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+  fs.appendFileSync(path.join(fixture.root, "owned/allowed.txt"), "accepted?\n");
+  commitAll(fixture.root, "incomplete integration");
+  git(fixture.root, ["push", "origin", "main"]);
+  const args = retirementArgs(task, head, gitText(fixture.root, ["rev-parse", "HEAD"]));
+  assertRetained(fixture, task, args, "accepted_source_not_equivalent");
+  // The tracking ref still says pushed: live remote inspection must disagree.
+  git(fixture.remote, ["update-ref", `refs/heads/${task.result.branch}`, fixture.baseSha]);
+  assertRetained(fixture, task, args, "unique_history_not_remotely_preserved");
+  git(fixture.remote, ["update-ref", "refs/heads/main", fixture.baseSha]);
+  assertRetained(fixture, task, args, "main_not_current");
+});
+
+test("retire preserves dirty, untracked, ignored files and common stashes", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-files", ["owned"]);
+  const worktree = task.result.worktreePath;
+  const args = retirementArgs(task, fixture.baseSha, fixture.baseSha);
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "staged\n");
+  git(worktree, ["add", "owned/allowed.txt"]);
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "unstaged\n");
+  fs.writeFileSync(path.join(worktree, "owned/untracked.txt"), "unique untracked\n");
+  assertRetained(fixture, task, args, "uncommitted_changes");
+  git(worktree, ["stash", "push", "--include-untracked", "-m", "preserved recovery"]);
+  const stash = gitText(worktree, ["rev-parse", "refs/stash"]);
+  fs.appendFileSync(path.join(fixture.root, ".git/info/exclude"), "ignored-evidence.txt\n");
+  fs.writeFileSync(path.join(worktree, "ignored-evidence.txt"), "original failure evidence\n");
+  const retained = assertRetained(fixture, task, args, "ignored_files_require_preservation");
+  assert.deepEqual(retained.result.ignoredPaths, ["ignored-evidence.txt"]);
+  assert.equal(fs.readFileSync(path.join(worktree, "ignored-evidence.txt"), "utf8"), "original failure evidence\n");
+  assert.deepEqual(retained.result.retainedStashes, [stash]);
+  assert.equal(gitText(fixture.root, ["rev-parse", "refs/stash"]), stash);
+});
+
+test("retire treats pattern-bearing task filenames literally during squash verification", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-literal-paths", ["owned"]);
+  const worktree = task.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "accepted\n");
+  fs.writeFileSync(path.join(worktree, "owned/new[1].txt"), "unique omitted file\n");
+  commitAll(worktree, "task with literal bracket filename");
+  git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  fs.appendFileSync(path.join(fixture.root, "owned/allowed.txt"), "accepted\n");
+  commitAll(fixture.root, "squash omitted the bracket file");
+  git(fixture.root, ["push", "origin", "main"]);
+  const accepted = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  assertRetained(fixture, task, retirementArgs(task, head, accepted), "accepted_source_not_equivalent");
+  assert.equal(fs.readFileSync(path.join(worktree, "owned/new[1].txt"), "utf8"), "unique omitted file\n");
+});
+
+test("retire refuses omitted filenames with leading Git pathspec magic", (context) => {
+  const fixture = createRepository(context);
+  const literalName = ":(top)unique.txt";
+  const task = start(fixture, "retire-pathspec-magic", ["owned", literalName]);
+  const worktree = task.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "accepted\n");
+  fs.writeFileSync(path.join(worktree, literalName), "unique omitted source\n");
+  commitAll(worktree, "task with leading pathspec magic filename");
+  git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  fs.appendFileSync(path.join(fixture.root, "owned/allowed.txt"), "accepted\n");
+  commitAll(fixture.root, "squash omitted literal magic filename");
+  git(fixture.root, ["push", "origin", "main"]);
+  const accepted = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  // Prove the real Git failure mode: an ordinary pathspec silently skips the
+  // literal file. The guard must reject that very same incomplete integration.
+  assert.equal(gitResult(fixture.root, ["diff", "--quiet", "--no-renames", head,
+    accepted, "--", literalName, "owned/allowed.txt"]).status, 0);
+  assertRetained(fixture, task, retirementArgs(task, head, accepted), "accepted_source_not_equivalent");
+  assert.equal(fs.readFileSync(path.join(worktree, literalName), "utf8"), "unique omitted source\n");
+});
+
+test("retire requires exact identity, external clearance and no foreign active claims", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-owners", ["owned"]);
+  const args = retirementArgs(task, fixture.baseSha, fixture.baseSha);
+  assertRetained(fixture, task, args.slice(0, 9), "manual_clearance_required");
+  const wrongId = [...args]; wrongId[2] = "another-task";
+  assertRetained(fixture, task, wrongId, "task_identity_mismatch");
+  const wrongHead = [...args]; wrongHead[6] = "f".repeat(40);
+  assertRetained(fixture, task, wrongHead, "head_changed");
+  const other = start(fixture, "foreign-owner", ["outside.txt"]);
+  const claim = JSON.parse(fs.readFileSync(other.result.claimPath, "utf8"));
+  claim.claimedPaths = ["owned"];
+  fs.writeFileSync(other.result.claimPath, JSON.stringify(claim));
+  const retained = assertRetained(fixture, task, args, "other_active_claims");
+  assert.match(retained.result.retention.find((row) => row.reason === "other_active_claims").nextAction, /foreign-owner/u);
+  assert.equal(fs.existsSync(other.result.claimPath), true);
+  assert.equal(fs.existsSync(other.result.worktreePath), true);
+});
+
+test("retire preserves locked worktrees and refuses execution from the target", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-locked", ["owned"]);
+  const args = retirementArgs(task, fixture.baseSha, fixture.baseSha);
+  git(fixture.root, ["worktree", "lock", "--reason", "runtime owner", task.result.worktreePath]);
+  assertRetained(fixture, task, args, "worktree_locked");
+  git(fixture.root, ["worktree", "unlock", task.result.worktreePath]);
+  const inside = guard(task.result.worktreePath, [...args, "--apply"]);
+  assert.ok(inside.result.blockers.includes("retirement_from_target"));
+  assert.equal(fs.existsSync(task.result.claimPath), true);
+});
+
+test("retire retains the claim after a normal Git refusal and never forces removal", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-refusal", ["owned"]);
+  const args = retirementArgs(task, fixture.baseSha, fixture.baseSha);
+  const calls = [];
+  const runner = ({cwd, args}) => {
+    calls.push([...args]);
+    if (args[0] === "worktree" && args[1] === "remove") {
+      fs.writeFileSync(path.join(task.result.worktreePath, "owned/raced.txt"), "late unique work\n");
+    }
+    return gitResult(cwd, args);
+  };
+  const retained = guard(fixture.root, [...args, "--apply"], {runner});
+  assert.equal(retained.status, 1);
+  assert.ok(retained.result.blockers.includes("git_remove_refused"));
+  assert.equal(fs.existsSync(task.result.claimPath), true);
+  assert.equal(fs.readFileSync(path.join(task.result.worktreePath, "owned/raced.txt"), "utf8"), "late unique work\n");
+  assert.equal(calls.filter((args) => args[0] === "worktree" && args[1] === "remove").length, 1);
+  assert.equal(calls.some((args) => args.includes("--force") || args.includes("-f") || args.includes("-D")), false);
+  assertRetained(fixture, task, args, "uncommitted_changes");
+});
+
+test("retire rejects nonphysical paths, unsupported force and cross-command apply", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-paths", ["owned"]);
+  const args = retirementArgs(task, fixture.baseSha, fixture.baseSha);
+  assert.throws(() => guard(fixture.root, [...args, "--force"]), TaskUsageError);
+  assert.throws(() => guard(fixture.root, ["finish", "--worktree", task.result.worktreePath, "--apply"]), TaskUsageError);
+  const escape = [...args]; escape[4] = fixture.root;
+  assert.throws(() => guard(fixture.root, escape), TaskUsageError);
+  const dangling = path.join(fixture.root, ".claude/worktrees/dangling");
+  fs.symlinkSync(path.join(fixture.container, "absent"), dangling);
+  const link = [...args]; link[4] = dangling;
+  assert.throws(() => guard(fixture.root, link), TaskUsageError);
+  assert.equal(fs.existsSync(task.result.claimPath), true);
+});
+
+function retirementArgs(task, headSha, acceptedSha) {
+  return ["retire", "--task-id", task.result.taskId, "--worktree", task.result.worktreePath,
+    "--head-sha", headSha, "--accepted-sha", acceptedSha,
+    "--by", "test-task-owner", "--clearance", "Synthetic fixture accepted; no foreign consumers; recovery verified; fixture-only removal authorized."];
+}
+
+function assertRetained(fixture, task, args, blocker) {
+  const execution = guard(fixture.root, [...args, "--apply"]);
+  assert.equal(execution.status, 1);
+  assert.ok(execution.result.blockers.includes(blocker), JSON.stringify(execution.result));
+  assert.equal(execution.result.retired, false);
+  assert.equal(fs.existsSync(task.result.worktreePath), true);
+  assert.equal(fs.existsSync(task.result.claimPath), true);
+  assert.ok(execution.result.retention.every((row) => row.path === task.result.worktreePath && row.accountableOwner && row.nextAction));
+  return execution;
+}
+
 function createRepository(context) {
   const container = fs.realpathSync(
     fs.mkdtempSync(path.join(os.tmpdir(), "catch-worktree-guard-")),
