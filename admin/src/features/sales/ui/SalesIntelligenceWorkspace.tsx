@@ -8,6 +8,8 @@ import type {ApprovedClause, IntelligenceApi,
   EvidenceClaim} from "../api/salesIntelligenceTypes";
 import {useSalesIntelligenceController} from
   "../controllers/useSalesIntelligenceController";
+import {salesOutreachCompositionReview} from
+  "./SalesOutreachCompositionReview";
 
 type Controller = ReturnType<typeof useSalesIntelligenceController>;
 function label(value: string): string {
@@ -19,11 +21,6 @@ function date(value: string): string {
   return Number.isNaN(parsed.getTime()) ? "Date unavailable" :
     parsed.toLocaleDateString(undefined, {day: "numeric", month: "short",
       year: "numeric"});
-}
-function activeClause(row: ApprovedClause, now: string): boolean {
-  return row.state === "approved" && row.permission !== "withdrawn" &&
-    Date.parse(row.validUntil) > Date.parse(now) &&
-    (row.kind !== "reference" || row.permission === "private_mention");
 }
 function QueryProblem({message, retry}: {message: string; retry: () => void}) {
   return <p role="alert">{message} <AdminButton onClick={retry}>Try again</AdminButton></p>;
@@ -399,38 +396,16 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
     copyEpoch.current += 1;
     return () => {copyEpoch.current += 1;};
   }, []);
-  const [contactId, setContactId] = useState("");
-  const [opportunityId, setOpportunityId] = useState("");
-  const [observationId, setObservationId] = useState("");
-  const [capabilityId, setCapabilityId] = useState("");
-  const [referenceId, setReferenceId] = useState("");
-  const [ctaId, setCtaId] = useState("");
-  const [channel, setChannel] = useState<"email" | "message">("email");
   const [factsChecked, setFactsChecked] = useState(false);
   const [acknowledgedDraftKey, setAcknowledgedDraftKey] = useState("");
   const [toneChecked, setToneChecked] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
   const account = c.account.data?.account;
   const now = c.catalog.data?.evaluatedAt ?? new Date().toISOString();
-  const approved = c.catalog.data?.clauses.filter((row) =>
-    activeClause(row, now)) ?? [];
-  const ofKind = (kind: ApprovedClause["kind"]) => approved.filter((row) =>
-    row.kind === kind);
-  const contacts = c.contacts.data?.rows.filter((row) =>
-    row.relationship.contactabilityStatus === "draft_reviewed") ?? [];
-  const opportunities = c.account.data?.opportunities.filter((row) =>
-    row.stage === "ready_to_contact") ?? [];
   const eligible = account?.researchStatus === "qualified" &&
     account.suppressionStatus !== "held" &&
     account.suppressionStatus !== "suppressed" &&
     c.catalog.data?.policy?.status === "active";
-  const canGenerate = eligible && contactId && opportunityId &&
-    observationId && capabilityId && ctaId && !c.pending && !c.busy;
-  const generate = () => c.generate({organizerId, contactId,
-    opportunityId, observationIds: [observationId],
-    capabilityIds: [capabilityId], referenceIds: referenceId ?
-      [referenceId] : [], ctaIds: [ctaId], channel,
-    purpose: "first_message"});
   const selected = c.draft.data;
   const reviewKey = selected ? `${selected.draftId}:${selected.draft.contentHash}` : "";
   useEffect(() => {
@@ -450,48 +425,21 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       setCopyStatus("Copy was reviewed, but the browser clipboard failed. Select the text below manually.");
     }
   };
-  const options = (kind: ApprovedClause["kind"], optional = false) => [
-    {value: "", label: optional ? "No reference" : "Choose approved wording"},
-    ...ofKind(kind).map((row) => ({value: row.clauseId, label: row.text})),
-  ];
   return <Panel title="Draft for manual review" icon={<ClipboardList size={18} />}>
-    <p>Drafts use exact approved sentences. They cannot be sent from this workspace.</p>
-    {!eligible ? <p role="alert">This host needs an active fit policy, a
-      qualified Sales record and clear contact restrictions before drafting.</p> : null}
     {c.account.isError ? <QueryProblem message="Host details could not load."
       retry={() => void c.account.refetch()} /> : null}
     {c.contacts.isError ? <QueryProblem message="Contacts could not load."
       retry={() => void c.contacts.refetch()} /> : null}
-    <AdminForm onSubmit={(event) => {event.preventDefault(); void generate();}}>
-      <h3>Prepare a first message</h3>
-      <SelectField label="Reviewed contact" value={contactId}
-        onChange={setContactId} options={[{value: "", label: "Choose contact"},
-          ...contacts.map((row) => ({value: row.contactId,
-            label: `${row.displayName} · ${row.relationship.role}`}))]} />
-      {c.contacts.data?.nextCursor ? <AdminButton onClick={() =>
-        c.nextContactPage(c.contacts.data!.nextCursor!)}>More contacts</AdminButton> : null}
-      {c.contactHistory.length ? <AdminButton onClick={c.previousContactPage}>
-        Previous contacts</AdminButton> : null}
-      <SelectField label="Opportunity ready for contact" value={opportunityId}
-        onChange={setOpportunityId} options={[{value: "", label: "Choose opportunity"},
-          ...opportunities.map((row) => ({value: row.opportunityId,
-            label: `${label(row.motion)} · ${label(row.stage)}`}))]} />
-      <SelectField label="Host observation" value={observationId}
-        onChange={setObservationId} options={options("observation")} />
-      <SelectField label="Catch capability" value={capabilityId}
-        onChange={setCapabilityId} options={options("capability")} />
-      <SelectField label="Private reference (optional)" value={referenceId}
-        onChange={setReferenceId} options={options("reference", true)} />
-      <SelectField label="Question or next step" value={ctaId}
-        onChange={setCtaId} options={options("cta")} />
-      <SelectField label="Draft channel" value={channel}
-        onChange={(value) => setChannel(value as typeof channel)} options={[
-          {value: "email", label: "Email draft"},
-          {value: "message", label: "Message draft"},
-        ]} />
-      <AdminButton type="submit" variant="primary"
-        disabled={!canGenerate}>Prepare private draft</AdminButton>
-    </AdminForm>
+    {salesOutreachCompositionReview({organizerId, evaluatedAt: now,
+      eligible: Boolean(eligible), blocked: c.busy || Boolean(c.pending),
+      contacts: c.contacts.data?.rows ?? [],
+      opportunities: c.account.data?.opportunities ?? [],
+      clauses: c.catalog.data?.clauses ?? [],
+      nextContactCursor: c.contacts.data?.nextCursor ?? null,
+      hasPreviousContacts: c.contactHistory.length > 0,
+      onNextContacts: c.nextContactPage,
+      onPreviousContacts: c.previousContactPage,
+      onGenerate: c.generate})}
     {c.jobRequestId ? <p role="status">Preparation status: {
       c.job.data?.status === "completed" ? "Ready for review" :
         c.job.data?.status === "running" ? "Still preparing" :
