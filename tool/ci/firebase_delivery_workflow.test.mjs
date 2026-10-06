@@ -713,6 +713,7 @@ test("five-Function caller pins the historical CI artifact and excludes wider ba
   assert.match(promotion, /gcloud run services get-iam-policy "\$service"/);
   assert.match(promotion, /test "\$policy_hash" = "\$expected_hash"/);
   assert.doesNotMatch(promotion, /gcloud run services (?:add-iam-policy-binding|set-iam-policy)/);
+  assert.doesNotMatch(promotion, /(?:gcloud )?secrets versions access|setIamPolicy|firebase deploy --only functions(?!:)/);
   assert.match(promotion, /whatsapp_five_release\.mjs complete[\s\S]*whatsapp-five-selected-receipt\.json/);
   assert.match(promotion, /coverage: "selected-physical-identities-only"|whatsapp-five-selected-prod-/);
   assert.doesNotMatch(caller, /firebase deploy|deploy_firebase_targets\.sh|prod-backend|contents: write/);
