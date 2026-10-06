@@ -4783,13 +4783,13 @@
               ]
             },
             {
-              "id": "open_programs_action",
+              "id": "program_inventory_rows",
               "kind": "populated",
-              "status": "tested",
+              "status": "implemented",
               "tests": [
                 "test/hosts/host_events_layout_test.dart"
               ],
-              "notes": "HostEventsClubSection owns the typed Programs header action and pushes hostProgramsScreen with the selected club organizer id so host teams can jump from the Events list to the program index.",
+              "notes": "Events shows one program row with dates and event count, workspace navigation, bounded cursor paging and an exact saved-ID anchor. The separate Programs navigation is retired.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -12948,11 +12948,12 @@
           ]
         },
         {
-          "id": "programs.list",
-          "routeId": "hostProgramsScreen",
+          "id": "programs.create",
+          "routeId": "hostCreateProgramScreen",
           "implementationPaths": [
-            "lib/programs/presentation/program_list_screen.dart",
-            "lib/programs/data/program_setup_repository.dart"
+            "lib/programs/presentation/program_create_screen.dart",
+            "lib/programs/presentation/program_create_controller.dart",
+            "lib/programs/data/program_inventory_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12975,28 +12976,58 @@
           ],
           "states": [
             {
+              "id": "draft",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "A labeled full form preserves its local draft."
+            },
+            {
+              "id": "validation",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Required title, type, timezone and ordered dates report inline errors before any request."
+            },
+            {
+              "id": "pending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Creation and exact-ID confirmation show loading and prevent duplicate submits."
+            },
+            {
+              "id": "failure",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Failure retains the submitted draft, request key and any saved receipt for retry."
+            },
+            {
+              "id": "offline",
+              "kind": "offline",
+              "status": "implemented",
+              "notes": "Unavailable persistence or confirmation retains the draft and exposes retry."
+            },
+            {
+              "id": "permission",
+              "kind": "permission",
+              "status": "implemented",
+              "notes": "Account, selected organizer and manager authority are rechecked; old-scope completion cannot navigate."
+            },
+            {
               "id": "loading",
               "kind": "loading",
               "status": "implemented",
-              "notes": "Loading viewport while organizer and program providers resolve."
+              "notes": "Organizer access resolves with established loading chrome."
             },
             {
-              "id": "error",
-              "kind": "error",
+              "id": "theme",
+              "kind": "theme",
               "status": "implemented",
-              "notes": "Localized error state with retry for clubs and program list."
+              "notes": "The form uses canonical Catch fields, sections, step header and tokens in both themes."
             },
             {
-              "id": "populated",
-              "kind": "populated",
+              "id": "large_text",
+              "kind": "accessibility",
               "status": "implemented",
-              "notes": "Program index with kind, status, date range and workspace navigation."
-            },
-            {
-              "id": "empty",
-              "kind": "empty",
-              "status": "implemented",
-              "notes": "No programs or no operable organizer render the empty state with create entry."
+              "notes": "Form content scrolls with a safe-area footer at large text sizes."
             }
           ]
         },

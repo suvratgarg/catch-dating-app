@@ -50,7 +50,10 @@ void main() {
 
     final firstEvent = HostEventEntryState.resolve(organizerId: 'club-1');
     expect(firstEvent.continueIntents, isEmpty);
-    expect(firstEvent.startIntents, [HostEventEntryIntent.createEvent]);
+    expect(firstEvent.startIntents, [
+      HostEventEntryIntent.createEvent,
+      HostEventEntryIntent.createProgram,
+    ]);
 
     final returning = HostEventEntryState.resolve(
       organizerId: 'club-1',

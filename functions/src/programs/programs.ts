@@ -2,6 +2,10 @@
   organizerId:ASCENDING,
   startsAt:DESCENDING
 ) */
+/* firestore-index: programFunctions (
+  organizerId:ASCENDING,
+  programId:ASCENDING
+) */
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
   kind:ASCENDING
@@ -10,6 +14,7 @@
   programId:ASCENDING,
   status:ASCENDING
 ) */
+import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -109,11 +114,33 @@ export async function createOrganizerProgramHandler(
   }
   const settings = data.transportSettings ?? defaultTransportSettings;
   validateVehicleClasses(settings.vehicleClasses);
-  const ref = db.collection("organizerPrograms").doc();
-  await db.runTransaction(async (tx) => {
+  const requestHash = data.requestId === undefined ? undefined :
+    createHash("sha256").update(canonicalProgramCreateJson(data)).digest("hex");
+  const programId = data.requestId === undefined ? undefined :
+    "program_" + createHash("sha256")
+      .update(JSON.stringify([actorUid, data.organizerId, data.requestId]))
+      .digest("hex");
+  const programs = db.collection("organizerPrograms");
+  const ref = programId === undefined ? programs.doc() : programs.doc(programId);
+  return db.runTransaction(async (tx) => {
     await requireOrganizerManager({
       db, organizerId: data.organizerId, actorUid, transaction: tx,
     });
+    if (requestHash !== undefined) {
+      const existing = await tx.get(ref);
+      if (existing.exists) {
+        const program = requireDoc<OrganizerProgramDocument>(
+          existing, "OrganizerProgramDocument");
+        if (program.organizerId !== data.organizerId ||
+            program.createdBy !== actorUid ||
+            program.createRequestHash !== requestHash) {
+          throw new HttpsError("failed-precondition",
+            "Program create request was already used with different details.");
+        }
+        return {entityId: ref.id, revision: program.revision,
+          alreadyApplied: true};
+      }
+    }
     const now = deps.now();
     const document: OrganizerProgramDocument = {
       organizerId: data.organizerId,
@@ -131,10 +158,11 @@ export async function createOrganizerProgramHandler(
       createdAt: now,
       updatedAt: now,
       revision: 1,
+      ...(requestHash === undefined ? {} : {createRequestHash: requestHash}),
     };
     tx.set(ref, document);
+    return {entityId: ref.id, revision: 1, alreadyApplied: false};
   });
-  return {entityId: ref.id, revision: 1, alreadyApplied: false};
 }
 
 export async function updateOrganizerProgramHandler(
@@ -252,13 +280,57 @@ export async function listOrganizerProgramsHandler(
   await requireOrganizerManager({
     db, organizerId: data.organizerId, actorUid,
   });
-  const snap = await db.collection("organizerPrograms")
-    .where("organizerId", "==", data.organizerId)
-    .orderBy("startsAt", "desc")
-    .limit(data.limit ?? 50)
-    .get();
+  const pageSize = data.limit ?? 50;
+  let programDocs: admin.firestore.DocumentSnapshot[];
+  let hasMore = false;
+  if (data.programId !== undefined) {
+    const program = await db.collection("organizerPrograms").doc(data.programId).get();
+    if (!program.exists || program.data()?.organizerId !== data.organizerId) {
+      throw new HttpsError("not-found", "Program is unavailable in this organizer.");
+    }
+    programDocs = [program];
+  } else {
+    let query = db.collection("organizerPrograms")
+      .where("organizerId", "==", data.organizerId)
+      .orderBy("startsAt", "desc");
+    if (data.cursor !== undefined) {
+      const cursor = await db.collection("organizerPrograms").doc(data.cursor).get();
+      if (!cursor.exists || cursor.data()?.organizerId !== data.organizerId) {
+        throw new HttpsError("not-found", "Program inventory cursor is unavailable.");
+      }
+      query = query.startAfter(cursor);
+    }
+    const snap = await query.limit(pageSize + 1).get();
+    programDocs = snap.docs.slice(0, pageSize);
+    hasMore = snap.size > pageSize;
+  }
+  // Batch only the authorized inventory IDs. Bound work to two reads for the
+  // canonical 50-row inventory; partial or failed counts never conceal rows.
+  const functionCounts = new Map<string, number>();
+  const countReadLimit = 2000;
+  for (let offset = 0; offset < programDocs.length; offset += 30) {
+    const ids = programDocs.slice(offset, offset + 30).map((doc) => doc.id);
+    try {
+      const functions = await db.collection("programFunctions")
+        .where("organizerId", "==", data.organizerId)
+        .where("programId", "in", ids).limit(countReadLimit + 1).get();
+      if (functions.size > countReadLimit) continue;
+      for (const id of ids) functionCounts.set(id, 0);
+      for (const doc of functions.docs) {
+        const value = doc.data();
+        if (value.organizerId === data.organizerId &&
+            functionCounts.has(value.programId)) {
+          functionCounts.set(value.programId,
+            functionCounts.get(value.programId)! + 1);
+        }
+      }
+    } catch (error) {
+      logger.warn("Program inventory count unavailable", {error});
+    }
+  }
   return {
-    programs: snap.docs.map((doc) => {
+    nextCursor: hasMore ? programDocs.at(-1)!.id : null,
+    programs: programDocs.map((doc) => {
       const program = requireDoc<OrganizerProgramDocument>(
         doc, "OrganizerProgramDocument");
       return {
@@ -269,6 +341,8 @@ export async function listOrganizerProgramsHandler(
         startsAtMillis: program.startsAt.toMillis(),
         endsAtMillis: program.endsAt.toMillis(),
         capabilities: program.capabilities,
+        ...(functionCounts.has(doc.id) ?
+          {functionCount: functionCounts.get(doc.id)!} : {}),
         archivedAtMillis: program.archivedAt?.toMillis() ?? null,
         anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
         anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
@@ -398,6 +472,20 @@ export function validateVehicleClasses(
     }
     ids.add(vehicle.id);
   }
+}
+
+function canonicalProgramCreateJson(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalProgramCreateJson).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort()
+      .filter((key) => record[key] !== undefined)
+      .map((key) => `${JSON.stringify(key)}:${canonicalProgramCreateJson(record[key])}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value);
 }
 
 function normalizeProgramPayload(value: unknown): unknown {

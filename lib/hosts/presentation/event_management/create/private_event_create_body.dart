@@ -309,10 +309,16 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           drafts: drafts,
         ),
       );
-      if (!mounted || picked?.draft == null) {
+      if (!mounted || picked == null) return;
+      if (picked.intent == HostEventEntryIntent.createProgram) {
+        await context.pushNamed(
+          Routes.hostCreateProgramScreen.name,
+          pathParameters: {'clubId': widget.club.id},
+        );
         return;
       }
-      final draft = picked!.draft!;
+      if (picked.draft == null) return;
+      final draft = picked.draft!;
       if (draft.clubId != widget.club.id) {
         return;
       }

@@ -1,4 +1,11 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
@@ -27,6 +34,8 @@ class HostEventsClubCard extends ConsumerWidget {
     required this.onManageEvent,
     required this.now,
     required this.sessionBoundary,
+    this.initialProgramId,
+    this.initialProgramRow,
   });
 
   final Club club;
@@ -34,6 +43,8 @@ class HostEventsClubCard extends ConsumerWidget {
   final HostEventsManageEventCallback onManageEvent;
   final DateTime now;
   final DateTime sessionBoundary;
+  final String? initialProgramId;
+  final OrganizerProgramListRow? initialProgramRow;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -80,7 +91,43 @@ class HostEventsClubCard extends ConsumerWidget {
 
     void onRetryEvents() =>
         ref.invalidate(hostEventsTimelineControllerProvider(request));
-    return HostEventsClubSection(
+    final accountId = ref.watch(uidProvider).value;
+    final scope = accountId == null
+        ? null
+        : (accountId: accountId, organizerId: club.id);
+    final programController = scope == null
+        ? null
+        : ref.watch(
+            programEventsControllerProvider((
+              scope: scope,
+              anchorId: initialProgramId,
+              initialRow: initialProgramRow,
+            )),
+          );
+    Widget section() => HostEventsClubSection(
+      programs: programController?.state ?? const CatchAsyncState.loading(),
+      hasMorePrograms: programController?.hasMore ?? false,
+      loadingMorePrograms: programController?.loadingMore ?? false,
+      programPageError: programController?.loadMoreError,
+      onLoadMorePrograms: programController?.loadMore,
+      now: now,
+      onRetryPrograms: programController?.refresh,
+      onOpenProgram: (program) async {
+        await context.pushNamed(
+          Routes.hostProgramWorkspaceScreen.name,
+          pathParameters: {'programId': program.programId},
+        );
+        if (context.mounted) await programController?.refresh();
+      },
+      onLifecycleProgram: programController == null
+          ? null
+          : (program, action) => _changeProgramLifecycle(
+              context,
+              programController,
+              program,
+              action,
+            ),
+      isProgramPending: programController?.isPending,
       club: club,
       state: workspaceState,
       entryState: entryState,
@@ -97,6 +144,12 @@ class HostEventsClubCard extends ConsumerWidget {
       onEventEntrySelected: onEventEntrySelected,
       onManageEvent: onManageEvent,
     );
+    return programController == null
+        ? section()
+        : ListenableBuilder(
+            listenable: programController,
+            builder: (_, _) => section(),
+          );
   }
 }
 
@@ -112,8 +165,29 @@ class HostEventsClubSection extends StatefulWidget {
     required this.onEventEntrySelected,
     required this.onManageEvent,
     this.onRetryEvents,
+    this.programs = const CatchAsyncState.data(<OrganizerProgramListRow>[]),
+    this.now,
+    this.onRetryPrograms,
+    this.onOpenProgram,
+    this.onLifecycleProgram,
+    this.isProgramPending,
+    this.hasMorePrograms = false,
+    this.loadingMorePrograms = false,
+    this.programPageError,
+    this.onLoadMorePrograms,
   });
 
+  final CatchAsyncState<List<OrganizerProgramListRow>> programs;
+  final DateTime? now;
+  final VoidCallback? onRetryPrograms;
+  final ValueChanged<OrganizerProgramListRow>? onOpenProgram;
+  final void Function(OrganizerProgramListRow, ProgramLifecycleAction)?
+  onLifecycleProgram;
+  final bool Function(String)? isProgramPending;
+  final bool hasMorePrograms;
+  final bool loadingMorePrograms;
+  final Object? programPageError;
+  final VoidCallback? onLoadMorePrograms;
   final Club club;
   final HostEventsWorkspaceState state;
   final HostEventEntryState entryState;
@@ -158,12 +232,6 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
         title: context.l10n.hostsHostEventsListTextEvents,
         actions: [
           CatchTopBarPrimaryButton(
-            key: const ValueKey<String>('host-events-view-programs'),
-            label: context.l10n.programsListTitle,
-            icon: CatchIcons.calendarMonthOutlined,
-            onPressed: _openPrograms,
-          ),
-          CatchTopBarPrimaryButton(
             key: const ValueKey<String>('host-events-create-event'),
             label: context.l10n.hostsHostEventsListLabelNewEvent,
             icon: CatchIcons.addRounded,
@@ -193,6 +261,16 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
               page: HostEventsTimelinePage(
                 key: ValueKey('host-events-${widget.club.id}-${view.name}'),
                 organizerId: widget.club.id,
+                programs: widget.programs,
+                now: widget.now,
+                onRetryPrograms: widget.onRetryPrograms,
+                onOpenProgram: widget.onOpenProgram,
+                onLifecycleProgram: widget.onLifecycleProgram,
+                isProgramPending: widget.isProgramPending,
+                hasMorePrograms: widget.hasMorePrograms,
+                loadingMorePrograms: widget.loadingMorePrograms,
+                programPageError: widget.programPageError,
+                onLoadMorePrograms: widget.onLoadMorePrograms,
                 view: view,
                 state: widget.state,
                 onRetryEvents: widget.onRetryEvents,
@@ -216,11 +294,6 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
       ),
     );
   }
-
-  void _openPrograms() => context.pushNamed(
-    Routes.hostProgramsScreen.name,
-    queryParameters: {'organizerId': widget.club.id},
-  );
 
   Future<void> _showEventEntrySheet() async {
     final intent = await showHostEventEntrySheet(
@@ -247,8 +320,29 @@ class HostEventsTimelinePage extends StatelessWidget
     required this.onManageEvent,
     required this.onResumeUnpublished,
     this.onRetryEvents,
+    this.programs = const CatchAsyncState.data(<OrganizerProgramListRow>[]),
+    this.now,
+    this.onRetryPrograms,
+    this.onOpenProgram,
+    this.onLifecycleProgram,
+    this.isProgramPending,
+    this.hasMorePrograms = false,
+    this.loadingMorePrograms = false,
+    this.programPageError,
+    this.onLoadMorePrograms,
   });
 
+  final CatchAsyncState<List<OrganizerProgramListRow>> programs;
+  final DateTime? now;
+  final VoidCallback? onRetryPrograms;
+  final ValueChanged<OrganizerProgramListRow>? onOpenProgram;
+  final void Function(OrganizerProgramListRow, ProgramLifecycleAction)?
+  onLifecycleProgram;
+  final bool Function(String)? isProgramPending;
+  final bool hasMorePrograms;
+  final bool loadingMorePrograms;
+  final Object? programPageError;
+  final VoidCallback? onLoadMorePrograms;
   final String organizerId;
   final HostEventsView view;
   final HostEventsWorkspaceState state;
@@ -264,6 +358,19 @@ class HostEventsTimelinePage extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final upcoming = view == HostEventsView.upcoming;
+    final clock = now ?? DateTime.now();
+    final programRows = (programs.value ?? const <OrganizerProgramListRow>[])
+        .where((program) {
+          // Draft programs stay discoverable while they are being configured.
+          final history =
+              program.isArchived ||
+              program.status == 'completed' ||
+              (program.status != 'draft' &&
+                  program.endsAt != null &&
+                  !program.endsAt!.isAfter(clock));
+          return upcoming != history;
+        })
+        .toList(growable: false);
     final sections = upcoming ? state.activeSections : state.pastSections;
     final pageError = upcoming ? state.activeLoadMoreError : state.pastError;
     final hasMore = upcoming ? state.hasMoreActive : state.hasMorePast;
@@ -273,6 +380,62 @@ class HostEventsTimelinePage extends StatelessWidget
     return CatchRootScreenPageScrollView.sections(
       scrollKey: PageStorageKey('host-events-$organizerId-${view.name}'),
       children: [
+        if (programs.isLoading)
+          CatchSection.sliverLoadingRows(
+            itemCount: 1,
+            layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
+              icon: CatchIcons.calendarMonthOutlined,
+              factCount: 2,
+              hasMetadata: true,
+            ),
+          ),
+        if (programRows.isNotEmpty) ...[
+          CatchSection.sliverRows(
+            key: ValueKey('host-programs-$organizerId-${view.name}'),
+            title: context.l10n.programsListTitle,
+            itemCount: programRows.length,
+            itemBuilder: (context, index) {
+              final program = programRows[index];
+              return ProgramEventsRow(
+                program: program,
+                now: clock,
+                pending: isProgramPending?.call(program.programId) ?? false,
+                onOpen: () => onOpenProgram?.call(program),
+                onLifecycle: (action) =>
+                    onLifecycleProgram?.call(program, action),
+              );
+            },
+          ),
+          const SliverToBoxAdapter(child: gapH24),
+        ],
+        if (programs.error != null)
+          CatchLocalizedSliverErrorState(
+            programs.error!,
+            context: AppErrorContext.event,
+            onRetry: onRetryPrograms,
+          ),
+        if (programPageError != null)
+          CatchLocalizedSliverErrorState(
+            programPageError!,
+            context: AppErrorContext.event,
+            onRetry: onLoadMorePrograms,
+          )
+        else if (hasMorePrograms)
+          CatchPageBody.sliver(
+            child: SliverToBoxAdapter(
+              child: Align(
+                child: CatchButton(
+                  key: ValueKey('host-programs-load-more-${view.name}'),
+                  label: context.l10n.programsEventsLoadMore,
+                  variant: CatchButtonVariant.secondary,
+                  status: loadingMorePrograms
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  onPressed: loadingMorePrograms ? null : onLoadMorePrograms,
+                ),
+              ),
+            ),
+          ),
         if (state.status == HostEventsWorkspaceStatus.loading ||
             (sections.isEmpty && loadingMore))
           CatchSection.sliverLoadingRows(
@@ -294,7 +457,11 @@ class HostEventsTimelinePage extends StatelessWidget
             context: AppErrorContext.event,
             onRetry: onRetryPage,
           )
-        else if (sections.isEmpty && !hasMore)
+        else if (sections.isEmpty &&
+            !hasMore &&
+            programRows.isEmpty &&
+            !hasMorePrograms &&
+            programs.isSettledData)
           CatchSliverEmptyState(
             icon: CatchIcons.eventBusy,
             title: upcoming
@@ -402,4 +569,58 @@ CatchRecordLayout hostEventRecordLayout(
       ),
     ),
   );
+}
+
+Future<void> _changeProgramLifecycle(
+  BuildContext context,
+  ProgramEventsController controller,
+  OrganizerProgramListRow program,
+  ProgramLifecycleAction action,
+) async {
+  if (controller.isPending(program.programId)) return;
+  final archiving = action == ProgramLifecycleAction.archive;
+  if (!archiving && !program.canUnarchiveAt(DateTime.now())) return;
+  final l10n = context.l10n;
+  final deadline = AppTimeFormatters.shortDate(
+    DateTime.now().add(const Duration(days: 14)),
+  );
+  final confirmed = await showCatchAdaptiveDialog<bool>(
+    context: context,
+    title: archiving
+        ? l10n.programsListArchiveConfirmTitle(title: program.title)
+        : l10n.programsListUnarchiveConfirmTitle(title: program.title),
+    message: archiving
+        ? l10n.programsListArchiveConfirmMessage(date: deadline)
+        : l10n.programsListUnarchiveConfirmMessage,
+    actions: [
+      CatchDialogAction(
+        label: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+        value: false,
+      ),
+      CatchDialogAction(
+        label: archiving
+            ? l10n.programsListArchiveAction
+            : l10n.programsListUnarchiveAction,
+        value: true,
+      ),
+    ],
+  );
+  if (confirmed != true || !context.mounted) return;
+  try {
+    final changed = await controller.changeLifecycle(
+      program,
+      action,
+      DateTime.now(),
+    );
+    if (changed && context.mounted)
+      showCatchNotice(
+        context,
+        archiving
+            ? l10n.programsListArchiveDone(date: deadline)
+            : l10n.programsListUnarchiveDone,
+        tone: CatchNoticeTone.success,
+      );
+  } catch (error) {
+    if (context.mounted) showCatchNoticeError(context, error);
+  }
 }
