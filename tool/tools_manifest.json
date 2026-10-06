@@ -433,6 +433,78 @@
       }
     },
     {
+      "id": "firebase:function-release-fingerprints",
+      "category": "firebase",
+      "path": "tool/firebase/function_release_fingerprints.mjs",
+      "command": "node --test tool/firebase/function_release_fingerprints.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/function_release_fingerprints.test.mjs"
+      ],
+      "description": "Tests per-export runtime dependency fingerprints with conservative unknown-impact rejection; promotion integration requires independent source and immutable package evidence.",
+      "checks": [
+        "node --check tool/firebase/function_release_fingerprints.mjs",
+        "node --test tool/firebase/function_release_fingerprints.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/function_release_fingerprints.test.mjs",
+        "contains": [
+          "shared file changes only the reachable exported behavior",
+          "changed dynamic-load consumer fails closed rather than deploying all",
+          "arbitrary dynamic loading cannot hide changes elsewhere in the package"
+        ]
+      }
+    },
+    {
+      "id": "ci:selective-backend-release",
+      "category": "ci",
+      "path": "tool/ci/selective_backend_release.mjs",
+      "command": "node --test tool/ci/selective_backend_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/selective_backend_release.test.mjs",
+        "tool/firebase/function_release_fingerprints.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/ci/delivery_core.mjs"
+      ],
+      "alsoCheckIds": [
+        "firebase:function-release-fingerprints",
+        "ci:firebase-functions-checkpoint"
+      ],
+      "description": "Tests selective release plans and mixed-source per-Function ledgers against independent source, package, params, index readiness and live deployment identities.",
+      "checks": [
+        "node --check tool/ci/selective_backend_release.mjs",
+        "node --test tool/ci/selective_backend_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/selective_backend_release.test.mjs",
+        "contains": [
+          "four changed Functions get candidate provenance while 574 real baseline rows remain byte-identical",
+          "completion rederives every plan field and exact evidence digest from independent preparation",
+          "all unchanged and selected live identities must match; no drift becomes coverage"
+        ]
+      }
+    },
+    {
       "id": "ci:firebase-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_firebase_delivery.mjs",

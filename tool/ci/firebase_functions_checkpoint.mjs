@@ -64,6 +64,10 @@ function deploymentIdentity(value, projectId, target) {
   assert.match(value.serviceGeneration ?? "", /^[1-9][0-9]*$/, "Cloud Run generation required.");
   return structuredClone(value);
 }
+export function validateFunctionIdentity(value, {scope, target}) {
+  targets([target]);
+  return deploymentIdentity(value, projectFromScope(scope), target);
+}
 function revisionResource(service, revision) {
   string(revision, "Cloud Run revision");
   if (revision.startsWith(`${service}/revisions/`)) return revision;
@@ -162,14 +166,23 @@ export async function liveFunctions(projectId, selectedTargets, {runCommand = sp
   do {
     assert.ok(!seenPages.has(pageToken), "Repeated Function inventory page.");
     seenPages.add(pageToken);
-    const query = new URLSearchParams({pageSize: "100"});
+    const query = new URLSearchParams({pageSize: "100",
+      fields: "functions(name,state,environment,updateTime,buildConfig(build,sourceProvenance(resolvedStorageSource(bucket,object,generation))),serviceConfig(service,revision)),nextPageToken"});
     if (pageToken) query.set("pageToken", pageToken);
     const response = await request(`https://cloudfunctions.googleapis.com/v2/projects/${projectId}/locations/${region}/functions?${query}`,
       {headers: {Authorization: `Bearer ${token}`}, signal: AbortSignal.timeout(30_000)});
     assert.ok(response.ok, `Function deployment inventory failed with HTTP ${response.status}.`);
     const page = await response.json();
     assert.ok(Array.isArray(page.functions ?? []), "Invalid Function deployment inventory.");
-    functions.push(...(page.functions ?? []));
+    // Project metadata explicitly as well as requesting a server-side field
+    // mask. Unexpected API fields can never enter a returned receipt.
+    for (const fn of page.functions ?? []) {
+      const resolved = fn.buildConfig?.sourceProvenance?.resolvedStorageSource;
+      functions.push({name: fn.name, state: fn.state, environment: fn.environment, updateTime: fn.updateTime,
+        buildConfig: {build: fn.buildConfig?.build, sourceProvenance: {resolvedStorageSource: resolved &&
+          {bucket: resolved.bucket, object: resolved.object, generation: resolved.generation}}},
+        serviceConfig: {service: fn.serviceConfig?.service, revision: fn.serviceConfig?.revision}});
+    }
     pageToken = page.nextPageToken ?? "";
     assert.equal(typeof pageToken, "string");
   } while (pageToken);
@@ -183,10 +196,18 @@ export async function liveFunctions(projectId, selectedTargets, {runCommand = sp
       const service = fn.serviceConfig?.service;
       assert.match(service ?? "", new RegExp(`^projects/${projectId}/locations/${region}/services/[a-z][a-z0-9-]*$`),
         "Cloud Run service must remain in the approved Function project/region.");
-      const response = await request(`https://run.googleapis.com/v2/${service}`,
+      const fields = "name,uid,generation,observedGeneration,reconciling,terminalCondition(state),latestReadyRevision,latestCreatedRevision,trafficStatuses(type,percent,revision,tag)";
+      const response = await request(`https://run.googleapis.com/v2/${service}?${new URLSearchParams({fields})}`,
         {headers: {Authorization: `Bearer ${token}`}, signal: AbortSignal.timeout(30_000)});
       assert.ok(response.ok, `Cloud Run serving inventory failed with HTTP ${response.status}.`);
-      fn.runService = await response.json();
+      const metadata = await response.json();
+      fn.runService = Object.fromEntries(["name", "uid", "generation", "observedGeneration", "reconciling",
+        "latestReadyRevision", "latestCreatedRevision"].filter((key) => metadata[key] !== undefined)
+        .map((key) => [key, metadata[key]]));
+      fn.runService.terminalCondition = {state: metadata.terminalCondition?.state};
+      fn.runService.trafficStatuses = metadata.trafficStatuses?.map((traffic) =>
+        Object.fromEntries(["type", "percent", "revision", "tag"].filter((key) => traffic[key] !== undefined)
+          .map((key) => [key, traffic[key]])));
     }
   }));
   return selected;

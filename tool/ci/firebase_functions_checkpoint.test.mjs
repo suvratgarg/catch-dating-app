@@ -131,16 +131,27 @@ test("metadata reader paginates Functions and independently reads only selected 
       assert.equal(options.headers.Authorization, "Bearer fixture-private-token");
       requested.push(url);
       if (url.includes("cloudfunctions.googleapis.com")) {
-        const second = new URL(url).searchParams.get("pageToken") === "next";
+        const parsed = new URL(url);
+        assert.equal(parsed.searchParams.get("fields"), "functions(name,state,environment,updateTime,buildConfig(build,sourceProvenance(resolvedStorageSource(bucket,object,generation))),serviceConfig(service,revision)),nextPageToken");
+        const second = parsed.searchParams.get("pageToken") === "next";
         const functions = (second ? inventory.slice(1) : inventory.slice(0, 1)).map(({runService, ...fn}) => fn);
-        return {ok: true, json: async () => ({functions, ...(second ? {} : {nextPageToken: "next"})})};
+        return {ok: true, json: async () => ({functions: functions.map((fn) => ({...fn,
+          serviceConfig: {...fn.serviceConfig, environmentVariables: {PRIVATE_CANARY: "fixture-payload-never-return"}},
+          buildConfig: {...fn.buildConfig, environmentVariables: {PRIVATE_BUILD: "fixture-payload-never-return"}}})),
+          ...(second ? {} : {nextPageToken: "next"})})};
       }
-      const fn = inventory.find((candidate) => url === `https://run.googleapis.com/v2/${candidate.serviceConfig.service}`);
+      const parsed = new URL(url);
+      assert.equal(parsed.searchParams.get("fields"), "name,uid,generation,observedGeneration,reconciling,terminalCondition(state),latestReadyRevision,latestCreatedRevision,trafficStatuses(type,percent,revision,tag)");
+      const fn = inventory.find((candidate) => parsed.origin + parsed.pathname === `https://run.googleapis.com/v2/${candidate.serviceConfig.service}`);
       assert.ok(fn, `Unexpected service read: ${url}`);
-      return {ok: true, json: async () => structuredClone(fn.runService)};
+      return {ok: true, json: async () => ({...structuredClone(fn.runService),
+        template: {containers: [{env: [{name: "PRIVATE_CANARY", value: "fixture-payload-never-return"}]}]},
+        terminalCondition: {...fn.runService.terminalCondition, message: "fixture-payload-never-return"}})};
     },
   };
-  assert.deepEqual(await liveFunctions("demo-project", selectedTargets, dependencies), inventory.slice(0, 2));
+  const metadata = await liveFunctions("demo-project", selectedTargets, dependencies);
+  assert.deepEqual(metadata, inventory.slice(0, 2));
+  assert.equal(JSON.stringify(metadata).includes("fixture-payload-never-return"), false);
   assert.equal(requested.length, 4);
   assert.ok(requested.every((url) => !url.includes("unselected") && !url.includes("fixture-private-token")));
   requested = [];
