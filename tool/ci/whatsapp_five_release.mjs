@@ -139,6 +139,9 @@ export async function runWhatsappFiveReleaseCli(argv, {readLive = liveFunctions}
     const [command, ...rest] = argv;
     assert.ok(["prepare", "params", "before", "complete"].includes(command));
     const args = options(rest);
+    exactKeys(args, command === "params" ? ["params-file"] :
+      command === "complete" ? ["manifest", "package-plan", "before", "deployment", "params-sha256", "output"] :
+        ["manifest", "package-plan", "output"]);
     if (command === "params") return verifyWhatsappFiveParams(args["params-file"]);
     const manifest = read(args.manifest);
     const packagePlan = read(args["package-plan"]);

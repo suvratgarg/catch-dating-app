@@ -127,4 +127,41 @@ test("CLI validates fixed paths and writes names-only evidence with private mode
     "--package-plan", planFile, "--output", output]), /Invalid exact-five WhatsApp release evidence/);
   await assert.rejects(runWhatsappFiveReleaseCli(["prepare", "--secret-payload", "anything"]),
     /Invalid exact-five WhatsApp release evidence/);
+  await assert.rejects(runWhatsappFiveReleaseCli(["prepare", "--manifest", manifestFile,
+    "--package-plan", planFile, "--output", path.join(dir, "unexpected.json"),
+    "--unapproved-target", "functions:extra"]), /Invalid exact-five WhatsApp release evidence/);
+});
+
+test("CLI captures and completes only selected live metadata, never a provider payload", async (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "catch-wa-five-live-"));
+  t.after(() => fs.rmSync(dir, {recursive: true, force: true}));
+  const good = fixture();
+  const manifestFile = path.join(dir, "manifest.json");
+  const planFile = path.join(dir, "plan.json");
+  const beforeFile = path.join(dir, "before.json");
+  const deploymentFile = path.join(dir, "deployment.json");
+  const receiptFile = path.join(dir, "receipt.json");
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest));
+  fs.writeFileSync(planFile, JSON.stringify(packagePlan));
+  fs.writeFileSync(deploymentFile, JSON.stringify(good.deployment));
+  const beforeLive = async (project, targets) => {
+    assert.equal(project, r.projectId);
+    assert.deepEqual(targets, r.targets);
+    return r.targets.map((target) => liveFunction(target));
+  };
+  await runWhatsappFiveReleaseCli(["before", "--manifest", manifestFile,
+    "--package-plan", planFile, "--output", beforeFile], {readLive: beforeLive});
+  const afterLive = async (project, targets) => {
+    assert.equal(project, r.projectId);
+    assert.deepEqual(targets, r.targets);
+    return good.functions;
+  };
+  await runWhatsappFiveReleaseCli(["complete", "--manifest", manifestFile,
+    "--package-plan", planFile, "--before", beforeFile,
+    "--deployment", deploymentFile, "--params-sha256", good.expectedParamsSha256,
+    "--output", receiptFile], {readLive: afterLive});
+  const receipt = JSON.parse(fs.readFileSync(receiptFile, "utf8"));
+  assert.equal(receipt.coverage, "selected-physical-identities-only");
+  assert.equal(receipt.functions.length, 5);
+  assert.equal(fs.statSync(receiptFile).mode & 0o777, 0o600);
 });
