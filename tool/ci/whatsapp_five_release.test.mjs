@@ -80,6 +80,9 @@ test("four Catch gates must be explicitly false in the generated deploy params, 
   const body = `${closed.map((name) => `${name}="false"`).join("\n")}\nOTHER_NON_SECRET="some value"\n`;
   fs.writeFileSync(file, body, {mode: 0o600});
   assert.deepEqual(verifyWhatsappFiveParams(file), {paramsSha256: sha256(body), catchGatesClosed: true});
+  fs.chmodSync(file, 0o644);
+  assert.throws(() => verifyWhatsappFiveParams(file), /Invalid exact-five WhatsApp release evidence/);
+  fs.chmodSync(file, 0o600);
   for (const changed of [body.replace('CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="true"'), body.replace('CATCH_WHATSAPP_REPLIES_ENABLED="false"\n', ""),
   `${body}CATCH_WHATSAPP_WEBHOOK_ENABLED="false"\n`]) {

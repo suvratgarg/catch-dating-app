@@ -72,6 +72,7 @@ export function verifyWhatsappFiveParams(file) {
     assert.equal(path.basename(file), `.env.${WHATSAPP_FIVE_RELEASE.projectId}`);
     const stat = fs.lstatSync(file);
     assert.ok(stat.isFile() && !stat.isSymbolicLink() && stat.size < 1024 * 1024);
+    assert.equal(stat.mode & 0o077, 0);
     const bytes = fs.readFileSync(file);
     const lines = bytes.toString("utf8").split(/\r?\n/u);
     for (const name of ["CATCH_WHATSAPP_WEBHOOK_ENABLED", "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
