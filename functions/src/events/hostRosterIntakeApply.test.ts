@@ -2,16 +2,20 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import type {Transaction} from "firebase-admin/firestore";
+import type {CallableRequest} from "firebase-functions/v2/https";
 import type {EventAttendeeDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   applyHostRosterIntake,
   currentRow,
   HostRosterIntakeApplyDeps,
+  HostRosterIntakeManageDeps,
+  manageHostRosterIntakeHandler,
 } from "./hostRosterIntakeApply";
 import {
   createHostRosterIntakeDraft,
   previewHostRosterIntake,
+  reviseHostRosterIntakeDraft,
 } from "./hostRosterIntakeCore";
 import type {HostRosterAppliedReview} from
   "./hostRosterIntakeSessionStore";
@@ -111,4 +115,52 @@ test("roster document conversion retains authority and reported revenue",
     assert.equal(converted.phoneE164, null);
     assert.equal(converted.revenueSource, "providerOrder");
     assert.equal(converted.updatedAtMillis, 1234);
+  });
+
+test("authenticated callable starts and previews a resumable session",
+  async () => {
+    let saved = fixture();
+    const rateLimited: string[] = [];
+    const deps: HostRosterIntakeManageDeps = {
+      rateLimit: async (hostUid) => {
+        rateLimited.push(hostUid);
+      },
+      store: {
+        createOrResume: async (input) => {
+          saved = createHostRosterIntakeDraft(input);
+          return saved;
+        },
+        get: async () => saved,
+        getAppliedReview: async () => null,
+        revise: async (params) => {
+          saved = reviseHostRosterIntakeDraft({draft: saved,
+            expectedRevision: params.expectedRevision, rows: params.rows,
+            excludedRowIds: params.excludedRowIds,
+            mapping: params.mapping});
+          return saved;
+        },
+        prepareCompletion: async () => {
+          throw new Error("not used");
+        },
+      },
+      authorize: async () => undefined,
+      loadInitialCurrentRows: async () => new Map(),
+      loadTransactionCurrentRows: async () => new Map(),
+      importCanonical: async () => {
+        throw new Error("not used");
+      },
+    };
+    const response = await manageHostRosterIntakeHandler({
+      auth: {uid: "host-1"},
+      data: {action: "start", organizerId: "organizer-1",
+        eventId: "event-1", fileFingerprint: "d".repeat(64),
+        fileName: "guests.csv", format: "csv",
+        headers: ["Name", "Attendee ID"],
+        mapping: {displayName: 0, externalReference: 1},
+        rows: fixture().rows},
+    } as unknown as CallableRequest<unknown>, deps);
+    assert.equal(response.draft.hostUid, "host-1");
+    assert.deepEqual(rateLimited, ["host-1"]);
+    assert.equal(response.preview?.counts.add, 1);
+    assert.equal(response.preview?.eligibleForApply, true);
   });

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
+import 'package:catch_dating_app/hosts/data/host_roster_intake_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -52,6 +53,27 @@ class HostOperationalRosterController {
         format: format,
         rows: rows,
       );
+
+  Future<HostRosterIntakeReview> startRosterIntake({
+    required String eventId,
+    required String organizerId,
+    required HostRosterImportPlan plan,
+  }) => _ref
+      .read(hostRosterIntakeRepositoryProvider)
+      .start(eventId: eventId, organizerId: organizerId, plan: plan);
+
+  Future<HostRosterIntakeReview> excludeRosterIntakeRows(
+    HostRosterIntakeReview review,
+    Iterable<String> rowIds,
+  ) =>
+      _ref.read(hostRosterIntakeRepositoryProvider).excludeRows(review, rowIds);
+
+  Future<HostRosterIntakeReview> resumeRosterIntake(String sessionId) =>
+      _ref.read(hostRosterIntakeRepositoryProvider).resume(sessionId);
+
+  Future<HostRosterIntakeReview> applyRosterIntake(
+    HostRosterIntakeReview review,
+  ) => _ref.read(hostRosterIntakeRepositoryProvider).apply(review);
 
   Future<HostAttendanceOutboxSummary> setAttendance({
     required String eventId,

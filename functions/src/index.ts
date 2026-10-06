@@ -81,6 +81,7 @@ export {
   registerPublicEvent,
   setEventAttendeeAttendance,
 } from "./events/eventAttendees";
+export {manageHostRosterIntake} from "./events/hostRosterIntakeApply";
 export {
   getEventOperatorAccess,
   grantEventStaff,

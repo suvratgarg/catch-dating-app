@@ -19223,10 +19223,10 @@ abstract class AppLocalizations {
   /// **'This workbook has {count} worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.'**
   String hostsOperationalRosterMultipleWorksheets({required int count});
 
-  /// Roster import confirmation CTA.
+  /// Continue mapped rows to saved roster review.
   ///
   /// In en, this message translates to:
-  /// **'Import {count} guests'**
+  /// **'Review {count} ready guests'**
   String hostsOperationalRosterImportAction({required int count});
 
   /// External event guest list field title.
@@ -40135,6 +40135,99 @@ abstract class AppLocalizations {
     required String status,
     required String source,
   });
+
+  /// Title for the saved Host roster intake review sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guest changes'**
+  String get hostsOperationalRosterIntakeReviewTitle;
+
+  /// Returns to the event-scoped Host roster intake draft saved on the server.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume saved review'**
+  String get hostsOperationalRosterIntakeResume;
+
+  /// Explains saved review-before-apply behavior.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} is saved. Review every proposed roster change before applying it.'**
+  String hostsOperationalRosterIntakeReviewSubtitle({required String fileName});
+
+  /// Applies the exact reviewed roster proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply reviewed changes'**
+  String get hostsOperationalRosterIntakeApply;
+
+  /// Count of unresolved or conflicting intake rows.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row needs a decision before apply.} other{{count} rows need a decision before apply.}}'**
+  String hostsOperationalRosterIntakeExceptions({required int count});
+
+  /// Explicitly excludes unresolved rows and refreshes preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Exclude {count, plural, =1{1 unresolved row} other{{count} unresolved rows}}'**
+  String hostsOperationalRosterIntakeExclude({required int count});
+
+  /// Retry-safe saved intake failure copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved review could not be updated. Try again; no roster changes were applied.'**
+  String get hostsOperationalRosterIntakeRetry;
+
+  /// Source row label in intake review.
+  ///
+  /// In en, this message translates to:
+  /// **'Source row {row}'**
+  String hostsOperationalRosterIntakeRow({required int row});
+
+  /// Exact preview count by outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind}: {count}'**
+  String hostsOperationalRosterIntakeCount({
+    required String kind,
+    required int count,
+  });
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get hostsOperationalRosterIntakeKindAdd;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get hostsOperationalRosterIntakeKindUpdate;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Unchanged'**
+  String get hostsOperationalRosterIntakeKindUnchanged;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded'**
+  String get hostsOperationalRosterIntakeKindExcluded;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get hostsOperationalRosterIntakeKindNeedsReview;
+
+  /// Roster preview outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity conflict'**
+  String get hostsOperationalRosterIntakeKindIdentityConflict;
 }
 
 class _AppLocalizationsDelegate

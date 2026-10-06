@@ -393,11 +393,15 @@ class HostRosterImportPlan {
     required this.needsReviewCount,
     required this.excludedCount,
     required this.adapterId,
+    this.headers = const [],
+    this.mapping = const {},
+    this.intakeRows = const [],
   });
 
   factory HostRosterImportPlan.fromMappedRows({
     required HostRosterTable table,
     required HostRosterMappedRows mapped,
+    required Map<HostRosterField, int?> mapping,
   }) => HostRosterImportPlan(
     fileName: table.fileName,
     fileFingerprint: table.fileFingerprint,
@@ -407,6 +411,11 @@ class HostRosterImportPlan {
     needsReviewCount: mapped.needsReviewCount,
     excludedCount: mapped.excludedCount,
     adapterId: table.adapter.adapterId,
+    headers: List.unmodifiable(table.headers),
+    mapping: Map.unmodifiable(mapping),
+    intakeRows: List.unmodifiable(
+      _buildIntakeRows(table: table, mapped: mapped, mapping: mapping),
+    ),
   );
 
   final String fileName;
@@ -417,6 +426,9 @@ class HostRosterImportPlan {
   final int needsReviewCount;
   final int excludedCount;
   final HostRosterAdapterId adapterId;
+  final List<String> headers;
+  final Map<HostRosterField, int?> mapping;
+  final List<Map<String, Object?>> intakeRows;
 
   ExternalBookingProvider get bookingProvider => switch (adapterId) {
     HostRosterAdapterId.lumaV1 => ExternalBookingProvider.luma,
@@ -427,6 +439,98 @@ class HostRosterImportPlan {
     HostRosterAdapterId.sampleRequired => ExternalBookingProvider.generic,
   };
 }
+
+List<Map<String, Object?>> _buildIntakeRows({
+  required HostRosterTable table,
+  required HostRosterMappedRows mapped,
+  required Map<HostRosterField, int?> mapping,
+}) {
+  final ready = {for (final row in mapped.rows) row.rowId: row};
+  final issues = <int, List<String>>{};
+  for (final issue in mapped.issues) {
+    final rowNumber = issue.rowNumber;
+    if (rowNumber != null) {
+      issues.putIfAbsent(rowNumber, () => []).add(_issueCode(issue.type));
+    }
+  }
+  return [
+    for (final indexed in table.rows.take(250).indexed)
+      () {
+        final rowNumber = indexed.$1 + 2;
+        final raw = indexed.$2
+            .take(40)
+            .map((cell) => cell.length > 500 ? cell.substring(0, 500) : cell)
+            .toList(growable: false);
+        final imported = ready['$rowNumber'];
+        final value =
+            imported?.toJson() ??
+            <String, Object?>{
+              'rowId': '$rowNumber',
+              'displayName': _boundedCell(
+                raw,
+                mapping[HostRosterField.displayName],
+                120,
+              ),
+              'status': EventAttendeeStatus.registered.name,
+            };
+        final fields = <String, Object?>{};
+        for (final entry in mapping.entries) {
+          final column = entry.value;
+          if (column == null ||
+              column >= raw.length ||
+              raw[column].trim().isEmpty) {
+            continue;
+          }
+          final field = _intakeFieldName(entry.key);
+          final evidence = <String, Object?>{
+            'column': column,
+            'header': table.headers[column],
+            'origin': 'upload',
+            'confidence': null,
+          };
+          fields[field] = evidence;
+          if (entry.key == HostRosterField.revenueAmount) {
+            fields['revenueSource'] = evidence;
+          }
+        }
+        return <String, Object?>{
+          'value': value,
+          'sourceRowNumber': rowNumber,
+          'fields': fields,
+          'rawCells': raw,
+          if (issues[rowNumber]?.isNotEmpty ?? false)
+            'issues': issues[rowNumber],
+        };
+      }(),
+  ];
+}
+
+String _boundedCell(List<String> row, int? column, int maxLength) {
+  if (column == null || column >= row.length) return '';
+  final value = row[column].trim();
+  return value.length > maxLength ? value.substring(0, maxLength) : value;
+}
+
+String _intakeFieldName(HostRosterField field) => switch (field) {
+  HostRosterField.city => 'cityMarketId',
+  HostRosterField.revenueAmount => 'revenueAmountMinor',
+  _ => field.name,
+};
+
+String _issueCode(HostRosterRowIssueType issue) => switch (issue) {
+  HostRosterRowIssueType.missingNameColumn => 'missing-name-column',
+  HostRosterRowIssueType.duplicateMappedColumn => 'duplicate-mapped-column',
+  HostRosterRowIssueType.missingName => 'missing-name',
+  HostRosterRowIssueType.missingStableIdentity => 'missing-stable-identity',
+  HostRosterRowIssueType.invalidPhone => 'invalid-phone',
+  HostRosterRowIssueType.invalidEmail => 'invalid-email',
+  HostRosterRowIssueType.invalidCity => 'invalid-city',
+  HostRosterRowIssueType.invalidRevenueAmount => 'invalid-revenue-amount',
+  HostRosterRowIssueType.missingRevenueCurrency => 'missing-revenue-currency',
+  HostRosterRowIssueType.duplicateIdentity => 'duplicate-identity',
+  HostRosterRowIssueType.unknownStatus => 'unknown-status',
+  HostRosterRowIssueType.excludedStatus => 'excluded-status',
+};
 
 List<String> uniqueHostRosterHeaders(List<String> rawHeaders) {
   final counts = <String, int>{};

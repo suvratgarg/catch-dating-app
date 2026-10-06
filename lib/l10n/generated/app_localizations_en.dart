@@ -12278,7 +12278,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostsOperationalRosterImportAction({required int count}) {
-    return 'Import $count guests';
+    return 'Review $count ready guests';
   }
 
   @override
@@ -24857,4 +24857,78 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$group: $status · $source';
   }
+
+  @override
+  String get hostsOperationalRosterIntakeReviewTitle => 'Review guest changes';
+
+  @override
+  String get hostsOperationalRosterIntakeResume => 'Resume saved review';
+
+  @override
+  String hostsOperationalRosterIntakeReviewSubtitle({
+    required String fileName,
+  }) {
+    return '$fileName is saved. Review every proposed roster change before applying it.';
+  }
+
+  @override
+  String get hostsOperationalRosterIntakeApply => 'Apply reviewed changes';
+
+  @override
+  String hostsOperationalRosterIntakeExceptions({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows need a decision before apply.',
+      one: '1 row needs a decision before apply.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostsOperationalRosterIntakeExclude({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unresolved rows',
+      one: '1 unresolved row',
+    );
+    return 'Exclude $_temp0';
+  }
+
+  @override
+  String get hostsOperationalRosterIntakeRetry =>
+      'The saved review could not be updated. Try again; no roster changes were applied.';
+
+  @override
+  String hostsOperationalRosterIntakeRow({required int row}) {
+    return 'Source row $row';
+  }
+
+  @override
+  String hostsOperationalRosterIntakeCount({
+    required String kind,
+    required int count,
+  }) {
+    return '$kind: $count';
+  }
+
+  @override
+  String get hostsOperationalRosterIntakeKindAdd => 'Add';
+
+  @override
+  String get hostsOperationalRosterIntakeKindUpdate => 'Update';
+
+  @override
+  String get hostsOperationalRosterIntakeKindUnchanged => 'Unchanged';
+
+  @override
+  String get hostsOperationalRosterIntakeKindExcluded => 'Excluded';
+
+  @override
+  String get hostsOperationalRosterIntakeKindNeedsReview => 'Needs review';
+
+  @override
+  String get hostsOperationalRosterIntakeKindIdentityConflict =>
+      'Identity conflict';
 }

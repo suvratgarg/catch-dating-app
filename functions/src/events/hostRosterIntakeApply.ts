@@ -1,6 +1,10 @@
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
-import {HttpsError} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
+import {requireAuth} from "../shared/auth";
+import {appCheckCallableOptions} from "../shared/callableOptions";
+import {validateManageHostRosterIntakeCallablePayload} from
+  "../shared/generated/validators/manageHostRosterIntakeInput";
 import type {
   EventAttendeeDocument,
   EventDocument,
@@ -12,7 +16,8 @@ import {
   isEventOrganizerManager,
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
-import {requireDoc} from "../shared/validation";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {checkRateLimit} from "../shared/rateLimit";
 import {
   EventAttendeeImportResult,
   importEventAttendeesForHost,
@@ -21,6 +26,8 @@ import {
   approveHostRosterIntakeApply,
   HostRosterCurrentRow,
   HostRosterIntakeDraft,
+  HostRosterIntakeRow,
+  previewHostRosterIntake,
 } from "./hostRosterIntakeCore";
 import {
   AuthorizeHostRosterSession,
@@ -60,13 +67,20 @@ export interface HostRosterIntakeApplyDeps {
   }): Promise<EventAttendeeImportResult>;
 }
 
+export interface HostRosterIntakeManageDeps extends
+  Omit<HostRosterIntakeApplyDeps, "store"> {
+  rateLimit(hostUid: string): Promise<void>;
+  store: HostRosterIntakeApplyStore & Pick<HostRosterIntakeSessionStore,
+    "createOrResume" | "revise">;
+}
+
 /** Runs one reviewed approval through the canonical roster transaction. */
 export async function applyHostRosterIntake(params: {
   hostUid: string;
   sessionId: string;
   reviewHash: string;
 }, deps?: HostRosterIntakeApplyDeps): Promise<EventAttendeeImportResult> {
-  const runtime = deps ?? defaultApplyDeps();
+  const runtime = deps ?? defaultHostRosterIntakeApplyDeps();
   const draft = await runtime.store.get({sessionId: params.sessionId,
     hostUid: params.hostUid}, runtime.authorize);
   if (!draft) throw new HttpsError("not-found", "Roster intake not found.");
@@ -110,13 +124,16 @@ export async function applyHostRosterIntake(params: {
     }});
 }
 
-function defaultApplyDeps(): HostRosterIntakeApplyDeps {
+export function defaultHostRosterIntakeApplyDeps():
+  HostRosterIntakeManageDeps {
   const db = admin.firestore();
   const authorize = managerAuthorizer(db);
   const store = new HostRosterIntakeSessionStore(db);
   const load = (tx: Transaction, draft: HostRosterIntakeDraft) =>
     loadCurrentRows(db, tx, draft);
   return {store, authorize,
+    rateLimit: (hostUid) => checkRateLimit(db, hostUid,
+      "manageHostRosterIntake"),
     loadInitialCurrentRows: (draft) => db.runTransaction(async (tx) => {
       await authorize({tx, hostUid: draft.hostUid,
         organizerId: draft.organizerId, eventId: draft.eventId});
@@ -125,6 +142,147 @@ function defaultApplyDeps(): HostRosterIntakeApplyDeps {
     loadTransactionCurrentRows: load,
     importCanonical: (input) => importEventAttendeesForHost(input)};
 }
+
+type ManageHostRosterIntakeResponse = {
+  draft: HostRosterIntakeDraft;
+  preview: ReturnType<typeof previewHostRosterIntake> | null;
+  receipt: HostRosterAppliedReview | null;
+  result: EventAttendeeImportResult | null;
+};
+
+/** Authenticated Host entrypoint for the saved review workflow. */
+export async function manageHostRosterIntakeHandler(
+  request: CallableRequest<unknown>,
+  deps: HostRosterIntakeManageDeps = defaultHostRosterIntakeApplyDeps()
+): Promise<ManageHostRosterIntakeResponse> {
+  const hostUid = requireAuth(request);
+  await deps.rateLimit(hostUid);
+  const data = validateCallableWithAjv(request,
+    validateManageHostRosterIntakeCallablePayload) as unknown as
+    Record<string, unknown>;
+  const action = data.action;
+  if (!["start", "get", "revise", "preview", "apply"].includes(
+    typeof action === "string" ? action : "")) {
+    throw new HttpsError("invalid-argument", "Invalid roster intake action.");
+  }
+  if (action === "start") {
+    const draft = await deps.store.createOrResume({
+      hostUid,
+      organizerId: stringValue(data.organizerId, "organizerId"),
+      eventId: stringValue(data.eventId, "eventId"),
+      fileFingerprint: stringValue(data.fileFingerprint, "fileFingerprint"),
+      fileName: stringValue(data.fileName, "fileName"),
+      format: enumValue(data.format, ["csv", "xlsx"], "format"),
+      headers: stringArray(data.headers, "headers"),
+      mapping: numberMap(data.mapping, "mapping"),
+      rows: objectArray(data.rows, "rows") as unknown as
+        HostRosterIntakeRow[],
+    }, deps.authorize);
+    return reviewResponse(draft, deps);
+  }
+  const sessionId = stringValue(data.sessionId, "sessionId");
+  const draft = await deps.store.get({sessionId, hostUid}, deps.authorize);
+  if (!draft) throw new HttpsError("not-found", "Roster intake not found.");
+  if (action === "get") {
+    const receipt = draft.state === "applied" ?
+      await deps.store.getAppliedReview({sessionId, hostUid},
+        deps.authorize) : null;
+    return {draft, preview: null, receipt, result: null};
+  }
+  if (action === "revise") {
+    const revised = await deps.store.revise({sessionId, hostUid,
+      expectedRevision: integerValue(data.expectedRevision,
+        "expectedRevision"),
+      rows: objectArray(data.rows, "rows") as unknown as
+        HostRosterIntakeRow[],
+      excludedRowIds: stringArray(data.excludedRowIds, "excludedRowIds"),
+      mapping: data.mapping === undefined ? undefined :
+        numberMap(data.mapping, "mapping"),
+    }, deps.authorize);
+    return reviewResponse(revised, deps);
+  }
+  if (action === "apply") {
+    const reviewHash = stringValue(data.reviewHash, "reviewHash");
+    const result = await applyHostRosterIntake({hostUid, sessionId,
+      reviewHash}, deps);
+    const applied = await deps.store.get({sessionId, hostUid}, deps.authorize);
+    const receipt = await deps.store.getAppliedReview({sessionId, hostUid},
+      deps.authorize);
+    if (!applied || !receipt) {
+      throw new HttpsError("internal", "Roster intake receipt is missing.");
+    }
+    return {draft: applied, preview: receipt.preview, receipt, result};
+  }
+  return reviewResponse(draft, deps);
+}
+
+async function reviewResponse(draft: HostRosterIntakeDraft,
+  deps: HostRosterIntakeManageDeps): Promise<ManageHostRosterIntakeResponse> {
+  if (draft.state === "applied") {
+    const receipt = await deps.store.getAppliedReview({
+      sessionId: draft.sessionId, hostUid: draft.hostUid,
+    }, deps.authorize);
+    return {draft, preview: receipt?.preview ?? null, receipt, result: null};
+  }
+  const currentRows = await deps.loadInitialCurrentRows(draft);
+  return {draft, preview: previewHostRosterIntake({draft, currentRows}),
+    receipt: null, result: null};
+}
+
+function record(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new HttpsError("invalid-argument", "Roster intake data is invalid.");
+  }
+  return value as Record<string, unknown>;
+}
+
+function stringValue(value: unknown, field: string): string {
+  if (typeof value !== "string") {
+    throw new HttpsError("invalid-argument", `${field} is invalid.`);
+  }
+  return value;
+}
+
+function integerValue(value: unknown, field: string): number {
+  if (!Number.isSafeInteger(value)) {
+    throw new HttpsError("invalid-argument", `${field} is invalid.`);
+  }
+  return value as number;
+}
+
+function stringArray(value: unknown, field: string): string[] {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+    throw new HttpsError("invalid-argument", `${field} is invalid.`);
+  }
+  return value;
+}
+
+function objectArray(value: unknown, field: string): Record<string, unknown>[] {
+  if (!Array.isArray(value) || value.some((item) => !item ||
+      typeof item !== "object" || Array.isArray(item))) {
+    throw new HttpsError("invalid-argument", `${field} is invalid.`);
+  }
+  return value as Record<string, unknown>[];
+}
+
+function numberMap(value: unknown, field: string): Record<string, number> {
+  const data = record(value);
+  if (Object.values(data).some((item) => !Number.isSafeInteger(item))) {
+    throw new HttpsError("invalid-argument", `${field} is invalid.`);
+  }
+  return data as Record<string, number>;
+}
+
+function enumValue<T extends string>(value: unknown, values: readonly T[],
+  field: string): T {
+  if (typeof value !== "string" || !values.includes(value as T)) {
+    throw new HttpsError("invalid-argument", `${field} is invalid.`);
+  }
+  return value as T;
+}
+
+export const manageHostRosterIntake = onCall(appCheckCallableOptions,
+  (request) => manageHostRosterIntakeHandler(request));
 
 function managerAuthorizer(db: Firestore): AuthorizeHostRosterSession {
   return async ({tx, hostUid, organizerId, eventId}) => {

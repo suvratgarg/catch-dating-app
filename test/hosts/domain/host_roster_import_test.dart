@@ -128,6 +128,19 @@ void main() {
       HostRosterRowIssueType.duplicateIdentity,
       HostRosterRowIssueType.duplicateIdentity,
     ]);
+    final plan = HostRosterImportPlan.fromMappedRows(
+      table: table,
+      mapped: mapped,
+      mapping: table.suggestedMapping,
+    );
+    expect(plan.intakeRows, hasLength(2));
+    expect(plan.intakeRows.first['issues'], ['duplicate-identity']);
+    expect(plan.intakeRows.first['rawCells'], contains('ticket-a'));
+    expect(
+      (plan.intakeRows.first['fields'] as Map<String, Object?>)
+          .containsKey('externalReference'),
+      isTrue,
+    );
   });
 
   test('unverified provider hint keeps manual mapping available', () {

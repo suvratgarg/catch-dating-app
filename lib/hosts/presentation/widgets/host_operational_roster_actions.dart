@@ -1,6 +1,8 @@
 part of 'host_operational_roster_panel.dart';
 
 extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
+  static const _rosterIntakeJournal = HostRosterIntakeDraftJournal();
+
   bool get _showsProviderSource {
     final provider = widget.bookingProvider;
     return widget._view == _HostOperationalRosterView.guestIntake &&
@@ -168,14 +170,29 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         defaultRevenueCurrency: widget.revenueCurrency,
       );
       if (plan == null || !sameScope() || !mounted) return;
-      await _importRows(
-        generation: operation,
+      final initial = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .startRosterIntake(
+            eventId: eventId,
+            organizerId: organizerId,
+            plan: plan,
+          );
+      if (!sameScope() || !mounted) return;
+      await _rosterIntakeJournal.save(
+        userId: accountId,
+        organizerId: organizerId,
+        eventId: eventId,
+        sessionId: initial.sessionId,
+      );
+      if (!sameScope() || !mounted) return;
+      _setLocalState(() => _savedRosterIntakeSessionId = initial.sessionId);
+      final applied = await _reviewRosterIntake(initial);
+      if (applied == null || !sameScope() || !mounted) return;
+      await _completeRosterIntake(
         eventId: eventId,
         organizerId: organizerId,
         accountId: accountId,
-        fileName: table.fileName,
-        format: table.format,
-        rows: plan.rows,
+        applied: applied,
       );
     } on HostRosterImportException catch (error) {
       if (sameScope() && mounted) {
@@ -191,6 +208,126 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         _setLocalState(() => _importing = false);
       }
     }
+  }
+
+  Future<void> _loadRosterIntakeDraft() async {
+    final eventId = widget.eventId;
+    final organizerId = widget.organizerId;
+    final accountId = ref.read(uidProvider).asData?.value;
+    if (accountId == null) return;
+    final sessionId = await _rosterIntakeJournal.load(
+      userId: accountId,
+      organizerId: organizerId,
+      eventId: eventId,
+    );
+    if (!mounted ||
+        widget.eventId != eventId ||
+        widget.organizerId != organizerId ||
+        ref.read(uidProvider).asData?.value != accountId) {
+      return;
+    }
+    _setLocalState(() => _savedRosterIntakeSessionId = sessionId);
+  }
+
+  Future<void> _resumeRosterIntake() async {
+    final operation = ++_importGeneration;
+    final sessionId = _savedRosterIntakeSessionId;
+    final eventId = widget.eventId;
+    final organizerId = widget.organizerId;
+    final accountId = ref.read(uidProvider).asData?.value;
+    if (sessionId == null || accountId == null) return;
+    bool sameScope() =>
+        mounted &&
+        _importGeneration == operation &&
+        widget.eventId == eventId &&
+        widget.organizerId == organizerId &&
+        ref.read(uidProvider).asData?.value == accountId;
+    _setLocalState(() {
+      _importing = true;
+      _mutationError = null;
+    });
+    try {
+      final review = await ref
+          .read(hostOperationalRosterControllerProvider)
+          .resumeRosterIntake(sessionId);
+      if (!sameScope() || !mounted) return;
+      final applied = await _reviewRosterIntake(review);
+      if (applied == null || !sameScope() || !mounted) return;
+      await _completeRosterIntake(
+        eventId: eventId,
+        organizerId: organizerId,
+        accountId: accountId,
+        applied: applied,
+      );
+    } catch (error) {
+      if (sameScope() && mounted) showCatchNoticeError(context, error);
+    } finally {
+      if (mounted && operation == _importGeneration) {
+        _setLocalState(() => _importing = false);
+      }
+    }
+  }
+
+  Future<HostRosterIntakeReview?> _reviewRosterIntake(
+    HostRosterIntakeReview initial,
+  ) => showHostRosterIntakeReview(
+    context,
+    review: initial,
+    onExclude: (review, rowIds) => ref
+        .read(hostOperationalRosterControllerProvider)
+        .excludeRosterIntakeRows(review, rowIds),
+    onApply: (review) => ref
+        .read(hostOperationalRosterControllerProvider)
+        .applyRosterIntake(review),
+  );
+
+  Future<void> _completeRosterIntake({
+    required String eventId,
+    required String organizerId,
+    required String accountId,
+    required HostRosterIntakeReview applied,
+  }) async {
+    ref.invalidate(watchEventAttendeesProvider(eventId));
+    ref.invalidate(hostEventRosterInsightsProvider(eventId));
+    await _showAppliedRosterReceipt(eventId: eventId, review: applied);
+    await _rosterIntakeJournal.clear(
+      userId: accountId,
+      organizerId: organizerId,
+      eventId: eventId,
+      sessionId: applied.sessionId,
+    );
+    if (mounted && widget.eventId == eventId) {
+      _setLocalState(() => _savedRosterIntakeSessionId = null);
+    }
+  }
+
+  Future<void> _showAppliedRosterReceipt({
+    required String eventId,
+    required HostRosterIntakeReview review,
+  }) async {
+    final result = review.result;
+    if (result == null || !mounted || widget.eventId != eventId) return;
+    await showCatchBottomSheet<void>(
+      context: context,
+      builder: (context) => CatchSheet.standard(
+        title: context.l10n.hostsOperationalRosterImportSuccess(
+          created: result.createdCount,
+          updated: result.updatedCount,
+          skipped: result.skippedCount,
+        ),
+        subtitle: review.fileName,
+        footer: CatchButton.sheet(
+          role: CatchButtonEmphasis.dismiss,
+          label: context.l10n.hostsOperationalRosterImportResultDone,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: result.importId,
+          body: review.reviewHash,
+        ),
+      ),
+    );
   }
 
   Future<void> _showManualGuest() async {

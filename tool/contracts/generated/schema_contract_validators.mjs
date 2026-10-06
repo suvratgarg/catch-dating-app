@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  manageHostRosterIntakeCallablePayloadSchema,
+  hostRosterIntakeSessionDocumentSchema,
+  hostRosterIntakeReceiptDocumentSchema,
   manageProgramLodgingCallablePayloadSchema,
   manageProgramLodgingCallableResponseSchema,
   programLodgingConfigDocumentSchema,
@@ -1205,6 +1208,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateManageHostRosterIntakeCallablePayload = ajv.compile(manageHostRosterIntakeCallablePayloadSchema);
+export const validateHostRosterIntakeSessionDocument = ajv.compile(hostRosterIntakeSessionDocumentSchema);
+export const validateHostRosterIntakeReceiptDocument = ajv.compile(hostRosterIntakeReceiptDocumentSchema);
 export const validateManageProgramLodgingCallablePayload = ajv.compile(manageProgramLodgingCallablePayloadSchema);
 export const validateManageProgramLodgingCallableResponse = ajv.compile(manageProgramLodgingCallableResponseSchema);
 export const validateProgramLodgingConfigDocument = ajv.compile(programLodgingConfigDocumentSchema);

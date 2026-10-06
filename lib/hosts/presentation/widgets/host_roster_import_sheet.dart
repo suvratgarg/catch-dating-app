@@ -75,7 +75,6 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
     final canImport =
         mapped.rows.isNotEmpty &&
         !mapped.hasBlockingMappingIssue &&
-        mapped.needsReviewCount == 0 &&
         mapped.truncatedCount == 0 &&
         !invalidFallback;
     return CatchSheet.standard(
@@ -91,6 +90,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                 HostRosterImportPlan.fromMappedRows(
                   table: widget.table,
                   mapped: mapped,
+                  mapping: _mapping,
                 ),
               )
             : null,

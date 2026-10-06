@@ -39,12 +39,12 @@ void main() {
     );
     await pumpFeatureUi(tester);
     final button = tester.widget<CatchButton>(
-      find.widgetWithText(CatchButton, 'Import 250 guests'),
+      find.widgetWithText(CatchButton, 'Review 250 ready guests'),
     );
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('duplicate buyer emails cannot submit an unresolved import', (
+  testWidgets('duplicate buyer emails continue to explicit saved review', (
     tester,
   ) async {
     const table = HostRosterTable(
@@ -73,9 +73,9 @@ void main() {
     );
     await pumpFeatureUi(tester);
     final button = tester.widget<CatchButton>(
-      find.widgetWithText(CatchButton, 'Import 1 guests'),
+      find.widgetWithText(CatchButton, 'Review 1 ready guests'),
     );
-    expect(button.onPressed, isNull);
+    expect(button.onPressed, isNotNull);
   });
 
   for (final scale in [1.0, 2.0]) {
@@ -113,7 +113,7 @@ void main() {
       await tester.tap(find.text('Open guest import'));
       await pumpFeatureUi(tester);
       expect(tester.takeException(), isNull);
-      final importAction = find.text('Import 2 guests');
+      final importAction = find.text('Review 2 ready guests');
       expect(importAction.hitTestable(), findsNothing);
       await tester.ensureVisible(importAction);
       await pumpFeatureUi(tester);

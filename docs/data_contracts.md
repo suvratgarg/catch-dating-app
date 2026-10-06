@@ -2253,12 +2253,24 @@ replaces `eventParticipations`:
 - `eventAttendeeImports` records actor, event, client idempotency key, format,
   canonical payload hash, counts, bounded row errors and terminal state. It is
   not a copy of the uploaded file.
-- the existing Host upload mapper blocks apply while rows need review or exceed
-  the callable's 250-row batch limit; it does not silently import a first page.
+- the Host upload mapper retains invalid and ambiguous source rows for the
+  saved intake review and blocks any batch above the callable's 250-row limit;
+  it does not silently import a first page.
   A host import that targets an existing Catch-booking attendee fails before
   writing roster rows or a receipt; booking status and financial authority stay
-  with Catch. A saved review session and pre-apply reconciliation belong to the
-  separately scoped CAT-154 implementation, not to this legacy mapping sheet.
+  with Catch. `manageHostRosterIntake` stores private, server-only sessions and
+  nested apply receipts. Each session binds the manager, organizer, event, file
+  fingerprint, mapping, complete row evidence, explicit exclusions and revision.
+  Preview labels additions, updates, unchanged rows, exclusions and identity
+  conflicts against the current event roster. Apply requires the exact review
+  hash, revalidates manager and event scope, recomputes the preview inside the
+  canonical import transaction and records an immutable receipt. Retries and
+  lost responses reuse the same session/import identities. The Flutter client
+  keeps only the opaque account/organizer/event-scoped session id locally for
+  resume; roster PII remains in the server-owned session. The extraction seam is
+  deterministic by default and has a synthetic provider for tests only. No live
+  model provider, credentials, paid inference or guest-data transmission is
+  enabled.
 
 Hosts may list operational attendees and import receipts only for events they
 manage. An attendee does not gain roster-list access when their UID is linked;
