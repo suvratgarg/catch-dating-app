@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ManageHostRosterIntakeCallablePayload',
+    source: 'callables/manage_host_roster_intake_payload.schema.json',
+    schema: schemaManageHostRosterIntakeCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostRosterIntakeSessionDocument',
+    source: 'firestore/host_roster_intake_sessions.schema.json',
+    schema: schemaHostRosterIntakeSessionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostRosterIntakeReceiptDocument',
+    source: 'firestore/host_roster_intake_receipts.schema.json',
+    schema: schemaHostRosterIntakeReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ManageProgramLodgingCallablePayload',
     source: 'callables/manage_program_lodging_payload.schema.json',
     schema: schemaManageProgramLodgingCallablePayloadSchema,
@@ -5909,6 +5924,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ManageHostRosterIntakeCallablePayload': schemaManageHostRosterIntakeCallablePayloadSchema,
+  'HostRosterIntakeSessionDocument': schemaHostRosterIntakeSessionDocumentSchema,
+  'HostRosterIntakeReceiptDocument': schemaHostRosterIntakeReceiptDocumentSchema,
   'ManageProgramLodgingCallablePayload': schemaManageProgramLodgingCallablePayloadSchema,
   'ManageProgramLodgingCallableResponse': schemaManageProgramLodgingCallableResponseSchema,
   'ProgramLodgingConfigDocument': schemaProgramLodgingConfigDocumentSchema,
@@ -7090,6 +7108,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/manage_host_roster_intake_payload.schema.json': schemaManageHostRosterIntakeCallablePayloadSchema,
+  'firestore/host_roster_intake_sessions.schema.json': schemaHostRosterIntakeSessionDocumentSchema,
+  'firestore/host_roster_intake_receipts.schema.json': schemaHostRosterIntakeReceiptDocumentSchema,
   'callables/manage_program_lodging_payload.schema.json': schemaManageProgramLodgingCallablePayloadSchema,
   'callable_responses/manage_program_lodging_response.schema.json': schemaManageProgramLodgingCallableResponseSchema,
   'firestore/program_lodging_configs.schema.json': schemaProgramLodgingConfigDocumentSchema,

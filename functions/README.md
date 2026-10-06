@@ -131,6 +131,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with an idempotent receipt and organizer Sends projection |
 | `importEventAttendees` / `markEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Import or manually add an external roster and manage operational check-in without Consumer booking |
+| `manageHostRosterIntake` | `src/events/hostRosterIntakeApply.ts` | Save, review, revise, and idempotently apply a bounded event-scoped Host roster upload through the canonical attendee writer |
 | `registerPublicEvent` | `src/events/eventAttendees.ts` | Phone-OTP public registration for profile-optional, free, open-admission events |
 | `createEventRosterHandoff` | `src/events/eventRosterHandoffs.ts` | Create a short-lived, capability-bound email or WhatsApp roster-forwarding handoff for a Host event |
 | `getEventAssistanceSetting` / `setEventAssistanceSetting` | `src/eventSuccess/operations/policySettingsHandlers.ts` | Manager-owned typed event defaults and group overrides with source/revision checks; saving a preference does not execute it |

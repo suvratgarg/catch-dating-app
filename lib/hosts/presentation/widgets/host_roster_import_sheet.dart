@@ -73,8 +73,9 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
       fallbackRevenueCurrency: fallbackRevenueCurrency,
     );
     final canImport =
-        mapped.rows.isNotEmpty &&
+        widget.table.rows.isNotEmpty &&
         !mapped.hasBlockingMappingIssue &&
+        mapped.truncatedCount == 0 &&
         !invalidFallback;
     return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterImportTitle,
@@ -89,6 +90,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                 HostRosterImportPlan.fromMappedRows(
                   table: widget.table,
                   mapped: mapped,
+                  mapping: _mapping,
                 ),
               )
             : null,

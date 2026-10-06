@@ -1573,6 +1573,24 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps Host roster intake sessions and receipts server-only", async () => {
+      await seed(["hostRosterIntakeSessions", "session-1"], {
+        draft: {hostUid: "host-1", eventId: "event-1"},
+      });
+      await seed([
+        "hostRosterIntakeSessions", "session-1", "receipts", "apply",
+      ], {importId: "import-1"});
+      for (const db of [authedDb("host-1"), authedDb("runner-1"),
+        testEnv.unauthenticatedContext().firestore()]) {
+        await assertFails(getDoc(doc(db,
+          "hostRosterIntakeSessions", "session-1")));
+        await assertFails(getDoc(doc(db,
+          "hostRosterIntakeSessions", "session-1", "receipts", "apply")));
+        await assertFails(setDoc(doc(db,
+          "hostRosterIntakeSessions", "session-2"), {eventId: "event-1"}));
+      }
+    });
+
     it("limits event staff to one event's live operational surfaces", async () => {
       await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());

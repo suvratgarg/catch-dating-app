@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_roster_intake_payload.schema.json",
+  "title": "ManageHostRosterIntakeCallablePayload",
+  "description": "Starts, resumes, revises, previews or applies one private Host roster intake.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action"],
+  "properties": {
+    "action": {"type": "string", "enum": ["start", "get", "revise", "preview", "apply"]},
+    "sessionId": {"type": "string", "pattern": "^hri_[a-f0-9]{48}$"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "fileFingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fileName": {"type": "string", "minLength": 1, "maxLength": 255},
+    "format": {"type": "string", "enum": ["csv", "xlsx"]},
+    "headers": {"type": "array", "minItems": 1, "maxItems": 40, "items": {"type": "string", "minLength": 1, "maxLength": 120}},
+    "mapping": {"$ref": "../firestore/host_roster_intake_sessions.schema.json#/definitions/mapping"},
+    "rows": {"type": "array", "minItems": 1, "maxItems": 250, "items": {"$ref": "../firestore/host_roster_intake_sessions.schema.json#/definitions/intakeRow"}},
+    "expectedRevision": {"type": "integer", "minimum": 1},
+    "excludedRowIds": {"type": "array", "maxItems": 250, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 120}},
+    "reviewHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

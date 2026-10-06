@@ -1,6 +1,5861 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const manageHostRosterIntakeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_roster_intake_payload.schema.json",
+  "title": "ManageHostRosterIntakeCallablePayload",
+  "description": "Starts, resumes, revises, previews or applies one private Host roster intake.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "start",
+        "get",
+        "revise",
+        "preview",
+        "apply"
+      ]
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^hri_[a-f0-9]{48}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fileFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "fileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx"
+      ]
+    },
+    "headers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "phone": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "email": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "city": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "externalReference": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "arrivalGroup": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "ticketType": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "revenueAmount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "revenueCurrency": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 250,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "sourceRowNumber",
+          "fields"
+        ],
+        "properties": {
+          "value": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "displayName",
+              "status"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "displayName": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "phone": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 40
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 320
+              },
+              "cityMarketId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80
+              },
+              "externalReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "arrivalGroup": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "ticketType": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 120
+              },
+              "revenueAmountMinor": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "revenueCurrency": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Z]{3}$"
+              },
+              "revenueSource": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "hostImport",
+                  "hostEstimate",
+                  null
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "invited",
+                  "registered",
+                  "waitlisted"
+                ]
+              }
+            }
+          },
+          "sourceRowNumber": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 100000
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "displayName": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "phone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "email": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "cityMarketId": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "externalReference": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "arrivalGroup": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "ticketType": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "revenueAmountMinor": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "revenueCurrency": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "revenueSource": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              },
+              "status": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "column",
+                  "header",
+                  "origin",
+                  "confidence"
+                ],
+                "properties": {
+                  "column": {
+                    "type": "integer",
+                    "minimum": -1,
+                    "maximum": 39
+                  },
+                  "header": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "origin": {
+                    "type": "string",
+                    "enum": [
+                      "upload",
+                      "hostCorrection",
+                      "modelProposal"
+                    ]
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              }
+            }
+          },
+          "rawCells": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          "issues": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{0,79}$"
+            }
+          }
+        }
+      }
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "excludedRowIds": {
+      "type": "array",
+      "maxItems": 250,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
+    },
+    "reviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const hostRosterIntakeSessionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_roster_intake_sessions.schema.json",
+  "title": "HostRosterIntakeSessionDocument",
+  "description": "Private resumable Host review state for one existing event roster upload.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostRosterIntakeSessions",
+  "x-firestore-path": "hostRosterIntakeSessions/{sessionId}",
+  "x-document-id-field": "sessionId",
+  "x-owner": "manageHostRosterIntake callable; no client reads or writes",
+  "required": [
+    "draft",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "hostUid",
+        "organizerId",
+        "eventId",
+        "fileFingerprint",
+        "fileName",
+        "format",
+        "headers",
+        "mapping",
+        "sourceManifest",
+        "revision",
+        "state",
+        "rows",
+        "excludedRowIds",
+        "appliedImportId"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^hri_[a-f0-9]{48}$"
+        },
+        "hostUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "fileFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "fileName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "csv",
+            "xlsx"
+          ]
+        },
+        "headers": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "displayName": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "phone": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "email": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "city": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "externalReference": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "arrivalGroup": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "ticketType": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "revenueAmount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "revenueCurrency": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "status": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            }
+          }
+        },
+        "sourceManifest": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "sourceRowNumber",
+              "rawEvidenceHash",
+              "originalValue",
+              "originalFields"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceRowNumber": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 100000
+              },
+              "rawEvidenceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "originalValue": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rowId",
+                  "displayName",
+                  "status"
+                ],
+                "properties": {
+                  "rowId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 40
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 320
+                  },
+                  "cityMarketId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "externalReference": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "arrivalGroup": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "ticketType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "revenueAmountMinor": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "revenueCurrency": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "revenueSource": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "hostImport",
+                      "hostEstimate",
+                      null
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "invited",
+                      "registered",
+                      "waitlisted"
+                    ]
+                  }
+                }
+              },
+              "originalFields": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "displayName": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "phone": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "cityMarketId": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "externalReference": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "arrivalGroup": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "ticketType": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueAmountMinor": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueCurrency": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueSource": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "review",
+            "applied"
+          ]
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "sourceRowNumber",
+              "fields"
+            ],
+            "properties": {
+              "value": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rowId",
+                  "displayName",
+                  "status"
+                ],
+                "properties": {
+                  "rowId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 40
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 320
+                  },
+                  "cityMarketId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "externalReference": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "arrivalGroup": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "ticketType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "revenueAmountMinor": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "revenueCurrency": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "revenueSource": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "hostImport",
+                      "hostEstimate",
+                      null
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "invited",
+                      "registered",
+                      "waitlisted"
+                    ]
+                  }
+                }
+              },
+              "sourceRowNumber": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 100000
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "displayName": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "phone": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "cityMarketId": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "externalReference": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "arrivalGroup": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "ticketType": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueAmountMinor": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueCurrency": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueSource": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "rawCells": {
+                "type": "array",
+                "maxItems": 40,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "issues": {
+                "type": "array",
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]{0,79}$"
+                }
+              }
+            }
+          }
+        },
+        "excludedRowIds": {
+          "type": "array",
+          "maxItems": 250,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "appliedImportId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        }
+      }
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "definitions": {
+    "sourceField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "column",
+        "header",
+        "origin",
+        "confidence"
+      ],
+      "properties": {
+        "column": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 39
+        },
+        "header": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "upload",
+            "hostCorrection",
+            "modelProposal"
+          ]
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "phone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "email": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "cityMarketId": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "externalReference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "arrivalGroup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "ticketType": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "revenueAmountMinor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "revenueCurrency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "revenueSource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "status": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "column",
+            "header",
+            "origin",
+            "confidence"
+          ],
+          "properties": {
+            "column": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 39
+            },
+            "header": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "upload",
+                "hostCorrection",
+                "modelProposal"
+              ]
+            },
+            "confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    "value": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "displayName",
+        "status"
+      ],
+      "properties": {
+        "rowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "phone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "cityMarketId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "externalReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "arrivalGroup": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "ticketType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "revenueAmountMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revenueCurrency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{3}$"
+        },
+        "revenueSource": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "hostImport",
+            "hostEstimate",
+            null
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "invited",
+            "registered",
+            "waitlisted"
+          ]
+        }
+      }
+    },
+    "intakeRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "sourceRowNumber",
+        "fields"
+      ],
+      "properties": {
+        "value": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rowId",
+            "displayName",
+            "status"
+          ],
+          "properties": {
+            "rowId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "displayName": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "phone": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 40
+            },
+            "email": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 320
+            },
+            "cityMarketId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "externalReference": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            },
+            "arrivalGroup": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            },
+            "ticketType": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "revenueAmountMinor": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "revenueCurrency": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Z]{3}$"
+            },
+            "revenueSource": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "hostImport",
+                "hostEstimate",
+                null
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "invited",
+                "registered",
+                "waitlisted"
+              ]
+            }
+          }
+        },
+        "sourceRowNumber": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 100000
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "displayName": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "phone": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "email": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "cityMarketId": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "externalReference": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "arrivalGroup": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "ticketType": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "revenueAmountMinor": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "revenueCurrency": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "revenueSource": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "status": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        "rawCells": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "issues": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,79}$"
+          }
+        }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "phone": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "email": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "city": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "externalReference": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "arrivalGroup": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "ticketType": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "revenueAmount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "revenueCurrency": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 39
+        }
+      }
+    },
+    "manifestRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "sourceRowNumber",
+        "rawEvidenceHash",
+        "originalValue",
+        "originalFields"
+      ],
+      "properties": {
+        "rowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "sourceRowNumber": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 100000
+        },
+        "rawEvidenceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "originalValue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rowId",
+            "displayName",
+            "status"
+          ],
+          "properties": {
+            "rowId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "displayName": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "phone": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 40
+            },
+            "email": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 320
+            },
+            "cityMarketId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "externalReference": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            },
+            "arrivalGroup": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            },
+            "ticketType": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "revenueAmountMinor": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "revenueCurrency": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Z]{3}$"
+            },
+            "revenueSource": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "hostImport",
+                "hostEstimate",
+                null
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "invited",
+                "registered",
+                "waitlisted"
+              ]
+            }
+          }
+        },
+        "originalFields": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "displayName": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "phone": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "email": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "cityMarketId": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "externalReference": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "arrivalGroup": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "ticketType": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "revenueAmountMinor": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "revenueCurrency": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "revenueSource": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "status": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "header",
+                "origin",
+                "confidence"
+              ],
+              "properties": {
+                "column": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 39
+                },
+                "header": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "origin": {
+                  "type": "string",
+                  "enum": [
+                    "upload",
+                    "hostCorrection",
+                    "modelProposal"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "hostUid",
+        "organizerId",
+        "eventId",
+        "fileFingerprint",
+        "fileName",
+        "format",
+        "headers",
+        "mapping",
+        "sourceManifest",
+        "revision",
+        "state",
+        "rows",
+        "excludedRowIds",
+        "appliedImportId"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^hri_[a-f0-9]{48}$"
+        },
+        "hostUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "fileFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "fileName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "csv",
+            "xlsx"
+          ]
+        },
+        "headers": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "displayName": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "phone": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "email": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "city": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "externalReference": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "arrivalGroup": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "ticketType": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "revenueAmount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "revenueCurrency": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            },
+            "status": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 39
+            }
+          }
+        },
+        "sourceManifest": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "sourceRowNumber",
+              "rawEvidenceHash",
+              "originalValue",
+              "originalFields"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceRowNumber": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 100000
+              },
+              "rawEvidenceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "originalValue": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rowId",
+                  "displayName",
+                  "status"
+                ],
+                "properties": {
+                  "rowId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 40
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 320
+                  },
+                  "cityMarketId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "externalReference": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "arrivalGroup": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "ticketType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "revenueAmountMinor": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "revenueCurrency": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "revenueSource": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "hostImport",
+                      "hostEstimate",
+                      null
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "invited",
+                      "registered",
+                      "waitlisted"
+                    ]
+                  }
+                }
+              },
+              "originalFields": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "displayName": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "phone": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "cityMarketId": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "externalReference": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "arrivalGroup": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "ticketType": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueAmountMinor": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueCurrency": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueSource": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "review",
+            "applied"
+          ]
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "sourceRowNumber",
+              "fields"
+            ],
+            "properties": {
+              "value": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rowId",
+                  "displayName",
+                  "status"
+                ],
+                "properties": {
+                  "rowId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 40
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 320
+                  },
+                  "cityMarketId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "externalReference": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "arrivalGroup": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 180
+                  },
+                  "ticketType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "revenueAmountMinor": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "revenueCurrency": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "revenueSource": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "hostImport",
+                      "hostEstimate",
+                      null
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "invited",
+                      "registered",
+                      "waitlisted"
+                    ]
+                  }
+                }
+              },
+              "sourceRowNumber": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 100000
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "displayName": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "phone": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "cityMarketId": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "externalReference": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "arrivalGroup": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "ticketType": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueAmountMinor": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueCurrency": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "revenueSource": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "column",
+                      "header",
+                      "origin",
+                      "confidence"
+                    ],
+                    "properties": {
+                      "column": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 39
+                      },
+                      "header": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "upload",
+                          "hostCorrection",
+                          "modelProposal"
+                        ]
+                      },
+                      "confidence": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "rawCells": {
+                "type": "array",
+                "maxItems": 40,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "issues": {
+                "type": "array",
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]{0,79}$"
+                }
+              }
+            }
+          }
+        },
+        "excludedRowIds": {
+          "type": "array",
+          "maxItems": 250,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "appliedImportId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        }
+      }
+    }
+  }
+};
+
+export const hostRosterIntakeReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_roster_intake_receipts.schema.json",
+  "title": "HostRosterIntakeReceiptDocument",
+  "description": "Private exact reviewed payload and outcome used for lost-response replay.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostRosterIntakeReceipts",
+  "x-firestore-path": "hostRosterIntakeSessions/{sessionId}/receipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "manageHostRosterIntake callable; atomically committed with canonical import",
+  "required": [
+    "importId",
+    "appliedAtMillis",
+    "preview",
+    "payload"
+  ],
+  "properties": {
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "appliedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "revision",
+        "reviewHash",
+        "rows",
+        "counts",
+        "eligibleForApply"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^hri_[a-f0-9]{48}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "sourceRowNumber",
+              "displayName",
+              "externalReference",
+              "attendeeId",
+              "kind",
+              "changedFields",
+              "fieldChanges",
+              "issueCode"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceRowNumber": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 100000
+              },
+              "displayName": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "externalReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "attendeeId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "unchanged",
+                  "excluded",
+                  "needsReview",
+                  "identityConflict"
+                ]
+              },
+              "changedFields": {
+                "type": "array",
+                "maxItems": 11,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "displayName",
+                    "phone",
+                    "email",
+                    "cityMarketId",
+                    "externalReference",
+                    "arrivalGroup",
+                    "ticketType",
+                    "revenueAmountMinor",
+                    "revenueCurrency",
+                    "revenueSource",
+                    "status"
+                  ]
+                }
+              },
+              "fieldChanges": {
+                "type": "array",
+                "maxItems": 11,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "currentValue",
+                    "proposedValue",
+                    "origin"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "enum": [
+                        "displayName",
+                        "phone",
+                        "email",
+                        "cityMarketId",
+                        "externalReference",
+                        "arrivalGroup",
+                        "ticketType",
+                        "revenueAmountMinor",
+                        "revenueCurrency",
+                        "revenueSource",
+                        "status"
+                      ]
+                    },
+                    "currentValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "proposedValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "origin": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "upload",
+                        "hostCorrection",
+                        "modelProposal",
+                        "default",
+                        null
+                      ]
+                    }
+                  }
+                }
+              },
+              "issueCode": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "add",
+            "update",
+            "unchanged",
+            "excluded",
+            "needsReview",
+            "identityConflict"
+          ],
+          "properties": {
+            "add": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "update": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "unchanged": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "excluded": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "needsReview": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "identityConflict": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            }
+          }
+        },
+        "eligibleForApply": {
+          "type": "boolean"
+        }
+      }
+    },
+    "payload": {
+      "title": "ImportEventAttendeesCallablePayload",
+      "description": "Callable payload accepted by importEventAttendees.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "importKey",
+        "fileName",
+        "format",
+        "rows"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "importKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 120
+        },
+        "fileName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "csv",
+            "xlsx",
+            "manual"
+          ]
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "displayName",
+              "status"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "phone": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 40
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 320
+              },
+              "cityMarketId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120,
+                    "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "externalReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "arrivalGroup": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "ticketType": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 120
+              },
+              "revenueAmountMinor": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "revenueCurrency": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Z]{3}$"
+              },
+              "revenueSource": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "hostImport",
+                  "hostEstimate",
+                  null
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "invited",
+                  "registered",
+                  "waitlisted"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "previewKind": {
+      "type": "string",
+      "enum": [
+        "add",
+        "update",
+        "unchanged",
+        "excluded",
+        "needsReview",
+        "identityConflict"
+      ]
+    },
+    "changedField": {
+      "type": "string",
+      "enum": [
+        "displayName",
+        "phone",
+        "email",
+        "cityMarketId",
+        "externalReference",
+        "arrivalGroup",
+        "ticketType",
+        "revenueAmountMinor",
+        "revenueCurrency",
+        "revenueSource",
+        "status"
+      ]
+    },
+    "previewRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "sourceRowNumber",
+        "displayName",
+        "externalReference",
+        "attendeeId",
+        "kind",
+        "changedFields",
+        "fieldChanges",
+        "issueCode"
+      ],
+      "properties": {
+        "rowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "sourceRowNumber": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 100000
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "externalReference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "attendeeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "add",
+            "update",
+            "unchanged",
+            "excluded",
+            "needsReview",
+            "identityConflict"
+          ]
+        },
+        "changedFields": {
+          "type": "array",
+          "maxItems": 11,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "phone",
+              "email",
+              "cityMarketId",
+              "externalReference",
+              "arrivalGroup",
+              "ticketType",
+              "revenueAmountMinor",
+              "revenueCurrency",
+              "revenueSource",
+              "status"
+            ]
+          }
+        },
+        "fieldChanges": {
+          "type": "array",
+          "maxItems": 11,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "currentValue",
+              "proposedValue",
+              "origin"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "phone",
+                  "email",
+                  "cityMarketId",
+                  "externalReference",
+                  "arrivalGroup",
+                  "ticketType",
+                  "revenueAmountMinor",
+                  "revenueCurrency",
+                  "revenueSource",
+                  "status"
+                ]
+              },
+              "currentValue": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "proposedValue": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "origin": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "upload",
+                  "hostCorrection",
+                  "modelProposal",
+                  "default",
+                  null
+                ]
+              }
+            }
+          }
+        },
+        "issueCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "fieldChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "currentValue",
+        "proposedValue",
+        "origin"
+      ],
+      "properties": {
+        "field": {
+          "type": "string",
+          "enum": [
+            "displayName",
+            "phone",
+            "email",
+            "cityMarketId",
+            "externalReference",
+            "arrivalGroup",
+            "ticketType",
+            "revenueAmountMinor",
+            "revenueCurrency",
+            "revenueSource",
+            "status"
+          ]
+        },
+        "currentValue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "proposedValue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "origin": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "upload",
+            "hostCorrection",
+            "modelProposal",
+            "default",
+            null
+          ]
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "add",
+        "update",
+        "unchanged",
+        "excluded",
+        "needsReview",
+        "identityConflict"
+      ],
+      "properties": {
+        "add": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250
+        },
+        "update": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250
+        },
+        "unchanged": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250
+        },
+        "needsReview": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250
+        },
+        "identityConflict": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250
+        }
+      }
+    },
+    "preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "revision",
+        "reviewHash",
+        "rows",
+        "counts",
+        "eligibleForApply"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^hri_[a-f0-9]{48}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "sourceRowNumber",
+              "displayName",
+              "externalReference",
+              "attendeeId",
+              "kind",
+              "changedFields",
+              "fieldChanges",
+              "issueCode"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceRowNumber": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 100000
+              },
+              "displayName": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "externalReference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180
+              },
+              "attendeeId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "add",
+                  "update",
+                  "unchanged",
+                  "excluded",
+                  "needsReview",
+                  "identityConflict"
+                ]
+              },
+              "changedFields": {
+                "type": "array",
+                "maxItems": 11,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "displayName",
+                    "phone",
+                    "email",
+                    "cityMarketId",
+                    "externalReference",
+                    "arrivalGroup",
+                    "ticketType",
+                    "revenueAmountMinor",
+                    "revenueCurrency",
+                    "revenueSource",
+                    "status"
+                  ]
+                }
+              },
+              "fieldChanges": {
+                "type": "array",
+                "maxItems": 11,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "field",
+                    "currentValue",
+                    "proposedValue",
+                    "origin"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "enum": [
+                        "displayName",
+                        "phone",
+                        "email",
+                        "cityMarketId",
+                        "externalReference",
+                        "arrivalGroup",
+                        "ticketType",
+                        "revenueAmountMinor",
+                        "revenueCurrency",
+                        "revenueSource",
+                        "status"
+                      ]
+                    },
+                    "currentValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "proposedValue": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 500
+                    },
+                    "origin": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "upload",
+                        "hostCorrection",
+                        "modelProposal",
+                        "default",
+                        null
+                      ]
+                    }
+                  }
+                }
+              },
+              "issueCode": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "add",
+            "update",
+            "unchanged",
+            "excluded",
+            "needsReview",
+            "identityConflict"
+          ],
+          "properties": {
+            "add": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "update": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "unchanged": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "excluded": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "needsReview": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            },
+            "identityConflict": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 250
+            }
+          }
+        },
+        "eligibleForApply": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
 export const manageProgramLodgingCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_program_lodging_payload.schema.json",

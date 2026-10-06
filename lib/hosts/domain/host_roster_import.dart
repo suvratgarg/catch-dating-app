@@ -2,6 +2,8 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 
+part 'host_roster_intake_provenance.dart';
+
 enum HostRosterAdapterId {
   genericV1('generic-v1', 'Flexible spreadsheet'),
   lumaV1('luma-v1', 'Luma export'),
@@ -165,11 +167,13 @@ class HostRosterTable {
       final rawCity = _nullableValueAt(source, mapping[HostRosterField.city]);
       final city = rawCity == null ? null : cityOptionByName(rawCity);
       if (rawCity != null && city == null) {
-        issues.add(HostRosterRowIssue(
-          HostRosterRowIssueType.invalidCity,
-          rowNumber: index + 2,
-          value: rawCity,
-        ));
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.invalidCity,
+            rowNumber: index + 2,
+            value: rawCity,
+          ),
+        );
         needsReviewCount += 1;
         continue;
       }
@@ -272,7 +276,6 @@ class HostRosterTable {
         phone: phone,
         email: email,
         externalReference: externalReference,
-        arrivalGroup: arrivalGroup,
       );
       if (identity == null) {
         issues.add(
@@ -318,8 +321,38 @@ class HostRosterTable {
         ),
       );
     }
+    final phoneIdentities = <String, Set<String>>{};
+    for (final row in mapped) {
+      final phone = row.phone;
+      if (phone == null) continue;
+      final normalized = _normalizedRosterPhone(phone)!;
+      phoneIdentities
+          .putIfAbsent(normalized, () => <String>{})
+          .add(
+            row.externalReference?.trim().toLowerCase() ?? 'phone:$normalized',
+          );
+    }
+    final ambiguousPhones = phoneIdentities.entries
+        .where((entry) => entry.value.length > 1)
+        .map((entry) => entry.key)
+        .toSet();
+    final ready = <EventAttendeeImportRow>[];
+    for (final row in mapped) {
+      if (row.phone != null &&
+          ambiguousPhones.contains(_normalizedRosterPhone(row.phone!))) {
+        issues.add(
+          HostRosterRowIssue(
+            HostRosterRowIssueType.duplicateIdentity,
+            rowNumber: int.tryParse(row.rowId),
+          ),
+        );
+        needsReviewCount += 1;
+      } else {
+        ready.add(row);
+      }
+    }
     return HostRosterMappedRows(
-      rows: mapped,
+      rows: ready,
       issues: issues,
       truncatedCount: rows.length > 250 ? rows.length - 250 : 0,
       excludedCount: excludedCount,
@@ -362,11 +395,15 @@ class HostRosterImportPlan {
     required this.needsReviewCount,
     required this.excludedCount,
     required this.adapterId,
+    this.headers = const [],
+    this.mapping = const {},
+    this.intakeRows = const [],
   });
 
   factory HostRosterImportPlan.fromMappedRows({
     required HostRosterTable table,
     required HostRosterMappedRows mapped,
+    required Map<HostRosterField, int?> mapping,
   }) => HostRosterImportPlan(
     fileName: table.fileName,
     fileFingerprint: table.fileFingerprint,
@@ -376,6 +413,11 @@ class HostRosterImportPlan {
     needsReviewCount: mapped.needsReviewCount,
     excludedCount: mapped.excludedCount,
     adapterId: table.adapter.adapterId,
+    headers: List.unmodifiable(table.headers),
+    mapping: Map.unmodifiable(mapping),
+    intakeRows: List.unmodifiable(
+      _buildIntakeRows(table: table, mapped: mapped, mapping: mapping),
+    ),
   );
 
   final String fileName;
@@ -386,6 +428,9 @@ class HostRosterImportPlan {
   final int needsReviewCount;
   final int excludedCount;
   final HostRosterAdapterId adapterId;
+  final List<String> headers;
+  final Map<HostRosterField, int?> mapping;
+  final List<Map<String, Object?>> intakeRows;
 
   ExternalBookingProvider get bookingProvider => switch (adapterId) {
     HostRosterAdapterId.lumaV1 => ExternalBookingProvider.luma,
@@ -655,14 +700,10 @@ String? _stableRosterIdentity({
   required String? phone,
   required String? email,
   required String? externalReference,
-  required String? arrivalGroup,
 }) {
   final reference = externalReference?.trim().toLowerCase();
-  if (arrivalGroup != null && reference != null && reference.isNotEmpty) {
-    return 'external:$reference';
-  }
+  if (reference != null && reference.isNotEmpty) return 'external:$reference';
   if (phone != null) return 'phone:${_normalizedRosterPhone(phone)}';
   if (email != null) return 'email:${email.trim().toLowerCase()}';
-  if (reference != null && reference.isNotEmpty) return 'external:$reference';
   return null;
 }
