@@ -58,6 +58,38 @@ test("private draft has event/actor scoped stable identity and row evidence",
       rows: Array(251).fill(source)}), /bounds/u);
   });
 
+test("persistence bound covers duplicated immutable source evidence", () => {
+  const header = "H".repeat(120);
+  const rows = Array.from({length: 250}, (_, index) => ({
+    value: {rowId: String(index + 2), displayName: "N".repeat(120),
+      email: `${index}@${"e".repeat(300)}.io`,
+      externalReference: `${index}-${"r".repeat(170)}`,
+      arrivalGroup: `${index}-${"a".repeat(170)}`,
+      ticketType: "T".repeat(120), status: "registered" as const},
+    sourceRowNumber: index + 2,
+    fields: {
+      displayName: {column: 0, header, origin: "upload" as const,
+        confidence: null},
+      email: {column: 1, header, origin: "upload" as const,
+        confidence: null},
+      externalReference: {column: 2, header, origin: "upload" as const,
+        confidence: null},
+      arrivalGroup: {column: 3, header, origin: "upload" as const,
+        confidence: null},
+      ticketType: {column: 4, header, origin: "upload" as const,
+        confidence: null},
+    },
+  }));
+  assert.ok(Buffer.byteLength(JSON.stringify(rows), "utf8") < 700000);
+  assert.throws(() => createHostRosterIntakeDraft({hostUid: "host-1",
+    organizerId: "organizer-1", eventId: "event-1",
+    fileFingerprint: "f".repeat(64), fileName: "large.csv",
+    format: "csv", headers: Array.from({length: 5}, (_, i) => `${i}${header}`
+      .slice(0, 120)), mapping: {displayName: 0, email: 1,
+      externalReference: 2, arrivalGroup: 3, ticketType: 4}, rows}),
+  /evidence exceeds bounds/u);
+});
+
 test("preview classifies adds, updates, conflicts and exact stale review",
   () => {
     const current = draft();

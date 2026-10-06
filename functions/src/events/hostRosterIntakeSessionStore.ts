@@ -4,6 +4,7 @@ import type {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
 import {
   approveHostRosterIntakeApply,
+  assertHostRosterIntakeDocumentBound,
   createHostRosterIntakeDraft,
   HostRosterIntakeDraft,
   HostRosterIntakePreview,
@@ -20,7 +21,6 @@ interface StoredSession {
   draft: HostRosterIntakeDraft;
   createdAtMillis: number;
   updatedAtMillis: number;
-  appliedReview?: HostRosterAppliedReview;
 }
 
 export interface HostRosterAppliedReview {
@@ -47,6 +47,12 @@ export class HostRosterIntakeSessionStore {
       throw new Error("Invalid Host roster intake session ID.");
     }
     return this.db.collection(collection).doc(sessionId);
+  }
+
+  private receiptRef(sessionId: string) {
+    this.ref(sessionId);
+    return this.db.collection(`${collection}/${sessionId}/receipts`)
+      .doc("apply");
   }
 
   private assertActor(draft: HostRosterIntakeDraft, hostUid: string): void {
@@ -80,8 +86,10 @@ export class HostRosterIntakeSessionStore {
         return stored.draft;
       }
       const now = this.now();
-      tx.create(ref, {draft: proposed, createdAtMillis: now,
-        updatedAtMillis: now} satisfies StoredSession);
+      const stored = {draft: proposed, createdAtMillis: now,
+        updatedAtMillis: now} satisfies StoredSession;
+      assertHostRosterIntakeDocumentBound(stored);
+      tx.create(ref, stored);
       return proposed;
     });
   }
@@ -103,12 +111,20 @@ export class HostRosterIntakeSessionStore {
     authorize: AuthorizeHostRosterSession):
     Promise<HostRosterAppliedReview | null> {
     return this.db.runTransaction(async (tx) => {
-      const snap = await tx.get(this.ref(params.sessionId));
+      const [snap, receiptSnap] = await tx.getAll(
+        this.ref(params.sessionId), this.receiptRef(params.sessionId));
       if (!snap.exists) return null;
       const stored = snap.data() as StoredSession;
       this.assertActor(stored.draft, params.hostUid);
       await this.assertManager(tx, stored.draft, authorize);
-      return stored.appliedReview ?? null;
+      if (!receiptSnap.exists) return null;
+      const receipt = receiptSnap.data() as HostRosterAppliedReview;
+      if (stored.draft.state !== "applied" ||
+          stored.draft.appliedImportId !== receipt.importId ||
+          receipt.preview.sessionId !== stored.draft.sessionId) {
+        throw new Error("Host roster intake receipt is inconsistent.");
+      }
+      return receipt;
     });
   }
 
@@ -130,7 +146,10 @@ export class HostRosterIntakeSessionStore {
       const draft = reviseHostRosterIntakeDraft({draft: stored.draft,
         expectedRevision: params.expectedRevision, rows: params.rows,
         excludedRowIds: params.excludedRowIds, mapping: params.mapping});
-      tx.update(ref, {draft, updatedAtMillis: this.now()});
+      const updatedAtMillis = this.now();
+      assertHostRosterIntakeDocumentBound({...stored, draft,
+        updatedAtMillis});
+      tx.update(ref, {draft, updatedAtMillis});
       return draft;
     });
   }
@@ -150,14 +169,21 @@ export class HostRosterIntakeSessionStore {
       Promise<ReadonlyMap<string, HostRosterCurrentRow>>;
   }): Promise<() => void> {
     const ref = this.ref(params.sessionId);
-    const snap = await params.tx.get(ref);
+    const receiptRef = this.receiptRef(params.sessionId);
+    const [snap, receiptSnap] = await params.tx.getAll(ref, receiptRef);
     if (!snap.exists) throw new Error("Host roster intake not found.");
     const stored = snap.data() as StoredSession;
     this.assertActor(stored.draft, params.hostUid);
     await this.assertManager(params.tx, stored.draft, params.authorize);
     if (params.replayed) {
       if (stored.draft.state !== "applied" ||
-          stored.draft.appliedImportId !== params.importId) {
+          stored.draft.appliedImportId !== params.importId ||
+          !receiptSnap.exists ||
+          (receiptSnap.data() as HostRosterAppliedReview).preview.reviewHash !==
+            params.expectedReviewHash ||
+          !isDeepStrictEqual(
+            (receiptSnap.data() as HostRosterAppliedReview).payload,
+            params.committedPayload)) {
         throw new Error("Unmatched Host roster intake receipt replay.");
       }
       return () => {};
@@ -180,12 +206,18 @@ export class HostRosterIntakeSessionStore {
     }
     const draft: HostRosterIntakeDraft = {...stored.draft,
       state: "applied", appliedImportId: params.importId};
+    const appliedAtMillis = this.now();
+    const receipt = {importId: params.importId, appliedAtMillis,
+      preview, payload: approved.payload} satisfies HostRosterAppliedReview;
+    assertHostRosterIntakeDocumentBound({...stored, draft,
+      updatedAtMillis: appliedAtMillis});
+    assertHostRosterIntakeDocumentBound(receipt);
+    if (receiptSnap.exists) {
+      throw new Error("Host roster intake receipt already exists.");
+    }
     return () => {
-      const appliedAtMillis = this.now();
-      params.tx.update(ref, {draft, updatedAtMillis: appliedAtMillis,
-        appliedReview: {importId: params.importId, appliedAtMillis,
-          preview, payload: approved.payload} satisfies
-          HostRosterAppliedReview});
+      params.tx.update(ref, {draft, updatedAtMillis: appliedAtMillis});
+      params.tx.create(receiptRef, receipt);
     };
   }
 }

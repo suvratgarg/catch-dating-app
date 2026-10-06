@@ -10,6 +10,8 @@ type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type FieldName = keyof ImportRow;
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
 const HASH = /^[a-f0-9]{64}$/u;
+/** Leaves ample headroom below Firestore's 1 MiB document limit. */
+export const HOST_ROSTER_INTAKE_DOCUMENT_MAX_JSON_BYTES = 700000;
 
 /** Private upload evidence. It must never enter public Supply Intake. */
 export interface HostRosterSourceField {
@@ -137,9 +139,6 @@ export function createHostRosterIntakeDraft(input: Omit<HostRosterIntakeDraft,
       })) {
     throw new Error("Invalid private roster intake row values.");
   }
-  if (Buffer.byteLength(JSON.stringify(input.rows), "utf8") > 700000) {
-    throw new Error("Private roster intake evidence exceeds bounds.");
-  }
   const rowIds = new Set<string>();
   for (const row of input.rows) {
     const unresolved = (row.issues?.length ?? 0) > 0;
@@ -192,11 +191,21 @@ export function createHostRosterIntakeDraft(input: Omit<HostRosterIntakeDraft,
     originalValue: structuredClone(row.value),
     originalFields: structuredClone(row.fields),
   }));
-  return {...input, rows,
+  const draft = {...input, rows,
     sessionId: "hri_" + hash([input.hostUid, input.organizerId,
       input.eventId, input.fileFingerprint]).slice(0, 48),
     revision: 1, state: "review", excludedRowIds: [],
-    sourceManifest, appliedImportId: null};
+    sourceManifest, appliedImportId: null} satisfies HostRosterIntakeDraft;
+  assertHostRosterIntakeDocumentBound(draft);
+  return draft;
+}
+
+/** Reserves more than 300 KiB for Firestore document overhead. */
+export function assertHostRosterIntakeDocumentBound(value: unknown): void {
+  if (Buffer.byteLength(JSON.stringify(value), "utf8") >
+      HOST_ROSTER_INTAKE_DOCUMENT_MAX_JSON_BYTES) {
+    throw new Error("Private roster intake evidence exceeds bounds.");
+  }
 }
 
 /** A revision change invalidates any earlier preview or approval. */
@@ -235,10 +244,12 @@ export function reviseHostRosterIntakeDraft(params: {
   }
   const checked = createHostRosterIntakeDraft({...draft, rows,
     mapping: params.mapping ?? draft.mapping});
-  return {...checked, sessionId: draft.sessionId,
+  const revised = {...checked, sessionId: draft.sessionId,
     revision: expectedRevision + 1,
     sourceManifest: structuredClone(draft.sourceManifest),
     excludedRowIds: [...excludedRowIds]};
+  assertHostRosterIntakeDocumentBound(revised);
+  return revised;
 }
 
 const comparedFields: FieldName[] = ["displayName", "phone", "email",

@@ -127,6 +127,11 @@ test("revision, failed commit and receipt replay preserve every row",
     assert.equal(reviewReceipt?.preview.counts.add, 1);
     assert.equal(reviewReceipt?.preview.reviewHash, preview.reviewHash);
     assert.deepEqual(reviewReceipt?.payload, approved.payload);
+    const sessionDocument = db.read(
+      `hostRosterIntakeSessions/${first.sessionId}`)!;
+    assert.equal("appliedReview" in sessionDocument, false);
+    assert.ok(db.read(`hostRosterIntakeSessions/${first.sessionId}` +
+      "/receipts/apply"));
     await complete(true);
     await assert.rejects(store.revise({sessionId: first.sessionId,
       hostUid: "host-1", expectedRevision: 2, rows: first.rows,
