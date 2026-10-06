@@ -10,7 +10,7 @@ import type {
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {organizerContactOriginId} from
   "../shared/organizerContactOrigins";
-import {eventAttendeeId, normalizeRosterPhone} from
+import {eventAttendeeId} from
   "../events/eventAttendees";
 import {formConversionReceiptId} from
   "./organizerFormAdmissionIdentity";
@@ -184,7 +184,7 @@ export async function reviewOrganizerFormAdmission(params: {
             contact.ambiguousCandidateContactIds.length > 0) {
           blockers.add("contactUnavailable");
         }
-        const stableKey = responseStableKey(responseId, crm);
+        const stableKey = responseStableKey(responseId);
         attendeeId = eventAttendeeId(eventId, stableKey);
         const offerId = responseOfferId(organizerId, eventId, contactId);
         const [attendeeSnap, edgeSnap, offerSnap] = await Promise.all([
@@ -254,21 +254,8 @@ export async function reviewOrganizerFormAdmission(params: {
   });
 }
 
-function responseStableKey(responseId: string,
-  crm: OrganizerFormConversionReceiptDocument): string {
-  const field = (name: string) => crm.fields.find((entry) =>
-    entry.destinationField === name)?.value;
-  const rawPhone = field("phoneNumber");
-  const phone = normalizeRosterPhone(
-    typeof rawPhone === "string" ? rawPhone : null);
-  if (phone.issue) {
-    throw new HttpsError("failed-precondition", phone.issue);
-  }
-  const rawEmail = field("email");
-  const email = typeof rawEmail === "string" ?
-    rawEmail.trim().toLowerCase() : null;
-  return phone.value ? `phone:${phone.value}` : email ?
-    `email:${email}` : `external:${responseId.toLowerCase()}`;
+function responseStableKey(responseId: string): string {
+  return `external:${responseId.toLowerCase()}`;
 }
 
 function responseOfferId(organizerId: string, eventId: string,

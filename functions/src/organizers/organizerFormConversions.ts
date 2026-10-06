@@ -549,8 +549,9 @@ async function applyEventAttendeeConversion(params: {
   const normalizedPhone = normalizeRosterPhone(phone).value;
   const email = (stringField(params.context.fields, "email") ??
     params.context.response.identity.email)?.toLocaleLowerCase("en") ?? null;
-  const stableKey = normalizedPhone ? `phone:${normalizedPhone}` :
-    email ? `email:${email}` : `external:${params.data.responseId}`;
+  // Form admission is one reviewed response/ticket. Keep its returned ID on
+  // the same attendee-level reference that the canonical import writes.
+  const stableKey = `external:${params.data.responseId.toLowerCase()}`;
   const result = await importEventAttendeesForHost({
     hostUid: params.actorUid,
     authorizeSource: async (tx, replayed) => {

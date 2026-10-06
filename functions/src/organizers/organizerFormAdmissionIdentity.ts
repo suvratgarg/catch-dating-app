@@ -1,5 +1,5 @@
 import {createHash} from "crypto";
-import {eventAttendeeId, normalizeRosterPhone} from "../events/eventAttendees";
+import {eventAttendeeId} from "../events/eventAttendees";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 import type {EventAttendeeDocument, OrganizerContactDocument,
   OrganizerContactOriginDocument, OrganizerFormConversionReceiptDocument} from
@@ -35,16 +35,10 @@ export async function formAdmissionContactId(params: {
       receipt.kind !== "eventAttendeeProposal" || receipt.status === "failed") {
     return null;
   }
-  const field = (name: string) => receipt.fields.find((entry) =>
-    entry.destinationField === name)?.value;
-  if (field("eventId") !== attendee.eventId) return null;
-  const phoneValue = field("phoneNumber");
-  const phone = normalizeRosterPhone(
-    typeof phoneValue === "string" ? phoneValue : null).value;
-  const email = typeof field("email") === "string" ?
-    String(field("email")).trim().toLowerCase() : null;
-  const key = phone ? `phone:${phone}` : email ? `email:${email}` :
-    `external:${responseId.toLowerCase()}`;
+  const eventField = receipt.fields.find((entry) =>
+    entry.destinationField === "eventId")?.value;
+  if (eventField !== attendee.eventId) return null;
+  const key = `external:${responseId.toLowerCase()}`;
   if (eventAttendeeId(attendee.eventId, key) !== attendeeId) return null;
   const origin = (await db.collection("organizerContactOrigins")
     .doc(organizerContactOriginId({organizerId: attendee.organizerId,

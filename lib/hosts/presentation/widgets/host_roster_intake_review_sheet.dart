@@ -161,12 +161,23 @@ class _HostRosterIntakeReviewSheetState
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
               children: [
-                _countBadge(context, 'add'),
-                _countBadge(context, 'update'),
-                _countBadge(context, 'unchanged'),
-                _countBadge(context, 'excluded'),
-                _countBadge(context, 'needsReview'),
-                _countBadge(context, 'identityConflict'),
+                for (final kind in const [
+                  'add',
+                  'update',
+                  'unchanged',
+                  'excluded',
+                  'needsReview',
+                  'identityConflict',
+                ])
+                  CatchBadge(
+                    label: context.l10n.hostsOperationalRosterIntakeCount(
+                      kind: _kindLabel(context, kind, null),
+                      count: _review.counts[kind] ?? 0,
+                    ),
+                    tone: {'needsReview', 'identityConflict'}.contains(kind)
+                        ? CatchBadgeTone.warning
+                        : CatchBadgeTone.neutral,
+                  ),
               ],
             ),
             if (unresolved > 0) ...[
@@ -246,16 +257,6 @@ class _HostRosterIntakeReviewSheetState
       ),
     );
   }
-
-  Widget _countBadge(BuildContext context, String kind) => CatchBadge(
-    label: context.l10n.hostsOperationalRosterIntakeCount(
-      kind: _kindLabel(context, kind, null),
-      count: _review.counts[kind] ?? 0,
-    ),
-    tone: {'needsReview', 'identityConflict'}.contains(kind)
-        ? CatchBadgeTone.warning
-        : CatchBadgeTone.neutral,
-  );
 }
 
 String _kindLabel(BuildContext context, String kind, String? issue) =>

@@ -15,7 +15,8 @@ const eventId = "event1";
 const responseId = "response1";
 const contactId = "contact1";
 const phone = "+919876543210";
-const attendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+const attendeeId = eventAttendeeId(eventId,
+  `external:${responseId.toLowerCase()}`);
 const offerId = "applicationoffer_" + createHash("sha256")
   .update([organizerId, eventId, contactId].join("\u001f"))
   .digest("hex").slice(0, 40);
@@ -170,7 +171,9 @@ test("roster collision and receipt replay do not rewrite a guest", async () => {
   assert.equal(replay.historicallyAdmitted, true);
   assert.equal(replay.canCommit, false);
   assert.equal(db.writes, 0);
-  db.patch(`eventAttendees/${attendeeId}`, {phoneE164: "+919111111111"});
+  db.patch(`eventAttendees/${attendeeId}`, {
+    externalReference: "another-response",
+  });
   assert.ok((await review(db)).blockers.includes("rosterConflict"));
 });
 

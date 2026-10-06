@@ -329,10 +329,15 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
           label: context.l10n.hostsOperationalRosterImportResultDone,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          title: result.importId,
-          body: review.reviewHash,
+        child: CatchSection.fieldRows(
+          first: true,
+          children: [
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              title: result.importId,
+              body: review.reviewHash,
+            ),
+          ],
         ),
       ),
     );
