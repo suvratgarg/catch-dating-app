@@ -47,53 +47,70 @@ class ProgramCreateScreen extends ConsumerWidget {
         organizerId: organizerId,
       )),
     );
-    return CatchAsyncBoundary<List<Club>>(
-      value: ref.watch(hostOperableClubsProvider(uid)),
-      retainDataOn: const {},
-      onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
-      loadingBuilder: (_) => const _ProgramCreateRouteState(
+    return controller.when(
+      loading: () => const _ProgramCreateRouteState(
         child: CatchStateViewport.loading(accountForBottomOverlay: false),
       ),
-      errorBuilder: (_, error, _, retry) => _ProgramCreateRouteState(
+      error: (error, _) => _ProgramCreateRouteState(
         child: CatchLocalizedErrorState(
           error,
-          context: AppErrorContext.club,
-          onRetry: retry,
-        ),
-      ),
-      builder: (context, clubs) {
-        final organizer = clubs
-            .where((club) => club.id == organizerId)
-            .firstOrNull;
-        final selected = ref.watch(hostOrganizerSelectionProvider(uid));
-        if (organizer == null ||
-            (selected != null && selected != organizerId)) {
-          return _ProgramCreateRouteState(
-            child: CatchEmptyState(
-              icon: CatchIcons.calendarMonthOutlined,
-              title: context.l10n.programsCreateActorChangedTitle,
-              message: context.l10n.programsCreateActorChangedBody,
-            ),
-          );
-        }
-        return ProgramCreatePageBody(
-          key: ValueKey('program-create-$uid-$organizerId'),
-          organizerName: organizer.name,
-          controller: controller,
-          onSaved: (programId) => context.goNamed(
-            Routes.hostEventsScreen.name,
-            queryParameters: {
-              'organizerId': organizerId,
-              'programId': programId,
-            },
-            extra: OrganizerProgramListAnchor(
+          context: AppErrorContext.event,
+          onRetry: () => ref.invalidate(
+            programCreateControllerProvider((
               accountId: uid,
               organizerId: organizerId,
-              row: controller.confirmedRow!,
-            ),
+            )),
           ),
-        );
-      },
+        ),
+      ),
+      data: (controller) => CatchAsyncBoundary<List<Club>>(
+        value: ref.watch(hostOperableClubsProvider(uid)),
+        retainDataOn: const {},
+        onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+        loadingBuilder: (_) => const _ProgramCreateRouteState(
+          child: CatchStateViewport.loading(accountForBottomOverlay: false),
+        ),
+        errorBuilder: (_, error, _, retry) => _ProgramCreateRouteState(
+          child: CatchLocalizedErrorState(
+            error,
+            context: AppErrorContext.club,
+            onRetry: retry,
+          ),
+        ),
+        builder: (context, clubs) {
+          final organizer = clubs
+              .where((club) => club.id == organizerId)
+              .firstOrNull;
+          final selected = ref.watch(hostOrganizerSelectionProvider(uid));
+          if (organizer == null ||
+              (selected != null && selected != organizerId)) {
+            return _ProgramCreateRouteState(
+              child: CatchEmptyState(
+                icon: CatchIcons.calendarMonthOutlined,
+                title: context.l10n.programsCreateActorChangedTitle,
+                message: context.l10n.programsCreateActorChangedBody,
+              ),
+            );
+          }
+          return ProgramCreatePageBody(
+            key: ValueKey('program-create-$uid-$organizerId'),
+            organizerName: organizer.name,
+            controller: controller,
+            onSaved: (programId) => context.goNamed(
+              Routes.hostEventsScreen.name,
+              queryParameters: {
+                'organizerId': organizerId,
+                'programId': programId,
+              },
+              extra: OrganizerProgramListAnchor(
+                accountId: uid,
+                organizerId: organizerId,
+                row: controller.confirmedRow!,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

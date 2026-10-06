@@ -2,13 +2,15 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/programs/data/program_create_journal.dart';
 import 'package:catch_dating_app/programs/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,10 +26,15 @@ typedef ProgramInventoryRead =
       String? programId,
     });
 
-final programCreateControllerProvider = Provider.autoDispose
-    .family<ProgramCreateController, ProgramEventsScope>((ref, scope) {
+final programCreateJournalProvider = Provider<ProgramCreateJournal>(
+  (ref) => const ProgramCreateJournal(),
+);
+
+final programCreateControllerProvider = FutureProvider.autoDispose
+    .family<ProgramCreateController, ProgramEventsScope>((ref, scope) async {
       final repository = ref.watch(programSetupRepositoryProvider);
       final inventoryRepository = ref.watch(programInventoryRepositoryProvider);
+      final journal = ref.watch(programCreateJournalProvider);
       bool isCurrent() {
         final selected = ref.read(
           hostOrganizerSelectionProvider(scope.accountId),
@@ -36,9 +43,38 @@ final programCreateControllerProvider = Provider.autoDispose
             (selected == null || selected == scope.organizerId);
       }
 
+      final recovered = await journal.load(
+        accountId: scope.accountId,
+        organizerId: scope.organizerId,
+      );
+      if (!ref.mounted || !isCurrent()) {
+        throw const ProgramActorChangedException();
+      }
+
       final controller = ProgramCreateController(
         organizerId: scope.organizerId,
-        requestId: _newProgramRequestId(),
+        requestId: recovered?.requestId ?? _newProgramRequestId(),
+        initialValues: _createValues(recovered?.values),
+        initialSubmittedValues: _createValues(recovered?.submittedValues),
+        initialProgramId: recovered?.programId,
+        newRequestId: _newProgramRequestId,
+        persist: (snapshot) => journal.save(
+          ProgramCreateJournalEntry(
+            accountId: scope.accountId,
+            organizerId: scope.organizerId,
+            requestId: snapshot.requestId,
+            values: _journalValues(snapshot.values),
+            submittedValues: snapshot.submittedValues == null
+                ? null
+                : _journalValues(snapshot.submittedValues!),
+            programId: snapshot.programId,
+          ),
+        ),
+        clearPersisted: (requestId) => journal.clear(
+          accountId: scope.accountId,
+          organizerId: scope.organizerId,
+          requestId: requestId,
+        ),
         isActorCurrent: isCurrent,
         create: (values, requestId) => inventoryRepository.create(
           organizerId: scope.organizerId,
@@ -72,6 +108,44 @@ final programCreateControllerProvider = Provider.autoDispose
       ref.onDispose(controller.dispose);
       return controller;
     });
+
+ProgramCreateValues _createValues(ProgramCreateJournalValues? values) {
+  if (values == null) return const ProgramCreateValues();
+  final kind = values.kind == null
+      ? null
+      : ProgramKind.values
+            .where((value) => value.name == values.kind)
+            .firstOrNull;
+  if (values.kind != null && kind == null) {
+    throw const FormatException('Invalid saved program kind');
+  }
+  return ProgramCreateValues(
+    title: values.title,
+    kind: kind,
+    timezone: values.timezone,
+    startsAt: _calendarDate(values.startsAtMillis),
+    endsAt: _calendarDate(values.endsAtMillis),
+  );
+}
+
+ProgramCreateJournalValues _journalValues(ProgramCreateValues values) =>
+    ProgramCreateJournalValues(
+      title: values.title,
+      kind: values.kind?.name,
+      timezone: values.timezone,
+      startsAtMillis: _calendarMillis(values.startsAt),
+      endsAtMillis: _calendarMillis(values.endsAt),
+    );
+
+int? _calendarMillis(DateTime? value) => value == null
+    ? null
+    : DateTime.utc(value.year, value.month, value.day).millisecondsSinceEpoch;
+
+DateTime? _calendarDate(int? value) {
+  if (value == null) return null;
+  final date = DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
+  return DateTime(date.year, date.month, date.day);
+}
 
 enum ProgramLifecycleAction { archive, unarchive }
 

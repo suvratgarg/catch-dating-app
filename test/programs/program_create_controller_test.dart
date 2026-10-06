@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
@@ -49,10 +50,20 @@ ProgramCreateController _controller({
   Future<OrganizerProgramSettings> Function(String)? read,
   Future<List<OrganizerProgramListRow>> Function(String)? refresh,
   bool Function()? isActorCurrent,
+  ProgramCreateValues? submittedValues,
+  String? programId,
+  String Function()? newRequestId,
+  ProgramCreateSnapshotWriter? persist,
+  Future<void> Function(String)? clearPersisted,
 }) => ProgramCreateController(
   organizerId: 'org',
   requestId: 'fixed-request-key',
   initialValues: values ?? _draft,
+  initialSubmittedValues: submittedValues,
+  initialProgramId: programId,
+  newRequestId: newRequestId,
+  persist: persist,
+  clearPersisted: clearPersisted,
   create: create ?? (_, _) async => _receipt,
   readSaved: read ?? (_) async => _saved(),
   refreshPrograms: refresh ?? (_) async => [_row()],
@@ -126,6 +137,7 @@ void main() {
       controller.edit(_draft.copyWith(title: 'Changed during save'));
       expect(controller.values.title, _draft.title);
       expect(await controller.submit(), isNull);
+      await Future<void>.delayed(Duration.zero);
       expect(calls, 1);
       create.complete(_receipt);
       expect(await pending, 'saved-id');
@@ -185,6 +197,84 @@ void main() {
     expect(await controller.submit(), 'saved-id');
     expect(creates, 1);
     expect(reads, 2);
+  });
+
+  test(
+    'recovered receipt confirms exact saved identity without creating again',
+    () async {
+      var creates = 0;
+      final cleared = <String>[];
+      final controller = _controller(
+        submittedValues: _draft,
+        programId: 'saved-id',
+        create: (_, _) async {
+          creates++;
+          return _receipt;
+        },
+        clearPersisted: (requestId) async => cleared.add(requestId),
+      );
+      addTearDown(controller.dispose);
+
+      expect(controller.commandPending, isTrue);
+      expect(await controller.submit(), 'saved-id');
+      expect(creates, 0);
+      expect(cleared, ['fixed-request-key']);
+    },
+  );
+
+  test(
+    'definitive rejection unlocks correction and rotates the request identity',
+    () async {
+      final snapshots = <ProgramCreateSnapshot>[];
+      final commands = <String>[];
+      var keys = 0;
+      final controller = _controller(
+        newRequestId: () => 'replacement-request-${++keys}',
+        persist: (snapshot) async => snapshots.add(snapshot),
+        create: (_, requestId) async {
+          commands.add(requestId);
+          if (commands.length == 1) {
+            throw const ValidationException(
+              'Choose a valid timezone.',
+              code: 'invalid-argument',
+            );
+          }
+          return _receipt;
+        },
+      );
+      addTearDown(controller.dispose);
+
+      expect(await controller.submit(), isNull);
+      expect(controller.commandPending, isFalse);
+      expect(controller.fieldsLocked, isFalse);
+      expect(controller.requestId, 'replacement-request-1');
+      expect(snapshots.last.submittedValues, isNull);
+
+      controller.edit(_draft.copyWith(timezone: 'Asia/Calcutta'));
+      expect(await controller.submit(), 'saved-id');
+      expect(commands, ['fixed-request-key', 'replacement-request-1']);
+    },
+  );
+
+  test('command and receipt are durable before their network stages', () async {
+    final order = <String>[];
+    final controller = _controller(
+      persist: (snapshot) async {
+        order.add(snapshot.programId == null ? 'command' : 'receipt');
+      },
+      create: (_, _) async {
+        order.add('create');
+        return _receipt;
+      },
+      read: (_) async {
+        order.add('read');
+        return _saved();
+      },
+    );
+    addTearDown(controller.dispose);
+
+    expect(await controller.submit(), 'saved-id');
+    expect(order, ['command', 'create', 'receipt', 'read']);
   });
 
   test(
