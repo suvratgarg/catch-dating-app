@@ -23679,21 +23679,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsListTitle => 'Programs';
 
   @override
-  String get programsListNoOrganizerTitle => 'No organizer selected';
-
-  @override
-  String get programsListNoOrganizerMessage =>
-      'Pick an organizer to manage its programs.';
-
-  @override
   String get programsListCreateLabel => 'New program';
-
-  @override
-  String get programsListEmptyTitle => 'No programs yet';
-
-  @override
-  String get programsListEmptyMessage =>
-      'Create a multi-day program to coordinate functions, travel and guest RSVP.';
 
   @override
   String get programsListRowActions => 'Program actions';
@@ -24857,38 +24843,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$group: $status · $source';
   }
-
-  @override
-  String hostEventOfferChooseForRecipient({required String name}) {
-    return 'Choose an event for $name';
-  }
-
-  @override
-  String hostEventOfferChooseForRecipients({required int count}) {
-    return 'Choose an event for $count people';
-  }
-
-  @override
-  String get hostEventOfferLoadingEvents => 'Loading events…';
-
-  @override
-  String get hostEventOfferPreparing => 'Preparing offer…';
-
-  @override
-  String get hostEventOfferLoadingExisting => 'Loading offer…';
-
-  @override
-  String get hostEventOfferPreparingMessage => 'Preparing message…';
-
-  @override
-  String get hostEventOfferCancelPreparation => 'Cancel preparation';
-
-  @override
-  String get hostEventOfferSetupRequired =>
-      'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.';
-
-  @override
-  String get hostResponseAddReviewNote => 'Add note';
 
   @override
   String get programsEntryTitle => 'Create';

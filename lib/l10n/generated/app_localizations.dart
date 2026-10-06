@@ -38110,35 +38110,11 @@ abstract class AppLocalizations {
   /// **'Programs'**
   String get programsListTitle;
 
-  /// Program workspace copy: programsListNoOrganizerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No organizer selected'**
-  String get programsListNoOrganizerTitle;
-
-  /// Program workspace copy: programsListNoOrganizerMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick an organizer to manage its programs.'**
-  String get programsListNoOrganizerMessage;
-
   /// Program workspace copy: programsListCreateLabel.
   ///
   /// In en, this message translates to:
   /// **'New program'**
   String get programsListCreateLabel;
-
-  /// Program workspace copy: programsListEmptyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No programs yet'**
-  String get programsListEmptyTitle;
-
-  /// Program workspace copy: programsListEmptyMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a multi-day program to coordinate functions, travel and guest RSVP.'**
-  String get programsListEmptyMessage;
 
   /// Program workspace copy: programsListRowActions.
   ///
@@ -40135,60 +40111,6 @@ abstract class AppLocalizations {
     required String status,
     required String source,
   });
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose an event for {name}'**
-  String hostEventOfferChooseForRecipient({required String name});
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose an event for {count} people'**
-  String hostEventOfferChooseForRecipients({required int count});
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading events…'**
-  String get hostEventOfferLoadingEvents;
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing offer…'**
-  String get hostEventOfferPreparing;
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading offer…'**
-  String get hostEventOfferLoadingExisting;
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing message…'**
-  String get hostEventOfferPreparingMessage;
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel preparation'**
-  String get hostEventOfferCancelPreparation;
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.'**
-  String get hostEventOfferSetupRequired;
-
-  /// Host response event chooser or offer preparation.
-  ///
-  /// In en, this message translates to:
-  /// **'Add note'**
-  String get hostResponseAddReviewNote;
 
   /// Host program creation and Events inventory: programsEntryTitle.
   ///
