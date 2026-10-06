@@ -271,6 +271,136 @@ export function initializeFunctionLedger(input) {
     return validateLedger(result);
   });
 }
+// Reconstruct the ledger after a bounded operator release from both immutable
+// package proofs and the independently captured live receipt. The common
+// coverage source remains the last source represented by every prior row;
+// each row retains its actual newer source/package/params when selected.
+export function initializeMixedFunctionLedger(input) {
+  return safe(() => {
+    exactKeys(input, ["baseline", "operator", "scope", "receipt", "allLiveIdentities"]);
+    const {baseline, operator, scope, receipt, allLiveIdentities} = input;
+    const sourceKeys = ["manifest", "deployment", "evidence", "paramsSha256", "baseSha"];
+    exactKeys(baseline, sourceKeys); exactKeys(operator, sourceKeys);
+    const prior = validateProvenanceManifest(baseline.manifest);
+    const promoted = validateProvenanceManifest(operator.manifest);
+    assert.notEqual(prior.sourceSha, promoted.sourceSha);
+    const allTargets = targetList(baseline.deployment.targets);
+    const selectedTargets = targetList(operator.deployment.targets);
+    assert.ok(selectedTargets.every((target) => allTargets.includes(target)));
+    assert.match(baseline.paramsSha256 ?? "", hashPattern);
+    assert.match(operator.paramsSha256 ?? "", hashPattern);
+    assert.match(baseline.baseSha ?? "", shaPattern);
+    assert.match(operator.baseSha ?? "", shaPattern);
+    validateFunctionsDeployment(baseline.deployment, {manifest: prior, scope, baseSha: baseline.baseSha,
+      selectedTargets: allTargets, paramsSha256: baseline.paramsSha256});
+    validateFunctionsDeployment(operator.deployment, {manifest: promoted, scope, baseSha: operator.baseSha,
+      selectedTargets, paramsSha256: operator.paramsSha256});
+    fingerprintEvidence(baseline.evidence,
+      {sourceSha: prior.sourceSha, packageSha256: prior.artifact.sha256}, allTargets);
+    fingerprintEvidence(operator.evidence,
+      {sourceSha: promoted.sourceSha, packageSha256: promoted.artifact.sha256}, allTargets);
+    assert.equal(baseline.evidence.runtimeConfigurationSha256, operator.evidence.runtimeConfigurationSha256);
+    exactKeys(receipt, ["schema", "scope", "packageSha256", "selectedTargets", "retainedTargetCount",
+      "addedIndexCount", "functions"]);
+    assert.equal(receipt.schema, "catch.operator-prod-selective-receipt/v1");
+    assert.equal(receipt.scope, scope);
+    assert.equal(receipt.packageSha256, promoted.artifact.sha256);
+    assert.deepEqual(receipt.selectedTargets, selectedTargets);
+    assert.equal(receipt.retainedTargetCount, allTargets.length - selectedTargets.length);
+    assert.ok(Number.isSafeInteger(receipt.addedIndexCount) && receipt.addedIndexCount >= 0);
+    assert.ok(Array.isArray(receipt.functions) && receipt.functions.length === allTargets.length);
+    const selected = new Map(selectedTargets.map((target, index) => [target, operator.deployment.functions[index]]));
+    const result = {schema: FUNCTION_LEDGER_SCHEMA, scope, coverageSourceSha: prior.sourceSha,
+      runtimeConfigurationSha256: baseline.evidence.runtimeConfigurationSha256,
+      functions: allTargets.map((target, index) => {
+        const row = receipt.functions[index];
+        exactKeys(row, ["target", "sourceSha", "deployment"]);
+        assert.equal(row.target, target);
+        const updated = selected.has(target);
+        const source = updated ? promoted : prior;
+        const proof = updated ? selected.get(target) : baseline.deployment.functions[index];
+        assert.equal(row.sourceSha, source.sourceSha);
+        assert.deepEqual(validateFunctionIdentity(row.deployment, {scope, target}), proof);
+        if (updated) assert.notDeepEqual(proof, baseline.deployment.functions[index]);
+        const fingerprint = updated ? operator.evidence.source.functions[target] : baseline.evidence.source.functions[target];
+        assert.deepEqual(fingerprint.unknown, []);
+        return {target, fingerprintSha256: fingerprint.sha256, sourceSha: source.sourceSha,
+          sourceCiRunId: source.sourceCiRunId, sourceCiRunAttempt: source.sourceCiRunAttempt,
+          packageSha256: source.artifact.sha256,
+          paramsSha256: updated ? operator.paramsSha256 : baseline.paramsSha256,
+          deployment: structuredClone(proof)};
+      })};
+    validateLedger(result);
+    verifyIdentities(result, allLiveIdentities);
+    return result;
+  });
+}
+// The source/package comparison may conservatively mark retained Functions as
+// impacted by dependency drift. This plan keeps them deferred with their real
+// prior bindings; it never promotes the package's full Function inventory.
+export function prepareMixedImpactRelease(input) {
+  return safe(() => {
+    exactKeys(input, ["initialization", "impactInput", "candidateManifest", "candidateBaseSha",
+      "candidateParamsSha256", "baselineIndexes", "operatorIndexes", "candidateIndexes"]);
+    const {initialization, impactInput, candidateManifest, candidateBaseSha, candidateParamsSha256,
+      baselineIndexes, operatorIndexes, candidateIndexes} = input;
+    const ledger = initializeMixedFunctionLedger(initialization);
+    const impact = assessSelectiveRuntimeImpact(impactInput);
+    manifestBinding(initialization.baseline.manifest, impact.baseline);
+    manifestBinding(candidateManifest, impact.candidate);
+    assert.deepEqual(impactInput.baselineEvidence, initialization.baseline.evidence);
+    assert.deepEqual(impactInput.baselineTargets, ledger.functions.map((row) => row.target));
+    assert.equal(additive(baselineIndexes, operatorIndexes).length,
+      initialization.receipt.addedIndexCount);
+    assert.deepEqual(indexInventory(operatorIndexes), indexInventory(candidateIndexes));
+    assert.match(candidateBaseSha ?? "", shaPattern);
+    assert.match(candidateParamsSha256 ?? "", hashPattern);
+    assert.ok(impact.selectedTargets.length > 0);
+    return {schema: "catch.selective-impact-plan/v1", scope: ledger.scope,
+      baselineCommonSourceSha: ledger.coverageSourceSha, candidate: binding(impact.candidate),
+      candidateBaseSha, candidateParamsSha256, ledgerSha256: digest(ledger), impactSha256: digest(impact),
+      operatorReceiptSha256: digest(initialization.receipt),
+      selectedTargets: [...impact.selectedTargets], deferredImpactedTargets: [...impact.deferredImpactedTargets],
+      retainedDeploymentTargets: ledger.functions.map((row) => row.target)
+        .filter((target) => !impact.selectedTargets.includes(target))};
+  });
+}
+export function completeMixedImpactRelease(input) {
+  return safe(() => {
+    exactKeys(input, ["preparation", "plan", "candidateDeployment", "allLiveIdentities"]);
+    const {preparation, plan, candidateDeployment, allLiveIdentities} = input;
+    assert.deepEqual(plan, prepareMixedImpactRelease(preparation));
+    const ledger = initializeMixedFunctionLedger(preparation.initialization);
+    const impact = assessSelectiveRuntimeImpact(preparation.impactInput);
+    const manifest = manifestBinding(preparation.candidateManifest, plan.candidate);
+    validateFunctionsDeployment(candidateDeployment, {manifest, scope: plan.scope,
+      baseSha: plan.candidateBaseSha, selectedTargets: plan.selectedTargets,
+      paramsSha256: plan.candidateParamsSha256});
+    const selected = new Map(plan.selectedTargets.map((target, index) => [target, candidateDeployment.functions[index]]));
+    const old = new Map(ledger.functions.map((row) => [row.target, row]));
+    const functions = preparation.impactInput.candidateTargets.map((target) => {
+      const prior = old.get(target);
+      if (!selected.has(target)) {
+        assert.ok(prior, "A new Function cannot be deferred without a deployment.");
+        return structuredClone(prior);
+      }
+      const deployment = validateFunctionIdentity(selected.get(target), {scope: plan.scope, target});
+      if (prior) assert.notDeepEqual(deployment, prior.deployment);
+      const fingerprint = preparation.impactInput.candidateEvidence.source.functions[target];
+      assert.deepEqual(fingerprint.unknown, []);
+      return {target, fingerprintSha256: fingerprint.sha256, ...binding(plan.candidate),
+        paramsSha256: plan.candidateParamsSha256, deployment};
+    });
+    const result = validateLedger({...structuredClone(ledger), functions});
+    verifyIdentities(result, allLiveIdentities);
+    assert.deepEqual(impact.deferredImpactedTargets, plan.deferredImpactedTargets);
+    return {ledger: result, coverage: {schema: "catch.selective-impact-coverage/v1", scope: plan.scope,
+      baselineCommonSourceSha: ledger.coverageSourceSha, candidate: binding(plan.candidate),
+      selectedTargets: [...plan.selectedTargets], deferredImpactedTargets: [...plan.deferredImpactedTargets],
+      retainedDeploymentTargets: [...plan.retainedDeploymentTargets],
+      planSha256: digest(plan), ledgerSha256: digest(result)}};
+  });
+}
 function verifyIdentities(ledger, identities) {
   validateLedger(ledger);
   assert.ok(Array.isArray(identities) && identities.length === ledger.functions.length);

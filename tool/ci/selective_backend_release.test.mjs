@@ -4,8 +4,9 @@ import test from "node:test";
 import {createCheckpointState, PROVENANCE_SCHEMA} from "./delivery_core.mjs";
 import {FUNCTIONS_DEPLOYMENT_SCHEMA} from "./firebase_functions_checkpoint.mjs";
 import {FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
-import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger,
+import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger, initializeMixedFunctionLedger,
   completeSelectiveRelease, verifyLedgerLiveIdentities, assessSelectiveRuntimeImpact,
+  prepareMixedImpactRelease, completeMixedImpactRelease,
   SELECTIVE_IMPACT_SCHEMA} from "./selective_backend_release.mjs";
 
 const hash = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -98,6 +99,108 @@ test("four changed Functions get candidate provenance while 574 real baseline ro
   result.ledger.functions[4].deployment.source.object = "changed-result-only";
   result.coverage.candidate.sourceCiRunId = "999";
   assert.equal(JSON.stringify(f.completion), original);
+});
+
+function mixedFixture({count = 578, changes = 4} = {}) {
+  const f = fixture({count, changes});
+  const initial = f.initialization.deployment;
+  const promoted = f.completion.deployment;
+  const selected = new Map(f.changed.map((target, index) => [target, promoted.functions[index]]));
+  const input = {scope, baseline: {manifest: f.initialization.manifest, deployment: initial,
+    evidence: f.preparation.baselineEvidence, paramsSha256: f.initialization.expectedParamsSha256,
+    baseSha: f.initialization.expectedBaseSha},
+  operator: {manifest: f.completion.manifest, deployment: promoted,
+    evidence: f.preparation.candidateEvidence, paramsSha256: f.completion.expectedCandidateParamsSha256,
+    baseSha: f.preparation.packageBaseSha},
+  receipt: {schema: "catch.operator-prod-selective-receipt/v1", scope,
+    packageSha256: f.completion.manifest.artifact.sha256,
+    selectedTargets: f.changed, retainedTargetCount: count - changes, addedIndexCount: 1,
+    functions: f.targets.map((target, index) => ({target,
+      sourceSha: selected.has(target) ? f.completion.manifest.sourceSha : f.initialization.manifest.sourceSha,
+      deployment: clone(selected.get(target) ?? initial.functions[index])}))},
+  allLiveIdentities: clone(f.completion.allLiveIdentities)};
+  return {f, input};
+}
+test("operator receipt initializes four promoted rows and retains 574 prior source and params bindings", () => {
+  const {f, input} = mixedFixture();
+  const initial = f.initialization.deployment;
+  const before = JSON.stringify(input);
+  const ledger = initializeMixedFunctionLedger(input);
+  assert.equal(ledger.coverageSourceSha, f.initialization.manifest.sourceSha);
+  assert.equal(ledger.functions.filter((row) => row.sourceSha === f.completion.manifest.sourceSha).length, 4);
+  for (let i = 4; i < ledger.functions.length; i++) {
+    assert.equal(ledger.functions[i].sourceSha, f.initialization.manifest.sourceSha);
+    assert.equal(ledger.functions[i].paramsSha256, f.initialization.expectedParamsSha256);
+    assert.deepEqual(ledger.functions[i].deployment, initial.functions[i]);
+  }
+  assert.equal(JSON.stringify(input), before);
+  for (const mutate of [
+    (p) => {p.receipt.packageSha256 = hash("unrelated package");},
+    (p) => {p.receipt.functions[0].deployment = clone(initial.functions[0]);},
+    (p) => {p.receipt.functions[4].sourceSha = p.operator.manifest.sourceSha;},
+    (p) => {p.operator.paramsSha256 = hash("different params");},
+    (p) => {p.operator.evidence.runtimeConfigurationSha256 = hash("different runtime");},
+    (p) => {p.operator.evidence.source.functions[f.targets[0]].unknown = ["index.js:dynamic-module-load"];
+      p.operator.evidence.compiled = clone(p.operator.evidence.source);},
+    (p) => {p.allLiveIdentities[0] = clone(initial.functions[0]);},
+    (p) => {p.receipt.retainedTargetCount = 578;},
+    (p) => {p.receipt.secretPayload = "FAKE_PRIVATE_SENTINEL";},
+  ]) rejectsClone(input, mutate, initializeMixedFunctionLedger);
+});
+
+test("mixed ledger completion updates exact selected identities and keeps deferred rows heterogeneous", () => {
+  const {f, input: initialization} = mixedFixture({count: 6, changes: 2});
+  const added = "functions:f0006";
+  const candidateManifest = manifest("c".repeat(40), "300");
+  const candidateTargets = [...f.targets, added];
+  const candidateFingerprints = fingerprints(candidateTargets, new Set([...f.changed, added]));
+  const candidateEvidence = {sourceSha: candidateManifest.sourceSha,
+    packageSha256: candidateManifest.artifact.sha256,
+    source: clone(candidateFingerprints), compiled: clone(candidateFingerprints),
+    runtimeConfigurationSha256: f.preparation.baselineEvidence.runtimeConfigurationSha256};
+  const selectedTargets = [...f.changed, added];
+  const preparation = {initialization, impactInput: {baseline: f.preparation.baseline,
+    candidate: binding(candidateManifest), baselineEvidence: f.preparation.baselineEvidence,
+    candidateEvidence, baselineTargets: f.targets, candidateTargets,
+    baselineLockSha256: hash("prior lock"), candidateLockSha256: hash("candidate lock"),
+    selectedTargets}, candidateManifest, candidateBaseSha: "1".repeat(40),
+  candidateParamsSha256: f.initialization.expectedParamsSha256,
+  baselineIndexes: f.preparation.baselineIndexes, operatorIndexes: f.preparation.candidateIndexes,
+  candidateIndexes: clone(f.preparation.candidateIndexes)};
+  const plan = prepareMixedImpactRelease(preparation);
+  assert.deepEqual(plan.selectedTargets, selectedTargets);
+  assert.deepEqual(plan.deferredImpactedTargets, f.targets.slice(2));
+  assert.deepEqual(plan.retainedDeploymentTargets, f.targets.slice(2));
+  const completion = {preparation, plan,
+    candidateDeployment: deployment(candidateManifest, selectedTargets,
+      preparation.candidateParamsSha256, preparation.candidateBaseSha, "3"),
+    allLiveIdentities: candidateTargets.map((target) => identity(target, selectedTargets.includes(target) ? "3" : "1"))};
+  const before = JSON.stringify(completion);
+  const result = completeMixedImpactRelease(completion);
+  assert.equal(result.ledger.coverageSourceSha, f.initialization.manifest.sourceSha);
+  assert.deepEqual(result.coverage.selectedTargets, selectedTargets);
+  assert.deepEqual(result.coverage.deferredImpactedTargets, f.targets.slice(2));
+  assert.equal(result.ledger.functions.length, 7);
+  for (const row of result.ledger.functions.slice(2, 6)) {
+    assert.equal(row.sourceSha, f.initialization.manifest.sourceSha);
+    assert.equal(row.packageSha256, f.initialization.manifest.artifact.sha256);
+  }
+  for (const row of [...result.ledger.functions.slice(0, 2), result.ledger.functions[6]])
+    assert.equal(row.sourceSha, candidateManifest.sourceSha);
+  assert.equal(JSON.stringify(completion), before);
+  for (const mutate of [
+    (c) => {c.plan.selectedTargets = [...candidateTargets];},
+    (c) => {c.candidateDeployment.targets = [...candidateTargets];},
+    (c) => {c.allLiveIdentities[2] = identity(f.targets[2], "2");},
+    (c) => {c.preparation.candidateParamsSha256 = hash("other params");},
+    (c) => {c.preparation.candidateIndexes.indexes.push({...index, collectionGroup: "extra"});},
+    (c) => {c.preparation.initialization.receipt.addedIndexCount = 2;},
+    (c) => {c.preparation.initialization.receipt.functions[2].sourceSha = candidateManifest.sourceSha;},
+    (c) => {c.preparation.impactInput.selectedTargets.pop();},
+    (c) => {c.preparation.impactInput.candidateEvidence.source.functions[f.targets[0]].unknown =
+      ["index.js:dynamic-module-load"]; c.preparation.impactInput.candidateEvidence.compiled =
+      clone(c.preparation.impactInput.candidateEvidence.source);},
+  ]) rejectsClone(completion, mutate, completeMixedImpactRelease);
 });
 
 test("source and compiled evidence, dependency digests and full inventories must agree", () => {
