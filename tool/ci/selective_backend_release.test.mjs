@@ -5,7 +5,8 @@ import {createCheckpointState, PROVENANCE_SCHEMA} from "./delivery_core.mjs";
 import {FUNCTIONS_DEPLOYMENT_SCHEMA} from "./firebase_functions_checkpoint.mjs";
 import {FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
 import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger,
-  completeSelectiveRelease, verifyLedgerLiveIdentities} from "./selective_backend_release.mjs";
+  completeSelectiveRelease, verifyLedgerLiveIdentities, assessSelectiveRuntimeImpact,
+  SELECTIVE_IMPACT_SCHEMA} from "./selective_backend_release.mjs";
 
 const hash = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const clone = structuredClone;
@@ -125,6 +126,53 @@ test("source coverage is the exact unique chronological interval ending at candi
     [preparation.candidate.sourceSha, preparation.candidate.sourceSha]]) {
     assert.throws(() => prepareSelectiveRelease({...preparation, coveredSources}), invalid);
   }
+});
+
+test("runtime lock drift stays explicit across a bounded selector and an added export", () => {
+  const f = fixture({count: 6, changes: 2, addIndex: false});
+  const added = "functions:f0006";
+  const input = {baseline: f.preparation.baseline, candidate: f.preparation.candidate,
+    baselineEvidence: f.preparation.baselineEvidence,
+    candidateEvidence: clone(f.preparation.candidateEvidence),
+    baselineTargets: f.targets, candidateTargets: [...f.targets, added],
+    baselineLockSha256: hash("old locked runtime"), candidateLockSha256: hash("new locked runtime"),
+    selectedTargets: [f.targets[0], added]};
+  const addedFingerprint = fingerprints([added]).functions[added];
+  input.candidateEvidence.source.functions[added] = clone(addedFingerprint);
+  input.candidateEvidence.compiled.functions[added] = clone(addedFingerprint);
+  const original = JSON.stringify(input);
+  const assessment = assessSelectiveRuntimeImpact(input);
+  assert.equal(assessment.schema, SELECTIVE_IMPACT_SCHEMA);
+  assert.equal(assessment.dependencyDrift, true);
+  assert.deepEqual(assessment.codeChangedTargets, f.changed);
+  assert.deepEqual(assessment.addedTargets, [added]);
+  assert.deepEqual(assessment.impactedTargets, input.candidateTargets);
+  assert.deepEqual(assessment.selectedTargets, input.selectedTargets);
+  assert.equal(assessment.deferredImpactedTargets.length, 5);
+  assert.deepEqual(assessment.retainedBaselineTargets, f.targets.slice(1));
+  assert.equal(JSON.stringify(input), original);
+
+  const sameLock = clone(input); sameLock.candidateLockSha256 = sameLock.baselineLockSha256;
+  const focused = assessSelectiveRuntimeImpact({...sameLock, selectedTargets: [...f.changed, added]});
+  assert.deepEqual(focused.impactedTargets, [...f.changed, added]);
+  assert.deepEqual(focused.deferredImpactedTargets, []);
+  for (const mutate of [
+    (p) => {p.candidateEvidence.runtimeConfigurationSha256 = hash("config drift");},
+    (p) => {p.candidateLockSha256 = "invalid";},
+    (p) => {p.selectedTargets = ["functions:unrelated"];},
+    (p) => {p.selectedTargets.reverse();},
+    (p) => {delete p.candidateEvidence.compiled.functions[added];},
+    (p) => {p.candidateEvidence.source.functions[f.targets[0]].unknown = ["index.js:dynamic-module-load"];
+      p.candidateEvidence.compiled = clone(p.candidateEvidence.source);},
+    (p) => {p.candidateEvidence.source.functions[added].unknown = ["index.js:dynamic-module-load"];
+      p.candidateEvidence.compiled = clone(p.candidateEvidence.source);},
+    (p) => {p.candidateTargets.pop(); delete p.candidateEvidence.source.functions[added];
+      delete p.candidateEvidence.compiled.functions[added];},
+    (p) => {p.candidateTargets.splice(5, 1); delete p.candidateEvidence.source.functions[f.targets[5]];
+      delete p.candidateEvidence.compiled.functions[f.targets[5]];},
+    (p) => {p.secretPayload = "FAKE_PRIVATE_SENTINEL";},
+  ]) rejectsClone(input, mutate, assessSelectiveRuntimeImpact);
+  assert.throws(() => assessSelectiveRuntimeImpact({...sameLock, selectedTargets: [f.targets[5]]}), invalid);
 });
 
 test("completion rederives every plan field and exact evidence digest from independent preparation", () => {

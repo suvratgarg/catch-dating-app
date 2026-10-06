@@ -6,6 +6,7 @@ import {validateFunctionsDeployment, validateFunctionIdentity} from "./firebase_
 
 export const SELECTIVE_RELEASE_SCHEMA = "catch.selective-backend-release/v1";
 export const FUNCTION_LEDGER_SCHEMA = "catch.function-deployment-ledger/v1";
+export const SELECTIVE_IMPACT_SCHEMA = "catch.selective-runtime-impact/v1";
 const hashPattern = /^[0-9a-f]{64}$/;
 const shaPattern = /^[0-9a-f]{40}$/;
 const targetsPattern = /^functions:[A-Za-z][A-Za-z0-9_-]*$/;
@@ -169,6 +170,52 @@ function prepare(input) {
 }
 // A projection never edits the candidate package's historical base or CI plan.
 export function prepareSelectiveRelease(input) { return safe(() => prepare(input)); }
+// Read-only impact classification. A dependency lock change can affect every
+// existing export even when compiled JS is byte-identical. Selection is an
+// operator input; deferred impact remains explicit and never becomes an
+// unchanged-function claim or deployment authorization.
+export function assessSelectiveRuntimeImpact(input) {
+  return safe(() => {
+    exactKeys(input, ["baseline", "candidate", "baselineEvidence", "candidateEvidence",
+      "baselineTargets", "candidateTargets", "baselineLockSha256", "candidateLockSha256", "selectedTargets"]);
+    const {baseline, candidate, baselineEvidence, candidateEvidence, baselineTargets, candidateTargets,
+      baselineLockSha256, candidateLockSha256, selectedTargets} = input;
+    binding(baseline); binding(candidate);
+    targetList(baselineTargets); targetList(candidateTargets); targetList(selectedTargets, {empty: true});
+    assert.match(baselineLockSha256 ?? "", hashPattern);
+    assert.match(candidateLockSha256 ?? "", hashPattern);
+    fingerprintEvidence(baselineEvidence, baseline, baselineTargets);
+    fingerprintEvidence(candidateEvidence, candidate, candidateTargets);
+    assert.equal(baselineEvidence.runtimeConfigurationSha256, candidateEvidence.runtimeConfigurationSha256);
+    const candidateSet = new Set(candidateTargets);
+    assert.ok(baselineTargets.every((target) => candidateSet.has(target)), "Deletion needs separate authority.");
+    const baselineSet = new Set(baselineTargets);
+    const common = (snapshot) => ({schema: snapshot.schema,
+      functions: Object.fromEntries(baselineTargets.map((target) => [target, snapshot.functions[target]]))});
+    const source = compareFunctionFingerprints(common(baselineEvidence.source), common(candidateEvidence.source),
+      {authorizedTargets: baselineTargets});
+    const compiled = compareFunctionFingerprints(common(baselineEvidence.compiled), common(candidateEvidence.compiled),
+      {authorizedTargets: baselineTargets});
+    assert.deepEqual(source, compiled);
+    const dependencyDrift = baselineLockSha256 !== candidateLockSha256;
+    const addedTargets = candidateTargets.filter((target) => !baselineSet.has(target));
+    const impactedTargets = [...new Set([...(dependencyDrift ? baselineTargets : source.targets), ...addedTargets])].sort();
+    const impacted = new Set(impactedTargets);
+    assert.ok(selectedTargets.every((target) => impacted.has(target)), "Selector includes an unaffected Function.");
+    for (const target of selectedTargets) {
+      assert.equal(candidateEvidence.source.functions[target].unknown.length, 0,
+        "Selected runtime closure is unresolved.");
+      if (baselineSet.has(target)) assert.equal(baselineEvidence.source.functions[target].unknown.length, 0,
+        "Selected baseline closure is unresolved.");
+    }
+    const selected = new Set(selectedTargets);
+    return {schema: SELECTIVE_IMPACT_SCHEMA, baseline: binding(baseline), candidate: binding(candidate),
+      baselineLockSha256, candidateLockSha256, dependencyDrift,
+      codeChangedTargets: [...source.targets], addedTargets, impactedTargets,
+      selectedTargets: [...selectedTargets], deferredImpactedTargets: impactedTargets.filter((target) => !selected.has(target)),
+      retainedBaselineTargets: baselineTargets.filter((target) => !selected.has(target))};
+  });
+}
 function validatePlan(plan) {
   exactKeys(plan, ["schema", "baseline", "candidate", "packageBaseSha", "fingerprintEvidenceSha256",
     "runtimeConfigurationSha256", "paramsSha256", "indexes", "indexContractSha256", "coveredSources", "targets", "unchangedTargets", "stages"]);
