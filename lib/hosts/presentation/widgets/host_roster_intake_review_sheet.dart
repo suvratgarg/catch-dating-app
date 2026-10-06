@@ -128,7 +128,7 @@ class _HostRosterIntakeReviewSheetState
     });
     try {
       final applied = await widget.onApply(_review);
-      if (mounted) Navigator.of(context).pop(applied);
+      if (mounted && !_scopeInvalidated) Navigator.of(context).pop(applied);
     } catch (error) {
       if (mounted && !_scopeInvalidated) setState(() => _error = error);
     } finally {
