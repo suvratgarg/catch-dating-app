@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.3.0
+version: 3.4.0
 updated: 2026-10-06
 owner: agent_operating_model
 status: active
@@ -72,6 +72,37 @@ have been removed. Put recurring protection in the owning test or scanner.
    completion condition.
 6. State the intended outcome, included and excluded paths, relevant owner
    docs, focused checks, and acceptance criteria before a broad edit.
+
+## Execution Venue And Source Handoff
+
+Default new source tasks to the saved Codex Cloud VM after checking its actual
+toolchain against `tool/ci/toolchain.env`. On that VM, source
+`/workspace/catch-cloud-setup/env.sh` when it exists. Install only the dependency
+family selected by the task's checks with `bootstrap_worktree.sh --target
+<family>` (`root`, `functions`, or `flutter`). Omit bootstrap for checks that
+need no packages. Use `all` only when all three families are needed.
+Each task still has one guarded worktree and its own dependencies; do not copy
+or symlink another checkout's installed packages. Close accepted worktrees with
+the existing retirement procedure instead of accumulating completed checkouts.
+
+Run Linux and Android checks in cloud or CI when their pinned inputs are
+available. Prefer the existing hosted macOS CI build and visual lanes for iOS
+and macOS source verification. Use the local iMac for connected devices and
+macOS-specific local work that the hosted lane cannot prove. Keep required CI,
+security/ownership review, user approval, and live-provider release gates.
+
+Commit the exact source tree, publish the branch through ordinary Git/PR
+tooling, and ask CI to verify that head. Cross-environment handoff uses that
+commit, not a downloaded/generated snapshot whose origin or completeness is
+unverified. If push is unavailable, retain the commit and report the exact
+publication barrier to the integration owner. A rejected draft PR is an
+admission/publishing blocker, not a failed product test; capture the rejection
+and next admission action separately from actual check results. A disconnected
+agent or VM does not establish task termination: inspect the branch, running
+process/command or CI run, and latest output after reconnecting. Report a
+blocked task with its exact commit, last observed command or run evidence,
+accountable owner, and specific next action. Do not mark work done based on
+elapsed time, a stale status label, or an unverified command assumption.
 
 ## Enforcement Integrity
 
@@ -198,16 +229,20 @@ integrated result. Assign disjoint file sets. Keep shared architecture
 decisions, canonical owner documents, common manifests, and final verification
 with the parent unless a child is explicitly assigned the whole file set.
 
-After creating a worktree, bootstrap its own pinned dependencies with one
-repository command:
+After creating a worktree, install only its required pinned dependency family
+with the repository command:
 
 ```sh
-bash tool/git/bootstrap_worktree.sh
+bash tool/git/bootstrap_worktree.sh --target root       # root npm checks
+bash tool/git/bootstrap_worktree.sh --target functions  # Functions checks
+bash tool/git/bootstrap_worktree.sh --target flutter    # Flutter checks
+# Omit --target to install all three when the task needs all three.
 ```
 
-The command runs root `npm ci`, Functions `npm ci`, and `flutter pub get` in
-that worktree. Keep these installs local to the worktree; do not symlink
-another checkout's `node_modules` or invent `NODE_PATH` overrides.
+The command checks the selected committed manifests and lockfiles, then runs
+their `npm ci` or `flutter pub get` in that worktree. Keep installs local to the
+worktree; do not symlink another checkout's `node_modules` or invent `NODE_PATH`
+overrides. A docs-only worktree with dependency-free checks needs no install.
 
 Use the worktree guard to create every new task worktree. It also provides the
 overlap and closeout checks needed when several local tasks are active:

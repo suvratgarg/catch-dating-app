@@ -931,11 +931,15 @@ delete refs, or authorize commands. Retirement uses read-only live ref queries
 and refuses stale/unavailable remote evidence. Its local claims are disposable; Git
 branches and commits remain authoritative.
 
-A newly created worktree contains tracked files only. Give it independent root
-npm, Functions npm, and Flutter dependencies before building:
+A newly created worktree contains tracked files only. Install the selected
+locked dependency family before its checks; omit bootstrap for dependency-free
+checks:
 
 ```sh
-bash tool/git/bootstrap_worktree.sh
+bash tool/git/bootstrap_worktree.sh --target root
+bash tool/git/bootstrap_worktree.sh --target functions
+bash tool/git/bootstrap_worktree.sh --target flutter
+# No --target installs all three families when required.
 ```
 
 The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with
