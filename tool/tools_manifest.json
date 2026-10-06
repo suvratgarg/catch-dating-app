@@ -7765,6 +7765,47 @@
       }
     },
     {
+      "id": "ci:whatsapp-five-release",
+      "category": "ci",
+      "path": "tool/ci/whatsapp_five_release.mjs",
+      "command": "node --test tool/ci/whatsapp_five_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/whatsapp_five_release.test.mjs",
+        ".github/workflows/selective-backend-release.yml",
+        ".github/workflows/_firebase-promote.yml",
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/ci/delivery_core.mjs"
+      ],
+      "description": "One pinned protected PROD release of only five Catch WhatsApp Functions from the immutable historical package, with closed gates and selected-only physical receipt.",
+      "checks": [
+        "node --check tool/ci/whatsapp_five_release.mjs",
+        "node --test tool/ci/whatsapp_five_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/whatsapp_five_release.test.mjs",
+        "contains": [
+          "immutable 580-export package selects exactly the authorized five",
+          "four Catch gates must be explicitly false in the generated deploy params",
+          "selected-only completion binds all five fresh serving revisions and exact params"
+        ]
+      },
+      "alsoCheckIds": [
+        "ci:firebase-delivery-workflow",
+        "ci:firebase-functions-checkpoint"
+      ]
+    },
+    {
       "id": "ci:wedding-phone-import-release",
       "category": "ci",
       "path": "tool/ci/wedding_phone_import_release.mjs",
