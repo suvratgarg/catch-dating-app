@@ -24,7 +24,11 @@ class ProgramEventsRow extends StatelessWidget {
   final bool pending;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => asCatchField(context);
+
+  /// Returns the canonical field directly for lazy [CatchSection.sliverRows]
+  /// builders, whose item contract is intentionally narrower than [Widget].
+  CatchField asCatchField(BuildContext context) {
     final l10n = context.l10n;
     final startsAt = program.startsAt;
     final endsAt = program.endsAt;

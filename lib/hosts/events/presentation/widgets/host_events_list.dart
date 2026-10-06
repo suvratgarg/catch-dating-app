@@ -1,15 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
@@ -20,6 +17,9 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -403,7 +403,7 @@ class HostEventsTimelinePage extends StatelessWidget
                 onOpen: () => onOpenProgram?.call(program),
                 onLifecycle: (action) =>
                     onLifecycleProgram?.call(program, action),
-              );
+              ).asCatchField(context);
             },
           ),
           const SliverToBoxAdapter(child: gapH24),
@@ -612,7 +612,7 @@ Future<void> _changeProgramLifecycle(
       action,
       DateTime.now(),
     );
-    if (changed && context.mounted)
+    if (changed && context.mounted) {
       showCatchNotice(
         context,
         archiving
@@ -620,6 +620,7 @@ Future<void> _changeProgramLifecycle(
             : l10n.programsListUnarchiveDone,
         tone: CatchNoticeTone.success,
       );
+    }
   } catch (error) {
     if (context.mounted) showCatchNoticeError(context, error);
   }
