@@ -614,7 +614,7 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.match(fullBuckets, /needs\.fast-gates\.result == 'success'/u);
   assert.match(
     fullBuckets,
-    /timeout-minutes: \$\{\{ matrix\.name == 'lint-scanners' && 45 \|\| 30 \}\}/u,
+    /timeout-minutes: \$\{\{ \(matrix\.name == 'lint-scanners' \|\| matrix\.name == 'marketing-design'\) && 45 \|\| 30 \}\}/u,
   );
   assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
   assert.match(fullBuckets, /if command -v rg >\/dev\/null 2>&1/u);
