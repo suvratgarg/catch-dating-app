@@ -16,6 +16,32 @@ const prepareKeys = ["baseline", "candidate", "packageBaseSha", "baselineEvidenc
 const canonical = (value) => Array.isArray(value) ? value.map(canonical) :
   value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])])) : value;
 const digest = (value) => createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex");
+// Full source/compiled evidence can exceed the maximum JavaScript string size.
+// Stream the same canonical JSON encoding, retaining every validated input.
+function impactInputDigest(value) {
+  const hash = createHash("sha256");
+  let chunks = []; let size = 0;
+  const append = (text) => {
+    chunks.push(text); size += text.length;
+    if (size >= 65536) {hash.update(chunks.join("")); chunks = []; size = 0;}
+  };
+  const visit = (entry) => {
+    if (Array.isArray(entry)) {
+      append("[");
+      entry.forEach((item, index) => {if (index) append(","); visit(item);});
+      append("]");
+    } else if (entry && typeof entry === "object") {
+      append("{");
+      Object.keys(entry).sort().forEach((key, index) => {
+        if (index) append(",");
+        append(JSON.stringify(key)); append(":"); visit(entry[key]);
+      });
+      append("}");
+    } else append(JSON.stringify(entry));
+  };
+  visit(value); hash.update(chunks.join(""));
+  return hash.digest("hex");
+}
 // Validation errors never expose rejected payloads through AssertionError.actual,
 // parser causes, or diffs. These APIs accept metadata, not parameter values.
 function safe(action) {
@@ -350,15 +376,20 @@ export function prepareMixedImpactRelease(input) {
     manifestBinding(candidateManifest, impact.candidate);
     assert.deepEqual(impactInput.baselineEvidence, initialization.baseline.evidence);
     assert.deepEqual(impactInput.baselineTargets, ledger.functions.map((row) => row.target));
+    const indexContracts = {baseline: indexInventory(baselineIndexes), operator: indexInventory(operatorIndexes),
+      candidate: indexInventory(candidateIndexes)};
     assert.equal(additive(baselineIndexes, operatorIndexes).length,
       initialization.receipt.addedIndexCount);
-    assert.deepEqual(indexInventory(operatorIndexes), indexInventory(candidateIndexes));
+    assert.deepEqual(indexContracts.operator, indexContracts.candidate);
     assert.match(candidateBaseSha ?? "", shaPattern);
     assert.match(candidateParamsSha256 ?? "", hashPattern);
     assert.ok(impact.selectedTargets.length > 0);
+    assert.ok(impact.addedTargets.every((target) => impact.selectedTargets.includes(target)),
+      "A new Function requires a selected deployment before ledger completion.");
     return {schema: "catch.selective-impact-plan/v1", scope: ledger.scope,
       baselineCommonSourceSha: ledger.coverageSourceSha, candidate: binding(impact.candidate),
       candidateBaseSha, candidateParamsSha256, ledgerSha256: digest(ledger), impactSha256: digest(impact),
+      impactInputSha256: impactInputDigest(impactInput), indexContractSha256: digest(indexContracts),
       operatorReceiptSha256: digest(initialization.receipt),
       selectedTargets: [...impact.selectedTargets], deferredImpactedTargets: [...impact.deferredImpactedTargets],
       retainedDeploymentTargets: ledger.functions.map((row) => row.target)

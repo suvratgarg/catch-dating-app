@@ -148,9 +148,9 @@ test("operator receipt initializes four promoted rows and retains 574 prior sour
   ]) rejectsClone(input, mutate, initializeMixedFunctionLedger);
 });
 
-test("mixed ledger completion updates exact selected identities and keeps deferred rows heterogeneous", () => {
-  const {f, input: initialization} = mixedFixture({count: 6, changes: 2});
-  const added = "functions:f0006";
+function mixedCompletionFixture({count = 6, changes = 2} = {}) {
+  const {f, input: initialization} = mixedFixture({count, changes});
+  const added = `functions:f${String(count).padStart(4, "0")}`;
   const candidateManifest = manifest("c".repeat(40), "300");
   const candidateTargets = [...f.targets, added];
   const candidateFingerprints = fingerprints(candidateTargets, new Set([...f.changed, added]));
@@ -168,13 +168,20 @@ test("mixed ledger completion updates exact selected identities and keeps deferr
   baselineIndexes: f.preparation.baselineIndexes, operatorIndexes: f.preparation.candidateIndexes,
   candidateIndexes: clone(f.preparation.candidateIndexes)};
   const plan = prepareMixedImpactRelease(preparation);
-  assert.deepEqual(plan.selectedTargets, selectedTargets);
-  assert.deepEqual(plan.deferredImpactedTargets, f.targets.slice(2));
-  assert.deepEqual(plan.retainedDeploymentTargets, f.targets.slice(2));
   const completion = {preparation, plan,
     candidateDeployment: deployment(candidateManifest, selectedTargets,
       preparation.candidateParamsSha256, preparation.candidateBaseSha, "3"),
     allLiveIdentities: candidateTargets.map((target) => identity(target, selectedTargets.includes(target) ? "3" : "1"))};
+  return {f, added, candidateManifest, candidateTargets, selectedTargets, completion};
+}
+test("mixed ledger completion updates exact selected identities and keeps deferred rows heterogeneous", () => {
+  const {f, candidateManifest, candidateTargets, selectedTargets, completion} = mixedCompletionFixture();
+  assert.deepEqual(completion.plan.selectedTargets, selectedTargets);
+  assert.deepEqual(completion.plan.deferredImpactedTargets, f.targets.slice(2));
+  assert.deepEqual(completion.plan.retainedDeploymentTargets, f.targets.slice(2));
+  // Independently calculated canonical JSON digests of this synthetic fixture.
+  assert.equal(completion.plan.impactInputSha256, "d613a3cc47111ed4cf80ed1438e089408a08265301bd435500ed478be00c2ffe");
+  assert.equal(completion.plan.indexContractSha256, "0c54fdec6efa089165bc60c26015818d518d3adce072d0f817457f3a2b4da2d1");
   const before = JSON.stringify(completion);
   const result = completeMixedImpactRelease(completion);
   assert.equal(result.ledger.coverageSourceSha, f.initialization.manifest.sourceSha);
@@ -201,6 +208,62 @@ test("mixed ledger completion updates exact selected identities and keeps deferr
       ["index.js:dynamic-module-load"]; c.preparation.impactInput.candidateEvidence.compiled =
       clone(c.preparation.impactInput.candidateEvidence.source);},
   ]) rejectsClone(completion, mutate, completeMixedImpactRelease);
+});
+
+test("mixed completion rejects substituted candidate dependencies under the original approved plan", () => {
+  const {f, completion} = mixedCompletionFixture();
+  const before = JSON.stringify(completion);
+  rejectsClone(completion, (c) => {
+    const row = c.preparation.impactInput.candidateEvidence.source.functions[f.targets[0]];
+    row.dependencies[0][1] = hash("different candidate evidence");
+    row.sha256 = hash(row.dependencies);
+    c.preparation.impactInput.candidateEvidence.compiled = clone(c.preparation.impactInput.candidateEvidence.source);
+  }, completeMixedImpactRelease);
+  assert.equal(JSON.stringify(completion), before);
+  assert.equal(completeMixedImpactRelease(completion).ledger.functions.length, 7);
+});
+
+test("mixed completion rejects substituted index contracts even when receipt counts still match", () => {
+  const {completion} = mixedCompletionFixture();
+  const before = JSON.stringify(completion);
+  rejectsClone(completion, (c) => {
+    c.preparation.operatorIndexes.indexes[0].collectionGroup = "substituted";
+    c.preparation.candidateIndexes.indexes[0].collectionGroup = "substituted";
+  }, completeMixedImpactRelease);
+  assert.equal(JSON.stringify(completion), before);
+  assert.equal(completeMixedImpactRelease(completion).ledger.functions.length, 7);
+});
+
+test("mixed preparation rejects a deferred addition before any selected deployment", () => {
+  const {completion} = mixedCompletionFixture();
+  const before = JSON.stringify(completion);
+  rejectsClone(completion.preparation, (p) => {p.impactInput.selectedTargets.pop();}, prepareMixedImpactRelease);
+  assert.equal(JSON.stringify(completion), before);
+  assert.equal(completeMixedImpactRelease(completion).ledger.functions.length, 7);
+});
+
+test("mixed 578-to-579 fixture retains 574 exact rows and normalizes index aliases in the plan", () => {
+  const {completion} = mixedCompletionFixture({count: 578, changes: 4});
+  const before = JSON.stringify(completion);
+  const prior = initializeMixedFunctionLedger(completion.preparation.initialization);
+  const result = completeMixedImpactRelease(completion);
+  assert.equal(result.ledger.functions.length, 579);
+  assert.equal(result.coverage.selectedTargets.length, 5);
+  assert.equal(result.coverage.deferredImpactedTargets.length, 574);
+  assert.equal(result.ledger.coverageSourceSha, prior.coverageSourceSha);
+  assert.deepEqual(result.ledger.functions.slice(4, 578), prior.functions.slice(4));
+  for (const row of [...result.ledger.functions.slice(0, 4), result.ledger.functions[578]]) {
+    assert.equal(row.sourceSha, completion.preparation.candidateManifest.sourceSha);
+    assert.equal(row.paramsSha256, completion.preparation.candidateParamsSha256);
+  }
+  const equivalent = clone(completion);
+  for (const inventory of [equivalent.preparation.operatorIndexes, equivalent.preparation.candidateIndexes]) {
+    const field = inventory.indexes[0].fields[0];
+    field.mode = field.order; delete field.order;
+  }
+  assert.deepEqual(prepareMixedImpactRelease(equivalent.preparation), completion.plan);
+  assert.deepEqual(completeMixedImpactRelease(equivalent), result);
+  assert.equal(JSON.stringify(completion), before);
 });
 
 test("source and compiled evidence, dependency digests and full inventories must agree", () => {
