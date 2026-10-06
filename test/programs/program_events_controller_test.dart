@@ -16,6 +16,17 @@ OrganizerProgramListRow row(String id) => OrganizerProgramListRow(
   endsAt: DateTime.utc(2026, 1, 2),
   functionCount: 0,
 );
+OrganizerProgramListRow historyRow(String id) => OrganizerProgramListRow(
+  programId: id,
+  title: 'Past program',
+  kind: 'wedding',
+  status: 'completed',
+  timezone: 'UTC',
+  revision: 1,
+  startsAt: DateTime.utc(2025),
+  endsAt: DateTime.utc(2025, 1, 2),
+  functionCount: 0,
+);
 OrganizerProgramInventoryPage page(List<String> ids, [String? cursor]) =>
     OrganizerProgramInventoryPage(
       programs: ids.map(row).toList(),
@@ -222,6 +233,46 @@ void main() {
     await c.loadMore();
     expect(c.loadMoreError, isA<FormatException>());
     expect(c.state.value!.single.programId, 'a');
+  });
+
+  test(
+    'tab-aware continuation skips hidden pages until a matching row',
+    () async {
+      final calls = <String?>[];
+      final c = controller(({cursor, programId}) async {
+        calls.add(cursor);
+        return switch (cursor) {
+          null => page(['upcoming-a'], 'cursor-a'),
+          'cursor-a' => page(['upcoming-b'], 'cursor-b'),
+          _ => OrganizerProgramInventoryPage(programs: [historyRow('past-a')]),
+        };
+      });
+      addTearDown(c.dispose);
+      await c.refresh();
+      await c.loadMoreMatching((program) => program.status == 'completed');
+      expect(calls, [null, 'cursor-a', 'cursor-b']);
+      expect(c.state.value!.map((program) => program.programId), [
+        'upcoming-a',
+        'upcoming-b',
+        'past-a',
+      ]);
+      expect(c.hasMore, isFalse);
+    },
+  );
+
+  test('tab-aware continuation remains bounded for sparse results', () async {
+    var continuationReads = 0;
+    final c = controller(({cursor, programId}) async {
+      if (cursor == null) return page(['initial'], 'cursor-0');
+      continuationReads++;
+      return page(['upcoming-$continuationReads'], 'cursor-$continuationReads');
+    });
+    addTearDown(c.dispose);
+    await c.refresh();
+    await c.loadMoreMatching((program) => program.status == 'completed');
+    expect(continuationReads, programEventsMatchingPageReadLimit);
+    expect(c.hasMore, isTrue);
+    expect(c.state.value, hasLength(programEventsMatchingPageReadLimit + 1));
   });
 
   test(

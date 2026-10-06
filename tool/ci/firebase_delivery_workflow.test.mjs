@@ -689,6 +689,36 @@ test("one-time PROD operator caller retains protected review and cannot borrow a
   assert.doesNotMatch(caller, /firebase deploy|deploy_firebase_targets\.sh/);
 });
 
+test("five-Function caller pins the historical CI artifact and excludes wider backend mutation", () => {
+  const caller = workflow("selective-backend-release.yml");
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(caller, /release_kind:[\s\S]*- whatsapp-five[\s\S]*- legacy/);
+  assert.match(caller, /authorize:\s+name:[^\n]+\n    if: \$\{\{ inputs\.release_kind == 'legacy' \}\}/);
+  assert.match(caller, /authorize-whatsapp:[\s\S]*if: \$\{\{ inputs\.release_kind == 'whatsapp-five' \}\}/);
+  assert.match(caller, /confirm_whatsapp_five/);
+  assert.match(caller, /source_sha: 4dcd759a261f096bcf37d5f69e19eb625b0199b2/);
+  assert.match(caller, /base_sha: 5c10b958da8d1774a29990d568a52bc2987b936e/);
+  assert.match(caller, /source_ci_run_id: '37511803512'/);
+  assert.match(caller, /11435902710[\s\S]*sha256:f9dad63d1753188f57f50f74bcdbd771e9e11c6aff09642d43cfcbf0438d2a49/);
+  assert.match(caller, /prod-whatsapp:[\s\S]*needs: authorize-whatsapp[\s\S]*whatsapp_five_release: true/);
+  assert.match(promotion, /WHATSAPP_FIVE_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
+  assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.whatsapp_five_release/);
+  assert.match(promotion, /8081e1b83a091286b9d34c78f682b3bc985f3fcd4c19cf7c119d7e5238970a88/);
+  assert.match(promotion, /whatsapp_five_release\.mjs prepare[\s\S]*--output build\/delivery\/execution-plan\.json/);
+  assert.match(promotion, /cmp build\/delivery\/execution-plan\.json build\/delivery\/whatsapp-reverified-execution\.json/);
+  assert.match(promotion, /test "\$target" = 'functions:adminReviewCatchWhatsappInbound,functions:adminSendCatchWhatsappReply,functions:catchWhatsappWebhook,functions:onCatchWhatsappReplyOperationWritten,functions:onCatchWhatsappWebhookEventCreated'/);
+  assert.match(promotion, /whatsapp_five_release\.mjs params[\s\S]*catchGatesClosed/);
+  assert.match(promotion, /WHATSAPP_FIVE_RELEASE:-false}" != true/);
+  assert.match(promotion, /Require existing public invocation on three WhatsApp HTTP entrypoints[\s\S]*get-iam-policy "\$service"/);
+  assert.match(promotion, /gcloud run services get-iam-policy "\$service"/);
+  assert.match(promotion, /test "\$policy_hash" = "\$expected_hash"/);
+  assert.doesNotMatch(promotion, /gcloud run services (?:add-iam-policy-binding|set-iam-policy)/);
+  assert.doesNotMatch(promotion, /(?:gcloud )?secrets versions access|setIamPolicy|firebase deploy --only functions(?!:)/);
+  assert.match(promotion, /whatsapp_five_release\.mjs complete[\s\S]*whatsapp-five-selected-receipt\.json/);
+  assert.match(promotion, /coverage: "selected-physical-identities-only"|whatsapp-five-selected-prod-/);
+  assert.doesNotMatch(caller, /firebase deploy|deploy_firebase_targets\.sh|prod-backend|contents: write/);
+});
+
 test("one-time PROD approval rejects admin bypass and non-reviewer approvals", () => {
   const step = extractSteps(workflow("_firebase-promote.yml")).find((entry) =>
     entry.name === "Require recorded human PROD environment approval for operator release");

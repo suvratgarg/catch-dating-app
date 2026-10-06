@@ -25,6 +25,13 @@ typedef ProgramInventoryRead =
       String? cursor,
       String? programId,
     });
+typedef ProgramInventoryRowPredicate =
+    bool Function(OrganizerProgramListRow program);
+
+/// Caps one tab-aware continuation so a sparse lifecycle never causes an
+/// unbounded burst of inventory calls. A later tap may continue from the exact
+/// cursor retained after this window.
+const programEventsMatchingPageReadLimit = 8;
 
 final programCreateJournalProvider = Provider<ProgramCreateJournal>(
   (ref) => const ProgramCreateJournal(),
@@ -347,7 +354,15 @@ class ProgramEventsController extends ChangeNotifier {
     _notify();
   }
 
-  Future<void> loadMore() async {
+  Future<void> loadMore() => _loadMore(maxPages: 1);
+
+  Future<void> loadMoreMatching(ProgramInventoryRowPredicate matches) =>
+      _loadMore(matches: matches, maxPages: programEventsMatchingPageReadLimit);
+
+  Future<void> _loadMore({
+    ProgramInventoryRowPredicate? matches,
+    required int maxPages,
+  }) async {
     final cursor = _nextCursor;
     if (_disposed ||
         !_isActorCurrent() ||
@@ -362,29 +377,41 @@ class ProgramEventsController extends ChangeNotifier {
     _loadMoreError = null;
     _notify();
     try {
-      final page = await _fetchPage(cursor: cursor);
-      if (!_current(generation)) return;
-      final next = page.nextCursor;
-      if (next != null && !_seenCursors.add(next)) {
-        throw const FormatException('Program inventory cursor did not advance');
+      String? currentCursor = cursor;
+      for (var pageIndex = 0; pageIndex < maxPages; pageIndex++) {
+        final page = await _fetchPage(cursor: currentCursor);
+        if (!_current(generation)) return;
+        final next = page.nextCursor;
+        if (next != null && !_seenCursors.add(next)) {
+          throw const FormatException(
+            'Program inventory cursor did not advance',
+          );
+        }
+        // Merge repeated canonical IDs (including an anchored row later paged)
+        // without merging distinct programs that happen to share a title.
+        final rows = {for (final row in _state.value!) row.programId: row};
+        final addedMatchingRow =
+            matches != null &&
+            page.programs.any(
+              (row) => matches(row) && !rows.containsKey(row.programId),
+            );
+        for (final row in page.programs) {
+          rows[row.programId] = row;
+        }
+        final anchorRecovered =
+            _anchorReadFailed &&
+            page.programs.any((row) => row.programId == anchorId);
+        if (anchorRecovered) {
+          _anchorReadFailed = false;
+        }
+        final error = _state.error;
+        _state = error != null && (_pageReadFailed || _anchorReadFailed)
+            ? CatchAsyncState.staleData(List.unmodifiable(rows.values), error)
+            : CatchAsyncState.data(List.unmodifiable(rows.values));
+        _nextCursor = next;
+        currentCursor = next;
+        if (matches == null || addedMatchingRow || next == null) break;
       }
-      // Merge repeated canonical IDs (including an anchored row later paged)
-      // without merging distinct programs that happen to share a title.
-      final rows = {for (final row in _state.value!) row.programId: row};
-      for (final row in page.programs) {
-        rows[row.programId] = row;
-      }
-      final anchorRecovered =
-          _anchorReadFailed &&
-          page.programs.any((row) => row.programId == anchorId);
-      if (anchorRecovered) {
-        _anchorReadFailed = false;
-      }
-      final error = _state.error;
-      _state = error != null && (_pageReadFailed || _anchorReadFailed)
-          ? CatchAsyncState.staleData(List.unmodifiable(rows.values), error)
-          : CatchAsyncState.data(List.unmodifiable(rows.values));
-      _nextCursor = next;
     } catch (error) {
       if (_current(generation)) {
         _loadMoreError = error;

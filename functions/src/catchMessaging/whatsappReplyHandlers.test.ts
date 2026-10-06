@@ -17,6 +17,9 @@ import {parseCatchWhatsappWebhook, WEBHOOK_RETENTION_MILLIS} from
   "./whatsappWebhookProtocol";
 import {prepareCatchReplyProvider} from "./whatsappReplyProvider";
 import {processCatchWhatsappReceipt} from "./whatsappReceiptConsumer";
+import {createSyntheticCatchAuthority} from "./whatsappAuthorityTestHarness";
+import {CATCH_APP_AUTHORITIES} from "./whatsappAppAuthorityStore";
+import {CATCH_INGRESS_EVIDENCE} from "./whatsappIngressStore";
 
 const time = 1800000000000;
 const config: CatchReplyConfig = {enabled: true, atomicStopIngressReady: true,
@@ -36,15 +39,22 @@ function receipt(text = "Please help with my account", id = "wamid.handler") {
   })), config)[0];
 }
 function fixture(realDb?: Firestore) {
-  const fake = new FormPaymentTestStore();
+  const fake = Object.assign(new FormPaymentTestStore(), {
+    projectId: realDb ? String(Reflect.get(realDb, "projectId")) :
+      "demo-catch-authority",
+    databaseId: "(default)"});
   const db = realDb ?? fake as unknown as Firestore;
   const event = receipt();
   const original = {...event, receivedAtMillis: time,
     expiresAt: Timestamp.fromMillis(time + WEBHOOK_RETENTION_MILLIS)};
+  const authority = createSyntheticCatchAuthority(db, () => time + 1000,
+    config.recipientE164, fake.projectId);
+  authority.seedInto(fake.records, original);
   const readiness = {schemaVersion: 1, readinessId: catchReadinessId(config),
     wabaId: "123", phoneNumberId: "456", recipientUid: "participant",
     endpointHash: catchEndpointHash(config.recipientE164),
     purpose: "serviceSupport", state: "ready", completeHistory: true,
+    appAuthorityBindings: authority.bindings,
     historyFromMillis: 0, coveredThroughMillis: time,
     atomicIngressStartedAtMillis: time, evidenceSha256: "d".repeat(64),
     reviewedByUid: "owner", reviewedAtMillis: time,
@@ -56,6 +66,7 @@ function fixture(realDb?: Firestore) {
   let sends = 0; let credentialReads = 0;
   const rateActions: string[] = [];
   const deps = {config: () => ({...config}), db: () => db,
+    authority: () => authority.store,
     getUser: async (uid: string) => ({disabled: false,
       customClaims: uid === "owner" ? {adminOwner: true} : {support: true},
       phoneNumber: uid === "participant" ? config.recipientE164 : undefined}),
@@ -76,11 +87,13 @@ function fixture(realDb?: Firestore) {
   };
   const handlers = createCatchReplyHandlers(deps);
   const request = (data: unknown) => ({auth: {uid: "agent", token: {
-    support: true, auth_time: time / 1000}}, app: {appId: "mock-app"}, data}) as
+    support: true, auth_time: time / 1000}}, app: {appId: "mock-app"},
+  rawRequest: {header: () => "Bearer synthetic-current-id-token"}, data}) as
     unknown as CallableRequest<unknown>;
   const reviewRequest = request({purpose: "serviceSupport",
     inboundEventId: event.eventId});
   return {fake, db, event, original, readiness, readinessPath, deps, handlers,
+    authority,
     request, reviewRequest, rateActions, sends: () => sends,
     reads: () => credentialReads};
 }
@@ -137,6 +150,8 @@ test("send-time readiness is reread after review and credential preparation",
       reviewedInboundTextHash: reviewed.reviewedInboundTextHash,
       confirmSupportRequest: true, body: "Requested support"})));
     assert.equal(f.sends(), 0);
+    assert.equal(f.reads(), 1,
+      "the final gate must run after credential preparation");
     assert.equal([...f.fake.records.keys()].some((key) =>
       key.startsWith(CATCH_REPLY_OPERATIONS + "/")), false);
   });
@@ -159,6 +174,32 @@ test("shared rate limit blocks excess reviews and sends before credentials",
     assert.equal(f.reads(), 0);
   });
 
+test("faithful synthetic fixture still rejects changed authority, session " +
+  "and ingress proof", async () => {
+  const baseline = fixture();
+  const reviewed = await baseline.handlers.review(baseline.reviewRequest);
+  assert.equal(reviewed.inboundText,
+    baseline.event.text);
+  for (const changed of ["authority", "session", "ingress"] as const) {
+    const f = fixture();
+    const request = {...f.reviewRequest};
+    if (changed === "authority") {
+      f.fake.records.get(CATCH_APP_AUTHORITIES + "/owner")!.revision = 2;
+    }
+    if (changed === "session") {
+      Object.assign(request, {rawRequest: {
+        header: () => "Bearer wrong-synthetic-session"}});
+    }
+    if (changed === "ingress") {
+      f.fake.records.get(
+        CATCH_INGRESS_EVIDENCE + "/" + f.event.eventId)!.state = "blocked";
+    }
+    await assert.rejects(f.handlers.review(request));
+    assert.equal(f.reads(), 0);
+    assert.equal(f.sends(), 0);
+  }
+});
+
 test("exported callables stay disabled before database or credential access",
   async () => {
     const f = fixture();
@@ -178,6 +219,9 @@ test("authenticated mocked reply, delivery and STOP use real Firestore",
     const receiptPath = CATCH_RECEIPTS + "/" + f.event.eventId;
     const paths = [f.readinessPath, receiptPath];
     try {
+      for (const [key, row] of f.authority.rows) await db.doc(key).set(row);
+      await db.doc(CATCH_INGRESS_EVIDENCE + "/" + f.event.eventId)
+        .set(f.authority.ingress(f.original));
       await db.doc(f.readinessPath).set(f.readiness);
       await db.doc(receiptPath).set(f.original);
       const reviewed = await f.handlers.review(f.reviewRequest);
@@ -213,7 +257,8 @@ test("authenticated mocked reply, delivery and STOP use real Firestore",
     } finally {
       // Isolated synthetic emulator project: include rate counters and STOP.
       for (const collection of [CATCH_RECEIPTS, CATCH_REPLY_READINESS,
-        CATCH_REPLY_OPERATIONS, "catchWhatsappEndpointStops", "rateLimits"]) {
+        CATCH_REPLY_OPERATIONS, "catchWhatsappEndpointStops", "rateLimits",
+        CATCH_APP_AUTHORITIES, CATCH_INGRESS_EVIDENCE]) {
         await db.recursiveDelete(db.collection(collection));
       }
       await deleteApp(app);

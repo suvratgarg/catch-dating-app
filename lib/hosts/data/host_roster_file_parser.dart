@@ -12,9 +12,11 @@ import 'package:xml/xml.dart';
 String hostRosterImportKey({
   required EventAttendeeImportFormat format,
   required List<EventAttendeeImportRow> rows,
+  String? fileName,
 }) {
   final canonical = jsonEncode({
     'format': format.name,
+    'fileName': fileName,
     'rows': [
       for (final row in rows)
         {
@@ -22,6 +24,7 @@ String hostRosterImportKey({
           'displayName': row.displayName,
           'phone': row.phone,
           'email': row.email,
+          'cityMarketId': row.cityMarketId,
           'externalReference': row.externalReference,
           'arrivalGroup': row.arrivalGroup,
           'ticketType': row.ticketType,

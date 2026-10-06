@@ -57,6 +57,11 @@ on:
         required: false
         default: false
         type: boolean
+      whatsapp_five_release:
+        description: One pinned, reviewer-protected PROD release of five Catch WhatsApp Functions.
+        required: false
+        default: false
+        type: boolean
       wedding_phone_import_release:
         description: One pinned additive wedding import callable; DEV then human-approved PROD.
         required: false
@@ -114,6 +119,7 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
           REQUIRE_CURRENT_MAIN: ${{ inputs.require_current_main }}
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
@@ -129,8 +135,25 @@ jobs:
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$REQUIRE_CURRENT_MAIN" =~ ^(true|false)$ ]]
           [[ "$WEDDING_RELEASE" =~ ^(true|false)$ ]]
+          [[ "$WHATSAPP_FIVE_RELEASE" =~ ^(true|false)$ ]]
+          if [[ "$WHATSAPP_FIVE_RELEASE" == true ]]; then
+            test "$OPERATOR_RELEASE" = false
+            test "$WEDDING_RELEASE" = false
+            test "$DEPLOY_ENVIRONMENT" = prod
+            test "$APPROVAL_ENVIRONMENT" = prod
+            test "$GITHUB_REF" = refs/heads/main
+            test "$GITHUB_EVENT_NAME" = workflow_dispatch
+            test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
+            test "$SOURCE_SHA" = 4dcd759a261f096bcf37d5f69e19eb625b0199b2
+            test "$BASE_SHA" = 5c10b958da8d1774a29990d568a52bc2987b936e
+            test "$SOURCE_CI_RUN_ID" = 37511803512
+            test "$SOURCE_CI_RUN_ATTEMPT" = 1
+            test "$REQUIRE_CURRENT_MAIN" = false
+            test -z "$RESUME_RUN_ID"
+          fi
           if [[ "$WEDDING_RELEASE" == true ]]; then
             test "$OPERATOR_RELEASE" = false
+            test "$WHATSAPP_FIVE_RELEASE" = false
             [[ "$DEPLOY_ENVIRONMENT" =~ ^(dev|prod)$ ]]
             test "$APPROVAL_ENVIRONMENT" = "$DEPLOY_ENVIRONMENT"
             test "$GITHUB_REF" = refs/heads/main
@@ -144,6 +167,7 @@ jobs:
             test -z "$RESUME_RUN_ID"
           fi
           if [[ "${OPERATOR_RELEASE:-false}" == true ]]; then
+            test "$WHATSAPP_FIVE_RELEASE" = false
             test "$DEPLOY_ENVIRONMENT" = prod
             test "$APPROVAL_ENVIRONMENT" = prod
             test "$GITHUB_REF" = refs/heads/main
@@ -166,7 +190,7 @@ jobs:
           fi
 
       - name: Require recorded human PROD environment approval for operator release
-        if: ${{ inputs.operator_release || (inputs.wedding_phone_import_release && inputs.environment == 'prod') }}
+        if: ${{ inputs.operator_release || inputs.whatsapp_five_release || (inputs.wedding_phone_import_release && inputs.environment == 'prod') }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -207,6 +231,7 @@ jobs:
           SOURCE_CHECKOUT: build/delivery/source-checkout
           SOURCE_SHA: ${{ inputs.source_sha }}
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
@@ -222,6 +247,11 @@ jobs:
             node tool/ci/wedding_phone_import_release.mjs source \
               --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
               --source-root "$SOURCE_CHECKOUT"
+          fi
+          if [[ "${WHATSAPP_FIVE_RELEASE:-false}" == true ]]; then
+            git -C "$SOURCE_CHECKOUT" diff --quiet "$SOURCE_SHA" refs/remotes/origin/main -- \
+              functions/src functions/package.json functions/package-lock.json \
+              functions/scripts/set-callable-invokers-public.cjs firebase.json .firebaserc
           fi
           if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
             test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
@@ -292,6 +322,7 @@ jobs:
           BASE_SHA: ${{ inputs.base_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
@@ -312,6 +343,11 @@ jobs:
           if [[ "${WEDDING_RELEASE:-false}" == true ]]; then
             printf '%s  %s\n' \
               b9c6be577d1aab3d95189c104387580baa46e32c6df01b70da62fc63edf18ac9 \
+              build/delivery/source/firebase-backend.tar.gz | sha256sum --check --status
+          fi
+          if [[ "${WHATSAPP_FIVE_RELEASE:-false}" == true ]]; then
+            printf '%s  %s\n' \
+              8081e1b83a091286b9d34c78f682b3bc985f3fcd4c19cf7c119d7e5238970a88 \
               build/delivery/source/firebase-backend.tar.gz | sha256sum --check --status
           fi
           mkdir -p build/delivery/package
@@ -351,6 +387,11 @@ jobs:
               --baseline-deployment build/delivery/operator-baseline/functions-deployment.json \
               --output-plan build/delivery/execution-plan.json \
               --output-preparation build/delivery/operator-preparation.json
+          elif [[ "${WHATSAPP_FIVE_RELEASE:-false}" == true ]]; then
+            node tool/ci/whatsapp_five_release.mjs prepare \
+              --manifest build/delivery/source/firebase-provenance.json \
+              --package-plan build/delivery/package-plan.json \
+              --output build/delivery/execution-plan.json
           elif [[ "${WEDDING_RELEASE:-false}" == true ]]; then
             node tool/ci/wedding_phone_import_release.mjs prepare \
               --manifest build/delivery/source/firebase-provenance.json \
@@ -570,6 +611,35 @@ jobs:
             --candidate-indexes build/delivery/package/firestore.indexes.json \
             --baseline-deployment build/delivery/operator-baseline/functions-deployment.json
 
+      - name: Capture the five currently serving PROD identities
+        if: ${{ inputs.whatsapp_five_release }}
+        run: |
+          set -euo pipefail
+          node tool/ci/whatsapp_five_release.mjs before \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --package-plan build/delivery/package-plan.json \
+            --output build/delivery/whatsapp-five-before.json
+
+      - name: Require existing public invocation on three WhatsApp HTTP entrypoints
+        if: ${{ inputs.whatsapp_five_release }}
+        run: |
+          set -euo pipefail
+          umask 077
+          : > build/delivery/whatsapp-five-invoker-policy-hashes.txt
+          for callable in adminReviewCatchWhatsappInbound adminSendCatchWhatsappReply catchWhatsappWebhook; do
+            service="$(jq -er --arg target "functions:$callable" '
+              (.selectedTargets | index($target)) as $index |
+              .functions[$index].service | split("/")[-1]
+            ' build/delivery/whatsapp-five-before.json)"
+            policy="$(gcloud run services get-iam-policy "$service" \
+              --project catch-dating-app-64e51 --region asia-south1 --format=json)"
+            jq -e 'any(.bindings[]?; .role == "roles/run.invoker" and .condition == null and
+              ((.members // []) | index("allUsers") != null))' <<< "$policy" > /dev/null
+            policy_hash="$(jq -cS 'del(.etag) | .bindings |= ((. // []) | map(.members |= ((. // []) | sort)) |
+              sort_by(.role, (.condition.expression // "")))' <<< "$policy" | sha256sum | cut -d ' ' -f1)"
+            printf '%s %s\n' "$callable" "$policy_hash" >> build/delivery/whatsapp-five-invoker-policy-hashes.txt
+          done
+
       - name: Snapshot additive callable absence and every retained resource
         if: ${{ inputs.wedding_phone_import_release }}
         env:
@@ -660,6 +730,7 @@ jobs:
         env:
           BASE_SHA: ${{ inputs.base_sha }}
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
@@ -704,6 +775,12 @@ jobs:
               --output-preparation build/delivery/operator-reverified-preparation.json
             cmp build/delivery/execution-plan.json build/delivery/operator-reverified-execution.json
             cmp build/delivery/operator-preparation.json build/delivery/operator-reverified-preparation.json
+          elif [[ "${WHATSAPP_FIVE_RELEASE:-false}" == true ]]; then
+            node tool/ci/whatsapp_five_release.mjs prepare \
+              --manifest build/delivery/source/firebase-provenance.json \
+              --package-plan build/delivery/reverified-plan.json \
+              --output build/delivery/whatsapp-reverified-execution.json
+            cmp build/delivery/execution-plan.json build/delivery/whatsapp-reverified-execution.json
           elif [[ "${WEDDING_RELEASE:-false}" == true ]]; then
             node tool/ci/wedding_phone_import_release.mjs prepare \
               --manifest build/delivery/source/firebase-provenance.json \
@@ -771,6 +848,16 @@ jobs:
             echo "Verified package has no Functions payload; skipping Functions parameter materialization."
           fi
 
+      - id: whatsapp_params
+        name: Prove four Catch gates remain closed in generated deploy params
+        if: ${{ inputs.whatsapp_five_release }}
+        run: |
+          set -euo pipefail
+          result="$(node tool/ci/whatsapp_five_release.mjs params \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51)"
+          test "$(jq -r '.catchGatesClosed' <<< "$result")" = true
+          echo "sha256=$(jq -er '.paramsSha256' <<< "$result")" >> "$GITHUB_OUTPUT"
+
       - name: Gate Functions param coverage before any deploy mutation
         if: ${{ steps.verify.outputs.has_functions == 'true' }}
         env:
@@ -815,6 +902,7 @@ jobs:
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
           SOURCE_SHA: ${{ inputs.source_sha }}
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
+          WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
@@ -867,6 +955,17 @@ jobs:
               --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
               --source-root "$SOURCE_CHECKOUT"
           fi
+            if [[ "${WHATSAPP_FIVE_RELEASE:-false}" == true ]]; then
+              git -C "$SOURCE_CHECKOUT" diff --quiet "$SOURCE_SHA" refs/remotes/origin/main -- \
+                functions/src functions/package.json functions/package-lock.json \
+                functions/scripts/set-callable-invokers-public.cjs firebase.json .firebaserc
+              test "$stage" = functions
+              test "$target" = 'functions:adminReviewCatchWhatsappInbound,functions:adminSendCatchWhatsappReply,functions:catchWhatsappWebhook,functions:onCatchWhatsappReplyOperationWritten,functions:onCatchWhatsappWebhookEventCreated'
+              result="$(node tool/ci/whatsapp_five_release.mjs params \
+                --params-file "$DELIVERY_FUNCTIONS_DIR/.env.$PROJECT_ID")"
+              test "$(jq -r '.catchGatesClosed' <<< "$result")" = true
+              test "$(jq -er '.paramsSha256' <<< "$result")" = "${{ steps.whatsapp_params.outputs.sha256 }}"
+            fi
             if [[ "${WEDDING_RELEASE:-false}" == true ]]; then
               test "$stage" = functions
               test "$target" = functions:importWeddingPhoneContacts
@@ -935,11 +1034,36 @@ jobs:
               # The additive caller requires the source-declared public IAM
               # policy already established by Firebase deployment. It never runs
               # an IAM repair command or relaxes ordinary full parity.
-              if [[ "$stage_status" == "0" && "${WEDDING_RELEASE:-false}" != true ]]; then
+              if [[ "$stage_status" == "0" && "${WEDDING_RELEASE:-false}" != true && "${WHATSAPP_FIVE_RELEASE:-false}" != true ]]; then
                 CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
                   CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
                   ./tool/deploy_firebase_targets.sh --functions-postconditions-only \
                     "$DEPLOY_ENVIRONMENT" "$target" "${deploy_args[@]}" || stage_status=$?
+              fi
+              if [[ "$stage_status" == "0" && "${WHATSAPP_FIVE_RELEASE:-false}" == true ]]; then
+                # The five-selector rollout has no authority to repair IAM or
+                # assert full-export parity. Check the three existing HTTP
+                # entrypoints without writing Cloud Run policy.
+                for callable in adminReviewCatchWhatsappInbound adminSendCatchWhatsappReply catchWhatsappWebhook; do
+                  service="$(jq -er --arg target "functions:$callable" '
+                    (.targets | index($target)) as $index |
+                    .functions[$index].service | split("/")[-1]
+                  ' build/delivery/checkpoint/functions-deployment.json)" || stage_status=$?
+                  if [[ "$stage_status" != "0" ]]; then break; fi
+                  policy="$(gcloud run services get-iam-policy "$service" \
+                    --project "$PROJECT_ID" --region asia-south1 --format=json)" || stage_status=$?
+                  if [[ "$stage_status" != "0" ]]; then break; fi
+                  jq -e 'any(.bindings[]?; .role == "roles/run.invoker" and .condition == null and
+                    ((.members // []) | index("allUsers") != null))' <<< "$policy" > /dev/null || stage_status=$?
+                  if [[ "$stage_status" != "0" ]]; then break; fi
+                  policy_hash="$(jq -cS 'del(.etag) | .bindings |= ((. // []) | map(.members |= ((. // []) | sort)) |
+                    sort_by(.role, (.condition.expression // "")))' <<< "$policy" | sha256sum | cut -d ' ' -f1)" || stage_status=$?
+                  if [[ "$stage_status" != "0" ]]; then break; fi
+                  expected_hash="$(awk -v target="$callable" '$1 == target {print $2}' \
+                    build/delivery/whatsapp-five-invoker-policy-hashes.txt)"
+                  test "$policy_hash" = "$expected_hash" || stage_status=$?
+                  if [[ "$stage_status" != "0" ]]; then break; fi
+                done
               fi
               if [[ "$stage_status" == "0" ]]; then
                 node tool/firebase/check_environment_readiness.mjs \
@@ -1020,6 +1144,27 @@ jobs:
             --source-root build/delivery/source-checkout --source-sha "$SOURCE_SHA" \
             --candidate build/delivery/secret-bindings.json --phase deployed
 
+      - name: Prove exact-five serving revisions and selected-only completion
+        if: ${{ inputs.whatsapp_five_release }}
+        run: |
+          set -euo pipefail
+          node tool/ci/whatsapp_five_release.mjs complete \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --package-plan build/delivery/package-plan.json \
+            --before build/delivery/whatsapp-five-before.json \
+            --deployment build/delivery/checkpoint/functions-deployment.json \
+            --params-sha256 '${{ steps.whatsapp_params.outputs.sha256 }}' \
+            --output build/delivery/whatsapp-five-selected-receipt.json
+
+      - name: Upload selected-only five-Function receipt
+        if: ${{ inputs.whatsapp_five_release && success() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: whatsapp-five-selected-prod-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: build/delivery/whatsapp-five-selected-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
       - id: wedding_proof
         name: Prove exact-one serving identity and unchanged retained state
         if: ${{ inputs.wedding_phone_import_release }}
@@ -1050,7 +1195,7 @@ jobs:
           retention-days: 90
 
       - name: Verify active rules match the exact approved source
-        if: ${{ !inputs.wedding_phone_import_release }}
+        if: ${{ !inputs.wedding_phone_import_release && !inputs.whatsapp_five_release }}
         env:
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
         run: >-
@@ -1085,7 +1230,7 @@ jobs:
         if: ${{ always() && hashFiles('build/delivery/checkpoint/checkpoint.json') != '' }}
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.wedding_phone_import_release && 'wedding-firebase-checkpoint' || inputs.operator_release && 'operator-firebase-checkpoint' || 'firebase-checkpoint' }}-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          name: ${{ inputs.whatsapp_five_release && 'whatsapp-five-firebase-checkpoint' || inputs.wedding_phone_import_release && 'wedding-firebase-checkpoint' || inputs.operator_release && 'operator-firebase-checkpoint' || 'firebase-checkpoint' }}-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
           path: |
             build/delivery/checkpoint/checkpoint.json
             build/delivery/checkpoint/functions-deployment.json

@@ -18,6 +18,7 @@ import type {EventOfferPaymentSnapshot} from "./eventOfferPaymentSnapshot";
 import type {EventOfferManualPayment} from "./eventOfferManualPayment";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
 import type {QueryOrganizerFormResponsesCallablePayload} from "./queryOrganizerFormResponsesCallablePayload";
+import type {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallablePayload";
 
 /**
  * Schema-derived Admin SDK Firestore document types.
@@ -550,6 +551,318 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Private resumable Host review state for one existing event roster upload.
+ */
+export interface HostRosterIntakeSessionDocument {
+  draft: {
+    sessionId: string;
+    hostUid: string;
+    organizerId: string;
+    eventId: string;
+    fileFingerprint: string;
+    fileName: string;
+    format: "csv" | "xlsx";
+    /**
+     * @minItems 1
+     * @maxItems 40
+     */
+    headers: string[];
+    mapping: {
+      displayName?: number;
+      phone?: number;
+      email?: number;
+      city?: number;
+      externalReference?: number;
+      arrivalGroup?: number;
+      ticketType?: number;
+      revenueAmount?: number;
+      revenueCurrency?: number;
+      status?: number;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 250
+     */
+    sourceManifest: {
+      rowId: string;
+      sourceRowNumber: number;
+      rawEvidenceHash: string;
+      originalValue: {
+        rowId: string;
+        displayName: string;
+        phone?: string | null;
+        email?: string | null;
+        cityMarketId?: string | null;
+        externalReference?: string | null;
+        arrivalGroup?: string | null;
+        ticketType?: string | null;
+        revenueAmountMinor?: number | null;
+        revenueCurrency?: string | null;
+        revenueSource?: "hostImport" | "hostEstimate" | null;
+        status: "invited" | "registered" | "waitlisted";
+      };
+      originalFields: {
+        displayName?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        phone?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        email?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        cityMarketId?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        externalReference?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        arrivalGroup?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        ticketType?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        revenueAmountMinor?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        revenueCurrency?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        revenueSource?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        status?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+      };
+    }[];
+    revision: number;
+    state: "review" | "applied";
+    /**
+     * @minItems 1
+     * @maxItems 250
+     */
+    rows: {
+      value: {
+        rowId: string;
+        displayName: string;
+        phone?: string | null;
+        email?: string | null;
+        cityMarketId?: string | null;
+        externalReference?: string | null;
+        arrivalGroup?: string | null;
+        ticketType?: string | null;
+        revenueAmountMinor?: number | null;
+        revenueCurrency?: string | null;
+        revenueSource?: "hostImport" | "hostEstimate" | null;
+        status: "invited" | "registered" | "waitlisted";
+      };
+      sourceRowNumber: number;
+      fields: {
+        displayName?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        phone?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        email?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        cityMarketId?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        externalReference?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        arrivalGroup?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        ticketType?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        revenueAmountMinor?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        revenueCurrency?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        revenueSource?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+        status?: {
+          column: number;
+          header: string;
+          origin: "upload" | "hostCorrection" | "modelProposal";
+          confidence: number | null;
+        };
+      };
+      /**
+       * @maxItems 40
+       */
+      rawCells?: string[];
+      /**
+       * @maxItems 10
+       */
+      issues?: string[];
+    }[];
+    /**
+     * @maxItems 250
+     */
+    excludedRowIds: string[];
+    appliedImportId: string | null;
+  };
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Private exact reviewed payload and outcome used for lost-response replay.
+ */
+export interface HostRosterIntakeReceiptDocument {
+  importId: string;
+  appliedAtMillis: number;
+  preview: {
+    sessionId: string;
+    revision: number;
+    reviewHash: string;
+    /**
+     * @minItems 1
+     * @maxItems 250
+     */
+    rows: {
+      rowId: string;
+      sourceRowNumber: number;
+      displayName: string;
+      externalReference: string | null;
+      attendeeId: string | null;
+      kind:
+        | "add"
+        | "update"
+        | "unchanged"
+        | "excluded"
+        | "needsReview"
+        | "identityConflict";
+      /**
+       * @maxItems 11
+       */
+      changedFields: (
+        | "displayName"
+        | "phone"
+        | "email"
+        | "cityMarketId"
+        | "externalReference"
+        | "arrivalGroup"
+        | "ticketType"
+        | "revenueAmountMinor"
+        | "revenueCurrency"
+        | "revenueSource"
+        | "status"
+      )[];
+      /**
+       * @maxItems 11
+       */
+      fieldChanges: {
+        field:
+          | "displayName"
+          | "phone"
+          | "email"
+          | "cityMarketId"
+          | "externalReference"
+          | "arrivalGroup"
+          | "ticketType"
+          | "revenueAmountMinor"
+          | "revenueCurrency"
+          | "revenueSource"
+          | "status";
+        currentValue: string | null;
+        proposedValue: string | null;
+        origin:
+          | "upload"
+          | "hostCorrection"
+          | "modelProposal"
+          | "default"
+          | null;
+      }[];
+      issueCode: string | null;
+    }[];
+    counts: {
+      add: number;
+      update: number;
+      unchanged: number;
+      excluded: number;
+      needsReview: number;
+      identityConflict: number;
+    };
+    eligibleForApply: boolean;
+  };
+  payload: ImportEventAttendeesCallablePayload;
+}
+
+/**
  * Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.
  */
 export interface ProgramLodgingConfigDocument {
@@ -911,6 +1224,32 @@ export interface CatchWhatsappReplyOperationDocument {
   createdAtMillis: number;
   updatedAtMillis: number;
   readinessEvidenceHash: string;
+  appAuthorityBindings?: {
+    actor: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    reviewer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    recipient: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+  };
 }
 
 /**
@@ -926,6 +1265,76 @@ export interface CatchWhatsappEndpointStopDocument {
   sourceMessageId: string;
   payloadHash: string;
   observedAtMillis: number;
+}
+
+/**
+ * Server-only durable project/UID/incarnation-bound capability authority. Missing records deny; no TTL, bootstrap, raw endpoint or credential. Mutations require an audited full-span Auth fence.
+ */
+export interface CatchWhatsappAppAuthorityDocument {
+  schemaVersion: 1;
+  projectId: string;
+  uid: string;
+  revision: number;
+  incarnation: string | null;
+  state: "denied" | "granting" | "active";
+  authNotBeforeSeconds: number;
+  updatedAtMillis: number;
+  /**
+   * @maxItems 3
+   */
+  capabilities: ("review" | "reply" | "receive")[];
+  endpointHash: string | null;
+  pending: {
+    nonce: string;
+    issuer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 3
+     */
+    capabilities: ("review" | "reply" | "receive")[];
+    endpointHash: string | null;
+    expiresAtMillis: number;
+  } | null;
+  grantedBy: {
+    projectId: string;
+    uid: string;
+    revision: number;
+    incarnation: string;
+    capability: "review" | "reply" | "receive";
+    endpointHash: string | null;
+  } | null;
+}
+
+/**
+ * Body-free durable semantic collision fence captured only after authenticated exact-sender ingress. Hashes never establish source completeness, consent or STOP absence. Blocked events cannot be reactivated; no TTL.
+ */
+export interface CatchWhatsappIngressEvidenceDocument {
+  schemaVersion: 1;
+  eventId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  endpointHash: string | null;
+  materialSha256: string;
+  eventKind: "inbound" | "status";
+  classification: "text" | "stop" | "status" | "ambiguous";
+  ambiguity:
+    | (
+        | "unresolved-endpoint"
+        | "truncated-text"
+        | "unsupported-message"
+        | "missing-text"
+        | "invalid-status-errors"
+      )
+    | null;
+  state: "accepted" | "blocked";
+  receivedAtMillis: number;
 }
 
 /**
@@ -948,6 +1357,24 @@ export interface CatchWhatsappReplyReadinessDocument {
   reviewedByUid: string;
   reviewedAtMillis: number;
   expiresAtMillis: number;
+  appAuthorityBindings?: {
+    reviewer: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+    recipient: {
+      projectId: string;
+      uid: string;
+      revision: number;
+      incarnation: string;
+      capability: "review" | "reply" | "receive";
+      endpointHash: string | null;
+    };
+  };
 }
 
 export interface OrganizerTrackingSettingsDocument {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -24,6 +26,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+typedef HostProgramsLoadMoreCallback = void Function(HostEventsView view);
 
 class HostEventsClubCard extends ConsumerWidget {
   const HostEventsClubCard({
@@ -110,7 +114,13 @@ class HostEventsClubCard extends ConsumerWidget {
         hasMorePrograms: programController?.hasMore ?? false,
         loadingMorePrograms: programController?.loadingMore ?? false,
         programPageError: programController?.loadMoreError,
-        onLoadMorePrograms: programController?.loadMore,
+        onLoadMorePrograms: programController == null
+            ? null
+            : (view) => unawaited(
+                programController.loadMoreMatching(
+                  (program) => _programBelongsToView(program, view, now),
+                ),
+              ),
         now: now,
         onRetryPrograms: programController?.refresh,
         onOpenProgram: (program) async {
@@ -183,7 +193,7 @@ class HostEventsClubSection extends StatefulWidget {
   final bool hasMorePrograms;
   final bool loadingMorePrograms;
   final Object? programPageError;
-  final VoidCallback? onLoadMorePrograms;
+  final HostProgramsLoadMoreCallback? onLoadMorePrograms;
   final Club club;
   final HostEventsWorkspaceState state;
   final HostEventEntryState entryState;
@@ -201,23 +211,58 @@ class HostEventsClubSection extends StatefulWidget {
 class _HostEventsClubSectionState extends State<HostEventsClubSection>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs;
+  final Set<HostEventsView> _autoAdvancedProgramViews = {};
 
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: HostEventsView.values.length, vsync: this);
+    _tabs.addListener(_scheduleProgramAutoAdvance);
+    _scheduleProgramAutoAdvance();
   }
 
   @override
   void didUpdateWidget(HostEventsClubSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.club.id != widget.club.id) _tabs.index = 0;
+    if (oldWidget.club.id != widget.club.id) {
+      _autoAdvancedProgramViews.clear();
+      _tabs.index = 0;
+    }
+    if (oldWidget.programs != widget.programs ||
+        oldWidget.hasMorePrograms != widget.hasMorePrograms ||
+        oldWidget.loadingMorePrograms != widget.loadingMorePrograms) {
+      _scheduleProgramAutoAdvance();
+    }
   }
 
   @override
   void dispose() {
+    _tabs.removeListener(_scheduleProgramAutoAdvance);
     _tabs.dispose();
     super.dispose();
+  }
+
+  void _scheduleProgramAutoAdvance() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final view = HostEventsView.values[_tabs.index];
+      final programs = widget.programs.value;
+      if (programs == null ||
+          widget.onLoadMorePrograms == null ||
+          !widget.hasMorePrograms ||
+          widget.loadingMorePrograms ||
+          programs.any(
+            (program) => _programBelongsToView(
+              program,
+              view,
+              widget.now ?? DateTime.now(),
+            ),
+          ) ||
+          !_autoAdvancedProgramViews.add(view)) {
+        return;
+      }
+      widget.onLoadMorePrograms!(view);
+    });
   }
 
   @override
@@ -266,7 +311,9 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
                 hasMorePrograms: widget.hasMorePrograms,
                 loadingMorePrograms: widget.loadingMorePrograms,
                 programPageError: widget.programPageError,
-                onLoadMorePrograms: widget.onLoadMorePrograms,
+                onLoadMorePrograms: widget.onLoadMorePrograms == null
+                    ? null
+                    : () => widget.onLoadMorePrograms!(view),
                 view: view,
                 state: widget.state,
                 onRetryEvents: widget.onRetryEvents,
@@ -356,16 +403,7 @@ class HostEventsTimelinePage extends StatelessWidget
     final upcoming = view == HostEventsView.upcoming;
     final clock = now ?? DateTime.now();
     final programRows = (programs.value ?? const <OrganizerProgramListRow>[])
-        .where((program) {
-          // Draft programs stay discoverable while they are being configured.
-          final history =
-              program.isArchived ||
-              program.status == 'completed' ||
-              (program.status != 'draft' &&
-                  program.endsAt != null &&
-                  !program.endsAt!.isAfter(clock));
-          return upcoming != history;
-        })
+        .where((program) => _programBelongsToView(program, view, clock))
         .toList(growable: false);
     final sections = upcoming ? state.activeSections : state.pastSections;
     final pageError = upcoming ? state.activeLoadMoreError : state.pastError;
@@ -618,6 +656,21 @@ CatchRecordLayout hostEventRecordLayout(
       ),
     ),
   );
+}
+
+bool _programBelongsToView(
+  OrganizerProgramListRow program,
+  HostEventsView view,
+  DateTime now,
+) {
+  // Draft programs stay discoverable while they are being configured.
+  final history =
+      program.isArchived ||
+      program.status == 'completed' ||
+      (program.status != 'draft' &&
+          program.endsAt != null &&
+          !program.endsAt!.isAfter(now));
+  return (view == HostEventsView.upcoming) != history;
 }
 
 Future<void> _changeProgramLifecycle(

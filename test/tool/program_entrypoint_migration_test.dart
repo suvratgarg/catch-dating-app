@@ -26,8 +26,9 @@ void main() {
           root,
         ).listSync(recursive: true).whereType<File>()) {
           if (file.path.endsWith('.dart') &&
-              retiredSymbols.hasMatch(file.readAsStringSync()))
+              retiredSymbols.hasMatch(file.readAsStringSync())) {
             violations.add(file.path);
+          }
         }
       }
       expect(violations, isEmpty);

@@ -244,6 +244,57 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('Events advances Programs with the selected lifecycle tab', (
+    tester,
+  ) async {
+    final loadedViewNames = <String>[];
+    final program = OrganizerProgramListRow(
+      programId: 'upcoming-program',
+      title: 'Wedding weekend',
+      kind: 'wedding',
+      status: 'draft',
+      timezone: 'Asia/Kolkata',
+      revision: 1,
+      startsAt: _now,
+      endsAt: _now.add(const Duration(days: 3)),
+      functionCount: 4,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: HostEventsClubSection(
+          club: _club,
+          now: _now,
+          state: HostEventsWorkspaceState.fromEvents(
+            events: const [],
+            now: _now,
+          ),
+          entryState: HostEventEntryState.resolve(organizerId: _club.id),
+          programs: CatchAsyncState.data([program]),
+          hasMorePrograms: true,
+          onLoadMorePrograms: (view) => loadedViewNames.add(view.name),
+          onLoadMoreActive: () {},
+          onLoadMorePast: () {},
+          onRetryPast: () {},
+          onEventEntrySelected: (_, _, _) {},
+          onManageEvent: (_, _) {},
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(loadedViewNames, isEmpty);
+    await tester.tap(find.text('Past').hitTestable());
+    await tester.pumpAndSettle();
+    expect(loadedViewNames, ['past']);
+    await tester.tap(
+      find.byKey(const ValueKey('host-programs-load-more-past')),
+    );
+    expect(loadedViewNames, ['past', 'past']);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Future<void> _pump(

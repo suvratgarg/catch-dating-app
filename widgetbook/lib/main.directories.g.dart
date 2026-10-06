@@ -8938,6 +8938,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostRosterIntakeReviewSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Adds, updates, and identity conflicts',
+                    builder:
+                        _widgetbook_workspace_hosts_host_roster_import_use_cases
+                            .hostRosterIntakeReviewSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostRosterMappingField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

@@ -82,7 +82,11 @@ class CreateEventController extends _$CreateEventController {
       .read(eventAttendeeRepositoryProvider)
       .importAttendees(
         eventId: eventId,
-        importKey: hostRosterImportKey(format: plan.format, rows: plan.rows),
+        importKey: hostRosterImportKey(
+          format: plan.format,
+          rows: plan.rows,
+          fileName: plan.fileName,
+        ),
         fileName: plan.fileName,
         format: plan.format,
         rows: plan.rows,
