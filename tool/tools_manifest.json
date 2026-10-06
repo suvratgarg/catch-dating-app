@@ -231,7 +231,7 @@
       "impactPaths": [
         "tool/git/worktree_guard.test.mjs"
       ],
-      "description": "Adds a thin local safety boundary around ordinary Git worktrees: exact bases, disjoint claimed paths, dirty/out-of-scope diagnosis, protected closeout, and attributable clean-only abandonment. It never installs, validates, pushes, or deletes worktrees.",
+      "description": "Thin ordinary-Git task safety: exact bases, disjoint claims, protected handoff/abandonment, and dry-run guarded retirement with accepted-source equivalence, preserved recovery, manual owner clearance and non-forced worktree removal. Never installs, validates, pushes, deletes refs or authorizes cleanup.",
       "checks": [
         "node --check tool/git/worktree_guard.mjs",
         "node --test tool/git/worktree_guard.test.mjs",
@@ -250,7 +250,15 @@
           "finish refuses uncommitted, upstream-less, and unpushed unique work",
           "finish abandon releases clean unpushed out-of-scope work with an attributable record",
           "finish abandon requires a reason and refuses a dirty worktree",
-          "stale reports old claims and unclaimed worktrees without deleting either"
+          "stale reports old claims and unclaimed worktrees without deleting either",
+          "retire reports before applying and repeated merged closeout is idempotent",
+          "retire proves full squash paths and keeps unique history in local and live remote refs",
+          "retire refuses partial squash incorporation, stale main and stale remote recovery",
+          "retire preserves dirty, untracked, ignored files and common stashes",
+          "retire requires exact identity, external clearance and no foreign active claims",
+          "retire retains the claim after a normal Git refusal and never forces removal",
+          "retire treats pattern-bearing task filenames literally during squash verification",
+          "retire refuses omitted filenames with leading Git pathspec magic"
         ]
       }
     },
@@ -667,7 +675,9 @@
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "impactPaths": [
         "tool/ci/operator_prod_release.test.mjs",
@@ -698,7 +708,9 @@
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "impactPaths": [
         "tool/ci/operator_source_compatibility.test.mjs",
@@ -2771,7 +2783,10 @@
       "description": "Validates live or emulator Firestore data invariants; checks use offline fixtures only.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "functions-npm"]
+        "setup": [
+          "node",
+          "functions-npm"
+        ]
       },
       "impactPaths": [
         "tool/data/validate_firestore_data.mjs",
@@ -7637,6 +7652,39 @@
           "cancellation during the final identity recheck revokes reuse"
         ]
       }
+    },
+    {
+      "id": "ci:wedding-phone-import-release",
+      "category": "ci",
+      "path": "tool/ci/wedding_phone_import_release.mjs",
+      "command": "node --test tool/ci/wedding_phone_import_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/wedding_phone_import_release.test.mjs",
+        ".github/workflows/wedding-phone-import-release.yml",
+        ".github/workflows/_firebase-promote.yml"
+      ],
+      "description": "One pinned additive wedding phone import callable, DEV receipt then protected human PROD approval, unchanged retained resources and closed activation controls.",
+      "checks": [
+        "node --check tool/ci/wedding_phone_import_release.mjs",
+        "node --test tool/ci/wedding_phone_import_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/wedding_phone_import_release.test.mjs"
+      },
+      "alsoCheckIds": [
+        "ci:firebase-functions-checkpoint",
+        "ci:operator-prod-selective-release"
+      ]
     }
   ]
 }
