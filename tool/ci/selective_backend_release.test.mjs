@@ -1,18 +1,33 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
+import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
-import {createCheckpointState, PROVENANCE_SCHEMA} from "./delivery_core.mjs";
+import {createCheckpointState, recordStageCheckpoint, PROVENANCE_SCHEMA} from "./delivery_core.mjs";
 import {FUNCTIONS_DEPLOYMENT_SCHEMA} from "./firebase_functions_checkpoint.mjs";
 import {FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
 import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger, initializeMixedFunctionLedger,
   completeSelectiveRelease, verifyLedgerLiveIdentities, assessSelectiveRuntimeImpact,
   prepareMixedImpactRelease, completeMixedImpactRelease,
+  prepareBaselineImpactRelease, completeBaselineImpactRelease,
   SELECTIVE_IMPACT_SCHEMA} from "./selective_backend_release.mjs";
 
 const hash = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const clone = structuredClone;
 const scope = "firebase:dev:demo-project";
 const invalid = /^Error: Invalid selective backend release evidence\.$/;
+function liveMetadata(row) {
+  const revision = `${row.service}/revisions/${row.revision}`;
+  return {name: row.name, state: "ACTIVE", environment: "GEN_2", updateTime: row.updateTime,
+    buildConfig: {build: row.build, sourceProvenance: {resolvedStorageSource: clone(row.source)}},
+    serviceConfig: {service: row.service, revision: row.revision},
+    runService: {name: row.service, uid: row.serviceUid, generation: row.serviceGeneration,
+      observedGeneration: row.serviceGeneration, latestReadyRevision: revision, latestCreatedRevision: revision,
+      terminalCondition: {state: "CONDITION_SUCCEEDED"},
+      trafficStatuses: [{type: "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST", percent: 100}]}};
+}
 function manifest(sha, run) {
   return {schema: PROVENANCE_SCHEMA, sourceSha: sha, sourceCiRunId: run, sourceCiRunAttempt: "2",
     artifact: {name: "firebase-backend.tar.gz", sizeBytes: 123, sha256: hash([sha, run])},
@@ -264,6 +279,170 @@ test("mixed 578-to-579 fixture retains 574 exact rows and normalizes index alias
   assert.deepEqual(prepareMixedImpactRelease(equivalent.preparation), completion.plan);
   assert.deepEqual(completeMixedImpactRelease(equivalent), result);
   assert.equal(JSON.stringify(completion), before);
+});
+
+function baselineAdapterFixture(t, {count = 6, changes = 2} = {}) {
+  const {f, completion: mixed, selectedTargets} = mixedCompletionFixture({count, changes});
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-baseline-adapter-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const paramsFile = path.join(directory, ".env.demo-project");
+  fs.writeFileSync(paramsFile, JSON.stringify("normalized fake public params"));
+  const baseline = mixed.preparation.initialization.baseline;
+  let checkpoint = createCheckpointState(baseline.manifest, scope);
+  for (const stage of baseline.manifest.stages) checkpoint = recordStageCheckpoint({
+    manifest: baseline.manifest, state: checkpoint, scope, stage, status: "passed"}).state;
+  const entries = {"checkpoint.json": checkpoint, "functions-deployment.json": baseline.deployment};
+  for (const [name, value] of Object.entries(entries)) fs.writeFileSync(path.join(directory, name), JSON.stringify(value));
+  const archive = path.join(directory, "baseline.zip");
+  const zipped = spawnSync("zip", ["-q", archive, ...Object.keys(entries)], {cwd: directory, encoding: "utf8"});
+  assert.equal(zipped.status, 0, zipped.stderr);
+  const bytes = fs.readFileSync(archive);
+  const artifactDigest = `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+  const run = {id: 900, run_attempt: 1, workflow_id: 88, path: ".github/workflows/backend-rebaseline.yml",
+    event: "workflow_dispatch", head_branch: "main", head_sha: baseline.manifest.sourceSha,
+    status: "completed", conclusion: "success", repository: {id: 42, full_name: "owner/catch"},
+    head_repository: {id: 42, full_name: "owner/catch"}};
+  const artifact = {id: 123, name: `firebase-checkpoint-dev-demo-project-${baseline.manifest.sourceSha}-1`,
+    digest: artifactDigest, expired: false, workflow_run: {id: 900, head_branch: "main", head_sha: run.head_sha,
+      repository_id: 42, head_repository_id: 42}};
+  const responses = new Map([
+    ["repos/owner/catch/actions/runs/900/attempts/1", run],
+    ["repos/owner/catch/actions/workflows/backend-rebaseline.yml", {id: 88, path: run.path}],
+    ["repos/owner/catch/actions/artifacts/123", artifact],
+    ["repos/owner/catch/actions/artifacts/123/zip", bytes],
+  ]);
+  const candidateManifest = {...mixed.preparation.candidateManifest, stages: ["functions"]};
+  const additions = Array.from({length: 5}, (_, i) => ({...clone(index), collectionGroup: `added${i}`}));
+  const preparation = {baselineArchive: {repository: "owner/catch", repositoryId: 42, runId: "900",
+    runAttempt: "1", artifactId: 123, artifactDigest},
+    baseline: {manifest: baseline.manifest, evidence: baseline.evidence,
+      paramsSha256: baseline.paramsSha256, baseSha: baseline.baseSha}, scope,
+    impactInput: mixed.preparation.impactInput, candidateManifest,
+    candidateBaseSha: mixed.preparation.candidateBaseSha, paramsFile,
+    baselineIndexes: {indexes: [], fieldOverrides: []}, candidateIndexes: {indexes: additions, fieldOverrides: []}};
+  const candidateDeployment = deployment(candidateManifest, selectedTargets, baseline.paramsSha256,
+    preparation.candidateBaseSha, "3");
+  const beforeFunctions = baseline.deployment.functions.map(liveMetadata);
+  const afterFunctions = mixed.allLiveIdentities.map(liveMetadata);
+  const liveIndexes = additions.map((entry, i) => ({...clone(entry), state: "READY",
+    name: `projects/demo-project/databases/(default)/collectionGroups/${entry.collectionGroup}/indexes/i${i}`,
+    fields: [...clone(entry.fields), {fieldPath: "__name__", order: "DESCENDING"}]}));
+  const dependencies = {request: async (endpoint) => {
+    assert.ok(responses.has(endpoint), `Unexpected GitHub read: ${endpoint}`);
+    const value = responses.get(endpoint); return Buffer.isBuffer(value) ? Buffer.from(value) : clone(value);
+  }, readFunctions: async (projectId, targets, options) => {
+    assert.equal(projectId, "demo-project");
+    if (options) {assert.deepEqual(options.absentTargets,
+      preparation.impactInput.candidateTargets.filter((target) => !f.targets.includes(target))); return clone(beforeFunctions);}
+    assert.deepEqual(targets, preparation.impactInput.candidateTargets); return clone(afterFunctions);
+  }, readIndexes: async (query) => {
+    assert.deepEqual(query, {projectId: "demo-project", database: "(default)"}); return clone(liveIndexes);
+  }};
+  return {f, preparation, candidateDeployment, beforeFunctions, afterFunctions, liveIndexes, dependencies, run, artifact, responses};
+}
+
+test("authenticated baseline adapter selects five, preserves 574 and keeps index readiness outside Functions authority", async (t) => {
+  const f = baselineAdapterFixture(t, {count: 578, changes: 4});
+  const original = JSON.stringify(f.preparation);
+  const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
+  assert.deepEqual(plan.stages, ["functions"]);
+  assert.equal(plan.indexReadiness.indexes.length, 5);
+  assert.equal(plan.selectedTargets.length, 5);
+  assert.equal(plan.deferredImpactedTargets.length, 574);
+  const result = await completeBaselineImpactRelease({preparation: f.preparation, plan,
+    candidateDeployment: f.candidateDeployment}, f.dependencies);
+  const prior = initializeFunctionLedger({...f.f.initialization});
+  assert.equal(result.ledger.functions.length, 579);
+  assert.equal(result.ledger.coverageSourceSha, prior.coverageSourceSha);
+  assert.deepEqual(result.ledger.functions.slice(4, 578), prior.functions.slice(4));
+  assert.equal(result.coverage.indexReadiness.readyIndexCount, 5);
+  for (const row of [...result.ledger.functions.slice(0, 4), result.ledger.functions[578]])
+    assert.equal(row.sourceSha, f.preparation.candidateManifest.sourceSha);
+  assert.equal(JSON.stringify(f.preparation), original);
+});
+
+test("baseline adapter rejects stale serving identities, materialized params and invented operator receipts", async (t) => {
+  const f = baselineAdapterFixture(t);
+  for (const mutate of [
+    (p) => {p.receipt = {schema: "catch.operator-prod-selective-receipt/v1"};},
+    (p) => {p.baseline.operator = clone(p.baseline);},
+    (p) => {p.baselineArchive.artifactDigest = `sha256:${hash("forged")}`;},
+    (p) => {p.impactInput.selectedTargets.pop();},
+    (p) => {p.candidateManifest.stages.push("firestore-indexes");},
+    (p) => {p.candidateIndexes.fieldOverrides.push({collectionGroup: "records", fieldPath: "expiresAt", ttl: true, indexes: []});},
+  ]) {const p = clone(f.preparation); mutate(p); await assert.rejects(prepareBaselineImpactRelease(p, f.dependencies), invalid);}
+  for (const mutate of [
+    (rows) => {rows[0].runService.generation = "2";},
+    (rows) => {rows[0].runService.latestReadyRevision += "-stale";},
+    (rows) => {rows.push(liveMetadata(identity(f.preparation.impactInput.candidateTargets.at(-1))));},
+  ]) {
+    const rows = clone(f.beforeFunctions); mutate(rows);
+    await assert.rejects(prepareBaselineImpactRelease(f.preparation, {...f.dependencies,
+      readFunctions: async () => rows}), invalid);
+  }
+  const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
+  const completion = {preparation: f.preparation, plan, candidateDeployment: f.candidateDeployment};
+  for (const mutate of [
+    (rows) => {rows[2].buildConfig.build += "-drift";},
+    (rows) => {rows[0] = clone(f.beforeFunctions[0]);},
+    (rows) => {rows.pop();},
+  ]) {
+    const rows = clone(f.afterFunctions); mutate(rows);
+    await assert.rejects(completeBaselineImpactRelease(completion, {...f.dependencies, readFunctions: async () => rows}), invalid);
+  }
+  fs.appendFileSync(f.preparation.paramsFile, "FAKE_PRIVATE_SENTINEL");
+  for (const action of [() => prepareBaselineImpactRelease(f.preparation, f.dependencies),
+    () => completeBaselineImpactRelease(completion, f.dependencies)]) await assert.rejects(action(), invalid);
+});
+
+test("baseline adapter detects params drift during fresh collection and refuses symlinked params", async (t) => {
+  for (const completing of [false, true]) {
+    const f = baselineAdapterFixture(t);
+    const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
+    const dependencies = {...f.dependencies, readFunctions: async (...args) => {
+      const result = await f.dependencies.readFunctions(...args);
+      fs.appendFileSync(f.preparation.paramsFile, "FAKE_PRIVATE_SENTINEL"); return result;
+    }};
+    await assert.rejects(completing ? completeBaselineImpactRelease({preparation: f.preparation,
+      plan, candidateDeployment: f.candidateDeployment}, dependencies) :
+      prepareBaselineImpactRelease(f.preparation, dependencies), invalid);
+  }
+  const f = baselineAdapterFixture(t);
+  const original = `${f.preparation.paramsFile}.original`;
+  fs.renameSync(f.preparation.paramsFile, original);
+  fs.symlinkSync(original, f.preparation.paramsFile);
+  await assert.rejects(prepareBaselineImpactRelease(f.preparation, f.dependencies), invalid);
+});
+
+test("baseline completion binds deferred fingerprints, requires the addition and rejects wrong index scope or readiness", async (t) => {
+  const f = baselineAdapterFixture(t);
+  const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
+  const completion = {preparation: f.preparation, plan, candidateDeployment: f.candidateDeployment};
+  for (const mutate of [
+    (c) => {const row = c.preparation.impactInput.candidateEvidence.source.functions["functions:f0002"];
+      row.dependencies[0][1] = hash("substituted deferred closure"); row.sha256 = hash(row.dependencies);
+      c.preparation.impactInput.candidateEvidence.compiled = clone(c.preparation.impactInput.candidateEvidence.source);},
+    (c) => {c.preparation.candidateIndexes.indexes[0].collectionGroup = "substitution";},
+    (c) => {c.plan.stages.push("firestore-indexes");},
+    (c) => {c.candidateDeployment.targets.pop(); c.candidateDeployment.functions.pop();},
+  ]) {const c = clone(completion); mutate(c); await assert.rejects(completeBaselineImpactRelease(c, f.dependencies), invalid);}
+  for (const mutate of [
+    (rows) => {rows.pop();},
+    (rows) => {rows[0].state = "CREATING";},
+    (rows) => {rows[0].name = rows[0].name.replace("demo-project", "foreign-project");},
+    (rows) => {rows[0].name = rows[0].name.replace("(default)", "other-database");},
+    (rows) => {rows[0].name = rows[0].name.replace("collectionGroups/added0", "collectionGroups/other");},
+    (rows) => {rows[0].fields[0].order = "DESCENDING";},
+  ]) {
+    const rows = clone(f.liveIndexes); mutate(rows);
+    await assert.rejects(completeBaselineImpactRelease(completion, {...f.dependencies, readIndexes: async () => rows}), invalid);
+  }
+  const deferred = clone(f.preparation);
+  deferred.impactInput.candidateEvidence.source.functions["functions:f0002"].unknown = ["index.js:dynamic-module-load"];
+  deferred.impactInput.candidateEvidence.compiled = clone(deferred.impactInput.candidateEvidence.source);
+  const deferredPlan = await prepareBaselineImpactRelease(deferred, f.dependencies);
+  const result = await completeBaselineImpactRelease({...completion, preparation: deferred, plan: deferredPlan}, f.dependencies);
+  assert.deepEqual(result.ledger.functions[2], initializeFunctionLedger(f.f.initialization).functions[2]);
 });
 
 test("source and compiled evidence, dependency digests and full inventories must agree", () => {

@@ -482,13 +482,16 @@
         "tool/ci/selective_backend_release.test.mjs",
         "tool/firebase/function_release_fingerprints.mjs",
         "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/ci/backend_delivery_lanes.mjs",
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
         "tool/ci/delivery_core.mjs"
       ],
       "alsoCheckIds": [
         "firebase:function-release-fingerprints",
-        "ci:firebase-functions-checkpoint"
+        "ci:firebase-functions-checkpoint",
+        "firebase:index-readiness-waiter"
       ],
-      "description": "Tests selective release plans and mixed-source per-Function ledgers against independent source, package, params, index readiness and live deployment identities.",
+      "description": "Tests selective release plans, authenticated baseline adapters and mixed-source per-Function ledgers against independent source, package, materialized params, scoped index readiness and live deployment identities.",
       "checks": [
         "node --check tool/ci/selective_backend_release.mjs",
         "node --test tool/ci/selective_backend_release.test.mjs"
@@ -499,6 +502,7 @@
         "path": "tool/ci/selective_backend_release.test.mjs",
         "contains": [
           "four changed Functions get candidate provenance while 574 real baseline rows remain byte-identical",
+          "authenticated baseline adapter selects five, preserves 574 and keeps index readiness outside Functions authority",
           "completion rederives every plan field and exact evidence digest from independent preparation",
           "all unchanged and selected live identities must match; no drift becomes coverage"
         ]

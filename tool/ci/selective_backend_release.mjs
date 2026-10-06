@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {compareFunctionFingerprints, FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
 import {validateProvenanceManifest} from "./delivery_core.mjs";
-import {validateFunctionsDeployment, validateFunctionIdentity} from "./firebase_functions_checkpoint.mjs";
+import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBaselineArchive,
+  readMaterializedParamsSha256, liveFunctions, captureFunctionIdentities,
+  FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
+import {gcloudIndexList, inspectIndexReadiness} from "../firebase/wait_firestore_indexes_ready.mjs";
 
 export const SELECTIVE_RELEASE_SCHEMA = "catch.selective-backend-release/v1";
 export const FUNCTION_LEDGER_SCHEMA = "catch.function-deployment-ledger/v1";
@@ -402,35 +405,122 @@ export function completeMixedImpactRelease(input) {
     const {preparation, plan, candidateDeployment, allLiveIdentities} = input;
     assert.deepEqual(plan, prepareMixedImpactRelease(preparation));
     const ledger = initializeMixedFunctionLedger(preparation.initialization);
-    const impact = assessSelectiveRuntimeImpact(preparation.impactInput);
-    const manifest = manifestBinding(preparation.candidateManifest, plan.candidate);
-    validateFunctionsDeployment(candidateDeployment, {manifest, scope: plan.scope,
-      baseSha: plan.candidateBaseSha, selectedTargets: plan.selectedTargets,
-      paramsSha256: plan.candidateParamsSha256});
-    const selected = new Map(plan.selectedTargets.map((target, index) => [target, candidateDeployment.functions[index]]));
-    const old = new Map(ledger.functions.map((row) => [row.target, row]));
-    const functions = preparation.impactInput.candidateTargets.map((target) => {
-      const prior = old.get(target);
-      if (!selected.has(target)) {
-        assert.ok(prior, "A new Function cannot be deferred without a deployment.");
-        return structuredClone(prior);
-      }
-      const deployment = validateFunctionIdentity(selected.get(target), {scope: plan.scope, target});
-      if (prior) assert.notDeepEqual(deployment, prior.deployment);
-      const fingerprint = preparation.impactInput.candidateEvidence.source.functions[target];
-      assert.deepEqual(fingerprint.unknown, []);
-      return {target, fingerprintSha256: fingerprint.sha256, ...binding(plan.candidate),
-        paramsSha256: plan.candidateParamsSha256, deployment};
-    });
-    const result = validateLedger({...structuredClone(ledger), functions});
-    verifyIdentities(result, allLiveIdentities);
-    assert.deepEqual(impact.deferredImpactedTargets, plan.deferredImpactedTargets);
-    return {ledger: result, coverage: {schema: "catch.selective-impact-coverage/v1", scope: plan.scope,
-      baselineCommonSourceSha: ledger.coverageSourceSha, candidate: binding(plan.candidate),
-      selectedTargets: [...plan.selectedTargets], deferredImpactedTargets: [...plan.deferredImpactedTargets],
-      retainedDeploymentTargets: [...plan.retainedDeploymentTargets],
-      planSha256: digest(plan), ledgerSha256: digest(result)}};
+    return completeImpactLedger({preparation, plan, ledger, candidateDeployment, allLiveIdentities});
   });
+}
+
+function completeImpactLedger({preparation, plan, ledger, candidateDeployment, allLiveIdentities}) {
+  const impact = assessSelectiveRuntimeImpact(preparation.impactInput);
+  const manifest = manifestBinding(preparation.candidateManifest, plan.candidate);
+  validateFunctionsDeployment(candidateDeployment, {manifest, scope: plan.scope,
+    baseSha: plan.candidateBaseSha, selectedTargets: plan.selectedTargets,
+    paramsSha256: plan.candidateParamsSha256});
+  const selected = new Map(plan.selectedTargets.map((target, index) => [target, candidateDeployment.functions[index]]));
+  const old = new Map(ledger.functions.map((row) => [row.target, row]));
+  const functions = preparation.impactInput.candidateTargets.map((target) => {
+    const prior = old.get(target);
+    if (!selected.has(target)) {
+      assert.ok(prior, "A new Function cannot be deferred without a deployment.");
+      return structuredClone(prior);
+    }
+    const deployment = validateFunctionIdentity(selected.get(target), {scope: plan.scope, target});
+    if (prior) assert.notDeepEqual(deployment, prior.deployment);
+    const fingerprint = preparation.impactInput.candidateEvidence.source.functions[target];
+    assert.deepEqual(fingerprint.unknown, []);
+    return {target, fingerprintSha256: fingerprint.sha256, ...binding(plan.candidate),
+      paramsSha256: plan.candidateParamsSha256, deployment};
+  });
+  const result = validateLedger({...structuredClone(ledger), functions});
+  verifyIdentities(result, allLiveIdentities);
+  assert.deepEqual(impact.deferredImpactedTargets, plan.deferredImpactedTargets);
+  return {ledger: result, coverage: {schema: "catch.selective-impact-coverage/v1", scope: plan.scope,
+    baselineCommonSourceSha: ledger.coverageSourceSha, candidate: binding(plan.candidate),
+    selectedTargets: [...plan.selectedTargets], deferredImpactedTargets: [...plan.deferredImpactedTargets],
+    retainedDeploymentTargets: [...plan.retainedDeploymentTargets],
+    planSha256: digest(plan), ledgerSha256: digest(result)}};
+}
+
+// This adapter authenticates the actual successful rebaseline archive. It does
+// not manufacture an operator receipt or grant index deployment authority.
+async function baselineImpactPreparation(input, {request} = {}) {
+  exactKeys(input, ["baselineArchive", "baseline", "scope", "impactInput", "candidateManifest",
+    "candidateBaseSha", "paramsFile", "baselineIndexes", "candidateIndexes"]);
+  const {baselineArchive, baseline, scope, impactInput, candidateManifest, candidateBaseSha,
+    paramsFile, baselineIndexes, candidateIndexes} = input;
+  exactKeys(baselineArchive, ["repository", "repositoryId", "runId", "runAttempt", "artifactId", "artifactDigest"]);
+  exactKeys(baseline, ["manifest", "evidence", "paramsSha256", "baseSha"]);
+  const entries = await readSuccessfulBaselineArchive({...baselineArchive, manifest: baseline.manifest, scope, request});
+  const ledger = initializeFunctionLedger({deployment: entries[FUNCTIONS_DEPLOYMENT_FILE],
+    manifest: baseline.manifest, scope, fingerprints: baseline.evidence.source,
+    configSha256: baseline.evidence.runtimeConfigurationSha256,
+    expectedParamsSha256: baseline.paramsSha256, expectedBaseSha: baseline.baseSha});
+  const impact = assessSelectiveRuntimeImpact(impactInput);
+  manifestBinding(baseline.manifest, impact.baseline);
+  const candidate = manifestBinding(candidateManifest, impact.candidate);
+  assert.deepEqual(candidate.stages, ["functions"], "This route only authorizes Functions.");
+  assert.deepEqual(impactInput.baselineEvidence, baseline.evidence);
+  assert.deepEqual(impactInput.baselineTargets, ledger.functions.map((row) => row.target));
+  assert.match(candidateBaseSha ?? "", shaPattern);
+  const projectId = scope.split(":")[2];
+  const candidateParamsSha256 = readMaterializedParamsSha256(paramsFile, projectId);
+  assert.equal(candidateParamsSha256, baseline.paramsSha256, "Fresh materialized baseline params changed.");
+  assert.ok(impact.selectedTargets.length > 0);
+  assert.ok(impact.addedTargets.every((target) => impact.selectedTargets.includes(target)),
+    "A new Function requires a selected deployment before ledger completion.");
+  const indexContracts = {baseline: indexInventory(baselineIndexes), candidate: indexInventory(candidateIndexes)};
+  const additions = additive(baselineIndexes, candidateIndexes);
+  const plan = {schema: "catch.baseline-selective-impact-plan/v1", scope,
+    baselineCommonSourceSha: ledger.coverageSourceSha, candidate: binding(impact.candidate),
+    candidateBaseSha, candidateParamsSha256, ledgerSha256: digest(ledger), impactSha256: digest(impact),
+    impactInputSha256: impactInputDigest(impactInput), indexContractSha256: digest(indexContracts),
+    baselineArchiveSha256: digest(baselineArchive), stages: ["functions"],
+    indexReadiness: {scope, database: "(default)", indexes: additions},
+    selectedTargets: [...impact.selectedTargets], deferredImpactedTargets: [...impact.deferredImpactedTargets],
+    retainedDeploymentTargets: ledger.functions.map((row) => row.target)
+      .filter((target) => !impact.selectedTargets.includes(target))};
+  return {plan, ledger, impact, projectId};
+}
+
+export async function prepareBaselineImpactRelease(input, dependencies = {}) {
+  try {
+    const {plan, ledger, impact, projectId} = await baselineImpactPreparation(input, dependencies);
+    const functions = await (dependencies.readFunctions ?? liveFunctions)(projectId,
+      input.impactInput.baselineTargets, {absentTargets: impact.addedTargets});
+    // Also check injected collectors' returned metadata for unexpected additions.
+    assert.ok(impact.addedTargets.every((target) => !functions.some((fn) =>
+      fn.name === `projects/${projectId}/locations/asia-south1/functions/${target.slice(10)}`)));
+    verifyLedgerLiveIdentities(ledger, captureFunctionIdentities(functions, plan.scope, input.impactInput.baselineTargets));
+    assert.equal(readMaterializedParamsSha256(input.paramsFile, projectId), plan.candidateParamsSha256);
+    return plan;
+  } catch { throw new Error("Invalid selective backend release evidence."); }
+}
+
+export async function completeBaselineImpactRelease(input, dependencies = {}) {
+  try {
+    exactKeys(input, ["preparation", "plan", "candidateDeployment"]);
+    const {preparation, plan, candidateDeployment} = input;
+    const {plan: expected, ledger, projectId} = await baselineImpactPreparation(preparation, dependencies);
+    assert.deepEqual(plan, expected);
+    const functions = await (dependencies.readFunctions ?? liveFunctions)(projectId, preparation.impactInput.candidateTargets);
+    const allLiveIdentities = captureFunctionIdentities(functions, plan.scope, preparation.impactInput.candidateTargets);
+    const result = completeImpactLedger({preparation, plan, ledger, candidateDeployment, allLiveIdentities});
+    // Read only the independently scoped index metadata; READY is a
+    // postcondition, never permission to add a stage to the Functions package.
+    const liveIndexes = await (dependencies.readIndexes ?? gcloudIndexList)({projectId, database: "(default)"});
+    assert.ok(Array.isArray(liveIndexes));
+    const prefix = `projects/${projectId}/databases/(default)/collectionGroups/`;
+    assert.ok(liveIndexes.every((index) => {
+      if (typeof index.name !== "string" || !index.name.startsWith(prefix)) return false;
+      const match = /^([A-Za-z_][A-Za-z0-9_.-]*)\/indexes\/[A-Za-z0-9_-]+$/.exec(index.name.slice(prefix.length));
+      return match && (index.collectionGroup === undefined || index.collectionGroup === match[1]);
+    }));
+    const readiness = inspectIndexReadiness({indexes: plan.indexReadiness.indexes}, liveIndexes);
+    assert.equal(readiness.complete, true);
+    assert.equal(readMaterializedParamsSha256(preparation.paramsFile, projectId), plan.candidateParamsSha256);
+    return {...result, coverage: {...result.coverage,
+      indexReadiness: {scope: plan.scope, database: "(default)",
+        indexContractSha256: plan.indexContractSha256, readyIndexCount: readiness.ready.length}}};
+  } catch { throw new Error("Invalid selective backend release evidence."); }
 }
 function verifyIdentities(ledger, identities) {
   validateLedger(ledger);

@@ -38,7 +38,8 @@ function projectFromScope(scope) {
     projectPattern.test(parts[2]), "Exact Firebase environment/project scope required.");
   return parts[2];
 }
-function paramsDigest(file, projectId) {
+export function readMaterializedParamsSha256(file, projectId) {
+  assert.match(projectId, projectPattern);
   assert.equal(path.basename(file), `.env.${projectId}`, "Expected materialized project params file.");
   const stat = fs.lstatSync(file);
   assert.ok(stat.isFile() && !stat.isSymbolicLink(), "Params must be a regular file.");
@@ -152,8 +153,11 @@ export function verifyFunctionsDeployment(value, {functions, ...expected}) {
   return {postconditionsOnly: true};
 }
 
-export async function liveFunctions(projectId, selectedTargets, {runCommand = spawnSync, request = fetch} = {}) {
+export async function liveFunctions(projectId, selectedTargets, {runCommand = spawnSync, request = fetch, absentTargets = []} = {}) {
   assert.match(projectId, projectPattern);
+  assert.ok(Array.isArray(absentTargets));
+  if (absentTargets.length) targets(absentTargets);
+  assert.ok(absentTargets.every((target) => !selectedTargets.includes(target)));
   const expectedNames = new Set(targets(selectedTargets).map((target) =>
     `projects/${projectId}/locations/${region}/functions/${target.slice("functions:".length)}`));
   const tokenResult = runCommand("gcloud", ["auth", "print-access-token"], {encoding: "utf8", maxBuffer: 1024 * 1024});
@@ -186,6 +190,9 @@ export async function liveFunctions(projectId, selectedTargets, {runCommand = sp
     pageToken = page.nextPageToken ?? "";
     assert.equal(typeof pageToken, "string");
   } while (pageToken);
+  assert.ok(absentTargets.every((target) => !functions.some((fn) =>
+    fn.name === `projects/${projectId}/locations/${region}/functions/${target.slice("functions:".length)}`)),
+  "An added Function already exists outside the accepted baseline.");
   const selected = functions.filter((fn) => expectedNames.has(fn?.name));
   assert.ok(selected.length === expectedNames.size && new Set(selected.map((fn) => fn.name)).size === expectedNames.size,
     "Selected Function inventory is missing or duplicated.");
@@ -222,6 +229,29 @@ export async function restoreCheckpointArchive({
   assert.equal(producer.status, "completed", "Recovery producer must be terminal.");
   assert.ok(["failure", "cancelled", "timed_out", "stale", "action_required", "startup_failure"].includes(producer.conclusion),
     "Recovery producer must be non-success.");
+  return readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
+    scope, manifest, request, producer});
+}
+
+// A successful rebaseline is immutable historical evidence, not failed-stage
+// recovery. Serving state and params must still be read afresh by its consumer.
+export async function readSuccessfulBaselineArchive(input) {
+  const {repository, repositoryId, runId, runAttempt, manifest, scope, request = lanes.githubRequest} = input;
+  const producer = await lanes.verifyWorkflowRun({repository, repositoryId, runId, runAttempt, role: "cursor", request});
+  assert.equal(producer.path?.split("@")[0], ".github/workflows/backend-rebaseline.yml");
+  assert.equal(producer.event, "workflow_dispatch");
+  assert.equal(producer.status, "completed");
+  assert.equal(producer.conclusion, "success");
+  assert.equal(producer.head_sha, manifest.sourceSha, "Baseline producer/source mismatch.");
+  const entries = await readCheckpointArchive({...input, request, producer});
+  const state = validateCheckpointState(manifest, entries[checkpointFile], scope);
+  assert.equal(resolveFirstIncompleteStage(manifest, state, scope).complete, true);
+  assert.ok(Object.hasOwn(entries, FUNCTIONS_DEPLOYMENT_FILE), "Baseline Functions deployment proof required.");
+  return entries;
+}
+
+async function readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
+  scope, manifest, request, producer}) {
   assert.ok(Number.isSafeInteger(artifactId) && artifactId > 0);
   assert.match(artifactDigest ?? "", /^sha256:[0-9a-f]{64}$/);
   const [_, environment, projectId] = scope.split(":");
@@ -315,7 +345,7 @@ export async function executeFunctionsCheckpointCli(argv, {readFunctions = liveF
   }
   const expected = {manifest, scope, baseSha: required(args, "base-sha"),
     selectedTargets: required(args, "targets").split(","),
-    paramsSha256: paramsDigest(required(args, "params-file"), projectFromScope(scope))};
+    paramsSha256: readMaterializedParamsSha256(required(args, "params-file"), projectFromScope(scope))};
   assert.match(expected.baseSha, shaPattern);
   targets(expected.selectedTargets);
   if (command === "verify" && !fs.existsSync(proofPath)) return {postconditionsOnly: false};
