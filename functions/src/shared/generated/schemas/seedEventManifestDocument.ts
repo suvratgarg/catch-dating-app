@@ -136,6 +136,15 @@ export const seedEventManifestDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "ownership": {
+      "type": "object",
+      "description": "Exact generation document tokens. Historical paths without these tokens grant no reset authority.",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;

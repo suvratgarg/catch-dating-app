@@ -51,24 +51,46 @@ export const organizerAudienceProjectionReceiptDocumentSchema: Record<string, un
       }
     },
     "expiresAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
         },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
+        {
+          "type": "null"
         }
-      }
+      ]
+    },
+    "cleanupToken": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-server-only": true
+    },
+    "pendingContactRebuildIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "uniqueItems": true,
+      "x-server-only": true
     }
   }
 } as const;

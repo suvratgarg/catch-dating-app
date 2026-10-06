@@ -200,6 +200,167 @@ export const catchWhatsappReplyOperationDocumentSchema: Record<string, unknown> 
       "minLength": 1,
       "maxLength": 64,
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "appAuthorityBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor",
+        "reviewer",
+        "recipient"
+      ],
+      "properties": {
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "reviewer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "recipient": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "uid",
+            "revision",
+            "incarnation",
+            "capability",
+            "endpointHash"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "uid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "incarnation": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "capability": {
+              "type": "string",
+              "enum": [
+                "review",
+                "reply",
+                "receive"
+              ]
+            },
+            "endpointHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "allOf": [

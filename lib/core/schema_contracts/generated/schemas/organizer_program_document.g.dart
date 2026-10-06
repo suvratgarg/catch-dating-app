@@ -395,6 +395,13 @@ const schemaOrganizerProgramDocumentSchema = <String, Object?>{
         },
       },
     },
+    'createRequestHash': <String, Object?>{
+      'type': 'string',
+      'minLength': 64,
+      'maxLength': 64,
+      'pattern': '^[a-f0-9]{64}\$',
+      'description': 'Immutable normalized create-command fingerprint for request-key replay. Absent on legacy programs; never changed by program edits or lifecycle transitions.',
+    },
     'revision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,

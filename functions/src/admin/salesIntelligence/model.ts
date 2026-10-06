@@ -28,6 +28,7 @@ export interface Clause {
   organizerId: string; revision: number; kind: ClauseKind; text: string;
   state: "draft" | "approved" | "withdrawn";
   evidenceIds: string[]; validUntil: string;
+  partnerCitations?: Array<{evidenceId: string; sourceHash: string}>;
   permission: "not_required" | "private_mention" | "withdrawn";
   reviewedAt: string | null; reviewedBy: string | null;
   updatedAt: string; updatedBy: string;
@@ -214,4 +215,19 @@ export function evaluateScore(policy: IntelligencePolicy, organizerId: string,
     policyRevision: policy.revision, policyVersion: policy.version, sourceHash,
     status: disputed ? "review_required" : complete ? "complete" : "needs_research",
     score, priority, factors, evaluatedAt: now};
+}
+
+export function currentReviewedEvidence(row: FirebaseFirestore.DocumentData | undefined,
+  organizerId: string, now: string): boolean {
+  const at = Date.parse(now);
+  const observed = Date.parse(String(row?.observedAt ?? ""));
+  const reviewed = Date.parse(String(row?.reviewedAt ?? ""));
+  return row?.classification === "sales_private" &&
+    row.organizerId === organizerId &&
+    typeof row.reviewerUid === "string" && row.reviewerUid.length > 0 &&
+    Number.isFinite(observed) && observed <= at &&
+    Number.isFinite(reviewed) && reviewed <= at &&
+    (!row.validThrough ||
+      (Number.isFinite(Date.parse(row.validThrough)) &&
+        Date.parse(row.validThrough) > at));
 }

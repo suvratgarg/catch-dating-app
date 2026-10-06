@@ -78,6 +78,11 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
               ]
             }
           },
+          "functionCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero."
+          },
           "revision": {
             "type": "integer",
             "minimum": 1
@@ -108,6 +113,15 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
           }
         }
       }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Last returned program ID when another page exists, otherwise null. Optional for legacy readers."
     }
   }
 } as const;

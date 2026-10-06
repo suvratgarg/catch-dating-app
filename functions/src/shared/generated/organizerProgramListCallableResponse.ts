@@ -22,6 +22,10 @@ export interface OrganizerProgramListCallableResponse {
       | "forms"
       | "messaging"
     )[];
+    /**
+     * Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero.
+     */
+    functionCount?: number;
     revision: number;
     /**
      * Set when the program is archived; null otherwise.
@@ -36,4 +40,8 @@ export interface OrganizerProgramListCallableResponse {
      */
     anonymizedAtMillis?: number | null;
   }[];
+  /**
+   * Last returned program ID when another page exists, otherwise null. Optional for legacy readers.
+   */
+  nextCursor?: string | null;
 }

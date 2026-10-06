@@ -17,7 +17,9 @@ import {validateCatchWhatsappReplyOperationDocument} from
 import {validateCatchWhatsappReplyReadinessDocument} from
   "../shared/generated/validators/catchWhatsappReplyReadinessDocument";
 import {adminRolesFromToken} from "../admin/adminAuth";
-import type {CatchReceipt} from "./whatsappEndpointStops";
+import {assertCatchIngressAccepted} from "./whatsappIngressStore";
+import {assertCatchAuthorityBinding} from "./whatsappAppAuthority";
+import type {CatchAppAuthorityStore, CatchAuditedAuthFence, CatchFreshAuthContext} from "./whatsappAppAuthorityStore";
 
 export const CATCH_REPLY_READINESS = "catchWhatsappReplyReadiness";
 export const catchReadinessId = (config: CatchReplyConfig): string =>
@@ -58,6 +60,7 @@ export class CatchWhatsappReplyStore {
     config: () => CatchReplyConfig;
     getUser: CatchGetUser;
     now: () => number;
+    authority?: CatchAppAuthorityStore;
   }) {}
 
   async claim(request: CallableRequest<unknown>, input: CatchReplyInput,
@@ -65,7 +68,7 @@ export class CatchWhatsappReplyStore {
       operation: CatchReplyOperation; replayed: boolean;
     }> {
     input = parseCatchReplyInput(input);
-    return transact(this.db, async (tx) => {
+    return this.runForReply(request, expectedConfig, async (tx, fence) => {
       const config = {...this.deps.config()};
       assertCatchReplyEnabled(config);
       if (catchReplyHash(config) !== catchReplyHash(expectedConfig)) {
@@ -74,8 +77,8 @@ export class CatchWhatsappReplyStore {
       await authorizeCatchReply(request, config, this.deps.getUser);
       const now = this.deps.now();
       if (!safeMillis(now)) throw new Error("Invalid reply clock");
-      const inbound = await this.readEligibleInbound(tx, request,
-        input.inboundEventId, config, now);
+      const {inbound, bindings, eligibleUntilMillis} = await this.readEligibleInbound(tx, request,
+        input.inboundEventId, config, now, fence);
       if (catchReplyHash(inbound.text) !== input.reviewedInboundTextHash) {
         throw new HttpsError("failed-precondition", "Inbound review changed.");
       }
@@ -85,9 +88,18 @@ export class CatchWhatsappReplyStore {
       const operationRef = this.db.collection(CATCH_REPLY_OPERATIONS)
         .doc(operationId);
       const existing = await tx.get(operationRef);
+      // Recheck external Auth before the final clock and all domain deadlines.
+      // There are no awaits between those checks and the staged claim write.
+      if ("recheck" in fence && typeof fence.recheck === "function") {
+        await (fence as CatchFreshAuthContext).recheck();
+      }
+      const finalNow = this.deps.now();
+      if (!safeMillis(finalNow) || finalNow < now || finalNow >= eligibleUntilMillis) {
+        throw new HttpsError("failed-precondition", "Current Catch eligibility expired.");
+      }
       const materialHash = catchReplyHash([config.wabaId, config.phoneNumberId,
         config.recipientUid, endpointHash, config.actorUid,
-        config.readinessEvidenceHash, input]);
+        config.readinessEvidenceHash, bindings, input]);
       if (existing.exists) {
         const operation = readCatchOperation(existing.data());
         if (operation.operationId !== operationId ||
@@ -102,7 +114,7 @@ export class CatchWhatsappReplyStore {
         return {operation, replayed: true};
       }
       const deadlineMillis = occurredAt + CATCH_SUPPORT_WINDOW_MS;
-      if (!safeMillis(deadlineMillis) || now >= deadlineMillis) {
+      if (!safeMillis(deadlineMillis) || finalNow >= deadlineMillis) {
         throw new HttpsError("failed-precondition",
           "Support reply window closed.");
       }
@@ -114,11 +126,11 @@ export class CatchWhatsappReplyStore {
         inboundEventId: inbound.eventId, inboundMessageId: inbound.messageId,
         inboundTextHash: input.reviewedInboundTextHash,
         bodyHash: catchReplyHash(input.body), materialHash,
-        readinessEvidenceHash: config.readinessEvidenceHash,
-        reviewedAtMillis: now, deadlineMillis, state: "claimed",
+        readinessEvidenceHash: config.readinessEvidenceHash, appAuthorityBindings: bindings,
+        reviewedAtMillis: finalNow, deadlineMillis, state: "claimed",
         providerMessageId: null, deliveryStatus: "pending",
         deliveryEventId: null,
-        deliveryAtMillis: null, createdAtMillis: now, updatedAtMillis: now});
+        deliveryAtMillis: null, createdAtMillis: finalNow, updatedAtMillis: finalNow});
       tx.create(operationRef, operation);
       return {operation, replayed: false};
     });
@@ -126,14 +138,14 @@ export class CatchWhatsappReplyStore {
 
   async review(request: CallableRequest<unknown>, inboundEventId: string,
     expectedConfig: CatchReplyConfig) {
-    return transact(this.db, async (tx) => {
+    return this.runForReply(request, expectedConfig, async (tx, fence) => {
       const config = {...this.deps.config()};
       if (catchReplyHash(config) !== catchReplyHash(expectedConfig)) {
         throw new HttpsError("aborted", "Controlled reply scope changed.");
       }
       const now = this.deps.now();
-      const inbound = await this.readEligibleInbound(tx, request,
-        inboundEventId, config, now);
+      const {inbound} = await this.readEligibleInbound(tx, request,
+        inboundEventId, config, now, fence);
       const deadlineMillis = Number(inbound.providerTimestampSeconds) * 1000 +
         CATCH_SUPPORT_WINDOW_MS;
       if (now >= deadlineMillis) {
@@ -148,7 +160,7 @@ export class CatchWhatsappReplyStore {
 
   private async readEligibleInbound(tx: Transaction,
     request: CallableRequest<unknown>, inboundEventId: string,
-    config: CatchReplyConfig, now: number): Promise<CatchReceipt> {
+    config: CatchReplyConfig, now: number, fence: CatchAuditedAuthFence) {
     await authorizeCatchReply(request, config, this.deps.getUser);
     if (!safeMillis(now)) throw new Error("Invalid reply clock");
     const inbound = readCatchReceipt((await tx.get(this.db.collection(
@@ -164,6 +176,7 @@ export class CatchWhatsappReplyStore {
         inbound.receivedAtMillis > now || inbound.expiresAt.toMillis() <= now) {
       throw new HttpsError("failed-precondition", "Inbound review changed.");
     }
+    await assertCatchIngressAccepted(tx, this.db, inbound);
     const endpointHash = catchEndpointHash(config.recipientE164);
     const [stop, preference, deleted, readiness] = await Promise.all([
       tx.get(this.db.collection(CATCH_ENDPOINT_STOPS)
@@ -211,7 +224,63 @@ export class CatchWhatsappReplyStore {
       throw new HttpsError("failed-precondition",
         "Current readiness owner required.");
     }
-    return inbound;
+    const authorization = this.deps.authority;
+    if (!authorization || !proof.appAuthorityBindings) {
+      throw new HttpsError("failed-precondition", "Current Catch authority is required.");
+    }
+    const header = request.rawRequest?.header("authorization");
+    if (typeof header !== "string" || !/^Bearer [^\s]+$/u.test(header)) {
+      throw new HttpsError("unauthenticated", "Current Catch session is required.");
+    }
+    const {bindings, expiresAtMillis} = await authorization.replyAuthorization(tx, fence, {actorUid: config.actorUid,
+      reviewerUid: proof.reviewedByUid, recipientUid: config.recipientUid, endpointHash}, header.slice(7));
+    assertCatchAuthorityBinding(bindings.reviewer, proof.appAuthorityBindings.reviewer);
+    assertCatchAuthorityBinding(bindings.recipient, proof.appAuthorityBindings.recipient);
+    authorization.assertFence(fence, [config.actorUid, proof.reviewedByUid, config.recipientUid]);
+    const finalNow = this.deps.now();
+    if (!safeMillis(finalNow) || finalNow < now || expiresAtMillis <= finalNow ||
+        proof.expiresAtMillis <= finalNow || inbound.expiresAt.toMillis() <= finalNow ||
+        occurredAt + CATCH_SUPPORT_WINDOW_MS <= finalNow) {
+      throw new HttpsError("failed-precondition", "Current Catch eligibility expired.");
+    }
+    return {inbound, bindings, eligibleUntilMillis: Math.min(expiresAtMillis,
+      proof.expiresAtMillis, inbound.expiresAt.toMillis(), occurredAt + CATCH_SUPPORT_WINDOW_MS)};
+  }
+
+  private async runForReply<T>(request: CallableRequest<unknown>, config: CatchReplyConfig,
+    callback: (tx: Transaction, fence: CatchAuditedAuthFence) => Promise<T>): Promise<T> {
+    await authorizeCatchReply(request, config, this.deps.getUser);
+    const authority = this.deps.authority;
+    if (!authority || authority.db !== this.db) {
+      throw new HttpsError("failed-precondition", "Current Catch authority is unavailable.");
+    }
+    // This bounded read determines fence scope only. Eligibility rereads and
+    // binds the actual readiness in the same transaction as a new send claim.
+    const scope = (await this.db.collection(CATCH_REPLY_READINESS).doc(catchReadinessId(config)).get()).data();
+    if (!validateCatchWhatsappReplyReadinessDocument(scope) ||
+        scope.readinessId !== catchReadinessId(config)) {
+      throw new HttpsError("failed-precondition", "Catch reply readiness is required.");
+    }
+    const header = request.rawRequest?.header("authorization");
+    if (typeof header !== "string" || !/^Bearer [^\s]+$/u.test(header)) {
+      throw new HttpsError("unauthenticated", "Current Catch session is required.");
+    }
+    // A current reviewer session cannot be inferred from a saved approval.
+    // The callable can prove it only when the signed-in actor is that owner.
+    if (authority.deps.withFreshAuthContext && scope.reviewedByUid !== config.actorUid) {
+      throw new HttpsError("failed-precondition", "Current readiness owner session is required.");
+    }
+    return authority.runFenced([config.actorUid, config.recipientUid, scope.reviewedByUid],
+      callback, {uid: config.actorUid, idToken: header.slice(7)});
+  }
+
+  /** Gate before credential preparation; final claim repeats it after that await. */
+  async preflight(request: CallableRequest<unknown>, input: CatchReplyInput,
+    expectedConfig: CatchReplyConfig): Promise<void> {
+    const review = await this.review(request, input.inboundEventId, expectedConfig);
+    if (review.reviewedInboundTextHash !== input.reviewedInboundTextHash) {
+      throw new HttpsError("failed-precondition", "Inbound review changed.");
+    }
   }
 
   async complete(claim: CatchReplyOperation, providerMessageId: string):

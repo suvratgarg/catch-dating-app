@@ -80,6 +80,11 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
               ],
             },
           },
+          'functionCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'description': 'Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero.',
+          },
           'revision': <String, Object?>{
             'type': 'integer',
             'minimum': 1,
@@ -110,6 +115,15 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
           },
         },
       },
+    },
+    'nextCursor': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Last returned program ID when another page exists, otherwise null. Optional for legacy readers.',
     },
   },
 };

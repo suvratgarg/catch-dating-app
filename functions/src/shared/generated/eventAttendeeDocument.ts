@@ -6,6 +6,15 @@
  * Private event-scoped operational attendee stored at eventAttendees/{attendeeId}.
  */
 export interface EventAttendeeDocument {
+  /**
+   * Server-owned lineage of an absent-created synthetic Catch-booking roster contribution; shared/manual roster sources never acquire this authority.
+   */
+  demoContribution?: {
+    version: "owned-projection-v1";
+    sourcePath: string;
+    seedPrefix: string;
+    demoOpsId: string;
+  };
   eventId: string;
   clubId: string;
   organizerId: string;

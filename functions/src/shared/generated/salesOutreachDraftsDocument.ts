@@ -47,4 +47,29 @@ export interface SalesOutreachDraftsDocument {
   createdBy: string;
   reviewedAt: string | null;
   reviewedBy: string | null;
+  participantScope?: {
+    partnerUid: string;
+    assignmentRevision: number;
+    renderedDraftId: string;
+  };
+  /**
+   * Own-partner neutral style edit, bound to an immutable intelligence receipt; never replaces sourced factual prose.
+   */
+  composition?: {
+    schemaVersion: 1;
+    revision: number;
+    previousRevision: number;
+    baseContentHash: string;
+    previousContentHash: string;
+    contentHash: string;
+    editRequestId: string;
+    editedAt: string;
+    editedBy: string;
+    style: {
+      greeting: "none" | "hello" | "hi";
+      closing: "none" | "thanks" | "best";
+      subjectStyle: "original" | "question" | "idea";
+      paragraphStyle: "spaced" | "compact";
+    };
+  };
 }

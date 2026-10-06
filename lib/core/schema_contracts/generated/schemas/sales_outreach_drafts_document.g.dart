@@ -456,6 +456,132 @@ const schemaSalesOutreachDraftsDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'participantScope': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'partnerUid',
+        'assignmentRevision',
+        'renderedDraftId',
+      ],
+      'properties': <String, Object?>{
+        'partnerUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'assignmentRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'renderedDraftId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+      },
+    },
+    'composition': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'schemaVersion',
+        'revision',
+        'previousRevision',
+        'baseContentHash',
+        'previousContentHash',
+        'contentHash',
+        'editRequestId',
+        'editedAt',
+        'editedBy',
+        'style',
+      ],
+      'properties': <String, Object?>{
+        'schemaVersion': <String, Object?>{
+          'const': 1,
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000000,
+        },
+        'previousRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999,
+        },
+        'baseContentHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'previousContentHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'contentHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'editRequestId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'editedAt': <String, Object?>{
+          'type': 'string',
+          'format': 'date-time',
+        },
+        'editedBy': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'style': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'greeting',
+            'closing',
+            'subjectStyle',
+            'paragraphStyle',
+          ],
+          'properties': <String, Object?>{
+            'greeting': <String, Object?>{
+              'enum': <Object?>[
+                'none',
+                'hello',
+                'hi',
+              ],
+            },
+            'closing': <String, Object?>{
+              'enum': <Object?>[
+                'none',
+                'thanks',
+                'best',
+              ],
+            },
+            'subjectStyle': <String, Object?>{
+              'enum': <Object?>[
+                'original',
+                'question',
+                'idea',
+              ],
+            },
+            'paragraphStyle': <String, Object?>{
+              'enum': <Object?>[
+                'spaced',
+                'compact',
+              ],
+            },
+          },
+        },
+      },
+      'description': 'Own-partner neutral style edit, bound to an immutable intelligence receipt; never replaces sourced factual prose.',
+    },
   },
   'definitions': <String, Object?>{
     'id': <String, Object?>{

@@ -1,3 +1,6 @@
+import {createSyntheticCatchAuthority} from "./whatsappAuthorityTestHarness";
+import {CATCH_APP_AUTHORITIES} from "./whatsappAppAuthorityStore";
+import {CATCH_INGRESS_EVIDENCE} from "./whatsappIngressStore";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {createRequire} from "node:module";
@@ -51,7 +54,9 @@ function incoming(body = "Please help with my account", id = "wamid.inbound") {
 }
 
 function fixture(realDb?: Firestore, suffix = "") {
-  const fake = new FormPaymentTestStore();
+  const fake = Object.assign(new FormPaymentTestStore(), {
+    projectId: realDb ? String(Reflect.get(realDb, "projectId")) : "demo-catch-authority",
+    databaseId: "(default)"});
   const db = realDb ?? fake as unknown as Firestore;
   const event = incoming(undefined, "wamid.inbound" + suffix);
   const doc = {...event, receivedAtMillis: time,
@@ -59,17 +64,19 @@ function fixture(realDb?: Firestore, suffix = "") {
   let now = time + 1000;
   let disabled = false;
   let sends = 0;
+  const authority = createSyntheticCatchAuthority(db, () => now, config.recipientE164, fake.projectId);
+  authority.seedInto(fake.records, doc);
   const input: CatchReplyInput = {purpose: "serviceSupport",
     inboundEventId: event.eventId, reviewedInboundTextHash:
       catchReplyHash(event.text), confirmSupportRequest: true,
     body: "Here is the requested account help."};
   const request = {auth: {uid: "agent", token: {support: true,
-    auth_time: time / 1000}}, data: input} as unknown as
+    auth_time: time / 1000}}, rawRequest: {header: () => "Bearer synthetic-current-id-token"}, data: input} as unknown as
     CallableRequest<unknown>;
   const deps = {config: () => ({...config}), getUser: async (uid: string) =>
     uid === "owner" ? {disabled: false, customClaims: {adminOwner: true}} :
       uid === "agent" ? {disabled, customClaims: {support: true}} :
-        {disabled: false, phoneNumber: config.recipientE164}, now: () => now};
+        {disabled: false, phoneNumber: config.recipientE164}, now: () => now, authority: authority.store};
   const store = new CatchWhatsappReplyStore(db, deps);
   const service = {...deps, store, prepare: async () => ({send: async () => {
     sends++; return "wamid.outbound" + suffix;
@@ -78,7 +85,7 @@ function fixture(realDb?: Firestore, suffix = "") {
     wabaId: config.wabaId, phoneNumberId: config.phoneNumberId,
     recipientUid: config.recipientUid,
     endpointHash: catchEndpointHash(config.recipientE164),
-    purpose: "serviceSupport", state: "ready", completeHistory: true,
+    purpose: "serviceSupport", state: "ready", completeHistory: true, appAuthorityBindings: authority.bindings,
     historyFromMillis: 0, coveredThroughMillis: time,
     atomicIngressStartedAtMillis: time, evidenceSha256: "d".repeat(64),
     reviewedByUid: "owner", reviewedAtMillis: time,
@@ -86,7 +93,7 @@ function fixture(realDb?: Firestore, suffix = "") {
   fake.records.set(CATCH_REPLY_READINESS + "/" + catchReadinessId(config),
     readiness);
   fake.records.set(CATCH_RECEIPTS + "/" + event.eventId, doc);
-  return {fake, db, doc, event, input, request, store, service, readiness,
+  return {fake, db, doc, event, input, request, store, service, readiness, authority,
     operationId: catchReplyId(config, event.messageId),
     sends: () => sends, setNow: (value: number) => {
       now = value;
@@ -118,6 +125,57 @@ test("fresh reviewed support request saves one message ID and exact replay",
       {...f.input, body: "A second response"}}, f.service));
     assert.equal(f.sends(), 1);
   });
+
+test("authority observation expires during review before credential access", async () => {
+  const f = fixture();
+  const authorize = f.authority.store.replyAuthorization.bind(f.authority.store);
+  f.authority.store.replyAuthorization = async (...args) => {
+    const result = await authorize(...args);
+    f.setNow(time + 31001);
+    return result;
+  };
+  await assert.rejects(sendCatchWhatsappReply(f.request, f.service));
+  assert.equal(f.sends(), 0);
+  assert.equal(f.fake.records.has(CATCH_REPLY_OPERATIONS + "/" + f.operationId), false);
+});
+
+test("final Auth recheck cannot claim after readiness expires", async () => {
+  const ownerConfig = {...config, actorUid: "owner"};
+  const ownerFixture = () => {
+    const f = fixture();
+    f.service.config = () => ownerConfig;
+    (f.store as unknown as {deps: {config: () => CatchReplyConfig}}).deps.config =
+      () => ownerConfig;
+    (f.request as unknown as {auth: {uid: string;
+      token: Record<string, unknown>}}).auth =
+      {uid: "owner", token: {adminOwner: true, auth_time: time / 1000}};
+    f.fake.records.get(CATCH_APP_AUTHORITIES + "/owner")!.capabilities =
+      ["review", "reply"];
+    return f;
+  };
+  const baseline = ownerFixture();
+  let baselineChecks = 0;
+  baseline.authority.store.deps.withFreshAuthContext = async ({uids}, callback) =>
+    callback({...baseline.authority.fence(uids, () => undefined),
+      recheck: async () => {baselineChecks++;}});
+  await sendCatchWhatsappReply(baseline.request, baseline.service);
+  assert.ok(baselineChecks > 0);
+  assert.equal(baseline.sends(), 1);
+
+  const f = ownerFixture();
+  let finalChecks = 0;
+  f.authority.store.deps.withFreshAuthContext = async ({uids}, callback) =>
+    callback({...f.authority.fence(uids, () => undefined),
+      recheck: async () => {
+        finalChecks++;
+        f.setNow(f.readiness.expiresAtMillis);
+      }});
+  await assert.rejects(sendCatchWhatsappReply(f.request, f.service));
+  assert.ok(finalChecks > 0, "final current-Auth check must be reached");
+  assert.equal(f.sends(), 0);
+  assert.equal(f.fake.records.has(CATCH_REPLY_OPERATIONS + "/" +
+    catchReplyId(ownerConfig, f.event.messageId)), false);
+});
 
 test("newly claimed reply is blocked at exact 24h and with invalid evidence",
   async () => {
@@ -255,6 +313,8 @@ test("authored operation and STOP contracts validate real store outputs",
     const f = fixture(); await sendCatchWhatsappReply(f.request, f.service);
     await persistCatchStopReceipt(f.db, incoming("stop", "wamid.stop"), time);
     const ajv = new Ajv({strict: false});
+    ajv.addSchema(JSON.parse(readFileSync(path.resolve(__dirname,
+      "../../../contracts/firestore/catch_whatsapp_app_authorities.schema.json"), "utf8")));
     for (const [name, collection] of [
       ["catch_whatsapp_reply_operations", CATCH_REPLY_OPERATIONS],
       ["catch_whatsapp_endpoint_stops", CATCH_ENDPOINT_STOPS],
@@ -289,6 +349,9 @@ test("Firestore concurrent replies send once and committed STOP blocks claims",
       catchReadinessId(config);
     paths.push(readinessPath);
     try {
+      for (const [key, row] of f.authority.rows) {await db.doc(key).set(row); paths.push(key);}
+      const ingressKey = CATCH_INGRESS_EVIDENCE + "/" + f.event.eventId;
+      await db.doc(ingressKey).set(f.authority.ingress(f.doc)); paths.push(ingressKey);
       await db.doc(readinessPath).set(f.readiness);
       await db.doc(paths[0]).create(f.doc);
       const results = await Promise.allSettled(Array.from({length: 8}, () =>
@@ -326,6 +389,8 @@ test("Firestore concurrent replies send once and committed STOP blocks claims",
       const racingKey = CATCH_REPLY_OPERATIONS + "/" + racing.operationId;
       paths.push(CATCH_RECEIPTS + "/" + racing.event.eventId, racingKey);
       await db.doc(paths.at(-2)!).create(racing.doc);
+      const racingIngress = CATCH_INGRESS_EVIDENCE + "/" + racing.event.eventId;
+      await db.doc(racingIngress).set(racing.authority.ingress(racing.doc)); paths.push(racingIngress);
       const [race] = await Promise.allSettled([
         sendCatchWhatsappReply(racing.request, racing.service),
         persistCatchStopReceipt(db, stop, time + 1000),
@@ -342,13 +407,16 @@ test("Firestore concurrent replies send once and committed STOP blocks claims",
       } else assert.equal(racing.sends(), 0);
 
       const later = fixture(db, suffix + "after-stop");
+      const laterClaim = CATCH_REPLY_OPERATIONS + "/" + later.operationId;
       paths.push(CATCH_RECEIPTS + "/" + later.event.eventId,
         CATCH_REPLY_OPERATIONS + "/" + later.operationId);
       await db.doc(paths.at(-2)!).create(later.doc);
+      const laterIngress = CATCH_INGRESS_EVIDENCE + "/" + later.event.eventId;
+      await db.doc(laterIngress).set(later.authority.ingress(later.doc)); paths.push(laterIngress);
       await assert.rejects(sendCatchWhatsappReply(later.request,
         later.service));
       assert.equal(later.sends(), 0);
-      assert.equal((await db.doc(paths.at(-1)!).get()).exists, false);
+      assert.equal((await db.doc(laterClaim).get()).exists, false);
       await assert.rejects(sendCatchWhatsappReply(f.request, f.service));
       assert.equal(f.sends(), 1);
       const receipt = (await db.doc(paths[1]).get()).data()!;
@@ -405,7 +473,7 @@ test("final claim rechecks scope and current identity after preparation",
         getUser: async (uid: string) => uid === "owner" ?
           {disabled: false, customClaims: {adminOwner: true}} :
           uid === "agent" ? actor : recipient,
-        now: f.service.now};
+        now: f.service.now, authority: f.authority.store};
       const store = new CatchWhatsappReplyStore(f.db, deps);
       let preparations = 0;
       const service = {...deps, store, prepare: async () => {
@@ -439,13 +507,16 @@ test("credential and claim failures cannot dispatch or persist a send claim",
   async () => {
     for (const failure of ["credential", "claim"] as const) {
       const f = fixture();
-      if (failure === "claim") f.fake.failNextCommit = true;
+      let prepared = 0;
       const service = {...f.service, prepare: async () => {
+        prepared++;
         if (failure === "credential") throw new Error("private token material");
+        if (failure === "claim") f.fake.failNextCommit = true;
         return f.service.prepare();
       }};
       await assert.rejects(sendCatchWhatsappReply(f.request, service),
         (error: Error) => !error.message.includes("private token material"));
+      assert.equal(prepared, 1, "Preflight reached credential preparation");
       assert.equal(f.sends(), 0);
       assert.equal(f.fake.records.has(CATCH_REPLY_OPERATIONS + "/" +
         f.operationId), false);

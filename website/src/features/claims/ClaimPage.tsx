@@ -1,3 +1,4 @@
+import {DemoContinuationWorkspace} from "./DemoContinuationWorkspace";
 import {websiteCopy} from "@content/generated";
 import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
 import {ClaimFlowMain} from "../../shared/ui/primitives";
@@ -10,6 +11,10 @@ import type {ClaimRouteState} from "./claimRouting";
 import {useClaimFlowController} from "./useClaimFlowController";
 
 export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
+  if (routeState.continuationId) return <DemoContinuationWorkspace key={routeState.continuationId} continuationId={routeState.continuationId} />;
+  return <PublicClaimPage routeState={routeState} />;
+}
+function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
   const controller = useClaimFlowController(routeState);
   const {claimUrlState} = controller;
 

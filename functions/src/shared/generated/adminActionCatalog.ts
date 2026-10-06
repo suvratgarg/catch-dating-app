@@ -1115,6 +1115,49 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner",
       "finance"
     ]
+  },
+  "sales.demo.GetSalesDemoPartnerReview": {
+    "callable": "adminGetSalesDemoPartnerReview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.ShareSalesDemoPartnerReview": {
+    "callable": "adminShareSalesDemoPartnerReview",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.partner.PreviewSalesPartnerMarketingGrant": {
+    "callable": "adminPreviewSalesPartnerMarketingGrant",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.partner.ReviewSalesPartnerMarketingGrant": {
+    "callable": "adminReviewSalesPartnerMarketingGrant",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.partner.RevokeSalesPartnerMarketingGrant": {
+    "callable": "adminRevokeSalesPartnerMarketingGrant",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
   }
 } as const;
 

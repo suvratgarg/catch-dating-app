@@ -39,6 +39,37 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
     "linkedAt"
   ],
   "properties": {
+    "demoContribution": {
+      "type": "object",
+      "description": "Server-owned lineage of an absent-created synthetic Catch-booking roster contribution; shared/manual roster sources never acquire this authority.",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "sourcePath",
+        "seedPrefix",
+        "demoOpsId"
+      ],
+      "properties": {
+        "version": {
+          "const": "owned-projection-v1"
+        },
+        "sourcePath": {
+          "type": "string",
+          "pattern": "^eventParticipations/[^/]+$"
+        },
+        "seedPrefix": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "demoOpsId": {
+          "type": "string",
+          "pattern": "__run_[0-9]+$",
+          "maxLength": 180
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "eventId": {
       "type": "string",
       "minLength": 1,

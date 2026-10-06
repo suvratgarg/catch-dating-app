@@ -97,6 +97,15 @@
     },
     "demoOpsCommand": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    },
+    "ownership": {
+      "type": "object",
+      "description": "Exact generation document tokens. Historical paths without these tokens grant no reset authority.",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "x-catch-ownership": "server-only"
     }
   }
 }

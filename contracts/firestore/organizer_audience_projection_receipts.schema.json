@@ -14,6 +14,8 @@
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "eventId": {"type": "string", "minLength": 1, "maxLength": 512},
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+    "expiresAt": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}, {"type": "null"}]},
+    "cleanupToken": {"type": "string", "pattern": "^[a-f0-9]{64}$", "x-server-only": true},
+    "pendingContactRebuildIds": {"type": "array", "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "uniqueItems": true, "x-server-only": true}
   }
 }

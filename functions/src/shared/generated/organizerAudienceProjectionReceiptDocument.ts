@@ -15,11 +15,10 @@ export interface OrganizerAudienceProjectionReceiptDocument {
     _seconds: number;
     _nanoseconds: number;
   };
-  /**
-   * Serialized Firestore Timestamp fixture shape.
-   */
   expiresAt: {
     _seconds: number;
     _nanoseconds: number;
-  };
+  } | null;
+  cleanupToken?: string;
+  pendingContactRebuildIds?: string[];
 }

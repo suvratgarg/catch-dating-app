@@ -453,6 +453,132 @@ export const salesOutreachDraftsDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ]
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision",
+        "renderedDraftId"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "renderedDraftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "revision",
+        "previousRevision",
+        "baseContentHash",
+        "previousContentHash",
+        "contentHash",
+        "editRequestId",
+        "editedAt",
+        "editedBy",
+        "style"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "previousRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999
+        },
+        "baseContentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "previousContentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "editRequestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "editedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "editedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "style": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "greeting",
+            "closing",
+            "subjectStyle",
+            "paragraphStyle"
+          ],
+          "properties": {
+            "greeting": {
+              "enum": [
+                "none",
+                "hello",
+                "hi"
+              ]
+            },
+            "closing": {
+              "enum": [
+                "none",
+                "thanks",
+                "best"
+              ]
+            },
+            "subjectStyle": {
+              "enum": [
+                "original",
+                "question",
+                "idea"
+              ]
+            },
+            "paragraphStyle": {
+              "enum": [
+                "spaced",
+                "compact"
+              ]
+            }
+          }
+        }
+      },
+      "description": "Own-partner neutral style edit, bound to an immutable intelligence receipt; never replaces sourced factual prose."
     }
   },
   "definitions": {

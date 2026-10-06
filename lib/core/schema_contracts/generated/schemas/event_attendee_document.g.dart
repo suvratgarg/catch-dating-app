@@ -41,6 +41,37 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
     'linkedAt',
   ],
   'properties': <String, Object?>{
+    'demoContribution': <String, Object?>{
+      'type': 'object',
+      'description': 'Server-owned lineage of an absent-created synthetic Catch-booking roster contribution; shared/manual roster sources never acquire this authority.',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'version',
+        'sourcePath',
+        'seedPrefix',
+        'demoOpsId',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'const': 'owned-projection-v1',
+        },
+        'sourcePath': <String, Object?>{
+          'type': 'string',
+          'pattern': '^eventParticipations/[^/]+\$',
+        },
+        'seedPrefix': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'demoOpsId': <String, Object?>{
+          'type': 'string',
+          'pattern': '__run_[0-9]+\$',
+          'maxLength': 180,
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

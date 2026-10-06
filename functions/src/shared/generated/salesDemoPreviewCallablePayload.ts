@@ -3,8 +3,9 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Anonymous read-only preview. Fetching never opens or consumes an invitation.
+ * Generic anonymous unfurl; personalized preview requires current invited contact and bearer grant. No session consumption.
  */
 export interface SalesDemoPreviewCallablePayload {
   invitationId: string;
+  grantToken?: string;
 }

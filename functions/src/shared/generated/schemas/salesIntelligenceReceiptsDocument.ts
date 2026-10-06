@@ -6,7 +6,7 @@ export const salesIntelligenceReceiptDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_receipts.schema.json",
   "title": "SalesIntelligenceReceiptDocument",
-  "description": "Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.",
+  "description": "Immutable actor-scoped exact-retry receipt for private employee intelligence and assignment-bound partner composition actions. Never proof of sending.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesIntelligenceReceipts",
@@ -52,7 +52,12 @@ export const salesIntelligenceReceiptDocumentSchema: Record<string, unknown> = {
         "score.snapshot",
         "draft.record",
         "draft.review",
-        "draft.copy"
+        "draft.copy",
+        "partner.draft.record",
+        "partner.draft.review",
+        "partner.draft.copy",
+        "partner.draft.manual_send",
+        "partner.draft.edit"
       ]
     },
     "requestId": {

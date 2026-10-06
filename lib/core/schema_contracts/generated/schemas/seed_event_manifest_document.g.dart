@@ -139,5 +139,14 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
       'maxLength': 80,
       'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
     },
+    'ownership': <String, Object?>{
+      'type': 'object',
+      'description': 'Exact generation document tokens. Historical paths without these tokens grant no reset authority.',
+      'additionalProperties': <String, Object?>{
+        'type': 'string',
+        'pattern': '^[a-f0-9]{64}\$',
+      },
+      'x-catch-ownership': 'server-only',
+    },
   },
 };

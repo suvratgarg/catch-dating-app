@@ -1,6 +1,10 @@
-import {useEffect, useState} from "react";
+import {useAdminOperationPending} from "../../../shared/pendingOperation";
+import {useSalesDemoPartnerReviewController} from "../controllers/useSalesDemoPartnerReviewController";
+import type {SalesDemoPartnerReviewApi} from "../api/salesDemoPartnerReview";
+import type {DemoReviewWording} from "../../../shared/domain/salesDemoReview";
+import {useCallback, useEffect, useState} from "react";
 import {ClipboardList} from "lucide-react";
-import {AdminButton, AdminForm, Panel, SelectField, StateRow,
+import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, SelectField, StateRow,
   TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
@@ -80,6 +84,8 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   const [form, setForm] = useState<FormState>(() => emptyForm(organizerName));
   const [formRevision, setFormRevision] = useState(0);
   const [formBlueprintId, setFormBlueprintId] = useState<string | null>(null);
+  const [sharingPending, setSharingPending] = useState(false);
+  const reportSharingPending = useCallback((value: boolean) => setSharingPending(value), []);
   const [dirty, setDirty] = useState(false);
   const [contactKind, setContactKind] = useState<"preview" | "email" | "phone">(
     "preview");
@@ -119,8 +125,11 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   const stale = Boolean(selected && selected.revision !== formRevision &&
     selected.blueprintId === formBlueprintId);
   const active = controller.blueprintId !== null;
-  const locked = controller.busy || Boolean(controller.pending);
-  const capabilityReady = controller.capability.data?.enabled === true;
+  const locked = controller.busy || Boolean(controller.pending) || sharingPending;
+  const sourceCurrent = !controller.blueprintExists || (controller.blueprint.isSuccess &&
+    !controller.blueprint.isFetching && !controller.blueprint.isError);
+  const capabilityReady = controller.capability.isSuccess && !controller.capability.isFetching &&
+    !controller.capability.isError && controller.capability.data.enabled === true;
   const previewValid = Boolean(form.preview.brandName.trim() &&
     form.preview.headline.trim() && form.preview.scenario.trim() &&
     form.preview.steps.length === 3 &&
@@ -140,7 +149,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
     expiryMillis > Date.now() && expiryMillis <= Date.now() + 7 * 86_400_000;
   const save = async () => {
     if (!controller.blueprintId || !capabilityReady || !previewValid || !setupValid ||
-        stale || locked || selected?.state === "withdrawn") return;
+        stale || locked || !sourceCurrent || selected?.state === "withdrawn") return;
     await controller.save({blueprintId: controller.blueprintId,
       expectedRevision: formRevision, organizerId, candidateId: null,
       opportunityId: null,
@@ -157,7 +166,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   };
   const issue = async () => {
     if (!selected || selected.state !== "reviewed" || locked || stale ||
-        dirty || !expiryValid) return;
+        dirty || !sourceCurrent || !expiryValid) return;
     const parsed = expiryMillis;
     const cap = Number(sessionCap);
     if (!Number.isFinite(parsed) || !Number.isInteger(cap) ||
@@ -172,7 +181,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   const copyLink = async () => {
     const issued = controller.issuedGrant;
     const origin = validOrigin();
-    if (!issued || !origin || !/^[A-Za-z0-9_-]{43}$/u.test(
+    if (!sourceCurrent || locked || !issued || !origin || !/^[A-Za-z0-9_-]{43}$/u.test(
       issued.grantToken)) return;
     const link = `${origin}/demo/${encodeURIComponent(issued.invitationId)}`+
       `#grant=${issued.grantToken}`;
@@ -192,6 +201,10 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
     {controller.notice ? <p role="status">{controller.notice}</p> : null}
     {controller.pending ? <AdminButton disabled={controller.busy}
       onClick={() => void controller.retry()}>Retry unchanged request</AdminButton> : null}
+    {controller.blueprintExists && <AdminButton disabled={controller.busy || controller.blueprint.isFetching}
+      onClick={() => {void controller.blueprint.refetch(); void controller.capability.refetch();}}>Refresh example and access</AdminButton>}
+    {!sourceCurrent && <p>Current example access is being checked or was denied. Refresh to review it.</p>}
+    {sourceCurrent && <>
     <h3>Saved examples</h3>
     {controller.blueprintList.isError ? <p role="alert">Saved examples could not be
       loaded. <AdminButton onClick={() => void controller.blueprintList.refetch()}>
@@ -211,7 +224,13 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
       onClick={controller.firstBlueprintPage}>First examples</AdminButton> : null}
     <AdminButton disabled={locked || !capabilityReady}
       onClick={beginNew}>New example</AdminButton>
-    {active ? <>
+    </>}
+    {selected && <SalesDemoPartnerSharePanel key={`${currentUserUid}:${organizerId}:${selected.blueprintId}`}
+      actorUid={currentUserUid} organizerId={organizerId} blueprintId={selected.blueprintId} blueprintRevision={selected.revision}
+      parentAccessCurrent={selected.state === "reviewed" && controller.blueprint.isSuccess && !controller.blueprint.isFetching &&
+        !controller.blueprint.isError && !dirty && !stale && !controller.busy && !controller.pending}
+      onPendingChange={reportSharingPending} onLoadWording={(wording) => edit({...form, preview: {...form.preview, ...wording}})} />}
+    {active && sourceCurrent ? <>
       <h3>{selected ? "Edit example" : "New example"}</h3>
       {controller.blueprint.isError ? <p role="alert">This blueprint could not
         be loaded. Choose it again from the list.</p> : null}
@@ -380,4 +399,47 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
         {sourceField: "", catchField: null, disposition: "manual"}]})}>
       Add field mapping</AdminButton>
   </AdminForm>;
+}
+
+function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: string; blueprintId: string;
+  blueprintRevision: number; parentAccessCurrent: boolean; onPendingChange: (pending: boolean) => void;
+  onLoadWording: (wording: DemoReviewWording) => void; api?: SalesDemoPartnerReviewApi}) {
+  const c = useSalesDemoPartnerReviewController(props); const operationPending = useAdminOperationPending();
+  const [reviewKey, setReviewKey] = useState<string | null>(null); const [expires, setExpires] = useState("");
+  useEffect(() => {props.onPendingChange(c.busy || !!c.ticket);}, [c.busy, c.ticket, props.onPendingChange]);
+  useEffect(() => () => {props.onPendingChange(false);}, [props.onPendingChange]);
+  const value = c.data;
+  const key = value ? `${value.blueprintId}:${value.blueprintRevision}:${value.previewHash}:${value.partnerUid}:${value.assignmentRevision}:${value.sharingRevision}` : null;
+  const expiry = Date.parse(`${expires}:00.000Z`);
+  const expiryValid = value && Number.isFinite(expiry) && expiry > Date.now() && expiry <= Date.parse(value.maximumExpiresAt);
+  const blocked = operationPending || c.busy || !!c.ticket;
+  if (!props.parentAccessCurrent) return null;
+  return <Panel title="Share a preview with the assigned partner" icon={<ClipboardList />}>
+    <p>Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</p>
+    {c.error && <p role="alert">{c.error}</p>}{c.notice && <p role="status">{c.notice}</p>}
+    <AdminButton disabled={operationPending || c.busy} onClick={() => void c.refresh()}>Refresh sharing scope</AdminButton>
+    {c.ticket && <AdminButton disabled={operationPending || c.busy || !value} onClick={() => void c.retry()}>Retry unchanged sharing action</AdminButton>}
+    {!value ? <EmptyState>A current accepted partner and reviewed canonical preview are required.</EmptyState> : <>
+      <StateRow label="Recipient account" value={value.partnerUid} /><StateRow label="Assignment revision" value={value.assignmentRevision} />
+      <StateRow label="Preview fingerprint" value={value.previewHash} />
+      <h3>{value.preview.headline}</h3><p>{value.preview.scenario}</p>
+      <ol>{value.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
+      {value.preview.retainedTools.map((tool, i) => <p key={i}>Keep: {tool}</p>)}
+      {value.preview.limitations.map((limit, i) => <p key={i}>{limit}</p>)}<p>{value.preview.cta}</p>
+      <StateRow label="Current sharing" value={value.sharingCurrent ? `Active until ${value.expiresAt}` : value.sharingState} />
+      <TextField label="Share until (UTC)" type="datetime-local" value={expires} disabled={blocked} onChange={(v) => {setExpires(v); setReviewKey(null);}} />
+      <p>Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</p>
+      <CheckboxField label="I approve this exact synthetic preview for this assigned partner" checked={!!key && reviewKey === key}
+        disabled={blocked} onChange={(checked) => setReviewKey(checked ? key : null)} />
+      <AdminButton disabled={blocked || !key || reviewKey !== key || !expiryValid} onClick={() => {
+        setReviewKey(null); void c.share("share", new Date(expiry).toISOString());}}>Share this preview</AdminButton>
+      <AdminButton disabled={blocked || value.sharingState === "none" || !key || reviewKey !== key} onClick={() => {
+        setReviewKey(null); void c.share("withdraw", null);}}>Withdraw partner sharing</AdminButton>
+      {value.proposedWording && <>
+        <h3>Pending partner wording</h3><p>{value.proposedWording.headline}</p><p>{value.proposedWording.scenario}</p><p>{value.proposedWording.cta}</p>
+        <AdminButton disabled={blocked} onClick={() => props.onLoadWording(value.proposedWording!)}>Load proposal into draft editor</AdminButton>
+        <p>Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</p>
+      </>}
+    </>}
+  </Panel>;
 }

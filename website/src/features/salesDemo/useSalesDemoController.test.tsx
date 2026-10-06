@@ -65,6 +65,46 @@ function harness(token: string | null = grantToken) {
 }
 
 describe("private Sales demo controller", () => {
+  it.each(["permission-denied", "revoked", "source drift"])("hides private session and setup after an authoritative %s refresh denial", async (reason) => {
+    const h = harness(); vi.mocked(h.api.start).mockResolvedValue(completed);
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    await act(async () => h.result.current.start());
+    await act(async () => h.result.current.readSetup());
+    expect(h.result.current.setup).toEqual(readySetup);
+    vi.mocked(h.api.getSession).mockRejectedValue(new Error(reason));
+    await act(async () => h.result.current.refresh());
+    expect(h.result.current.session).toBeNull();
+    expect(h.result.current.setup).toBeNull();
+    expect(h.result.current.privateAccessDenied).toBe(true);
+    expect(h.result.current.canTry).toBe(false);
+    await act(async () => h.result.current.prepareSetup());
+    expect(h.api.prepareSetup).not.toHaveBeenCalled(); h.unmount();
+  });
+  it("explicitly restarts an expired session after verifying that the invitation is still current", async () => {
+    const h = harness(); await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    await act(async () => h.result.current.start());
+    vi.mocked(h.api.getSession).mockRejectedValue(new Error("session expired"));
+    await act(async () => h.result.current.refresh());
+    expect(h.result.current.canTry).toBe(false);
+    await act(async () => h.result.current.retryPreview());
+    await waitFor(() => expect(h.result.current.canRestartSample).toBe(true));
+    expect(h.api.start).toHaveBeenCalledOnce();
+    await act(async () => h.result.current.restartSample());
+    expect(h.api.start).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(h.api.start).mock.calls[1][0].requestId).not.toBe(vi.mocked(h.api.start).mock.calls[0][0].requestId);
+    expect(h.api.getSession).toHaveBeenCalledOnce();
+    expect(h.result.current.session).toEqual(session); h.unmount();
+  });
+  it("hides private details when an uncertain advance cannot reconcile current access", async () => {
+    const h = harness(); await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    await act(async () => h.result.current.start());
+    vi.mocked(h.api.advance).mockRejectedValue(new Error("network timeout"));
+    vi.mocked(h.api.getSession).mockRejectedValue(new Error("permission-denied"));
+    await act(async () => h.result.current.advance({action: "reviewApplication", choice: "approve"}));
+    expect(h.result.current.session).toBeNull();
+    expect(h.result.current.privateAccessDenied).toBe(true);
+    expect(h.result.current.retryAction).toBeNull(); h.unmount();
+  });
   it("fetches a safe preview without materializing a session or caching the grant", async () => {
     const h = harness(null);
     await waitFor(() => expect(h.result.current.preview.data).toEqual(preview));
@@ -73,6 +113,54 @@ describe("private Sales demo controller", () => {
     expect(JSON.stringify(h.client.getQueryCache().getAll().map((query) =>
       [query.queryKey, query.state]))).not.toContain(grantToken);
     h.unmount();
+  });
+
+  it("refreshes private access after phone linking on the same UID without dropping the grant", async () => {
+    const h = harness();
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    h.setViewer({...verified, emailVerified: false, phoneNumber: null});
+    await waitFor(() => expect(h.result.current.canTry).toBe(false));
+    const prior = vi.mocked(h.api.preview).mock.calls.length;
+    h.setViewer({...verified, emailVerified: false, phoneNumber: "+15555550100"});
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    expect(vi.mocked(h.api.preview).mock.calls.length).toBeGreaterThan(prior);
+    expect(vi.mocked(h.api.preview).mock.lastCall?.[0]).toEqual({invitationId: "invite-1", grantToken});
+    expect(JSON.stringify(h.client.getQueryCache().getAll().map((q) => q.queryKey))).not.toContain(grantToken);
+    h.unmount();
+  });
+
+  it("hides private session and fences a delayed setup reply on an unchanged-UID token event", async () => {
+    const h = harness(); vi.mocked(h.api.start).mockResolvedValue(completed);
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    await act(async () => h.result.current.start());
+    let resolve: (value: SalesDemoSetup) => void = () => undefined;
+    vi.mocked(h.api.getSetup).mockImplementationOnce(() => new Promise((done) => {resolve = done;}));
+    let read!: Promise<unknown>;
+    act(() => {read = h.result.current.readSetup();});
+    vi.mocked(h.api.preview).mockRejectedValue(new Error("permission-denied"));
+    h.setViewer({...verified});
+    expect(h.result.current.session).toBeNull();
+    expect(h.result.current.setup).toBeNull();
+    await act(async () => {resolve(readySetup); await read;});
+    await waitFor(() => expect(h.result.current.preview.isError).toBe(true));
+    expect(h.result.current.setup).toBeNull();
+    expect(h.result.current.canTry).toBe(false); h.unmount();
+  });
+  it("can recover an uncertain preservation after private preview becomes unavailable", async () => {
+    const h = harness(); vi.mocked(h.api.start).mockResolvedValue(completed);
+    const preserve = vi.fn().mockRejectedValueOnce(new Error("network timeout"))
+      .mockResolvedValue({continuationId: "c".repeat(64), expiresAt: "2099-01-01T00:00:00.000Z", publicationAuthority: false});
+    h.api.preserve = preserve;
+    await waitFor(() => expect(h.result.current.canTry).toBe(true));
+    await act(async () => h.result.current.start());
+    await act(async () => h.result.current.preserveSetup());
+    vi.mocked(h.api.preview).mockRejectedValue(new Error("permission-denied"));
+    h.setViewer({...verified});
+    await waitFor(() => expect(h.result.current.preview.isError).toBe(true));
+    expect(h.result.current.canRecoverPreservation).toBe(true);
+    await act(async () => h.result.current.preserveSetup());
+    expect(h.result.current.continuationId).toBe("c".repeat(64));
+    expect(preserve.mock.calls[1][0]).toEqual(preserve.mock.calls[0][0]); h.unmount();
   });
 
   it("starts only on an explicit tap and reuses the request after uncertain failure", async () => {

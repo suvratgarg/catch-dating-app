@@ -46,4 +46,10 @@ export interface SeedEventManifestDocument {
    * Internal demo-operations command name used for cleanup and diagnostics.
    */
   demoOpsCommand?: string;
+  /**
+   * Exact generation document tokens. Historical paths without these tokens grant no reset authority.
+   */
+  ownership?: {
+    [k: string]: string;
+  };
 }

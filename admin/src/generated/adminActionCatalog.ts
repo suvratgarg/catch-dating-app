@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.6.0",
+  "catalogVersion": "1.7.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -1982,6 +1982,84 @@ export const adminActionCatalog = {
       ],
       "summary": "Revoke one existing entitlement grant for an organizer; idempotent on operationId and fails closed on unknown or already-revoked grants.",
       "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoPartnerReview",
+      "callable": "adminGetSalesDemoPartnerReview",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.demo.ShareSalesDemoPartnerReview",
+      "callable": "adminShareSalesDemoPartnerReview",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.partner.PreviewSalesPartnerMarketingGrant",
+      "callable": "adminPreviewSalesPartnerMarketingGrant",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Preview current private marketing wording and its exact source fingerprint.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.partner.ReviewSalesPartnerMarketingGrant",
+      "callable": "adminReviewSalesPartnerMarketingGrant",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Explicitly review or revoke scoped private wording permission for manual partner outreach.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "sales.partner.RevokeSalesPartnerMarketingGrant",
+      "callable": "adminRevokeSalesPartnerMarketingGrant",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Explicitly review or revoke scoped private wording permission for manual partner outreach.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2255,7 +2333,12 @@ export const adminActionCatalog = {
         "sales.privacy.plan.preview",
         "sales.privacy.plan.review",
         "sales.privacy.batch.apply",
-        "sales.privacy.case.get"
+        "sales.privacy.case.get",
+        "sales.demo.GetSalesDemoPartnerReview",
+        "sales.demo.ShareSalesDemoPartnerReview",
+        "sales.partner.PreviewSalesPartnerMarketingGrant",
+        "sales.partner.ReviewSalesPartnerMarketingGrant",
+        "sales.partner.RevokeSalesPartnerMarketingGrant"
       ]
     }
   ]

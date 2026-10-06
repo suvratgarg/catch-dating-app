@@ -76,6 +76,13 @@ export const createOrganizerProgramCallablePayloadSchema: Record<string, unknown
         ]
       }
     },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Optional create-command identity. Same actor, organizer, key and normalized body replay the saved program; changed-body reuse is rejected. Omission preserves legacy random-ID creation."
+    },
     "transportSettings": {
       "type": "object",
       "additionalProperties": false,

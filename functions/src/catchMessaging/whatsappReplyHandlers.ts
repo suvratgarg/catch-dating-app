@@ -17,6 +17,8 @@ import {authorizeCatchReply, parseCatchReplyInput, sendCatchWhatsappReply} from
   "./whatsappReply";
 import type {CatchGetUser, CatchReplyConfig, PreparedCatchReply} from
   "./whatsappReply";
+import {CatchAppAuthorityStore, withCatchFreshAuthContext} from "./whatsappAppAuthorityStore";
+import {createCatchFirebaseAuthority, createCatchGoogleFirebaseLookupTransport} from "./whatsappFirebaseAuthority";
 import {CatchWhatsappReplyStore} from "./whatsappReplyStore";
 import {prepareCatchReplyProvider} from "./whatsappReplyProvider";
 
@@ -28,6 +30,7 @@ export function createCatchReplyHandlers(deps: {
   now: () => number;
   prepare: (config: CatchReplyConfig) => Promise<PreparedCatchReply>;
   rateLimit: typeof checkRateLimit;
+  authority?: () => CatchAppAuthorityStore;
 }) {
   async function authorize(request: CallableRequest<unknown>) {
     const config = {...deps.config()};
@@ -50,7 +53,7 @@ export function createCatchReplyHandlers(deps: {
       await deps.rateLimit(db, request.auth!.uid,
         "adminReviewCatchWhatsappInbound",
         RATE_LIMITS.adminReviewCatchWhatsappInbound);
-      const result = await new CatchWhatsappReplyStore(db, deps).review(
+      const result = await new CatchWhatsappReplyStore(db, {...deps, authority: deps.authority?.()}).review(
         request, request.data.inboundEventId, config);
       if (!validateAdminReviewCatchWhatsappInboundCallableResponse(result)) {
         throw new HttpsError("internal", "Invalid Catch review result.");
@@ -64,7 +67,7 @@ export function createCatchReplyHandlers(deps: {
       await deps.rateLimit(db, request.auth!.uid,
         "adminSendCatchWhatsappReply", RATE_LIMITS.adminSendCatchWhatsappReply);
       const result = await sendCatchWhatsappReply({...request, data: input},
-        {...deps, store: new CatchWhatsappReplyStore(db, deps)});
+        {...deps, store: new CatchWhatsappReplyStore(db, {...deps, authority: deps.authority?.()})});
       if (!validateAdminSendCatchWhatsappReplyCallableResponse(result)) {
         throw new HttpsError("internal", "Invalid Catch reply result.");
       }
@@ -101,6 +104,21 @@ const handlers = createCatchReplyHandlers({
       evidence.value().trim()}),
   db: getFirestore, getUser: (uid) => getAuth().getUser(uid), now: Date.now,
   rateLimit: checkRateLimit,
+  authority: () => {
+    const projectId = getApp().options.projectId;
+    if (!projectId) throw new HttpsError("failed-precondition", "Catch project is unavailable.");
+    const firebase = createCatchFirebaseAuthority({projectId, auth: getAuth(),
+      transport: createCatchGoogleFirebaseLookupTransport(), now: Date.now});
+    return new CatchAppAuthorityStore(getFirestore(), {projectId, now: Date.now,
+      firebase,
+      withFreshAuthContext: (identity, callback) =>
+        withCatchFreshAuthContext(firebase, identity, callback),
+      withAuditedAuthFence: async () => {
+        // Internal grant commands have no callable/session producer. The
+        // fallback cannot initialize authority or bypass fresh checks.
+        throw new HttpsError("failed-precondition", "Catch authority is unavailable.");
+      }});
+  },
   prepare: (config) => prepareCatchReplyProvider(config, {
     now: Date.now, fetch: (...args) => fetch(...args),
     readCredential: async (version) => {

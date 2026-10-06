@@ -23,7 +23,7 @@
     "check": "npm run runtime:check && npm run test && npm run boundaries && npm run manifests && npm run admin:check && npm run smoke",
     "manifests": "node scripts/check-workflow-manifest.mjs",
     "smoke": "node src/cli/main.mjs help && node src/admin-cli/main.mjs help",
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test test/*.test.mjs src/workflows/outreach-drafting/*.test.mjs",
     "runtime:generate": "node scripts/generate-event-assistance-runtime.mjs",
     "runtime:check": "node scripts/generate-event-assistance-runtime.mjs --check"
   },
