@@ -754,6 +754,11 @@ node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned 
 ## Marketing App Screenshot Context
 
 Marketing app screenshots are tracked by `tool/marketing/capture_manifest.json`.
+The manual `marketing-captures.yml` hosted macOS exporter accepts an exact
+source SHA and uploads all 12 validated canonical exports without committing
+or publishing. See `docs/marketing_app_media_pipeline.md#manual-hosted-export-cat159-enabling-slice`
+for the default-branch execution prerequisite and artifact receipt. Its focused
+wrapper/workflow checks run through `marketing:hosted-capture-export`.
 The Figma/AI-friendly metadata shape is checked into
 `tool/marketing/app_screenshots_design_context.json` so downstream consumers do
 not depend on ad hoc stdout.

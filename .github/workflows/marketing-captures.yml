@@ -1,0 +1,95 @@
+name: Export canonical marketing captures
+run-name: Marketing captures from ${{ inputs.source_sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full 40-character source commit SHA in this repository
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marketing-captures-${{ inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  export:
+    name: Render and validate 12 canonical iPhone captures
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      CAPTURE_SOURCE_SHA: ${{ inputs.source_sha }}
+      CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
+      TZ: UTC
+    steps:
+      - name: Validate immutable source selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CAPTURE_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]] || {
+            echo 'A full lowercase commit SHA is required.' >&2
+            exit 1
+          }
+      - name: Initialize runner output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CAPTURE_OUTPUT_DIR=$RUNNER_TEMP/canonical-marketing-captures" >> "$GITHUB_ENV"
+      - name: Checkout exporter at the workflow commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Checkout exact capture source separately
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_sha }}
+          path: capture-source
+          persist-credentials: false
+      - name: Verify source and matching toolchain pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C "$CAPTURE_SOURCE_DIR" rev-parse HEAD)" = "$CAPTURE_SOURCE_SHA"
+          cmp tool/ci/toolchain.env "$CAPTURE_SOURCE_DIR/tool/ci/toolchain.env"
+          test -f /System/Library/Fonts/SFNS.ttf
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ./.github/actions/setup-flutter
+      - name: Resolve exact source Flutter dependencies
+        working-directory: capture-source
+        run: flutter pub get --enforce-lockfile
+      - name: Render, frame, validate and package canonical outputs
+        run: node tool/marketing/export_hosted_captures.mjs
+      - name: Upload validated immutable capture bundle
+        id: bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: canonical-marketing-${{ inputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_OUTPUT_DIR }}/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Record exact artifact identity
+        env:
+          ARTIFACT_ID: ${{ steps.bundle.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.bundle.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.bundle.outputs.artifact-url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "Source: $CAPTURE_SOURCE_SHA"
+            echo "Workflow: $GITHUB_SHA"
+            echo "Run/attempt: $GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT"
+            echo "Artifact: $ARTIFACT_ID"
+            echo "Digest: $ARTIFACT_DIGEST"
+            echo "Download: $ARTIFACT_URL"
+            echo '12 synthetic captures; website copies and provenance validated. No golden baseline update or website publication.'
+          } >> "$GITHUB_STEP_SUMMARY"
