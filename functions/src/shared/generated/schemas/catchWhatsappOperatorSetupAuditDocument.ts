@@ -1,4 +1,8 @@
-{
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const catchWhatsappOperatorSetupAuditDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_operator_setup_audits.schema.json",
   "title": "CatchWhatsappOperatorSetupAuditDocument",
@@ -160,4 +164,4 @@
   "x-firestore-path": "catchWhatsappOperatorSetupAudits/{auditId}",
   "x-document-id-field": "auditId",
   "x-owner": "Catch support operator setup"
-}
+} as const;

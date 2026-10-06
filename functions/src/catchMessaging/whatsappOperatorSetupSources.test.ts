@@ -1,3 +1,5 @@
+import {validateCatchWhatsappOperatorSetupAuditDocument} from
+  "../shared/generated/validators/catchWhatsappOperatorSetupAuditDocument";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {test} from "node:test";
@@ -322,6 +324,7 @@ for (const outcome of ["before", "after", "receipt"]) {
       assert.equal(f.setters(), outcome === "receipt" ? 0 : 1);
       const receipt = f.records.get(OPERATOR_SETUP_AUDITS + "/" +
         plan.scope.projectId + "_auth_dispatch");
+      assert.ok(validateCatchWhatsappOperatorSetupAuditDocument(receipt));
       assert.equal(receipt?.receiptKind, "auth-dispatch-intent");
       assert.equal(receipt?.effectSha256, plan.desiredClaimsSha256);
       assert.equal(f.records.size, 2);

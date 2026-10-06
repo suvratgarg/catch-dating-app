@@ -1,3 +1,7 @@
+import {validateCatchWhatsappOperatorSetupOperationDocument} from
+  "../shared/generated/validators/catchWhatsappOperatorSetupOperationDocument";
+import {validateCatchWhatsappOperatorSetupAuditDocument} from
+  "../shared/generated/validators/catchWhatsappOperatorSetupAuditDocument";
 import assert from "node:assert/strict";
 import {test} from "node:test";
 import {createHash} from "node:crypto";
@@ -216,6 +220,17 @@ async () => {
   assert.equal(f.setters(), 1);
   assert.equal([...f.memory.records.keys()].filter((p) =>
     p.startsWith(OPERATOR_SETUP_AUDITS + "/")).length, 9);
+  const operation = f.memory.records.get(OPERATOR_SETUP_OPERATIONS + "/" +
+    f.sources.scope.projectId);
+  assert.ok(validateCatchWhatsappOperatorSetupOperationDocument(operation));
+  assert.equal(validateCatchWhatsappOperatorSetupOperationDocument(
+    {...operation, expiresAt: 1}), false); // TTL cannot enter permanent state.
+  for (const [path, row] of f.memory.records) {
+    if (!path.startsWith(OPERATOR_SETUP_AUDITS + "/")) continue;
+    assert.ok(validateCatchWhatsappOperatorSetupAuditDocument(row));
+    assert.equal(validateCatchWhatsappOperatorSetupAuditDocument(
+      {...row, rawClaims: {adminOwner: true}}), false);
+  }
   await assert.rejects(f.engine.apply({...f.request(),
     replayKey: "2".repeat(64)}));
 });

@@ -1,3 +1,5 @@
+import type {CatchWhatsappOperatorSetupOperationDocument} from
+  "../shared/generated/catchWhatsappOperatorSetupOperationDocument";
 import {createHash} from "node:crypto";
 import {ADMIN_ROLE_CLAIMS} from "../admin/adminAuth";
 import type {CatchAppAuthority, CatchFirebaseObservation,
@@ -57,20 +59,8 @@ export type OperatorSetupPhase = "reserved" | "auth-intent" |
   "auth-confirmed" | "seeded" | "root-active" | "prepare-intent" |
   "prepared" | "finalize-intent" | "complete" | "publish-intent" |
   "published" | "readiness-intent" | "ready" | "revoke-intent" | "revoked";
-export interface OperatorSetupOperation {
-  schemaVersion: 1;
-  operationId: string;
-  projectId: string;
-  planId: string;
-  planSha256: string;
-  replaySha256: string;
-  scopeSha256: string;
-  actorUid: string;
-  recipientUid: string;
-  phase: OperatorSetupPhase;
-  revision: number;
-  updatedAtMillis: number;
-}
+export type OperatorSetupOperation =
+  CatchWhatsappOperatorSetupOperationDocument;
 export interface OperatorSetupRequest {
   planId: string;
   planSha256: string;

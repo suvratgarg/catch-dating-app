@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupOperationDocument.ts` |
+| CatchWhatsappOperatorSetupAuditDocument | `firestore/catch_whatsapp_operator_setup_audits.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupAuditDocument.ts` |
 | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts` |
 | HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `functions/src/shared/generated/hostRosterIntakeSessionDocument.ts` |
 | HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `functions/src/shared/generated/hostRosterIntakeReceiptDocument.ts` |
@@ -1200,6 +1202,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaCatchWhatsappOperatorSetupOperationDocumentSchema` | CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_operation_document.g.dart` |
+| `schemaCatchWhatsappOperatorSetupAuditDocumentSchema` | CatchWhatsappOperatorSetupAuditDocument | `firestore/catch_whatsapp_operator_setup_audits.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_audit_document.g.dart` |
 | `schemaManageHostRosterIntakeCallablePayloadSchema` | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_roster_intake_callable_payload.g.dart` |
 | `schemaHostRosterIntakeSessionDocumentSchema` | HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_session_document.g.dart` |
 | `schemaHostRosterIntakeReceiptDocumentSchema` | HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_receipt_document.g.dart` |

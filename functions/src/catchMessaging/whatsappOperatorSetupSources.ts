@@ -1,3 +1,5 @@
+import {validateCatchWhatsappOperatorSetupAuditDocument} from
+  "../shared/generated/validators/catchWhatsappOperatorSetupAuditDocument";
 import {ADMIN_ROLE_CLAIMS} from "../admin/adminAuth";
 import {createHash} from "node:crypto";
 import type {Auth} from "firebase-admin/auth";
@@ -202,7 +204,7 @@ export function createProtectedOperatorSetupSources(options: {
             current.actorAssignmentExists || now() >= plan.expiresAtMillis) {
           setupUnavailable();
         }
-        tx.create(ref, {schemaVersion: 1,
+        const audit = {schemaVersion: 1,
           receiptKind: "auth-dispatch-intent", auditId,
           operationId: operation.operationId, projectId: scope.projectId,
           actorUid: scope.actorUid, planSha256: operation.planSha256,
@@ -210,7 +212,11 @@ export function createProtectedOperatorSetupSources(options: {
           toPhase: "auth-intent", revision: operation.revision,
           atMillis: now(), beforeSha256: setupHash(operation),
           afterSha256: setupHash(operation),
-          effectSha256: plan.desiredClaimsSha256});
+          effectSha256: plan.desiredClaimsSha256};
+        if (!validateCatchWhatsappOperatorSetupAuditDocument(audit)) {
+          setupUnavailable();
+        }
+        tx.create(ref, audit);
       }, {maxAttempts: 1});
       if (now() >= plan.expiresAtMillis) setupUnavailable();
       const beforeDispatch = await snapshot();

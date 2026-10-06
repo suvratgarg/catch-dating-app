@@ -1,3 +1,7 @@
+import {validateCatchWhatsappOperatorSetupOperationDocument} from
+  "../shared/generated/validators/catchWhatsappOperatorSetupOperationDocument";
+import {validateCatchWhatsappOperatorSetupAuditDocument} from
+  "../shared/generated/validators/catchWhatsappOperatorSetupAuditDocument";
 import {Timestamp} from "firebase-admin/firestore";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {authorizeCatchAppCapability, denyCatchAppAuthority,
@@ -27,7 +31,10 @@ export function readOperatorSetupOperation(value: unknown,
   setupExact(value, ["schemaVersion", "operationId", "projectId", "planId",
     "planSha256", "replaySha256", "scopeSha256", "actorUid", "recipientUid",
     "phase", "revision", "updatedAtMillis"]);
-  const r = value as OperatorSetupOperation;
+  if (!validateCatchWhatsappOperatorSetupOperationDocument(value)) {
+    setupUnavailable();
+  }
+  const r = value;
   if (r.schemaVersion !== 1 || r.operationId !== plan.scope.projectId ||
       r.projectId !== plan.scope.projectId || r.planId !== plan.planId ||
       r.planSha256 !== setupHash(plan) ||
@@ -53,7 +60,7 @@ export function commitOperatorSetupPhase(tx: Transaction, db: Firestore,
           before.revision + 1 ||
         after.updatedAtMillis < before.updatedAtMillis))) setupUnavailable();
   const auditId = `${plan.scope.projectId}_${after.revision}`;
-  tx.create(db.collection(OPERATOR_SETUP_AUDITS).doc(auditId), {
+  const audit = {
     schemaVersion: 1, receiptKind: "phase", auditId,
     operationId: after.operationId,
     projectId: after.projectId, actorUid: after.actorUid,
@@ -62,7 +69,11 @@ export function commitOperatorSetupPhase(tx: Transaction, db: Firestore,
     revision: after.revision, atMillis: after.updatedAtMillis,
     beforeSha256: before ? setupHash(before) : null,
     afterSha256: setupHash(after), effectSha256,
-  });
+  };
+  if (!validateCatchWhatsappOperatorSetupAuditDocument(audit)) {
+    setupUnavailable();
+  }
+  tx.create(db.collection(OPERATOR_SETUP_AUDITS).doc(auditId), audit);
   const ref = db.collection(OPERATOR_SETUP_OPERATIONS).doc(
     plan.scope.projectId);
   if (before) tx.update(ref, {...after});

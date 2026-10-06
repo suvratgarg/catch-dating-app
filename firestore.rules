@@ -1511,6 +1511,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Source-only permanent setup state and immutable phase/dispatch receipts.
+    match /catchWhatsappOperatorSetupOperations/{operationId} {
+      allow read, write: if false;
+    }
+
+    match /catchWhatsappOperatorSetupAudits/{auditId} {
+      allow read, write: if false;
+    }
+
     match /catchWhatsappReplyOperations/{operationId} {
       allow read, write: if false;
     }
