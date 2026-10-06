@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts` |
+| HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `functions/src/shared/generated/hostRosterIntakeSessionDocument.ts` |
+| HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `functions/src/shared/generated/hostRosterIntakeReceiptDocument.ts` |
 | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallablePayload.ts` |
 | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `functions/src/shared/generated/manageProgramLodgingCallableResponse.ts` |
 | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `functions/src/shared/generated/programLodgingConfigDocument.ts` |
@@ -1195,6 +1198,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaManageHostRosterIntakeCallablePayloadSchema` | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_roster_intake_callable_payload.g.dart` |
+| `schemaHostRosterIntakeSessionDocumentSchema` | HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_session_document.g.dart` |
+| `schemaHostRosterIntakeReceiptDocumentSchema` | HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_receipt_document.g.dart` |
 | `schemaManageProgramLodgingCallablePayloadSchema` | ManageProgramLodgingCallablePayload | `callables/manage_program_lodging_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_payload.g.dart` |
 | `schemaManageProgramLodgingCallableResponseSchema` | ManageProgramLodgingCallableResponse | `callable_responses/manage_program_lodging_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_program_lodging_callable_response.g.dart` |
 | `schemaProgramLodgingConfigDocumentSchema` | ProgramLodgingConfigDocument | `firestore/program_lodging_configs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_lodging_config_document.g.dart` |
@@ -2378,6 +2384,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| ManageHostRosterIntakeCallableRequest | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/callables/manage_host_roster_intake_callable_request.g.dart` |
 | AdminReviewCatchWhatsappInboundCallableRequest | AdminReviewCatchWhatsappInboundCallablePayload | `callables/admin_review_catch_whatsapp_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_review_catch_whatsapp_inbound_callable_request.g.dart` |
 | AdminSendCatchWhatsappReplyCallableRequest | AdminSendCatchWhatsappReplyCallablePayload | `callables/admin_send_catch_whatsapp_reply_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_send_catch_whatsapp_reply_callable_request.g.dart` |
 | GetOrganizerTrackingSettingsCallableRequest | GetOrganizerTrackingSettingsCallablePayload | `callables/get_organizer_tracking_settings_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_tracking_settings_callable_request.g.dart` |
