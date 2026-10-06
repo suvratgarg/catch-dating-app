@@ -40,6 +40,7 @@ test(
   async () => {
     for (const extra of [
       {title: " "}, {kind: ""}, {timezone: " "},
+      {timezone: "Not/AZone"},
       {startsAtMillis: undefined}, {endsAtMillis: undefined},
       {endsAtMillis: now.toMillis()},
       {endsAtMillis: now.toMillis() - 1},

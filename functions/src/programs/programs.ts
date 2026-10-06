@@ -128,6 +128,11 @@ export async function createOrganizerProgramHandler(
       "invalid-argument", "Program end must be after its start."
     );
   }
+  if (!isIanaTimeZone(data.timezone)) {
+    throw new HttpsError(
+      "invalid-argument", "Program timezone must be a valid IANA identifier."
+    );
+  }
   const settings = data.transportSettings ?? defaultTransportSettings;
   validateVehicleClasses(settings.vehicleClasses);
   const requestHash = data.requestId === undefined ? undefined :
@@ -519,6 +524,15 @@ function canonicalProgramCreateJson(value: unknown): string {
       .join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+function isIanaTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en-US", {timeZone: value}).format(0);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function normalizeProgramPayload(value: unknown): unknown {
