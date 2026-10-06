@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 OrganizerProgramListRow row(String id) => OrganizerProgramListRow(
   programId: id,
   title: 'Same title',
   kind: 'wedding',
   status: 'draft',
+  timezone: 'UTC',
   revision: 1,
   startsAt: DateTime.utc(2026),
   endsAt: DateTime.utc(2026, 1, 2),
@@ -116,11 +117,12 @@ void main() {
     for (final code in ['not-found', 'permission-denied', 'unauthenticated']) {
       final c = controller(
         ({cursor, programId}) async {
-          if (programId != null)
+          if (programId != null) {
             throw FirebaseFunctionsException(
               code: code,
               message: 'domain rejection',
             );
+          }
           return page(['recent']);
         },
         anchorId: 'saved',
@@ -230,8 +232,9 @@ void main() {
         final pending = Completer<OrganizerProgramInventoryPage>();
         final c = controller(
           ({cursor, programId}) {
-            if (stage == 'first' || programId != null || cursor != null)
+            if (stage == 'first' || programId != null || cursor != null) {
               return pending.future;
+            }
             return Future.value(page(['a'], 'a'));
           },
           anchorId: stage == 'anchor' ? 'saved' : null,

@@ -28,8 +28,8 @@ const schemaListOrganizerProgramsCallablePayloadSchema = <String, Object?>{
     'cursor': <String, Object?>{
       'type': 'string',
       'minLength': 1,
-      'maxLength': 180,
-      'description': 'Optional last program ID from nextCursor. Server verifies current organizer scope and continues after its canonical snapshot.',
+      'maxLength': 512,
+      'description': 'Optional opaque value from nextCursor. Server verifies current organizer scope and continues after the immutable ordering tuple encoded by that cursor.',
     },
     'programId': <String, Object?>{
       'type': 'string',

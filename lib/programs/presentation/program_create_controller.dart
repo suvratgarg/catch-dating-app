@@ -11,6 +11,9 @@ typedef ProgramCreateCommand =
       String requestId,
     );
 
+/// Opaque backend or confirmation failure retained for localized rendering.
+typedef ProgramCreateError = Object;
+
 @immutable
 class ProgramCreateSnapshot {
   const ProgramCreateSnapshot({
@@ -32,9 +35,9 @@ typedef ProgramCreateSnapshotWriter =
 /// Owns the program creation transaction, including confirmation. The form
 /// stays mounted after failures, and a receipt retry only reads the saved ID.
 class ProgramCreateController extends ChangeNotifier {
-  ProgramCreateController({
-    required this.organizerId,
-    required this.requestId,
+  factory ProgramCreateController({
+    required String organizerId,
+    required String requestId,
     required ProgramCreateCommand create,
     required Future<OrganizerProgramSettings> Function(String) readSaved,
     required Future<List<OrganizerProgramListRow>> Function(String)
@@ -46,16 +49,35 @@ class ProgramCreateController extends ChangeNotifier {
     String Function()? newRequestId,
     ProgramCreateSnapshotWriter? persist,
     Future<void> Function(String requestId)? clearPersisted,
-  }) : _create = create,
-       _readSaved = readSaved,
-       _refreshPrograms = refreshPrograms,
-       _isActorCurrent = isActorCurrent,
-       _values = initialValues,
-       _submittedValues = initialSubmittedValues,
-       _programId = initialProgramId,
-       _newRequestId = newRequestId ?? (() => requestId),
-       _persist = persist ?? _ignoreSnapshot,
-       _clearPersisted = clearPersisted ?? _ignoreRequestId;
+  }) => ProgramCreateController._(
+    organizerId: organizerId,
+    requestId: requestId,
+    create: create,
+    readSaved: readSaved,
+    refreshPrograms: refreshPrograms,
+    isActorCurrent: isActorCurrent,
+    values: initialValues,
+    submittedValues: initialSubmittedValues,
+    programId: initialProgramId,
+    newRequestId: newRequestId ?? (() => requestId),
+    persist: persist ?? _ignoreSnapshot,
+    clearPersisted: clearPersisted ?? _ignoreRequestId,
+  );
+
+  ProgramCreateController._({
+    required this.organizerId,
+    required this.requestId,
+    required this._create,
+    required this._readSaved,
+    required this._refreshPrograms,
+    required this._isActorCurrent,
+    required this._values,
+    required this._submittedValues,
+    required this._programId,
+    required this._newRequestId,
+    required this._persist,
+    required this._clearPersisted,
+  });
 
   final String organizerId;
   String requestId;
@@ -76,7 +98,7 @@ class ProgramCreateController extends ChangeNotifier {
   bool _confirmed = false;
   String? _programId;
   OrganizerProgramListRow? _confirmedRow;
-  Object? _error;
+  ProgramCreateError? _error;
 
   ProgramCreateValues get values => _values;
   bool get saving => _saving;
@@ -87,7 +109,7 @@ class ProgramCreateController extends ChangeNotifier {
   bool get fieldsLocked => saving || commandPending || actorChanged;
   String? get programId => _programId;
   OrganizerProgramListRow? get confirmedRow => _confirmedRow;
-  Object? get error => _error;
+  ProgramCreateError? get error => _error;
 
   void edit(ProgramCreateValues values) {
     if (fieldsLocked || _disposed) return;

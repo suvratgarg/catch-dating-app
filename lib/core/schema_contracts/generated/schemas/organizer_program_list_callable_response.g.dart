@@ -26,6 +26,7 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
           'kind',
           'title',
           'status',
+          'timezone',
           'startsAtMillis',
           'endsAtMillis',
           'capabilities',
@@ -59,6 +60,12 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
               'completed',
               'archived',
             ],
+          },
+          'timezone': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 60,
+            'description': 'IANA timezone used to recover the Program\'s civil calendar dates from its stored instants.',
           },
           'startsAtMillis': <String, Object?>{
             'type': 'integer',
@@ -122,8 +129,8 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
         'null',
       ],
       'minLength': 1,
-      'maxLength': 180,
-      'description': 'Last returned program ID when another page exists, otherwise null. Optional for legacy readers.',
+      'maxLength': 512,
+      'description': 'Opaque stable cursor for the last returned startsAt/program-ID tuple when another page exists, otherwise null. Optional for legacy readers.',
     },
   },
 };

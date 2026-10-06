@@ -1,15 +1,41 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../support/page_preview.dart';
 import '../utility/preview.dart';
+
+@widgetbook.UseCase(
+  name: 'Route loading',
+  type: ProgramCreateScreen,
+  path: '[P1 product surfaces]/Program workspace',
+)
+Widget programCreateScreenStates(BuildContext context) =>
+    WidgetbookPageCatalogFrame(
+      title: 'ProgramCreateScreen',
+      contractId: 'screen.programs.create',
+      children: [
+        WidgetbookPageStateCard(
+          label: 'account loading',
+          child: WidgetbookUtilityDeviceFrame(
+            child: ProviderScope(
+              overrides: [
+                uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+              ],
+              child: const ProgramCreateScreen(organizerId: 'org'),
+            ),
+          ),
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
   name: 'Form states',
@@ -49,6 +75,7 @@ Widget programEventsRowStates(BuildContext context) =>
               title: 'Kapoor–Shah Wedding',
               kind: 'wedding',
               status: 'draft',
+              timezone: 'Asia/Kolkata',
               revision: 1,
               startsAt: DateTime(2026, 10, 5),
               endsAt: DateTime(2026, 10, 8),

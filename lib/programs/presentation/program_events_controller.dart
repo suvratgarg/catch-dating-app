@@ -149,6 +149,9 @@ DateTime? _calendarDate(int? value) {
 
 enum ProgramLifecycleAction { archive, unarchive }
 
+/// Opaque continuation failure retained while already-loaded rows stay usable.
+typedef ProgramEventsPageError = Object;
+
 /// Both account and organizer participate in the provider identity. An exact
 /// saved-ID anchor survives a route reopen without expanding the page size.
 final programEventsControllerProvider = Provider.autoDispose
@@ -199,7 +202,7 @@ final programEventsControllerProvider = Provider.autoDispose
     });
 
 class ProgramEventsController extends ChangeNotifier {
-  ProgramEventsController({
+  factory ProgramEventsController({
     required bool Function() isActorCurrent,
     required ProgramInventoryRead fetchPage,
     required Future<ProgramMutationResult> Function(
@@ -208,15 +211,27 @@ class ProgramEventsController extends ChangeNotifier {
     )
     mutate,
     required void Function(String) onMutation,
-    this.anchorId,
+    String? anchorId,
     OrganizerProgramListRow? initialRow,
-  }) : _state = initialRow == null
-           ? const CatchAsyncState.loading()
-           : CatchAsyncState.data([initialRow]),
-       _isActorCurrent = isActorCurrent,
-       _fetchPage = fetchPage,
-       _mutate = mutate,
-       _onMutation = onMutation;
+  }) => ProgramEventsController._(
+    state: initialRow == null
+        ? const CatchAsyncState.loading()
+        : CatchAsyncState.data([initialRow]),
+    isActorCurrent: isActorCurrent,
+    fetchPage: fetchPage,
+    mutate: mutate,
+    onMutation: onMutation,
+    anchorId: anchorId,
+  );
+
+  ProgramEventsController._({
+    required this._state,
+    required this._isActorCurrent,
+    required this._fetchPage,
+    required this._mutate,
+    required this._onMutation,
+    this.anchorId,
+  });
 
   final bool Function() _isActorCurrent;
   final ProgramInventoryRead _fetchPage;
@@ -234,14 +249,14 @@ class ProgramEventsController extends ChangeNotifier {
   bool _anchorReadFailed = false;
   String? _nextCursor;
   bool _loadingMore = false;
-  Object? _loadMoreError;
+  ProgramEventsPageError? _loadMoreError;
   int _generation = 0;
   bool _disposed = false;
 
   CatchAsyncState<List<OrganizerProgramListRow>> get state => _state;
   bool get hasMore => _nextCursor != null;
   bool get loadingMore => _loadingMore;
-  Object? get loadMoreError => _loadMoreError;
+  ProgramEventsPageError? get loadMoreError => _loadMoreError;
   bool isPending(String id) => _pending.contains(id);
   bool _current(int generation) =>
       !_disposed && generation == _generation && _isActorCurrent();
@@ -339,8 +354,9 @@ class ProgramEventsController extends ChangeNotifier {
         _loadingMore ||
         cursor == null ||
         !_state.hasData ||
-        _state.isRefreshing)
+        _state.isRefreshing) {
       return;
+    }
     final generation = _generation;
     _loadingMore = true;
     _loadMoreError = null;
@@ -355,18 +371,24 @@ class ProgramEventsController extends ChangeNotifier {
       // Merge repeated canonical IDs (including an anchored row later paged)
       // without merging distinct programs that happen to share a title.
       final rows = {for (final row in _state.value!) row.programId: row};
-      for (final row in page.programs) rows[row.programId] = row;
+      for (final row in page.programs) {
+        rows[row.programId] = row;
+      }
       final anchorRecovered =
           _anchorReadFailed &&
           page.programs.any((row) => row.programId == anchorId);
-      if (anchorRecovered) _anchorReadFailed = false;
+      if (anchorRecovered) {
+        _anchorReadFailed = false;
+      }
       final error = _state.error;
       _state = error != null && (_pageReadFailed || _anchorReadFailed)
           ? CatchAsyncState.staleData(List.unmodifiable(rows.values), error)
           : CatchAsyncState.data(List.unmodifiable(rows.values));
       _nextCursor = next;
     } catch (error) {
-      if (_current(generation)) _loadMoreError = error;
+      if (_current(generation)) {
+        _loadMoreError = error;
+      }
     } finally {
       if (_current(generation)) {
         _loadingMore = false;
@@ -380,11 +402,13 @@ class ProgramEventsController extends ChangeNotifier {
     ProgramLifecycleAction action,
     DateTime now,
   ) async {
-    if (_disposed || !_isActorCurrent() || isPending(program.programId))
+    if (_disposed || !_isActorCurrent() || isPending(program.programId)) {
       return false;
+    }
     if (action == ProgramLifecycleAction.unarchive &&
-        !program.canUnarchiveAt(now))
+        !program.canUnarchiveAt(now)) {
       return false;
+    }
     _pending.add(program.programId);
     _notify();
     try {

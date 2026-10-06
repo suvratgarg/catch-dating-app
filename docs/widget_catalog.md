@@ -747,8 +747,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:43</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:108</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentsEntryField</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_entry_field.dart:10</code> | — | — | Manage-screen entry into the event's organizer Moments workspace. |
-| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:29</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:156</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:28</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:152</code> | — | — | No class documentation or registry summary. |
 | <code>ClubBasicsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_details_step.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>ClubEventSuccessDefaultsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart:8</code> | — | — | No class documentation or registry summary. |
@@ -1049,7 +1049,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramArrivalRow</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:246</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionAttendanceRow</code> | <code>lib/programs/presentation/program_attendance_report_screen.dart:210</code> | — | — | One function's attendance reconciliation: invited vs attended vs checked-in, plus the exception counts needing follow-up. |
 | <code>ProgramAttentionRow</code> | <code>lib/programs/presentation/program_attention_screen.dart:107</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramCreatePageBody</code> | <code>lib/programs/presentation/program_create_screen.dart:143</code> | — | — | Rendering and Flutter field mechanics only. Validation, pending commands, receipt recovery, and list confirmation belong to the injected controller. |
+| <code>ProgramCreatePageBody</code> | <code>lib/programs/presentation/program_create_screen.dart:214</code> | — | — | Rendering and Flutter field mechanics only. Validation, pending commands, receipt recovery, and list confirmation belong to the injected controller. |
 | <code>ProgramDispatchGroupTile</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:225</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDispatchSheet</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:296</code> | — | — | Plate capture + vendor + class override. The dispatch write is queued through the operations outbox so a dead zone cannot lose a departure. |
 | <code>ProgramDoorAttendanceBadge</code> | <code>lib/programs/presentation/program_door_screen.dart:574</code> | — | — | No class documentation or registry summary. |
@@ -1248,7 +1248,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:25</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentEditScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart:6</code> | — | — | Creates or revises a moment through upsertOrganizerMoment. Revising an armed moment drops it back to draft with approval cleared — the backend owns that lifecycle; the form only submits the new definition. |
 | <code>OrganizerMomentsScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_screen.dart:20</code> | — | — | Moments for one event or program scope: the organizer's send rules with their approve-the-rule-once lifecycle (draft → armed → paused/done). |
-| <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:310</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
+| <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:306</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:5</code> | — | — | Compatibility entry for saved application URLs; all detail UI has one owner. |
 | <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |

@@ -39,6 +39,7 @@ OrganizerProgramListRow _row({String id = 'saved-id'}) =>
       title: _draft.title,
       kind: 'wedding',
       status: 'draft',
+      timezone: _draft.timezone,
       revision: 1,
       startsAt: _start,
       endsAt: _end,

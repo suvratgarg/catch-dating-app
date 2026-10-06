@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-04",
+  "updated": "2026-10-06",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for future design-parity work, or explicitly excluded from baseline design parity. The schema admits planned as a lifecycle value, but the zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
   "routes": [
@@ -536,6 +536,13 @@
       "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
     },
     {
+      "routeId": "hostCreateProgramScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.create",
+      "reason": "Covered by screen.programs.create as the recoverable organizer-scoped Program creation flow entered from Events."
+    },
+    {
       "routeId": "hostProgramWorkspaceScreen",
       "status": "contracted",
       "priority": "P1",
@@ -716,13 +723,6 @@
       "priority": "P1",
       "reason": "Covered by screen.host.chat as the professional host conversation thread.",
       "screenId": "screen.host.chat"
-    },
-    {
-      "routeId": "hostCreateProgramScreen",
-      "status": "contracted",
-      "priority": "P1",
-      "screenId": "screen.programs.create",
-      "reason": "Full program creation form replaces the modal; genuine form-state captures are pending verification."
     }
   ]
 }

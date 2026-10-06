@@ -1,8 +1,3 @@
-import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -251,6 +246,11 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -9104,14 +9104,34 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
 }
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
-  for (final state in ['draft', 'validation', 'pending', 'failure'])
-    ScreenCaptureEntry(
-      id: 'program_create_$state',
-      routeIds: const ['hostCreateProgramScreen'],
-      device: CaptureDevice.claudePhone390,
-      disableAnimations: true,
-      builder: (_) => _ProgramCreateCaptureFixture(state: state),
-    ),
+  ScreenCaptureEntry(
+    id: 'program_create_draft',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'draft'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_validation',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'validation'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_pending',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'pending'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_failure',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'failure'),
+  ),
   ScreenCaptureEntry(
     id: 'program_create_large_text',
     routeIds: const ['hostCreateProgramScreen'],
@@ -10259,6 +10279,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             title: 'Wedding weekend',
             kind: 'wedding',
             status: 'draft',
+            timezone: 'Asia/Kolkata',
             revision: 1,
             startsAt: _hostEventsReferenceNow,
             endsAt: _hostEventsReferenceNow.add(const Duration(days: 3)),
@@ -10296,6 +10317,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             title: 'Wedding weekend',
             kind: 'wedding',
             status: 'draft',
+            timezone: 'Asia/Kolkata',
             revision: 1,
             startsAt: _hostEventsReferenceNow,
             endsAt: _hostEventsReferenceNow.add(const Duration(days: 3)),

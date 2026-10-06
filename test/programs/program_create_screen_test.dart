@@ -202,6 +202,7 @@ void main() {
               title: 'Wedding weekend',
               kind: 'wedding',
               status: 'draft',
+              timezone: 'Asia/Kolkata',
               revision: 1,
               startsAt: start,
               endsAt: end,

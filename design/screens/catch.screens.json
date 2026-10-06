@@ -1502,7 +1502,7 @@
             "hostCreateProgramScreen"
           ],
           "file": "lib/programs/presentation/program_create_screen.dart",
-          "symbol": "_ProgramCreateRouteState",
+          "symbol": "ProgramCreateScreen",
           "family": "step-flow",
           "expression": "CatchScaffold.stepFlow",
           "bodyGeometry": "intrinsic",
@@ -28166,9 +28166,48 @@
         }
       ],
       "composition": {
-        "currentLayout": "Labeled fields in CatchSection on the established scrollable form lane, with CatchStepHeader and SafeArea submit footer.",
-        "targetLayout": "Programs share Events discovery; this route only creates a program and returns to its exact scoped inventory row.",
-        "sections": []
+      "currentLayout": "Labeled fields in CatchSection on the established scrollable form lane, with CatchStepHeader and SafeArea submit footer.",
+      "targetLayout": "Programs share Events discovery; this route only creates a program and returns to its exact scoped inventory row.",
+      "sections": [
+        {
+          "id": "section.programs.create_form",
+          "name": "Create program form",
+          "status": "implemented_local",
+          "layer": "screen-adapter",
+          "claudeComponents": [
+            "ProgramCreateScreen",
+            "ProgramCreatePageBody"
+          ],
+          "flutter": {
+            "file": "lib/programs/presentation/program_create_screen.dart",
+            "symbol": "ProgramCreateScreen"
+          },
+          "currentOwner": "ProgramCreateScreen + ProgramCreateController",
+          "targetOwner": "organizer-scoped route adapter plus provider-free form body",
+          "dependencies": [
+            "catch.button",
+            "catch.field",
+            "catch.section",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "states": [
+            "account_loading",
+            "organizer_loading",
+            "permission_error",
+            "draft",
+            "validation_error",
+            "submit_pending",
+            "submit_error",
+            "confirmed"
+          ],
+          "migration": "Keep authentication and organizer authority at the route boundary while the form body renders retained draft, validation, idempotent mutation, exact saved-program confirmation and retry state from ProgramCreateController.",
+          "previewIds": [
+            "programCreateScreenStates",
+            "programCreateFormStates"
+          ]
+        }
+      ]
       },
       "openGaps": [
         {

@@ -26,3 +26,11 @@ DateTime programCalendarDateInstant(DateTime date, String identifier) {
   final location = timezone.getLocation(identifier.trim());
   return timezone.TZDateTime(location, date.year, date.month, date.day);
 }
+
+/// Projects a stored instant back into the Program's civil calendar. Date
+/// labels must use this value instead of the device timezone.
+DateTime programCalendarDateAtInstant(DateTime instant, String identifier) {
+  _ensureTimeZones();
+  final location = timezone.getLocation(identifier.trim());
+  return timezone.TZDateTime.from(instant, location);
+}

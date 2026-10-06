@@ -765,20 +765,6 @@
       "role": "step-flow",
       "owner": "CatchStepHeader",
       "reason": "Onboarding delegates progress and navigation chrome to the canonical step header."
-    },
-    {
-      "path": "lib/programs/presentation/program_create_screen.dart",
-      "symbol": "_ProgramCreateRouteState",
-      "role": "step-flow",
-      "owner": "CatchStepHeader",
-      "reason": "Program form and access states reuse the established creation step header."
-    },
-    {
-      "path": "lib/programs/presentation/program_create_screen.dart",
-      "symbol": "_ProgramCreatePageBodyState",
-      "role": "step-flow",
-      "owner": "CatchStepHeader",
-      "reason": "Program form and access states reuse the established creation step header."
     }
   ]
 }

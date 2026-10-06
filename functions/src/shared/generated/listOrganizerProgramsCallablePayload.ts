@@ -9,7 +9,7 @@ export interface ListOrganizerProgramsCallablePayload {
   organizerId: string;
   limit?: number;
   /**
-   * Optional last program ID from nextCursor. Server verifies current organizer scope and continues after its canonical snapshot.
+   * Optional opaque value from nextCursor. Server verifies current organizer scope and continues after the immutable ordering tuple encoded by that cursor.
    */
   cursor?: string;
   /**

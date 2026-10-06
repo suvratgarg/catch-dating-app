@@ -12964,7 +12964,12 @@
             "catch.section",
             "catch.top_bar"
           ],
-          "captureIds": [],
+          "captureIds": [
+            "program_create_draft",
+            "program_create_validation",
+            "program_create_pending",
+            "program_create_failure"
+          ],
           "designRefs": [
             {
               "id": "repo.program-rollout-spec",

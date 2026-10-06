@@ -91378,7 +91378,7 @@ abstract final class CatchContractConstraints {
 
   static const listOrganizerProgramsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listOrganizerProgramsCallablePayload.cursor',
-    maxLength: 180,
+    maxLength: 512,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -114767,7 +114767,7 @@ abstract final class CatchContractConstraints {
 
   static const organizerProgramListCallableResponseNextCursor = CatchContractFieldConstraints(
     path: 'organizerProgramListCallableResponse.nextCursor',
-    maxLength: 180,
+    maxLength: 512,
     minLength: 1,
     valueTypes: <String>['string'],
   );
@@ -114860,6 +114860,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['draft', 'active', 'completed', 'archived'],
+  );
+
+  static const organizerProgramListCallableResponseProgramsItemsTimezone = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.timezone',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerProgramListCallableResponseProgramsItemsTitle = CatchContractFieldConstraints(
@@ -174728,6 +174736,7 @@ abstract final class CatchContractConstraints {
     'organizerProgramListCallableResponse.programs.items.revision': organizerProgramListCallableResponseProgramsItemsRevision,
     'organizerProgramListCallableResponse.programs.items.startsAtMillis': organizerProgramListCallableResponseProgramsItemsStartsAtMillis,
     'organizerProgramListCallableResponse.programs.items.status': organizerProgramListCallableResponseProgramsItemsStatus,
+    'organizerProgramListCallableResponse.programs.items.timezone': organizerProgramListCallableResponseProgramsItemsTimezone,
     'organizerProgramListCallableResponse.programs.items.title': organizerProgramListCallableResponseProgramsItemsTitle,
     'organizerProviderConnectionDocument.adapterClass': organizerProviderConnectionDocumentAdapterClass,
     'organizerProviderConnectionDocument.capabilities.eventList': organizerProviderConnectionDocumentCapabilitiesEventList,

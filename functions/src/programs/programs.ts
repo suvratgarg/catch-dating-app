@@ -16,6 +16,7 @@
 ) */
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
+import {FieldPath} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {logger} from "firebase-functions";
@@ -71,7 +72,7 @@ interface ProgramDeps {
   now: () => FirebaseFirestore.Timestamp;
 }
 
-async function requireActiveAccount(params: {
+export async function requireActiveProgramAccount(params: {
   db: FirebaseFirestore.Firestore;
   actorUid: string;
   transaction?: FirebaseFirestore.Transaction;
@@ -145,7 +146,7 @@ export async function createOrganizerProgramHandler(
   const ref = programId === undefined ?
     programs.doc() : programs.doc(programId);
   return db.runTransaction(async (tx) => {
-    await requireActiveAccount({db, actorUid, transaction: tx});
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     await requireOrganizerManager({
       db, organizerId: data.organizerId, actorUid, transaction: tx,
     });
@@ -203,7 +204,7 @@ export async function updateOrganizerProgramHandler(
   const ref = db.collection("organizerPrograms").doc(data.programId);
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
-    await requireActiveAccount({db, actorUid, transaction: tx});
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     const {program, organizer} = await loadProgramBundle({
       db, programId: data.programId, transaction: tx,
     });
@@ -224,6 +225,11 @@ export async function updateOrganizerProgramHandler(
     }
     if (data.transportSettings) {
       validateVehicleClasses(data.transportSettings.vehicleClasses);
+    }
+    if (data.timezone !== undefined && !isIanaTimeZone(data.timezone)) {
+      throw new HttpsError(
+        "invalid-argument", "Program timezone must be a valid IANA identifier."
+      );
     }
     const startsAtMillis = data.startsAtMillis ?? program.startsAt.toMillis();
     const endsAtMillis = data.endsAtMillis ?? program.endsAt.toMillis();
@@ -303,7 +309,7 @@ export async function listOrganizerProgramsHandler(
   await deps.checkRateLimit(db, actorUid, "listOrganizerPrograms");
   const pageSize = data.limit ?? 50;
   const {programDocs, hasMore} = await db.runTransaction(async (tx) => {
-    await requireActiveAccount({db, actorUid, transaction: tx});
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     await requireOrganizerManager({
       db, organizerId: data.organizerId, actorUid, transaction: tx,
     });
@@ -320,17 +326,24 @@ export async function listOrganizerProgramsHandler(
     }
     let query = db.collection("organizerPrograms")
       .where("organizerId", "==", data.organizerId)
-      .orderBy("startsAt", "desc");
+      .orderBy("startsAt", "desc")
+      .orderBy(FieldPath.documentId(), "desc");
     if (data.cursor !== undefined) {
+      const stableCursor = decodeProgramInventoryCursor(data.cursor);
+      const cursorId = stableCursor?.programId ?? data.cursor;
       const cursor = await tx.get(
-        db.collection("organizerPrograms").doc(data.cursor)
+        db.collection("organizerPrograms").doc(cursorId)
       );
       if (!cursor.exists || cursor.data()?.organizerId !== data.organizerId) {
         throw new HttpsError(
           "not-found", "Program inventory cursor is unavailable."
         );
       }
-      query = query.startAfter(cursor);
+      query = stableCursor === null ? query.startAfter(cursor) :
+        query.startAfter(
+          admin.firestore.Timestamp.fromMillis(stableCursor.startsAtMillis),
+          stableCursor.programId
+        );
     }
     const snap = await tx.get(query.limit(pageSize + 1));
     return {
@@ -362,8 +375,13 @@ export async function listOrganizerProgramsHandler(
       logger.warn("Program inventory count unavailable", {error});
     }
   }
+  const lastProgram = hasMore ? requireDoc<OrganizerProgramDocument>(
+    programDocs.at(-1)!, "OrganizerProgramDocument") : null;
   return {
-    nextCursor: hasMore ? programDocs.at(-1)!.id : null,
+    nextCursor: lastProgram === null ? null : encodeProgramInventoryCursor({
+      startsAtMillis: lastProgram.startsAt.toMillis(),
+      programId: programDocs.at(-1)!.id,
+    }),
     programs: programDocs.map((doc) => {
       const program = requireDoc<OrganizerProgramDocument>(
         doc, "OrganizerProgramDocument");
@@ -372,6 +390,7 @@ export async function listOrganizerProgramsHandler(
         kind: program.kind,
         title: program.title,
         status: program.status,
+        timezone: program.timezone,
         startsAtMillis: program.startsAt.toMillis(),
         endsAtMillis: program.endsAt.toMillis(),
         capabilities: program.capabilities,
@@ -396,7 +415,7 @@ export async function getOrganizerProgramHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerProgram");
   const {program, organizer} = await db.runTransaction(async (tx) => {
-    await requireActiveAccount({db, actorUid, transaction: tx});
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     return loadProgramBundle({
       db, programId: data.programId, transaction: tx,
     });
@@ -524,6 +543,44 @@ function canonicalProgramCreateJson(value: unknown): string {
       .join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+type ProgramInventoryCursor = {
+  startsAtMillis: number;
+  programId: string;
+};
+
+function encodeProgramInventoryCursor(cursor: ProgramInventoryCursor): string {
+  const payload = JSON.stringify({
+    v: 1,
+    s: cursor.startsAtMillis,
+    i: cursor.programId,
+  });
+  return `v1.${Buffer.from(payload).toString("base64url")}`;
+}
+
+function decodeProgramInventoryCursor(
+  value: string
+): ProgramInventoryCursor | null {
+  if (!value.startsWith("v1.")) return null;
+  try {
+    const decoded = JSON.parse(
+      Buffer.from(value.slice(3), "base64url").toString("utf8")
+    ) as {v?: unknown; s?: unknown; i?: unknown};
+    if (decoded.v !== 1 || !Number.isSafeInteger(decoded.s) ||
+        (decoded.s as number) < 0 || typeof decoded.i !== "string" ||
+        decoded.i.length < 1 || decoded.i.length > 180) {
+      throw new Error("Invalid cursor payload.");
+    }
+    return {
+      startsAtMillis: decoded.s as number,
+      programId: decoded.i,
+    };
+  } catch {
+    throw new HttpsError(
+      "invalid-argument", "Program inventory cursor is invalid."
+    );
+  }
 }
 
 function isIanaTimeZone(value: string): boolean {

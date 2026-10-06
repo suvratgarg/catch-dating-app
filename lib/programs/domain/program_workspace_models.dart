@@ -12,6 +12,7 @@ class OrganizerProgramListRow {
     required this.title,
     required this.kind,
     required this.status,
+    required this.timezone,
     required this.revision,
     this.startsAt,
     this.endsAt,
@@ -21,39 +22,49 @@ class OrganizerProgramListRow {
     this.anonymizedAt,
   });
 
-  factory OrganizerProgramListRow.fromMap(Map<Object?, Object?> map) =>
-      OrganizerProgramListRow(
-        programId: requiredString(map, 'programId'),
-        title: requiredString(map, 'title'),
-        kind: requiredString(map, 'kind'),
-        status: requiredString(map, 'status'),
-        revision: requiredInt(map, 'revision'),
-        startsAt: requiredDateTime(map, 'startsAtMillis'),
-        endsAt: requiredDateTime(map, 'endsAtMillis'),
-        functionCount: map['functionCount'] is num
-            ? (map['functionCount']! as num).toInt()
-            : null,
-        archivedAt: map['archivedAtMillis'] is num
-            ? DateTime.fromMillisecondsSinceEpoch(
-                (map['archivedAtMillis']! as num).toInt(),
-              )
-            : null,
-        anonymizeAt: map['anonymizeAtMillis'] is num
-            ? DateTime.fromMillisecondsSinceEpoch(
-                (map['anonymizeAtMillis']! as num).toInt(),
-              )
-            : null,
-        anonymizedAt: map['anonymizedAtMillis'] is num
-            ? DateTime.fromMillisecondsSinceEpoch(
-                (map['anonymizedAtMillis']! as num).toInt(),
-              )
-            : null,
-      );
+  factory OrganizerProgramListRow.fromMap(Map<Object?, Object?> map) {
+    final timezone = requiredString(map, 'timezone');
+    return OrganizerProgramListRow(
+      programId: requiredString(map, 'programId'),
+      title: requiredString(map, 'title'),
+      kind: requiredString(map, 'kind'),
+      status: requiredString(map, 'status'),
+      timezone: timezone,
+      revision: requiredInt(map, 'revision'),
+      startsAt: programCalendarDateAtInstant(
+        requiredDateTime(map, 'startsAtMillis'),
+        timezone,
+      ),
+      endsAt: programCalendarDateAtInstant(
+        requiredDateTime(map, 'endsAtMillis'),
+        timezone,
+      ),
+      functionCount: map['functionCount'] is num
+          ? (map['functionCount']! as num).toInt()
+          : null,
+      archivedAt: map['archivedAtMillis'] is num
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (map['archivedAtMillis']! as num).toInt(),
+            )
+          : null,
+      anonymizeAt: map['anonymizeAtMillis'] is num
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (map['anonymizeAtMillis']! as num).toInt(),
+            )
+          : null,
+      anonymizedAt: map['anonymizedAtMillis'] is num
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (map['anonymizedAtMillis']! as num).toInt(),
+            )
+          : null,
+    );
+  }
 
   final String programId;
   final String title;
   final String kind;
   final String status;
+  final String timezone;
   final int revision;
   final DateTime? startsAt;
   final DateTime? endsAt;

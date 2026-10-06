@@ -14,6 +14,10 @@ export interface OrganizerProgramListCallableResponse {
     kind: "wedding" | "corporate" | "social" | "other";
     title: string;
     status: "draft" | "active" | "completed" | "archived";
+    /**
+     * IANA timezone used to recover the Program's civil calendar dates from its stored instants.
+     */
+    timezone: string;
     startsAtMillis: number;
     endsAtMillis: number;
     capabilities: (
@@ -41,7 +45,7 @@ export interface OrganizerProgramListCallableResponse {
     anonymizedAtMillis?: number | null;
   }[];
   /**
-   * Last returned program ID when another page exists, otherwise null. Optional for legacy readers.
+   * Opaque stable cursor for the last returned startsAt/program-ID tuple when another page exists, otherwise null. Optional for legacy readers.
    */
   nextCursor?: string | null;
 }

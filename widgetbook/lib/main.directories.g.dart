@@ -13116,6 +13116,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ProgramCreateScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route loading',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programCreateScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProgramEventsRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(

@@ -185229,8 +185229,8 @@ export const listOrganizerProgramsCallablePayloadSchema = {
     "cursor": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180,
-      "description": "Optional last program ID from nextCursor. Server verifies current organizer scope and continues after its canonical snapshot."
+      "maxLength": 512,
+      "description": "Optional opaque value from nextCursor. Server verifies current organizer scope and continues after the immutable ordering tuple encoded by that cursor."
     },
     "programId": {
       "type": "string",
@@ -188803,6 +188803,7 @@ export const organizerProgramListCallableResponseSchema = {
           "kind",
           "title",
           "status",
+          "timezone",
           "startsAtMillis",
           "endsAtMillis",
           "capabilities",
@@ -188836,6 +188837,12 @@ export const organizerProgramListCallableResponseSchema = {
               "completed",
               "archived"
             ]
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "IANA timezone used to recover the Program's civil calendar dates from its stored instants."
           },
           "startsAtMillis": {
             "type": "integer",
@@ -188899,8 +188906,8 @@ export const organizerProgramListCallableResponseSchema = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180,
-      "description": "Last returned program ID when another page exists, otherwise null. Optional for legacy readers."
+      "maxLength": 512,
+      "description": "Opaque stable cursor for the last returned startsAt/program-ID tuple when another page exists, otherwise null. Optional for legacy readers."
     }
   }
 };

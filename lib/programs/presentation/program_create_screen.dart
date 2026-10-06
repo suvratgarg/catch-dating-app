@@ -29,14 +29,31 @@ class ProgramCreateScreen extends ConsumerWidget {
     final account = ref.watch(uidProvider);
     final uid = account.value;
     if (uid == null) {
-      return _ProgramCreateRouteState(
-        child: account.hasError
-            ? CatchLocalizedErrorState(
-                account.error!,
-                context: AppErrorContext.auth,
-                onRetry: () => ref.invalidate(uidProvider),
-              )
-            : const CatchStateViewport.loading(accountForBottomOverlay: false),
+      return CatchScaffold.stepFlow(
+        body: Column(
+          children: [
+            CatchStepHeader(
+              title: context.l10n.programsCreateTitle,
+              stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+              compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                context.l10n,
+              ),
+              onBack: () => Navigator.of(context).pop(),
+              leadingType: CatchTopBarNavigationMode.back,
+            ),
+            Expanded(
+              child: account.hasError
+                  ? CatchLocalizedErrorState(
+                      account.error!,
+                      context: AppErrorContext.auth,
+                      onRetry: () => ref.invalidate(uidProvider),
+                    )
+                  : const CatchStateViewport.loading(
+                      accountForBottomOverlay: false,
+                    ),
+            ),
+          ],
+        ),
       );
     }
     // Keep the scoped draft/key/receipt alive throughout route-level organizer
@@ -48,33 +65,95 @@ class ProgramCreateScreen extends ConsumerWidget {
       )),
     );
     return controller.when(
-      loading: () => const _ProgramCreateRouteState(
-        child: CatchStateViewport.loading(accountForBottomOverlay: false),
+      loading: () => CatchScaffold.stepFlow(
+        body: Column(
+          children: [
+            CatchStepHeader(
+              title: context.l10n.programsCreateTitle,
+              stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+              compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                context.l10n,
+              ),
+              onBack: () => Navigator.of(context).pop(),
+              leadingType: CatchTopBarNavigationMode.back,
+            ),
+            const Expanded(
+              child: CatchStateViewport.loading(accountForBottomOverlay: false),
+            ),
+          ],
+        ),
       ),
-      error: (error, _) => _ProgramCreateRouteState(
-        child: CatchLocalizedErrorState(
-          error,
-          context: AppErrorContext.event,
-          onRetry: () => ref.invalidate(
-            programCreateControllerProvider((
-              accountId: uid,
-              organizerId: organizerId,
-            )),
-          ),
+      error: (error, _) => CatchScaffold.stepFlow(
+        body: Column(
+          children: [
+            CatchStepHeader(
+              title: context.l10n.programsCreateTitle,
+              stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+              compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                context.l10n,
+              ),
+              onBack: () => Navigator.of(context).pop(),
+              leadingType: CatchTopBarNavigationMode.back,
+            ),
+            Expanded(
+              child: CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.event,
+                onRetry: () => ref.invalidate(
+                  programCreateControllerProvider((
+                    accountId: uid,
+                    organizerId: organizerId,
+                  )),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       data: (controller) => CatchAsyncBoundary<List<Club>>(
         value: ref.watch(hostOperableClubsProvider(uid)),
         retainDataOn: const {},
         onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
-        loadingBuilder: (_) => const _ProgramCreateRouteState(
-          child: CatchStateViewport.loading(accountForBottomOverlay: false),
+        loadingBuilder: (_) => CatchScaffold.stepFlow(
+          body: Column(
+            children: [
+              CatchStepHeader(
+                title: context.l10n.programsCreateTitle,
+                stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+                compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                  context.l10n,
+                ),
+                onBack: () => Navigator.of(context).pop(),
+                leadingType: CatchTopBarNavigationMode.back,
+              ),
+              const Expanded(
+                child: CatchStateViewport.loading(
+                  accountForBottomOverlay: false,
+                ),
+              ),
+            ],
+          ),
         ),
-        errorBuilder: (_, error, _, retry) => _ProgramCreateRouteState(
-          child: CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.club,
-            onRetry: retry,
+        errorBuilder: (_, error, _, retry) => CatchScaffold.stepFlow(
+          body: Column(
+            children: [
+              CatchStepHeader(
+                title: context.l10n.programsCreateTitle,
+                stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+                compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                  context.l10n,
+                ),
+                onBack: () => Navigator.of(context).pop(),
+                leadingType: CatchTopBarNavigationMode.back,
+              ),
+              Expanded(
+                child: CatchLocalizedErrorState(
+                  error,
+                  context: AppErrorContext.club,
+                  onRetry: retry,
+                ),
+              ),
+            ],
           ),
         ),
         builder: (context, clubs) {
@@ -84,11 +163,26 @@ class ProgramCreateScreen extends ConsumerWidget {
           final selected = ref.watch(hostOrganizerSelectionProvider(uid));
           if (organizer == null ||
               (selected != null && selected != organizerId)) {
-            return _ProgramCreateRouteState(
-              child: CatchEmptyState(
-                icon: CatchIcons.calendarMonthOutlined,
-                title: context.l10n.programsCreateActorChangedTitle,
-                message: context.l10n.programsCreateActorChangedBody,
+            return CatchScaffold.stepFlow(
+              body: Column(
+                children: [
+                  CatchStepHeader(
+                    title: context.l10n.programsCreateTitle,
+                    stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+                    compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                      context.l10n,
+                    ),
+                    onBack: () => Navigator.of(context).pop(),
+                    leadingType: CatchTopBarNavigationMode.back,
+                  ),
+                  Expanded(
+                    child: CatchEmptyState(
+                      icon: CatchIcons.calendarMonthOutlined,
+                      title: context.l10n.programsCreateActorChangedTitle,
+                      message: context.l10n.programsCreateActorChangedBody,
+                    ),
+                  ),
+                ],
               ),
             );
           }
@@ -113,29 +207,6 @@ class ProgramCreateScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _ProgramCreateRouteState extends StatelessWidget {
-  const _ProgramCreateRouteState({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => CatchScaffold.stepFlow(
-    body: Column(
-      children: [
-        CatchStepHeader(
-          title: context.l10n.programsCreateTitle,
-          stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
-          compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
-            context.l10n,
-          ),
-          onBack: () => Navigator.of(context).pop(),
-          leadingType: CatchTopBarNavigationMode.back,
-        ),
-        Expanded(child: child),
-      ],
-    ),
-  );
 }
 
 /// Rendering and Flutter field mechanics only. Validation, pending commands,
@@ -342,12 +413,13 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
                                       if (values.kind != null) values.kind!,
                                     },
                                     onSelectionChanged: (selection) {
-                                      if (selection.isNotEmpty)
+                                      if (selection.isNotEmpty) {
                                         controller.edit(
                                           values.copyWith(
                                             kind: selection.single,
                                           ),
                                         );
+                                      }
                                     },
                                     error: _fieldError(
                                       context,

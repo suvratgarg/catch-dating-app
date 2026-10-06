@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as admin from "firebase-admin";
 import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {createOrganizerProgramHandler, listOrganizerProgramsHandler} from
-  "./programs";
+import {
+  createOrganizerProgramHandler,
+  listOrganizerProgramsHandler,
+  updateOrganizerProgramHandler,
+} from "./programs";
 
 const input = (extra: Record<string, unknown> = {}) => ({
   organizerId: "org-1", kind: "wedding", title: "Wedding weekend",
@@ -29,6 +33,7 @@ test("create receipt persists the same ID in the draft inventory", async () => {
   const rows = (await inventory(db)).programs;
   const saved = rows.find((row) => row.programId === result.entityId)!;
   assert.equal(saved.title, "Wedding weekend");
+  assert.equal(saved.timezone, "Asia/Kolkata");
   assert.equal(saved.startsAtMillis, input().startsAtMillis);
   assert.equal(saved.endsAtMillis, input().endsAtMillis);
   assert.equal(saved.functionCount, 0);
@@ -52,6 +57,20 @@ test(
     }
   }
 );
+
+test("update rejects a non-IANA program timezone without writing", async () => {
+  const db = new FakeFirestore(baseSeed());
+  const before = new Map(db.docs);
+  await assert.rejects(
+    updateOrganizerProgramHandler(request({
+      programId: "program-1",
+      expectedRevision: 3,
+      timezone: "Not/AZone",
+    }, "manager-1"), deps(db)),
+    code("invalid-argument")
+  );
+  assert.deepEqual(db.docs, before);
+});
 
 test(
   "lost-response replay and concurrent duplicate submits create one ID",
@@ -224,6 +243,38 @@ test(
       [...first.programs, ...second.programs].map((row) => row.programId)
     );
     assert.equal(uniqueIds.size, 56);
+  }
+);
+
+test(
+  "stable inventory cursor cannot move when its program date is edited",
+  async () => {
+    const seed = baseSeed();
+    const day = 86_400_000;
+    seed["organizerPrograms/newer"] = {
+      ...seed["organizerPrograms/program-1"],
+      startsAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 3 * day),
+    };
+    seed["organizerPrograms/cursor"] = {
+      ...seed["organizerPrograms/program-1"],
+      startsAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 2 * day),
+    };
+    const db = new FakeFirestore(seed);
+    const first = await listOrganizerProgramsHandler(
+      request({organizerId: "org-1", limit: 2}, "manager-1"), deps(db));
+    assert.deepEqual(first.programs.map((row) => row.programId),
+      ["newer", "cursor"]);
+    assert.match(first.nextCursor ?? "", /^v1\./u);
+
+    db.updateDoc("organizerPrograms/cursor", {
+      startsAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 4 * day),
+    });
+    const second = await listOrganizerProgramsHandler(
+      request({organizerId: "org-1", limit: 2, cursor: first.nextCursor},
+        "manager-1"), deps(db));
+    assert.deepEqual(second.programs.map((row) => row.programId),
+      ["program-1"]);
+    assert.equal(second.nextCursor, null);
   }
 );
 
