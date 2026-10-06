@@ -153,30 +153,37 @@ function callable(
 export const registerSalesPartner = callable(
   "register", false, validateRegisterSalesPartnerCallablePayload,
   registerPartner,
+  20,
 );
 export const nominateSalesOrganizer = callable(
   "nominate", false, validateNominateSalesOrganizerCallablePayload,
   nominateOrganizer,
+  20,
 );
 export const getSalesPartnerWorkspace = callable(
   "workspace", false, validateGetSalesPartnerWorkspaceCallablePayload,
   getPartnerWorkspace,
+  20,
 );
 export const decideSalesPartnerAssignment = callable(
   "assignment.decide", false,
   validateDecideSalesPartnerAssignmentCallablePayload, decideAssignment,
+  20,
 );
 export const adminAssignSalesPartner = callable(
   "assign", true, validateAdminAssignSalesPartnerCallablePayload, assignPartner,
+  20,
 );
 export const adminRevokeSalesPartnerAccess = callable(
   "revoke", true, validateAdminRevokeSalesPartnerAccessCallablePayload,
   revokePartnerAccess,
+  20,
 );
 
 export const updateSalesPartnerAssignment = callable(
   "assignment.update", false,
   validateUpdateSalesPartnerAssignmentCallablePayload, updateAssignment,
+  20,
 );
 
 export const generateSalesPartnerOutreach = callable(
@@ -188,36 +195,44 @@ export const generateSalesPartnerOutreach = callable(
 export const getSalesPartnerOutreachJob = callable(
   "getSalesPartnerOutreachJob", false,
   validateGetSalesPartnerOutreachJobCallablePayload, getPartnerDraftJob,
+  20,
 );
 export const getSalesPartnerOutreachDraft = callable(
   "getSalesPartnerOutreachDraft", false,
   validateGetSalesPartnerOutreachDraftCallablePayload, getPartnerOutreachDraft,
+  20,
 );
 export const reviewSalesPartnerOutreachDraft = callable(
   "reviewSalesPartnerOutreachDraft", false,
   validateReviewSalesPartnerOutreachDraftCallablePayload,
   reviewPartnerOutreachDraft,
+  20,
 );
 export const copySalesPartnerOutreachDraft = callable(
   "copySalesPartnerOutreachDraft", false,
   validateCopySalesPartnerOutreachDraftCallablePayload,
   copyPartnerOutreachDraft,
+  20,
 );
 export const recordSalesPartnerManualSend = callable(
   "recordSalesPartnerManualSend", false,
   validateRecordSalesPartnerManualSendCallablePayload, recordPartnerManualSend,
+  20,
 );
 export const getSalesPartnerPreparation = callable(
   "getSalesPartnerPreparation", false,
   validateGetSalesPartnerPreparationCallablePayload, getPartnerPreparation,
+  20,
 );
 
 export const getSalesPartnerDemoReviews = callable(
   "demo.reviews", false, validateGetSalesPartnerDemoReviewsCallablePayload,
   listPartnerDemoReviews,
+  20,
 );
 export const proposeSalesPartnerDemoWording = callable(
   "demo.wording.propose", false,
   validateProposeSalesPartnerDemoWordingCallablePayload,
   proposePartnerDemoWording,
+  20,
 );
