@@ -71,6 +71,22 @@ interface ProgramDeps {
   now: () => FirebaseFirestore.Timestamp;
 }
 
+async function requireActiveAccount(params: {
+  db: FirebaseFirestore.Firestore;
+  actorUid: string;
+  transaction?: FirebaseFirestore.Transaction;
+}): Promise<void> {
+  const ref = params.db.collection("deletedUsers").doc(params.actorUid);
+  const snapshot = params.transaction ?
+    await params.transaction.get(ref) : await ref.get();
+  if (snapshot.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "This account cannot access private program operations."
+    );
+  }
+}
+
 const defaultDeps: ProgramDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
@@ -121,8 +137,10 @@ export async function createOrganizerProgramHandler(
       .update(JSON.stringify([actorUid, data.organizerId, data.requestId]))
       .digest("hex");
   const programs = db.collection("organizerPrograms");
-  const ref = programId === undefined ? programs.doc() : programs.doc(programId);
+  const ref = programId === undefined ?
+    programs.doc() : programs.doc(programId);
   return db.runTransaction(async (tx) => {
+    await requireActiveAccount({db, actorUid, transaction: tx});
     await requireOrganizerManager({
       db, organizerId: data.organizerId, actorUid, transaction: tx,
     });
@@ -180,6 +198,7 @@ export async function updateOrganizerProgramHandler(
   const ref = db.collection("organizerPrograms").doc(data.programId);
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
+    await requireActiveAccount({db, actorUid, transaction: tx});
     const {program, organizer} = await loadProgramBundle({
       db, programId: data.programId, transaction: tx,
     });
@@ -277,33 +296,43 @@ export async function listOrganizerProgramsHandler(
     );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerPrograms");
-  await requireOrganizerManager({
-    db, organizerId: data.organizerId, actorUid,
-  });
   const pageSize = data.limit ?? 50;
-  let programDocs: admin.firestore.DocumentSnapshot[];
-  let hasMore = false;
-  if (data.programId !== undefined) {
-    const program = await db.collection("organizerPrograms").doc(data.programId).get();
-    if (!program.exists || program.data()?.organizerId !== data.organizerId) {
-      throw new HttpsError("not-found", "Program is unavailable in this organizer.");
+  const {programDocs, hasMore} = await db.runTransaction(async (tx) => {
+    await requireActiveAccount({db, actorUid, transaction: tx});
+    await requireOrganizerManager({
+      db, organizerId: data.organizerId, actorUid, transaction: tx,
+    });
+    if (data.programId !== undefined) {
+      const program = await tx.get(
+        db.collection("organizerPrograms").doc(data.programId)
+      );
+      if (!program.exists || program.data()?.organizerId !== data.organizerId) {
+        throw new HttpsError(
+          "not-found", "Program is unavailable in this organizer."
+        );
+      }
+      return {programDocs: [program], hasMore: false};
     }
-    programDocs = [program];
-  } else {
     let query = db.collection("organizerPrograms")
       .where("organizerId", "==", data.organizerId)
       .orderBy("startsAt", "desc");
     if (data.cursor !== undefined) {
-      const cursor = await db.collection("organizerPrograms").doc(data.cursor).get();
+      const cursor = await tx.get(
+        db.collection("organizerPrograms").doc(data.cursor)
+      );
       if (!cursor.exists || cursor.data()?.organizerId !== data.organizerId) {
-        throw new HttpsError("not-found", "Program inventory cursor is unavailable.");
+        throw new HttpsError(
+          "not-found", "Program inventory cursor is unavailable."
+        );
       }
       query = query.startAfter(cursor);
     }
-    const snap = await query.limit(pageSize + 1).get();
-    programDocs = snap.docs.slice(0, pageSize);
-    hasMore = snap.size > pageSize;
-  }
+    const snap = await tx.get(query.limit(pageSize + 1));
+    return {
+      programDocs: snap.docs.slice(0, pageSize),
+      hasMore: snap.size > pageSize,
+    };
+  });
   // Batch only the authorized inventory IDs. Bound work to two reads for the
   // canonical 50-row inventory; partial or failed counts never conceal rows.
   const functionCounts = new Map<string, number>();
@@ -361,8 +390,11 @@ export async function getOrganizerProgramHandler(
     request, validateProgramIdCallablePayload, normalizeProgramPayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerProgram");
-  const {program, organizer} = await loadProgramBundle({
-    db, programId: data.programId,
+  const {program, organizer} = await db.runTransaction(async (tx) => {
+    await requireActiveAccount({db, actorUid, transaction: tx});
+    return loadProgramBundle({
+      db, programId: data.programId, transaction: tx,
+    });
   });
   if (!isOrganizerManager(organizer, actorUid)) {
     throw new HttpsError(
@@ -482,7 +514,8 @@ function canonicalProgramCreateJson(value: unknown): string {
     const record = value as Record<string, unknown>;
     return `{${Object.keys(record).sort()
       .filter((key) => record[key] !== undefined)
-      .map((key) => `${JSON.stringify(key)}:${canonicalProgramCreateJson(record[key])}`)
+      .map((key) =>
+        `${JSON.stringify(key)}:${canonicalProgramCreateJson(record[key])}`)
       .join(",")}}`;
   }
   return JSON.stringify(value);

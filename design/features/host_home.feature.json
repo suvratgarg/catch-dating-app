@@ -556,7 +556,7 @@
         "create_event_action",
         "manage_event_navigation",
         "dress_rehearsal_action",
-        "open_programs_action",
+        "program_inventory_rows",
         "offline",
         "text_scale_2",
         "reduced_motion",
@@ -797,12 +797,12 @@
             }
           ]
         },
-        "open_programs_action": {
+        "program_inventory_rows": {
           "actionCases": [
             {
               "id": "open",
               "enabledActions": [
-                "open_programs"
+                "open_program"
               ]
             }
           ]
@@ -878,7 +878,7 @@
             "create_event_action",
             "manage_event_navigation",
             "dress_rehearsal_action",
-            "open_programs_action"
+            "program_inventory_rows"
           ],
           "evidence": [
             "captures"
