@@ -236,14 +236,17 @@ export async function restoreCheckpointArchive({
 // A successful rebaseline is immutable historical evidence, not failed-stage
 // recovery. Serving state and params must still be read afresh by its consumer.
 export async function readSuccessfulBaselineArchive(input) {
-  const {repository, repositoryId, runId, runAttempt, manifest, scope, request = lanes.githubRequest} = input;
+  const {repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
+    scope, request = lanes.githubRequest} = input;
+  const manifest = structuredClone(input.manifest);
   const producer = await lanes.verifyWorkflowRun({repository, repositoryId, runId, runAttempt, role: "cursor", request});
   assert.equal(producer.path?.split("@")[0], ".github/workflows/backend-rebaseline.yml");
   assert.equal(producer.event, "workflow_dispatch");
   assert.equal(producer.status, "completed");
   assert.equal(producer.conclusion, "success");
   assert.equal(producer.head_sha, manifest.sourceSha, "Baseline producer/source mismatch.");
-  const entries = await readCheckpointArchive({...input, request, producer});
+  const entries = await readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId,
+    artifactDigest, manifest, scope, request, producer});
   const state = validateCheckpointState(manifest, entries[checkpointFile], scope);
   assert.equal(resolveFirstIncompleteStage(manifest, state, scope).complete, true);
   assert.ok(Object.hasOwn(entries, FUNCTIONS_DEPLOYMENT_FILE), "Baseline Functions deployment proof required.");

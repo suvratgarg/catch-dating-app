@@ -414,6 +414,42 @@ test("baseline adapter detects params drift during fresh collection and refuses 
   await assert.rejects(prepareBaselineImpactRelease(f.preparation, f.dependencies), invalid);
 });
 
+test("baseline adapter revalidates selected and deferred evidence after asynchronous collectors", async (t) => {
+  const archiveMutation = baselineAdapterFixture(t);
+  await assert.rejects(prepareBaselineImpactRelease(archiveMutation.preparation,
+    {...archiveMutation.dependencies, request: async (...args) => {
+      const response = await archiveMutation.dependencies.request(...args);
+      if (args[0].endsWith("/zip")) archiveMutation.preparation.baselineArchive.repositoryId = 99;
+      return response;
+    }}), invalid);
+  for (const completing of [false, true]) for (const target of ["functions:f0000", "functions:f0002"]) {
+    const f = baselineAdapterFixture(t);
+    const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
+    const dependencies = {...f.dependencies, readFunctions: async (...args) => {
+      const result = await f.dependencies.readFunctions(...args);
+      const row = f.preparation.impactInput.candidateEvidence.source.functions[target];
+      row.dependencies[0][1] = hash("substitution during collector"); row.sha256 = hash(row.dependencies);
+      f.preparation.impactInput.candidateEvidence.compiled = clone(f.preparation.impactInput.candidateEvidence.source);
+      return result;
+    }};
+    await assert.rejects(completing ? completeBaselineImpactRelease({preparation: f.preparation, plan,
+      candidateDeployment: f.candidateDeployment}, dependencies) : prepareBaselineImpactRelease(f.preparation, dependencies), invalid);
+  }
+  for (const mutate of [
+    (f, plan) => {f.preparation.candidateIndexes.indexes.pop(); plan.indexReadiness.indexes.pop();},
+    (f, plan) => {f.preparation.candidateManifest.stages.push("firestore-indexes"); plan.stages.push("firestore-indexes");},
+    (f) => {f.preparation.baselineArchive.repositoryId = 99;},
+    (f) => {f.preparation.receipt = {schema: "catch.operator-prod-selective-receipt/v1"};},
+  ]) {
+    const f = baselineAdapterFixture(t);
+    const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
+    await assert.rejects(completeBaselineImpactRelease({preparation: f.preparation, plan,
+      candidateDeployment: f.candidateDeployment}, {...f.dependencies, readIndexes: async (...args) => {
+        const rows = await f.dependencies.readIndexes(...args); mutate(f, plan); return rows;
+      }}), invalid);
+  }
+});
+
 test("baseline completion binds deferred fingerprints, requires the addition and rejects wrong index scope or readiness", async (t) => {
   const f = baselineAdapterFixture(t);
   const plan = await prepareBaselineImpactRelease(f.preparation, f.dependencies);
