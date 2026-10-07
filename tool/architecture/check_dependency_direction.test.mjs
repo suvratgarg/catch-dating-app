@@ -346,6 +346,46 @@ test("scanFile flags manual provider declarations outside core", () => {
   assert.deepEqual(coreFindings, []);
 });
 
+test("manual provider ratchet identifies every declaration and builder shape", () => {
+  const source = [
+    "// final ignoredProvider = Provider<int>((ref) => 1);",
+    "final text = 'final ignoredProvider = Provider<int>((ref) => 1);';",
+    "final firstProvider = FutureProvider.autoDispose",
+    "    .family<int, String>((ref, key) async => 1);",
+    "final secondProvider = ChangeNotifierProvider.autoDispose<Owner>((ref) => Owner());",
+  ].join("\n");
+  const findings = scanFile({relativePath: "lib/sample/presentation/owners.dart", source});
+  assert.deepEqual(findings.map(({rule, symbol, operation}) => ({rule, symbol, operation})), [
+    {rule: "manualProviderDeclaration", symbol: "firstProvider", operation: "FutureProvider.autoDispose.family"},
+    {rule: "manualProviderDeclaration", symbol: "secondProvider", operation: "ChangeNotifierProvider.autoDispose"},
+  ]);
+});
+
+test("manual provider baseline rejects same-count swaps and new symbols in an existing debt file", () => {
+  const file = "lib/sample/presentation/owners.dart";
+  const reviewed = {rule: "manualProviderDeclaration", path: file, symbol: "oldProvider", operation: "Provider", status: "planned", debtId: "CAT156", rationale: "Existing exact declaration debt."};
+  const scan = (source, allowedFindings = [reviewed]) => scanDependencyDirection({
+    snapshot: createFixtureSnapshot({[file]: source}), baseline: {allowedFindings},
+  });
+  assert.equal(scan("final oldProvider = Provider<int>((ref) => 1);").findings.length, 0);
+  assert.equal(scan("final replacementProvider = Provider<int>((ref) => 1);").findings[0].symbol, "replacementProvider");
+  assert.equal(scan("final oldProvider = FutureProvider<int>((ref) async => 1);").findings[0].operation, "FutureProvider");
+  const expanded = scan("final oldProvider = Provider<int>((ref) => 1);\nfinal secondProvider = Provider<int>((ref) => 2);");
+  assert.equal(expanded.baselineFindings.length, 1);
+  assert.equal(expanded.findings[0].symbol, "secondProvider");
+  assert.equal(scan("final oldProvider = Provider<int>((ref) => 1);", [{rule: reviewed.rule, path: file}]).findings.length, 1);
+});
+
+test("prefixed manual provider families retain canonical builder identity", () => {
+  const findings = scanFile({relativePath: "lib/sample/presentation/owners.dart", source: [
+    "import 'package:flutter_riverpod/flutter_riverpod.dart' as rp;",
+    "final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, key) async => 1);",
+  ].join("\n")});
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].symbol, "firstProvider");
+  assert.equal(findings[0].operation, "FutureProvider.autoDispose.family");
+});
+
 test("scanFile flags display state classes misplaced outside state files", () => {
   const findings = scanFile({
     relativePath: "lib/hosts/presentation/host_operations_screen.dart",
