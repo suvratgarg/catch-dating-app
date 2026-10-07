@@ -29,7 +29,8 @@ export function createDeepSeekProvider(options = {}) {
       const choice = wire?.choices?.[0];
       if (wire?.model !== request.modelId || wire?.choices?.length !== 1 ||
           choice?.finish_reason !== "stop" || choice?.message?.refusal ||
-          choice?.message?.tool_calls || typeof choice?.message?.content !== "string") {
+          choice?.message?.tool_calls || typeof choice?.message?.content !== "string" ||
+          (choice.message.reasoning_content != null && choice.message.reasoning_content !== "")) {
         throw providerError("MODEL_PROVIDER_RESULT_INVALID");
       }
       return {usage, content: choice.message.content};

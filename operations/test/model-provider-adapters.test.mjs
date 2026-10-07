@@ -337,6 +337,7 @@ test("auth, refusal, truncation, empty output, schema/usage failures do not retr
   const badWire = [wire({model: "other"}), wire({choices: []}),
     wire({choices: [{finish_reason: "length", message: {content: "synthetic private output"}}]}),
     wire({choices: [{finish_reason: "stop", message: {refusal: "synthetic private refusal", content: "{}"}}]}),
+    wire({choices: [{finish_reason: "stop", message: {reasoning_content: "synthetic private thinking", content: JSON.stringify(output)}}]}),
     wire({choices: [{finish_reason: "stop", message: {content: ""}}]}),
     wire({choices: [{finish_reason: "stop", message: {content: JSON.stringify({...output, extra: "synthetic private"})}}]}),
     wire({choices: [{finish_reason: "stop", message: {content: JSON.stringify({...output, draft: 1})}}]}),
@@ -481,6 +482,7 @@ for (const providerId of Object.keys(nativeProviders)) {
   test(`${providerId}: invalid public input and unsupported native schemas stop before credentials`, async () => {
     const unsupported = providerId === "openai" ? [
       {...nativeSchema, required: ["draft"]}, {...nativeSchema, allOf: [{...nativeSchema}]},
+      {...nativeSchema, anyOf: [structuredClone(nativeSchema)]},
       {...nativeSchema, properties: {...nativeSchema.properties, draft: {type: "string", pattern: "x"}}},
     ] : [outputSchema, {...nativeSchema, properties: {...nativeSchema.properties,
       sourceIds: {type: "array", minItems: 2, items: {type: "string"}}}},
@@ -578,7 +580,8 @@ test("Anthropic: billed refusals, max_tokens, tool/thinking blocks and missing c
     {...p.wire().usage, cache_creation_input_tokens: -1}, {...p.wire().usage, cache_read_input_tokens: "20"},
     {...p.wire().usage, input_tokens: Number.MAX_SAFE_INTEGER},
     {...p.wire().usage, output_tokens: 129}, {...p.wire().usage, output_tokens_details: {thinking_tokens: 21}},
-    {...p.wire().usage, server_tool_use: {web_search_requests: 1}}];
+    {...p.wire().usage, server_tool_use: {web_search_requests: 1}},
+    {...p.wire().usage, server_tool_use: 1}, {...p.wire().usage, server_tool_use: []}];
   const badWire = [p.wire({stop_reason: "refusal"}), p.wire({stop_reason: "max_tokens"}), p.wire({stop_reason: "tool_use"}),
     p.wire({stop_details: {type: "refusal", explanation: "synthetic private refusal"}}), p.wire({model: "other"}),
     p.wire({content: [{type: "tool_use", input: "synthetic private tool"}]}),

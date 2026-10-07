@@ -49,7 +49,8 @@ function normalizedUsage(usage, maxOutputTokens) {
       !integer(usage.cache_creation_input_tokens) || !integer(inputTotal) ||
       !integer(usage.output_tokens) || usage.output_tokens > maxOutputTokens ||
       (reasoningOutput !== null && (!integer(reasoningOutput) || reasoningOutput > usage.output_tokens)) ||
-      (usage.server_tool_use != null && Object.values(usage.server_tool_use).some((count) => count !== 0))) {
+      (usage.server_tool_use != null && (typeof usage.server_tool_use !== "object" ||
+        Array.isArray(usage.server_tool_use) || Object.values(usage.server_tool_use).some((count) => count !== 0)))) {
     throw providerError("MODEL_PROVIDER_USAGE_INVALID");
   }
   return {inputTotal, ordinaryInput: usage.input_tokens, cacheRead: usage.cache_read_input_tokens,

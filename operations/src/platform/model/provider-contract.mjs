@@ -142,6 +142,10 @@ export function compileClosedSchema(schema, {publicInput = false} = {}) {
  * @param {"openai"|"anthropic"} providerId
  */
 export function validateStructuredOutputSchema(schema, providerId) {
+  if (!["openai", "anthropic"].includes(providerId) ||
+      (providerId === "openai" && Object.hasOwn(schema, "anyOf"))) {
+    throw providerError("MODEL_SCHEMA_UNSUPPORTED");
+  }
   const allowed = new Set(["type", "properties", "required", "additionalProperties",
     "items", "enum", "description", "anyOf"]);
   if (providerId === "openai") {
