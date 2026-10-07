@@ -533,10 +533,12 @@ jobs:
           )
           # Fail before waiting when a selected lane or this attempt's proof is missing.
           node tool/ci/finalize_ci_plan.mjs validate "${proof_args[@]}"
+          validation_base_sha="$(jq -er '.baseSha' build/ci/validation/impact-plan.json)"
           baseline="$(node tool/ci/main_ci_baseline.mjs \
             --repository "$GITHUB_REPOSITORY" \
             --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
-            --source-sha "$SOURCE_SHA" --fallback-base "$BEFORE_SHA" --wait)"
+            --source-sha "$SOURCE_SHA" --minimum-base-sha "$validation_base_sha" \
+            --fallback-base "$BEFORE_SHA" --wait)"
           base_sha="$(jq -er '.baseSha' <<< "$baseline")"
           node tool/ci/finalize_ci_plan.mjs finalize "${proof_args[@]}" \
             --base-sha "$base_sha" --output build/ci/impact-plan.json \

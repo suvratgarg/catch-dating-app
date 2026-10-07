@@ -63,10 +63,13 @@ void main() {
               Uri.file(executable).resolve('../../../dart-sdk/bin/dart'),
             ).path
           : executable;
+      // Keep this compiler probe independent of plugin startup. Required
+      // workspace analysis and smoke gates exercise the plugins separately.
       final result = await Process.run(dart, [
         'analyze',
         '--format',
         'machine',
+        '--no-plugins',
         ...files,
       ]);
       final output = '${result.stdout}\n${result.stderr}';
