@@ -4,9 +4,25 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {PaymentDocument} from "../../shared/generated/firestoreAdminTypes";
 import {Store} from "../../organizerFormAdmission/admissionTestFixture";
 import {LegacyRefundReviewRequired} from "./errors";
-import {planLegacyCancellationRefund, type LegacyRefundIntent} from "./intent";
+import {planLegacyCancellationRefund,
+  type LegacyRazorpayRefundAuthorization,
+  type LegacyRefundIntent} from "./intent";
 import {processLegacyCancellationRefund, type LegacyRefundProvider,
   type LegacyRefundObservation} from "./processor";
+import {razorpayOwnershipNotes, resolveRazorpayOrderOwnership} from
+  "../razorpayOrderOwnership";
+
+function ownedAuthorization(payment: PaymentDocument):
+  LegacyRazorpayRefundAuthorization {
+  const runtimeProjectId = "catchdates-dev";
+  const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
+    order: {id: payment.orderId,
+      notes: razorpayOwnershipNotes(runtimeProjectId)},
+    frozenContexts: [payment.razorpayOwnership,
+      payment.cancellationRefund?.razorpayOwnership]});
+  if (ownership.kind !== "owned") throw new Error("Expected owned order.");
+  return {evidence: ownership.evidence, runtimeProjectId};
+}
 
 function setup(targetAmountMinor = 1000, provider: "razorpay" | "stripe" =
 "razorpay") {
@@ -16,11 +32,15 @@ function setup(targetAmountMinor = 1000, provider: "razorpay" | "stripe" =
   const initial: PaymentDocument = {userId: "user1", eventId: "event1",
     orderId: "order_one", paymentId: "pay_one", amount: 1000, currency: "INR",
     provider, ...(provider === "stripe" ? {providerPaymentId: "pi_one",
-      stripeAccountId: "acct_one"} : {}),
+      stripeAccountId: "acct_one"} : {razorpayOwnership: {
+      projectId: "catchdates-dev", schema: "1"}}),
     status: "completed", signUpFailed: false,
     createdAt: Timestamp.fromMillis(1)};
+  const razorpayAuthorization = provider === "razorpay" ?
+    ownedAuthorization(initial) : undefined;
   const intent = planLegacyCancellationRefund({payment: initial,
-    reason: "guestCancelled", targetAmountMinor, nowMillis: now});
+    reason: "guestCancelled", targetAmountMinor, nowMillis: now,
+    razorpayAuthorization});
   store.put(path, {...initial, cancellationRefund: intent});
   const payment = () => store.get(path) as unknown as PaymentDocument;
   const readIntent = () => payment().cancellationRefund!;
@@ -52,7 +72,8 @@ function setup(targetAmountMinor = 1000, provider: "razorpay" | "stripe" =
     upgrade: () => {
       store.put(path, {...payment(), cancellationRefund:
         planLegacyCancellationRefund({payment: payment(),
-          reason: "eventCancelled", targetAmountMinor: 1000, nowMillis: now})});
+          reason: "eventCancelled", targetAmountMinor: 1000, nowMillis: now,
+          razorpayAuthorization})});
     },
     run: () => processLegacyCancellationRefund({db: store.db(),
       paymentId: "payment1", provider: api, clock: () => now})};
@@ -166,9 +187,13 @@ test("changed payment authority blocks provider work", async () => {
 test("a lease prevents another worker dispatch while the provider is running",
   async () => {
     const h = setup(); let release!: () => void;
-    h.api.verifyPayment = () => new Promise<void>((done) => {
-      release = done;
-    });
+    const create = h.api.createRefund;
+    h.api.createRefund = async (...args) => {
+      await new Promise<void>((done) => {
+        release = done;
+      });
+      return create(...args);
+    };
     const first = h.run();
     while (!release) await new Promise((done) => setImmediate(done));
     await h.run(); assert.equal(h.refundCalls.length, 0);
@@ -200,14 +225,74 @@ test("failed refunds keep liability explicit without claiming success",
   });
 
 
-test("a definite provider rejection exits automatic recovery", async () => {
+test("a provider preflight rejection leaves the refund intent untouched",
+  async () => {
+    const h = setup();
+    const before = JSON.stringify(h.payment());
+    h.api.verifyPayment = async () => {
+      throw new LegacyRefundReviewRequired("Wrong provider authority");
+    };
+    await assert.rejects(h.run(), LegacyRefundReviewRequired);
+    assert.equal(JSON.stringify(h.payment()), before);
+    assert.equal(h.refundCalls.length, 0);
+    assert.equal(h.payment().status, "completed");
+  });
+
+// Append to legacyRefunds/processor.test.ts. Source-only baseline regressions.
+// Fakes refuse verified ownership at the provider boundary. The original worker
+// currently mutates lease/attempt/review before and after that refusal.
+for (const origin of ["foreign", "unknown"] as const) {
+  test(`ownership worker: ${origin} persisted intent has zero ` +
+    "local/provider effects",
+  async () => {
+    const h = setup();
+    const before = JSON.stringify(h.store.get(h.path));
+    const beforeIntent = JSON.stringify(h.readIntent());
+    let verifies = 0;
+    h.api.verifyPayment = async () => {
+      verifies++;
+      throw new LegacyRefundReviewRequired(`${origin} order origin`);
+    };
+    const writesBefore = h.store.writes.length;
+    const timelineBefore = h.store.timeline.length;
+    // Rejection status is not the decisive assertion: domain effects are.
+    await h.run().catch(() => undefined);
+    assert.equal(JSON.stringify(h.store.get(h.path)), before);
+    assert.equal(JSON.stringify(h.readIntent()), beforeIntent);
+    assert.equal(h.store.writes.length - writesBefore, 0);
+    assert.deepEqual(h.store.timeline.slice(timelineBefore)
+      .filter((entry) => entry.startsWith("write:")), []);
+    assert.equal(h.refundCalls.length, 0);
+    assert.equal(h.observations(), 0);
+    assert.ok(verifies <= 1);
+  });
+}
+
+test("ownership worker control: own provider retry retains key and uses " +
+  "readback",
+async () => {
   const h = setup();
-  h.api.verifyPayment = async () => {
-    throw new LegacyRefundReviewRequired("Wrong provider authority");
+  const create = h.api.createRefund;
+  let loseFirst = true;
+  h.api.createRefund = async (...args) => {
+    const result = await create(...args);
+    if (loseFirst) {
+      loseFirst = false; throw new Error("Lost response");
+    }
+    result.state = "pending";
+    return result;
   };
-  await assert.rejects(h.run(), LegacyRefundReviewRequired);
-  assert.equal(h.readIntent().state, "reviewRequired");
+  await assert.rejects(h.run(), /Lost response/);
+  const firstKey = h.readIntent().attempts[0].idempotencyKey;
   h.advance(); await h.run();
-  assert.equal(h.refundCalls.length, 0);
-  assert.equal(h.payment().status, "completed");
+  assert.equal(h.issued.size, 1);
+  assert.equal(h.readIntent().attempts[0].idempotencyKey, firstKey);
+  assert.equal(new Set(h.refundCalls).size, 1);
+  const posts = h.refundCalls.length;
+    h.issued.values().next().value!.state = "processed";
+    h.advance(); await h.run();
+    assert.equal(h.refundCalls.length, posts);
+    assert.equal(h.observations(), 1);
+    assert.equal(h.readIntent().confirmedAmountMinor, 1000);
+    assert.equal(h.payment().status, "refunded");
 });

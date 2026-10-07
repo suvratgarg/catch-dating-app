@@ -5,6 +5,9 @@ import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import Razorpay from "razorpay";
 import {verifyRazorpayPaymentHandler} from "./verifyRazorpayPayment";
 
+process.env.GCLOUD_PROJECT = "catchdates-dev";
+process.env.GCLOUDPROJECT = "catchdates-dev";
+
 test(
   "verifyRazorpayPaymentHandler books trusted event from Razorpay metadata",
   async () => {
@@ -37,6 +40,8 @@ test(
               notes: {
                 eventId: "trusted-event",
                 userId: "runner-1",
+                catchBookingProject: "catchdates-dev",
+                catchBookingSchema: "1",
                 inviteLinkId: "link-1",
                 inviteSource: "instagram-bio",
               },
@@ -83,6 +88,8 @@ test(
     assert.equal(paymentDoc.setCalls.length, 1);
     assert.equal(paymentDoc.setCalls[0].status, "completed");
     assert.equal(paymentDoc.setCalls[0].amount, 25000);
+    assert.deepEqual(paymentDoc.setCalls[0].razorpayOwnership,
+      {projectId: "catchdates-dev", schema: "1"});
     assert.ok(paymentDoc.setCalls[0].completedAt);
     assert.equal(paymentDoc.inviteLinkSetCalls.length, 1);
     assert.equal(paymentDoc.inviteLinkSetCalls[0].docId, "link-1");
@@ -121,6 +128,8 @@ test(
                 notes: {
                   eventId: "trusted-event",
                   userId: "runner-1",
+                  catchBookingProject: "catchdates-dev",
+                  catchBookingSchema: "1",
                 },
               }),
             },
@@ -157,6 +166,10 @@ test(
     assert.deepEqual(
       (paymentDoc.setCalls[0].cancellationRefund as {state: string}).state,
       "pending");
+    assert.deepEqual(
+      (paymentDoc.setCalls[0].cancellationRefund as
+        {razorpayOwnership: unknown}).razorpayOwnership,
+      {projectId: "catchdates-dev", schema: "1"});
   }
 );
 
@@ -189,6 +202,8 @@ test(
                 notes: {
                   eventId: "trusted-event",
                   userId: "runner-1",
+                  catchBookingProject: "catchdates-dev",
+                  catchBookingSchema: "1",
                 },
               }),
             },
@@ -229,7 +244,10 @@ test(
   "verifyRazorpayPaymentHandler is a no-op for an already-completed payment",
   async () => {
     const paymentDoc = createPaymentDocRecorder({
-      existing: {status: "completed"},
+      existing: {status: "completed", userId: "runner-1",
+        eventId: "trusted-event", orderId: "order_123",
+        paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+        currency: "INR", provider: "razorpay"},
     });
     let signUpCalled = false;
 
@@ -256,6 +274,8 @@ test(
               notes: {
                 eventId: "trusted-event",
                 userId: "runner-1",
+                catchBookingProject: "catchdates-dev",
+                catchBookingSchema: "1",
               },
             }),
           },
@@ -287,6 +307,89 @@ test(
     assert.deepEqual(result, {verified: true, eventId: "trusted-event"});
   }
 );
+
+test("a cancelled completed payment cannot confirm " +
+  "checkout again", async () => {
+  const existing = {status: "completed", signUpFailed: false,
+    userId: "runner-1", eventId: "trusted-event", orderId: "order_123",
+    paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+    currency: "INR", provider: "razorpay",
+    razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
+    cancellationRefund: {
+      version: 1, reason: "guestCancelled", state: "complete",
+      targetAmountMinor: 0, confirmedAmountMinor: 0,
+      paymentFingerprint: "a".repeat(64), provider: "razorpay",
+      providerPaymentId: "pay_123", orderId: "order_123", currency: "INR",
+      stripeAccountId: null, refundApplicationFee: false,
+      razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
+      requestedAtMillis: 1, nextAttemptAtMillis: 1, leaseUntilMillis: 0,
+      attempts: [], lastErrorCode: null,
+    }};
+  const paymentDoc = createPaymentDocRecorder({existing});
+  let signUpCalled = false;
+
+  await assert.rejects(verifyRazorpayPaymentHandler(buildRequest({
+    auth: {uid: "runner-1"},
+    data: {paymentId: "pay_123", orderId: "order_123",
+      signature: "sig_123"},
+  }), {
+    firestore: () => createPaymentsFirestore(paymentDoc),
+    createClient: () => ({
+      orders: {fetch: async () => ({id: "order_123", amount: 25000,
+        currency: "INR", amount_paid: 25000, amount_due: 0,
+        notes: {eventId: "trusted-event", userId: "runner-1",
+          catchBookingProject: "catchdates-dev", catchBookingSchema: "1"}})},
+      payments: {fetch: async () => ({id: "pay_123",
+        order_id: "order_123", amount: 25000, currency: "INR",
+        status: "captured", amount_refunded: 0})},
+    }) as unknown as Razorpay,
+    serverTimestamp: () => "server-now",
+    signUpForEvent: async () => {
+      signUpCalled = true;
+    },
+    verifySignature: () => true,
+  }), isHttpsError("failed-precondition",
+    "This booking was not admitted. Check its refund status in Payments."));
+
+  assert.equal(signUpCalled, false);
+  assert.deepEqual(paymentDoc.setCalls, []);
+});
+
+test("a fully refunded replay cannot confirm checkout", async () => {
+  const existing = {status: "refundFailed", userId: "runner-1",
+    eventId: "trusted-event", orderId: "order_123",
+    paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+    currency: "INR", provider: "razorpay",
+    razorpayOwnership: {projectId: "catchdates-dev", schema: "1"}};
+  const paymentDoc = createPaymentDocRecorder({existing});
+  let signUpCalled = false;
+
+  await assert.rejects(verifyRazorpayPaymentHandler(buildRequest({
+    auth: {uid: "runner-1"},
+    data: {paymentId: "pay_123", orderId: "order_123",
+      signature: "sig_123"},
+  }), {
+    firestore: () => createPaymentsFirestore(paymentDoc),
+    createClient: () => ({
+      orders: {fetch: async () => ({id: "order_123", amount: 25000,
+        currency: "INR", amount_paid: 25000, amount_due: 0,
+        notes: {eventId: "trusted-event", userId: "runner-1",
+          catchBookingProject: "catchdates-dev", catchBookingSchema: "1"}})},
+      payments: {fetch: async () => ({id: "pay_123",
+        order_id: "order_123", amount: 25000, currency: "INR",
+        status: "refunded", amount_refunded: 25000})},
+    }) as unknown as Razorpay,
+    serverTimestamp: () => "server-now",
+    signUpForEvent: async () => {
+      signUpCalled = true;
+    },
+    verifySignature: () => true,
+  }), isHttpsError("failed-precondition",
+    "This booking was not admitted. Check its refund status in Payments."));
+
+  assert.equal(signUpCalled, false);
+  assert.deepEqual(paymentDoc.setCalls, []);
+});
 
 test(
   "verifyRazorpayPaymentHandler rejects invalid signatures before fetching",
@@ -399,6 +502,7 @@ for (const scenario of [
           orders: {fetch: async () => ({id: "order_123", amount: 25000,
             currency: "INR", amount_paid: 25000, amount_due: 0,
             notes: {eventId: "trusted-event", userId: "runner-1",
+              catchBookingProject: "catchdates-dev", catchBookingSchema: "1",
               ...scenario.notes}})},
           payments: {
             fetch: async () => ({id: "pay_123", order_id: "order_123",
@@ -531,3 +635,51 @@ function isHttpsError(expectedCode: string, expectedMessage: string) {
     error.code === expectedCode &&
     error.message === expectedMessage;
 }
+
+// Append to verifyRazorpayPayment.test.ts. NOT EXECUTED.
+test("ownership: valid callback cannot admit a foreign order for cloned " +
+  "Auth UID",
+async () => {
+  const record = createPaymentDocRecorder();
+  let signUps = 0;
+  let refunds = 0;
+  const previous = process.env.GCLOUD_PROJECT;
+  const previousLegacy = process.env.GCLOUDPROJECT;
+  process.env.GCLOUD_PROJECT = "catchdates-dev";
+  process.env.GCLOUDPROJECT = "catchdates-dev";
+  try {
+    await assert.rejects(verifyRazorpayPaymentHandler(buildRequest({
+      auth: {uid: "runner-1"},
+      data: {paymentId: "pay_123", orderId: "order_123",
+        signature: "sig_123"},
+    }), {
+      firestore: () => createPaymentsFirestore(record),
+      createClient: () => ({
+        orders: {fetch: async () => ({id: "order_123", amount: 25000,
+          currency: "INR", amount_paid: 25000, amount_due: 0,
+          notes: {eventId: "trusted-event", userId: "runner-1",
+            catchBookingProject: "catch-dating-app-64e51",
+            catchBookingSchema: "1"}})},
+        payments: {fetch: async () => ({id: "pay_123", order_id: "order_123",
+          amount: 25000, currency: "INR", status: "captured",
+          refund_status: "null"}), refund: async () => {
+          refunds++;
+        }},
+      }) as unknown as Razorpay,
+      verifySignature: () => true,
+      serverTimestamp: () => "server-now",
+      signUpForEvent: async () => {
+        signUps++;
+      },
+    }));
+    assert.equal(signUps, 0);
+    assert.equal(refunds, 0);
+    assert.deepEqual(record.setCalls, []);
+    assert.deepEqual(record.inviteLinkSetCalls, []);
+  } finally {
+    if (previous === undefined) delete process.env.GCLOUD_PROJECT;
+    else process.env.GCLOUD_PROJECT = previous;
+    if (previousLegacy === undefined) delete process.env.GCLOUDPROJECT;
+    else process.env.GCLOUDPROJECT = previousLegacy;
+  }
+});

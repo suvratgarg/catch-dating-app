@@ -42363,6 +42363,26 @@ export const legacyPaymentRefundIntentSchema = {
         "null"
       ],
       "maxLength": 80
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
@@ -225858,6 +225878,26 @@ export const paymentDocumentSchema = {
             "null"
           ],
           "maxLength": 80
+        },
+        "razorpayOwnership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "schema"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "schema": {
+              "type": "string",
+              "const": "1"
+            }
+          },
+          "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+          "x-catch-ownership": "server-only"
         }
       },
       "x-catch-ownership": "callable-owned"
@@ -225882,8 +225922,132 @@ export const paymentDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
+};
+
+export const nativeRefundRecoveryCursorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/native_refund_recovery_cursor.schema.json",
+  "title": "NativeRefundRecoveryCursorDocument",
+  "description": "Server-only, project-bound progress for bounded payment recovery queues. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest eligible row.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stateId",
+    "projectId",
+    "schema",
+    "revision",
+    "cursor",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "stateId": {
+      "type": "string",
+      "enum": [
+        "pendingRefunds",
+        "cancelledRazorpayPayments",
+        "pendingRazorpayOrders"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "minLength": 6,
+      "maxLength": 30,
+      "x-catch-ownership": "server-only"
+    },
+    "schema": {
+      "type": "string",
+      "const": "1",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "cursor": {
+      "description": "Queue-specific exclusive discovery position. Refund queues use the next-attempt order key and payment document id. pendingRazorpayOrders uses integer epoch nanoseconds plus the complete pending-order document id.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "nextAttemptOrderKey",
+            "paymentId"
+          ],
+          "properties": {
+            "nextAttemptOrderKey": {
+              "description": "Canonical tagged primary Firestore order value for the selected recovery queue.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "double:nan",
+                    "double:negativeInfinity",
+                    "double:positiveInfinity"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "pattern": "^integer:-?(?:0|[1-9][0-9]*)$",
+                  "maxLength": 29
+                },
+                {
+                  "type": "string",
+                  "pattern": "^double:(?:-0|-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?)$",
+                  "maxLength": 32
+                }
+              ]
+            },
+            "paymentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1500,
+              "description": "Exclusive secondary key. pendingRazorpayOrders and refund queues store the complete Firestore document id."
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "x-firestore-collection": "nativeRefundRecoveryCursors",
+  "x-firestore-path": "nativeRefundRecoveryCursors/{stateId}",
+  "x-document-id-field": "stateId",
+  "x-owner": "payment recovery schedulers"
 };
 
 export const hostPaymentAccountDocumentSchema = {
@@ -226189,6 +226353,26 @@ export const razorpayPendingOrderDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
