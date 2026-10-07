@@ -10,6 +10,7 @@ import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBas
   readMaterializedParamsSha256, liveFunctions, captureFunctionIdentities,
   FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
 import {gcloudIndexList, inspectIndexReadiness} from "../firebase/wait_firestore_indexes_ready.mjs";
+import salesSourceGuardedPaths from "./sales_pr543_source_guard.json" with {type: "json"};
 
 export const SELECTIVE_RELEASE_SCHEMA = "catch.selective-backend-release/v1";
 export const FUNCTION_LEDGER_SCHEMA = "catch.function-deployment-ledger/v1";
@@ -695,12 +696,7 @@ export const SALES_PR543_RETAINED_TARGETS = Object.freeze(SALES_PR543_RELEASE.ta
 // index.ts's runtime closure (including initialization of every re-export).
 // Bind that reviewed separation to exact Git objects, never a path exclusion.
 export const SALES_SOURCE_CHECKPOINT = "6256356bb9b41dbb5727354f5cb77384773c0454";
-export const SALES_SOURCE_GUARDED_PATHS = Object.freeze([
-  "functions/src", "functions/package.json", "functions/package-lock.json",
-  "functions/scripts/set-callable-invokers-public.cjs", "operations/src/platform",
-  "operations/src/workflows/outreach-drafting", "contracts/operations",
-  "firestore.rules", "firebase.json", ".firebaserc",
-]);
+export const SALES_SOURCE_GUARDED_PATHS = Object.freeze(salesSourceGuardedPaths);
 export const SALES_SOURCE_DELTA = Object.freeze([
   Object.freeze({path: "functions/src/catchMessaging/whatsappOperatorSetup.ts",
     candidateGitBlob: "e0e2ce455c5f08ccc73003a051f4471c15ea0238",
