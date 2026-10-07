@@ -176,6 +176,7 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     }));
 
     fireEvent.click(screen.getByRole("button", {name: "Activity"}));
+    expect(childMocks.history).not.toHaveBeenCalled();
     fireEvent.change(screen.getByLabelText("What happened?"),
       {target: {value: "outreach_sent_manual"}});
     fireEvent.change(screen.getByLabelText("What should the team know?"),
@@ -189,5 +190,27 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     }));
     expect(screen.getByText("You attest this was sent outside Catch. Delivery is unconfirmed."))
       .toBeTruthy();
+  });
+
+  it("clears unsaved activity and tabs on a cached assigned-host switch", () => {
+    const {props, rerender} = renderWorkspace({selectedOrganizerId: "host-one"});
+    fireEvent.click(screen.getByRole("button", {name: "Activity"}));
+    fireEvent.change(screen.getByLabelText("What happened?"),
+      {target: {value: "outreach_sent_manual"}});
+    fireEvent.change(screen.getByLabelText("What should the team know?"),
+      {target: {value: "Private host-one unsaved material"}});
+    current.detail.data = {...current.detail.data,
+      account: {...current.detail.data.account, organizerId: "host-two"},
+      organizerSummary: {...current.detail.data.organizerSummary, name: "Other Assigned Host"}};
+    rerender(<AdminFeedbackProvider onError={vi.fn()} onNotice={vi.fn()}>
+      <SalesWorkspaceScreen {...props} selectedOrganizerId="host-two" />
+    </AdminFeedbackProvider>);
+    expect(screen.getByRole("heading", {name: "Other Assigned Host"})).toBeTruthy();
+    expect(screen.queryByLabelText("What should the team know?")).toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Activity"}));
+    expect(screen.getByLabelText("What should the team know?")).toHaveProperty("value", "");
+    expect(screen.getByLabelText("What happened?")).toHaveProperty("value", "note");
+    expect(current.logActivity).not.toHaveBeenCalled();
+    expect(childMocks.history).not.toHaveBeenCalled();
   });
 });

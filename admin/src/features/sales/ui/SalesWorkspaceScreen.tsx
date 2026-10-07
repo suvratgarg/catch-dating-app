@@ -156,7 +156,8 @@ export function SalesWorkspaceScreen({
             actorUid: currentUserUid, isAdminOwner,
             organizerId: selectedOrganizerId,
             organizerName: controller.detail.data?.organizerSummary.name,
-          }) : <HostDetail controller={controller} currentUserUid={currentUserUid}
+          }) : <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
+            controller={controller} currentUserUid={currentUserUid}
             isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
             onOpenOrganizer={onOpenOrganizer} />}
         </>
@@ -564,7 +565,8 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
         assignedStaffOnly={assignedStaffOnly} /> : null}
     {visibleTab === "activity" ? <>
       <HostActivity detail={detail} controller={controller} />
-      {renderSalesImportedHistory(detail.account.organizerId, currentUserUid)}
+      {assignedStaffOnly ? null : renderSalesImportedHistory(
+        detail.account.organizerId, currentUserUid)}
     </> : null}
     {visibleTab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
@@ -575,7 +577,7 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     {visibleTab === "commercial" && !assignedStaffOnly ? renderSalesCommercialWorkspace(detail,
       controller.evidence.data?.rows ?? [], isAdminOwner) : null}
     {visibleTab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
-      controller={controller} /> : null}
+      controller={controller} assignedStaffOnly={assignedStaffOnly} /> : null}
     {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
       key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
       organizerId={detail.account.organizerId}
@@ -584,7 +586,7 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     {visibleTab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
       controller={controller} /> : null}
     {visibleTab === "research" ? <SalesRecordsWorkspace section="evidence" detail={detail}
-      controller={controller} /> : null}
+      controller={controller} assignedStaffOnly={assignedStaffOnly} /> : null}
     {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
       <SalesRecordsWorkspace
       section="suppression" detail={detail} controller={controller} /> : null}
@@ -592,7 +594,7 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       <HostCustomFields
       detail={detail} controller={controller} /> : null}
     <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}
-      currentUserUid={currentUserUid} />
+      currentUserUid={currentUserUid} assignedStaffOnly={assignedStaffOnly} />
   </AdminDetailScreenStack>;
 }
 

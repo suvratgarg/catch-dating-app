@@ -207,9 +207,7 @@ export async function executeSalesAction(
   if (isAssignedSalesStaff(principal) && action === "hosts.update") {
     const patch = (input as UpdateHostPayload).patch;
     if (Object.keys(patch).some((key) =>
-      !["summary", "nextAction", "researchStatus"].includes(key)) ||
-      patch.researchStatus &&
-      !["needs_research", "ready_for_review"].includes(patch.researchStatus)) {
+      !["summary", "nextAction"].includes(key))) {
       throw new HttpsError("permission-denied",
         "Owner review is required for assignment or qualification changes.");
     }

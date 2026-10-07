@@ -192,6 +192,7 @@ test("staff edits and replay require current assignment and Auth", async () => {
     error instanceof HttpsError && error.code === "permission-denied";
   for (const patch of [
     {assignedOwnerUid: "other"}, {researchStatus: "qualified"},
+    {researchStatus: "needs_research"}, {researchStatus: "ready_for_review"},
   ]) {
     await assert.rejects(executeSalesAction(staff, "hosts.update",
       {...update, requestId: "staff-forbidden-0001", patch}, deps), deny);
