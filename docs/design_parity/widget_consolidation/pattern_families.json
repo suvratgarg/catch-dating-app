@@ -4065,7 +4065,7 @@
       "priority": "P1",
       "status": "implemented",
       "targetContract": "catch.section",
-      "qualityReference": "CatchSection.action",
+      "qualityReference": "CatchSection",
       "decisionSource": "owner-approved:2026-10-08 shared section migration after screenshot review",
       "acceptedVisualDelta": [
         "Quiet borderless surfaces for operational modules; outlined perimeters retained for actual field groups.",
@@ -4083,9 +4083,8 @@
         {
           "symbol": "EventSuccessReportEmptyState",
           "disposition": "discard",
-          "target": "CatchSection.status",
           "preview": "not-applicable",
-          "rationale": "Three callers migrate directly; delete the presentation-only wrapper."
+          "rationale": "Three callers use CatchSection.status directly; delete the presentation-only wrapper."
         },
         {
           "symbol": "EventAssistanceHelpEntrySection",

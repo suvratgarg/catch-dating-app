@@ -88,7 +88,7 @@ class _RowVisitor extends SimpleAstVisitor<void> {
       },
       'CatchRowViewport' => const {
         '/lib/src/patterns/catch_scaffold.dart',
-        '/lib/src/patterns/catch_master_detail_viewport.dart',
+        '/lib/src/patterns/catch_navigation_viewport.dart',
         '/lib/src/patterns/catch_section_list.dart',
       },
       'CatchRowSection' || 'CatchDependentRowSection' => const {
