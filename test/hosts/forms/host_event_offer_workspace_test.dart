@@ -20,6 +20,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_works
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_offer_workspace_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
@@ -38,8 +39,10 @@ import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
 
 part 'host_event_offer_workspace_fixtures.dart';
+part 'host_offer_preparation_cases.dart';
 
 void main() {
+  _preparationRegressionTests();
   testWidgets(
     'release-gated shared route renders without Firebase initialization',
     (tester) async {
@@ -72,6 +75,7 @@ void main() {
     final auth = _SwitchingAuth('manager');
     final accounts = StreamController<String?>();
     final storage = MemoryCommandJournalStorage();
+    final functions = _RouteFunctions();
     addTearDown(accounts.close);
     addTearDown(storage.close);
     await tester.pumpWidget(
@@ -80,7 +84,7 @@ void main() {
           privateEventSetupAvailableProvider.overrideWithValue(true),
           uidProvider.overrideWith((ref) => accounts.stream),
           firebaseAuthProvider.overrideWithValue(auth),
-          firebaseFunctionsProvider.overrideWithValue(_RouteFunctions()),
+          firebaseFunctionsProvider.overrideWithValue(functions),
           commandJournalStorageProvider.overrideWithValue(() async => storage),
           hostFormResponseDetailProvider(
             organizerId: 'org',
@@ -120,13 +124,22 @@ void main() {
     await tester.tap(find.text('Sunday run'));
     await pumpFeatureUi(tester);
     expect(find.text(preview), findsNothing);
+    final delayedConfiguration = Completer<void>();
+    functions.configurationGate = delayedConfiguration.future;
     await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
-    await pumpUntilFound(tester, find.text(preview));
+    await pumpFeatureUi(tester);
+    expect(
+      find.text(AppLocalizationsEn().hostEventOfferPreparing),
+      findsOneWidget,
+    );
     auth.uid = null;
     accounts.add(null);
     await pumpFeatureUi(tester);
     expect(find.text(preview), findsNothing);
     expect(find.byType(HostEventOfferWorkspaceSection), findsNothing);
+    delayedConfiguration.complete();
+    await pumpFeatureUi(tester);
+    expect(find.text(preview), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -625,7 +638,7 @@ void main() {
       expect(workspace.event?.name, 'Freshly saved');
       await workspace.openSettings();
       expect(workspace.event?.setupRevision, 2);
-      expect(targets.configurationCalls, 3);
+      expect(targets.configurationCalls, 2);
       if (applicationId != null) {
         expect(
           workspace.draft!.rows.single.sourceKind,
@@ -657,7 +670,7 @@ void main() {
       source.hash = 'changed';
       await workspace.choose(workspace.event!);
       expect(workspace.selectionStale, isTrue);
-      expect(targets.configurationCalls, 3);
+      expect(targets.configurationCalls, 2);
     });
   }
 
