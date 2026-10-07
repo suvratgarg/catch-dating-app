@@ -10,6 +10,53 @@ const designPath = "tool/marketing/app_screenshots_design_context.json";
 const websiteManifestPath = "website/public/assets/app-screenshots/manifest.json";
 const sha256 = bytes => crypto.createHash("sha256").update(bytes).digest("hex");
 
+export function resolveCaptureRequest({eventName, event, repository, runSha, workflowDefinitionSha}) {
+  if (!/^[\w.-]+\/[\w.-]+$/u.test(repository ?? "") || event?.repository?.full_name !== repository) {
+    throw new Error("Capture request repository does not match the workflow repository.");
+  }
+  let sourceSha;
+  let workflowSha;
+  let prNumber;
+  if (eventName === "workflow_dispatch") {
+    sourceSha = event.inputs?.source_sha;
+    workflowSha = runSha;
+  } else if (eventName === "pull_request") {
+    const pr = event.pull_request;
+    if (event.action !== "labeled" || event.label?.name !== "capture:requested" ||
+        pr?.state !== "open" || pr.base?.ref !== "main" ||
+        pr.base?.repo?.full_name !== repository || pr.head?.repo?.full_name !== repository ||
+        !Number.isSafeInteger(pr.number) || pr.number < 1 || event.number !== pr.number) {
+      throw new Error("Requires capture:requested on an open same-repository PR into main.");
+    }
+    sourceSha = pr.head.sha;
+    workflowSha = pr.base.sha;
+    prNumber = pr.number;
+  } else {
+    throw new Error("Unsupported capture request event.");
+  }
+  for (const sha of [sourceSha, workflowSha, runSha, workflowDefinitionSha]) {
+    if (!/^[a-f0-9]{40}$/u.test(sha ?? "")) throw new Error("Full immutable capture request SHAs required.");
+  }
+  return {eventName, sourceSha, workflowSha, workflowDefinitionSha, eventSha: runSha,
+    ...(prNumber ? {prNumber, label: "capture:requested"} : {})};
+}
+
+function requestFromEnvironment() {
+  const request = resolveCaptureRequest({eventName: process.env.GITHUB_EVENT_NAME,
+    event: JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")),
+    repository: process.env.GITHUB_REPOSITORY, runSha: process.env.GITHUB_SHA,
+    workflowDefinitionSha: process.env.CAPTURE_WORKFLOW_DEFINITION_SHA});
+  if (request.sourceSha !== process.env.CAPTURE_SOURCE_SHA ||
+      request.workflowSha !== process.env.CAPTURE_WORKFLOW_SHA) {
+    throw new Error("Capture environment differs from the immutable event request.");
+  }
+  const controller = spawnSync("git", ["rev-parse", "HEAD"], {encoding: "utf8"});
+  if (controller.status !== 0 || controller.stdout.trim() !== request.workflowSha) {
+    throw new Error("Exporter controller checkout does not match the request.");
+  }
+  return request;
+}
+
 export function canonicalInventory(manifest) {
   if (manifest.captures?.length !== 12) throw new Error("Expected exactly 12 canonical captures.");
   const ids = new Set();
@@ -57,10 +104,13 @@ export function readProvenance(bytes) {
 }
 
 export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowSha,
-  repository, runId, runAttempt, platform = process.platform,
+  repository, runId, runAttempt, request, platform = process.platform,
   sfFont = "/System/Library/Fonts/SFNS.ttf"}) {
   for (const sha of [sourceSha, workflowSha]) {
     if (!/^[a-f0-9]{40}$/u.test(sha ?? "")) throw new Error("Full immutable source/workflow SHA required.");
+  }
+  if (request && (request.sourceSha !== sourceSha || request.workflowSha !== workflowSha)) {
+    throw new Error("Capture receipt request does not match source/controller identity.");
   }
   if (!/^[\w.-]+\/[\w.-]+$/u.test(repository ?? "") ||
       !/^[1-9][0-9]*$/u.test(runId ?? "") || !/^[1-9][0-9]*$/u.test(runAttempt ?? "")) {
@@ -133,6 +183,7 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   });
   const receipt = {version: 1, kind: "canonical marketing export; synthetic fixture evidence",
     sourceSha, sourceTree: git("rev-parse", "HEAD^{tree}"), workflowSha, repository, runId, runAttempt,
+    ...(request ? {workflowDefinitionSha: request.workflowDefinitionSha, request} : {}),
     runUrl: `https://github.com/${repository}/actions/runs/${runId}/attempts/${runAttempt}`,
     exporterSha256: sha256(fs.readFileSync(fileURLToPath(import.meta.url))),
     toolchain: {node: process.version, flutter, os: execute("sw_vers", [], true),
@@ -150,11 +201,16 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const receipt = exportHostedCaptures({sourceDir: process.env.CAPTURE_SOURCE_DIR,
-      sourceSha: process.env.CAPTURE_SOURCE_SHA, outputDir: process.env.CAPTURE_OUTPUT_DIR,
-      workflowSha: process.env.GITHUB_SHA, repository: process.env.GITHUB_REPOSITORY,
-      runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT});
-    console.log(`Validated ${receipt.captures.length} captures from ${receipt.sourceSha}.`);
+    const request = requestFromEnvironment();
+    if (process.argv.includes("--check-request")) {
+      console.log(JSON.stringify(request));
+    } else {
+      const receipt = exportHostedCaptures({sourceDir: process.env.CAPTURE_SOURCE_DIR,
+        sourceSha: request.sourceSha, outputDir: process.env.CAPTURE_OUTPUT_DIR,
+        workflowSha: request.workflowSha, repository: process.env.GITHUB_REPOSITORY,
+        runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, request});
+      console.log(`Validated ${receipt.captures.length} captures from ${receipt.sourceSha}.`);
+    }
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

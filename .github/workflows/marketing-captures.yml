@@ -1,5 +1,5 @@
 name: Export canonical marketing captures
-run-name: Marketing captures from ${{ inputs.source_sha }}
+run-name: Marketing captures from ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha }}
 
 on:
   workflow_dispatch:
@@ -8,21 +8,32 @@ on:
         description: Full 40-character source commit SHA in this repository
         required: true
         type: string
+  pull_request:
+    types: [labeled]
 
 permissions:
   contents: read
 
-concurrency:
-  group: marketing-captures-${{ inputs.source_sha }}
-  cancel-in-progress: false
-
 jobs:
   export:
     name: Render and validate 12 canonical iPhone captures
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.action == 'labeled' &&
+       github.event.label.name == 'capture:requested' &&
+       github.event.pull_request.state == 'open' &&
+       github.event.pull_request.base.ref == 'main' &&
+       github.event.pull_request.base.repo.full_name == github.repository &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    concurrency:
+      group: marketing-captures-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha }}
+      cancel-in-progress: false
     runs-on: macos-26
     timeout-minutes: 45
     env:
-      CAPTURE_SOURCE_SHA: ${{ inputs.source_sha }}
+      CAPTURE_SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha }}
+      CAPTURE_WORKFLOW_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+      CAPTURE_WORKFLOW_DEFINITION_SHA: ${{ github.workflow_sha }}
       CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
       TZ: UTC
     steps:
@@ -30,24 +41,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$CAPTURE_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]] || {
-            echo 'A full lowercase commit SHA is required.' >&2
-            exit 1
-          }
+          for sha in "$CAPTURE_SOURCE_SHA" "$CAPTURE_WORKFLOW_SHA" "$CAPTURE_WORKFLOW_DEFINITION_SHA"; do
+            [[ "$sha" =~ ^[a-f0-9]{40}$ ]] || {
+              echo 'Full lowercase source, controller and workflow-definition commit SHAs are required.' >&2
+              exit 1
+            }
+          done
       - name: Initialize runner output directory
         shell: bash
         run: |
           set -euo pipefail
           echo "CAPTURE_OUTPUT_DIR=$RUNNER_TEMP/canonical-marketing-captures" >> "$GITHUB_ENV"
-      - name: Checkout exporter at the workflow commit
+      - name: Checkout immutable exporter controller
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.CAPTURE_WORKFLOW_SHA }}
           persist-credentials: false
+      - name: Validate capture request and controller identity
+        run: node tool/marketing/export_hosted_captures.mjs --check-request
       - name: Checkout exact capture source separately
         uses: actions/checkout@v6
         with:
-          ref: ${{ inputs.source_sha }}
+          ref: ${{ env.CAPTURE_SOURCE_SHA }}
           path: capture-source
           persist-credentials: false
       - name: Verify source and matching toolchain pins
@@ -72,7 +87,7 @@ jobs:
         id: bundle
         uses: actions/upload-artifact@v7
         with:
-          name: canonical-marketing-${{ inputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: canonical-marketing-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.CAPTURE_OUTPUT_DIR }}/
           if-no-files-found: error
           retention-days: 7
@@ -86,7 +101,9 @@ jobs:
           set -euo pipefail
           {
             echo "Source: $CAPTURE_SOURCE_SHA"
-            echo "Workflow: $GITHUB_SHA"
+            echo "Exporter controller: $CAPTURE_WORKFLOW_SHA"
+            echo "Workflow definition: $CAPTURE_WORKFLOW_DEFINITION_SHA"
+            echo "Event: $GITHUB_EVENT_NAME ($GITHUB_SHA)"
             echo "Run/attempt: $GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT"
             echo "Artifact: $ARTIFACT_ID"
             echo "Digest: $ARTIFACT_DIGEST"
