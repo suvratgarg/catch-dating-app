@@ -75,6 +75,73 @@ ProgramCreateController _controller({
 
 void main() {
   test(
+    'fresh persistence failure before dispatch unlocks without rotating key',
+    () async {
+      var calls = 0;
+      final failure = StateError('local persistence unavailable');
+      final controller = _controller(
+        persist: (_) async => throw failure,
+        create: (_, _) async {
+          calls++;
+          return _receipt;
+        },
+      );
+      addTearDown(controller.dispose);
+      expect(await controller.submit(), isNull);
+      expect(calls, 0);
+      expect(controller.error, same(failure));
+      expect(controller.commandPending, isFalse);
+      expect(controller.fieldsLocked, isFalse);
+      expect(controller.requestId, 'fixed-request-key');
+      controller.edit(_draft.copyWith(title: 'Corrected draft'));
+      expect(controller.values.title, 'Corrected draft');
+      await flushTestEventQueue();
+    },
+  );
+
+  test(
+    'recovered ambiguous command stays locked if retry persistence fails',
+    () async {
+      var calls = 0;
+      final controller = _controller(
+        submittedValues: _draft,
+        persist: (_) async => throw StateError('local persistence unavailable'),
+        create: (_, _) async {
+          calls++;
+          return _receipt;
+        },
+      );
+      addTearDown(controller.dispose);
+      expect(await controller.submit(), isNull);
+      expect(calls, 0);
+      expect(controller.commandPending, isTrue);
+      expect(controller.fieldsLocked, isTrue);
+      expect(controller.requestId, 'fixed-request-key');
+    },
+  );
+
+  test('actor change during command persistence prevents dispatch', () async {
+    final persisted = Completer<void>();
+    var current = true;
+    var calls = 0;
+    final controller = _controller(
+      persist: (_) => persisted.future,
+      isActorCurrent: () => current,
+      create: (_, _) async {
+        calls++;
+        return _receipt;
+      },
+    );
+    addTearDown(controller.dispose);
+    final pending = controller.submit();
+    current = false;
+    persisted.complete();
+    expect(await pending, isNull);
+    expect(calls, 0);
+    expect(controller.actorChanged, isTrue);
+  });
+
+  test(
     'missing required fields show all inline errors without a request',
     () async {
       var calls = 0;
