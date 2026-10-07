@@ -5,9 +5,10 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {prepareFunctionsDeployment} from "./firebase_functions_checkpoint.mjs";
+import {createCheckpointState, recordStageCheckpoint} from "./delivery_core.mjs";
 import {SALES_PR543_RELEASE as r, SALES_PR543_RETAINED_TARGETS as retained,
   prepareSalesPr543Release, verifySalesPr543Params, captureSalesPr543Before,
-  completeSalesPr543Release, runSalesPr543ReleaseCli} from "./selective_backend_release.mjs";
+  completeSalesPr543Release, runSalesPr543ReleaseCli, verifySalesCheckpointOnly} from "./selective_backend_release.mjs";
 
 const copy = structuredClone;
 const approvedTargets = [
@@ -117,6 +118,80 @@ function fixture() {
     selectedTargets: r.targets, paramsSha256, functions});
   return {manifest, packagePlan, before, deployment, expectedParamsSha256: paramsSha256, functions};
 }
+
+function recoveryFixture(status = "failed") {
+  const f = copy(fixture());
+  const checkpoint = recordStageCheckpoint({manifest, state: createCheckpointState(manifest, r.scope),
+    scope: r.scope, stage: "functions", status}).state;
+  return {...f, checkpoint, stage: status === "passed" ? "firestore-rules" : "functions",
+    acceptedRules: Buffer.from("synthetic exact rules\n"), packagedRules: Buffer.from("synthetic exact rules\n")};
+}
+function recoveryPorts(f, calls = []) {
+  return {
+    readLive: async (project, selected) => {
+      assert.equal(project, r.projectId); assert.deepEqual(selected, r.targets);
+      calls.push("identities"); return f.functions;
+    },
+    readPolicy: async () => {calls.push("iam-read"); return {bindings: [{role: "roles/run.invoker", members: ["allUsers"]}]};},
+    checkParity: async () => {calls.push("parity");},
+    checkReadiness: async () => {calls.push("readiness");},
+  };
+}
+for (const status of ["failed", "passed"]) {
+  test(`strict Sales recovery freshly verifies identities IAM and readiness with Functions ${status}`, async () => {
+    const f = recoveryFixture(status); const before = copy(f); const calls = [];
+    assert.deepEqual(await verifySalesCheckpointOnly(f, recoveryPorts(f, calls)), {
+      checkpointOnly: true, functionsDeploymentAllowed: false, iamRepairAllowed: false,
+      verifiedFunctions: 44, authorizedStage: f.stage,
+    });
+    assert.deepEqual(copy(f), before);
+    assert.equal(calls[0], "identities");
+    assert.equal(calls.filter((call) => call === "iam-read").length, 43);
+    assert.deepEqual(calls.slice(-3), ["parity", "readiness", "identities"]);
+  });
+}
+for (const [name, mutate] of [
+  ["missing checkpoint", (f) => {delete f.checkpoint;}],
+  ["empty checkpoint that would restart stage one", (f) => {f.checkpoint = createCheckpointState(manifest, r.scope);}],
+  ["missing physical proof that would fall back to deployment", (f) => {delete f.deployment;}],
+  ["wrong checkpoint source", (f) => {f.checkpoint.provenance.sourceSha = "0".repeat(40);}],
+  ["wrong source CI run", (f) => {f.manifest.sourceCiRunId = "1";}],
+  ["wrong source attempt", (f) => {f.manifest.sourceCiRunAttempt = "2";}],
+  ["wrong project", (f) => {f.deployment.scope = "firebase:prod:other-project";}],
+  ["wrong target set", (f) => {f.deployment.targets.pop();}],
+  ["changed packaged rules", (f) => {f.packagedRules = Buffer.from("changed");}],
+  ["materialized parameter drift", (f) => {f.expectedParamsSha256 = "b".repeat(64);}],
+  ["stale serving revision", (f) => {f.functions[0].serviceConfig.revision = "changed-revision";}],
+  ["wrong before proof", (f) => {f.before.absentTargets.pop();}],
+  ["unapproved stage", (f) => {f.stage = "firestore-indexes";}],
+]) {
+  test(`strict Sales recovery stops for ${name}`, async () => {
+    const f = recoveryFixture(); mutate(f);
+    await assert.rejects(verifySalesCheckpointOnly(f, recoveryPorts(f)));
+  });
+}
+for (const bindings of [[], [{role: "roles/run.invoker", members: ["user:other@example.invalid"]}],
+  [{role: "roles/run.invoker", members: ["allUsers", "user:other@example.invalid"]}],
+  [{role: "roles/run.invoker", members: ["allUsers"], condition: {expression: "true"}}]]) {
+  test("strict Sales recovery rejects invoker IAM drift without repair", async () => {
+    const f = recoveryFixture("passed"); const calls = []; const ports = recoveryPorts(f, calls);
+    ports.readPolicy = async () => ({bindings});
+    await assert.rejects(verifySalesCheckpointOnly(f, ports));
+    assert.ok(!calls.includes("readiness"));
+  });
+}
+for (const check of ["checkParity", "checkReadiness"]) {
+  test(`strict Sales recovery stops on failed ${check}`, async () => {
+    const f = recoveryFixture("passed"); const ports = recoveryPorts(f);
+    ports[check] = async () => {throw new Error("Synthetic unavailable metadata");};
+    await assert.rejects(verifySalesCheckpointOnly(f, ports));
+  });
+}
+test("strict Sales recovery detects identity drift during readiness before rules", async () => {
+  const f = recoveryFixture("passed"); const ports = recoveryPorts(f);
+  ports.checkReadiness = async () => {f.functions[0].runService.generation = "999";};
+  await assert.rejects(verifySalesCheckpointOnly(f, ports));
+});
 
 test("immutable 601-export package selects exactly 44 Sales Functions and Firestore rules", () => {
   assert.deepEqual(r.targets, approvedTargets);
