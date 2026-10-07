@@ -6,6 +6,7 @@ import 'package:catch_consumer_app/mobile_health_activity_client.dart';
 import 'package:catch_consumer_app/razorpay_checkout_adapter.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 
 /// Consumer-owned native capability bindings around the shared Consumer UI.
 class ConsumerPlatformApp extends StatelessWidget {
@@ -14,15 +15,19 @@ class ConsumerPlatformApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-      overrides: [
-        healthActivityClientProvider.overrideWith(
-          (ref) => MobileHealthActivityClient(),
-        ),
-        razorpayCheckoutFactoryProvider.overrideWithValue(
-          PluginRazorpayCheckout.new,
-        ),
-      ],
+      overrides: consumerPlatformOverrides(),
       child: MyApp(routerProvider: consumerGoRouterProvider),
     );
   }
 }
+
+/// Production native bindings shared by supervised native entrypoints.
+///
+/// Keeping these bindings in one list prevents an acceptance harness from
+/// substituting a fake checkout while leaving the shipped app unchanged.
+List<Override> consumerPlatformOverrides() => [
+  healthActivityClientProvider.overrideWith(
+    (ref) => MobileHealthActivityClient(),
+  ),
+  razorpayCheckoutFactoryProvider.overrideWithValue(PluginRazorpayCheckout.new),
+];

@@ -1201,7 +1201,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart:11</code> | — | — | Consumer-owned native capability bindings around the shared Consumer UI. |
+| <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart:12</code> | — | — | Consumer-owned native capability bindings around the shared Consumer UI. |
 | <code>HostPlatformApp</code> | <code>apps/host/lib/host_platform_app.dart:6</code> | — | — | Host-owned app root selecting only the Host router and default capabilities. |
 | <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart:229</code> | — | — | No class documentation or registry summary. |
 | <code>MyApp</code> | <code>lib/app.dart:44</code> | — | — | No class documentation or registry summary. |
