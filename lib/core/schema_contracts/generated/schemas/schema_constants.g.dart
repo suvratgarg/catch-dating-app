@@ -206,6 +206,8 @@ export 'catch_communication_preference_document.g.dart';
 export 'catch_whatsapp_app_authority_document.g.dart';
 export 'catch_whatsapp_endpoint_stop_document.g.dart';
 export 'catch_whatsapp_ingress_evidence_document.g.dart';
+export 'catch_whatsapp_operator_setup_audit_document.g.dart';
+export 'catch_whatsapp_operator_setup_operation_document.g.dart';
 export 'catch_whatsapp_readiness_approval_document.g.dart';
 export 'catch_whatsapp_readiness_audit_document.g.dart';
 export 'catch_whatsapp_readiness_ingress_document.g.dart';
