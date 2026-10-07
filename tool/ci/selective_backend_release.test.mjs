@@ -15,7 +15,7 @@ import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger,
   SELECTIVE_IMPACT_SCHEMA} from "./selective_backend_release.mjs";
 import {SALES_PR543_RELEASE, SALES_SOURCE_CHECKPOINT, SALES_SOURCE_DELTA,
   SALES_SOURCE_GUARDED_PATHS, verifySalesSourceCompatibility, checkSalesGitCompatibility,
-  runSalesPr543ReleaseCli} from "./selective_backend_release.mjs";
+  runSalesPr543ReleaseCli, checkSalesCheckpointSource} from "./selective_backend_release.mjs";
 import "./sales_pr543_release.test.mjs";
 
 const salesSourceEvidence = () => ({sourceSha: SALES_PR543_RELEASE.sourceSha,
@@ -75,6 +75,18 @@ test("Sales source compatibility reads historical Git objects and binds its CLI"
     "--targets", "functions:importWeddingPhoneContacts"]));
 });
 
+test("strict Sales source route pins the original run and attempt without permitting replay", () => {
+  const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
+  assert.deepEqual(checkSalesCheckpointSource(SALES_PR543_RELEASE.sourceSha, SALES_SOURCE_CHECKPOINT,
+    root, "37576714164", "1"), {checkpointOnly: true});
+  for (const [source, run, attempt] of [
+    ["0".repeat(40), "37576714164", "1"],
+    [SALES_PR543_RELEASE.sourceSha, "37576714165", "1"],
+    [SALES_PR543_RELEASE.sourceSha, "37576714164", "2"],
+    [SALES_PR543_RELEASE.sourceSha, "", "1"],
+  ]) assert.throws(() => checkSalesCheckpointSource(source, SALES_SOURCE_CHECKPOINT, root, run, attempt));
+});
+
 test("Sales Git compatibility rejects real altered blobs and new runtime intersections", () => {
   const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "sales-source-compatibility-"));
@@ -104,6 +116,13 @@ test("Sales Git compatibility rejects real altered blobs and new runtime interse
       const current = git(["commit-tree", tree, "-p", SALES_SOURCE_CHECKPOINT], {input: "Synthetic guarded drift\n"});
       assert.throws(() => checkSalesGitCompatibility(SALES_PR543_RELEASE.sourceSha, current, repo),
         undefined, `Must reject actual guarded change: ${file}`);
+      if (file === "firestore.rules") {
+        assert.throws(() => checkSalesCheckpointSource(SALES_PR543_RELEASE.sourceSha, current, repo, "37576714164", "1"));
+      } else {
+        // Runtime source may advance only in the branch that forbids replay.
+        assert.deepEqual(checkSalesCheckpointSource(SALES_PR543_RELEASE.sourceSha, current, repo, "37576714164", "1"),
+          {checkpointOnly: true});
+      }
     }
   } finally {
     fs.rmSync(temporary, {recursive: true, force: true});

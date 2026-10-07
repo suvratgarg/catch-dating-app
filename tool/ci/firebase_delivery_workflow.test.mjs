@@ -324,6 +324,42 @@ test("actual Functions recovery branch records only completed deployments and ne
   }
 });
 
+test("actual strict Sales branch cannot deploy Functions or repair IAM and gates rules on fresh proof", (t) => {
+  const promotion = workflow("_firebase-promote.yml");
+  const start = promotion.indexOf('            if [[ "$SALES_CHECKPOINT_ONLY" == true ]]; then\n              # This branch');
+  const end = promotion.indexOf('            elif [[ "$stage" == "functions" && -z "$target" ]]', start);
+  assert.ok(start > 0 && end > start);
+  const body = promotion.slice(start, end) + "            fi\n";
+  assert.doesNotMatch(body, /functions-deploy-only|functions-postconditions-only|sync_callable_invokers|set-iam-policy/);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-sales-checkpoint-only-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "bin")); fs.mkdirSync(path.join(directory, "tool"));
+  fs.writeFileSync(path.join(directory, "bin/node"), '#!/bin/sh\n' +
+    'echo "$2" >> "$EVENTS"\nif [ "$2" = checkpoint-only ]; then exit "$PROOF_STATUS"; fi\nexit 0\n', {mode: 0o755});
+  fs.writeFileSync(path.join(directory, "bin/git"), '#!/bin/sh\necho aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n', {mode: 0o755});
+  fs.writeFileSync(path.join(directory, "tool/deploy_firebase_targets.sh"), '#!/bin/sh\n' +
+    'echo "deploy:$1:$2" >> "$EVENTS"\n[ "$1" = prod ] && [ "$2" = firestore:rules ]\n', {mode: 0o755});
+  for (const [stage, status, expected] of [
+    ["functions", 0, ["checkpoint-only", "stage"]],
+    ["firestore-rules", 0, ["checkpoint-only", "deploy:prod:firestore:rules"]],
+    ["functions", 5, ["checkpoint-only"]],
+    ["firestore-rules", 5, ["checkpoint-only"]],
+  ]) {
+    const events = path.join(directory, "events"); fs.rmSync(events, {force: true});
+    const result = spawnSync("bash", ["-euo", "pipefail", "-c",
+      'stage_status=0\ndeploy_args=(--config package/firebase.json)\n' + body + '\nexit "$stage_status"'], {
+      cwd: directory, encoding: "utf8", env: {...process.env,
+        PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`,
+        SALES_CHECKPOINT_ONLY: "true", stage, target: stage === "functions" ? "functions:synthetic" : "firestore:rules",
+        EVENTS: events, PROOF_STATUS: String(status), CHECKPOINT: "checkpoint.json", DELIVERY_FUNCTIONS_DIR: "package/functions",
+        PROJECT_ID: "catch-dating-app-64e51", SOURCE_CHECKOUT: "source", PACKAGE_DIR: "package",
+        DEPLOY_ENVIRONMENT: "prod", RESUME_RUN_ID: "37576714164", RESUME_ATTEMPT: "1",
+      }});
+    assert.equal(result.status, status, result.stderr);
+    assert.deepEqual(fs.readFileSync(events, "utf8").trim().split("\n"), expected);
+  }
+});
+
 test("Delivery consumes the always-present plan before deciding package or no-op", () => {
   const delivery = workflow("delivery.yml");
   const planOffset = delivery.indexOf("Download the exact CI impact plan first");
@@ -734,13 +770,16 @@ test("PR543 Sales caller pins 44 Functions plus rules behind existing protected 
   assert.match(caller, /resume_delivery_run_id:[\s\S]*resume_delivery_attempt:/);
   assert.match(caller, /prod-sales-pr543:[\s\S]*resume_delivery_run_id: \$\{\{ inputs\.resume_delivery_run_id \}\}[\s\S]*resume_delivery_attempt: \$\{\{ inputs\.resume_delivery_attempt \}\}/);
   assert.match(caller, /selective_backend_release\.mjs source \\\n\s+--source-sha "\$REQUESTED_SHA" --current-main "\$GITHUB_SHA" --source-root \./);
-  const sourceChecks = promotion.match(/node tool\/ci\/selective_backend_release\.mjs source[^\n]*\n[^\n]*\n[^\n]*\n[^\n]*/g);
+  const sourceChecks = promotion.match(/node tool\/ci\/selective_backend_release\.mjs "\$source_command"[^\n]*\n[^\n]*\n[^\n]*\n[^\n]*/g);
   assert.equal(sourceChecks?.length, 2);
   for (const check of sourceChecks) {
     assert.ok(check.includes('--source-sha "$SOURCE_SHA"'));
     assert.ok(check.includes('rev-parse refs/remotes/origin/main'));
-    assert.ok(check.trimEnd().endsWith('--source-root "$SOURCE_CHECKOUT"'));
+    assert.ok(check.trimEnd().endsWith('--source-root "$SOURCE_CHECKOUT" "${resume_args[@]}"'));
   }
+  assert.match(caller, /if \[\[ -n "\$RESUME_RUN_ID" \]\]; then[\s\S]*checkpoint-source[\s\S]*else[\s\S]*selective_backend_release\.mjs source/);
+  assert.match(promotion, /test "\$should_restore" = true[\s\S]*11463988816[\s\S]*5c64be7605a46cff585e7d334878d329360aaff253e43f713710f8732c579341/);
+  assert.match(promotion, /11463298945[\s\S]*e557f76637abc20b097ba1d2451d626f9f044ad2f9eff5482e5da2726453be49/);
   assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /SALES_PR543_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.sales_pr543_release/);

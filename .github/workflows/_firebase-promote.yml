@@ -258,6 +258,9 @@ jobs:
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
           WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           SALES_PR543_RELEASE: ${{ inputs.sales_pr543_release }}
+          SALES_CHECKPOINT_ONLY: ${{ inputs.sales_pr543_release && inputs.resume_delivery_run_id != '' }}
+          RESUME_RUN_ID: ${{ inputs.resume_delivery_run_id }}
+          RESUME_ATTEMPT: ${{ inputs.resume_delivery_attempt }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
@@ -280,10 +283,16 @@ jobs:
               functions/scripts/set-callable-invokers-public.cjs firebase.json .firebaserc
           fi
           if [[ "${SALES_PR543_RELEASE:-false}" == true ]]; then
-            node tool/ci/selective_backend_release.mjs source \
+            source_command=source
+            resume_args=()
+            if [[ "${SALES_CHECKPOINT_ONLY:-false}" == true ]]; then
+              source_command=checkpoint-source
+              resume_args=(--run-id "$RESUME_RUN_ID" --run-attempt "$RESUME_ATTEMPT")
+            fi
+            node tool/ci/selective_backend_release.mjs "$source_command" \
               --source-sha "$SOURCE_SHA" \
               --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
-              --source-root "$SOURCE_CHECKOUT"
+              --source-root "$SOURCE_CHECKOUT" "${resume_args[@]}"
           fi
           if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
             test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
@@ -611,6 +620,13 @@ jobs:
             decision="$(node tool/ci/delivery_core.mjs restore-decision \
               --artifact-count "$count")"
             should_restore="$(jq -r '.shouldRestore' <<< "$decision")"
+            if [[ "$SALES_PR543_RELEASE" == true ]]; then
+              test "$restore_run_id" = 37576714164
+              test "$restore_attempt" = 1
+              test "$should_restore" = true
+              test "$(jq -er '.[0].id' <<< "$matching_artifacts")" = 11463988816
+              test "$(jq -er '.[0].digest' <<< "$matching_artifacts")" = sha256:5c64be7605a46cff585e7d334878d329360aaff253e43f713710f8732c579341
+            fi
             if [[ "$should_restore" == "true" ]]; then
               echo "artifact_id=$(jq -er '.[0].id' <<< "$matching_artifacts")" >> "$GITHUB_OUTPUT"
               echo "artifact_digest=$(jq -er '.[0].digest' <<< "$matching_artifacts")" >> "$GITHUB_OUTPUT"
@@ -624,6 +640,8 @@ jobs:
                 --paginate --slurp | jq --arg name "$before_name" \
                   '[.[].artifacts[] | select(.name == $name)]')"
               test "$(jq 'length' <<< "$before_artifacts")" = 1
+              test "$(jq -er '.[0].id' <<< "$before_artifacts")" = 11463298945
+              test "$(jq -er '.[0].digest' <<< "$before_artifacts")" = sha256:e557f76637abc20b097ba1d2451d626f9f044ad2f9eff5482e5da2726453be49
               echo "sales_before_artifact_id=$(jq -er '.[0].id' <<< "$before_artifacts")" >> "$GITHUB_OUTPUT"
               echo "sales_before_artifact_digest=$(jq -er '.[0].digest' <<< "$before_artifacts")" >> "$GITHUB_OUTPUT"
               echo "sales_before_artifact_name=$before_name" >> "$GITHUB_OUTPUT"
@@ -1045,6 +1063,9 @@ jobs:
           OPERATOR_RELEASE: ${{ inputs.operator_release }}
           WHATSAPP_FIVE_RELEASE: ${{ inputs.whatsapp_five_release }}
           SALES_PR543_RELEASE: ${{ inputs.sales_pr543_release }}
+          SALES_CHECKPOINT_ONLY: ${{ inputs.sales_pr543_release && inputs.resume_delivery_run_id != '' }}
+          RESUME_RUN_ID: ${{ inputs.resume_delivery_run_id }}
+          RESUME_ATTEMPT: ${{ inputs.resume_delivery_attempt }}
           WEDDING_RELEASE: ${{ inputs.wedding_phone_import_release }}
         run: |
           set -euo pipefail
@@ -1109,10 +1130,16 @@ jobs:
               test "$(jq -er '.paramsSha256' <<< "$result")" = "${{ steps.whatsapp_params.outputs.sha256 }}"
             fi
             if [[ "${SALES_PR543_RELEASE:-false}" == true ]]; then
-              node tool/ci/selective_backend_release.mjs source \
+              source_command=source
+              resume_args=()
+              if [[ "$SALES_CHECKPOINT_ONLY" == true ]]; then
+                source_command=checkpoint-source
+                resume_args=(--run-id "$RESUME_RUN_ID" --run-attempt "$RESUME_ATTEMPT")
+              fi
+              node tool/ci/selective_backend_release.mjs "$source_command" \
                 --source-sha "$SOURCE_SHA" \
                 --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
-                --source-root "$SOURCE_CHECKOUT"
+                --source-root "$SOURCE_CHECKOUT" "${resume_args[@]}"
               node tool/ci/selective_backend_release.mjs stage --stage "$stage" --target "$target" > /dev/null
               if [[ "$stage" == functions ]]; then
                 result="$(node tool/ci/selective_backend_release.mjs params \
@@ -1157,7 +1184,30 @@ jobs:
                 deploy_args+=(--force)
               fi
             fi
-            if [[ "$stage" == "functions" && -z "$target" ]]; then
+            if [[ "$SALES_CHECKPOINT_ONLY" == true ]]; then
+              # This branch has no Functions deploy or callable IAM repair.
+              # Repeat all live checks even when Functions was already passed.
+              node tool/ci/selective_backend_release.mjs checkpoint-only \
+                --manifest build/delivery/source/firebase-provenance.json \
+                --package-plan build/delivery/package-plan.json \
+                --before build/delivery/sales-pr543-before.json \
+                --deployment build/delivery/checkpoint/functions-deployment.json \
+                --checkpoint "$CHECKPOINT" --stage "$stage" \
+                --params-file "$DELIVERY_FUNCTIONS_DIR/.env.$PROJECT_ID" \
+                --source-root "$SOURCE_CHECKOUT" --package-root "$PACKAGE_DIR" \
+                --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
+                --run-id "$RESUME_RUN_ID" --run-attempt "$RESUME_ATTEMPT" \
+                --readiness-candidate build/delivery/secret-bindings.json
+              if [[ "$stage" == firestore-rules ]]; then
+                test "$target" = firestore:rules
+                CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
+                  ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" firestore:rules \
+                    "${deploy_args[@]}" || stage_status=$?
+              else
+                test "$stage" = functions
+                node tool/ci/selective_backend_release.mjs stage --stage functions --target "$target" > /dev/null
+              fi
+            elif [[ "$stage" == "functions" && -z "$target" ]]; then
               echo "No Functions runtime dependency changed; recording the verified no-op stage."
             elif [[ "$stage" == "functions" ]]; then
               proof_args=(
