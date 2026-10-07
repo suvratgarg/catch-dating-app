@@ -110,6 +110,7 @@ part 'detail_route_pages.dart';
 part 'go_router.g.dart';
 part 'host_route_extras.dart';
 part 'host_inbox_route.dart';
+part 'host_workspace_index_screen.dart';
 part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
 
@@ -485,533 +486,540 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   return router;
 }
 
-List<RouteBase> _hostWorkspaceDestinationRoutes() {
-  return [
-    GoRoute(
-      path: Routes.hostHomeScreen.path,
-      name: Routes.hostHomeScreen.name,
-      redirect: (context, state) => hostHomeLegacyRedirect(),
+List<GoRoute> _hostWorkspaceDestinationRoutes() => [
+  GoRoute(
+    path: Routes.hostHomeScreen.path,
+    name: Routes.hostHomeScreen.name,
+    redirect: (context, state) => hostHomeLegacyRedirect(),
+  ),
+  GoRoute(
+    path: Routes.hostOperatorEventScreen.path,
+    name: Routes.hostOperatorEventScreen.name,
+    redirect: _operatorEventUriRedirect,
+  ),
+  GoRoute(
+    path: Routes.hostWorkScreen.path,
+    name: Routes.hostWorkScreen.name,
+    builder: (context, state) => const HostWorkScreen(),
+  ),
+  GoRoute(
+    path: Routes.hostWorkEventScreen.path,
+    name: Routes.hostWorkEventScreen.name,
+    builder: (context, state) =>
+        HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkProgramScreen.path,
+    name: Routes.hostWorkProgramScreen.name,
+    builder: (context, state) => ProgramWorkScreen(
+      programId: state.pathParameters['programId']!,
+      inviteId: state.uri.queryParameters['invite'],
     ),
-    GoRoute(
-      path: Routes.hostOperatorEventScreen.path,
-      name: Routes.hostOperatorEventScreen.name,
-      redirect: _operatorEventUriRedirect,
+  ),
+  GoRoute(
+    path: Routes.hostWorkArrivalsScreen.path,
+    name: Routes.hostWorkArrivalsScreen.name,
+    builder: (context, state) => ProgramArrivalsScreen(
+      programId: state.pathParameters['programId']!,
+      pickupPointId: state.pathParameters['pickupPointId'],
+      stationLabel: state.uri.queryParameters['station'] ?? 'Arrivals',
     ),
-    GoRoute(
-      path: Routes.hostWorkScreen.path,
-      name: Routes.hostWorkScreen.name,
-      builder: (context, state) => const HostWorkScreen(),
+  ),
+  GoRoute(
+    path: Routes.hostWorkDispatchScreen.path,
+    name: Routes.hostWorkDispatchScreen.name,
+    builder: (context, state) => ProgramDispatchScreen(
+      programId: state.pathParameters['programId']!,
+      pickupPointId: state.pathParameters['pickupPointId']!,
+      stationLabel: state.uri.queryParameters['station'] ?? 'Dispatch',
     ),
-    GoRoute(
-      path: Routes.hostWorkEventScreen.path,
-      name: Routes.hostWorkEventScreen.name,
-      builder: (context, state) =>
-          HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkHotelScreen.path,
+    name: Routes.hostWorkHotelScreen.name,
+    builder: (context, state) => ProgramHotelDeskScreen(
+      programId: state.pathParameters['programId']!,
+      hotelId: state.pathParameters['hotelId']!,
     ),
-    GoRoute(
-      path: Routes.hostWorkProgramScreen.path,
-      name: Routes.hostWorkProgramScreen.name,
-      builder: (context, state) => ProgramWorkScreen(
-        programId: state.pathParameters['programId']!,
-        inviteId: state.uri.queryParameters['invite'],
-      ),
+  ),
+  GoRoute(
+    path: Routes.hostWorkHotelRoomsScreen.path,
+    name: Routes.hostWorkHotelRoomsScreen.name,
+    builder: (context, state) => ProgramHotelRoomsScreen(
+      programId: state.pathParameters['programId']!,
+      hotelId: state.pathParameters['hotelId']!,
     ),
-    GoRoute(
-      path: Routes.hostWorkArrivalsScreen.path,
-      name: Routes.hostWorkArrivalsScreen.name,
-      builder: (context, state) => ProgramArrivalsScreen(
-        programId: state.pathParameters['programId']!,
-        pickupPointId: state.pathParameters['pickupPointId'],
-        stationLabel: state.uri.queryParameters['station'] ?? 'Arrivals',
-      ),
+  ),
+  GoRoute(
+    path: Routes.hostWorkDoorScreen.path,
+    name: Routes.hostWorkDoorScreen.name,
+    builder: (context, state) => ProgramFunctionDoorScreen(
+      programId: state.pathParameters['programId']!,
+      functionId: state.pathParameters['functionId']!,
+      functionName: state.uri.queryParameters['function'],
     ),
-    GoRoute(
-      path: Routes.hostWorkDispatchScreen.path,
-      name: Routes.hostWorkDispatchScreen.name,
-      builder: (context, state) => ProgramDispatchScreen(
-        programId: state.pathParameters['programId']!,
-        pickupPointId: state.pathParameters['pickupPointId']!,
-        stationLabel: state.uri.queryParameters['station'] ?? 'Dispatch',
-      ),
+  ),
+  GoRoute(
+    path: Routes.hostWorkNowScreen.path,
+    name: Routes.hostWorkNowScreen.name,
+    builder: (context, state) =>
+        ProgramNowNextScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkAttentionScreen.path,
+    name: Routes.hostWorkAttentionScreen.name,
+    builder: (context, state) =>
+        ProgramAttentionScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkTripsScreen.path,
+    name: Routes.hostWorkTripsScreen.name,
+    builder: (context, state) =>
+        ProgramTripsScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkGuestsScreen.path,
+    name: Routes.hostWorkGuestsScreen.name,
+    builder: (context, state) =>
+        ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkPhoneImportScreen.path,
+    name: Routes.hostWorkPhoneImportScreen.name,
+    builder: (context, state) =>
+        PhoneImportScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkImportScreen.path,
+    name: Routes.hostWorkImportScreen.name,
+    builder: (context, state) =>
+        ProgramImportScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostWorkAttendanceReportScreen.path,
+    name: Routes.hostWorkAttendanceReportScreen.name,
+    builder: (context, state) => ProgramAttendanceReportScreen(
+      programId: state.pathParameters['programId']!,
     ),
-    GoRoute(
-      path: Routes.hostWorkHotelScreen.path,
-      name: Routes.hostWorkHotelScreen.name,
-      builder: (context, state) => ProgramHotelDeskScreen(
-        programId: state.pathParameters['programId']!,
-        hotelId: state.pathParameters['hotelId']!,
-      ),
+  ),
+  GoRoute(
+    path: Routes.hostWorkCountsScreen.path,
+    name: Routes.hostWorkCountsScreen.name,
+    builder: (context, state) =>
+        ProgramStakeholderScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramsScreen.path,
+    name: Routes.hostProgramsScreen.name,
+    redirect: (context, state) => hostProgramsLegacyRedirect(state.uri),
+  ),
+  GoRoute(
+    path: Routes.hostCreateProgramScreen.path,
+    name: Routes.hostCreateProgramScreen.name,
+    builder: (context, state) =>
+        ProgramCreateScreen(organizerId: state.pathParameters['clubId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramLodgingScreen.path,
+    name: Routes.hostProgramLodgingScreen.name,
+    builder: (context, state) =>
+        ProgramLodgingScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramWorkspaceScreen.path,
+    name: Routes.hostProgramWorkspaceScreen.name,
+    builder: (context, state) =>
+        ProgramWorkspaceScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramGuestsScreen.path,
+    name: Routes.hostProgramGuestsScreen.name,
+    builder: (context, state) =>
+        ProgramGuestsScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramTeamScreen.path,
+    name: Routes.hostProgramTeamScreen.name,
+    builder: (context, state) =>
+        ProgramTeamScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramImportScreen.path,
+    name: Routes.hostProgramImportScreen.name,
+    builder: (context, state) =>
+        ProgramImportScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostProgramMomentsScreen.path,
+    name: Routes.hostProgramMomentsScreen.name,
+    builder: (context, state) => OrganizerMomentsScreen(
+      scope: _programMomentScope(state),
+      scopeTitle: state.uri.queryParameters['title'],
     ),
-    GoRoute(
-      path: Routes.hostWorkHotelRoomsScreen.path,
-      name: Routes.hostWorkHotelRoomsScreen.name,
-      builder: (context, state) => ProgramHotelRoomsScreen(
-        programId: state.pathParameters['programId']!,
-        hotelId: state.pathParameters['hotelId']!,
-      ),
+  ),
+  GoRoute(
+    path: Routes.hostOrganizerMessagingScreen.path,
+    name: Routes.hostOrganizerMessagingScreen.name,
+    builder: (context, state) =>
+        HostMessagingSetupScreen(clubId: state.pathParameters['clubId']!),
+  ),
+  GoRoute(
+    path: Routes.hostClubEventDefaultsScreen.path,
+    name: Routes.hostClubEventDefaultsScreen.name,
+    builder: (context, state) => HostClubEventDefaultsScreen(
+      clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
-    GoRoute(
-      path: Routes.hostWorkDoorScreen.path,
-      name: Routes.hostWorkDoorScreen.name,
-      builder: (context, state) => ProgramFunctionDoorScreen(
-        programId: state.pathParameters['programId']!,
-        functionId: state.pathParameters['functionId']!,
-        functionName: state.uri.queryParameters['function'],
-      ),
+  ),
+  GoRoute(
+    path: Routes.hostClubLiveGuideScreen.path,
+    name: Routes.hostClubLiveGuideScreen.name,
+    builder: (context, state) => HostClubLiveGuideScreen(
+      clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
-    GoRoute(
-      path: Routes.hostWorkNowScreen.path,
-      name: Routes.hostWorkNowScreen.name,
-      builder: (context, state) =>
-          ProgramNowNextScreen(programId: state.pathParameters['programId']!),
+  ),
+  GoRoute(
+    path: Routes.hostClubTeamScreen.path,
+    name: Routes.hostClubTeamScreen.name,
+    builder: (context, state) =>
+        HostClubTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
+  ),
+  GoRoute(
+    path: Routes.hostClubPaymentsScreen.path,
+    name: Routes.hostClubPaymentsScreen.name,
+    builder: (context, state) => HostClubPaymentsScreen(
+      clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
-    GoRoute(
-      path: Routes.hostWorkAttentionScreen.path,
-      name: Routes.hostWorkAttentionScreen.name,
-      builder: (context, state) =>
-          ProgramAttentionScreen(programId: state.pathParameters['programId']!),
-    ),
-    GoRoute(
-      path: Routes.hostWorkTripsScreen.path,
-      name: Routes.hostWorkTripsScreen.name,
-      builder: (context, state) =>
-          ProgramTripsScreen(programId: state.pathParameters['programId']!),
-    ),
-    GoRoute(
-      path: Routes.hostWorkGuestsScreen.path,
-      name: Routes.hostWorkGuestsScreen.name,
-      builder: (context, state) =>
-          ProgramGuestDeskScreen(programId: state.pathParameters['programId']!),
-    ),
-    GoRoute(
-      path: Routes.hostWorkPhoneImportScreen.path,
-      name: Routes.hostWorkPhoneImportScreen.name,
-      builder: (context, state) =>
-          PhoneImportScreen(programId: state.pathParameters['programId']!),
-    ),
-    GoRoute(
-      path: Routes.hostWorkImportScreen.path,
-      name: Routes.hostWorkImportScreen.name,
-      builder: (context, state) =>
-          ProgramImportScreen(programId: state.pathParameters['programId']!),
-    ),
-    GoRoute(
-      path: Routes.hostWorkAttendanceReportScreen.path,
-      name: Routes.hostWorkAttendanceReportScreen.name,
-      builder: (context, state) => ProgramAttendanceReportScreen(
-        programId: state.pathParameters['programId']!,
-      ),
-    ),
-    GoRoute(
-      path: Routes.hostWorkCountsScreen.path,
-      name: Routes.hostWorkCountsScreen.name,
-      builder: (context, state) => ProgramStakeholderScreen(
-        programId: state.pathParameters['programId']!,
-      ),
-    ),
-    GoRoute(
-      path: Routes.hostProgramsScreen.path,
-      name: Routes.hostProgramsScreen.name,
-      redirect: (context, state) => hostProgramsLegacyRedirect(state.uri),
-    ),
-    GoRoute(
-      path: Routes.hostCreateProgramScreen.path,
-      name: Routes.hostCreateProgramScreen.name,
-      builder: (context, state) =>
-          ProgramCreateScreen(organizerId: state.pathParameters['clubId']!),
-    ),
-    GoRoute(
-      path: Routes.hostProgramLodgingScreen.path,
-      name: Routes.hostProgramLodgingScreen.name,
-      builder: (context, state) =>
-          ProgramLodgingScreen(programId: state.pathParameters['programId']!),
-    ),
-    GoRoute(
-      path: Routes.hostProgramWorkspaceScreen.path,
-      name: Routes.hostProgramWorkspaceScreen.name,
-      builder: (context, state) =>
-          ProgramWorkspaceScreen(programId: state.pathParameters['programId']!),
-      routes: [
-        GoRoute(
-          path: 'guests',
-          name: Routes.hostProgramGuestsScreen.name,
-          builder: (context, state) => ProgramGuestsScreen(
-            programId: state.pathParameters['programId']!,
-          ),
-        ),
-        GoRoute(
-          path: 'team',
-          name: Routes.hostProgramTeamScreen.name,
-          builder: (context, state) =>
-              ProgramTeamScreen(programId: state.pathParameters['programId']!),
-        ),
-        GoRoute(
-          path: 'import',
-          name: Routes.hostProgramImportScreen.name,
-          builder: (context, state) => ProgramImportScreen(
-            programId: state.pathParameters['programId']!,
-          ),
-        ),
-        GoRoute(
-          path: 'moments',
-          name: Routes.hostProgramMomentsScreen.name,
-          builder: (context, state) => OrganizerMomentsScreen(
-            scope: _programMomentScope(state),
-            scopeTitle: state.uri.queryParameters['title'],
-          ),
-        ),
-      ],
-    ),
-    GoRoute(
-      path: Routes.hostOrganizerMessagingScreen.path,
-      name: Routes.hostOrganizerMessagingScreen.name,
-      builder: (context, state) =>
-          HostMessagingSetupScreen(clubId: state.pathParameters['clubId']!),
-    ),
-    GoRoute(
-      path: Routes.hostClubEventDefaultsScreen.path,
-      name: Routes.hostClubEventDefaultsScreen.name,
-      redirect: (context, state) => hostOrganizerWorkspaceRedirect(
-        state,
-        Routes.hostClubEventDefaultsScreen,
-      ),
-    ),
-    GoRoute(
-      path: Routes.hostClubLiveGuideScreen.path,
-      name: Routes.hostClubLiveGuideScreen.name,
-      redirect: (context, state) =>
-          hostOrganizerWorkspaceRedirect(state, Routes.hostClubLiveGuideScreen),
-    ),
-    GoRoute(
-      path: Routes.hostClubTeamScreen.path,
-      name: Routes.hostClubTeamScreen.name,
-      redirect: (context, state) =>
-          hostOrganizerWorkspaceRedirect(state, Routes.hostClubTeamScreen),
-    ),
-    GoRoute(
-      path: Routes.hostClubPaymentsScreen.path,
-      name: Routes.hostClubPaymentsScreen.name,
-      redirect: (context, state) =>
-          hostOrganizerWorkspaceRedirect(state, Routes.hostClubPaymentsScreen),
-    ),
-    GoRoute(
-      path: Routes.hostClubsScreen.path,
-      name: Routes.hostClubsScreen.name,
-      redirect: (context, state) => hostOrganizerIndexRedirect(state.uri),
-      routes: [
-        GoRoute(
-          path: 'create-organizer',
-          name: Routes.hostCreateClubScreen.name,
-          builder: (context, state) => const HostCreateClubScreen(),
-        ),
-        GoRoute(
-          path: ':clubId',
-          name: Routes.hostClubDetailScreen.name,
-          builder: (context, state) => _clubDetailScreen(state),
-          routes: [
-            GoRoute(
-              path: 'create-event',
-              name: Routes.hostCreateEventScreen.name,
-              builder: (context, state) {
-                final extra = state.extra;
-                return HostCreateEventRouteScreen(
-                  clubId: state.pathParameters['clubId']!,
-                  initialClub: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialClub,
-                    final Club club => club,
-                    _ => null,
-                  },
-                  initialPrefill: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialPrefill,
-                    _ => null,
-                  },
-                  initialDraft: extra is HostCreateEventRouteArguments
-                      ? extra.initialDraft
-                      : null,
+  ),
+  GoRoute(
+    path: Routes.hostClubsScreen.path,
+    name: Routes.hostClubsScreen.name,
+    redirect: (context, state) => hostOrganizerIndexRedirect(state.uri),
+  ),
+  GoRoute(
+    path: Routes.hostCreateClubScreen.path,
+    name: Routes.hostCreateClubScreen.name,
+    builder: (context, state) => const HostCreateClubScreen(),
+  ),
+  GoRoute(
+    path: Routes.hostClubDetailScreen.path,
+    name: Routes.hostClubDetailScreen.name,
+    builder: (context, state) => _clubDetailScreen(state),
+  ),
+  GoRoute(
+    path: Routes.hostCreateEventScreen.path,
+    name: Routes.hostCreateEventScreen.name,
+    builder: (context, state) {
+      final extra = state.extra;
+      return HostCreateEventRouteScreen(
+        clubId: state.pathParameters['clubId']!,
+        initialClub: switch (extra) {
+          final HostCreateEventRouteArguments arguments =>
+            arguments.initialClub,
+          final Club club => club,
+          _ => null,
+        },
+        initialPrefill: switch (extra) {
+          final HostCreateEventRouteArguments arguments =>
+            arguments.initialPrefill,
+          _ => null,
+        },
+        initialDraft: extra is HostCreateEventRouteArguments
+            ? extra.initialDraft
+            : null,
 
-                  initialSavedEventId: extra is HostCreateEventRouteArguments
-                      ? extra.initialSavedEventId
-                      : null,
-                  externalBookingMode: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.externalBookingMode,
-                    _ => false,
-                  },
-                  initialRosterImportPlan: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialRosterImportPlan,
-                    _ => null,
-                  },
-                  promptForDrafts: extra is HostCreateEventRouteArguments
-                      ? extra.promptForDrafts
-                      : true,
-                  returnToResponsesOnSave:
-                      extra is HostCreateEventRouteArguments
-                      ? extra.returnToResponsesOnSave
-                      : false,
-                );
-              },
-            ),
-            GoRoute(
-              path: 'rehearsals/new',
-              name: Routes.hostEventRehearsalStartScreen.name,
-              builder: (context, state) => HostEventRehearsalStartScreen(
-                clubId: state.pathParameters['clubId']!,
-                sourceEventId: state.uri.queryParameters['eventId'],
-                startFromOrganizerDefaults:
-                    state.uri.queryParameters['source'] == 'custom',
-              ),
-            ),
-            GoRoute(
-              path: 'rehearsals/:sessionId',
-              name: Routes.hostEventRehearsalScreen.name,
-              builder: (context, state) => HostEventRehearsalScreen(
-                clubId: state.pathParameters['clubId']!,
-                sessionId: state.pathParameters['sessionId']!,
-              ),
-            ),
-            GoRoute(
-              path: 'events/:eventId',
-              name: Routes.hostAppEventDetailScreen.name,
-              builder: (context, state) => _eventDetailScreen(state),
-            ),
-            GoRoute(
-              path: 'events/:eventId/manage',
-              name: Routes.hostAppEventManageScreen.name,
-              redirect: (context, state) => hostEventWorkspaceRedirect(state),
-            ),
-            GoRoute(
-              path: 'events/:eventId/edit',
-              name: Routes.hostAppEditEventScreen.name,
-              builder: (context, state) => EditHostedEventRouteScreen(
-                clubId: state.pathParameters['clubId']!,
-                eventId: state.pathParameters['eventId']!,
-                initialEvent: _routeEventExtra(state),
-              ),
-            ),
-            GoRoute(
-              path: 'events/:eventId/attendance',
-              name: Routes.hostAppAttendanceSheet.name,
-              builder: (context, state) => HostEventManageRouteScreen(
-                clubId: state.pathParameters['clubId']!,
-                eventId: state.pathParameters['eventId']!,
-                initialEvent: _routeEventExtra(state),
-                initialSection: HostEventManageSection.live,
-              ),
-            ),
-            GoRoute(
-              path: 'events/:eventId/success',
-              name: Routes.hostAppEventSuccessScreen.name,
-              builder: (context, state) => HostEventManageRouteScreen(
-                clubId: state.pathParameters['clubId']!,
-                eventId: state.pathParameters['eventId']!,
-                initialEvent: _routeEventExtra(state),
-                initialSection: _hostManageSectionFromState(state),
-              ),
-            ),
-            GoRoute(
-              path: 'events/:eventId/moments',
-              name: Routes.hostAppEventMomentsScreen.name,
-              builder: (context, state) => OrganizerMomentsScreen(
-                scope: _eventMomentScope(state),
-                scopeTitle: _routeEventExtra(state)?.title,
-              ),
-            ),
-          ],
-        ),
-      ],
+        initialSavedEventId: extra is HostCreateEventRouteArguments
+            ? extra.initialSavedEventId
+            : null,
+        externalBookingMode: switch (extra) {
+          final HostCreateEventRouteArguments arguments =>
+            arguments.externalBookingMode,
+          _ => false,
+        },
+        initialRosterImportPlan: switch (extra) {
+          final HostCreateEventRouteArguments arguments =>
+            arguments.initialRosterImportPlan,
+          _ => null,
+        },
+        promptForDrafts: extra is HostCreateEventRouteArguments
+            ? extra.promptForDrafts
+            : true,
+        returnToResponsesOnSave: extra is HostCreateEventRouteArguments
+            ? extra.returnToResponsesOnSave
+            : false,
+      );
+    },
+  ),
+  GoRoute(
+    path: Routes.hostEventRehearsalStartScreen.path,
+    name: Routes.hostEventRehearsalStartScreen.name,
+    builder: (context, state) => HostEventRehearsalStartScreen(
+      clubId: state.pathParameters['clubId']!,
+      sourceEventId: state.uri.queryParameters['eventId'],
+      startFromOrganizerDefaults:
+          state.uri.queryParameters['source'] == 'custom',
     ),
-  ];
-}
-
-GoRoute _hostAudienceRoute() {
-  return GoRoute(
-    path: Routes.hostAudienceScreen.path,
-    name: Routes.hostAudienceScreen.name,
-    builder: (context, state) => hostAudienceScreenForUri(
-      state.uri,
-      initialContactDisplayName: _routeContactNameExtra(state),
+  ),
+  GoRoute(
+    path: Routes.hostEventRehearsalScreen.path,
+    name: Routes.hostEventRehearsalScreen.name,
+    builder: (context, state) => HostEventRehearsalScreen(
+      clubId: state.pathParameters['clubId']!,
+      sessionId: state.pathParameters['sessionId']!,
     ),
-    routes: [
-      GoRoute(
-        path: 'applications',
-        name: Routes.hostApplicationsScreen.name,
-        redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
-      ),
-      GoRoute(
-        path: 'applications/:applicationId',
-        name: Routes.hostApplicationDetailScreen.name,
-        builder: (context, state) => HostApplicationDetailScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          applicationId: state.pathParameters['applicationId']!,
-          queue: _responseReviewQueue(state.extra),
-        ),
-      ),
-      GoRoute(
-        path: 'people/new',
-        name: Routes.hostAddCustomerScreen.name,
-        builder: (context, state) => HostAddCustomerScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        ),
-      ),
-      GoRoute(
-        path: 'audiences/new',
-        name: Routes.hostCreateSavedAudienceScreen.name,
-        builder: (context, state) => HostSavedAudienceEditorScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        ),
-      ),
-      GoRoute(
-        path: 'audiences/:audienceId',
-        name: Routes.hostSavedAudienceDetailScreen.name,
-        builder: (context, state) => HostSavedAudienceEditorScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          audienceId: state.pathParameters['audienceId'],
-          initialAudience: _routeAudienceExtra(state),
-        ),
-      ),
-      GoRoute(
-        path: 'forms/new',
-        name: Routes.hostFormTemplatesScreen.name,
-        builder: (context, state) => HostFormTemplatesScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        ),
-      ),
-      GoRoute(
-        path: 'responses/:responseId',
-        name: Routes.hostFormResponseDetailScreen.name,
-        builder: (context, state) => HostFormResponseDetailScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          responseId: state.pathParameters['responseId']!,
-          queue: _responseReviewQueue(state.extra),
-        ),
-      ),
-      GoRoute(
-        path: 'forms/:formId/preview',
-        name: Routes.hostFormPreviewScreen.name,
-        builder: (context, state) => HostFormPreviewScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          formId: state.pathParameters['formId']!,
-        ),
-      ),
-      GoRoute(
-        path: 'forms/:formId/share',
-        name: Routes.hostFormShareScreen.name,
-        builder: (context, state) => HostFormShareScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          formId: state.pathParameters['formId']!,
-        ),
-      ),
-      GoRoute(
-        path: 'forms/:formId/analytics',
-        name: Routes.hostFormAnalyticsScreen.name,
-        builder: (context, state) => HostFormAnalyticsScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          formId: state.pathParameters['formId']!,
-        ),
-      ),
-      GoRoute(
-        path: 'automations',
-        name: Routes.hostAudienceAutomationsScreen.name,
-        builder: (context, state) => HostFormAutomationsScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-        ),
-      ),
-      GoRoute(
-        path: 'forms/:formId/automations',
-        name: Routes.hostFormAutomationsScreen.name,
-        builder: (context, state) => HostFormAutomationsScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          formId: state.pathParameters['formId']!,
-        ),
-      ),
-      GoRoute(
-        path: 'forms/:formId',
-        name: Routes.hostFormBuilderScreen.name,
-        builder: (context, state) => HostFormBuilderScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          formId: state.pathParameters['formId']!,
-          initialView: hostFormViewFromQuery(state.uri.queryParameters['view']),
-        ),
-      ),
-      GoRoute(
-        path: 'people/:contactId',
-        name: Routes.hostCustomerDetailScreen.name,
-        builder: (context, state) => HostCustomerDetailScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          contactId: state.pathParameters['contactId']!,
-          initialDisplayName: _routeContactNameExtra(state),
-        ),
-      ),
-    ],
-  );
-}
-
-GoRoute _hostCustomersLegacyRoute() {
-  return GoRoute(
+  ),
+  GoRoute(
+    path: Routes.hostAppEventDetailScreen.path,
+    name: Routes.hostAppEventDetailScreen.name,
+    builder: (context, state) => _eventDetailScreen(state),
+  ),
+  GoRoute(
+    path: Routes.hostAppEventManageScreen.path,
+    name: Routes.hostAppEventManageScreen.name,
+    builder: (context, state) => HostEventManageRouteScreen(
+      clubId: state.pathParameters['clubId']!,
+      eventId: state.pathParameters['eventId']!,
+      initialEvent: _routeEventExtra(state),
+      initialSection: _hostManageSectionFromState(state),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAppEditEventScreen.path,
+    name: Routes.hostAppEditEventScreen.name,
+    builder: (context, state) => EditHostedEventRouteScreen(
+      clubId: state.pathParameters['clubId']!,
+      eventId: state.pathParameters['eventId']!,
+      initialEvent: _routeEventExtra(state),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAppAttendanceSheet.path,
+    name: Routes.hostAppAttendanceSheet.name,
+    builder: (context, state) => HostEventManageRouteScreen(
+      clubId: state.pathParameters['clubId']!,
+      eventId: state.pathParameters['eventId']!,
+      initialEvent: _routeEventExtra(state),
+      initialSection: HostEventManageSection.live,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAppEventSuccessScreen.path,
+    name: Routes.hostAppEventSuccessScreen.name,
+    builder: (context, state) => HostEventManageRouteScreen(
+      clubId: state.pathParameters['clubId']!,
+      eventId: state.pathParameters['eventId']!,
+      initialEvent: _routeEventExtra(state),
+      initialSection: _hostManageSectionFromState(state),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAppEventMomentsScreen.path,
+    name: Routes.hostAppEventMomentsScreen.name,
+    builder: (context, state) => OrganizerMomentsScreen(
+      scope: _eventMomentScope(state),
+      scopeTitle: _routeEventExtra(state)?.title,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostApplicationsScreen.path,
+    name: Routes.hostApplicationsScreen.name,
+    redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
+  ),
+  GoRoute(
+    path: Routes.hostApplicationDetailScreen.path,
+    name: Routes.hostApplicationDetailScreen.name,
+    builder: (context, state) => HostApplicationDetailScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      applicationId: state.pathParameters['applicationId']!,
+      queue: _responseReviewQueue(state.extra),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAddCustomerScreen.path,
+    name: Routes.hostAddCustomerScreen.name,
+    builder: (context, state) => HostAddCustomerScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostCreateSavedAudienceScreen.path,
+    name: Routes.hostCreateSavedAudienceScreen.name,
+    builder: (context, state) => HostSavedAudienceEditorScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostSavedAudienceDetailScreen.path,
+    name: Routes.hostSavedAudienceDetailScreen.name,
+    builder: (context, state) => HostSavedAudienceEditorScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      audienceId: state.pathParameters['audienceId'],
+      initialAudience: _routeAudienceExtra(state),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormTemplatesScreen.path,
+    name: Routes.hostFormTemplatesScreen.name,
+    builder: (context, state) => HostFormTemplatesScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormResponseDetailScreen.path,
+    name: Routes.hostFormResponseDetailScreen.name,
+    builder: (context, state) => HostFormResponseDetailScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      responseId: state.pathParameters['responseId']!,
+      queue: _responseReviewQueue(state.extra),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormPreviewScreen.path,
+    name: Routes.hostFormPreviewScreen.name,
+    builder: (context, state) => HostFormPreviewScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      formId: state.pathParameters['formId']!,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormShareScreen.path,
+    name: Routes.hostFormShareScreen.name,
+    builder: (context, state) => HostFormShareScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      formId: state.pathParameters['formId']!,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormAnalyticsScreen.path,
+    name: Routes.hostFormAnalyticsScreen.name,
+    builder: (context, state) => HostFormAnalyticsScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      formId: state.pathParameters['formId']!,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAudienceAutomationsScreen.path,
+    name: Routes.hostAudienceAutomationsScreen.name,
+    builder: (context, state) => HostFormAutomationsScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormAutomationsScreen.path,
+    name: Routes.hostFormAutomationsScreen.name,
+    builder: (context, state) => HostFormAutomationsScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      formId: state.pathParameters['formId']!,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostFormBuilderScreen.path,
+    name: Routes.hostFormBuilderScreen.name,
+    builder: (context, state) => HostFormBuilderScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      formId: state.pathParameters['formId']!,
+      initialView: hostFormViewFromQuery(state.uri.queryParameters['view']),
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostCustomerDetailScreen.path,
+    name: Routes.hostCustomerDetailScreen.name,
+    builder: (context, state) => HostCustomerDetailScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      contactId: state.pathParameters['contactId']!,
+      initialDisplayName: _routeContactNameExtra(state),
+    ),
+  ),
+  GoRoute(
     path: Routes.hostCustomersLegacyScreen.path,
     name: Routes.hostCustomersLegacyScreen.name,
     redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
-    routes: [
-      GoRoute(path: 'new', redirect: _customersUriRedirect),
-      GoRoute(path: 'audiences/new', redirect: _customersUriRedirect),
-      GoRoute(path: 'audiences/:audienceId', redirect: _customersUriRedirect),
-      GoRoute(path: 'applications', redirect: _customersUriRedirect),
-      GoRoute(
-        path: 'applications/:applicationId',
-        redirect: _customersUriRedirect,
-      ),
-      GoRoute(path: ':contactId', redirect: _customersUriRedirect),
-    ],
-  );
-}
-
-GoRoute _hostFormsLegacyRoute() {
-  return GoRoute(
+  ),
+  GoRoute(
+    path: '${Routes.hostCustomersLegacyScreen.path}/new',
+    redirect: _customersUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostCustomersLegacyScreen.path}/audiences/new',
+    redirect: _customersUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostCustomersLegacyScreen.path}/audiences/:audienceId',
+    redirect: _customersUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostCustomersLegacyScreen.path}/applications',
+    redirect: _customersUriRedirect,
+  ),
+  GoRoute(
+    path:
+        '${Routes.hostCustomersLegacyScreen.path}/applications/:applicationId',
+    redirect: _customersUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostCustomersLegacyScreen.path}/:contactId',
+    redirect: _customersUriRedirect,
+  ),
+  GoRoute(
     path: Routes.hostFormsLegacyScreen.path,
     name: Routes.hostFormsLegacyScreen.name,
     redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
-    routes: [
-      GoRoute(path: 'new', redirect: _formsUriRedirect),
-      GoRoute(path: 'responses/:responseId', redirect: _formsUriRedirect),
-      GoRoute(path: 'applications', redirect: _formsUriRedirect),
-      GoRoute(path: 'applications/:applicationId', redirect: _formsUriRedirect),
-      GoRoute(path: ':formId/preview', redirect: _formsUriRedirect),
-      GoRoute(path: ':formId/share', redirect: _formsUriRedirect),
-      GoRoute(path: ':formId/analytics', redirect: _formsUriRedirect),
-      GoRoute(path: ':formId/automations', redirect: _formsUriRedirect),
-      GoRoute(path: ':formId', redirect: _formsUriRedirect),
-    ],
-  );
-}
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/new',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/responses/:responseId',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/applications',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/applications/:applicationId',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/:formId/preview',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/:formId/share',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/:formId/analytics',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/:formId/automations',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: '${Routes.hostFormsLegacyScreen.path}/:formId',
+    redirect: _formsUriRedirect,
+  ),
+  GoRoute(
+    path: Routes.hostTodayFocusScreen.path,
+    name: Routes.hostTodayFocusScreen.name,
+    builder: (context, state) => HostTodayFocusScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostChatScreen.path,
+    name: Routes.hostChatScreen.name,
+    builder: (context, state) => ChatScreen(
+      matchId: state.pathParameters['matchId']!,
+      otherProfile: _routePublicProfileExtra(state),
+    ),
+  ),
+];
 
-// One route graph for all Host destinations. Utility routes are flattened into
-// their owning branch, so a named push keeps its result contract while its
-// content appears beside the existing index instead of covering the shell.
-List<GoRoute> _hostWorkspaceRoutes(
-  List<RouteBase> routes, [
-  String prefix = '',
-]) {
-  return [
-    for (final route in routes.whereType<GoRoute>()) ...[
-      GoRoute(
-        path: prefix.isEmpty ? route.path : '$prefix/${route.path}',
-        name: route.name,
-        redirect: route.redirect,
-        builder: route.builder,
-      ),
-      ..._hostWorkspaceRoutes(
-        route.routes,
-        prefix.isEmpty ? route.path : '$prefix/${route.path}',
-      ),
-    ],
-  ];
-}
-
-Routes _hostWorkspaceOwner(GoRoute route) {
-  final path = route.path;
+// Every destination is declared once with its canonical absolute path.
+// The shared ShellRoute attaches its selected content to the owning index.
+Routes _hostWorkspaceOwner(String path) {
   if (path.startsWith('/host/audience') ||
       path.startsWith('/host/forms') ||
       path.startsWith('/host/customers')) {
@@ -1035,8 +1043,8 @@ Routes _hostWorkspaceOwner(GoRoute route) {
   return Routes.hostOrganizerScreen;
 }
 
-GoRoute? _hostWorkspaceParent(GoRoute leaf, List<GoRoute> routes) {
-  final parent = switch (leaf.name) {
+Routes? _hostWorkspaceParent(String? routeName) {
+  return switch (routeName) {
     'hostAppEditEventScreen' ||
     'hostAppEventMomentsScreen' => Routes.hostAppEventManageScreen,
     'hostProgramLodgingScreen' ||
@@ -1063,7 +1071,6 @@ GoRoute? _hostWorkspaceParent(GoRoute leaf, List<GoRoute> routes) {
     'hostWorkCountsScreen' => Routes.hostWorkProgramScreen,
     _ => null,
   };
-  return routes.where((route) => route.name == parent?.name).firstOrNull;
 }
 
 String _hostWorkspaceRouteLocation(GoRoute route, GoRouterState state) => state
@@ -1080,111 +1087,90 @@ String _hostWorkspaceRouteLocation(GoRoute route, GoRouterState state) => state
 StatefulShellRoute hostWorkspaceRouteGraph(AppAnalytics analytics) =>
     _hostShellRoute(analytics, _RouterNavigatorKeys());
 
+Uri _hostWorkspaceUri(Routes root, GoRouterState state) {
+  return state.uri.replace(
+    path: root.path,
+    queryParameters: {
+      ...state.uri.queryParameters,
+      if (_routeOrganizerQueryId(state) == null &&
+          state.pathParameters['clubId'] != null)
+        'organizerId': state.pathParameters['clubId']!,
+      if (root == Routes.hostAudienceScreen && state.uri.path != root.path)
+        'view': state.uri.path.contains('/forms/')
+            ? 'forms'
+            : state.uri.path.contains('/responses/') ||
+                  state.uri.path.contains('/applications/')
+            ? 'responses'
+            : state.uri.path.contains('/audiences/')
+            ? 'audiences'
+            : 'people',
+    },
+  );
+}
+
+List<GoRoute> _hostWorkspaceRootRecipes() => [
+  GoRoute(
+    path: Routes.hostTodayScreen.path,
+    name: Routes.hostTodayScreen.name,
+    builder: (context, state) => HostWorkspaceIndexScreen.route(
+      root: Routes.hostTodayScreen,
+      state: state,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostEventsScreen.path,
+    name: Routes.hostEventsScreen.name,
+    builder: (context, state) => HostWorkspaceIndexScreen.route(
+      root: Routes.hostEventsScreen,
+      state: state,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostAudienceScreen.path,
+    name: Routes.hostAudienceScreen.name,
+    builder: (context, state) => HostWorkspaceIndexScreen.route(
+      root: Routes.hostAudienceScreen,
+      state: state,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostInboxScreen.path,
+    name: Routes.hostInboxScreen.name,
+    builder: (context, state) => HostWorkspaceIndexScreen.route(
+      root: Routes.hostInboxScreen,
+      state: state,
+    ),
+  ),
+  GoRoute(
+    path: Routes.hostOrganizerScreen.path,
+    name: Routes.hostOrganizerScreen.name,
+    redirect: _organizerAudienceUriRedirect,
+    builder: (context, state) => HostWorkspaceIndexScreen.route(
+      root: Routes.hostOrganizerScreen,
+      state: state,
+    ),
+  ),
+];
+
 StatefulShellRoute _hostShellRoute(
   AppAnalytics analytics,
   _RouterNavigatorKeys keys,
 ) {
-  final audience = _hostAudienceRoute();
-  final destinations = _hostWorkspaceRoutes([
-    ..._hostWorkspaceDestinationRoutes(),
-    ...audience.routes,
-    _hostCustomersLegacyRoute(),
-    _hostFormsLegacyRoute(),
-    GoRoute(
-      path: Routes.hostTodayFocusScreen.path,
-      name: Routes.hostTodayFocusScreen.name,
-      builder: (context, state) => HostTodayFocusScreen(
-        organizerId: state.uri.queryParameters['organizerId'] ?? '',
-      ),
-    ),
-    GoRoute(
-      path: Routes.hostChatScreen.path,
-      name: Routes.hostChatScreen.name,
-      builder: (context, state) => ChatScreen(
-        matchId: state.pathParameters['matchId']!,
-        otherProfile: _routePublicProfileExtra(state),
-      ),
-    ),
-  ]);
-  // Audience children were authored relative to their former parent.
-  final routes = [
-    for (final route in destinations)
-      if (route.path.startsWith('/'))
-        route
-      else
-        GoRoute(
-          path: '${Routes.hostAudienceScreen.path}/${route.path}',
-          name: route.name,
-          builder: route.builder,
-          redirect: route.redirect,
-        ),
-  ];
+  final roots = _hostWorkspaceRootRecipes();
+  final routes = _hostWorkspaceDestinationRoutes();
 
-  ShellRoute workspaceRoute(Routes root, String name) => ShellRoute(
+  ShellRoute workspaceRoute(Routes root, GoRoute rootRoute) => ShellRoute(
     builder: (context, state, child) {
       final selected = routes
           .where((route) => route.path == state.fullPath)
           .firstOrNull;
-      final parent = selected == null
-          ? null
-          : _hostWorkspaceParent(selected, routes);
-      final uri = state.uri.replace(
-        path: root.path,
-        queryParameters: {
-          ...state.uri.queryParameters,
-          if (_routeOrganizerQueryId(state) == null &&
-              state.pathParameters['clubId'] != null)
-            'organizerId': state.pathParameters['clubId']!,
-          if (root == Routes.hostAudienceScreen && selected != null)
-            'view': selected.path.contains('/forms/')
-                ? 'forms'
-                : selected.path.contains('/responses/') ||
-                      selected.path.contains('/applications/')
-                ? 'responses'
-                : selected.path.contains('/audiences/')
-                ? 'audiences'
-                : 'people',
-        },
-      );
-      final index = switch (root) {
-        Routes.hostTodayScreen => HostNavigationWorkspace.event(
-          uri: uri,
-          initialEvent: _routeEventExtra(state),
-          index: HostTodayScreen(
-            initialOrganizerId: uri.queryParameters['organizerId'],
-          ),
-        ),
-        Routes.hostEventsScreen => HostNavigationWorkspace.event(
-          uri: uri,
-          initialEvent: _routeEventExtra(state),
-          index: HostEventsScreen(
-            initialOrganizerId: uri.queryParameters['organizerId'],
-            initialProgramId: uri.queryParameters['programId'],
-            initialProgramAnchor: state.extra is OrganizerProgramListAnchor
-                ? state.extra as OrganizerProgramListAnchor
-                : null,
-          ),
-        ),
-        Routes.hostAudienceScreen => switch (hostAudienceViewFromName(
-          uri.queryParameters['view'],
-        )) {
-          HostAudienceView.forms ||
-          HostAudienceView.responses => HostNavigationWorkspace(
-            uri: uri,
-            index: hostAudienceScreenForUri(uri),
-          ),
-          _ => hostAudienceScreenForUri(
-            uri,
-            initialContactDisplayName: _routeContactNameExtra(state),
-          ),
-        },
-        Routes.hostInboxScreen => hostInboxScreenForUri(
-          uri,
-          initialOrganizerId: _routeClubIdExtra(state),
-        ),
-        _ => hostOrganizerScreenForUri(uri),
-      };
-      return HostNavigationWorkspace.route(
+      final parentId = _hostWorkspaceParent(selected?.name);
+      final parent = routes
+          .where((route) => route.name == parentId?.name)
+          .firstOrNull;
+      final uri = _hostWorkspaceUri(root, state);
+      final index = rootRoute.builder!(context, state);
+      return HostWorkspaceRouteScope.route(
         index: index,
         navigator: child,
         selectedRoute: selected?.name,
@@ -1201,7 +1187,8 @@ StatefulShellRoute _hostShellRoute(
                 ),
               ),
             ),
-          if (parent?.builder != null)
+          if (parent?.builder != null &&
+              parent?.name != Routes.hostAppEventManageScreen.name)
             CatchWorkspacePane(
               id: parent!.name!,
               child: CatchWorkspaceBackScope(
@@ -1224,15 +1211,8 @@ StatefulShellRoute _hostShellRoute(
       );
     },
     routes: [
-      GoRoute(
-        path: root.path,
-        name: name,
-        redirect: root == Routes.hostOrganizerScreen
-            ? _organizerAudienceUriRedirect
-            : null,
-        builder: (context, state) => const SizedBox.shrink(),
-      ),
-      ...routes.where((route) => _hostWorkspaceOwner(route) == root),
+      rootRoute,
+      ...routes.where((route) => _hostWorkspaceOwner(route.path) == root),
     ],
   );
   return StatefulShellRoute.indexedStack(
@@ -1245,43 +1225,27 @@ StatefulShellRoute _hostShellRoute(
       StatefulShellBranch(
         navigatorKey: keys.hostToday,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          workspaceRoute(Routes.hostTodayScreen, Routes.hostTodayScreen.name),
-        ],
+        routes: [workspaceRoute(Routes.hostTodayScreen, roots[0])],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostEvents,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          workspaceRoute(Routes.hostEventsScreen, Routes.hostEventsScreen.name),
-        ],
+        routes: [workspaceRoute(Routes.hostEventsScreen, roots[1])],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostAudience,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          workspaceRoute(
-            Routes.hostAudienceScreen,
-            Routes.hostAudienceScreen.name,
-          ),
-        ],
+        routes: [workspaceRoute(Routes.hostAudienceScreen, roots[2])],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostInbox,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          workspaceRoute(Routes.hostInboxScreen, Routes.hostInboxScreen.name),
-        ],
+        routes: [workspaceRoute(Routes.hostInboxScreen, roots[3])],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostOrganizer,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [
-          workspaceRoute(
-            Routes.hostOrganizerScreen,
-            Routes.hostOrganizerScreen.name,
-          ),
-        ],
+        routes: [workspaceRoute(Routes.hostOrganizerScreen, roots[4])],
       ),
     ],
   );

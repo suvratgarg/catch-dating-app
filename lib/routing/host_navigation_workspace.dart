@@ -28,11 +28,7 @@ class HostNavigationWorkspace extends StatelessWidget {
        _initialEvent = null,
        _panes = null,
        _compactPaneId = null,
-       _onBack = null,
-       _navigator = null,
-       _routeAncestors = null,
-       _selectedRoute = null,
-       _routeBack = null;
+       _onBack = null;
 
   const HostNavigationWorkspace.event({
     super.key,
@@ -48,11 +44,7 @@ class HostNavigationWorkspace extends StatelessWidget {
        _initialEvent = initialEvent,
        _panes = null,
        _compactPaneId = null,
-       _onBack = null,
-       _navigator = null,
-       _routeAncestors = null,
-       _selectedRoute = null,
-       _routeBack = null;
+       _onBack = null;
 
   factory HostNavigationWorkspace.single({
     Key? key,
@@ -77,11 +69,7 @@ class HostNavigationWorkspace extends StatelessWidget {
        _preview = null,
        _indexMode = CatchWorkspacePaneMode.directory,
        _eventSelection = false,
-       _initialEvent = null,
-       _navigator = null,
-       _routeAncestors = null,
-       _selectedRoute = null,
-       _routeBack = null;
+       _initialEvent = null;
 
   final Widget? _index;
   final Uri? _uri;
@@ -94,60 +82,8 @@ class HostNavigationWorkspace extends StatelessWidget {
   final String? _compactPaneId;
   final VoidCallback? _onBack;
 
-  /// Selected routes attach to the root's existing path without replacing its index.
-  const HostNavigationWorkspace.route({
-    super.key,
-    required Widget index,
-    required Widget navigator,
-    required List<CatchWorkspacePane> ancestors,
-    required String? selectedRoute,
-    required VoidCallback onBack,
-  }) : _index = index,
-       _navigator = navigator,
-       _routeAncestors = ancestors,
-       _selectedRoute = selectedRoute,
-       _routeBack = onBack,
-       _uri = null,
-       _detail = null,
-       _preview = null,
-       _indexMode = CatchWorkspacePaneMode.directory,
-       _eventSelection = false,
-       _initialEvent = null,
-       _panes = null,
-       _compactPaneId = null,
-       _onBack = null;
-
-  final Widget? _navigator;
-  final List<CatchWorkspacePane>? _routeAncestors;
-  final String? _selectedRoute;
-  final VoidCallback? _routeBack;
-
   @override
   Widget build(BuildContext context) {
-    if (_navigator != null) {
-      return HostWorkspaceRouteScope(
-        panes: [
-          ..._routeAncestors!,
-          if (_selectedRoute != null)
-            CatchWorkspacePane(
-              id: _selectedRoute,
-              child: CatchWorkspaceBackScope(
-                onBack: _routeBack!,
-                child: _navigator,
-              ),
-            ),
-        ],
-        onBack: _routeBack!,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _index!,
-            // The root route's empty navigator still participates in router state.
-            if (_selectedRoute == null) Offstage(child: _navigator),
-          ],
-        ),
-      );
-    }
     final route = context
         .dependOnInheritedWidgetOfExactType<HostWorkspaceRouteScope>();
     final uri = _uri;
@@ -222,7 +158,52 @@ class HostWorkspaceRouteScope extends InheritedWidget {
     required this.panes,
     required this.onBack,
     required super.child,
+    this.navigatorRoot = false,
   });
+
+  /// Attaches router content to the existing viewport without owning geometry.
+  factory HostWorkspaceRouteScope.route({
+    Key? key,
+    required Widget index,
+    required Widget navigator,
+    required List<CatchWorkspacePane> ancestors,
+    required String? selectedRoute,
+    required VoidCallback onBack,
+  }) {
+    final anchor = HostWorkspaceRouteScope(
+      panes: const [],
+      onBack: onBack,
+      navigatorRoot: true,
+      child: navigator,
+    );
+    return HostWorkspaceRouteScope(
+      key: key,
+      panes: [
+        ...ancestors,
+        if (selectedRoute != null)
+          CatchWorkspacePane(
+            id: selectedRoute,
+            child: CatchWorkspaceBackScope(onBack: onBack, child: anchor),
+          ),
+      ],
+      onBack: onBack,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          index,
+          if (selectedRoute == null) Offstage(child: anchor),
+        ],
+      ),
+    );
+  }
+
+  final bool navigatorRoot;
+  static bool isNavigatorRoot(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<HostWorkspaceRouteScope>()
+          ?.navigatorRoot ??
+      false;
+
   final List<CatchWorkspacePane> panes;
   final VoidCallback onBack;
   @override
@@ -236,21 +217,6 @@ Uri hostWorkspaceIndexUri(Uri uri) => uri.replace(
         entry.key: entry.value,
   },
 );
-
-String hostEventWorkspaceRedirect(GoRouterState state) => Uri(
-  path: Routes.hostEventsScreen.path,
-  queryParameters: {
-    ...state.uri.queryParameters,
-    'organizerId': state.pathParameters['clubId']!,
-    'eventId': state.pathParameters['eventId']!,
-  },
-).toString();
-
-String hostOrganizerWorkspaceRedirect(GoRouterState state, Routes setting) =>
-    Uri(
-      path: Routes.hostOrganizerScreen.path,
-      queryParameters: {...state.uri.queryParameters, 'setting': setting.name},
-    ).toString();
 
 void openHostOrganizerSetting(
   BuildContext context,

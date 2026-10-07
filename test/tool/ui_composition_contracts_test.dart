@@ -106,6 +106,42 @@ class ExampleScreen {
     expect(failures, isEmpty);
   });
 
+  test('workspace roots govern every returned layout branch', () {
+    const owner = <String, Object?>{
+      'symbol': 'ExampleScreen',
+      'family': 'root',
+      'expression': 'CatchNavigationViewport',
+      'bodyGeometry': 'full-bleed',
+      'topEdge': 'safe-area',
+    };
+    expect(
+      evaluateLayoutOwnerContract(
+        screenId: 'screen.fixture',
+        owner: owner,
+        declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchNavigationViewport(panes: panes);
+}
+''',
+      ),
+      isEmpty,
+    );
+    expect(
+      evaluateLayoutOwnerContract(
+        screenId: 'screen.fixture',
+        owner: owner,
+        declarationSource: '''
+class ExampleScreen {
+  Object build() => compact
+      ? const SizedBox()
+      : CatchNavigationViewport(panes: panes);
+}
+''',
+      ),
+      isNotEmpty,
+    );
+  });
+
   test('accepts a governed standard route owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',

@@ -4069,7 +4069,7 @@
       "decisionSource": "owner-approved:2026-10-08 shared section migration after screenshot review",
       "acceptedVisualDelta": [
         "Quiet borderless surfaces for operational modules; outlined perimeters retained for actual field groups.",
-        "Full-width secondary collection commands; compact leading-aligned successful-empty content.",
+        "Full-width primary collection commands; compact leading-aligned successful-empty content.",
         "Pickup points and Hotels are peer collections; report statuses use the same surface.",
         "Content determines height; existing shared spacing tokens and touch metrics remain."
       ],

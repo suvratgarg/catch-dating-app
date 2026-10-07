@@ -5548,6 +5548,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceIndexScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared Today route index',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceIndexScreen,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostWorkspaceRouteScope',
             useCases: [
               _widgetbook.WidgetbookUseCase(

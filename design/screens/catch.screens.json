@@ -392,6 +392,17 @@
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostOrganizerScreen"
+          ],
+          "file": "lib/routing/host_navigation_workspace.dart",
+          "symbol": "HostNavigationWorkspace",
+          "family": "root",
+          "expression": "CatchNavigationViewport",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Organizer roots use the tabbed family; club spokes use the pushed-route family."
@@ -672,6 +683,17 @@
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostAudienceScreen"
+          ],
+          "file": "lib/routing/host_navigation_workspace.dart",
+          "symbol": "HostNavigationWorkspace",
+          "family": "root",
+          "expression": "CatchNavigationViewport",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Audience owns one primary-rail root and a complete set of canonical pushed editor, form, and customer routes."

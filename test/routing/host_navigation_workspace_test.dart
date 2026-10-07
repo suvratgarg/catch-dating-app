@@ -10,6 +10,27 @@ import 'package:go_router/go_router.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('navigator anchor does not mount a second production index', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: HostWorkspaceRouteScope(
+          navigatorRoot: true,
+          panes: const [],
+          onBack: () {},
+          child: HostWorkspaceIndexScreen(
+            root: Routes.hostEventsScreen,
+            uri: Uri(path: Routes.hostEventsScreen.path),
+          ),
+        ),
+      ),
+    );
+    // Mounting a second index would also attempt to resolve its providers.
+    expect(find.byType(CatchNavigationViewport), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   test(
     'every Host named route belongs to one of the five workspace branches',
     () {
@@ -51,7 +72,7 @@ void main() {
         initialLocation: '/index',
         routes: [
           ShellRoute(
-            builder: (context, state, child) => HostNavigationWorkspace.route(
+            builder: (context, state, child) => HostWorkspaceRouteScope.route(
               index: HostNavigationWorkspace.panes(
                 compactPaneId: 'index',
                 panes: [
@@ -82,7 +103,10 @@ void main() {
             routes: [
               GoRoute(
                 path: '/index',
-                builder: (_, _) => const SizedBox.shrink(),
+                builder: (context, _) =>
+                    HostWorkspaceRouteScope.isNavigatorRoot(context)
+                    ? const SizedBox.shrink()
+                    : const Material(child: Text('Duplicate root index')),
               ),
               GoRoute(
                 path: '/detail',
@@ -113,6 +137,10 @@ void main() {
         MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       );
       await pumpFeatureUi(tester);
+      expect(
+        find.text('Duplicate root index', skipOffstage: false),
+        findsNothing,
+      );
       await tester.enterText(
         find.byKey(const ValueKey('index-draft')),
         'Keep this draft',
@@ -123,6 +151,10 @@ void main() {
       final detailResult = router.push<String>('/detail');
       await pumpFeatureUi(tester);
       expect(find.text('Detail'), findsOneWidget);
+      expect(
+        find.text('Duplicate root index', skipOffstage: false),
+        findsNothing,
+      );
       expect(
         tester.element(find.byKey(const ValueKey('index-draft'))),
         same(indexElement),

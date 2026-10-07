@@ -4197,7 +4197,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Owns section anatomy. Action, collection and status modules share quiet token fill, natural content height, heading, copy and padding. Collections own compact empty content, sibling separators and an optional full-width secondary command. Outlined field groups remain separate semantic recipes.",
+      "summary": "Owns section anatomy. Action, collection and status modules share quiet token fill, natural content height, heading, copy and padding. Collections own compact empty content, sibling separators and an optional full-width primary command. Outlined field groups remain separate semantic recipes.",
       "design": {
         "figma": {
           "status": "unmapped",

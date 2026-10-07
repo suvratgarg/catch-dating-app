@@ -714,8 +714,12 @@ inside one of the five workspace branches. `HostNavigationWorkspace` attaches
 the selected route navigator and its declared ancestors to the existing index;
 Program subpages, Audience editors, setup flows and live work use this same
 adapter. Named push/pop results remain intact. No Host content route escapes
-to the root navigator based on width. The adaptive app shell remains the
-separate owner of bottom navigation and its obstruction.
+to the root navigator based on width. Every named route keeps one explicit,
+canonical absolute-path declaration. The shell uses its root recipe to build
+the visible index; a routing anchor retains the navigator root for Back and
+push results without mounting a duplicate index. The composition scanner checks
+all declarations and the canonical navigation viewport. The adaptive app shell
+remains the separate owner of bottom navigation and its obstruction.
 
 `CatchPageBodyMode.standard` is the one regular body contract: 20 pt phone
 gutters and 16 pt from the preceding title/tab boundary to the standard body

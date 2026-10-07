@@ -40,6 +40,8 @@ const _canonicalRootScreenPageScrollPath =
     'packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart';
 const _canonicalRootScreenPageOwnerPath =
     'packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart';
+const _canonicalNavigationViewportPath =
+    'packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart';
 
 const _rootScaffoldExpressions = <String>{
   'CatchRootScreenScaffold.standard',
@@ -83,6 +85,7 @@ const catchRootScreenPageSpecExpressions = <String>{
 /// [test/tool/ui_composition_contracts_test.dart] rejects drift between this
 /// executable analyzer vocabulary and the JSON schema accepted by CI.
 const catchScreenLayoutOwnerExpressions = <String>{
+  'CatchNavigationViewport',
   ..._rootScaffoldExpressions,
   ..._rootScrollExpressions,
   'CatchRouteScaffold',
@@ -95,6 +98,9 @@ const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
   },
   _canonicalRootScaffoldPath: <String, Set<String>>{
     'CatchRootScreenScaffold': _rootScaffoldExpressions,
+  },
+  _canonicalNavigationViewportPath: <String, Set<String>>{
+    'CatchNavigationViewport': <String>{'CatchNavigationViewport'},
   },
   _canonicalRootScrollPath: <String, Set<String>>{
     'CatchRootScreenScrollView': _rootScrollExpressions,
@@ -131,7 +137,11 @@ const _rootScreenRoles = <String, String>{
 };
 
 const _familyExpressions = <String, Set<String>>{
-  'root': <String>{..._rootScaffoldExpressions, ..._rootScrollExpressions},
+  'root': <String>{
+    ..._rootScaffoldExpressions,
+    ..._rootScrollExpressions,
+    'CatchNavigationViewport',
+  },
   'pushed-route': <String>{'CatchRouteScaffold'},
   'media-hero': <String>{'CatchScaffold.workspace'},
   'immersive': <String>{'CatchScaffold.workspace'},

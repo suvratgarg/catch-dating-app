@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import '../hosts/operations/shell_fixture.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -170,3 +172,19 @@ Widget hostWorkspaceRouteScope(BuildContext context) =>
   path: '[Core patterns]/Viewport',
 )
 Widget workspaceHeader(BuildContext context) => workspacePaneScaffold(context);
+
+@widgetbook.UseCase(
+  name: 'Shared Today route index',
+  type: HostWorkspaceIndexScreen,
+  path: '[Host]/Layout',
+)
+Widget hostWorkspaceIndexScreen(BuildContext context) =>
+    WidgetbookViewportFrame.device(
+      size: const Size(1200, 800),
+      child: WidgetbookHostShellScope(
+        child: HostWorkspaceIndexScreen(
+          root: Routes.hostTodayScreen,
+          uri: Uri(path: Routes.hostTodayScreen.path),
+        ),
+      ),
+    );
