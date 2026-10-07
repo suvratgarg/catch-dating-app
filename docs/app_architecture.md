@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.74.0
-updated: 2026-09-23
+version: 1.75.0
+updated: 2026-10-07
 owner: app_architecture
 status: active
 ---
@@ -536,6 +536,43 @@ read-only, and created only on demand or as ephemeral CI evidence. Feature-owned
 async providers should follow the generated family reference in
 `ARCH-PROVIDER-CODEGEN-001`; manual providers require an exact reviewed
 exception rather than an implicit allowlist.
+
+The graph also derives responsibility review candidates from class ancestry and
+AST callsites: Listenable state owners (including inherited ChangeNotifier and
+ValueNotifier types), provider wrappers around them, direct repository
+construction by reactive owners, widget repository/backend reads, and widget
+completion state around awaited business seams or declared Future callbacks.
+Named constructors, import prefixes, local provider aliases, and extension
+methods in URI-linked part files retain their exact owner/operation identity.
+A `*_controller.dart` filename does not exempt a widget or reactive owner.
+Generated repository function factories and pure orchestration helpers are
+different responsibilities; Firebase Auth current-user reads may be legitimate
+account-currentness fences. Consumer inheritance alone proves no boundary.
+
+Ownership decisions in `provider_graph_reviews.json` name the exact candidate
+id, path, symbol, operation, observed `maxCallsites`, and rationale. A new symbol
+in a reviewed file, a same-count operation replacement, or added callsites
+requires a new review. Remove stale decisions and lower the ceiling when debt
+shrinks. `planned` means confirmed debt with a stable task id; `watch` means an
+unresolved signal whose changed fields and caller contract still need review.
+Neither disposition claims compliance. Use `accepted-exception` only for a
+named mechanical/framework/service responsibility, such as the router
+Listenable bridge. Do not generate approvals from counts or use directory,
+filename, or whole-file ownership exceptions. Manual provider declarations in
+`dependency_direction_baseline.json` likewise require their exact symbol and
+canonical builder operation; the reviewed private Host family and Programs debt
+do not admit another declaration in the same file.
+
+This is a parsed-source review gate, not whole-program type/flow analysis.
+Dynamic dispatch, typedef/tear-off callback aliases, re-export-only ancestry,
+named-library parts, and callbacks delegated through unrelated helpers still
+require manual responsibility review. It inventories concrete operations, not
+all loading flags or listeners. A syntax match requires classification; passing
+the graph does not certify lifecycle/currentness or erase recorded debt. It
+scans `lib/**` excluding `.g.dart` and `.freezed.dart`; its source-file total
+still includes generated SDK/localization files with other names and is not the
+audit's production denominator. Tests, packages and vendored package sources
+are outside this graph's roots; package-local primitives need focused review.
 
 ## Screen Definition
 
@@ -2082,6 +2119,16 @@ Use the smallest controller pattern that owns the lifecycle correctly:
 | View-model provider | read-only composition of repository streams/futures into screen-ready state | generated function provider |
 | Domain/use-case class | shared or complex business logic independent of Flutter | pure Dart class/function |
 
+Code generation manages the provider seam, not the state model returned by an
+arbitrary helper. A generated function returning a business ChangeNotifier is
+still manually reactive business-state ownership. Conversely, a generated
+function may provide a pure imperative effects service and register disposal
+without turning that helper into a Notifier. Synchronous immutable editors with
+supplied reviewed snapshots remain valid flow controllers; microtask, listener,
+epoch and in-flight syntax alone does not justify converting them to
+AsyncNotifier. Preserve the pending-snapshot and account/authorization fences
+below when changing ownership.
+
 Mutation key grain must match the UI interaction grain. Route-level single
 actions such as book, cancel, submit, and delete for the route's single subject
 may use static `Mutation` fields. Repeated row or list actions such as
@@ -2243,6 +2290,31 @@ sign-out, or cancellation.
 Use `AsyncNotifier<T>` when state is loaded asynchronously and then mutated by
 user actions. Good fits include queues, async local caches, paged lists, and
 screens where the controller owns both loaded state and mutation methods.
+
+The executable bounded paging reference lives in
+`test/architecture/generated_provider_family_test.dart` (`_PagedRowsOwner`).
+It uses test-only manual provider wiring to exercise the locked Riverpod API;
+production ports use `@riverpod` and a generated auto-dispose family with the
+same value-equality account/organizer scope. This fixture is a decision contract,
+not a shared app framework or certification of an existing feature controller.
+
+| Operation | Published state and concurrency | Required proof |
+|---|---|---|
+| Initial read | `build` returns a Future; Riverpod owns initial loading/error/disposal. Refresh during initial loading is a documented no-op at the command boundary. | A duplicate refresh starts no second initial read. |
+| Load more | Keep immutable rows/cursor in AsyncData; publish continuation pending/error in that immutable value. Deduplicate one cursor request and retry the same cursor after failure. | Existing rows remain usable, duplicate calls share a future, and successful pages deduplicate row identities. |
+| Refresh | Supersede continuation generation; read from the first cursor. Keep immutable previous rows with refresh pending/error, distinct from continuation error. | Delayed old success and failure cannot replace the refreshed rows or cursor. |
+| Scope/disposal | Account and organizer belong in family identity. Fence imperative continuations with `ref.mounted` and the request generation; clear leases on disposal. | A switched account sees no prior-account rows; disposed late completions cannot publish or poison a reopened family. |
+
+The reference uses public AsyncValue APIs: initial loading/errors come from
+`build`, while retained refresh/continuation feedback belongs in immutable
+page data. Do not copy Riverpod-internal `copyWithPrevious` into a new owner.
+Widgets render this state and delegate refresh/load-more; they do not store a
+second future, page list, cursor, pending/error flags, or account generation.
+Read-only composition stays a generated function provider, a synchronous editor
+stays an immutable Notifier flow, and commands follow the Mutation contract.
+Paging generation is not an authorization decision or durable command journal:
+feature ports must additionally prove their real access deadlines, auth leases,
+frozen/versioned request snapshots, idempotency and uncertain-write recovery.
 
 ### View-Model Provider
 
