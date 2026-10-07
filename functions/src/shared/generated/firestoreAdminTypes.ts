@@ -551,6 +551,93 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Permanent project-bound one-time operator setup slot. Never delete, reset or add TTL. Exact private reviewed plan/scope and replay digests bind source SHA, current account incarnations, Google identity, expected absence, fixed capabilities and server-owned readiness references. Phases journal non-atomic Auth/Firestore effects; unknown outcomes are reconciled without blind retry. Internal source only, no client writes or activation by this schema.
+ */
+export interface CatchWhatsappOperatorSetupOperationDocument {
+  schemaVersion: 1;
+  operationId: string;
+  projectId: string;
+  planId: string;
+  planSha256: string;
+  replaySha256: string;
+  scopeSha256: string;
+  actorUid: string;
+  recipientUid: string;
+  phase:
+    | "reserved"
+    | "auth-intent"
+    | "auth-confirmed"
+    | "seeded"
+    | "root-active"
+    | "prepare-intent"
+    | "prepared"
+    | "finalize-intent"
+    | "complete"
+    | "publish-intent"
+    | "published"
+    | "readiness-intent"
+    | "ready"
+    | "revoke-intent"
+    | "revoked";
+  revision: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Create-only, no-TTL private operator setup phase audit. Authority seeds, root activation, receive prepare/finalize and readiness effects commit with their phase/audit in one Firestore transaction. Auth claim replacement remains separately journaled; hashes provide binding, not independent authentication. No token, raw claims, archive or plaintext contact content. Auth-dispatch-intent receipt precedes the external Auth call and permanently consumes its dispatch permit; it is not proof that Auth committed.
+ */
+export interface CatchWhatsappOperatorSetupAuditDocument {
+  schemaVersion: 1;
+  auditId: string;
+  operationId: string;
+  projectId: string;
+  actorUid: string;
+  planSha256: string;
+  scopeSha256: string;
+  fromPhase:
+    | (
+        | "reserved"
+        | "auth-intent"
+        | "auth-confirmed"
+        | "seeded"
+        | "root-active"
+        | "prepare-intent"
+        | "prepared"
+        | "finalize-intent"
+        | "complete"
+        | "publish-intent"
+        | "published"
+        | "readiness-intent"
+        | "ready"
+        | "revoke-intent"
+        | "revoked"
+      )
+    | null;
+  toPhase:
+    | "reserved"
+    | "auth-intent"
+    | "auth-confirmed"
+    | "seeded"
+    | "root-active"
+    | "prepare-intent"
+    | "prepared"
+    | "finalize-intent"
+    | "complete"
+    | "publish-intent"
+    | "published"
+    | "readiness-intent"
+    | "ready"
+    | "revoke-intent"
+    | "revoked";
+  revision: number;
+  atMillis: number;
+  beforeSha256: string | null;
+  afterSha256: string;
+  effectSha256: string | null;
+  receiptKind: "phase" | "auth-dispatch-intent";
+}
+
+/**
  * Private resumable Host review state for one existing event roster upload.
  */
 export interface HostRosterIntakeSessionDocument {
@@ -863,6 +950,28 @@ export interface HostRosterIntakeReceiptDocument {
 }
 
 /**
+ * Bounded own completed-demo proof for private claim review delay. Contains references and hashes, never grant tokens or synthetic guest data. Every resume rechecks current identity, scope and real manager authority before Forms materialization.
+ */
+export interface SalesDemoContinuationDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  continuationId: string;
+  actorUid: string;
+  organizerId: string;
+  invitationId: string;
+  invitationRevision: number;
+  invitationExpiresAt: string;
+  blueprintId: string;
+  blueprintRevision: number;
+  sessionId: string;
+  sessionRevision: number;
+  setupHash: string;
+  completedAt: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
+/**
  * Private event lodging setup referencing canonical program guest/group/hotel/room-block IDs. Contains explicit demand and sharing choices, exact or provisional inventory, and verified layered 2D facts; no copied contact records or public hotel catalog.
  */
 export interface ProgramLodgingConfigDocument {
@@ -1127,6 +1236,68 @@ export interface WorkspaceMembershipDecisionDocument {
   relationshipRevision: number;
   actorUid: string;
   observedAtMillis: number;
+}
+
+export interface SalesPartnerMembershipDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: number;
+  createdAt: string;
+  updatedAt: string;
+  uid: string;
+  status: "active" | "revoked";
+  termsVersion: "referral-preview-v1";
+  acceptedAt: string;
+  expiresAt: string;
+  displayName: string;
+  /**
+   * @maxItems 30
+   */
+  marketingGrants: {
+    campaignId: string;
+    channel: "email" | "whatsapp" | "other";
+    /**
+     * @minItems 1
+     * @maxItems 12
+     */
+    assetIds: string[];
+    expiresAt: string;
+    schemaVersion: 1;
+    grantId: string;
+    revision: number;
+    status: "active" | "revoked";
+    organizerId: string;
+    assignmentRevision: number;
+    sourceHash: string;
+    reviewedAt: string;
+    reviewedBy: string;
+    reason: string;
+    purpose: "manual_partner_outreach";
+    approvalReceiptId: string;
+    approvedMembershipRevision: number;
+  }[];
+}
+
+export interface SalesPartnerAssignmentDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: number;
+  updatedAt: string;
+  organizerId: string;
+  partnerUid: string;
+  status: "offered" | "accepted" | "declined" | "revoked";
+  originatorUid: string | null;
+  introducingSenderUid: string | null;
+  catchOwnerUid: string;
+  activationOwnerUid: string | null;
+  relationshipContext: string | null;
+  relationshipConfirmedAt: string | null;
+  channel: ("email" | "whatsapp" | "other") | null;
+  nextAction: string;
+  reviewAt: string;
+  expiresAt: string;
+  assignedAt: string;
+  reason: string;
 }
 
 /**
@@ -1778,6 +1949,10 @@ export interface SalesOutreachJobsDocument {
     contentHash: string;
   } | null;
   failure: string | null;
+  participantScope?: {
+    partnerUid: string;
+    assignmentRevision: number;
+  };
 }
 
 /**
@@ -2305,7 +2480,16 @@ export interface SalesActionReceiptDocument {
     | "commercial.quotes.accept"
     | "commercial.finance.attest"
     | "imports.compensation.apply"
-    | "imports.history.apply";
+    | "imports.history.apply"
+    | "partner.register"
+    | "partner.nominate"
+    | "partner.assign"
+    | "partner.assignment.decide"
+    | "partner.revoke"
+    | "partner.assignment.update"
+    | "partner.demo.wording.propose"
+    | "partner.marketing.review"
+    | "partner.marketing.revoke";
   actorUid: string;
   clientId: string | null;
   clientAuthUid: string | null;
@@ -2669,6 +2853,31 @@ export interface SalesDemoBlueprintsDocument {
         templateHash: string;
         materializerVersion: 1;
       };
+  partnerReviewGrant?: {
+    revision: number;
+    state: "active" | "withdrawn";
+    partnerUid: string;
+    assignmentRevision: number;
+    blueprintRevision: number;
+    previewHash: string;
+    expiresAt: string;
+    ownerReviewedByUid: string;
+    ownerReviewedAt: string;
+  };
+  partnerPreviewProposal?: {
+    revision: number;
+    state: "pending_owner_review";
+    partnerUid: string;
+    assignmentRevision: number;
+    blueprintRevision: number;
+    sourcePreviewHash: string;
+    wording: {
+      headline: string;
+      scenario: string;
+      cta: string;
+    };
+    proposedAt: string;
+  };
 }
 
 /**
@@ -2733,7 +2942,8 @@ export interface SalesDemoReceiptsDocument {
     | "salesDemo.session.reviewApplication"
     | "salesDemo.session.prepareReply"
     | "salesDemo.session.admitGuest"
-    | "salesDemo.session.requestAssistance";
+    | "salesDemo.session.requestAssistance"
+    | "salesDemo.blueprint.partnerReview.share";
   targetId: string;
   materialHash: string;
   result: {
@@ -2778,6 +2988,12 @@ export interface SalesDemoReceiptsDocument {
       displayName: "Sample Applicant";
     };
     assistanceRequested?: boolean;
+    sharingRevision?: number;
+    sharingState?: "active" | "withdrawn";
+    previewHash?: string;
+    sendAuthority?: false;
+    capabilityApprovalAuthority?: false;
+    organizerControlAuthority?: false;
   };
   createdAt: string;
   expiresAt?: string;
@@ -2971,7 +3187,7 @@ export interface SalesInboundIntentsDocument {
   revision: number;
   classification: "sales_private";
   intentId: string;
-  source: "website";
+  source: "website" | "partner";
   submissionId: string;
   requestHash: string;
   waitlistId: string;
@@ -2979,7 +3195,7 @@ export interface SalesInboundIntentsDocument {
   organizerId: string | null;
   evidenceStatus: "self_reported";
   fullName: string;
-  email: string;
+  email: string | null;
   city: string;
   entryRoute: string | null;
   alreadyJoined: boolean;
@@ -3015,6 +3231,7 @@ export interface SalesInboundIntentsDocument {
   linkedAt?: FirebaseFirestore.Timestamp;
   linkedBy?: string;
   linkRequestId?: string;
+  partnerUid?: string;
 }
 
 /**
@@ -3060,6 +3277,13 @@ export interface SalesIntelligenceClauseDocument {
   reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
+  /**
+   * @maxItems 8
+   */
+  partnerCitations?: {
+    evidenceId: string;
+    sourceHash: string;
+  }[];
 }
 
 /**
@@ -3098,7 +3322,7 @@ export interface SalesIntelligencePolicyDocument {
 }
 
 /**
- * Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.
+ * Immutable actor-scoped exact-retry receipt for private employee intelligence and assignment-bound partner composition actions. Never proof of sending.
  */
 export interface SalesIntelligenceReceiptDocument {
   schemaVersion: 1;
@@ -3113,7 +3337,11 @@ export interface SalesIntelligenceReceiptDocument {
     | "score.snapshot"
     | "draft.record"
     | "draft.review"
-    | "draft.copy";
+    | "draft.copy"
+    | "partner.draft.record"
+    | "partner.draft.review"
+    | "partner.draft.copy"
+    | "partner.draft.manual_send";
   requestId: string;
   materialHash: string;
   result: {
@@ -3198,6 +3426,11 @@ export interface SalesOutreachDraftsDocument {
   createdBy: string;
   reviewedAt: string | null;
   reviewedBy: string | null;
+  participantScope?: {
+    partnerUid: string;
+    assignmentRevision: number;
+    renderedDraftId: string;
+  };
 }
 
 /**

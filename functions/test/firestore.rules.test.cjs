@@ -2228,6 +2228,28 @@ describe("firestore.rules", () => {
       );
     });
 
+    for (const name of ["catchWhatsappOperatorSetupOperations",
+      "catchWhatsappOperatorSetupAudits"]) {
+      it(`keeps ${name} permanently server-only`, async () => {
+        await seed([name, "synthetic-permanent-slot"], {
+          schemaVersion: 1, syntheticReceipt: true,
+        });
+        const clients = [authedDb("operator", {adminOwner: true}),
+          authedDb("support", {support: true}), authedDb("recipient"),
+          authedDb("host-1"), testEnv.unauthenticatedContext().firestore()];
+        for (const client of clients) {
+          const ref = doc(client, name, "synthetic-permanent-slot");
+          await assertFails(getDoc(ref));
+          await assertFails(getDocs(collection(client, name)));
+          await assertFails(setDoc(doc(client, name, "new-slot"),
+            {schemaVersion: 1, syntheticReceipt: true}));
+          await assertFails(setDoc(ref, {schemaVersion: 1, reset: true}));
+          await assertFails(updateDoc(ref, {reset: true}));
+          await assertFails(deleteDoc(ref));
+        }
+      });
+    }
+
     it("keeps Catch WhatsApp webhook receipts server-only", async () => {
       await seed(["catchWhatsappWebhookEvents", "receipt-1"], {
         eventKind: "inbound", text: "private inbound message",

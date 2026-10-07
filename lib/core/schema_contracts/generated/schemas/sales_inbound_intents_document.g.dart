@@ -52,7 +52,10 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
       'pattern': '^[a-f0-9]{64}\$',
     },
     'source': <String, Object?>{
-      'const': 'website',
+      'enum': <Object?>[
+        'website',
+        'partner',
+      ],
     },
     'submissionId': <String, Object?>{
       'type': 'string',
@@ -96,9 +99,16 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
       'maxLength': 100,
     },
     'email': <String, Object?>{
-      'type': 'string',
-      'format': 'email',
-      'maxLength': 320,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'format': 'email',
+          'maxLength': 320,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'city': <String, Object?>{
       'type': 'string',
@@ -407,6 +417,11 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 128,
     },
+    'partnerUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 128,
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -436,6 +451,37 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
           'organizerId': <String, Object?>{
             'type': 'null',
           },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'source': <String, Object?>{
+            'const': 'partner',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'partnerUid',
+        ],
+        'properties': <String, Object?>{
+          'email': <String, Object?>{
+            'type': 'null',
+          },
+          'entryRoute': <String, Object?>{
+            'const': '/partners/',
+          },
+        },
+      },
+      'else': <String, Object?>{
+        'properties': <String, Object?>{
+          'email': <String, Object?>{
+            'type': 'string',
+            'format': 'email',
+          },
+          'partnerUid': false,
         },
       },
     },

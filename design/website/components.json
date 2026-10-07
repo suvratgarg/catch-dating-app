@@ -4131,6 +4131,33 @@
         ]
       },
       "notes": "Original consumer discovery, app availability and waitlist sequence retained at /explore/."
+    },
+    {
+      "id": "sales_demo_continuation",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim"
+      ],
+      "owner": "features/claims",
+      "source": "website/src/features/claims/DemoContinuationWorkspace.tsx",
+      "exportName": "DemoContinuationWorkspace",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/SalesDemo.stories.tsx",
+        "exportName": "Continuation",
+        "states": [
+          "verify-contact",
+          "claim-required",
+          "claim-pending",
+          "ready",
+          "prepared",
+          "unavailable"
+        ]
+      },
+      "notes": "Account-bound private sample continuation; claim review and private Forms preparation require explicit actions."
     }
   ]
 }

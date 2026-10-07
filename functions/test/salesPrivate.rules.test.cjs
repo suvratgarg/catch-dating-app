@@ -7,6 +7,7 @@ const {initializeTestEnvironment, assertFails, assertSucceeds} =
 const {doc, collection, getDoc, getDocs, setDoc} = require("firebase/firestore");
 
 const privatePaths = [
+  "salesPartnerMemberships/partner-one", "salesPartnerAssignments/host-one",
   "salesPrivacyRestrictions/host-one", "salesPrivacyPolicies/current",
   "salesPrivacyPlans/plan-one", "salesPrivacyBatchReceipts/receipt-one",
   "salesImportHistoryRows/row-one", "salesImportHistoryRecords/record-one",
@@ -44,7 +45,7 @@ const privatePaths = [
   "assistantManagementReceipts/receipt-one",
   "salesDemoBlueprints/blueprint-one", "salesDemoCapabilities/capability-one",
   "salesDemoInvitations/invitation-one", "salesDemoSessions/session-one",
-  "salesDemoReceipts/receipt-one", "salesDemoSetups/setup-one", "salesImportCompensations/effect-one",
+  "salesDemoReceipts/receipt-one", "salesDemoContinuations/continuation-one", "salesDemoSetups/setup-one", "salesImportCompensations/effect-one",
   "salesFitQueueEntries/entry-one", "salesFitQueueMeta/current",
   "salesFitQueueReceipts/receipt-one",
 ];

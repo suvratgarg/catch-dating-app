@@ -56,6 +56,7 @@ const schemaSalesDemoReceiptsDocumentSchema = <String, Object?>{
         'salesDemo.session.prepareReply',
         'salesDemo.session.admitGuest',
         'salesDemo.session.requestAssistance',
+        'salesDemo.blueprint.partnerReview.share',
       ],
     },
     'targetId': <String, Object?>{
@@ -228,6 +229,30 @@ const schemaSalesDemoReceiptsDocumentSchema = <String, Object?>{
         },
         'assistanceRequested': <String, Object?>{
           'type': 'boolean',
+        },
+        'sharingRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'sharingState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'active',
+            'withdrawn',
+          ],
+        },
+        'previewHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'sendAuthority': <String, Object?>{
+          'const': false,
+        },
+        'capabilityApprovalAuthority': <String, Object?>{
+          'const': false,
+        },
+        'organizerControlAuthority': <String, Object?>{
+          'const': false,
         },
       },
     },

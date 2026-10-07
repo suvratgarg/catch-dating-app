@@ -662,7 +662,11 @@
           "functions:adminIssueSalesDemoInvitation",
           "functions:adminRevokeSalesDemoInvitation",
           "functions:adminGetSalesDemoBlueprint",
-          "functions:adminGetSalesDemoInvitation"
+          "functions:adminGetSalesDemoInvitation",
+          "functions:getSalesDemoPreview",
+          "functions:createSalesDemoContinuation",
+          "functions:getSalesDemoContinuation",
+          "functions:prepareSalesDemoContinuationForm"
         ]
       },
       "acceptedStates": [

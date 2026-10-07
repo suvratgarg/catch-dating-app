@@ -7,4 +7,11 @@ export interface AdminReviewSalesIntelligenceClauseRequest {
   clauseId: string;
   expectedRevision: number;
   decision: "approve" | "withdraw";
+  /**
+   * @maxItems 8
+   */
+  partnerCitations?: {
+    evidenceId: string;
+    sourceHash: string;
+  }[];
 }

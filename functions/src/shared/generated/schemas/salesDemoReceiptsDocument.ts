@@ -53,7 +53,8 @@ export const salesDemoReceiptsDocumentSchema: Record<string, unknown> = {
         "salesDemo.session.reviewApplication",
         "salesDemo.session.prepareReply",
         "salesDemo.session.admitGuest",
-        "salesDemo.session.requestAssistance"
+        "salesDemo.session.requestAssistance",
+        "salesDemo.blueprint.partnerReview.share"
       ]
     },
     "targetId": {
@@ -226,6 +227,30 @@ export const salesDemoReceiptsDocumentSchema: Record<string, unknown> = {
         },
         "assistanceRequested": {
           "type": "boolean"
+        },
+        "sharingRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sharingState": {
+          "type": "string",
+          "enum": [
+            "active",
+            "withdrawn"
+          ]
+        },
+        "previewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sendAuthority": {
+          "const": false
+        },
+        "capabilityApprovalAuthority": {
+          "const": false
+        },
+        "organizerControlAuthority": {
+          "const": false
         }
       }
     },

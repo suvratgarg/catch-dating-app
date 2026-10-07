@@ -1,0 +1,261 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_sales_partner_workspace_response.schema.json",
+  "title": "GetSalesPartnerWorkspaceResponse",
+  "x-callable-aliases": [
+    "getSalesPartnerWorkspace"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "membership",
+    "leads",
+    "submissions",
+    "nextCursor",
+    "sendAuthority"
+  ],
+  "properties": {
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "displayName",
+        "termsVersion",
+        "expiresAt"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "termsVersion": {
+          "const": "referral-preview-v1"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "leads": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assignment",
+          "organizer"
+        ],
+        "properties": {
+          "assignment": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "revision",
+              "status",
+              "nextAction",
+              "reviewAt",
+              "expiresAt",
+              "relationshipContext",
+              "channel"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "enum": [
+                  "offered",
+                  "accepted"
+                ]
+              },
+              "nextAction": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "reviewAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "relationshipContext": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "channel": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "email",
+                      "whatsapp",
+                      "other"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "organizer": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "name",
+              "city",
+              "claimState"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "city": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "claimState": {
+                "enum": [
+                  "unclaimed",
+                  "claimPending",
+                  "claimed",
+                  "verified",
+                  "suppressed"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "submissions": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "intentId",
+          "status",
+          "name",
+          "organizerId"
+        ],
+        "properties": {
+          "intentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "status": {
+            "enum": [
+              "needs_identity_review",
+              "linked",
+              "dismissed"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "organizerId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "linked"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "organizerId": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  }
+}

@@ -131,3 +131,29 @@ test("Catch WhatsApp GUI actions keep strict validation and cannot run via CLI",
         finding.missing.includes(action.callable)));
     }
   });
+
+
+test("partner composition sharing remains Owner-only with exact current preview scope", async () => {
+  const catalog = await loadAdminActionCatalog();
+  const read = catalog.actionsById.get("sales.demo.GetSalesDemoPartnerReview");
+  const share = catalog.actionsById.get("sales.demo.ShareSalesDemoPartnerReview");
+  assert.ok(read); assert.ok(share);
+  for (const action of [read, share]) {
+    assert.deepEqual(action.roles, ["adminOwner"]);
+    assert.deepEqual(action.workflowIds, ["sales"]);
+    assert.equal(action.guiPath, "/sales/hosts");
+    assert.equal(catalog.validateRequest(action.actionId, action.example), action.example);
+    assert.throws(() => catalog.validateRequest(action.actionId,
+      {...action.example, invitationAuthority: true}), {code: "ADMIN_ACTION_INPUT_INVALID"});
+  }
+  assert.equal(read.kind, "read"); assert.equal(read.risk, "sensitive-read");
+  assert.equal(share.kind, "mutation"); assert.equal(share.risk, "high");
+  assert.equal(share.confirmation, "action-and-target"); assert.equal(share.targetField, "blueprintId");
+  for (const field of ["expectedPreviewHash", "expectedBlueprintRevision", "expectedSharingRevision",
+    "partnerUid", "expectedAssignmentRevision", "expiresAt"]) {
+    const changed = {...share.example}; delete changed[field];
+    assert.throws(() => catalog.validateRequest(share.actionId, changed), {code: "ADMIN_ACTION_INPUT_INVALID"});
+  }
+  assert.throws(() => catalog.validateRequest(share.actionId,
+    {...share.example, expectedPreviewHash: "unreviewed"}), {code: "ADMIN_ACTION_INPUT_INVALID"});
+});

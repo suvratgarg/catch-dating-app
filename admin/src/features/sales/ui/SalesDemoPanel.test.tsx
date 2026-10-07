@@ -1,3 +1,10 @@
+vi.mock("../api/salesDemoPartnerReview", () => {
+  const api: import("../api/salesDemoPartnerReview").SalesDemoPartnerReviewApi = {
+    get: vi.fn(async () => {throw new Error("No partner sharing fixture in this management test.");}),
+    share: vi.fn(async () => {throw new Error("Unexpected partner share in a management test.");}),
+  };
+  return {salesDemoPartnerReviewApi: api};
+});
 import {act, cleanup, fireEvent, render, screen, waitFor} from
   "@testing-library/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";

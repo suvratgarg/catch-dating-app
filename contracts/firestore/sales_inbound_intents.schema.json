@@ -46,7 +46,10 @@
       "pattern": "^[a-f0-9]{64}$"
     },
     "source": {
-      "const": "website"
+      "enum": [
+        "website",
+        "partner"
+      ]
     },
     "submissionId": {
       "type": "string",
@@ -90,9 +93,16 @@
       "maxLength": 100
     },
     "email": {
-      "type": "string",
-      "format": "email",
-      "maxLength": 320
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "city": {
       "type": "string",
@@ -349,6 +359,11 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   },
   "allOf": [
@@ -379,6 +394,37 @@
           "organizerId": {
             "type": "null"
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "partner"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "partnerUid"
+        ],
+        "properties": {
+          "email": {
+            "type": "null"
+          },
+          "entryRoute": {
+            "const": "/partners/"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "partnerUid": false
         }
       }
     }

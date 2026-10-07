@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_demo_continuation_payload.schema.json",
+  "title": "GetSalesDemoContinuationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "continuationId"
+  ],
+  "properties": {
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesDemoContinuation"
+  ]
+}
