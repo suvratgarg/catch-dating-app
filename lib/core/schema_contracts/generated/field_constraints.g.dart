@@ -18980,6 +18980,192 @@ abstract final class CatchContractConstraints {
     pattern: '^[0-9]{1,32}\$',
   );
 
+  static const catchWhatsappOperatorSetupAuditDocumentActorUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.actorUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentAfterSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.afterSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.atMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentAuditId = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.auditId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentBeforeSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.beforeSha256',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentEffectSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.effectSha256',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentFromPhase = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.fromPhase',
+    valueTypes: <String>['string'],
+    enumValues: <String>['reserved', 'auth-intent', 'auth-confirmed', 'seeded', 'root-active', 'prepare-intent', 'prepared', 'finalize-intent', 'complete', 'publish-intent', 'published', 'readiness-intent', 'ready', 'revoke-intent', 'revoked'],
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentOperationId = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.operationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentPlanSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.planSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentReceiptKind = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.receiptKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['phase', 'auth-dispatch-intent'],
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 15,
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.schemaVersion',
+    required: true,
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentScopeSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.scopeSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupAuditDocumentToPhase = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupAuditDocument.toPhase',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['reserved', 'auth-intent', 'auth-confirmed', 'seeded', 'root-active', 'prepare-intent', 'prepared', 'finalize-intent', 'complete', 'publish-intent', 'published', 'readiness-intent', 'ready', 'revoke-intent', 'revoked'],
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentActorUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.actorUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentOperationId = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.operationId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentPhase = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.phase',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['reserved', 'auth-intent', 'auth-confirmed', 'seeded', 'root-active', 'prepare-intent', 'prepared', 'finalize-intent', 'complete', 'publish-intent', 'published', 'readiness-intent', 'ready', 'revoke-intent', 'revoked'],
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentPlanId = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentPlanSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.planSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentProjectId = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentRecipientUid = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.recipientUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentReplaySha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.replaySha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentRevision = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 15,
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.schemaVersion',
+    required: true,
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentScopeSha256 = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.scopeSha256',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappOperatorSetupOperationDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappOperatorSetupOperationDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const catchWhatsappReadinessApprovalDocumentApprovalAction = CatchContractFieldConstraints(
     path: 'catchWhatsappReadinessApprovalDocument.approval.action',
     required: true,
@@ -166734,6 +166920,33 @@ abstract final class CatchContractConstraints {
     'catchWhatsappIngressEvidenceDocument.schemaVersion': catchWhatsappIngressEvidenceDocumentSchemaVersion,
     'catchWhatsappIngressEvidenceDocument.state': catchWhatsappIngressEvidenceDocumentState,
     'catchWhatsappIngressEvidenceDocument.wabaId': catchWhatsappIngressEvidenceDocumentWabaId,
+    'catchWhatsappOperatorSetupAuditDocument.actorUid': catchWhatsappOperatorSetupAuditDocumentActorUid,
+    'catchWhatsappOperatorSetupAuditDocument.afterSha256': catchWhatsappOperatorSetupAuditDocumentAfterSha256,
+    'catchWhatsappOperatorSetupAuditDocument.atMillis': catchWhatsappOperatorSetupAuditDocumentAtMillis,
+    'catchWhatsappOperatorSetupAuditDocument.auditId': catchWhatsappOperatorSetupAuditDocumentAuditId,
+    'catchWhatsappOperatorSetupAuditDocument.beforeSha256': catchWhatsappOperatorSetupAuditDocumentBeforeSha256,
+    'catchWhatsappOperatorSetupAuditDocument.effectSha256': catchWhatsappOperatorSetupAuditDocumentEffectSha256,
+    'catchWhatsappOperatorSetupAuditDocument.fromPhase': catchWhatsappOperatorSetupAuditDocumentFromPhase,
+    'catchWhatsappOperatorSetupAuditDocument.operationId': catchWhatsappOperatorSetupAuditDocumentOperationId,
+    'catchWhatsappOperatorSetupAuditDocument.planSha256': catchWhatsappOperatorSetupAuditDocumentPlanSha256,
+    'catchWhatsappOperatorSetupAuditDocument.projectId': catchWhatsappOperatorSetupAuditDocumentProjectId,
+    'catchWhatsappOperatorSetupAuditDocument.receiptKind': catchWhatsappOperatorSetupAuditDocumentReceiptKind,
+    'catchWhatsappOperatorSetupAuditDocument.revision': catchWhatsappOperatorSetupAuditDocumentRevision,
+    'catchWhatsappOperatorSetupAuditDocument.schemaVersion': catchWhatsappOperatorSetupAuditDocumentSchemaVersion,
+    'catchWhatsappOperatorSetupAuditDocument.scopeSha256': catchWhatsappOperatorSetupAuditDocumentScopeSha256,
+    'catchWhatsappOperatorSetupAuditDocument.toPhase': catchWhatsappOperatorSetupAuditDocumentToPhase,
+    'catchWhatsappOperatorSetupOperationDocument.actorUid': catchWhatsappOperatorSetupOperationDocumentActorUid,
+    'catchWhatsappOperatorSetupOperationDocument.operationId': catchWhatsappOperatorSetupOperationDocumentOperationId,
+    'catchWhatsappOperatorSetupOperationDocument.phase': catchWhatsappOperatorSetupOperationDocumentPhase,
+    'catchWhatsappOperatorSetupOperationDocument.planId': catchWhatsappOperatorSetupOperationDocumentPlanId,
+    'catchWhatsappOperatorSetupOperationDocument.planSha256': catchWhatsappOperatorSetupOperationDocumentPlanSha256,
+    'catchWhatsappOperatorSetupOperationDocument.projectId': catchWhatsappOperatorSetupOperationDocumentProjectId,
+    'catchWhatsappOperatorSetupOperationDocument.recipientUid': catchWhatsappOperatorSetupOperationDocumentRecipientUid,
+    'catchWhatsappOperatorSetupOperationDocument.replaySha256': catchWhatsappOperatorSetupOperationDocumentReplaySha256,
+    'catchWhatsappOperatorSetupOperationDocument.revision': catchWhatsappOperatorSetupOperationDocumentRevision,
+    'catchWhatsappOperatorSetupOperationDocument.schemaVersion': catchWhatsappOperatorSetupOperationDocumentSchemaVersion,
+    'catchWhatsappOperatorSetupOperationDocument.scopeSha256': catchWhatsappOperatorSetupOperationDocumentScopeSha256,
+    'catchWhatsappOperatorSetupOperationDocument.updatedAtMillis': catchWhatsappOperatorSetupOperationDocumentUpdatedAtMillis,
     'catchWhatsappReadinessApprovalDocument.approval.action': catchWhatsappReadinessApprovalDocumentApprovalAction,
     'catchWhatsappReadinessApprovalDocument.approval.approvalId': catchWhatsappReadinessApprovalDocumentApprovalApprovalId,
     'catchWhatsappReadinessApprovalDocument.approval.atomicIngressStartedAtMillis': catchWhatsappReadinessApprovalDocumentApprovalAtomicIngressStartedAtMillis,
