@@ -12982,7 +12982,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
     uniqueItems: true,
   );
 
@@ -12990,7 +12990,7 @@ abstract final class CatchContractConstraints {
     path: 'adminSetAdminUserRolesCallablePayload.roles.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
   );
 
   static const adminSetAdminUserRolesCallablePayloadTargetUid = CatchContractFieldConstraints(
@@ -13005,7 +13005,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
     uniqueItems: true,
   );
 
@@ -13013,7 +13013,7 @@ abstract final class CatchContractConstraints {
     path: 'adminSetAdminUserRolesCallableResponse.afterRoles.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
   );
 
   static const adminSetAdminUserRolesCallableResponseBeforeRoles = CatchContractFieldConstraints(
@@ -13021,7 +13021,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
     uniqueItems: true,
   );
 
@@ -13029,7 +13029,7 @@ abstract final class CatchContractConstraints {
     path: 'adminSetAdminUserRolesCallableResponse.beforeRoles.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
   );
 
   static const adminSetAdminUserRolesCallableResponseUserAssignmentPath = CatchContractFieldConstraints(
@@ -13060,7 +13060,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
     uniqueItems: true,
   );
 
@@ -13068,7 +13068,7 @@ abstract final class CatchContractConstraints {
     path: 'adminSetAdminUserRolesCallableResponse.user.roles.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer', 'salesStaff'],
   );
 
   static const adminSetAdminUserRolesCallableResponseUserTargetUid = CatchContractFieldConstraints(
