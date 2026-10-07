@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.98.0
+version: 1.99.0
 updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
@@ -806,6 +806,21 @@ denied authorities, admin assignment, admin audit and setup phase atomically.
 The seed's next-second cutoff requires a new sign-in before root activation;
 token refresh alone is insufficient. Root revision 2 has only reply/review;
 recipient receive activation reuses the existing prepare/finalize store.
+
+Recipient planning also admits the exact existing single-key claim shape
+`{admin: true}` for preservation. The reviewed plan binds that decision through
+the exact recipient UID, full `recipientClaimsSha256`, source SHA and plan digest;
+bootstrap apply rechecks the full fingerprint at each mutation admission. No recipient
+Auth claim is written or removed. Its pre-existing general Admin access remains;
+legacy `admin` supplies no Catch capability. Only separately approved
+endpoint-bound `receive` is granted. Recipient `adminOwner`, `support`, other
+privileged combinations or extra claims alongside `admin: true` remain rejected.
+Actor admission, no-existing-owner/authority/assignment checks and permanent
+receipts are unchanged.
+
+Read-only reconciliation checks the current full recipient fingerprint alongside
+account incarnation and endpoint. Observed claim drift requires reconciliation;
+the status read neither changes claims nor redispatches an effect.
 
 The concrete adapters include exact setup intent and pinned authority in the
 actual transaction read set. Receive, publication and readiness effects share a

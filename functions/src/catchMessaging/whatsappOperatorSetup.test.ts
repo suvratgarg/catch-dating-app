@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
-import {desiredOperatorClaims, planOperatorSetup, setupHash,
+import {assertPlannedSetupIdentity, desiredOperatorClaims, planOperatorSetup,
+  setupHash,
   validateSetupRequest, validateSetupPlan} from "./whatsappOperatorSetup";
 import type {OperatorSetupScope, OperatorSetupSnapshot} from
   "./whatsappOperatorSetup";
@@ -106,6 +107,88 @@ test("planning rejects current identity, role, " +
       /Protected Catch operator setup unavailable/u);
   }
 });
+test("reviewed plan preserves the exact legacy recipient admin fingerprint",
+  () => {
+    const f = fixture();
+    f.snapshot.recipient.claims = {admin: true};
+    const before = structuredClone(f);
+    const plan = planOperatorSetup(f.scope, f.snapshot, f.options);
+    assert.deepEqual(f, before);
+    assert.equal(plan.recipientClaimsSha256, setupHash({admin: true}));
+    assert.equal(plan.scope.recipientUid, f.scope.recipientUid);
+    assert.equal(plan.sourceSha, f.options.sourceSha);
+    assert.notEqual(setupHash(plan), setupHash({...plan,
+      recipientClaimsSha256: setupHash({})}));
+    assertPlannedSetupIdentity(plan, f.snapshot, f.options.now);
+  });
+test("legacy recipient admin is not a privileged-recipient or actor allowance",
+  () => {
+    for (const claims of [{adminOwner: true}, {support: true},
+      {admin: true, adminOwner: true}, {admin: true, support: true},
+      {admin: true, finance: true}, {admin: true, safetyReviewer: true},
+      {admin: true, analyticsViewer: true},
+      {admin: true, extra: "unreviewed"}]) {
+      const f = fixture();
+      f.snapshot.recipient.claims = claims;
+      const roles = ["adminOwner", "support"] as const;
+      f.snapshot.recipient.auth.relevantRoles = roles.filter((role) =>
+        claims[role as keyof typeof claims] === true);
+      assert.throws(() => planOperatorSetup(f.scope, f.snapshot, f.options));
+    }
+    const f = fixture();
+    f.snapshot.actor.claims = {admin: true};
+    f.snapshot.recipient.claims = {admin: true};
+    assert.throws(() => planOperatorSetup(f.scope, f.snapshot, f.options));
+    for (const state of ["authorityExists", "bootstrapExists",
+      "actorAssignmentExists"] as const) {
+      const existing = fixture();
+      existing.snapshot.recipient.claims = {admin: true};
+      existing.snapshot[state] = true;
+      assert.throws(() => planOperatorSetup(existing.scope, existing.snapshot,
+        existing.options));
+    }
+  });
+test("legacy preservation rejects claim, incarnation, endpoint and owner drift",
+  () => {
+    const changes: Array<(f: ReturnType<typeof fixture>) => void> = [
+      (f) => {
+        f.snapshot.recipient.claims = {};
+      },
+      (f) => {
+        f.snapshot.recipient.claims.admin = false;
+      },
+      (f) => {
+        f.snapshot.recipient.claims.extra = true;
+      },
+      (f) => {
+        f.snapshot.recipient.claims.support = true;
+        f.snapshot.recipient.auth.relevantRoles = ["support"];
+      },
+      (f) => {
+        f.snapshot.recipient.auth.creationTimeMillis++;
+      },
+      (f) => {
+        f.snapshot.recipient.auth.tokensValidAfterMillis++;
+      },
+      (f) => {
+        f.snapshot.recipient.auth.endpointHash = "9".repeat(64);
+      },
+      (f) => {
+        f.snapshot.recipient.auth.uid = "other-recipient";
+      },
+      (f) => {
+        f.snapshot.existingOwnerUids = ["new-owner"];
+      },
+    ];
+    for (const change of changes) {
+      const f = fixture();
+      f.snapshot.recipient.claims = {admin: true};
+      const plan = planOperatorSetup(f.scope, f.snapshot, f.options);
+      change(f);
+      assert.throws(() => assertPlannedSetupIdentity(plan, f.snapshot,
+        f.options.now));
+    }
+  });
 test("claim projection adds only owner and preserves unrelated values exactly",
   () => {
     const claims = {analyticsViewer: false, feature: ["a", "b"],
