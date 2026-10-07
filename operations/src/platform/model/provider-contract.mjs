@@ -36,6 +36,25 @@ import {OperationsError, invariant} from "../errors.mjs";
  * @typedef {{run:(request:ModelProviderRequest)=>Promise<ModelProviderResult>}} ModelProvider
  */
 
+/**
+ * @typedef {Object} ModelProviderConfig
+ * @property {boolean} [enabled]
+ * @property {string} modelId
+ * @property {string} promptVersion
+ * @property {string} prompt Trusted, independently frozen stage prompt.
+ * @property {Record<string, unknown>} inputSchema Trusted public-data allowlist.
+ * @property {"public_organizer_only"} [dataPolicy]
+ * @property {string} serverSecretRef Opaque server reference, never a secret value.
+ * @property {(ref:string, options:{signal:AbortSignal})=>Promise<string>} [resolveSecret]
+ * @property {(url:string, options:RequestInit)=>Promise<Response>} [transport] One fetch, no hidden retries.
+ * @property {number} timeoutMs
+ * @property {number} maxAttempts
+ * @property {number} maxNetworkRequests
+ * @property {number} maxInputBytes Cap for the entire rendered JSON request, including prompt/schema.
+ * @property {number} maxOutputTokens
+ * @property {number} maxCostMicros Conservative ledger ceiling, not provider billing enforcement.
+ */
+
 const PRIVATE_KEYS = /^(?:uid|userId|guest.*|attendee.*|datingProfile|email|phone(?:Number)?|contacts?|contactExport|payment.*|private.*|crmNotes|apiKey|secret|credential.*|authorization)$/i;
 
 /**
@@ -114,6 +133,50 @@ export function compileClosedSchema(schema, {publicInput = false} = {}) {
       for (const child of node[keyword] ?? []) inspect(child);
     }
   }
+}
+
+/** Narrow native structured-output subsets; never strip constraints silently.
+ * Called after local AJV compilation. References/tools/recursive grammars are
+ * outside this bounded draft port, even when a vendor supports them.
+ * @param {Record<string, unknown>} schema
+ * @param {"openai"|"anthropic"} providerId
+ */
+export function validateStructuredOutputSchema(schema, providerId) {
+  const allowed = new Set(["type", "properties", "required", "additionalProperties",
+    "items", "enum", "description", "anyOf"]);
+  if (providerId === "openai") {
+    for (const key of ["minLength", "maxLength", "minimum", "maximum", "multipleOf", "minItems", "maxItems"]) allowed.add(key);
+  } else {
+    allowed.add("const"); allowed.add("minItems");
+  }
+  let properties = 0; let enums = 0; let unions = 0; let optional = 0;
+  inspect(schema, 0);
+  function inspect(node, objectDepth) {
+    const types = Array.isArray(node.type) ? node.type : [node.type];
+    if (Object.keys(node).some((key) => !allowed.has(key)) ||
+        (providerId === "anthropic" && node.minItems !== undefined && ![0, 1].includes(node.minItems))) fail();
+    if (types.length > 1 || node.anyOf) unions++;
+    if (types.includes("object")) {
+      objectDepth++;
+      const keys = Object.keys(node.properties ?? {});
+      const required = node.required ?? [];
+      const missing = keys.filter((key) => !required.includes(key)).length;
+      properties += keys.length; optional += missing;
+      if (objectDepth > 10 || properties > 100 ||
+          required.some((key) => !keys.includes(key)) ||
+          (providerId === "openai" && missing > 0)) fail();
+    }
+    for (const values of [node.enum, Object.hasOwn(node, "const") ? [node.const] : []]) {
+      if (!values) continue;
+      enums += values.length;
+      if (values.some((value) => value !== null && typeof value === "object")) fail();
+    }
+    if (enums > 100 || unions > 16 || optional > 24) fail();
+    for (const child of Object.values(node.properties ?? {})) inspect(child, objectDepth);
+    if (node.items) inspect(node.items, objectDepth);
+    for (const child of node.anyOf ?? []) inspect(child, objectDepth);
+  }
+  function fail() {throw providerError("MODEL_SCHEMA_UNSUPPORTED");}
 }
 
 /** Snapshot once before validation, including getters/toJSON at the JSON boundary.
