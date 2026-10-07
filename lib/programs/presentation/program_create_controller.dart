@@ -105,7 +105,7 @@ class ProgramCreateController extends ChangeNotifier {
   bool get showErrors => _showErrors;
   bool get actorChanged => _actorChanged;
   bool get confirmed => _confirmed;
-  bool get commandPending => _submittedValues != null;
+  bool get commandPending => _submittedValues != null || _programId != null;
   bool get fieldsLocked => saving || commandPending || actorChanged;
   String? get programId => _programId;
   OrganizerProgramListRow? get confirmedRow => _confirmedRow;
@@ -143,6 +143,8 @@ class ProgramCreateController extends ChangeNotifier {
       _notify();
       return null;
     }
+    final wasCommandPending = commandPending;
+    var createDispatched = false;
     _saving = true;
     _error = null;
     _notify();
@@ -150,6 +152,8 @@ class ProgramCreateController extends ChangeNotifier {
       if (_programId == null) {
         _submittedValues ??= _values;
         await _persistSnapshot();
+        if (!_checkActor()) return null;
+        createDispatched = true;
         final receipt = await _create(_submittedValues!, requestId);
         // Retain the receipt even if the actor changed while the request ran.
         _programId = receipt.entityId;
@@ -175,9 +179,12 @@ class ProgramCreateController extends ChangeNotifier {
     } catch (error) {
       if (_checkActor()) {
         _error = error;
-        if (_programId == null && _definitiveCreateRejection(error)) {
+        final freshCommandNotDispatched =
+            !wasCommandPending && !createDispatched;
+        if (_programId == null &&
+            (freshCommandNotDispatched || _definitiveCreateRejection(error))) {
           _submittedValues = null;
-          requestId = _newRequestId();
+          if (!freshCommandNotDispatched) requestId = _newRequestId();
           try {
             await _persistSnapshot();
           } catch (persistenceError) {

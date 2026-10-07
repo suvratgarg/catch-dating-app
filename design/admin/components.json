@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 40,
-  "updated": "2026-10-03",
+  "version": 41,
+  "updated": "2026-10-07",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -5582,6 +5582,27 @@
         ]
       },
       "notes": "Current own separately shared synthetic preview and unapproved wording proposal; no invitation or control."
+    },
+    {
+      "id": "route_operator_session",
+      "kind": "route",
+      "owner": "features/operator-session",
+      "source": "admin/src/features/operator-session/ui/OperatorSessionScreen.tsx",
+      "exportName": "OperatorSessionScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "unbound",
+          "review",
+          "transferred",
+          "cancelled",
+          "unavailable"
+        ]
+      },
+      "notes": "Exports only the already signed-in actor’s fresh Google session encrypted to an owner-protected helper pinned by its private launch file after explicit confirmation. No admin queries, role changes, sign-in or persistence migration."
     }
   ]
 }

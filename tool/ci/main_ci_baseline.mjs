@@ -36,8 +36,9 @@ export function inspectPredecessors({current, runs, repository}) {
 }
 
 export async function resolveMainBaseline({
-  repository, runId, runAttempt, sourceSha, fallbackBase, wait = false,
+  repository, runId, runAttempt, sourceSha, fallbackBase, minimumBaseSha, wait = false,
   request = githubRequest, ensureAncestor = gitAncestor,
+  isAncestor = gitIsAncestor,
   sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
   now = Date.now, maxWaitMs = 175 * 60 * 1000,
   onWait = (message) => process.stderr.write(`${message}\n`),
@@ -45,6 +46,13 @@ export async function resolveMainBaseline({
   requireCondition(/^[\w.-]+\/[\w.-]+$/.test(repository), "Invalid repository.");
   requireCondition(positiveInteger(runId) && positiveInteger(runAttempt), "Invalid current CI run or attempt.");
   requireCondition(shaPattern.test(sourceSha), "Exact source SHA required.");
+  if (minimumBaseSha != null) {
+    // The caller must independently verify this attempt's immutable validation
+    // plan before supplying its base. Reject an unusable floor before waiting.
+    requireCondition(shaPattern.test(minimumBaseSha) && !/^0+$/.test(minimumBaseSha),
+      "Exact nonzero validation floor SHA required.");
+    await ensureAncestor(minimumBaseSha, sourceSha);
+  }
   const current = await request(`repos/${repository}/actions/runs/${runId}`);
   requireCondition(String(current.id) === String(runId) && current.run_attempt === Number(runAttempt) &&
     current.head_sha === sourceSha && current.event === "push" && current.head_branch === "main" &&
@@ -75,13 +83,22 @@ export async function resolveMainBaseline({
       await sleep(20_000);
       continue;
     }
-    const baseSha = previousSuccess?.head_sha ?? fallbackBase;
+    let baseSha = previousSuccess?.head_sha ?? fallbackBase;
     requireCondition(shaPattern.test(baseSha) && !/^0+$/.test(baseSha), "Missing usable successful baseline or push-before SHA.");
     await ensureAncestor(baseSha, sourceSha);
+    if (minimumBaseSha != null && baseSha !== minimumBaseSha &&
+        !await isAncestor(minimumBaseSha, baseSha)) {
+      requireCondition(await isAncestor(baseSha, minimumBaseSha),
+        "Main CI baseline and validation floor have incompatible ancestry.");
+      // A predecessor's rerun can remove it from the live success list. Its
+      // status transition cannot broaden this attempt's validated window.
+      baseSha = minimumBaseSha;
+    }
+    const selectedPredecessor = previousSuccess?.head_sha === baseSha ? previousSuccess : null;
     return {
       baseSha, sourceSha, sourceCiRunId: String(runId), sourceCiRunAttempt: String(runAttempt),
-      previousCiRunId: previousSuccess ? String(previousSuccess.id) : null,
-      previousCiRunNumber: previousSuccess?.run_number ?? null,
+      previousCiRunId: selectedPredecessor ? String(selectedPredecessor.id) : null,
+      previousCiRunNumber: selectedPredecessor?.run_number ?? null,
       activePredecessors: active.length,
     };
   }
@@ -96,19 +113,25 @@ function githubRequest(endpoint, {paginate = false} = {}) {
 }
 
 function gitAncestor(base, head) {
+  requireCondition(gitIsAncestor(base, head), "Main CI baseline is not a reachable source ancestor.");
+}
+
+function gitIsAncestor(base, head) {
   const result = spawnSync("git", ["merge-base", "--is-ancestor", base, head], {encoding: "utf8"});
-  requireCondition(result.status === 0, result.stderr || "Main CI baseline is not a reachable source ancestor.");
+  requireCondition(result.status === 0 || result.status === 1,
+    result.stderr || "Cannot prove main CI baseline ancestry.");
+  return result.status === 0;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   if (args.includes("--help")) {
-    console.log("Usage: main_ci_baseline.mjs --repository owner/repo --run-id id --run-attempt attempt --source-sha sha --fallback-base sha [--wait]");
+    console.log("Usage: main_ci_baseline.mjs --repository owner/repo --run-id id --run-attempt attempt --source-sha sha --fallback-base sha [--minimum-base-sha verified-validation-base] [--wait]");
   } else {
     try {
       const options = {};
       const names = {"--repository": "repository", "--run-id": "runId", "--run-attempt": "runAttempt",
-        "--source-sha": "sourceSha", "--fallback-base": "fallbackBase"};
+        "--source-sha": "sourceSha", "--fallback-base": "fallbackBase", "--minimum-base-sha": "minimumBaseSha"};
       for (let index = 0; index < args.length; index++) {
         const flag = args[index];
         if (flag === "--wait" && options.wait == null) { options.wait = true; continue; }
