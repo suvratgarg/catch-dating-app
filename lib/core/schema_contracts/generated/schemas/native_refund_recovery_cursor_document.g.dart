@@ -8,7 +8,7 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/native_refund_recovery_cursor.schema.json',
   'title': 'NativeRefundRecoveryCursorDocument',
-  'description': 'Server-only, project-bound progress for the bounded native cancellation-refund due queue. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest due row.',
+  'description': 'Server-only, project-bound progress for bounded payment recovery queues. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest eligible row.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -25,6 +25,7 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'pendingRefunds',
         'cancelledRazorpayPayments',
+        'pendingRazorpayOrders',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -47,6 +48,7 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'server-only',
     },
     'cursor': <String, Object?>{
+      'description': 'Queue-specific exclusive discovery position. Refund queues use the next-attempt order key and payment document id. pendingRazorpayOrders uses integer epoch nanoseconds plus the complete pending-order document id.',
       'oneOf': <Object?>[
         <String, Object?>{
           'type': 'null',
@@ -60,6 +62,7 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
           ],
           'properties': <String, Object?>{
             'nextAttemptOrderKey': <String, Object?>{
+              'description': 'Canonical tagged primary Firestore order value for the selected recovery queue.',
               'oneOf': <Object?>[
                 <String, Object?>{
                   'type': 'string',
@@ -72,7 +75,7 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
                 <String, Object?>{
                   'type': 'string',
                   'pattern': '^integer:-?(?:0|[1-9][0-9]*)\$',
-                  'maxLength': 28,
+                  'maxLength': 29,
                 },
                 <String, Object?>{
                   'type': 'string',
@@ -85,6 +88,7 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
               'type': 'string',
               'minLength': 1,
               'maxLength': 1500,
+              'description': 'Exclusive secondary key. pendingRazorpayOrders and refund queues store the complete Firestore document id.',
             },
           },
         },
@@ -101,5 +105,5 @@ const schemaNativeRefundRecoveryCursorDocumentSchema = <String, Object?>{
   'x-firestore-collection': 'nativeRefundRecoveryCursors',
   'x-firestore-path': 'nativeRefundRecoveryCursors/{stateId}',
   'x-document-id-field': 'stateId',
-  'x-owner': 'native cancellation refund recovery scheduler',
+  'x-owner': 'payment recovery schedulers',
 };

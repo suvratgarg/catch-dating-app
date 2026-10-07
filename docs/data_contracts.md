@@ -1770,6 +1770,13 @@ A foreign or unknown webhook performs zero local writes/deletes and no refund.
 The native refund worker likewise validates ownership and provider context before
 lease, attempt, review or retry writes, and rebinds the reread payment/intent
 inside its claim transaction. Foreign or unknown persisted intent remains intact.
+The dormant pending-order reconciler resolves the fetched provider marker
+against frozen pending context before listing payments, expiring tracking state,
+or fulfilling a booking; foreign, unknown, invalid or conflicting ownership is
+skipped without order, payment, or booking mutation. Its project-bound durable
+discovery cursor advances before provider I/O and wraps after the tail, so a
+bounded page of quarantined or temporarily unavailable orders cannot starve
+later owned work and every skipped row becomes eligible again after wrap.
 Razorpay dispatch independently reclassifies the fetched order before POST;
 separate webhook signing secrets do not establish environment ownership.
 Exact owned terminal replay cannot re-admit, recreate refund intent, or interpret

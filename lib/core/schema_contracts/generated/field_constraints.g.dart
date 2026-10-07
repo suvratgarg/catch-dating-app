@@ -98722,7 +98722,7 @@ abstract final class CatchContractConstraints {
     path: 'nativeRefundRecoveryCursorDocument.stateId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['pendingRefunds', 'cancelledRazorpayPayments'],
+    enumValues: <String>['pendingRefunds', 'cancelledRazorpayPayments', 'pendingRazorpayOrders'],
   );
 
   static const nativeRefundRecoveryCursorDocumentUpdatedAtMillis = CatchContractFieldConstraints(
