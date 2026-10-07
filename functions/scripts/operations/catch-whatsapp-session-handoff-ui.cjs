@@ -75,7 +75,7 @@ const script = String.raw`(async () => {
       if (cancelled) return;
       cancel.disabled = true;
       status.textContent = 'Session saved. It expires at ' + new Date(receipt.expiresAtMillis).toLocaleString() + '.';
-    } catch {if (!cancelled) status.textContent = 'Session unavailable. No session was saved. Restart to retry.';}
+    } catch {if (!cancelled) status.textContent = 'Save status unconfirmed. Check the local helper and session file before retrying.';}
   });
   window.addEventListener('beforeunload', () => {
     if (!csrf || cancelled) return;

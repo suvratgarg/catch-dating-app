@@ -248,7 +248,7 @@ test("CLI rejects unapproved argument forms without exposing credential-shaped i
 
 const vm = require("node:vm");
 const {localPage} = require("../scripts/operations/catch-whatsapp-session-handoff-ui.cjs");
-async function localBrowser(t, {saveWaiting} = {}) {
+async function localBrowser(t, {saveWaiting, lostSaveResponse = false} = {}) {
   const calls = [], messages = [];
   const transfer = {challenge: "a".repeat(64), expiresAtMillis: Date.now() + 300000};
   const child = {closed: false, postMessage: (...args) => messages.push(args)};
@@ -276,6 +276,7 @@ async function localBrowser(t, {saveWaiting} = {}) {
     fetch: async (url, options) => {
       calls.push({url, options});
       if (url === "/session" && saveWaiting) await saveWaiting;
+      if (url === "/session" && lostSaveResponse) throw new Error("synthetic committed save then response lost " + privateToken);
       return {ok: true, status: 200, json: async () => url === "/bootstrap" ?
         {csrf: "f".repeat(64), profile: {synthetic: true}, runtime: {sourceSha: "b".repeat(40)}} :
         url === "/configure" ? {clientOrigin, request: transfer} :
@@ -315,5 +316,13 @@ test("local cancel remains available during verification and ignores a later sav
   assert.equal(b.calls.filter(call => call.url === "/cancel").length, 1);
   resolve(); await b.tick();
   assert.match(b.dom.window.document.getElementById("status").textContent, /Cancelled/u);
+  assert.ok(!b.dom.window.document.body.textContent.includes(privateToken));
+});
+test("a lost save receipt reports an unknown outcome and does not retry or expose a token", async t => {
+  const b = await localBrowser(t, {lostSaveResponse: true});
+  const message = {kind: "catch-operator-session-transfer", challenge: b.transfer.challenge, idToken: privateToken};
+  b.send(message); await b.tick(); b.send(message); await b.tick();
+  assert.equal(b.calls.filter(call => call.url === "/session").length, 1);
+  assert.match(b.dom.window.document.getElementById("status").textContent, /Save status unconfirmed/u);
   assert.ok(!b.dom.window.document.body.textContent.includes(privateToken));
 });
