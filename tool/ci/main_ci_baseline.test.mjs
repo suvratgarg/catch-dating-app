@@ -187,7 +187,9 @@ test("workflow derives the publication floor only after exact validation-plan ve
   const floor = finalizer.indexOf("jq -er '.baseSha' build/ci/validation/impact-plan.json");
   const resolve = finalizer.indexOf('baseline="$(node tool/ci/main_ci_baseline.mjs');
   assert.ok(proof >= 0 && floor > proof && resolve > floor);
-  assert.match(finalizer, /--minimum-base-sha "\$validation_base_sha" --wait/);
+  const command = finalizer.slice(resolve, finalizer.indexOf('\n          base_sha=', resolve));
+  assert.match(command, /--minimum-base-sha "\$validation_base_sha"/);
+  assert.match(command, /--fallback-base "\$BEFORE_SHA" --wait/);
 });
 
 test("CLI help and malformed invocations require no GitHub requests", () => {
