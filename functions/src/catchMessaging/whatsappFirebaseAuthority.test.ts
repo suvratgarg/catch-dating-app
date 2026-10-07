@@ -462,7 +462,8 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
     const authorizationUrls: (string | URL | undefined)[] = [];
     const fetchCalls: Parameters<typeof fetch>[] = [];
     // The real project resolver must use the supplied project without ADC.
-    const projectResolver = context.mock.method(GoogleAuth.prototype, "getApplicationDefault",
+    const projectResolver = context.mock.method(GoogleAuth.prototype,
+      "getApplicationDefault",
       async () => assert.fail("ambient project discovery forbidden"));
     context.mock.method(GoogleAuth.prototype, "getRequestHeaders",
       async (url?: string | URL) => {
