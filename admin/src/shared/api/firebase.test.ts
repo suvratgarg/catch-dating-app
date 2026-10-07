@@ -7,6 +7,9 @@ const mocks = vi.hoisted(() => ({
   recaptchaVerifier: vi.fn(),
   signInWithPhoneNumber: vi.fn(),
   signOut: vi.fn(),
+  googleParameters: vi.fn(),
+  googleProvider: {},
+  signInWithPopup: vi.fn(),
 }));
 
 vi.mock("firebase/auth", () => ({
@@ -17,6 +20,10 @@ vi.mock("firebase/auth", () => ({
   },
   signInWithPhoneNumber: mocks.signInWithPhoneNumber,
   signOut: mocks.signOut,
+  GoogleAuthProvider: function GoogleAuthProvider() {
+    return {...mocks.googleProvider, setCustomParameters: mocks.googleParameters};
+  },
+  signInWithPopup: mocks.signInWithPopup,
 }));
 
 vi.mock("./firebaseCore", () => ({
@@ -30,6 +37,7 @@ import {
   requestPhoneSignInCode,
   resetPhoneSignIn,
   signOutAdmin,
+  signInWithGoogleAdmin,
 } from "./firebase";
 
 describe("admin Firebase authentication", () => {
@@ -84,5 +92,12 @@ describe("admin Firebase authentication", () => {
 
     expect(mocks.recaptchaClear).toHaveBeenCalledOnce();
     expect(mocks.signOut).toHaveBeenCalledWith(auth);
+  });
+
+  it("uses the same Firebase Auth and Google account selection without granting roles", async () => {
+    await signInWithGoogleAdmin();
+    expect(mocks.googleParameters).toHaveBeenCalledWith({prompt: "select_account"});
+    expect(mocks.signInWithPopup).toHaveBeenCalledWith(auth,
+      expect.objectContaining({setCustomParameters: mocks.googleParameters}));
   });
 });

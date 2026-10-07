@@ -4,13 +4,18 @@ const f = vi.hoisted(() => ({
   auth: {currentUser: null as unknown},
   app: {options: {projectId: "catchdates-dev"}},
   token: vi.fn(), fetch: vi.fn(),
+  available: true, refresh: vi.fn(),
 }));
 vi.mock("../../../shared/api/firebase", () => ({auth: f.auth}));
 vi.mock("../../../shared/api/firebaseCore", () =>
   ({firebaseApp: f.app, adminAppCheck: {}}));
 vi.mock("../../../shared/api/dataMode", () => ({dataMode: () => "live"}));
 vi.mock("firebase/app-check", () => ({getToken: f.token}));
-import {catchWhatsappTrialApi, catchWhatsappTrialEnabled} from
+vi.mock("./catchWhatsappAvailability", () => ({
+  catchWhatsappSupportAvailable: () => f.available,
+  refreshCatchWhatsappAvailability: f.refresh,
+}));
+import {catchWhatsappTrialApi} from
   "./catchWhatsappTrialRepository";
 const scope = {actorUid: "staff", projectId: "catchdates-dev",
   sessionKey: "session", isCurrent: () => true};
@@ -19,25 +24,31 @@ const review = {purpose: "serviceSupport", inboundEventId: eventId,
   inboundText: "Private request", reviewedInboundTextHash: "b".repeat(64),
   deadlineMillis: 10000};
 beforeEach(() => {
-  vi.stubEnv("VITE_CATCH_WHATSAPP_TRIAL_ENABLED", "true");
   vi.stubEnv("VITE_ADMIN_APPCHECK_SITE_KEY", "test-site-key");
   vi.stubGlobal("fetch", f.fetch);
   f.app.options.projectId = "catchdates-dev";
   f.auth.currentUser = f.user;
   f.user.getIdToken.mockResolvedValue("auth-token");
   f.token.mockResolvedValue({token: "app-check-token"});
+  f.available = true; f.refresh.mockResolvedValue(true);
   f.fetch.mockResolvedValue({ok: true, json: async () => ({result: review})});
 });
 
-it("defaults off, rejects PROD and requires App Check configuration", () => {
-  vi.stubEnv("VITE_CATCH_WHATSAPP_TRIAL_ENABLED", "");
-  expect(catchWhatsappTrialEnabled()).toBe(false);
-  vi.stubEnv("VITE_CATCH_WHATSAPP_TRIAL_ENABLED", "true");
-  f.app.options.projectId = "prod-project";
-  expect(catchWhatsappTrialEnabled()).toBe(false);
-  f.app.options.projectId = "catchdates-dev";
-  vi.stubEnv("VITE_ADMIN_APPCHECK_SITE_KEY", "");
-  expect(catchWhatsappTrialEnabled()).toBe(false);
+it("does not dispatch when Remote Config availability is absent or disabled", async () => {
+  f.available = false; f.refresh.mockResolvedValue(false);
+  await expect(catchWhatsappTrialApi.prepare(scope)).rejects.toThrow();
+  await expect(catchWhatsappTrialApi.review(eventId, scope)).rejects.toThrow();
+  expect(f.fetch).not.toHaveBeenCalled();
+});
+
+it("uses the configured production project with the same one-use guarded protocol", async () => {
+  f.app.options.projectId = "catch-prod-synthetic";
+  const production = {...scope, projectId: f.app.options.projectId};
+  await catchWhatsappTrialApi.prepare(production);
+  await catchWhatsappTrialApi.review(eventId, production);
+  expect(f.fetch).toHaveBeenCalledWith(
+    "https://asia-south1-catch-prod-synthetic.cloudfunctions.net/adminReviewCatchWhatsappInbound",
+    expect.objectContaining({method: "POST", redirect: "error"}));
 });
 
 it("fences current actor, project and session before any request", async () => {
