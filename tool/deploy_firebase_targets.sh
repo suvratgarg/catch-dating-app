@@ -205,9 +205,14 @@ while IFS=$'\t' read -r phase deploy_only; do
     fi
     if [[ "$functions_mode" != "deploy" ]]; then
       sync_callable_invokers "$deploy_only"
+      # The planner has already reduced broad `functions` to every eligible
+      # export and exact releases to their authorized subset. Bind parity to
+      # that same immutable set; the checker still validates all source-declared
+      # secret names, while its no-target mode remains strict full parity.
       node "$repo_root/tool/firebase/check_deploy_parity.mjs" \
         --env "$environment" \
-        --repo-root "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}"
+        --repo-root "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}" \
+        --targets "$deploy_only"
     fi
   else
     deploy_target "$phase" "$deploy_only" "$@"
