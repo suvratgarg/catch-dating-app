@@ -719,6 +719,47 @@ test("five-Function caller pins the historical CI artifact and excludes wider ba
   assert.doesNotMatch(caller, /firebase deploy|deploy_firebase_targets\.sh|prod-backend|contents: write/);
 });
 
+test("PR543 Sales caller pins 44 Functions plus rules behind existing protected PROD review", () => {
+  const caller = workflow("selective-backend-release.yml");
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(caller, /release_kind:[\s\S]*- sales-pr543[\s\S]*- whatsapp-five[\s\S]*- legacy/);
+  assert.match(caller, /confirm_sales_pr543/);
+  assert.match(caller, /authorize-sales-pr543:[\s\S]*if: \$\{\{ inputs\.release_kind == 'sales-pr543' \}\}/);
+  assert.match(caller, /test "\$LEGACY_CONFIRM" = false[\s\S]*test "\$WHATSAPP_CONFIRM" = false/);
+  assert.match(caller, /source_sha: 63f13abe6fbc6051771ea6eeab1d147a956f0be5/);
+  assert.match(caller, /base_sha: 5b75d553caaa84ff4ea5210a9353ec18c19303fc/);
+  assert.match(caller, /source_ci_run_id: '37555898087'/);
+  assert.match(caller, /11455770275[\s\S]*sha256:9cde3d6457cf65bcd743fd575789d6c69e76c6ec37337187b2e166133642bad0/);
+  assert.match(caller, /prod-sales-pr543:[\s\S]*needs: authorize-sales-pr543[\s\S]*sales_pr543_release: true/);
+  assert.match(caller, /resume_delivery_run_id:[\s\S]*resume_delivery_attempt:/);
+  assert.match(caller, /prod-sales-pr543:[\s\S]*resume_delivery_run_id: \$\{\{ inputs\.resume_delivery_run_id \}\}[\s\S]*resume_delivery_attempt: \$\{\{ inputs\.resume_delivery_attempt \}\}/);
+  assert.match(caller, /git diff --quiet "\$REQUESTED_SHA" "\$GITHUB_SHA" --[\s\S]*firestore\.rules/);
+  assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
+  assert.match(promotion, /SALES_PR543_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
+  assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.sales_pr543_release/);
+  assert.match(promotion, /b248529e41c9634688792cbccd3f58b196f6152bb57d924c6e967791073ef1fd/);
+  assert.match(promotion, /selective_backend_release\.mjs prepare[\s\S]*--output build\/delivery\/execution-plan\.json/);
+  assert.match(promotion, /cmp build\/delivery\/execution-plan\.json build\/delivery\/sales-pr543-reverified-execution\.json/);
+  assert.match(promotion, /selective_backend_release\.mjs before[\s\S]*sales-pr543-before\.json/);
+  assert.match(promotion, /sales-pr543-before-\$\{\{ inputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(promotion, /artifact_prefix=sales-pr543-firebase-checkpoint[\s\S]*--role selective/);
+  assert.match(promotion, /--producer-role "\$PRODUCER_ROLE"/);
+  assert.match(promotion, /selective_backend_release\.mjs verify-before[\s\S]*sales-pr543-restore\/sales-pr543-before\.json/);
+  assert.match(promotion, /selective_backend_release\.mjs params[\s\S]*sales_pr543_params\.outputs\.sha256/);
+  assert.match(promotion, /selective_backend_release\.mjs stage --stage "\$stage" --target "\$target"/);
+  assert.match(promotion, /selective_backend_release\.mjs complete[\s\S]*sales-pr543-selected-receipt\.json/);
+  assert.match(promotion, /sales-pr543-selected-prod-\$\{\{ inputs\.source_sha \}\}/);
+  assert.match(promotion, /Verify active rules match the exact approved source[\s\S]*check_rules_deployment_drift\.mjs/);
+  assert.ok(promotion.indexOf("Verify active rules match the exact approved source") <
+    promotion.indexOf("Prove exact Sales serving revisions and rules completion"));
+  assert.ok(promotion.indexOf("Prove exact Sales serving revisions and rules completion") <
+    promotion.indexOf("Upload exact Sales and rules completion receipt"));
+  assert.ok(promotion.indexOf("Preserve exact Sales before proof for bounded recovery") <
+    promotion.indexOf("Resume ordered backend stages"));
+  assert.doesNotMatch(caller, /firebase deploy|deploy_firebase_targets\.sh|contents: write/);
+  assert.doesNotMatch(promotion, /secrets versions access/);
+});
+
 test("one-time PROD approval rejects admin bypass and non-reviewer approvals", () => {
   const step = extractSteps(workflow("_firebase-promote.yml")).find((entry) =>
     entry.name === "Require recorded human PROD environment approval for operator release");
@@ -1460,16 +1501,17 @@ process.stdout.write(JSON.stringify(input[endpoint]));
 `, {mode: 0o755});
     const scripts = ["delivery.yml", "_backend-rebaseline.yml", "_firebase-promote.yml"].flatMap((file) => {
       const source = workflow(file);
-      return [...source.matchAll(/node tool\/ci\/backend_delivery_lanes\.mjs verify-run \\\n[\s\S]*?--role (cursor|delivery) --output ([^\n]+)/g)].map((match) => {
+      return [...source.matchAll(/node tool\/ci\/backend_delivery_lanes\.mjs verify-run \\\n[\s\S]*?--role (cursor|delivery|selective) --output ([^\n]+)/g)].map((match) => {
         let script = match[0];
-        if (match[1] === "delivery") {
+        if (match[1] === "delivery" || match[1] === "selective") {
           const following = source.slice(match.index + match[0].length);
-          script += following.slice(0, following.indexOf("> /dev/null") + "> /dev/null".length);
+          const jqStart = following.indexOf("jq -e '");
+          script += `\n${following.slice(jqStart, following.indexOf("> /dev/null", jqStart) + "> /dev/null".length)}`;
         }
         return {file, role: match[1], output: match[2], script};
       });
     });
-    assert.equal(scripts.length, 4);
+    assert.equal(scripts.length, 5);
     const rebaseline = workflow("_backend-rebaseline.yml");
     const authorize = ciJob(rebaseline, "authorize");
     assert.ok(authorize.indexOf("actions/setup-node@v6") < authorize.indexOf("      - id: cursor"));
@@ -1477,15 +1519,21 @@ process.stdout.write(JSON.stringify(input[endpoint]));
 
     const repo = {id: 42, full_name: "owner/catch"};
     for (const {file, role, output, script} of scripts) {
-      const run = {id: 900, run_attempt: 1, workflow_id: 88, path: ".github/workflows/delivery.yml",
+      const producerWorkflow = role === "selective" ? "selective-backend-release.yml" : "delivery.yml";
+      const producerWorkflowId = role === "selective" ? 90 : 88;
+      const run = {id: 900, run_attempt: 1, workflow_id: producerWorkflowId, path: `.github/workflows/${producerWorkflow}`,
         name: "Delivery lane v1 dev", repository: repo, head_repository: repo, head_branch: "main",
+        event: role === "selective" ? "workflow_dispatch" : "workflow_run",
         status: "completed", conclusion: "failure"};
       const execute = (patch = {}, workflowPatch = {}) => {
         fs.rmSync(path.join(directory, output), {force: true});
         const current = {...run, ...patch};
         const fixture = {
           "repos/owner/catch/actions/runs/900/attempts/1": current,
-          "repos/owner/catch/actions/workflows/delivery.yml": {id: 88, path: ".github/workflows/delivery.yml", ...workflowPatch},
+          "repos/owner/catch/actions/workflows/delivery.yml": {id: 88, path: ".github/workflows/delivery.yml",
+            ...(role === "selective" ? {} : workflowPatch)},
+          "repos/owner/catch/actions/workflows/selective-backend-release.yml": {id: 90,
+            path: ".github/workflows/selective-backend-release.yml", ...(role === "selective" ? workflowPatch : {})},
           "repos/owner/catch/actions/workflows/backend-rebaseline.yml": {id: 89, path: ".github/workflows/backend-rebaseline.yml"},
         };
         const fixtureFile = path.join(directory, "fixture.json");
@@ -1507,6 +1555,7 @@ process.stdout.write(JSON.stringify(input[endpoint]));
         assert.equal(fs.existsSync(path.join(directory, output)), false, "Failed identity must not publish verified output.");
       }
       assert.notEqual(execute({}, {id: 99}).status, 0);
+      if (role === "selective") assert.notEqual(execute({event: "workflow_run"}).status, 0);
       assert.equal(execute({path: ".github/workflows/backend-rebaseline.yml", workflow_id: 89}).status, role === "cursor" ? 0 : 1);
       assert.equal(execute({status: "in_progress", conclusion: null}).status === 0, role === "cursor");
       assert.equal(execute({status: "completed", conclusion: "success"}).status === 0, role === "cursor");
