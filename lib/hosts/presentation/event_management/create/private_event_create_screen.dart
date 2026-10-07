@@ -46,6 +46,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'private_event_create_body.dart';
+part 'private_event_create_drafts.dart';
 
 /// The first page of the single progressive event editor.
 ///
@@ -246,7 +247,7 @@ class _PrivateEventCreateScreenState
         widget.initialPrefill == null &&
         widget.initialRosterImportPlan == null) {
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _PrivateEventCreateBody(this)._checkForDrafts(),
+        (_) => _PrivateEventCreateDrafts(this)._checkForDrafts(),
       );
     }
   }
