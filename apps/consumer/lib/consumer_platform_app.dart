@@ -13,6 +13,23 @@ class ConsumerPlatformApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ConsumerPlatformScope(
+      child: MyApp(routerProvider: consumerGoRouterProvider),
+    );
+  }
+}
+
+/// The production native bindings, reusable by supervised native entrypoints.
+///
+/// Keeping these bindings in one scope prevents an acceptance harness from
+/// substituting a fake checkout while leaving the shipped app unchanged.
+class ConsumerPlatformScope extends StatelessWidget {
+  const ConsumerPlatformScope({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
         healthActivityClientProvider.overrideWith(
@@ -22,7 +39,7 @@ class ConsumerPlatformApp extends StatelessWidget {
           PluginRazorpayCheckout.new,
         ),
       ],
-      child: MyApp(routerProvider: consumerGoRouterProvider),
+      child: child,
     );
   }
 }
