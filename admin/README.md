@@ -56,10 +56,13 @@ and local-data context appear in the account menu only when they change
 operator risk; switching Firebase targets still happens through environment
 variables and rebuilds.
 Catch WhatsApp support on Overview uses the initialized Firebase project's
-existing review/send callables. Availability comes only from a successful remote
-value for the existing parameter named by `VITE_CATCH_WHATSAPP_REMOTE_CONFIG_KEY`;
-missing configuration, local/default values, failed fetch, stale or retired
-sessions keep it unavailable. Remote Config does not approve setup or sending.
+existing review/send callables. Availability requires successful remote-origin
+`true` for the canonical `catch_whatsapp_support_enabled` Remote Config key.
+The client and checked-in template default to `false`; no build-time key-name
+input is required. Absent, local/default or remote-false values, failed fetch,
+stale or retired sessions keep it unavailable. The source declaration does not
+prove the live parameter exists or enable it. Remote Config does not approve
+setup or sending.
 App Check, current roles, backend readiness/suppression and exact human review
 remain required. No flag is enabled by source publication.
 Admin feature import direction is enforced by

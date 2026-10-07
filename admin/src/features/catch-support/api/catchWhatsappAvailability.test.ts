@@ -1,7 +1,10 @@
+import {readFileSync} from "node:fs";
+import {dirname, resolve} from "node:path";
+import {fileURLToPath} from "node:url";
 import {beforeEach, expect, it, vi} from "vitest";
 const f = vi.hoisted(() => ({auth: {currentUser: {uid: "operator"}},
   app: {options: {projectId: "catch-prod-synthetic"}},
-  config: {settings: {}, lastFetchStatus: "success"},
+  config: {settings: {}, defaultConfig: {other_parameter: "preserved"}, lastFetchStatus: "success"},
   fetch: vi.fn(), value: true, source: "remote"}));
 vi.mock("../../../shared/api/firebase", () => ({auth: f.auth}));
 vi.mock("../../../shared/api/firebaseCore", () => ({firebaseApp: f.app, adminAppCheck: {}}));
@@ -9,7 +12,7 @@ vi.mock("../../../shared/api/dataMode", () => ({dataMode: () => "live"}));
 vi.mock("firebase/remote-config", () => ({isSupported: async () => true,
   getRemoteConfig: () => f.config, fetchAndActivate: f.fetch,
   getValue: (_config: unknown, key: string) => {
-    expect(key).toBe("synthetic_owner_key");
+    expect(key).toBe("catch_whatsapp_support_enabled");
     return {getSource: () => f.source, asBoolean: () => f.value};
   }}));
 const scope = {projectId: "catch-prod-synthetic", actorUid: "operator",
@@ -17,31 +20,50 @@ const scope = {projectId: "catch-prod-synthetic", actorUid: "operator",
 beforeEach(() => {
   vi.resetModules(); f.fetch.mockReset().mockResolvedValue(true);
   f.auth.currentUser = {uid: "operator"}; f.config.lastFetchStatus = "success";
+  f.config.defaultConfig = {other_parameter: "preserved"};
   f.source = "remote"; f.value = true;
-  vi.stubEnv("VITE_CATCH_WHATSAPP_REMOTE_CONFIG_KEY", "synthetic_owner_key");
   vi.stubEnv("VITE_ADMIN_APPCHECK_SITE_KEY", "synthetic-site-key");
 });
 
-it("allows the initialized production project only from successful remote availability", async () => {
+it("declares matching false client/template defaults and allows current-project remote true", async () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const template = JSON.parse(readFileSync(resolve(here,
+    "../../../../../firebase/remote_config.template.json"), "utf8"));
+  expect(template.parameters.catch_whatsapp_support_enabled.defaultValue.value).toBe("false");
+  expect(template.parameters.catch_whatsapp_support_enabled.conditionalValues).toBeUndefined();
   const api = await import("./catchWhatsappAvailability");
   expect(api.catchWhatsappSupportAvailable(scope)).toBe(false);
   expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(true);
+  expect(f.config.defaultConfig).toEqual({other_parameter: "preserved",
+    catch_whatsapp_support_enabled: false});
   expect(api.catchWhatsappSupportAvailable(scope)).toBe(true);
   expect(api.catchWhatsappSupportAvailable({...scope, sessionKey: "other"})).toBe(false);
   expect(api.catchWhatsappSupportAvailable({...scope, projectId: "catchdates-dev"})).toBe(false);
 });
 
-it("rejects missing key, default/local values and failed fetch without a usable gate", async () => {
+it.each([
+  ["static", false], ["default", false], ["static", true], ["default", true], ["remote", false],
+])("keeps absent/default/local values and remote false closed (%s, %s)", async (source, value) => {
   const api = await import("./catchWhatsappAvailability");
-  vi.stubEnv("VITE_CATCH_WHATSAPP_REMOTE_CONFIG_KEY", "");
+  f.source = source as string; f.value = value as boolean;
   expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(false);
+  expect(api.catchWhatsappSupportAvailable(scope)).toBe(false);
+});
+
+it("rejects a different initialized project before fetching", async () => {
+  const api = await import("./catchWhatsappAvailability");
+  expect(await api.refreshCatchWhatsappAvailability({...scope, projectId: "catchdates-dev"})).toBe(false);
   expect(f.fetch).not.toHaveBeenCalled();
-  vi.stubEnv("VITE_CATCH_WHATSAPP_REMOTE_CONFIG_KEY", "synthetic_owner_key");
-  for (const source of ["default", "static"]) {
-    f.source = source;
-    expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(false);
-  }
-  f.source = "remote"; f.fetch.mockRejectedValue(new Error("private upstream detail"));
+});
+
+it("invalidates prior remote true when fetching fails or reports an unsuccessful status", async () => {
+  const api = await import("./catchWhatsappAvailability");
+  expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(true);
+  f.fetch.mockRejectedValueOnce(new Error("private upstream detail"));
+  expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(false);
+  expect(api.catchWhatsappSupportAvailable(scope)).toBe(false);
+  expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(true);
+  f.config.lastFetchStatus = "failure";
   expect(await api.refreshCatchWhatsappAvailability(scope)).toBe(false);
   expect(api.catchWhatsappSupportAvailable(scope)).toBe(false);
 });

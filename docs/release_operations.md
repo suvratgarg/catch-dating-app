@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.28
+version: 2.7.29
 updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
@@ -1516,22 +1516,29 @@ Use the existing configured operator for authorized setup.
 The panel uses the initialized Firebase project's regional callable endpoint
 (`asia-south1`) for `adminReviewCatchWhatsappInbound` and
 `adminSendCatchWhatsappReply`. There is no DEV prerequisite or trial build flag.
-Availability requires a successful remote-origin value from the owner's existing
-Remote Config parameter named by `VITE_CATCH_WHATSAPP_REMOTE_CONFIG_KEY`, plus
-live Auth/App Check/current session. There is no guessed key or enabling default;
-missing key, failed fetch, local/default value or retired session keeps it closed.
-The optional build input passes that parameter name only, not an enablement value.
-No Remote Config flag is read or changed in this source task. Availability cannot
-approve bootstrap or a reply; exact human confirmation, pre-resolved one-use
+Availability requires successful remote-origin `true` for the canonical
+`catch_whatsapp_support_enabled` Remote Config key, plus live Auth, App Check and
+current session in the initialized project. The client and checked-in Remote
+Config template declare `false` defaults; no build-time key-name input is required.
+Absent, local/default or remote-false values, failed fetch or retired session
+keep it closed.
+This source declaration does not prove the live parameter exists, create it or
+enable it. Availability cannot approve bootstrap or a reply; exact human
+confirmation, pre-resolved one-use
 tokens, synchronous final dispatch guard and no automatic send retry remain.
 
 Live custody delegation, actual audited history/cutover/publication, private
-profile/session/approvals, the owner's Remote Config parameter name and deployed
+profile/session/approvals, live canonical Remote Config availability and deployed
 atomic ingress must be supplied or verified by their authorized owners before
 live execution. Missing input is not evidence of missing IAM or grounds to
 recreate the existing token. Source/tests/PR publication do not authorize live
 execution, provider activation, flags, deployment or sends. See
 [First Catch WhatsApp operator source boundary](data_contracts.md#first-catch-whatsapp-operator-source-boundary).
+
+Backend webhook, receipt, reply and atomic-ingress switches remain Firebase
+Functions `defineBoolean` deployment parameters. This Admin availability contract
+does not migrate their activation mechanism; any backend switch migration or
+live activation requires its own authorized source and release work.
 
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,
