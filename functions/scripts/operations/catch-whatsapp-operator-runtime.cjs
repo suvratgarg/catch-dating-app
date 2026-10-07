@@ -118,6 +118,7 @@ function liveSdk(profile, beforeDispatch) {
   const {getAuth} = require("firebase-admin/auth");
   const {getFirestore} = require("firebase-admin/firestore");
   const {SecretManagerServiceClient} = require("@google-cloud/secret-manager");
+  const {GoogleAuth} = require("google-auth-library");
   const {createCatchGoogleFirebaseLookupTransport} = require("../../lib/catchMessaging/whatsappFirebaseAuthority.js");
   const app = initializeApp({projectId: profile.scope.projectId},
     "catch-operator-" + randomBytes(16).toString("hex"));
@@ -130,8 +131,11 @@ function liveSdk(profile, beforeDispatch) {
     verifyIdToken: (...args) => sdkAuth.verifyIdToken(...args),
     setCustomUserClaims: createSingleAttemptClaimsSetter(profile.scope, {beforeDispatch})};
   return {auth, db: getFirestore(app),
-    transport: createCatchGoogleFirebaseLookupTransport(),
-    secrets: new SecretManagerServiceClient()};
+    transport: createCatchGoogleFirebaseLookupTransport(profile.scope.projectId),
+    secrets: new SecretManagerServiceClient({projectId: profile.scope.projectId,
+      auth: new GoogleAuth({projectId: profile.scope.projectId,
+        scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+        clientOptions: {quotaProjectId: profile.scope.projectId}})})};
 }
 
 function createSingleAttemptClaimsSetter(scope, {credentialFactory, dispatch = fetch,
@@ -139,7 +143,9 @@ function createSingleAttemptClaimsSetter(scope, {credentialFactory, dispatch = f
   const pinned = structuredClone(scope);
   let google;
   const credential = () => google ??= credentialFactory ? credentialFactory() :
-    new (require("google-auth-library").GoogleAuth)({scopes: ["https://www.googleapis.com/auth/identitytoolkit"]});
+    new (require("google-auth-library").GoogleAuth)({projectId: pinned.projectId,
+      scopes: ["https://www.googleapis.com/auth/identitytoolkit"],
+      clientOptions: {quotaProjectId: pinned.projectId}});
   return async (uid, input) => {
     const claims = structuredClone(input);
     if (uid !== pinned.actorUid || !validId(uid) ||
@@ -164,6 +170,7 @@ function createSingleAttemptClaimsSetter(scope, {credentialFactory, dispatch = f
     if (await bounded(client.getProjectId()) !== pinned.projectId) unavailable();
     const headers = new Headers(await bounded(client.getRequestHeaders(url)));
     headers.set("Content-Type", "application/json");
+    headers.set("X-Goog-User-Project", pinned.projectId);
     await bounded(beforeDispatch()); // Reread exact approval after credential waits.
     signal.throwIfAborted();
     // Exactly one mutation HTTP request. No Google RequestClient or SDK retry.
@@ -175,8 +182,12 @@ function createSingleAttemptClaimsSetter(scope, {credentialFactory, dispatch = f
 
 // Only metadata methods are available to this producer. A missing supported
 // direct binding is unproven access, not evidence that an IAM grant is missing.
-async function credentialMetadata(profile, secrets) {
+async function credentialMetadata(profile, secrets, {dispatch = fetch,
+  deadline = () => AbortSignal.timeout(10000)} = {}) {
   const name = profile.credentialVersionName;
+  const projectId = profile.scope.projectId;
+  const requested = /^projects\/([a-z][a-z0-9-]{4,28}[a-z0-9])\/secrets\/CATCH_WHATSAPP_ACCESS_TOKEN\/versions\/([1-9][0-9]{0,19})$/u.exec(name);
+  if (!requested || requested[1] !== projectId) unavailable();
   const resource = name.slice(0, name.lastIndexOf("/versions/"));
   const [[version], [policy]] = await Promise.all([
     secrets.getSecretVersion({name}, {timeout: 10000, retry: null}),
@@ -186,8 +197,37 @@ async function credentialMetadata(profile, secrets) {
   const bindings = (policy.bindings ?? []).filter((b) =>
     b.role === "roles/secretmanager.secretAccessor" && !b.condition &&
     Array.isArray(b.members) && b.members.includes(profile.runtimePrincipal));
-  return {resourceSha256: sha(name), enabled: version.name === name &&
-    (version.state === "ENABLED" || version.state === 1),
+  let matches = version.name === name;
+  const enabled = version.state === "ENABLED" || version.state === 1;
+  const canonical = /^projects\/([1-9][0-9]{0,29})\/secrets\/CATCH_WHATSAPP_ACCESS_TOKEN\/versions\/([1-9][0-9]{0,19})$/u.exec(version.name);
+  if (!matches && enabled && canonical && canonical[2] === requested[2]) {
+    // A numeric segment alone is not identity evidence. Read the exact expected
+    // project through the same authenticated client used for secret metadata.
+    const url = `https://cloudresourcemanager.googleapis.com/v3/projects/${projectId}`;
+    const signal = deadline();
+    signal.throwIfAborted();
+    let listener;
+    const aborted = new Promise((_, reject) => {
+      listener = () => reject(new Error("Operator project deadline elapsed."));
+      signal.addEventListener("abort", listener, {once: true});
+    });
+    try {
+      matches = await Promise.race([aborted, (async () => {
+        if (await secrets.auth.getProjectId() !== projectId) unavailable();
+        const headers = new Headers(await secrets.auth.getRequestHeaders(url));
+        if (!/^Bearer [^\s]+$/u.test(headers.get("Authorization") ?? "")) unavailable();
+        headers.set("X-Goog-User-Project", projectId);
+        signal.throwIfAborted();
+        const response = await dispatch(url, {method: "GET", headers,
+          redirect: "error", signal});
+        if (!response.ok) unavailable();
+        const project = await response.json();
+        return project.projectId === projectId &&
+          project.name === `projects/${canonical[1]}` && project.state === "ACTIVE";
+      })()]);
+    } finally {signal.removeEventListener("abort", listener);}
+  }
+  return {resourceSha256: sha(name), enabled: matches && enabled,
   runtimeAccessor: bindings.length === 1};
 }
 

@@ -76,7 +76,7 @@ export function createProtectedOperatorSetupSources(options: {
   const firebase = createCatchFirebaseAuthority({projectId: scope.projectId,
     auth: options.auth, now,
     transport: options.transport ?? createCatchGoogleFirebaseLookupTransport(
-    )});
+      scope.projectId)});
   let armed: OperatorSetupPlan | undefined;
   const identity = () => {
     if (options.auth.app.options.projectId !== scope.projectId ||

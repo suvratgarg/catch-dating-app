@@ -211,7 +211,7 @@ function runtimeFixture() {
     file(`approvals/${plan.planId}.json`, approval);
     return {plan, request, approval};
   };
-  return {home, runtime, review, file, profile, records,
+  return {home, runtime, review, file, profile, records, sdk: {db, auth, transport, secrets},
     clock: () => now,
     transactionErrors: () => transactionErrors,
     counts: () => ({setters, sdkCalls, writes, metadataReads}),
@@ -837,8 +837,117 @@ test("metadata uses exact enabled version and pinned direct principal; no secret
     assert.equal((await credentialMetadata(h.profile, secrets)).runtimeAccessor, false);
     binding = {role: "roles/secretmanager.secretAccessor", members: ["group:operators@example.invalid"]};
     assert.equal((await credentialMetadata(h.profile, secrets)).runtimeAccessor, false);
+    binding = {role: "roles/viewer", members: [h.profile.runtimePrincipal]};
+    assert.equal((await credentialMetadata(h.profile, secrets)).runtimeAccessor, false);
+    binding = {role: "roles/secretmanager.secretAccessor", members: []};
+    assert.equal((await credentialMetadata(h.profile, secrets)).runtimeAccessor, false);
     state = "DISABLED";
     assert.equal((await credentialMetadata(h.profile, secrets)).enabled, false);
+  } finally {h.close();}
+});
+
+test("numeric secret alias requires authenticated ACTIVE exact-project binding and exact suffix", async () => {
+  const h = runtimeFixture();
+  try {
+    const requested = h.profile.credentialVersionName;
+    const alias = requested.replace("demo-catch-setup", "123456789012");
+    let name = alias;
+    let state = "ENABLED";
+    let authProject = h.profile.scope.projectId;
+    let headers = {Authorization: "Bearer synthetic-project-oauth"};
+    let project = {projectId: authProject, name: "projects/123456789012", state: "ACTIVE"};
+    let binding = {role: "roles/secretmanager.secretAccessor", members: [h.profile.runtimePrincipal]};
+    let status = 200;
+    let reads = 0;
+    const secrets = {auth: {
+      getProjectId: async () => authProject,
+      getRequestHeaders: async url => {
+        assert.equal(url, "https://cloudresourcemanager.googleapis.com/v3/projects/demo-catch-setup");
+        return headers;
+      }},
+    getSecretVersion: async (input, options) => {
+      assert.deepEqual(input, {name: requested});
+      assert.deepEqual(options, {timeout: 10000, retry: null});
+      return [{name, state}];
+    }, getIamPolicy: async (input, options) => {
+      assert.deepEqual(input, {resource: requested.split("/versions/")[0], options: {requestedPolicyVersion: 3}});
+      assert.deepEqual(options, {timeout: 10000, retry: null});
+      return [{bindings: [binding]}];
+    }, accessSecretVersion: () => assert.fail("no token payload"),
+    setIamPolicy: () => assert.fail("no IAM mutation")};
+    const options = {dispatch: async (url, init) => {
+      reads++;
+      assert.equal(url, "https://cloudresourcemanager.googleapis.com/v3/projects/demo-catch-setup");
+      assert.equal(init.method, "GET");
+      assert.equal(init.redirect, "error");
+      assert.ok(init.signal instanceof AbortSignal);
+      assert.equal(init.headers.get("Authorization"), "Bearer synthetic-project-oauth");
+      assert.equal(init.headers.get("X-Goog-User-Project"), "demo-catch-setup");
+      return new Response(JSON.stringify(project), {status});
+    }};
+    const metadata = () => credentialMetadata(h.profile, secrets, options);
+    const expected = {resourceSha256: h.profile.scope.credentialVersionSha256,
+      enabled: true, runtimeAccessor: true};
+    assert.deepEqual(await metadata(), expected);
+    assert.equal(reads, 1);
+    name = requested;
+    assert.deepEqual(await metadata(), expected);
+    assert.equal(reads, 1, "literal project ID needs no alias lookup");
+    for (const invalid of [alias.replace("ACCESS_TOKEN", "OTHER_TOKEN"),
+      alias.replace("/versions/7", "/versions/8"), alias.replace("123456789012", "foreign-project"),
+      alias.replace("123456789012", "999999"), alias + "/extra", alias + "\n",
+      alias.replace("123456789012", "0123456789012"), alias.replace("/versions/7", "/versions/latest"),
+      alias.replace("/versions/7", "/versions/07")]) {
+      name = invalid;
+      assert.equal((await metadata()).enabled, false, invalid);
+    }
+    name = alias;
+    for (const mismatch of [{...project, projectId: "foreign-project"},
+      {...project, name: "projects/999999"}, {...project, state: "DELETE_REQUESTED"},
+      {...project, name: "projects/0123456789012"}, {...project, state: undefined}]) {
+      const saved = project; project = mismatch;
+      assert.equal((await metadata()).enabled, false);
+      project = saved;
+    }
+    state = "DISABLED";
+    const beforeDisabled = reads;
+    assert.equal((await metadata()).enabled, false);
+    assert.equal(reads, beforeDisabled);
+    state = 1;
+    assert.equal((await metadata()).enabled, true);
+    for (const invalid of [{...binding, condition: {expression: "true"}},
+      {...binding, members: ["group:operators@example.invalid"]}, {...binding, members: []},
+      {...binding, role: "roles/viewer"}]) {
+      const saved = binding; binding = invalid;
+      assert.equal((await metadata()).runtimeAccessor, false);
+      binding = saved;
+    }
+    authProject = "foreign-project";
+    const beforeAuth = reads;
+    await assert.rejects(metadata);
+    assert.equal(reads, beforeAuth);
+    authProject = "demo-catch-setup";
+    headers = {};
+    await assert.rejects(metadata);
+    assert.equal(reads, beforeAuth);
+    headers = {Authorization: "Bearer synthetic-project-oauth", "X-Goog-User-Project": "foreign-project"};
+    assert.deepEqual(await metadata(), expected);
+    for (const denied of [403, 302, 503]) {
+      status = denied;
+      const before = reads;
+      await assert.rejects(metadata);
+      assert.equal(reads, before + 1, "no project lookup retry");
+    }
+    status = 200;
+    await assert.rejects(() => credentialMetadata(h.profile, secrets, {
+      dispatch: async () => {throw new Error("synthetic lost response");}}));
+    const controller = new AbortController();
+    const keepAlive = setTimeout(() => controller.abort(), 20);
+    secrets.auth.getRequestHeaders = async () => new Promise(() => {});
+    try {
+      await assert.rejects(() => credentialMetadata(h.profile, secrets, {...options,
+        deadline: () => controller.signal}), /deadline/);
+    } finally {clearTimeout(keepAlive);}
   } finally {h.close();}
 });
 
@@ -863,6 +972,66 @@ test("default SDK rejects emulator redirection before any ADC or network initial
     if (previous === undefined) delete process.env[key]; else process.env[key] = previous;
     h.close();
   }
+});
+
+test("default SDK binds lookup and Secret Manager auth to the reviewed project and quota", async () => {
+  const h = runtimeFixture();
+  const Module = require("node:module");
+  const load = Module._load;
+  let secretOptions;
+  let lookupProject;
+  try {
+    Module._load = function(name, ...args) {
+      if (name === "firebase-admin/app") return {initializeApp: options => {
+        assert.equal(options.projectId, h.profile.scope.projectId);
+        return h.sdk.auth.app;
+      }};
+      if (name === "firebase-admin/auth") return {getAuth: () => h.sdk.auth};
+      if (name === "firebase-admin/firestore") return {getFirestore: () => h.sdk.db};
+      if (name === "@google-cloud/secret-manager") return {SecretManagerServiceClient: class {
+        constructor(options) {secretOptions = options; return h.sdk.secrets;}
+      }};
+      const exported = load.call(this, name, ...args);
+      if (name === "../../lib/catchMessaging/whatsappFirebaseAuthority.js") return {...exported,
+        createCatchGoogleFirebaseLookupTransport: projectId => {
+          lookupProject = projectId; return h.sdk.transport;
+        }};
+      return exported;
+    };
+    const runtime = createOperatorRuntime({home: h.home,
+      now: h.clock, identity: () => ({sourceSha: h.profile.sourceSha,
+        executionSha256: h.profile.executionSha256})});
+    assert.equal(secretOptions, undefined, "SDK remains lazy");
+    await runtime.plan();
+    assert.equal(lookupProject, h.profile.scope.projectId);
+    assert.equal(secretOptions.projectId, h.profile.scope.projectId);
+    assert.equal(await secretOptions.auth.getProjectId(), h.profile.scope.projectId);
+    assert.equal(secretOptions.auth.clientOptions.quotaProjectId, h.profile.scope.projectId);
+    assert.equal(h.counts().writes, 0);
+    assert.equal(h.counts().setters, 0);
+  } finally {Module._load = load; h.close();}
+});
+
+test("default claims GoogleAuth uses validated project and quota without ambient discovery", async context => {
+  const {GoogleAuth} = require("google-auth-library");
+  const projectId = "demo-catch-setup";
+  context.mock.method(GoogleAuth.prototype, "getApplicationDefault", async () => assert.fail("no ambient project discovery"));
+  context.mock.method(GoogleAuth.prototype, "getRequestHeaders", async function() {
+    assert.equal(await this.getProjectId(), projectId);
+    assert.equal(this.clientOptions.quotaProjectId, projectId);
+    return new Headers({Authorization: "Bearer synthetic-test-oauth", "X-Goog-User-Project": "foreign-project"});
+  });
+  let dispatches = 0;
+  const setter = createSingleAttemptClaimsSetter({projectId, actorUid: "operator"}, {
+    beforeDispatch: async () => {}, dispatch: async (_url, init) => {
+      dispatches++;
+      assert.equal(init.headers.get("X-Goog-User-Project"), projectId);
+      return new Response('{"localId":"operator"}', {status: 200});
+    }});
+  await setter("operator", {});
+  assert.equal(dispatches, 1);
+  await assert.rejects(() => createSingleAttemptClaimsSetter({projectId: "foreign/project", actorUid: "operator"}, {
+    beforeDispatch: async () => {}, dispatch: async () => assert.fail("invalid project dispatch")})("operator", {}));
 });
 
 test("reconcile authenticates no-slot status and rejects REST role disagreement or old active-root session", async () => {
@@ -898,6 +1067,7 @@ test("real HTTP claims transport never retries reset, committed lost response, o
       req.on("end", () => {
         assert.equal(req.method, "POST");
         assert.equal(req.headers.authorization, "Bearer synthetic-test-oauth");
+        assert.equal(req.headers["x-goog-user-project"], "demo-catch-setup");
         assert.deepEqual(JSON.parse(body), {localId: "operator",
           customAttributes: '{"adminOwner":true,"preserved":"value"}'});
         if (mode === "committed-lost-response" || mode === "normal") committed++;
