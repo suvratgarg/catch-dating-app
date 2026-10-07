@@ -1,6 +1,23 @@
+import 'dart:convert';
+
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_create_journal.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _RejectedPreferences extends Fake implements SharedPreferences {
+  _RejectedPreferences({this.raw});
+  final String? raw;
+
+  @override
+  Future<bool> setString(String key, String value) async => false;
+
+  @override
+  String? getString(String key) => raw;
+
+  @override
+  Future<bool> remove(String key) async => false;
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +30,72 @@ void main() {
     timezone: 'Asia/Kolkata',
     startsAtMillis: 1791158400000,
     endsAtMillis: 1791417600000,
+  );
+
+  test(
+    'false durable write and cleanup results surface persistence failures',
+    () async {
+      const entry = ProgramCreateJournalEntry(
+        accountId: 'account-1',
+        organizerId: 'organizer-1',
+        requestId: 'program-request-0001',
+        values: values,
+        submittedValues: values,
+      );
+      final journal = ProgramCreateJournal(
+        preferences: _RejectedPreferences(raw: jsonEncode(entry.toJson())),
+      );
+      await expectLater(journal.save(entry), throwsA(isA<AppException>()));
+      await expectLater(
+        journal.clear(
+          accountId: entry.accountId,
+          organizerId: entry.organizerId,
+          requestId: entry.requestId,
+        ),
+        throwsA(isA<AppException>()),
+      );
+    },
+  );
+
+  test(
+    'blank draft fields roundtrip while identity fields stay strict',
+    () async {
+      const journal = ProgramCreateJournal();
+      const empty = ProgramCreateJournalValues(
+        title: '',
+        kind: null,
+        timezone: '',
+        startsAtMillis: null,
+        endsAtMillis: null,
+      );
+      await journal.save(
+        const ProgramCreateJournalEntry(
+          accountId: 'account-1',
+          organizerId: 'organizer-1',
+          requestId: 'program-request-0001',
+          values: empty,
+        ),
+      );
+      final recovered = await journal.load(
+        accountId: 'account-1',
+        organizerId: 'organizer-1',
+      );
+      expect(recovered!.values.title, '');
+      expect(recovered.values.timezone, '');
+      expect(recovered.submittedValues, isNull);
+      final raw = recovered.toJson();
+      expect(
+        () => ProgramCreateJournalEntry.fromJson({...raw, 'requestId': ''}),
+        throwsFormatException,
+      );
+      expect(
+        () => ProgramCreateJournalValues.fromJson({
+          ...empty.toJson(),
+          'title': null,
+        }),
+        throwsFormatException,
+      );
+    },
   );
 
   test('draft, submitted command and receipt survive a new journal', () async {
