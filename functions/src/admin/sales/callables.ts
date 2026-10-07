@@ -18,8 +18,11 @@ import type {
   SalesPrincipal,
   SalesReadAction,
 } from "./types";
+import {assignedSalesAccountIds, assertSalesStaffAccount,
+  assertSalesStaffScope, isAssignedSalesStaff,
+  SALES_STAFF_ACTIONS} from "./staffAccess";
 
-const allowedRoles = ["admin", "adminOwner"] as const;
+const allowedRoles = ["admin", "adminOwner", "salesStaff"] as const;
 const callableLimits = {
   concurrency: 20,
   maxInstances: 10,
@@ -35,6 +38,8 @@ export async function currentSalesEmployee(
     customClaims?: Record<string, unknown>;
     tokensValidAfterTime?: string;
   }> = (uid) => admin.auth().getUser(uid),
+  assignedIds: (uid: string) => Promise<string[]> =
+  (uid) => assignedSalesAccountIds(admin.firestore(), uid),
 ): Promise<SalesPrincipal> {
   const initial = requireAdminRole(request, allowedRoles);
   const user = await getUser(initial.uid);
@@ -45,7 +50,8 @@ export async function currentSalesEmployee(
     );
   }
   const roles = adminRolesFromToken(user.customClaims);
-  if (!roles.includes("admin") && !roles.includes("adminOwner")) {
+  if (!roles.some((role) =>
+    (allowedRoles as readonly string[]).includes(role))) {
     throw new HttpsError(
       "permission-denied",
       "Current Sales role is required.",
@@ -66,7 +72,12 @@ export async function currentSalesEmployee(
       "Sales session has been revoked.",
     );
   }
-  return {uid: initial.uid, roles};
+  const principal: SalesPrincipal = {uid: initial.uid, roles};
+  if (isAssignedSalesStaff(principal)) {
+    principal.organizerIds = await assignedIds(initial.uid);
+    principal.allowedActions = SALES_STAFF_ACTIONS;
+  }
+  return principal;
 }
 
 async function handleRead(
@@ -88,8 +99,14 @@ async function handleRead(
   const deps: SalesServiceDeps = {
     firestore: () => db,
     now: () => new Date(),
-    authorizeRead: async (_db, _principal, readAction) => {
+    authorizeRead: async (_db, _principal, readAction, organizerId) => {
       const current = await currentSalesEmployee(request);
+      if (isAssignedSalesStaff(principal) !== isAssignedSalesStaff(current)) {
+        throw new HttpsError("permission-denied",
+          "Sales role changed; sign in again.");
+      }
+      if (organizerId) await assertSalesStaffAccount(db, current, organizerId);
+      else await assertSalesStaffScope(db, principal);
       if (["imports.compensation.preview", "imports.history.preview"].includes(
         readAction) &&
           !current.roles.includes("adminOwner")) {
@@ -119,8 +136,17 @@ async function handleAction(
   const deps: SalesServiceDeps = {
     firestore: () => db,
     now: () => new Date(),
-    authorizeInTransaction: async () => {
+    authorizeInTransaction: async (
+      tx, _db, _principal, _action, organizerId,
+    ) => {
       const current = await currentSalesEmployee(request);
+      if (isAssignedSalesStaff(principal) !== isAssignedSalesStaff(current)) {
+        throw new HttpsError("permission-denied",
+          "Sales role changed; sign in again.");
+      }
+      if (organizerId) {
+        await assertSalesStaffAccount(db, current, organizerId, tx);
+      }
       assertSalesFinanceAuthority(current, action, request.data);
     },
   };

@@ -7,6 +7,8 @@ import {hasCurrentDraftContact} from "../sales/suppression";
 import {salesRelationshipId} from "../sales/records";
 import {assertQualifiedByRuntimePolicy} from "../sales/qualificationPolicy";
 import type {SalesPrincipal} from "../sales/types";
+import {assertSalesStaffAccount, assertSalesStaffScope,
+  isAssignedSalesStaff} from "../sales/staffAccess";
 import {requireAssignment} from "../../partners/service";
 import {expectRevision, type PartnerActor, type PartnerDeps} from "../../partners/model";
 import {Assessment, Clause, IntelligencePolicy, ScoreSnapshot,
@@ -23,7 +25,7 @@ const MAX_EVIDENCE = 50;
 
 function employee(principal: SalesPrincipal): void {
   if (principal.clientId || !principal.roles.some((role) =>
-    role === "admin" || role === "adminOwner")) {
+    role === "admin" || role === "adminOwner" || role === "salesStaff")) {
     fail("permission-denied", "An employee Sales role is required.");
   }
 }
@@ -72,13 +74,23 @@ async function mutateAuthorized<T extends Record<string, unknown>>(
     await access.inTransaction(tx);
     await assertSalesMaterialPrivacyOpen(db, material, tx);
     const scoped = material as {clauseId?: string; draftId?: string};
+    await assertSalesStaffScope(db, principal, tx);
+    const accountId = (material as {organizerId?: string})?.organizerId;
+    if (accountId) await assertSalesStaffAccount(db, principal, accountId, tx);
     if (scoped?.clauseId) {
-      await assertSalesMaterialPrivacyOpen(db,
-        (await tx.get(db.collection("salesIntelligenceClauses").doc(scoped.clauseId))).data(), tx);
+      const clause = (await tx.get(db.collection("salesIntelligenceClauses").doc(scoped.clauseId))).data();
+      if (isAssignedSalesStaff(principal)) {
+        await assertSalesStaffAccount(db, principal, id(clause?.organizerId), tx);
+      }
+      await assertSalesMaterialPrivacyOpen(db, clause, tx);
     }
     if (scoped?.draftId) {
-      await assertSalesMaterialPrivacyOpen(db,
-        (await tx.get(db.collection("salesOutreachDrafts").doc(scoped.draftId))).data(), tx);
+      const draft = (await tx.get(db.collection("salesOutreachDrafts").doc(scoped.draftId))).data();
+      if (isAssignedSalesStaff(principal)) {
+        await assertSalesStaffAccount(db, principal, id(draft?.organizerId), tx);
+        if (draft?.participantScope) fail("permission-denied", "Partner drafts retain their separate authority.");
+      }
+      await assertSalesMaterialPrivacyOpen(db, draft, tx);
     }
     const existing = await tx.get(ref);
     if (existing.exists) {
@@ -245,6 +257,7 @@ export async function getIntelligenceScore(deps: IntelligenceDeps,
   employee(principal);
   const input = object(payload, ["organizerId"]);
   const organizerId = id(input.organizerId);
+  await assertSalesStaffAccount(deps.db, principal, organizerId);
   await deps.authorize(principal, false);
   const db = deps.db;
   const [accountSnap, policySnap, evidenceSnap] = await Promise.all([
@@ -269,6 +282,7 @@ export async function getIntelligenceScore(deps: IntelligenceDeps,
     assessments.filter((doc) => doc.exists).map((doc) => doc.data() as Assessment),
     evidenceSnap.docs.map((doc) => doc.data()), deps.now().toISOString());
   await assertSalesPrivacyOpenRead(db, organizerId);
+  await assertSalesStaffAccount(db, principal, organizerId);
   return {snapshot};
 }
 
@@ -278,6 +292,7 @@ export async function getIntelligenceCatalog(deps: IntelligenceDeps,
   employee(principal);
   const input = object(payload, ["organizerId"]);
   const organizerId = id(input.organizerId);
+  await assertSalesStaffAccount(deps.db, principal, organizerId);
   await deps.authorize(principal, false);
   const db = deps.db;
   const [account, policySnap, clauseSnap] = await Promise.all([
@@ -325,6 +340,7 @@ export async function getIntelligenceCatalog(deps: IntelligenceDeps,
   }
   await deps.authorize(principal, false);
   await assertSalesPrivacyOpenRead(db, organizerId);
+  await assertSalesStaffAccount(db, principal, organizerId);
   return {policy, assessments: assessments.map((row) => ({
     schemaVersion: 1, classification: "sales_private", assessmentId: row.assessmentId,
     organizerId: row.organizerId, factorId: row.factorId, revision: row.revision,
@@ -350,6 +366,7 @@ export async function listOutreachDrafts(deps: IntelligenceDeps,
   employee(principal);
   const input = object(payload, ["organizerId"]);
   const organizerId = id(input.organizerId);
+  await assertSalesStaffAccount(deps.db, principal, organizerId);
   await deps.authorize(principal, false);
   const [account, draftsSnap] = await Promise.all([
     deps.db.collection("organizerSalesAccounts").doc(organizerId).get(),
@@ -363,7 +380,8 @@ export async function listOutreachDrafts(deps: IntelligenceDeps,
   if (draftsSnap.size > 50) {
     return fail("resource-exhausted", "Draft list needs curation before review.");
   }
-  const rows = draftsSnap.docs.map((doc) => doc.data());
+  const rows = draftsSnap.docs.map((doc) => doc.data()).filter((row) =>
+    !isAssignedSalesStaff(principal) || !row.participantScope);
   if (rows.some((row) => row.classification !== "sales_private" ||
       row.organizerId !== organizerId || typeof row.draftId !== "string" ||
       typeof row.draft?.contentHash !== "string" ||
@@ -371,6 +389,7 @@ export async function listOutreachDrafts(deps: IntelligenceDeps,
     return fail("failed-precondition", "Private draft list contains invalid records.");
   }
   await deps.authorize(principal, false);
+  await assertSalesStaffAccount(deps.db, principal, organizerId);
   return {rows: rows.map((row) => ({draftId: row.draftId,
     contactId: row.contactId, opportunityId: row.opportunityId,
     subject: row.draft.subject, status: row.status,
@@ -542,8 +561,11 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
   tx?: FirebaseFirestore.Transaction): Promise<Record<string, unknown>> {
   employee(principal);
   return buildOutreachInputCore(deps, payload, {
-    authorize: async () => {
-      await deps.authorize(principal, false); return null;
+    authorize: async (readTx) => {
+      await deps.authorize(principal, false);
+      await assertSalesStaffAccount(deps.db, principal,
+        id((payload as {organizerId?: unknown}).organizerId), readTx);
+      return null;
     },
   }, tx);
 }
@@ -902,6 +924,12 @@ export async function recordPartnerOperationsDraft(deps: PartnerDeps,
 
 async function requireCurrentDraft(deps: IntelligenceDeps,
   principal: SalesPrincipal, tx: FirebaseFirestore.Transaction, draftId: string) {
+  if (isAssignedSalesStaff(principal)) {
+    const stored = (await tx.get(deps.db.collection("salesOutreachDrafts").doc(draftId))).data();
+    if (stored?.participantScope) {
+      fail("permission-denied", "Partner drafts retain their separate authority.");
+    }
+  }
   return requireCurrentDraftCore(deps, tx, draftId,
     (sourceRequest) => buildOutreachInput(deps, principal, sourceRequest, tx));
 }
