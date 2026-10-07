@@ -65,10 +65,12 @@ void main() {
                 ).copyWith(textScaler: TextScaler.linear(scale)),
                 child: child!,
               ),
-              home: ProgramCreatePageBody(
-                organizerName: 'Kapoor Family',
-                controller: controller,
-                onSaved: savedIds.add,
+              home: CatchScaffold.stepFlow(
+                body: ProgramCreatePageBody(
+                  organizerName: 'Kapoor Family',
+                  controller: controller,
+                  onSaved: savedIds.add,
+                ),
               ),
             ),
           );

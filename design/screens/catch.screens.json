@@ -1507,20 +1507,9 @@
           "expression": "CatchScaffold.stepFlow",
           "bodyGeometry": "intrinsic",
           "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostCreateProgramScreen"
-          ],
-          "file": "lib/programs/presentation/program_create_screen.dart",
-          "symbol": "_ProgramCreatePageBodyState",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
         }
       ],
-      "reason": "Program creation and access states share the established event form step-flow owner."
+      "reason": "Program creation and access states share one route-owned event form step-flow surface."
     }
   },
   "layoutOnlyRoutes": {
@@ -28139,6 +28128,16 @@
           "kind": "loading",
           "status": "implemented",
           "source": "Organizer access resolves with established loading chrome.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "form",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Authorized organizer access resolves to the retained Program creation form.",
           "nextAction": "Run focused regressions and inspect rendered states before completion.",
           "previewIds": [
             "programCreateFormStates"

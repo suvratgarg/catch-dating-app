@@ -13023,6 +13023,12 @@
               "notes": "Organizer access resolves with established loading chrome."
             },
             {
+              "id": "form",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Authorized organizer access resolves to the retained Program creation form."
+            },
+            {
               "id": "theme",
               "kind": "theme",
               "status": "implemented",

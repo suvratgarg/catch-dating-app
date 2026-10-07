@@ -6,6 +6,7 @@ import 'package:catch_dating_app/programs/presentation/program_create_controller
 import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -131,9 +132,11 @@ class _ProgramFormFixtureState extends State<_ProgramFormFixture> {
   }
 
   @override
-  Widget build(BuildContext context) => ProgramCreatePageBody(
-    organizerName: 'Kapoor Family',
-    controller: controller,
-    onSaved: (_) {},
+  Widget build(BuildContext context) => CatchScaffold.stepFlow(
+    body: ProgramCreatePageBody(
+      organizerName: 'Kapoor Family',
+      controller: controller,
+      onSaved: (_) {},
+    ),
   );
 }

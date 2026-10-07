@@ -17574,9 +17574,11 @@ class _ProgramCreateCaptureFixtureState
   }
 
   @override
-  Widget build(BuildContext context) => ProgramCreatePageBody(
-    organizerName: 'Kapoor Family',
-    controller: controller,
-    onSaved: (_) {},
+  Widget build(BuildContext context) => CatchScaffold.stepFlow(
+    body: ProgramCreatePageBody(
+      organizerName: 'Kapoor Family',
+      controller: controller,
+      onSaved: (_) {},
+    ),
   );
 }

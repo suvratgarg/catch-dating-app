@@ -65,9 +65,9 @@ class ProgramCreateScreen extends ConsumerWidget {
         organizerId: organizerId,
       )),
     );
-    return controller.when(
-      loading: () => CatchScaffold.stepFlow(
-        body: Column(
+    return CatchScaffold.stepFlow(
+      body: controller.when(
+        loading: () => Column(
           children: [
             CatchStepHeader(
               title: context.l10n.programsCreateTitle,
@@ -83,9 +83,7 @@ class ProgramCreateScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-      error: (error, _) => CatchScaffold.stepFlow(
-        body: Column(
+        error: (error, _) => Column(
           children: [
             CatchStepHeader(
               title: context.l10n.programsCreateTitle,
@@ -110,13 +108,11 @@ class ProgramCreateScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-      data: (controller) => CatchAsyncBoundary<List<Club>>(
-        value: ref.watch(hostOperableClubsProvider(uid)),
-        retainDataOn: const {},
-        onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
-        loadingBuilder: (_) => CatchScaffold.stepFlow(
-          body: Column(
+        data: (controller) => CatchAsyncBoundary<List<Club>>(
+          value: ref.watch(hostOperableClubsProvider(uid)),
+          retainDataOn: const {},
+          onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+          loadingBuilder: (_) => Column(
             children: [
               CatchStepHeader(
                 title: context.l10n.programsCreateTitle,
@@ -134,9 +130,7 @@ class ProgramCreateScreen extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-        errorBuilder: (_, error, _, retry) => CatchScaffold.stepFlow(
-          body: Column(
+          errorBuilder: (_, error, _, retry) => Column(
             children: [
               CatchStepHeader(
                 title: context.l10n.programsCreateTitle,
@@ -156,16 +150,14 @@ class ProgramCreateScreen extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-        builder: (context, clubs) {
-          final organizer = clubs
-              .where((club) => club.id == organizerId)
-              .firstOrNull;
-          final selected = ref.watch(hostOrganizerSelectionProvider(uid));
-          if (organizer == null ||
-              (selected != null && selected != organizerId)) {
-            return CatchScaffold.stepFlow(
-              body: Column(
+          builder: (context, clubs) {
+            final organizer = clubs
+                .where((club) => club.id == organizerId)
+                .firstOrNull;
+            final selected = ref.watch(hostOrganizerSelectionProvider(uid));
+            if (organizer == null ||
+                (selected != null && selected != organizerId)) {
+              return Column(
                 children: [
                   CatchStepHeader(
                     title: context.l10n.programsCreateTitle,
@@ -184,27 +176,27 @@ class ProgramCreateScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
+              );
+            }
+            return ProgramCreatePageBody(
+              key: ValueKey('program-create-$uid-$organizerId'),
+              organizerName: organizer.name,
+              controller: controller,
+              onSaved: (programId) => context.goNamed(
+                Routes.hostEventsScreen.name,
+                queryParameters: {
+                  'organizerId': organizerId,
+                  'programId': programId,
+                },
+                extra: OrganizerProgramListAnchor(
+                  accountId: uid,
+                  organizerId: organizerId,
+                  row: controller.confirmedRow!,
+                ),
               ),
             );
-          }
-          return ProgramCreatePageBody(
-            key: ValueKey('program-create-$uid-$organizerId'),
-            organizerName: organizer.name,
-            controller: controller,
-            onSaved: (programId) => context.goNamed(
-              Routes.hostEventsScreen.name,
-              queryParameters: {
-                'organizerId': organizerId,
-                'programId': programId,
-              },
-              extra: OrganizerProgramListAnchor(
-                accountId: uid,
-                organizerId: organizerId,
-                row: controller.confirmedRow!,
-              ),
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -340,201 +332,191 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
         onPopInvokedWithResult: (popped, _) {
           if (!popped) _close();
         },
-        child: CatchScaffold.stepFlow(
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchStepHeader(
-                title: l10n.programsCreateTitle,
-                subtitle: widget.organizerName,
-                stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
-                compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
-                  l10n,
-                ),
-                onBack: controller.saving ? null : _close,
-                leadingType: CatchTopBarNavigationMode.back,
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: CatchLayout.hostCreateEventFormLaneMaxWidth,
-                    ),
-                    child: ListView(
-                      padding: CatchInsets.formStepBodyWithBottomActions,
-                      children: [
-                        if (controller.actorChanged)
-                          CatchBanner.error(
-                            message: l10n.programsCreateActorChangedBody,
-                          ),
-                        AbsorbPointer(
-                          absorbing: controller.fieldsLocked,
-                          child: CatchSectionList(
-                            emptyStateOmitted: true,
-                            children: [
-                              CatchSection.fieldRows(
-                                first: true,
-                                children: [
-                                  CatchField.input(
-                                    copy: copy,
-                                    key: const ValueKey('program-create-title'),
-                                    title: l10n.programsCreateNameLabel,
-                                    controller: _title,
-                                    contract: CatchContractConstraints
-                                        .createOrganizerProgramCallablePayloadTitle,
-                                    inputHint: l10n.programsCreateNameHint,
-                                    textCapitalization:
-                                        TextCapitalization.words,
-                                    onChanged: (value) => controller.edit(
-                                      values.copyWith(title: value),
-                                    ),
-                                    error: _fieldError(
-                                      context,
-                                      ProgramCreateField.title,
-                                    ),
-                                  ),
-                                  CatchField<ProgramKind>.choices(
-                                    copy: copy,
-                                    key: const ValueKey('program-create-kind'),
-                                    title: l10n.programsCreateKindLabel,
-                                    body: values.kind == null
-                                        ? l10n.programsCreateChooseKind
-                                        : programKindLabel(
-                                            context,
-                                            values.kind!,
-                                          ),
-                                    contract: CatchContractConstraints
-                                        .createOrganizerProgramCallablePayloadKind,
-                                    contractValueBuilder: (kind) => kind.name,
-                                    values: ProgramKind.values,
-                                    itemLabelBuilder: (kind) =>
-                                        programKindLabel(context, kind),
-                                    selected: {
-                                      if (values.kind != null) values.kind!,
-                                    },
-                                    onSelectionChanged: (selection) {
-                                      if (selection.isNotEmpty) {
-                                        controller.edit(
-                                          values.copyWith(
-                                            kind: selection.single,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    error: _fieldError(
-                                      context,
-                                      ProgramCreateField.kind,
-                                    ),
-                                  ),
-                                  CatchField.input(
-                                    copy: copy,
-                                    key: const ValueKey(
-                                      'program-create-timezone',
-                                    ),
-                                    title: l10n.programsCreateTimezoneLabel,
-                                    controller: _timezone,
-                                    contract: CatchContractConstraints
-                                        .createOrganizerProgramCallablePayloadTimezone,
-                                    inputHint: l10n.programsCreateTimezoneHint,
-                                    onChanged: (value) => controller.edit(
-                                      values.copyWith(timezone: value),
-                                    ),
-                                    error: _fieldError(
-                                      context,
-                                      ProgramCreateField.timezone,
-                                    ),
-                                  ),
-                                  CatchField.nav(
-                                    copy: copy,
-                                    key: const ValueKey('program-create-start'),
-                                    title: l10n.programsCreateStartLabel,
-                                    body: values.startsAt == null
-                                        ? l10n.hostsWhenStepPlaceholderSelectADate
-                                        : MaterialLocalizations.of(
-                                            context,
-                                          ).formatMediumDate(values.startsAt!),
-                                    icon: CatchIcons.calendarTodayOutlined,
-                                    onTap: () => _pickDate(start: true),
-                                    error: _fieldError(
-                                      context,
-                                      ProgramCreateField.start,
-                                    ),
-                                  ),
-                                  CatchField.nav(
-                                    copy: copy,
-                                    key: const ValueKey('program-create-end'),
-                                    title: l10n.programsCreateEndLabel,
-                                    body: values.endsAt == null
-                                        ? l10n.hostsWhenStepPlaceholderSelectADate
-                                        : MaterialLocalizations.of(
-                                            context,
-                                          ).formatMediumDate(values.endsAt!),
-                                    icon: CatchIcons.calendarMonthOutlined,
-                                    onTap: () => _pickDate(start: false),
-                                    error: _fieldError(
-                                      context,
-                                      ProgramCreateField.end,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchStepHeader(
+              title: l10n.programsCreateTitle,
+              subtitle: widget.organizerName,
+              stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
+              compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(l10n),
+              onBack: controller.saving ? null : _close,
+              leadingType: CatchTopBarNavigationMode.back,
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.hostCreateEventFormLaneMaxWidth,
+                  ),
+                  child: ListView(
+                    padding: CatchInsets.formStepBodyWithBottomActions,
+                    children: [
+                      if (controller.actorChanged)
+                        CatchBanner.error(
+                          message: l10n.programsCreateActorChangedBody,
                         ),
-                        if (controller.commandPending && !controller.confirmed)
-                          CatchBanner(
-                            message: controller.programId == null
-                                ? l10n.programsCreatePendingBody
-                                : l10n.programsCreateConfirmingBody,
-                          ),
-                        if (controller.confirmed)
-                          CatchBanner(message: l10n.programsCreateSavedBody),
-                        if (controller.error != null)
-                          CatchBanner.error(
-                            message:
-                                controller.error is ProgramNotVisibleException
-                                ? l10n.programsCreateNotVisibleBody
-                                : appErrorMessage(
-                                    controller.error!,
-                                    l10n: l10n,
-                                    context: AppErrorContext.event,
+                      AbsorbPointer(
+                        absorbing: controller.fieldsLocked,
+                        child: CatchSectionList(
+                          emptyStateOmitted: true,
+                          children: [
+                            CatchSection.fieldRows(
+                              first: true,
+                              children: [
+                                CatchField.input(
+                                  copy: copy,
+                                  key: const ValueKey('program-create-title'),
+                                  title: l10n.programsCreateNameLabel,
+                                  controller: _title,
+                                  contract: CatchContractConstraints
+                                      .createOrganizerProgramCallablePayloadTitle,
+                                  inputHint: l10n.programsCreateNameHint,
+                                  textCapitalization: TextCapitalization.words,
+                                  onChanged: (value) => controller.edit(
+                                    values.copyWith(title: value),
                                   ),
-                          ),
-                      ],
-                    ),
+                                  error: _fieldError(
+                                    context,
+                                    ProgramCreateField.title,
+                                  ),
+                                ),
+                                CatchField<ProgramKind>.choices(
+                                  copy: copy,
+                                  key: const ValueKey('program-create-kind'),
+                                  title: l10n.programsCreateKindLabel,
+                                  body: values.kind == null
+                                      ? l10n.programsCreateChooseKind
+                                      : programKindLabel(context, values.kind!),
+                                  contract: CatchContractConstraints
+                                      .createOrganizerProgramCallablePayloadKind,
+                                  contractValueBuilder: (kind) => kind.name,
+                                  values: ProgramKind.values,
+                                  itemLabelBuilder: (kind) =>
+                                      programKindLabel(context, kind),
+                                  selected: {
+                                    if (values.kind != null) values.kind!,
+                                  },
+                                  onSelectionChanged: (selection) {
+                                    if (selection.isNotEmpty) {
+                                      controller.edit(
+                                        values.copyWith(kind: selection.single),
+                                      );
+                                    }
+                                  },
+                                  error: _fieldError(
+                                    context,
+                                    ProgramCreateField.kind,
+                                  ),
+                                ),
+                                CatchField.input(
+                                  copy: copy,
+                                  key: const ValueKey(
+                                    'program-create-timezone',
+                                  ),
+                                  title: l10n.programsCreateTimezoneLabel,
+                                  controller: _timezone,
+                                  contract: CatchContractConstraints
+                                      .createOrganizerProgramCallablePayloadTimezone,
+                                  inputHint: l10n.programsCreateTimezoneHint,
+                                  onChanged: (value) => controller.edit(
+                                    values.copyWith(timezone: value),
+                                  ),
+                                  error: _fieldError(
+                                    context,
+                                    ProgramCreateField.timezone,
+                                  ),
+                                ),
+                                CatchField.nav(
+                                  copy: copy,
+                                  key: const ValueKey('program-create-start'),
+                                  title: l10n.programsCreateStartLabel,
+                                  body: values.startsAt == null
+                                      ? l10n.hostsWhenStepPlaceholderSelectADate
+                                      : MaterialLocalizations.of(
+                                          context,
+                                        ).formatMediumDate(values.startsAt!),
+                                  icon: CatchIcons.calendarTodayOutlined,
+                                  onTap: () => _pickDate(start: true),
+                                  error: _fieldError(
+                                    context,
+                                    ProgramCreateField.start,
+                                  ),
+                                ),
+                                CatchField.nav(
+                                  copy: copy,
+                                  key: const ValueKey('program-create-end'),
+                                  title: l10n.programsCreateEndLabel,
+                                  body: values.endsAt == null
+                                      ? l10n.hostsWhenStepPlaceholderSelectADate
+                                      : MaterialLocalizations.of(
+                                          context,
+                                        ).formatMediumDate(values.endsAt!),
+                                  icon: CatchIcons.calendarMonthOutlined,
+                                  onTap: () => _pickDate(start: false),
+                                  error: _fieldError(
+                                    context,
+                                    ProgramCreateField.end,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (controller.commandPending && !controller.confirmed)
+                        CatchBanner(
+                          message: controller.programId == null
+                              ? l10n.programsCreatePendingBody
+                              : l10n.programsCreateConfirmingBody,
+                        ),
+                      if (controller.confirmed)
+                        CatchBanner(message: l10n.programsCreateSavedBody),
+                      if (controller.error != null)
+                        CatchBanner.error(
+                          message:
+                              controller.error is ProgramNotVisibleException
+                              ? l10n.programsCreateNotVisibleBody
+                              : appErrorMessage(
+                                  controller.error!,
+                                  l10n: l10n,
+                                  context: AppErrorContext.event,
+                                ),
+                        ),
+                    ],
                   ),
                 ),
               ),
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: CatchInsets.pageBodyTight,
-                  child: CatchButton(
-                    key: const ValueKey('program-create-submit'),
-                    label: controller.saving
-                        ? (controller.programId == null
-                              ? l10n.programsCreateSaving
-                              : l10n.programsCreateConfirming)
-                        : controller.confirmed
-                        ? l10n.programsCreateViewEvents
-                        : controller.commandPending
-                        ? l10n.programsCreateRetry
-                        : l10n.programsCreateSubmit,
-                    onPressed: controller.saving || controller.actorChanged
-                        ? null
-                        : controller.confirmed
-                        ? () => widget.onSaved(controller.programId!)
-                        : _submit,
-                    status: controller.saving
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    fullWidth: true,
-                  ),
+            ),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: CatchInsets.pageBodyTight,
+                child: CatchButton(
+                  key: const ValueKey('program-create-submit'),
+                  label: controller.saving
+                      ? (controller.programId == null
+                            ? l10n.programsCreateSaving
+                            : l10n.programsCreateConfirming)
+                      : controller.confirmed
+                      ? l10n.programsCreateViewEvents
+                      : controller.commandPending
+                      ? l10n.programsCreateRetry
+                      : l10n.programsCreateSubmit,
+                  onPressed: controller.saving || controller.actorChanged
+                      ? null
+                      : controller.confirmed
+                      ? () => widget.onSaved(controller.programId!)
+                      : _submit,
+                  status: controller.saving
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  fullWidth: true,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     },
