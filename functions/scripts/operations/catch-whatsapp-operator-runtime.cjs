@@ -119,6 +119,16 @@ function liveSdk(profile, beforeDispatch) {
   const {getFirestore} = require("firebase-admin/firestore");
   const {SecretManagerServiceClient} = require("@google-cloud/secret-manager");
   const {GoogleAuth} = require("google-auth-library");
+  class MetadataAuth extends GoogleAuth {
+    async getClient() {
+      const client = await super.getClient();
+      // ADC may replace constructor quota options. Pin the public client's
+      // in-memory request context after resolution; credential bytes stay intact.
+      client.quotaProjectId = profile.scope.projectId;
+      if (client.quotaProjectId !== profile.scope.projectId) unavailable();
+      return client;
+    }
+  }
   const {createCatchGoogleFirebaseLookupTransport} = require("../../lib/catchMessaging/whatsappFirebaseAuthority.js");
   const app = initializeApp({projectId: profile.scope.projectId},
     "catch-operator-" + randomBytes(16).toString("hex"));
@@ -133,7 +143,7 @@ function liveSdk(profile, beforeDispatch) {
   return {auth, db: getFirestore(app),
     transport: createCatchGoogleFirebaseLookupTransport(profile.scope.projectId),
     secrets: new SecretManagerServiceClient({projectId: profile.scope.projectId,
-      auth: new GoogleAuth({projectId: profile.scope.projectId,
+      auth: new MetadataAuth({projectId: profile.scope.projectId,
         scopes: ["https://www.googleapis.com/auth/cloud-platform"],
         clientOptions: {quotaProjectId: profile.scope.projectId}})})};
 }

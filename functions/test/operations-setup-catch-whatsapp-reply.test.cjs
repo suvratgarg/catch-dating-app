@@ -974,13 +974,16 @@ test("default SDK rejects emulator redirection before any ADC or network initial
   }
 });
 
-test("default SDK binds lookup and Secret Manager auth to the reviewed project and quota", async () => {
+test("default SDK binds lookup and effective Secret Manager auth quota without changing credentials", async context => {
   const h = runtimeFixture();
   const Module = require("node:module");
   const load = Module._load;
   let secretOptions;
   let lookupProject;
   try {
+    const {GoogleAuth, UserRefreshClient} = require("google-auth-library");
+    let resolved;
+    context.mock.method(GoogleAuth.prototype, "getClient", async () => resolved);
     Module._load = function(name, ...args) {
       if (name === "firebase-admin/app") return {initializeApp: options => {
         assert.equal(options.projectId, h.profile.scope.projectId);
@@ -1007,6 +1010,24 @@ test("default SDK binds lookup and Secret Manager auth to the reviewed project a
     assert.equal(secretOptions.projectId, h.profile.scope.projectId);
     assert.equal(await secretOptions.auth.getProjectId(), h.profile.scope.projectId);
     assert.equal(secretOptions.auth.clientOptions.quotaProjectId, h.profile.scope.projectId);
+    for (const quota of [undefined, "foreign-quota-project"]) {
+      const json = {type: "authorized_user", client_id: "synthetic-client-id",
+        client_secret: "synthetic-client-secret", refresh_token: "synthetic-refresh-token",
+        ...(quota ? {quota_project_id: quota} : {})};
+      const original = structuredClone(json);
+      resolved = UserRefreshClient.fromJSON(json);
+      resolved.setCredentials({access_token: "synthetic-existing-access-token",
+        expiry_date: Date.now() + 60 * 60 * 1000});
+      const credentials = structuredClone(resolved.credentials);
+      assert.equal(resolved.quotaProjectId, quota, "synthetic ADC can override constructor options");
+      const client = await secretOptions.auth.getClient();
+      assert.equal(client, resolved);
+      assert.equal(client.quotaProjectId, h.profile.scope.projectId);
+      const headers = await client.getRequestHeaders("https://secretmanager.googleapis.com");
+      assert.equal(headers.get("X-Goog-User-Project"), h.profile.scope.projectId);
+      assert.deepEqual(client.credentials, credentials);
+      assert.deepEqual(json, original);
+    }
     assert.equal(h.counts().writes, 0);
     assert.equal(h.counts().setters, 0);
   } finally {Module._load = load; h.close();}
