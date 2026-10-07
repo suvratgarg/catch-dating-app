@@ -1,5 +1,5 @@
 import {validateHostGroupDetailDocument} from
-  "../shared/generated/schemaValidators";
+  "../shared/generated/validators/hostGroupDetailDocument";
 import {savedAudienceResponse} from "../organizers/organizerSavedAudiences";
 import {isDeepStrictEqual} from "node:util";
 import type {HostFormSummaryDocument, HostEventSummaryDocument,

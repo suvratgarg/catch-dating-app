@@ -2,7 +2,7 @@ import {responseSummaryId} from "./responseIds";
 import type {HostResponseSummaryDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {validateHostResponseSummaryDocument} from
-  "../shared/generated/schemaValidators";
+  "../shared/generated/validators/hostResponseSummaryDocument";
 
 /** A replay must retain redacted audit metadata, never re-delete its row. */
 export function redactResponseSummary(value: unknown, organizerId: string,
