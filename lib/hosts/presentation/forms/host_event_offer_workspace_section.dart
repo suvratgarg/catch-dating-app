@@ -14,69 +14,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class HostEventOfferWorkspaceCopy {
-  const HostEventOfferWorkspaceCopy({
-    required this.create,
-    required this.selectEvent,
-    required this.emptyEvents,
-    required this.untitledEvent,
-    required this.loadMoreEvents,
-    required this.needsContact,
-    required this.convertContact,
-    required this.selectionChanged,
-    required this.loadFailed,
-    required this.issued,
-    required this.refresh,
-    required this.existing,
-    required this.noOffers,
-    required this.configurePayment,
-    required this.openSettings,
-    required this.statusDraft,
-    required this.statusOffered,
-    required this.statusWithdrawn,
-    required this.statusExpired,
-    required this.personalPaymentLink,
-    required this.openExisting,
-    required this.handoffPrepare,
-    required this.handoffBlocked,
-    required this.handoffDisclosure,
-    required this.openWhatsapp,
-    required this.copyMessage,
-    required this.messageCopied,
-    required this.handoffOpenFailed,
-    required this.review,
-  });
-
-  final String create;
-  final String selectEvent;
-  final String emptyEvents;
-  final String untitledEvent;
-  final String loadMoreEvents;
-  final String needsContact;
-  final String convertContact;
-  final String selectionChanged;
-  final String loadFailed;
-  final String issued;
-  final String refresh;
-  final String existing;
-  final String noOffers;
-  final String configurePayment;
-  final String openSettings;
-  final String statusDraft;
-  final String statusOffered;
-  final String statusWithdrawn;
-  final String statusExpired;
-  final String Function(String name) personalPaymentLink;
-  final String openExisting;
-  final String handoffPrepare;
-  final String handoffBlocked;
-  final String handoffDisclosure;
-  final String openWhatsapp;
-  final String copyMessage;
-  final String messageCopied;
-  final String handoffOpenFailed;
-  final HostEventOfferReviewCopy review;
-}
+part 'host_event_offer_workspace_copy.dart';
 
 /// One manager's reviewed query selection. No offer is prepared from a list
 /// label alone: every selected response is read again and the materialized
@@ -88,6 +26,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     required this.accountId,
     this.queryController,
     this.responseId,
+    this.recipientLabel,
     required this.offerController,
     required this.listOffers,
     required this.getOffer,
@@ -114,6 +53,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   final String? accountId;
   final HostResponseQueryController? queryController;
   final String? responseId;
+  final String? recipientLabel;
   final HostEventOfferController offerController;
   final Future<Map<String, Object?>> Function({
     required String organizerId,
@@ -258,11 +198,18 @@ class _HostEventOfferWorkspaceSectionState
   Widget build(BuildContext context) {
     final copy = widget.copy;
     final selected = _controller.selectedOffer;
-    if (_controller.event != null &&
+    final event = _controller.event;
+    final configuration = _controller.configuration;
+    final draft = _controller.draft;
+    final commitRequestId = _controller.commitRequestId;
+    if (event != null &&
+        !_controller.preparing &&
         _controller.missingContacts.isEmpty &&
-        _controller.configuration?.suggestedExpiresAt != null &&
+        configuration != null &&
+        configuration.suggestedExpiresAt != null &&
         selected == null &&
-        _controller.draft != null) {
+        draft != null &&
+        commitRequestId != null) {
       return HostEventOfferReviewSection(
         layoutBuilder: (body, action) => HostEventOfferWorkspaceLayout(
           layoutBuilder: widget.layoutBuilder,
@@ -274,11 +221,11 @@ class _HostEventOfferWorkspaceSectionState
           action: action,
         ),
         controller: widget.offerController,
-        draft: _controller.draft!,
+        draft: draft,
         amountLabel: _amountLabel(context),
         showEvent: false,
-        eventTitle: _controller.event!.name?.trim().isNotEmpty == true
-            ? _controller.event!.name!
+        eventTitle: event.name?.trim().isNotEmpty == true
+            ? event.name!
             : copy.untitledEvent,
         contactLabel: (id) =>
             _controller.details
@@ -288,9 +235,9 @@ class _HostEventOfferWorkspaceSectionState
                 .identity
                 .primaryLabel ??
             context.l10n.hostFormResponsesAnonymous,
-        eventStartsAt: _controller.configuration!.startsAt,
+        eventStartsAt: configuration.startsAt,
         now: widget.now,
-        commitRequestId: _controller.commitRequestId!,
+        commitRequestId: commitRequestId,
         copy: copy.review,
       );
     }
@@ -398,21 +345,34 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
 
   String _eventTimeLabel(HostOfferEventTarget event) {
     final local = event.startTime.toLocal();
-    final displayed =
-        '${AppTimeFormatters.dateTime(local)} '
-        '${local.timeZoneName}';
-    final eventZone = event.timezone?.trim();
-    return eventZone == null ||
-            eventZone.isEmpty ||
-            eventZone == local.timeZoneName
-        ? displayed
-        : '$displayed · $eventZone';
+    // The clock is shown in the device's local zone, with one matching label.
+    return '${AppTimeFormatters.dateTime(local)} ${local.timeZoneName}';
   }
 
   @override
   Widget build(BuildContext context) {
     final copy = workspace.copy;
     final intent = workspace.queryController?.selectionIntent;
+    final selectedRow = controller.ids.length == 1
+        ? workspace.queryController?.view.rows
+              .where((row) => row.responseId == controller.ids.single)
+              .firstOrNull
+        : null;
+    final recipient =
+        (workspace.recipientLabel ?? selectedRow?.identity.primaryLabel)
+            ?.trim();
+    final contextLabel = recipient?.isNotEmpty == true
+        ? copy.chooseForRecipient(recipient!)
+        : controller.ids.length > 1
+        ? copy.chooseForRecipients(controller.ids.length)
+        : copy.selectEvent;
+    final stageLabel = switch (controller.stage) {
+      HostOfferWorkspaceStage.loadingEvents => copy.loadingEvents,
+      HostOfferWorkspaceStage.preparingOffer => copy.preparingOffer,
+      HostOfferWorkspaceStage.loadingOffer => copy.loadingOffer,
+      HostOfferWorkspaceStage.preparingMessage => copy.preparingMessage,
+      HostOfferWorkspaceStage.idle => null,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -427,26 +387,13 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
             ),
           ),
         if (controller.ids.isNotEmpty) ...[
-          if (controller.event == null) ...[
-            CatchSection.plain(
-              child: Text(
-                copy.selectEvent,
-                style: CatchTextStyles.sectionTitle(context),
-              ),
+          CatchSection.plain(
+            child: Text(
+              contextLabel,
+              style: CatchTextStyles.sectionTitle(context),
             ),
-            if (workspace.onCreateEvent != null) gapH12,
-            if (workspace.onCreateEvent != null)
-              CatchSection.plain(
-                child: CatchButton(
-                  key: const ValueKey('offer-create-event'),
-                  label: context.l10n.hostsHostEventsListLabelNewEvent,
-                  fullWidth: true,
-                  variant: CatchButtonVariant.secondary,
-                  onPressed: controller.loading
-                      ? null
-                      : workspace.onCreateEvent,
-                ),
-              ),
+          ),
+          if (controller.event == null) ...[
             if (controller.events.isEmpty && !controller.loading)
               CatchSection.plain(
                 child: Text(
@@ -480,6 +427,19 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   onPressed: controller.loading ? null : controller.loadEvents,
                 ),
               ),
+            if (workspace.onCreateEvent != null) gapH12,
+            if (workspace.onCreateEvent != null)
+              CatchSection.plain(
+                child: CatchButton(
+                  key: const ValueKey('offer-create-event'),
+                  label: context.l10n.hostsHostEventsListLabelNewEvent,
+                  fullWidth: true,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: controller.loading
+                      ? null
+                      : workspace.onCreateEvent,
+                ),
+              ),
           ],
           if (controller.event != null) ...[
             CatchSection.fieldRows(
@@ -491,9 +451,8 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   body:
                       '${_eventTimeLabel(controller.event!)} · ${context.l10n.hostEventOfferChangeEvent}',
                   onTap:
-                      controller.loading ||
-                          workspace.offerController.view.pendingRequestId !=
-                              null
+                      controller.loading && !controller.canCancelPreparation ||
+                          controller.hasUnresolvedCommand
                       ? null
                       : controller.changeEvent,
                 ),
@@ -527,7 +486,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     ),
                 ],
               ),
-            ] else if (controller.configuration?.suggestedExpiresAt == null)
+            ] else if (!controller.preparing &&
+                controller.configuration != null &&
+                controller.configuration!.suggestedExpiresAt == null)
               CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -546,7 +507,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                 ),
               )
             else if (controller.selectedOffer == null &&
-                controller.draft != null)
+                !controller.preparing &&
+                controller.draft != null &&
+                controller.commitRequestId != null)
               review!,
 
             if (controller.selectedOffer == null &&
@@ -749,11 +712,19 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
             ],
           ],
         ],
-        if (controller.loading)
+        if (stageLabel != null)
           CatchSection.plain(
-            child: Text(
-              copy.review.previewing,
-              style: CatchTextStyles.supporting(context),
+            child: Text(stageLabel, style: CatchTextStyles.supporting(context)),
+          ),
+        if (controller.preparing)
+          CatchSection.plain(
+            child: CatchButton(
+              key: const ValueKey('offer-cancel-preparation'),
+              label: copy.cancelPreparation,
+              variant: CatchButtonVariant.secondary,
+              onPressed: controller.canCancelPreparation
+                  ? controller.cancelPreparation
+                  : null,
             ),
           ),
         if (controller.hasError || controller.selectionStale) ...[
@@ -765,12 +736,13 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
               style: CatchTextStyles.supporting(context),
             ),
           ),
-          CatchSection.plain(
-            child: CatchButton(
-              label: context.l10n.sharedActionTryAgain,
-              onPressed: controller.loading ? null : controller.start,
+          if (!controller.hasUnresolvedCommand)
+            CatchSection.plain(
+              child: CatchButton(
+                label: context.l10n.sharedActionTryAgain,
+                onPressed: controller.loading ? null : controller.retry,
+              ),
             ),
-          ),
         ],
       ],
     );

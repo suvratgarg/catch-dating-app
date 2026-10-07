@@ -1789,11 +1789,11 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_form_response_detail_screen.dart:9f18426c9b741d92a2794cdee5d8d21c4cc8e84b0119dc737b4bf1df8a6f84db:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId))",
+      "siteId": "material-page:lib/hosts/presentation/forms/host_form_response_detail_screen.dart:2a8c495af2e0d3d1eca11347324cdcb2d3b8b42784ade821e7a96d137160036b:1",
+      "routeExpression": "MaterialPageRoute(builder:(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId,recipientLabel:detail.response!.response.identity.primaryLabel))",
       "sourcePath": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId)",
+      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId,recipientLabel:detail.response!.response.identity.primaryLabel)",
       "presentationTarget": "HostResponseOfferScreen",
       "fullscreenDialogExpression": null
     },

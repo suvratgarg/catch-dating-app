@@ -37468,6 +37468,60 @@ abstract class AppLocalizations {
   /// **'No eligible upcoming events are available.'**
   String get hostEventOfferSelectEventEmpty;
 
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event for {name}'**
+  String hostEventOfferChooseForRecipient({required String name});
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event for {count} people'**
+  String hostEventOfferChooseForRecipients({required int count});
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading events…'**
+  String get hostEventOfferLoadingEvents;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing offer…'**
+  String get hostEventOfferPreparing;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading offer…'**
+  String get hostEventOfferLoadingExisting;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing message…'**
+  String get hostEventOfferPreparingMessage;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel preparation'**
+  String get hostEventOfferCancelPreparation;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.'**
+  String get hostEventOfferSetupRequired;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get hostResponseAddReviewNote;
+
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
@@ -37527,12 +37581,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load more events'**
   String get hostEventOfferLoadMoreEvents;
-
-  /// Host forms to event offer action or state.
-  ///
-  /// In en, this message translates to:
-  /// **'Configure event payment terms before creating offers.'**
-  String get hostEventOfferConfigurePayment;
 
   /// Host forms to event offer action or state.
   ///
