@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_update_journal.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -49,24 +49,20 @@ class CreateEventDraftController extends _$CreateEventDraftController {
     required String organizerId,
     required String requestId,
     required PrivateEventBasics basics,
-  }) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).create(
-    organizerId: organizerId,
-    requestId: requestId,
-    basics: basics,
-  );
+  }) => ref
+      .read(privateEventSetupTimelineRepositoryProvider)
+      .create(organizerId: organizerId, requestId: requestId, basics: basics);
 
   Future<PrivateEventCreateReceipt> updatePrivateEventBasics(
     PrivateEventBasicsUpdateRequest request,
-  ) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider))
-      .update(request);
+  ) => ref.read(privateEventSetupTimelineRepositoryProvider).update(request);
 
   Future<PrivateEventBasicSummary> getPrivateEventSetup({
     required String organizerId,
     required String eventId,
-  }) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).get(
-    organizerId: organizerId,
-    eventId: eventId,
-  );
+  }) => ref
+      .read(privateEventSetupTimelineRepositoryProvider)
+      .get(organizerId: organizerId, eventId: eventId);
 
   Future<PrivateEventBasicsUpdateRequest?> loadPendingBasicsUpdate({
     required String organizerId,
