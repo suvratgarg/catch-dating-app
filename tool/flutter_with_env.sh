@@ -385,9 +385,55 @@ has_flavor=0
 has_target=0
 supplied_flavor=""
 supplied_target=""
+has_release_mode=0
+has_profile_mode=0
+has_debug_mode=0
+target_count=0
+has_prebuilt_binary=0
+has_no_build=0
+has_caller_dart_define=0
+device_count=0
+owns_entrypoint=0
+case "${flutter_args[0]:-}" in
+  run|build|drive) owns_entrypoint=1 ;;
+esac
 for ((i = 0; i < ${#flutter_args[@]}; i++)); do
   arg="${flutter_args[$i]}"
   case "$arg" in
+    --)
+      if ((owns_entrypoint == 1)); then
+        echo "This wrapper does not permit '--' for app entrypoint commands; pass an entrypoint with -t/--target." >&2
+        exit 64
+      fi
+      ;;
+    --release)
+      has_release_mode=1
+      ;;
+    --profile)
+      has_profile_mode=1
+      ;;
+    --debug)
+      has_debug_mode=1
+      ;;
+    --no-build)
+      has_no_build=1
+      ;;
+    --use-application-binary|--use-application-binary=*)
+      has_prebuilt_binary=1
+      ;;
+    -D|-D*|--dart-define|--dart-define=*|--dart-define-from-file|--dart-define-from-file=*)
+      has_caller_dart_define=1
+      ;;
+    -d|--device-id)
+      device_count=$((device_count + 1))
+      if ((i + 1 >= ${#flutter_args[@]})); then
+        echo "$arg requires a value."
+        exit 1
+      fi
+      ;;
+    --device-id=*)
+      device_count=$((device_count + 1))
+      ;;
     --flavor)
       has_flavor=1
       if ((i + 1 >= ${#flutter_args[@]})); then
@@ -402,6 +448,7 @@ for ((i = 0; i < ${#flutter_args[@]}; i++)); do
       ;;
     -t|--target)
       has_target=1
+      target_count=$((target_count + 1))
       if ((i + 1 >= ${#flutter_args[@]})); then
         echo "$arg requires a value."
         exit 1
@@ -410,18 +457,56 @@ for ((i = 0; i < ${#flutter_args[@]}; i++)); do
       ;;
     --target=*)
       has_target=1
+      target_count=$((target_count + 1))
       supplied_target="${arg#--target=}"
       ;;
   esac
 done
+
+if ((target_count > 1)); then
+  echo "This wrapper accepts exactly one -t/--target entrypoint." >&2
+  exit 64
+fi
+
+known_device_platform_mismatch=0
+case "$target_platform" in
+  ios)
+    if is_android_target "$target_device" || is_macos_target "$target_device" ||
+      is_web_target "$target_device"; then
+      known_device_platform_mismatch=1
+    fi
+    ;;
+  android)
+    if is_ios_target "$target_device" || is_macos_target "$target_device" ||
+      is_web_target "$target_device"; then
+      known_device_platform_mismatch=1
+    fi
+    ;;
+esac
 
 if [[ -n "$supplied_flavor" && "$supplied_flavor" != "$native_flavor" ]]; then
   echo "App target $app_role/$environment resolves flavor '$native_flavor'; caller supplied '$supplied_flavor'."
   exit 1
 fi
 if [[ -n "$supplied_target" && "$supplied_target" != "$target_entrypoint" ]]; then
-  echo "App target $app_role/$environment resolves entrypoint '$target_entrypoint'; caller supplied '$supplied_target'."
-  exit 1
+  cat151_acceptance_target="integration_test/cat151_razorpay_acceptance_harness.dart"
+  if [[ "$supplied_target" != "$cat151_acceptance_target" ]]; then
+    echo "App target $app_role/$environment resolves entrypoint '$target_entrypoint'; caller supplied '$supplied_target'."
+    exit 1
+  fi
+  if [[ "$app_role" != consumer || "${flutter_args[0]:-}" != run ||
+    "$local_emulators" == true || "$environment" != prod ||
+    ( "$target_platform" != android && "$target_platform" != ios ) ||
+    $device_count -ne 1 || $known_device_platform_mismatch -eq 1 ||
+    $has_profile_mode -ne 1 || $has_release_mode -eq 1 ||
+    $has_debug_mode -eq 1 || $has_prebuilt_binary -eq 1 ||
+    $has_no_build -eq 1 || $has_caller_dart_define -eq 1 ||
+    "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" == true ||
+    -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ||
+    "${ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN:-}" == 1 ]]; then
+    echo "The CAT-151 acceptance target permits only a profile-mode Consumer run on native production."
+    exit 1
+  fi
 fi
 
 if [[ "$local_emulators" != true ]]; then
