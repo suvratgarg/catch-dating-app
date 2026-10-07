@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.29
+version: 2.7.30
 updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
@@ -1418,6 +1418,14 @@ only `review`/`reply`, and the pinned recipient gets only endpoint-bound `receiv
 The operator must accept the broader Admin grant before live approval. Readiness
 revoke does not remove that Admin claim or undo a send. There is no second user,
 Google identity, new IAM role or global Auth mutex.
+
+The existing recipient's exact `{admin: true}` claim may be preserved by the
+reviewed plan. Its exact UID and full claim hash remain bound to source and
+approval and are rechecked before bootstrap mutations and during reconciliation. The CLI never writes recipient
+claims or strips existing general Admin access; that legacy claim supplies no
+Catch review/reply authority. Receive still requires its separate endpoint-bound
+Catch authority. Any claim drift or broader privileged recipient shape fails
+closed. The Google actor's broad `adminOwner` grant still needs separate approval.
 
 After the seed receipt, `fresh-sign-in-required` means a new Google sign-in after
 the seed's next-second cutoff; refreshing the old token is insufficient. Replace
