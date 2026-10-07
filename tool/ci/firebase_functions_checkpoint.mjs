@@ -222,15 +222,17 @@ export async function liveFunctions(projectId, selectedTargets, {runCommand = sp
 
 export async function restoreCheckpointArchive({
   repository, repositoryId, runId, runAttempt, artifactId, artifactDigest, scope, manifest,
-  request = lanes.githubRequest, verifyProducer = lanes.verifyWorkflowRun,
+  producerRole = "delivery", request = lanes.githubRequest, verifyProducer = lanes.verifyWorkflowRun,
 }) {
   assert.equal(typeof verifyProducer, "function", "Stable workflow identity verifier required for recovery.");
-  const producer = await verifyProducer({repository, repositoryId, runId, runAttempt, role: "delivery", request});
+  assert.ok(["delivery", "selective"].includes(producerRole), "Unsupported checkpoint producer role.");
+  const producer = await verifyProducer({repository, repositoryId, runId, runAttempt, role: producerRole, request});
   assert.equal(producer.status, "completed", "Recovery producer must be terminal.");
   assert.ok(["failure", "cancelled", "timed_out", "stale", "action_required", "startup_failure"].includes(producer.conclusion),
     "Recovery producer must be non-success.");
   return readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
-    scope, manifest, request, producer});
+    scope, manifest, request, producer,
+    artifactPrefix: producerRole === "selective" ? "sales-pr543-firebase-checkpoint" : "firebase-checkpoint"});
 }
 
 // A successful rebaseline is immutable historical evidence, not failed-stage
@@ -254,12 +256,13 @@ export async function readSuccessfulBaselineArchive(input) {
 }
 
 async function readCheckpointArchive({repository, repositoryId, runId, runAttempt, artifactId, artifactDigest,
-  scope, manifest, request, producer}) {
+  scope, manifest, request, producer, artifactPrefix = "firebase-checkpoint"}) {
   assert.ok(Number.isSafeInteger(artifactId) && artifactId > 0);
   assert.match(artifactDigest ?? "", /^sha256:[0-9a-f]{64}$/);
   const [_, environment, projectId] = scope.split(":");
   projectFromScope(scope);
-  const expectedName = `firebase-checkpoint-${environment}-${projectId}-${manifest.sourceSha}-${runAttempt}`;
+  assert.ok(["firebase-checkpoint", "sales-pr543-firebase-checkpoint"].includes(artifactPrefix));
+  const expectedName = `${artifactPrefix}-${environment}-${projectId}-${manifest.sourceSha}-${runAttempt}`;
   const root = `repos/${repository}/actions/artifacts/${artifactId}`;
   const metadata = await request(root);
   assert.equal(metadata.id, artifactId);
@@ -295,7 +298,8 @@ function options(args) {
     assert.ok(/^--[a-z-]+$/.test(args[index] ?? "") && args[index + 1] && !args[index + 1].startsWith("--"), "Expected --name value pairs.");
     const key = args[index].slice(2);
     assert.ok(["manifest", "artifact", "source-sha", "ci-run-id", "ci-run-attempt", "scope", "checkpoint",
-      "base-sha", "targets", "params-file", "repository", "repository-id", "run-id", "run-attempt", "artifact-id", "artifact-digest"].includes(key),
+      "base-sha", "targets", "params-file", "repository", "repository-id", "run-id", "run-attempt", "artifact-id", "artifact-digest",
+      "producer-role"].includes(key),
     `Unknown option: ${key}`);
     assert.equal(result[key], undefined, `Duplicate option: ${key}`);
     result[key] = args[index + 1];
@@ -329,7 +333,8 @@ export async function executeFunctionsCheckpointCli(argv, {readFunctions = liveF
     const entries = await restoreCheckpointArchive({repository: required(args, "repository"),
       repositoryId: Number(required(args, "repository-id")), runId: required(args, "run-id"),
       runAttempt: required(args, "run-attempt"), artifactId: Number(required(args, "artifact-id")),
-      artifactDigest: required(args, "artifact-digest"), scope, manifest, request, verifyProducer});
+      artifactDigest: required(args, "artifact-digest"), producerRole: args["producer-role"] ?? "delivery",
+      scope, manifest, request, verifyProducer});
     // Write only validated allowlisted JSON, never extract archive paths.
     await writeJsonAtomic(checkpointPath, entries[checkpointFile]);
     if (Object.hasOwn(entries, FUNCTIONS_DEPLOYMENT_FILE)) await writeJsonAtomic(proofPath, entries[FUNCTIONS_DEPLOYMENT_FILE]);

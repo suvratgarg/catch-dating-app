@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {compareFunctionFingerprints, FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
 import {validateProvenanceManifest} from "./delivery_core.mjs";
 import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBaselineArchive,
@@ -600,5 +603,264 @@ export function completeSelectiveRelease(input) {
       baseline: binding(plan.baseline), candidate: binding(plan.candidate), coveredSources: [...plan.coveredSources],
       planSha256: digest(plan), ledgerSha256: digest(result), indexContractSha256: plan.indexContractSha256,
       deployedTargets: [...plan.targets], retainedTargets: [...plan.unchangedTargets]}};
+  });
+}
+
+// One protected projection of the immutable PR543-compatible main package. The
+// historical 601-Function plan remains unchanged on disk; this profile only
+// narrows its execution plan to the reviewed Sales closure and Firestore rules.
+export const SALES_PR543_RELEASE = Object.freeze({
+  sourceSha: "c0a213bd9663f69ed1f8df3b5bad9284930e5339",
+  baseSha: "63f13abe6fbc6051771ea6eeab1d147a956f0be5",
+  sourceCiRunId: "37560236235",
+  sourceCiRunAttempt: "1",
+  packageSha256: "594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5",
+  scope: "firebase:prod:catch-dating-app-64e51",
+  projectId: "catch-dating-app-64e51",
+  targets: Object.freeze([
+    "functions:adminApplySalesPrivacyBatch",
+    "functions:adminAssignSalesPartner",
+    "functions:adminBuildSalesOutreachInput",
+    "functions:adminCopySalesOutreachDraft",
+    "functions:adminGenerateSalesOutreachDraft",
+    "functions:adminGetSalesDemoPartnerReview",
+    "functions:adminGetSalesIntelligenceCatalog",
+    "functions:adminGetSalesIntelligenceScore",
+    "functions:adminGetSalesOutreachDraft",
+    "functions:adminGetSalesOutreachDraftJob",
+    "functions:adminGetSalesPrivacyCase",
+    "functions:adminLinkSalesInboundIntent",
+    "functions:adminListSalesInboundIntents",
+    "functions:adminListSalesOutreachDrafts",
+    "functions:adminPreviewSalesPrivacyPlan",
+    "functions:adminRestrictSalesOrganizer",
+    "functions:adminReviewSalesIntelligenceClause",
+    "functions:adminReviewSalesOutreachDraft",
+    "functions:adminReviewSalesPrivacyPlan",
+    "functions:adminReviewSalesPrivacyPolicy",
+    "functions:adminRevokeSalesPartnerAccess",
+    "functions:adminSaveSalesFactorAssessment",
+    "functions:adminSaveSalesIntelligenceClause",
+    "functions:adminSaveSalesIntelligencePolicy",
+    "functions:adminSaveSalesScoreSnapshot",
+    "functions:adminShareSalesDemoPartnerReview",
+    "functions:copySalesPartnerOutreachDraft",
+    "functions:createSalesDemoContinuation",
+    "functions:decideSalesPartnerAssignment",
+    "functions:expireSalesDemos",
+    "functions:generateSalesPartnerOutreach",
+    "functions:getSalesDemoContinuation",
+    "functions:getSalesPartnerDemoReviews",
+    "functions:getSalesPartnerOutreachDraft",
+    "functions:getSalesPartnerOutreachJob",
+    "functions:getSalesPartnerPreparation",
+    "functions:getSalesPartnerWorkspace",
+    "functions:nominateSalesOrganizer",
+    "functions:prepareSalesDemoContinuationForm",
+    "functions:proposeSalesPartnerDemoWording",
+    "functions:recordSalesPartnerManualSend",
+    "functions:registerSalesPartner",
+    "functions:reviewSalesPartnerOutreachDraft",
+    "functions:updateSalesPartnerAssignment",
+  ]),
+  addedTargets: Object.freeze([
+    "functions:adminAssignSalesPartner",
+    "functions:adminGetSalesDemoPartnerReview",
+    "functions:adminRevokeSalesPartnerAccess",
+    "functions:adminShareSalesDemoPartnerReview",
+    "functions:copySalesPartnerOutreachDraft",
+    "functions:createSalesDemoContinuation",
+    "functions:decideSalesPartnerAssignment",
+    "functions:generateSalesPartnerOutreach",
+    "functions:getSalesDemoContinuation",
+    "functions:getSalesPartnerDemoReviews",
+    "functions:getSalesPartnerOutreachDraft",
+    "functions:getSalesPartnerOutreachJob",
+    "functions:getSalesPartnerPreparation",
+    "functions:getSalesPartnerWorkspace",
+    "functions:nominateSalesOrganizer",
+    "functions:prepareSalesDemoContinuationForm",
+    "functions:proposeSalesPartnerDemoWording",
+    "functions:recordSalesPartnerManualSend",
+    "functions:registerSalesPartner",
+    "functions:reviewSalesPartnerOutreachDraft",
+    "functions:updateSalesPartnerAssignment",
+  ]),
+});
+export const SALES_PR543_RETAINED_TARGETS = Object.freeze(SALES_PR543_RELEASE.targets
+  .filter((target) => !SALES_PR543_RELEASE.addedTargets.includes(target)));
+
+const bytesDigest = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const salesFail = () => { throw new Error("Invalid Sales PR543 selective release evidence."); };
+const salesSafe = (action) => { try { return action(); } catch { return salesFail(); } };
+const salesSame = (a, b) => assert.deepEqual(a, b);
+const salesExactKeys = (value, names) => {
+  assert.ok(value && typeof value === "object" && !Array.isArray(value));
+  salesSame(Object.keys(value).sort(), [...names].sort());
+};
+const salesManifest = (raw) => {
+  const manifest = validateProvenanceManifest(raw);
+  assert.equal(manifest.sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.equal(manifest.sourceCiRunId, SALES_PR543_RELEASE.sourceCiRunId);
+  assert.equal(manifest.sourceCiRunAttempt, SALES_PR543_RELEASE.sourceCiRunAttempt);
+  salesSame(manifest.stages, ["functions", "firestore-rules"]);
+  assert.equal(manifest.artifact.name, "firebase-backend.tar.gz");
+  assert.equal(manifest.artifact.sizeBytes, 8144024);
+  assert.equal(manifest.artifact.sha256, SALES_PR543_RELEASE.packageSha256);
+  return manifest;
+};
+
+export function prepareSalesPr543Release({packagePlan, manifest: rawManifest}) {
+  return salesSafe(() => {
+    salesManifest(rawManifest);
+    const release = SALES_PR543_RELEASE;
+    assert.equal(packagePlan.sourceSha, release.sourceSha);
+    assert.equal(packagePlan.baseSha, release.baseSha);
+    assert.equal(packagePlan.sourceCiRunId, release.sourceCiRunId);
+    assert.equal(packagePlan.sourceCiRunAttempt, release.sourceCiRunAttempt);
+    assert.equal(packagePlan.schema, "catch.firebase-delivery-plan/v2");
+    salesSame(packagePlan.deployGroups, ["firestore-rules", "functions"]);
+    salesSame(packagePlan.stages, ["functions", "firestore-rules"]);
+    assert.equal(packagePlan.targets?.length, 2);
+    assert.equal(packagePlan.targets[1], "firestore:rules");
+    const historical = packagePlan.targets[0]?.split(",");
+    assert.equal(historical?.length, 601);
+    assert.equal(new Set(historical).size, 601);
+    assert.ok(historical.every((target) => /^functions:[A-Za-z][A-Za-z0-9_-]*$/u.test(target)));
+    salesSame(historical, [...historical].sort());
+    assert.ok(release.targets.every((target) => historical.includes(target)));
+    salesSame(release.targets, [...release.targets].sort());
+    salesSame(release.addedTargets, [...release.addedTargets].sort());
+    assert.ok(release.addedTargets.every((target) => release.targets.includes(target)));
+    assert.equal(SALES_PR543_RETAINED_TARGETS.length, 23);
+    return {...structuredClone(packagePlan), targets: [release.targets.join(","), "firestore:rules"]};
+  });
+}
+
+export function verifySalesPr543Params(file) {
+  return salesSafe(() => {
+    assert.equal(path.basename(file), `.env.${SALES_PR543_RELEASE.projectId}`);
+    const stat = fs.lstatSync(file);
+    assert.ok(stat.isFile() && !stat.isSymbolicLink() && stat.size < 1024 * 1024);
+    assert.equal(stat.mode & 0o077, 0);
+    return {paramsSha256: readMaterializedParamsSha256(file, SALES_PR543_RELEASE.projectId)};
+  });
+}
+
+export function captureSalesPr543Before({manifest: rawManifest, packagePlan, functions}) {
+  return salesSafe(() => {
+    prepareSalesPr543Release({packagePlan, manifest: rawManifest});
+    return {schema: "catch.sales-pr543-before/v1", scope: SALES_PR543_RELEASE.scope,
+      sourceSha: SALES_PR543_RELEASE.sourceSha, packageSha256: SALES_PR543_RELEASE.packageSha256,
+      selectedTargets: [...SALES_PR543_RELEASE.targets], absentTargets: [...SALES_PR543_RELEASE.addedTargets],
+      functions: captureFunctionIdentities(functions, SALES_PR543_RELEASE.scope, SALES_PR543_RETAINED_TARGETS)};
+  });
+}
+
+function salesBefore(value) {
+  salesExactKeys(value, ["schema", "scope", "sourceSha", "packageSha256", "selectedTargets", "absentTargets", "functions"]);
+  assert.equal(value.schema, "catch.sales-pr543-before/v1");
+  assert.equal(value.scope, SALES_PR543_RELEASE.scope);
+  assert.equal(value.sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.equal(value.packageSha256, SALES_PR543_RELEASE.packageSha256);
+  salesSame(value.selectedTargets, SALES_PR543_RELEASE.targets);
+  salesSame(value.absentTargets, SALES_PR543_RELEASE.addedTargets);
+  assert.ok(Array.isArray(value.functions) && value.functions.length === SALES_PR543_RETAINED_TARGETS.length);
+  value.functions.forEach((identity, index) => validateFunctionIdentity(identity,
+    {scope: SALES_PR543_RELEASE.scope, target: SALES_PR543_RETAINED_TARGETS[index]}));
+  return structuredClone(value);
+}
+
+export function validateSalesPr543Before(value) {
+  return salesSafe(() => salesBefore(value));
+}
+
+export function completeSalesPr543Release({manifest: rawManifest, packagePlan, before, deployment,
+  expectedParamsSha256, functions}) {
+  return salesSafe(() => {
+    const manifest = salesManifest(rawManifest);
+    prepareSalesPr543Release({packagePlan, manifest});
+    before = salesBefore(before);
+    assert.match(expectedParamsSha256 ?? "", /^[0-9a-f]{64}$/u);
+    validateFunctionsDeployment(deployment, {manifest, scope: SALES_PR543_RELEASE.scope,
+      baseSha: SALES_PR543_RELEASE.baseSha, selectedTargets: SALES_PR543_RELEASE.targets,
+      paramsSha256: expectedParamsSha256});
+    const actual = captureFunctionIdentities(functions, SALES_PR543_RELEASE.scope, SALES_PR543_RELEASE.targets);
+    salesSame(actual, deployment.functions);
+    const actualByTarget = new Map(SALES_PR543_RELEASE.targets.map((target, index) => [target, actual[index]]));
+    SALES_PR543_RETAINED_TARGETS.forEach((target, index) => {
+      assert.notEqual(actualByTarget.get(target).revision, before.functions[index].revision);
+      assert.notEqual(actualByTarget.get(target).build, before.functions[index].build);
+    });
+    return {schema: "catch.sales-pr543-selected-receipt/v1", scope: SALES_PR543_RELEASE.scope,
+      sourceSha: SALES_PR543_RELEASE.sourceSha, packageSha256: SALES_PR543_RELEASE.packageSha256,
+      selectedTargets: [...SALES_PR543_RELEASE.targets], addedTargets: [...SALES_PR543_RELEASE.addedTargets],
+      paramsSha256: expectedParamsSha256, beforeSha256: bytesDigest(JSON.stringify(before)), functions: actual,
+      rulesTarget: "firestore:rules", coverage: "selected-physical-identities-and-exact-rules-only"};
+  });
+}
+
+const salesRead = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
+const salesWrite = (file, value) => fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, {flag: "wx", mode: 0o600});
+const salesOptions = (args) => {
+  const result = {};
+  for (let index = 0; index < args.length; index += 2) {
+    assert.ok(args[index]?.startsWith("--") && args[index + 1]);
+    const key = args[index].slice(2);
+    assert.ok(!Object.hasOwn(result, key));
+    result[key] = args[index + 1];
+  }
+  return result;
+};
+
+export async function runSalesPr543ReleaseCli(argv, {readLive = liveFunctions} = {}) {
+  try {
+    const [command, ...rest] = argv;
+    assert.ok(["prepare", "params", "stage", "before", "verify-before", "complete"].includes(command));
+    const args = salesOptions(rest);
+    salesExactKeys(args, command === "params" ? ["params-file"] :
+      command === "stage" ? ["stage", "target"] :
+      command === "verify-before" ? ["manifest", "package-plan", "before"] :
+      command === "complete" ? ["manifest", "package-plan", "before", "deployment", "params-sha256", "output"] :
+        ["manifest", "package-plan", "output"]);
+    if (command === "params") return verifySalesPr543Params(args["params-file"]);
+    if (command === "stage") {
+      if (args.stage === "functions") assert.equal(args.target, SALES_PR543_RELEASE.targets.join(","));
+      else {
+        assert.equal(args.stage, "firestore-rules");
+        assert.equal(args.target, "firestore:rules");
+      }
+      return {authorizedStage: args.stage};
+    }
+    const manifest = salesRead(args.manifest);
+    const packagePlan = salesRead(args["package-plan"]);
+    if (command === "verify-before") {
+      prepareSalesPr543Release({packagePlan, manifest});
+      validateSalesPr543Before(salesRead(args.before));
+      return {verifiedBefore: true, existingFunctions: 23, absentFunctions: 21};
+    }
+    if (command === "prepare") {
+      salesWrite(args.output, prepareSalesPr543Release({packagePlan, manifest}));
+      return {prepared: true, selectedFunctions: 44, selectedRules: 1};
+    }
+    if (command === "before") {
+      const functions = await readLive(SALES_PR543_RELEASE.projectId, SALES_PR543_RETAINED_TARGETS,
+        {absentTargets: SALES_PR543_RELEASE.addedTargets});
+      salesWrite(args.output, captureSalesPr543Before({manifest, packagePlan, functions}));
+      return {verifiedBefore: true, existingFunctions: 23, absentFunctions: 21};
+    }
+    const functions = await readLive(SALES_PR543_RELEASE.projectId, SALES_PR543_RELEASE.targets);
+    const result = completeSalesPr543Release({manifest, packagePlan, functions,
+      before: salesRead(args.before), deployment: salesRead(args.deployment),
+      expectedParamsSha256: args["params-sha256"]});
+    salesWrite(args.output, result);
+    return {verifiedComplete: true, selectedFunctions: 44, selectedRules: 1};
+  } catch { return salesFail(); }
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runSalesPr543ReleaseCli(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
   });
 }
