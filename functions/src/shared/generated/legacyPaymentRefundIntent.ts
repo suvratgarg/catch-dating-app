@@ -32,4 +32,11 @@ export interface LegacyPaymentRefundIntent {
     startedAtMillis: number;
   }[];
   lastErrorCode: string | null;
+  /**
+   * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
+   */
+  razorpayOwnership?: {
+    projectId: string;
+    schema: "1";
+  };
 }

@@ -6,10 +6,12 @@ import {assertLegacyRefundAuthority, legacyRefundAttemptKey,
 
 export interface LegacyRefundProvider {
   verifyPayment(payment: PaymentDocument, intent: LegacyRefundIntent):
-    Promise<void>;
-  createRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt):
+    Promise<unknown>;
+  createRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt,
+    authorization?: unknown):
     Promise<LegacyRefundObservation>;
-  fetchRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt):
+  fetchRefund(intent: LegacyRefundIntent, attempt: LegacyRefundAttempt,
+    authorization?: unknown):
     Promise<LegacyRefundObservation>;
 }
 export interface LegacyRefundObservation {
@@ -31,12 +33,35 @@ export async function processLegacyCancellationRefund(input: {
   const {db, paymentId, provider} = input;
   const clock = input.clock ?? Date.now;
   const ref = db.collection("payments").doc(paymentId);
+  // Provider ownership and payment truth are read-only preflight. A foreign,
+  // unknown or unavailable order must not create a lease, attempt or review
+  // write merely because it occupied the due queue.
+  const preflight = await db.runTransaction(async (tx) => {
+    const payment = requireDoc<PaymentDocument>(await tx.get(ref),
+      "PaymentDocument");
+    const intent = payment.cancellationRefund;
+    if (!intent || intent.state !== "pending") return null;
+    assertLegacyRefundAuthority(payment, intent);
+    const now = clock();
+    if (intent.nextAttemptAtMillis > now || intent.leaseUntilMillis > now) {
+      return null;
+    }
+    return {payment, intent, serialized: JSON.stringify({payment, intent})};
+  });
+  if (!preflight) return;
+  const authorization = await provider.verifyPayment(
+    preflight.payment,
+    preflight.intent
+  );
   const claim = await db.runTransaction(async (tx) => {
     const payment = requireDoc<PaymentDocument>(await tx.get(ref),
       "PaymentDocument");
     const old = payment.cancellationRefund;
     if (!old || old.state !== "pending") return null;
     assertLegacyRefundAuthority(payment, old);
+    if (JSON.stringify({payment, intent: old}) !== preflight.serialized) {
+      return null;
+    }
     const now = clock();
     if (old.nextAttemptAtMillis > now || old.leaseUntilMillis > now) {
       return null;
@@ -70,11 +95,10 @@ export async function processLegacyCancellationRefund(input: {
   });
   if (!claim) return;
   try {
-    await provider.verifyPayment(claim.payment, claim.intent);
     const attempt = claim.intent.attempts[claim.index];
     const observation = attempt.providerRefundId ?
-      await provider.fetchRefund(claim.intent, attempt) :
-      await provider.createRefund(claim.intent, attempt);
+      await provider.fetchRefund(claim.intent, attempt, authorization) :
+      await provider.createRefund(claim.intent, attempt, authorization);
     if (observation.paymentId !== claim.intent.providerPaymentId ||
         observation.amountMinor !== attempt.amountMinor ||
         observation.currency !== claim.intent.currency || !observation.id ||

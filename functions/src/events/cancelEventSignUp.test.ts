@@ -4,8 +4,14 @@ import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {createHash} from "crypto";
 import {cancelEventSignUpHandler} from "./cancelEventSignUp";
+import type {PaymentDocument} from
+  "../shared/generated/firestoreAdminTypes";
+import type {LegacyRazorpayRefundAuthorization} from
+  "../payments/legacyRefunds/intent";
 import {processLegacyCancellationRefund} from
   "../payments/legacyRefunds/processor";
+import {razorpayOwnershipNotes, resolveRazorpayOrderOwnership} from
+  "../payments/razorpayOrderOwnership";
 import {eventAttendeeId} from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
@@ -29,6 +35,10 @@ class FakeDocRef {
 
   async update(patch: FakeData) {
     this.firestore.merge(this.path, patch);
+  }
+
+  async get() {
+    return new FakeSnapshot(this.firestore, this.path);
   }
 }
 
@@ -657,7 +667,10 @@ test(
 function harness(
   initialDocs: Record<string, FakeData | undefined>,
   options: {nowMillis?: number; sendNotificationError?: Error;
-    refundError?: Error} = {}
+    refundError?: Error; authorizationError?: Error;
+    afterAuthorization?: () => void;
+    authorizeRazorpayRefund?: (payment: PaymentDocument) =>
+      Promise<LegacyRazorpayRefundAuthorization>} = {}
 ) {
   const firestore = new FakeFirestore(initialDocs);
   const refunds: Array<{paymentId: string; amountInPaise: number}> = [];
@@ -681,6 +694,14 @@ function harness(
       loadCurrentAuthPhone: async (uid: string): Promise<string | null> => {
         void uid;
         return null;
+      },
+      authorizeRazorpayRefund: async (payment: PaymentDocument) => {
+        if (options.authorizationError) throw options.authorizationError;
+        const supplied = options.authorizeRazorpayRefund ?
+          await options.authorizeRazorpayRefund(payment) :
+          ownedRazorpayAuthorization(payment);
+        options.afterAuthorization?.();
+        return supplied;
       },
       processRefund: async (db: FirebaseFirestore.Firestore,
         paymentId: string) => processLegacyCancellationRefund({db, paymentId,
@@ -792,10 +813,24 @@ function payment(): FakeData {
     eventId: "event-1",
     amount: 25000,
     currency: "INR",
+    provider: "razorpay",
+    razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
     status: "completed",
     signUpFailed: false,
     createdAt: admin.firestore.Timestamp.fromMillis(1),
   };
+}
+
+function ownedRazorpayAuthorization(payment: PaymentDocument):
+  LegacyRazorpayRefundAuthorization {
+  const runtimeProjectId = "catchdates-dev";
+  const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
+    order: {id: payment.orderId,
+      notes: razorpayOwnershipNotes(runtimeProjectId)},
+    frozenContexts: [payment.razorpayOwnership,
+      payment.cancellationRefund?.razorpayOwnership]});
+  if (ownership.kind !== "owned") throw new Error("Expected owned order.");
+  return {evidence: ownership.evidence, runtimeProjectId};
 }
 
 function eventPolicy(overrides: FakeData = {}): FakeData {
@@ -855,3 +890,128 @@ test("guest cancellation saves its refund before provider failure and replays",
     assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
     assert.equal(h.refunds.length, 1);
   });
+
+test("foreign Razorpay guest cancellation has zero booking or refund effects",
+  async () => {
+    const h = harness({"events/event-1": event({bookedCount: 1}),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "payments/pay-1": payment()}, {
+      authorizeRazorpayRefund: async (current) => {
+        const ownership = resolveRazorpayOrderOwnership({
+          runtimeProjectId: "catchdates-dev",
+          order: {id: current.orderId,
+            notes: razorpayOwnershipNotes("catch-dating-app-64e51")},
+          frozenContexts: [current.razorpayOwnership],
+        });
+        assert.equal(ownership.kind, "foreign");
+        throw new Error("Foreign Razorpay order.");
+      },
+    });
+    const before = cancellationEffectSnapshot(h.firestore);
+    await assert.rejects(() =>
+      cancelEventSignUpHandler(request("runner-1"), h.deps), /Foreign/);
+    assert.equal(cancellationEffectSnapshot(h.firestore), before);
+    assert.deepEqual(h.refunds, []);
+    assert.deepEqual(h.notifications, []);
+  });
+
+test("Razorpay ownership read failure is retryable without partial effects",
+  async () => {
+    const options: {authorizationError?: Error} = {
+      authorizationError: new Error("Provider unavailable"),
+    };
+    const h = harness({"events/event-1": event({bookedCount: 1}),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "payments/pay-1": payment()}, options);
+    const before = cancellationEffectSnapshot(h.firestore);
+    await assert.rejects(() =>
+      cancelEventSignUpHandler(request("runner-1"), h.deps), /unavailable/);
+    assert.equal(cancellationEffectSnapshot(h.firestore), before);
+    delete options.authorizationError;
+    assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
+      h.deps), {cancelled: true});
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+      ?.status, "cancelled");
+    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+  });
+
+test("guest cancellation rebinds ownership to the transaction payment read",
+  async () => {
+    const options: {afterAuthorization?: () => void} = {};
+    const h = harness({"events/event-1": event({bookedCount: 1}),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "payments/pay-1": payment()}, options);
+    options.afterAuthorization = () => {
+      options.afterAuthorization = undefined;
+      h.firestore.merge("payments/pay-1", {amount: 26000});
+    };
+    await assert.rejects(() =>
+      cancelEventSignUpHandler(request("runner-1"), h.deps),
+    /ownership reconciliation/);
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+      ?.status, "signedUp");
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    assert.equal(h.firestore.get("payments/pay-1")?.cancellationRefund,
+      undefined);
+    assert.deepEqual(h.refunds, []);
+  });
+
+test("Stripe guest cancellation does not require Razorpay authorization",
+  async () => {
+    let authorizationCalls = 0;
+    const stripePayment: FakeData = {...payment(), provider: "stripe",
+      providerPaymentId: "pi_123", stripeAccountId: "acct_123"};
+    delete stripePayment.razorpayOwnership;
+    const h = harness({"events/event-1": event({bookedCount: 1}),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "payments/pay-1": stripePayment}, {
+      authorizeRazorpayRefund: async (current) => {
+        authorizationCalls++;
+        return ownedRazorpayAuthorization(current);
+      },
+    });
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+    assert.equal(authorizationCalls, 0);
+    assert.equal(h.firestore.get("payments/pay-1")?.status, "refunded");
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+      ?.status, "cancelled");
+  });
+
+test("completed no-refund Razorpay cancellation replays without provider I/O",
+  async () => {
+    const options: {nowMillis: number; authorizationError?: Error} = {
+      nowMillis: Date.parse("2026-05-02T00:30:00.000Z"),
+    };
+    const h = harness({"events/event-1": event({bookedCount: 1,
+      eventPolicy: eventPolicy({cancellation: {policyId: "strict"}})}),
+    "users/runner-1": user(),
+    "eventParticipations/event-1_runner-1":
+      participation("runner-1", "signedUp"),
+    "payments/pay-1": payment()}, options);
+    assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
+      h.deps), {cancelled: true});
+    options.authorizationError = new Error("Provider unavailable");
+    assert.deepEqual(await cancelEventSignUpHandler(request("runner-1"),
+      h.deps), {cancelled: false});
+    assert.equal(h.firestore.get("payments/pay-1")?.cancellationRefund &&
+      (h.firestore.get("payments/pay-1")?.cancellationRefund as FakeData)
+        .state, "complete");
+    assert.deepEqual(h.refunds, []);
+  });
+
+function cancellationEffectSnapshot(firestore: FakeFirestore): string {
+  return JSON.stringify([
+    firestore.get("events/event-1"),
+    firestore.get("eventParticipations/event-1_runner-1"),
+    firestore.get("eventSeatLedgers/event-1"),
+    firestore.get("payments/pay-1"),
+  ]);
+}

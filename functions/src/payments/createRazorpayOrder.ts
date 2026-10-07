@@ -51,6 +51,10 @@ import {
 import {resolveInviteAttribution} from "../events/inviteLinks";
 import {requireActiveCrossPathsPairHold} from
   "../crossPaths/pairHoldValidation";
+import {
+  razorpayOwnershipNotes,
+  razorpayRuntimeProject,
+} from "./razorpayOrderOwnership";
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -58,6 +62,7 @@ interface CreateRazorpayOrderDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => number;
   serverTimestamp: () => unknown;
+  runtimeProjectId?: () => string;
 }
 
 const defaultDeps: CreateRazorpayOrderDeps = {
@@ -66,6 +71,7 @@ const defaultDeps: CreateRazorpayOrderDeps = {
   firestore: () => admin.firestore(),
   now: () => Date.now(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  runtimeProjectId: razorpayRuntimeProject,
 };
 
 /**
@@ -222,20 +228,24 @@ export async function createRazorpayOrderHandler(
     eventId,
     inviteLinkId,
   });
-  const order = await razorpay.orders.create(
-    buildOrderCreatePayload({
-      eventId,
-      event,
-      userId: uid,
-      receiptToken: deps.now(),
-      amountInPaise,
-      inviteVerified: policy.admission.inviteRequired &&
+  const projectId = (deps.runtimeProjectId ?? razorpayRuntimeProject)();
+  const ownershipNotes = razorpayOwnershipNotes(projectId);
+  const orderPayload = buildOrderCreatePayload({
+    eventId,
+    event,
+    userId: uid,
+    receiptToken: deps.now(),
+    amountInPaise,
+    inviteVerified: policy.admission.inviteRequired &&
         (hasValidInvite || hasWaitlistOfferAccess),
-      inviteLinkId: inviteAttribution?.inviteLinkId,
-      inviteSource: inviteAttribution?.inviteSource,
-      crossPathsPairHoldId: pairHold ? crossPathsPairHoldId : null,
-    })
-  );
+    inviteLinkId: inviteAttribution?.inviteLinkId,
+    inviteSource: inviteAttribution?.inviteSource,
+    crossPathsPairHoldId: pairHold ? crossPathsPairHoldId : null,
+  });
+  const order = await razorpay.orders.create({
+    ...orderPayload,
+    notes: {...orderPayload.notes, ...ownershipNotes},
+  });
 
   // Track the order so reconciliation can recover the booking if both the
   // client verification callback and the webhook are missed. Best effort: the
@@ -251,6 +261,7 @@ export async function createRazorpayOrderHandler(
       currency: order.currency ?? event.currency ?? razorpayCurrency,
       serverTimestamp: deps.serverTimestamp,
       crossPathsPairHoldId: pairHold ? crossPathsPairHoldId : null,
+      razorpayOwnership: {projectId, schema: "1"},
     });
   } catch (error) {
     logger.warn(

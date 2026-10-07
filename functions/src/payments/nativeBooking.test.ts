@@ -6,10 +6,15 @@ import {prepareNativePaidBooking, stageRejectedNativeBooking,
 import {processLegacyCancellationRefund, LegacyRefundProvider} from
   "./legacyRefunds/processor";
 import type {PaymentDocument} from "../shared/generated/firestoreAdminTypes";
+import {type LegacyRazorpayRefundAuthorization} from
+  "./legacyRefunds/intent";
+import {razorpayOwnershipNotes, resolveRazorpayOrderOwnership} from
+  "./razorpayOrderOwnership";
 
 const booking: NativePaidBooking = {userId: "user1", eventId: "event1",
   orderId: "order_one", paymentId: "pay_one", amount: 1000,
-  amountMinor: 1000, currency: "INR", provider: "razorpay"};
+  amountMinor: 1000, currency: "INR", provider: "razorpay",
+  razorpayOwnership: {projectId: "catchdates-dev", schema: "1"}};
 const paymentPath = "payments/pay_one";
 const participationPath = "eventParticipations/event1_user1";
 function admit(store: Store) {
@@ -27,6 +32,19 @@ function fixture() {
   const store = new Store();
   return store;
 }
+function ownedAuthorization(): LegacyRazorpayRefundAuthorization {
+  const runtimeProjectId = "catchdates-dev";
+  const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
+    order: {id: booking.orderId,
+      notes: razorpayOwnershipNotes(runtimeProjectId)},
+    frozenContexts: [booking.razorpayOwnership]});
+  if (ownership.kind !== "owned") throw new Error("Expected owned order.");
+  return {evidence: ownership.evidence, runtimeProjectId};
+}
+function reject(store: Store) {
+  return stageRejectedNativeBooking({db: store.db(), booking,
+    razorpayAuthorization: ownedAuthorization()});
+}
 
 test("admission and payment commit together", async () => {
   const store = fixture(); store.failNextCommit = true;
@@ -43,10 +61,9 @@ test("admission and payment commit together", async () => {
 
 test("persisted rejection fences admission and survives replay", async () => {
   const store = fixture();
-  assert.equal(await stageRejectedNativeBooking({db: store.db(), booking}),
-    "refund");
+  assert.equal(await reject(store), "refund");
   const original = store.get(paymentPath);
-  await stageRejectedNativeBooking({db: store.db(), booking});
+  await reject(store);
   assert.deepEqual(store.get(paymentPath), original);
   await assert.rejects(admit(store), /cannot admit again/);
   assert.equal(store.get(participationPath), undefined);
@@ -63,7 +80,7 @@ test("a retry cannot re-admit a cancelled booking", async () => {
 test("failed booking observes pending refunds and retries one key",
   async () => {
     const store = fixture();
-    await stageRejectedNativeBooking({db: store.db(), booking});
+    await reject(store);
     let now = Date.now() + 1; let requests = 0; let polls = 0;
     const keys: string[] = [];
     const provider: LegacyRefundProvider = {
