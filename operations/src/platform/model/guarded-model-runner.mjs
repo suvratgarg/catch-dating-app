@@ -28,6 +28,9 @@ export class GuardedModelRunner {
       /^[a-z0-9][a-z0-9._-]{0,99}$/i.test(providerId)),
     "INVALID_MODEL_RUNNER", "Provider identity must be a bounded identifier.");
     this.providerId = providerId;
+    invariant(providerId === null || (typeof modelId === "string" &&
+      /^[a-z0-9][a-z0-9._-]{0,127}$/i.test(modelId)),
+    "INVALID_MODEL_RUNNER", "Model identity must be a bounded identifier.");
     this.validateOutput = validateOutput;
     this.maxInputBytes = maxInputBytes;
   }
@@ -35,6 +38,7 @@ export class GuardedModelRunner {
   async run(request) {
     request = snapshotRequest(request);
     validateRequest(request, this.maxInputBytes);
+    const requestMetadata = this.providerId === null ? null : boundedRequest(request, this.maxInputBytes);
     checkCancellation(request.signal, "not_submitted");
     const cacheKey = hashValue({
       schemaVersion: 1,
@@ -58,7 +62,10 @@ export class GuardedModelRunner {
         "MODEL_CACHE_INVALID", "Cached provider identity does not match the request.");
         metadata = validateMetadata(cached.provenance.metadata,
           validateUsage(cached.provenance.usage), this.providerId, this.modelId,
-          cached.provenance.request?.maxNetworkRequests);
+          cached.provenance.request?.maxNetworkRequests, cached.provenance.request?.maxCostMicros);
+        invariant(cached.provenance.monthlyWindow === null ||
+          /^\d{4}-\d{2}$/.test(cached.provenance.monthlyWindow ?? ""),
+        "MODEL_CACHE_INVALID", "Cached monthly window must be bounded.");
       }
       const validation = validateJsonSchema(request.outputSchema, cached.output);
       if (!validation.valid) {
@@ -72,7 +79,7 @@ export class GuardedModelRunner {
           task: request.task, promptVersion: request.promptVersion,
           providerId: this.providerId, modelId: this.modelId, cacheKey, cacheHit: true,
           usage: validateUsage(cached.provenance.usage), metadata,
-          request: boundedRequest(cached.provenance.request, this.maxInputBytes),
+          request: boundedRequest(cached.provenance.request, cached.provenance.request?.maxInputBytes),
           monthlyWindow: cached.provenance.monthlyWindow,
         }};
     }
@@ -143,9 +150,11 @@ export class GuardedModelRunner {
     }
     checkCancellation(request.signal, "unknown");
     const usage = validateUsage(response?.usage);
+    invariant(this.providerId === null || response?.schemaVersion === 1,
+      "MODEL_METADATA_INVALID", "Provider response must use the supported contract version.");
     const metadata = this.providerId === null ? null :
       validateMetadata(response?.metadata, usage, this.providerId, this.modelId,
-        requestedReservation.networkRequests);
+        requestedReservation.networkRequests, requestedReservation.modelCostMicros);
     const validation = validateJsonSchema(request.outputSchema, response.output);
     if (!validation.valid) {
       throw new OperationsError("MODEL_OUTPUT_INVALID", "Model output failed schema validation.");
@@ -178,7 +187,7 @@ export class GuardedModelRunner {
         usage,
         monthlyWindow: this.monthlyWindow,
         ...(metadata === null ? {} : {providerId: this.providerId, metadata,
-          request: boundedRequest(request, this.maxInputBytes)}),
+          request: requestMetadata}),
       },
     };
     await this.cache.put(cacheKey, record);
@@ -253,13 +262,19 @@ function networkLimit(value) {
 }
 
 function boundedRequest(request, maxInputBytes) {
-  return {maxInputBytes, estimatedInputTokens: requiredEstimate(request, "estimatedInputTokens"),
+  const result = {maxInputBytes, estimatedInputTokens: requiredEstimate(request, "estimatedInputTokens"),
     maxOutputTokens: requiredEstimate(request, "maxOutputTokens"),
     maxCostMicros: requiredEstimate(request, "maxCostMicros"),
     maxNetworkRequests: networkLimit(request.maxNetworkRequests)};
+  invariant(Number.isSafeInteger(maxInputBytes) && maxInputBytes > 0 && maxInputBytes <= 32_768 &&
+    result.estimatedInputTokens > 0 && result.estimatedInputTokens <= 1_000_000 &&
+    result.maxOutputTokens > 0 && result.maxOutputTokens <= 8192 &&
+    result.maxCostMicros > 0 && result.maxCostMicros <= 100_000_000,
+  "MODEL_BUDGET_ESTIMATE_REQUIRED", "Provider request ceilings must be bounded positive integers.");
+  return result;
 }
 
-function validateMetadata(value, usage, providerId, modelId, maxNetworkRequests) {
+function validateMetadata(value, usage, providerId, modelId, maxNetworkRequests, maxCostMicros) {
   const integer = (n) => Number.isSafeInteger(n) && n >= 0;
   const tokens = value?.tokens;
   invariant(value?.providerId === providerId && value.modelId === modelId &&
@@ -268,7 +283,8 @@ function validateMetadata(value, usage, providerId, modelId, maxNetworkRequests)
     value.attemptCount <= networkLimit(maxNetworkRequests) &&
     integer(value.durationMs) && value.durationMs <= 600_000 &&
     value.finishReason === "stop" && value.costBasis === "reserved_ceiling" &&
-    value.estimatedCostMicros === null && tokens?.inputTotal === usage.inputTokens &&
+    value.estimatedCostMicros === null && usage.costMicros === maxCostMicros &&
+    tokens?.inputTotal === usage.inputTokens &&
     tokens.outputTotal === usage.outputTokens,
   "MODEL_METADATA_INVALID", "Provider metadata must match the bounded request and usage.");
   for (const key of ["ordinaryInput", "cacheRead", "cacheWrite", "reasoningOutput"]) {
@@ -318,6 +334,7 @@ const SAFE_PROVIDER_ERRORS = new Set([
   "MODEL_PROVIDER_OUTPUT_INVALID", "MODEL_PROVIDER_REFUSED", "MODEL_PROVIDER_INCOMPLETE",
   "MODEL_PROVIDER_USAGE_INVALID", "MODEL_PROVIDER_DISABLED", "MODEL_PROVIDER_REQUEST_INVALID",
   "MODEL_PROVIDER_INPUT_INVALID", "MODEL_SCHEMA_UNSUPPORTED", "MODEL_CAPABILITY_UNSUPPORTED",
+  "MODEL_PROVIDER_RESULT_INVALID", "MODEL_PROVIDER_BODY_INVALID", "MODEL_PROVIDER_SECRET_UNAVAILABLE",
 ]);
 
 function redactedProviderError(error) {
