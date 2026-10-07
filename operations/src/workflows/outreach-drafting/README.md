@@ -30,3 +30,43 @@ and the strongest plausible workflow, with unknown baseline if no tools are
 visible. Accepted output remains an unverified suggestion for existing Sales
 human review, with no qualification or sending authority. Persistence and
 current-source refresh must be supplied by the existing durable worker adapter.
+
+`preparation-adapter.mjs` is an isolated source composition helper, disabled by
+default. It accepts the three named native factories from dependent PR #582
+(`createDeepSeekProvider`, `createOpenAIProvider`, `createAnthropicProvider`).
+It uses the existing independent stage policy and exact current authorization,
+then invokes `GuardedModelRunner` with provider/model cache identity, explicit
+run/month model and network ceilings, forwarded cancellation and redacted,
+bounded request/usage metadata. A stage policy hash also separates prompt and
+budget revisions even when a prompt version is reused. No provider fallback is
+permitted; the composition fixes attempts and network requests to one.
+Current stage authority and the live UTC budget month are checked again after
+cache waits, before provider invocation and before returning any prepared result.
+Provider-aware cache and activation read errors omit raw messages and causes.
+
+The trusted worker supplies `publicClauses` or `publicSources` explicitly marked
+`dataClassification: reviewed_public`. Classification is a worker obligation:
+schemas and this marker cannot prove arbitrary free text is public. The helper
+projects allowlisted text into local option/source aliases. Organizer, contact,
+opportunity and canonical source/clause IDs, URL metadata, private CRM extras and
+unapproved clauses are absent from provider input. Public projection fields must
+be captured own values; live getters are rejected. Writing returns a canonical
+ID selection with observation, capability and CTA, or an explicit blocking
+reason, with no generated message prose. Research returns an unverified,
+source-bound proposal. Both full canonical contracts and literal source checks
+run before caching or releasing any reservation. A trusted prompt must also
+contain only approved public instructions.
+
+The portable helper requires injected cache and trusted monthly `BudgetLedger`
+ports and an explicit input-token reservation for the rendered request. These
+in-memory ledger objects do **not** implement durable billing enforcement. A
+future Functions bridge still must provide current assignment and source checks,
+fenced leases, persisted run/month accounting and unique attempt claims before
+provider I/O. It must not replay uncertain paid attempts, including after a
+process restart. Failed/uncertain results retain all reserved ceilings. No
+pricing estimate or billed cost is inferred; `costBasis: reserved_ceiling`
+preserves the conservative amount from #582. Rendered-request token estimation,
+provider timeout within worker/lease deadlines, and a reviewed price book remain
+activation prerequisites. This slice does not modify the Sales service, job,
+runtime, access guards, bundle allowlist, callables or existing deterministic
+worker. It is not Functions integration or activated research/writing.
