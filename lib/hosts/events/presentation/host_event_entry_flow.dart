@@ -40,6 +40,12 @@ Future<void> runHostEventEntryFlow({
       );
     case HostEventEntryIntent.createEvent:
       await _openCreateEvent(context: context, ref: ref, club: club);
+    case HostEventEntryIntent.createProgram:
+      if (state.organizerId != club.id || !context.mounted) return;
+      await context.pushNamed(
+        Routes.hostCreateProgramScreen.name,
+        pathParameters: {'clubId': club.id},
+      );
     case HostEventEntryIntent.resumePrivateEvent:
       final eventId = selection.savedEventId;
       if (eventId == null || eventId.isEmpty) return;

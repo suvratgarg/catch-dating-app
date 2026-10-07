@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.29
+version: 2.7.30
 updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
@@ -103,17 +103,23 @@ dependency installation; do not move this gate into Firebase predeploy hooks.
 
 Repository checks prove the authored Functions package, not what a Firebase
 project currently exposes. After every Functions deployment, the safe deploy
-wrapper compares the live inventory with the deployment-eligible exports
-derived from `functions/src/index.ts` and confirms that every literal
-`defineSecret()` name exists in the selected project:
+wrapper compares the live inventory with the exact deployment-eligible target
+set resolved by its planner and confirms that every literal `defineSecret()`
+name exists in the selected project. A broad `functions` plan resolves every
+eligible export, so it retains full parity; an exact selective plan does not
+require unrelated exports:
 
 ```sh
 node tool/firebase/check_deploy_parity.mjs --env staging
 node tool/firebase/check_deploy_parity.mjs --env prod --json
+node tool/firebase/check_deploy_parity.mjs --env prod \
+  --targets functions:firstCallable,functions:secondCallable
 ```
 
-Missing deployment-eligible exports or declared secret names fail the
-deployment. Environment-only Functions are counted but ignored because
+Without `--targets`, the command remains a strict full-parity check. Missing
+selected exports (or any deployment-eligible export in full mode) and missing
+declared secret names fail the deployment. Selectors not eligible in the exact
+source fail closed. Environment-only Functions are counted but ignored because
 installed Firebase Extensions legitimately own exports that are absent from
 this repository. The check uses only `firebase functions:list` and Secret
 Manager resource-name metadata; it never requests a secret version or payload.
@@ -1412,6 +1418,14 @@ only `review`/`reply`, and the pinned recipient gets only endpoint-bound `receiv
 The operator must accept the broader Admin grant before live approval. Readiness
 revoke does not remove that Admin claim or undo a send. There is no second user,
 Google identity, new IAM role or global Auth mutex.
+
+The existing recipient's exact `{admin: true}` claim may be preserved by the
+reviewed plan. Its exact UID and full claim hash remain bound to source and
+approval and are rechecked before bootstrap mutations and during reconciliation. The CLI never writes recipient
+claims or strips existing general Admin access; that legacy claim supplies no
+Catch review/reply authority. Receive still requires its separate endpoint-bound
+Catch authority. Any claim drift or broader privileged recipient shape fails
+closed. The Google actor's broad `adminOwner` grant still needs separate approval.
 
 After the seed receipt, `fresh-sign-in-required` means a new Google sign-in after
 the seed's next-second cutoff; refreshing the old token is insufficient. Replace

@@ -516,9 +516,9 @@
           "description": "Starts the isolated Dress Rehearsal flow from Today as an operational-preparation action, not as an event-creation choice."
         },
         {
-          "id": "open_programs",
+          "id": "open_program",
           "owner": "events_list",
-          "codeValue": "_openPrograms",
+          "codeValue": "onOpenProgram",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -530,11 +530,11 @@
               "kind": "route",
               "authority": {
                 "registry": "flutter_screens",
-                "id": "screen.programs.list"
+                "id": "screen.programs.workspace"
               }
             }
           ],
-          "description": "Opens the organizer's multi-day program index from the Events header with the selected organizer carried as a route parameter."
+          "description": "Opens the existing program workspace from one identifiable date-range/count row in Events."
         }
       ],
       "stateIds": [
@@ -556,7 +556,7 @@
         "create_event_action",
         "manage_event_navigation",
         "dress_rehearsal_action",
-        "open_programs_action",
+        "program_inventory_rows",
         "offline",
         "text_scale_2",
         "reduced_motion",
@@ -797,12 +797,12 @@
             }
           ]
         },
-        "open_programs_action": {
+        "program_inventory_rows": {
           "actionCases": [
             {
               "id": "open",
               "enabledActions": [
-                "open_programs"
+                "open_program"
               ]
             }
           ]
@@ -878,7 +878,7 @@
             "create_event_action",
             "manage_event_navigation",
             "dress_rehearsal_action",
-            "open_programs_action"
+            "program_inventory_rows"
           ],
           "evidence": [
             "captures"

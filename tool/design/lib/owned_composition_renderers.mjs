@@ -42,6 +42,9 @@ declare(`${ui}components/catch_top_bar.dart`, `${ui}components/catch_top_bar.dar
 declare("lib/hosts/presentation/customers/host_customer_timeline.dart",
   "lib/hosts/presentation/customers/host_customer_timeline.dart", null,
   ["hostCustomerTimelineField"], ["CatchField"]);
+declare("lib/programs/presentation/program_events_row.dart",
+  "lib/programs/presentation/program_events_row.dart", null,
+  ["programEventsField"], ["CatchField"]);
 declare("lib/routing/host_inbox_route.dart", "lib/routing/go_router.dart", null,
   ["hostInboxScreenForUri"], ["HostInboxScreen"]);
 

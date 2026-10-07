@@ -2,12 +2,12 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 103,
-    "captures": 663,
+    "routes": 104,
+    "captures": 668,
     "statusCounts": {
       "excluded": 4,
       "captured": 53,
-      "alias": 12,
+      "alias": 13,
       "planned": 34
     }
   },
@@ -17,6 +17,91 @@
     "outputLayout": "theme-first"
   },
   "shots": [
+    {
+      "id": "program_create_draft",
+      "routes": [
+        "hostCreateProgramScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/program_create_draft.png",
+        "dark": "dark/program_create_draft.png"
+      },
+      "whatItIs": "Program Create Draft",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "program_create_validation",
+      "routes": [
+        "hostCreateProgramScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/program_create_validation.png",
+        "dark": "dark/program_create_validation.png"
+      },
+      "whatItIs": "Program Create Validation",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "program_create_pending",
+      "routes": [
+        "hostCreateProgramScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/program_create_pending.png",
+        "dark": "dark/program_create_pending.png"
+      },
+      "whatItIs": "Program Create Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "program_create_failure",
+      "routes": [
+        "hostCreateProgramScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/program_create_failure.png",
+        "dark": "dark/program_create_failure.png"
+      },
+      "whatItIs": "Program Create Failure",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "program_create_large_text",
+      "routes": [
+        "hostCreateProgramScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/program_create_large_text.png",
+        "dark": "dark/program_create_large_text.png"
+      },
+      "whatItIs": "Program Create Large Text",
+      "keepChangeNotes": ""
+    },
     {
       "id": "profile_self",
       "routes": [

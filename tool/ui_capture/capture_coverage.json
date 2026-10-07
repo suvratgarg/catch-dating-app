@@ -936,9 +936,10 @@
     },
     {
       "routeId": "hostProgramsScreen",
-      "status": "planned",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Organizer program workspace route lands with the W1 slice; route captures are scheduled with the program golden pass."
+      "canonicalRouteId": "hostEventsScreen",
+      "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
     },
     {
       "routeId": "hostProgramWorkspaceScreen",
@@ -1401,6 +1402,12 @@
       "status": "planned",
       "priority": "P1",
       "reason": "Private lodging route has focused routed controller/screen/setup editor and board tests covering configuration, membership, manual proposals, publication, stale revisions and session fences. Deterministic loaded, no-configuration, scoped hotel desk and uncertain-write retry route captures remain planned; the twelve existing marketing captures do not cover this route."
+    },
+    {
+      "routeId": "hostCreateProgramScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Full program creation form replaces the modal; genuine form-state captures are pending verification."
     }
   ]
 }

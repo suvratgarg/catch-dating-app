@@ -38,12 +38,15 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 part 'private_event_create_body.dart';
+part 'private_event_create_drafts.dart';
 
 /// The first page of the single progressive event editor.
 ///
@@ -244,7 +247,7 @@ class _PrivateEventCreateScreenState
         widget.initialPrefill == null &&
         widget.initialRosterImportPlan == null) {
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _PrivateEventCreateBody(this)._checkForDrafts(),
+        (_) => _PrivateEventCreateDrafts(this)._checkForDrafts(),
       );
     }
   }

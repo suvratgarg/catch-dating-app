@@ -62,9 +62,11 @@ import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_scr
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
@@ -72,7 +74,6 @@ import 'package:catch_dating_app/programs/presentation/program_guests_screen.dar
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_now_next_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
@@ -110,6 +111,10 @@ part 'host_route_extras.dart';
 part 'host_inbox_route.dart';
 part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
+
+@visibleForTesting
+String hostProgramsLegacyRedirect(Uri uri) =>
+    uri.replace(path: Routes.hostEventsScreen.path).toString();
 
 @visibleForTesting
 HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
@@ -593,8 +598,13 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
     GoRoute(
       path: Routes.hostProgramsScreen.path,
       name: Routes.hostProgramsScreen.name,
+      redirect: (context, state) => hostProgramsLegacyRedirect(state.uri),
+    ),
+    GoRoute(
+      path: Routes.hostCreateProgramScreen.path,
+      name: Routes.hostCreateProgramScreen.name,
       builder: (context, state) =>
-          ProgramListScreen(initialOrganizerId: _routeOrganizerQueryId(state)),
+          ProgramCreateScreen(organizerId: state.pathParameters['clubId']!),
     ),
     GoRoute(
       path: Routes.hostProgramLodgingScreen.path,
@@ -1026,6 +1036,10 @@ StatefulShellRoute _hostShellRoute(
             name: Routes.hostEventsScreen.name,
             builder: (context, state) => HostEventsScreen(
               initialOrganizerId: _routeOrganizerQueryId(state),
+              initialProgramId: state.uri.queryParameters['programId'],
+              initialProgramAnchor: state.extra is OrganizerProgramListAnchor
+                  ? state.extra as OrganizerProgramListAnchor
+                  : null,
             ),
           ),
         ],

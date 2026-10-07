@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:a4c254b643fa8c57d2ec5fb9ece9f30bb842662e045abafc25c3b0f59768c1e0",
-  "resolvedDigest": "sha256:7209f63c3a6796e30439382b416ba41ede0292b51935c1daa0603dc8750f2a40",
+  "sourceDigest": "sha256:277529da748f2b95c0a8909b108cd7e06188b54521ae02fbe45c7eb4c3513f7b",
+  "resolvedDigest": "sha256:55edb76965be2c792eedeb075a18a8bc276df3d75ce6f3e07ee838e72a617c70",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -556,9 +556,9 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_programs",
+          "id": "open_program",
           "owner": "events_list",
-          "codeValue": "_openPrograms",
+          "codeValue": "onOpenProgram",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
@@ -570,11 +570,11 @@
               "kind": "route",
               "authority": {
                 "registry": "flutter_screens",
-                "id": "screen.programs.list"
+                "id": "screen.programs.workspace"
               }
             }
           ],
-          "description": "Opens the organizer's multi-day program index from the Events header with the selected organizer carried as a route parameter.",
+          "description": "Opens the existing program workspace from one identifiable date-range/count row in Events.",
           "implementationStatus": "implemented"
         }
       ],
@@ -615,7 +615,7 @@
             "create_event_action",
             "manage_event_navigation",
             "dress_rehearsal_action",
-            "open_programs_action"
+            "program_inventory_rows"
           ],
           "evidence": [
             "captures"
@@ -690,7 +690,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -747,7 +747,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -806,7 +806,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -864,7 +864,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -924,7 +924,7 @@
                   "repeat_event",
                   "manage_event",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -985,7 +985,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1045,7 +1045,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1102,7 +1102,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1160,7 +1160,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1216,7 +1216,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1280,7 +1280,7 @@
                   "create_organizer",
                   "retry_event_history",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1338,7 +1338,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1396,7 +1396,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1453,7 +1453,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1511,7 +1511,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1569,7 +1569,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1627,7 +1627,7 @@
                   "create_event",
                   "repeat_event",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1685,17 +1685,17 @@
                   "manage_event",
                   "open_operational_event",
                   "open_attention_task",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
           ]
         },
         {
-          "id": "open_programs_action",
-          "stateId": "open_programs_action",
+          "id": "program_inventory_rows",
+          "stateId": "program_inventory_rows",
           "kind": "populated",
-          "status": "tested",
+          "status": "implemented",
           "dimensions": {
             "load": "ready",
             "access": "owner",
@@ -1726,7 +1726,7 @@
               },
               "actions": {
                 "enabled": [
-                  "open_programs"
+                  "open_program"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1801,7 +1801,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1858,7 +1858,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1915,7 +1915,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }
@@ -1972,7 +1972,7 @@
                   "open_operational_event",
                   "open_attention_task",
                   "start_dress_rehearsal",
-                  "open_programs"
+                  "open_program"
                 ]
               }
             }

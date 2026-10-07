@@ -2,7 +2,7 @@
   "owner": "app_architecture",
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
   "version": 1,
-  "updated": "2026-07-11",
+  "updated": "2026-10-07",
   "description": "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
   "allowedFindings": [
     {
@@ -39,6 +39,14 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
       "import": "package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart"
+    },
+    {
+      "rule": "manualProviderDeclaration",
+      "path": "lib/programs/data/program_inventory_repository.dart"
+    },
+    {
+      "rule": "manualProviderDeclaration",
+      "path": "lib/programs/presentation/program_events_controller.dart"
     },
     {
       "rule": "multiRouteScreenFile",

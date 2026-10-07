@@ -537,6 +537,8 @@ import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
 import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
+import 'package:widgetbook_workspace/programs/program_create_use_cases.dart'
+    as _widgetbook_workspace_programs_program_create_use_cases;
 import 'package:widgetbook_workspace/programs/program_lodging_use_cases.dart'
     as _widgetbook_workspace_programs_program_lodging_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
@@ -13115,12 +13117,32 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program workspace',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramCreateDialog',
+            name: 'ProgramCreatePageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Create dialog',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programCreateDialogStates,
+                name: 'Form states',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programCreateFormStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramCreateScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route loading',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programCreateScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramEventsRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inventory row',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programEventsRowStates,
               ),
             ],
           ),
@@ -13142,26 +13164,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_programs_workspace_use_cases_logistics
                         .programHotelEditDialogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramListPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Body states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programListPageBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramListScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programListScreenStates,
               ),
             ],
           ),

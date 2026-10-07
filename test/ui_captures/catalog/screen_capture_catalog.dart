@@ -246,6 +246,11 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -2850,6 +2855,7 @@ class _ReferenceChromeSafeArea extends StatelessWidget {
 }
 
 List<Object> _hostOperationsProviderOverrides({
+  List<OrganizerProgramListRow> programRows = const [],
   List<Club>? hostedClubs,
   List<Club>? ownedClubs,
   AsyncValue<HostProfile?>? hostProfile,
@@ -2885,6 +2891,19 @@ List<Object> _hostOperationsProviderOverrides({
   };
 
   return [
+    programEventsControllerProvider.overrideWith((ref, request) {
+      final controller = ProgramEventsController(
+        isActorCurrent: () => true,
+        fetchPage: ({cursor, programId}) async =>
+            OrganizerProgramInventoryPage(programs: programRows),
+        mutate: (_, _) async =>
+            throw StateError('Preview inventory is read only'),
+        onMutation: (_) {},
+      );
+      ref.onDispose(controller.dispose);
+      unawaited(controller.refresh());
+      return controller;
+    }),
     hostTodayFeedControllerProvider.overrideWith2(
       (_) => _CaptureHostTodayFeedController(timelineEventsByOrganizer),
     ),
@@ -9086,6 +9105,42 @@ EventRehearsalBootstrap _eventRehearsalRuntimeCaptureBootstrap() {
 
 final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
+    id: 'program_create_draft',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'draft'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_validation',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'validation'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_pending',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'pending'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_failure',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'failure'),
+  ),
+  ScreenCaptureEntry(
+    id: 'program_create_large_text',
+    routeIds: const ['hostCreateProgramScreen'],
+    device: CaptureDevice.claudePhone390,
+    textScale: 2,
+    disableAnimations: true,
+    builder: (_) => const _ProgramCreateCaptureFixture(state: 'validation'),
+  ),
+  ScreenCaptureEntry(
     id: 'profile_self',
     routeIds: const <String>['profileScreen'],
     device: CaptureDevice.reviewTall,
@@ -10218,6 +10273,19 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostOperationsProviderOverrides(
+        programRows: [
+          OrganizerProgramListRow(
+            programId: 'reference-program',
+            title: 'Wedding weekend',
+            kind: 'wedding',
+            status: 'draft',
+            timezone: 'Asia/Kolkata',
+            revision: 1,
+            startsAt: _hostEventsReferenceNow,
+            endsAt: _hostEventsReferenceNow.add(const Duration(days: 3)),
+            functionCount: 3,
+          ),
+        ],
         hostedClubs: [_hostEventsReferenceClub],
         ownedClubs: [_hostEventsReferenceClub],
         clubEvents: {
@@ -10243,6 +10311,19 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       ..._hostOperationsProviderOverrides(
+        programRows: [
+          OrganizerProgramListRow(
+            programId: 'reference-program',
+            title: 'Wedding weekend',
+            kind: 'wedding',
+            status: 'draft',
+            timezone: 'Asia/Kolkata',
+            revision: 1,
+            startsAt: _hostEventsReferenceNow,
+            endsAt: _hostEventsReferenceNow.add(const Duration(days: 3)),
+            functionCount: 3,
+          ),
+        ],
         hostedClubs: [_hostEventsReferenceClub],
         ownedClubs: [_hostEventsReferenceClub],
         clubEvents: {
@@ -17448,3 +17529,56 @@ final _profileFixture = ProfileView(
     ),
   ],
 );
+
+class _ProgramCreateCaptureFixture extends StatefulWidget {
+  const _ProgramCreateCaptureFixture({required this.state});
+  final String state;
+  @override
+  State<_ProgramCreateCaptureFixture> createState() =>
+      _ProgramCreateCaptureFixtureState();
+}
+
+class _ProgramCreateCaptureFixtureState
+    extends State<_ProgramCreateCaptureFixture> {
+  late final ProgramCreateController controller;
+  @override
+  void initState() {
+    super.initState();
+    final valid = widget.state == 'pending' || widget.state == 'failure';
+    controller = ProgramCreateController(
+      organizerId: 'org',
+      requestId: 'preview-only-request',
+      isActorCurrent: () => true,
+      initialValues: valid
+          ? ProgramCreateValues(
+              title: 'Kapoor–Shah Wedding',
+              kind: ProgramKind.wedding,
+              timezone: 'Asia/Kolkata',
+              startsAt: DateTime(2026, 10, 5),
+              endsAt: DateTime(2026, 10, 8),
+            )
+          : const ProgramCreateValues(),
+      create: (_, _) => widget.state == 'pending'
+          ? Completer<ProgramMutationResult>().future
+          : Future.error(StateError('Connection interrupted. Please retry.')),
+      readSaved: (_) => Future.error(StateError('No persistence in a preview')),
+      refreshPrograms: (_) async => [],
+    );
+    if (widget.state != 'draft') unawaited(controller.submit());
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CatchScaffold.stepFlow(
+    body: ProgramCreatePageBody(
+      organizerName: 'Kapoor Family',
+      controller: controller,
+      onSaved: (_) {},
+    ),
+  );
+}

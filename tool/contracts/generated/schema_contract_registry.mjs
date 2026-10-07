@@ -182776,6 +182776,13 @@ export const organizerProgramDocumentSchema = {
         }
       }
     },
+    "createRequestHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Immutable normalized create-command fingerprint for request-key replay. Absent on legacy programs; never changed by program edits or lifecycle transitions."
+    },
     "revision": {
       "type": "integer",
       "minimum": 1,
@@ -195140,7 +195147,25 @@ export const listOrganizerProgramsCallablePayloadSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Optional opaque value from nextCursor. Server verifies current organizer scope and continues after the immutable ordering tuple encoded by that cursor."
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional exact program ID for bounded saved-program confirmation. Organizer authority and document scope are rechecked; cannot be combined with cursor."
     }
+  },
+  "not": {
+    "required": [
+      "cursor",
+      "programId"
+    ]
   }
 };
 
@@ -195232,6 +195257,13 @@ export const createOrganizerProgramCallablePayloadSchema = {
           "messaging"
         ]
       }
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Optional create-command identity. Same actor, organizer, key and normalized body replay the saved program; changed-body reuse is rejected. Omission preserves legacy random-ID creation."
     },
     "transportSettings": {
       "type": "object",
@@ -198693,6 +198725,7 @@ export const organizerProgramListCallableResponseSchema = {
           "kind",
           "title",
           "status",
+          "timezone",
           "startsAtMillis",
           "endsAtMillis",
           "capabilities",
@@ -198727,6 +198760,12 @@ export const organizerProgramListCallableResponseSchema = {
               "archived"
             ]
           },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "IANA timezone used to recover the Program's civil calendar dates from its stored instants."
+          },
           "startsAtMillis": {
             "type": "integer",
             "minimum": 0
@@ -198746,6 +198785,11 @@ export const organizerProgramListCallableResponseSchema = {
                 "messaging"
               ]
             }
+          },
+          "functionCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero."
           },
           "revision": {
             "type": "integer",
@@ -198777,6 +198821,15 @@ export const organizerProgramListCallableResponseSchema = {
           }
         }
       }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Opaque stable cursor for the last returned startsAt/program-ID tuple when another page exists, otherwise null. Optional for legacy readers."
     }
   }
 };

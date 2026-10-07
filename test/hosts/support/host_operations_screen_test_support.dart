@@ -485,6 +485,19 @@ List _hostClubOverrides({
     ...hosted.map((club) => club.id),
   };
   return [
+    programEventsControllerProvider.overrideWith((ref, request) {
+      final controller = ProgramEventsController(
+        isActorCurrent: () => true,
+        fetchPage: ({cursor, programId}) async =>
+            const OrganizerProgramInventoryPage(programs: []),
+        mutate: (_, _) async =>
+            throw StateError('Preview inventory is read only'),
+        onMutation: (_) {},
+      );
+      ref.onDispose(controller.dispose);
+      unawaited(controller.refresh());
+      return controller;
+    }),
     eventRepositoryProvider.overrideWithValue(
       _FixedHostEventRepository(timelineEventsByOrganizer),
     ),

@@ -256,11 +256,18 @@ export function planOperatorSetup(scope: OperatorSetupScope,
     createReviewRef: string; revokeReviewRef: string; now: number;
   }): OperatorSetupPlan {
   assertSetupSnapshot(scope, snapshot, options.now);
+  const recipientClaims = snapshot.recipient.claims;
+  // Preserve only the explicitly observed legacy {admin: true} shape. The
+  // reviewed plan binds its full hash, exact recipient and source; this claim
+  // supplies no Catch capability and is never written by bootstrap.
+  const preserveLegacyAdmin = Object.keys(recipientClaims).length === 1 &&
+    Object.hasOwn(recipientClaims, "admin") && recipientClaims.admin === true;
   if (snapshot.authorityExists || snapshot.bootstrapExists ||
       snapshot.actorAssignmentExists ||
       snapshot.existingOwnerUids.length ||
-      [snapshot.actor.claims, snapshot.recipient.claims].some((claims) =>
-        ADMIN_ROLE_CLAIMS.some((role) => claims[role] === true))) {
+      ADMIN_ROLE_CLAIMS.some((role) => snapshot.actor.claims[role] === true) ||
+      (!preserveLegacyAdmin && ADMIN_ROLE_CLAIMS.some((role) =>
+        recipientClaims[role] === true))) {
     setupUnavailable();
   }
   const plan: OperatorSetupPlan = {schemaVersion: 1,
