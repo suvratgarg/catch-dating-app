@@ -362,6 +362,134 @@ const schemaSalesDemoBlueprintsDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'partnerReviewGrant': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'state',
+        'partnerUid',
+        'assignmentRevision',
+        'blueprintRevision',
+        'previewHash',
+        'expiresAt',
+        'ownerReviewedByUid',
+        'ownerReviewedAt',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'state': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'active',
+            'withdrawn',
+          ],
+        },
+        'partnerUid': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+        },
+        'assignmentRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'blueprintRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'previewHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'expiresAt': <String, Object?>{
+          'type': 'string',
+          'format': 'date-time',
+        },
+        'ownerReviewedByUid': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+        },
+        'ownerReviewedAt': <String, Object?>{
+          'type': 'string',
+          'format': 'date-time',
+        },
+      },
+    },
+    'partnerPreviewProposal': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'state',
+        'partnerUid',
+        'assignmentRevision',
+        'blueprintRevision',
+        'sourcePreviewHash',
+        'wording',
+        'proposedAt',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'state': <String, Object?>{
+          'const': 'pending_owner_review',
+        },
+        'partnerUid': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+        },
+        'assignmentRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'blueprintRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'sourcePreviewHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'wording': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'headline',
+            'scenario',
+            'cta',
+          ],
+          'properties': <String, Object?>{
+            'headline': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[^<>\\u0000-\\u001f]+\$',
+            },
+            'scenario': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[^<>\\u0000-\\u001f]+\$',
+            },
+            'cta': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[^<>\\u0000-\\u001f]+\$',
+            },
+          },
+        },
+        'proposedAt': <String, Object?>{
+          'type': 'string',
+          'format': 'date-time',
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'id': <String, Object?>{

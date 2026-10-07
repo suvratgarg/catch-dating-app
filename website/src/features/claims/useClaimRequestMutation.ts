@@ -90,6 +90,7 @@ export function useClaimAuthController({
 export function useClaimRequestMutation(listingId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
+    gcTime: 0,
     mutationFn: async (payload: RequestOrganizerClaimPayload) => {
       const {requestOrganizerClaim} = await import("../../firebase");
       return requestOrganizerClaim(payload);

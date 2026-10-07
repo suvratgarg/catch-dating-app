@@ -1,3 +1,4 @@
+export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
 import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
@@ -225,6 +226,21 @@ export function watchClaimAuthState(
     cancelled = true;
     unsubscribe();
   };
+}
+
+/** Sales contact verification can refresh credentials without changing UID. */
+export function watchSalesDemoAuthState(callback: (user: User | null) => void): () => void {
+  if (!claimFirebaseConfigured) {callback(null); return () => undefined;}
+  let cancelled = false;
+  let unsubscribe: () => void = () => undefined;
+  void getFirebaseRuntime().then(async (runtime) => {
+    if (cancelled) return;
+    if (!runtime) {callback(null); return;}
+    const {onIdTokenChanged} = await import("firebase/auth");
+    if (cancelled) return;
+    unsubscribe = onIdTokenChanged(runtime.auth, callback);
+  }).catch(() => {if (!cancelled) callback(null);});
+  return () => {cancelled = true; unsubscribe();};
 }
 
 export const watchEventRuntimeAuthState = watchClaimAuthState;
@@ -854,10 +870,8 @@ export async function signInForClaim() {
   if (!runtime) {
     throw new Error("Claim sign-in is not configured for this build.");
   }
-  const {GoogleAuthProvider, signInWithPopup} = await import("firebase/auth");
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({prompt: "select_account"});
-  await signInWithPopup(runtime.auth, provider);
+  const {signInOrLinkClaimGoogle} = await import("./firebaseClaimAccountLinking");
+  await signInOrLinkClaimGoogle(runtime.auth);
 }
 
 export async function signOutClaimUser() {
@@ -929,6 +943,23 @@ export async function recordOrganizerAnalyticsEvent(
   >(runtime.functions, "recordOrganizerAnalyticsEvent");
   const result = await callable(payload);
   return result.data;
+}
+
+export async function beginSalesDemoPhoneVerification(
+  phoneNumber: string, recaptchaContainerId: string
+): Promise<PublicEventPhoneVerification> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !claimFirebaseConfigured) {
+    throw new Error("Sales demo verification is not configured for this build.");
+  }
+  const {RecaptchaVerifier} = await import("firebase/auth");
+  const {beginClaimPhoneLink} = await import("./firebaseClaimAccountLinking");
+  const verifier = new RecaptchaVerifier(runtime.auth, recaptchaContainerId, {size: "invisible"});
+  try {
+    const challenge = await beginClaimPhoneLink(runtime.auth, phoneNumber, verifier);
+    return {clear: () => verifier.clear(),
+      confirm: async (code) => (await challenge.confirm(code)).user};
+  } catch (error) {verifier.clear(); throw error;}
 }
 
 export async function beginPublicEventPhoneVerification(
@@ -1219,7 +1250,8 @@ export async function managePublicEventCheckout(payload: ManagePublicEventChecko
 export async function invokeSalesDemoCallable<Request, Response>(
   name: "getSalesDemoPreview" | "startSalesDemo" |
     "getSalesDemoSession" | "advanceSalesDemo" |
-    "getSalesDemoSetup" | "prepareSalesDemoFormDraft",
+    "getSalesDemoSetup" | "prepareSalesDemoFormDraft" |
+    "createSalesDemoContinuation" | "getSalesDemoContinuation" | "prepareSalesDemoContinuationForm",
   payload: Request
 ): Promise<Response> {
   return invokeWebsiteCallable<Request, Response>(name, payload,

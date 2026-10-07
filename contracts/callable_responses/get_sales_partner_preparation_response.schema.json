@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_sales_partner_preparation_response.schema.json",
+  "title": "GetSalesPartnerPreparationResponse",
+  "x-callable-aliases": [
+    "getSalesPartnerPreparation"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "assignmentRevision",
+    "researchStatus",
+    "contacts",
+    "opportunities",
+    "clauses",
+    "evaluatedAt",
+    "sendAuthority",
+    "capabilityApprovalAuthority"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "researchStatus": {
+      "enum": [
+        "new",
+        "needs_research",
+        "ready_for_review",
+        "qualified",
+        "benchmark_only",
+        "no_fit",
+        "archived"
+      ]
+    },
+    "contacts": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contactId",
+          "displayName",
+          "role"
+        ],
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "opportunityId",
+          "stage",
+          "motion"
+        ],
+        "properties": {
+          "opportunityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "stage": {
+            "enum": [
+              "new_enquiry",
+              "ready_to_contact",
+              "contacted",
+              "in_conversation",
+              "demo_arranged",
+              "demo_completed",
+              "pilot_agreed",
+              "pilot_running",
+              "commercial_discussion",
+              "closed_won",
+              "closed_lost"
+            ]
+          },
+          "motion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "clauses": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clauseId",
+          "kind",
+          "text",
+          "revision",
+          "validUntil",
+          "evidence"
+        ],
+        "properties": {
+          "clauseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "kind": {
+            "enum": [
+              "observation",
+              "capability",
+              "reference",
+              "cta"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 48
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "observedAt",
+                "validThrough",
+                "excerpt",
+                "confidence"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320,
+                  "format": "uri"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                "validThrough": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "excerpt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "confidence": {
+                  "enum": [
+                    "high",
+                    "medium",
+                    "low"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    }
+  }
+}

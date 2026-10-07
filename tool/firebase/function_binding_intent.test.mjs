@@ -242,10 +242,16 @@ test("export discovery includes direct and local exports and refuses unknown for
 test("reviewed endpoint wrappers, storage overload and imported selectors resolve", (t) => {
   const root = fixture(t, {
     "index.ts": `export {selected} from './admin/sales/callables';
+      export {partner} from './partners/callables';
       export {image, document} from './events';`,
     "admin/sales/callables.ts": `${imports}
       const read = (opts) => request(opts, () => {});
       export const selected = read({serviceAccount:'sales-reader@test-project.iam.gserviceaccount.com',secrets:['SALES_SECRET']});`,
+    "partners/callables.ts": `${imports}
+      function callable(action, employee, validator, service, maxRequests) {
+        return request({maxInstances:5}, () => {});
+      }
+      export const partner = callable('review', false, null, null, 20);`,
     "events.ts": `import {onObjectFinalized} from 'firebase-functions/v2/storage';
       import {onDocumentCreated} from 'firebase-functions/v2/firestore';
       import {selector} from './selector';
@@ -253,11 +259,12 @@ test("reviewed endpoint wrappers, storage overload and imported selectors resolv
       export const document = onDocumentCreated(selector, () => {});`,
     "selector.ts": `export const selector = 'items/{id}';`,
   });
-  const result = collect(root, {consumers: ['selected','image','document']});
+  const result = collect(root, {consumers: ['selected','partner','image','document']});
   assert.deepEqual(result.functions.find((r) => r.consumer === 'selected').secretNames,
     ['SALES_SECRET']);
   assert.equal(result.functions.find((r) => r.consumer === 'selected').serviceAccount,
     'sales-reader@test-project.iam.gserviceaccount.com');
+  assert.deepEqual(result.functions.find((r) => r.consumer === 'partner').secretNames, []);
   for (const body of ["{const copy = opts; return request(copy,()=>{});}",
     "process.env.CHANGED ? request(opts,()=>{}) : request({},()=>{})",
     "request({...opts,serviceAccount:process.env.IDENTITY},()=>{})"]) {
