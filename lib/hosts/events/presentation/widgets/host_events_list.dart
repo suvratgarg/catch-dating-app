@@ -21,6 +21,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_view_mode
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -430,66 +431,16 @@ class HostEventsTimelinePage extends StatelessWidget
             itemCount: programRows.length,
             itemBuilder: (context, index) {
               final program = programRows[index];
-              final l10n = context.l10n;
               final pending =
                   isProgramPending?.call(program.programId) ?? false;
-              return CatchField.navigate(
-                key: ValueKey('host-program-row-${program.programId}'),
-                onActivate: () => onOpenProgram?.call(program),
-                content: CatchRecordLayout(
-                  title: program.title,
-                  icon: CatchIcons.calendarMonthOutlined,
-                  metadata: l10n.programsEventRowLabel,
-                  facts: [
-                    if (program.startsAt != null && program.endsAt != null)
-                      l10n.programsEventDateRange(
-                        start: AppTimeFormatters.shortDate(program.startsAt!),
-                        end: AppTimeFormatters.shortDate(program.endsAt!),
-                      ),
-                    program.functionCount == null
-                        ? l10n.programsEventCountUnavailable
-                        : l10n.programsEventCount(
-                            count: program.functionCount!,
-                          ),
-                    if (program.isArchived) l10n.programsEventArchived,
-                  ],
-                  description: program.anonymizedAt != null
-                      ? l10n.programsListAnonymized
-                      : program.isArchived && program.anonymizeAt != null
-                      ? l10n.programsListAnonymizesOn(
-                          date: AppTimeFormatters.shortDate(
-                            program.anonymizeAt!,
-                          ),
-                        )
-                      : null,
-                ),
-                secondaryAction:
-                    CatchFieldSecondaryAction.menu<ProgramLifecycleAction>(
-                      label: l10n.programsListRowActions,
-                      items: [
-                        if (program.isArchived)
-                          CatchActionMenuItem(
-                            value: ProgramLifecycleAction.unarchive,
-                            label: l10n.programsListUnarchiveAction,
-                            icon: CatchIcons.undoRounded,
-                            enabled: !pending && program.canUnarchiveAt(clock),
-                            sublabel: program.anonymizedAt != null
-                                ? l10n.programsListAnonymized
-                                : program.canUnarchiveAt(clock)
-                                ? null
-                                : l10n.programsListRestoreWindowExpiredReason,
-                          )
-                        else
-                          CatchActionMenuItem(
-                            value: ProgramLifecycleAction.archive,
-                            label: l10n.programsListArchiveAction,
-                            icon: CatchIcons.archiveOutlined,
-                            enabled: !pending,
-                          ),
-                      ],
-                      onSelected: (action) =>
-                          onLifecycleProgram?.call(program, action),
-                    ),
+              return programEventsField(
+                context,
+                program: program,
+                now: clock,
+                pending: pending,
+                onOpen: () => onOpenProgram?.call(program),
+                onLifecycle: (action) =>
+                    onLifecycleProgram?.call(program, action),
               );
             },
           ),

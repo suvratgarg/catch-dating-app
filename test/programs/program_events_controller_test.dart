@@ -5,6 +5,8 @@ import 'package:catch_dating_app/programs/presentation/program_events_controller
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 OrganizerProgramListRow row(String id) => OrganizerProgramListRow(
   programId: id,
   title: 'Same title',
@@ -297,7 +299,7 @@ void main() {
           loading = c.loadMore();
         } else {
           loading = c.refresh();
-          await Future<void>.delayed(Duration.zero);
+          await flushTestEventQueue();
         }
         current = false;
         c.invalidateActor();

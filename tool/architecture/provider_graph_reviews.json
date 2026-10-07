@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-09-16",
+  "updated": "2026-10-07",
   "owner": "app_architecture",
   "candidatePolicy": {
     "highFanOutUniqueDependencies": 8,
@@ -77,6 +77,42 @@
       "id": "high-fan-out:authSessionControllerProvider",
       "status": "accepted",
       "rationale": "These eight dependencies belong to one sign-out boundary: auth repository, auth and onboarding flow controllers, four session-scoped Explore browse roots, and the existing FCM service. Installation removal runs while account authorization is still valid, without initializing an unused service; flow state is cleared centrally. Auth session and FCM lifecycle tests cover cleanup, in-flight sign-out deduplication and bounded unregister failure."
+    },
+    {
+      "id": "cross-feature-presentation:programCreateControllerProvider->hostOrganizerSelectionProvider",
+      "status": "planned",
+      "debtId": "CAT156",
+      "rationale": "Program creation currently watches the Host organizer selection to invalidate an in-flight account/organizer command when the actor changes. CAT156 will replace this presentation-to-presentation edge with an injected or feature-neutral actor fence while preserving draft retention, idempotency, and override contracts."
+    },
+    {
+      "id": "cross-feature-presentation:programEventsControllerProvider->hostOrganizerSelectionProvider",
+      "status": "planned",
+      "debtId": "CAT156",
+      "rationale": "The Programs inventory controller currently watches the Host organizer selection to reject stale pages and mutations after an actor switch. CAT156 will replace this presentation-to-presentation edge with an injected or feature-neutral actor fence while preserving account and organizer isolation."
+    },
+    {
+      "id": "manual-provider:programCreateControllerProvider",
+      "status": "planned",
+      "debtId": "CAT156",
+      "rationale": "The route-scoped Program creation controller landed with a manual family so its value-equality request key, auto-dispose lifecycle, future access, and focused overrides stay stable. CAT156 owns the equivalent Riverpod codegen migration and generated-output update."
+    },
+    {
+      "id": "manual-provider:programCreateJournalProvider",
+      "status": "planned",
+      "debtId": "CAT156",
+      "rationale": "The Program creation command journal remains manually provided for the initial consolidation so its persistence instance and test override contract do not change in the source repair. CAT156 owns the equivalent Riverpod codegen migration."
+    },
+    {
+      "id": "manual-provider:programEventsControllerProvider",
+      "status": "planned",
+      "debtId": "CAT156",
+      "rationale": "The account- and organizer-scoped Programs inventory controller landed with a manual family so its request identity, disposal, pagination, and override contracts stay stable. CAT156 owns the equivalent Riverpod codegen migration and generated-output update."
+    },
+    {
+      "id": "manual-provider:programInventoryRepositoryProvider",
+      "status": "planned",
+      "debtId": "CAT156",
+      "rationale": "The Programs inventory repository remains manually provided for the initial consolidation to avoid changing repository overrides alongside the Events integration. CAT156 owns the equivalent Riverpod codegen migration and generated-output update."
     }
   ]
 }

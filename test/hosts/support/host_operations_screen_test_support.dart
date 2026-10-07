@@ -489,7 +489,7 @@ List _hostClubOverrides({
       final controller = ProgramEventsController(
         isActorCurrent: () => true,
         fetchPage: ({cursor, programId}) async =>
-            OrganizerProgramInventoryPage(programs: const []),
+            const OrganizerProgramInventoryPage(programs: []),
         mutate: (_, _) async =>
             throw StateError('Preview inventory is read only'),
         onMutation: (_) {},

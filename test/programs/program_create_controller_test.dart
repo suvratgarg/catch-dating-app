@@ -6,6 +6,8 @@ import 'package:catch_dating_app/programs/presentation/program_create_controller
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 final _start = DateTime.utc(2026, 10, 5);
 final _end = DateTime.utc(2026, 10, 8);
 final _draft = ProgramCreateValues(
@@ -139,7 +141,7 @@ void main() {
       controller.edit(_draft.copyWith(title: 'Changed during save'));
       expect(controller.values.title, _draft.title);
       expect(await controller.submit(), isNull);
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
       expect(calls, 1);
       create.complete(_receipt);
       expect(await pending, 'saved-id');

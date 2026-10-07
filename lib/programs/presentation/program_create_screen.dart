@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -26,7 +27,7 @@ class ProgramCreateScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(uidProvider);
+    final account = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
     final uid = account.value;
     if (uid == null) {
       return CatchScaffold.stepFlow(
@@ -42,7 +43,7 @@ class ProgramCreateScreen extends ConsumerWidget {
               leadingType: CatchTopBarNavigationMode.back,
             ),
             Expanded(
-              child: account.hasError
+              child: account.error != null
                   ? CatchLocalizedErrorState(
                       account.error!,
                       context: AppErrorContext.auth,

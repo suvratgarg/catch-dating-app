@@ -287,7 +287,7 @@ void main() {
     await tester.pump();
     expect(loadedViewNames, isEmpty);
     await tester.tap(find.text('Past').hitTestable());
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(loadedViewNames, ['past']);
     await tester.tap(
       find.byKey(const ValueKey('host-programs-load-more-past')),
