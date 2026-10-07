@@ -5186,13 +5186,15 @@
       "path": "tool/marketing/export_hosted_captures.mjs",
       "impactPaths": [
         "tool/marketing/export_hosted_captures.test.mjs",
-        ".github/workflows/marketing-captures.yml"
+        ".github/workflows/marketing-captures.yml",
+        ".github/workflows/ci.yml",
+        "tool/ci/pr_ci_admission.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
       "safety": "local-writes-artifacts",
       "status": "active",
       "role": "generator",
-      "description": "Runs the canonical 12-image macOS marketing exporter from an exact source checkout and packages validated media and run provenance without changing goldens or publishing.",
+      "description": "Validates manual or same-repository capture-label requests, runs the canonical 12-image macOS exporter from exact source/controller checkouts, and packages media plus distinct workflow and trigger provenance without changing goldens or publishing.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
