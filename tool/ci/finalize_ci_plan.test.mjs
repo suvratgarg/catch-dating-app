@@ -8,6 +8,7 @@ import {planCommittedWindow, projectPlanOutputs} from "../harness.mjs";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {changedPathsSince} from "../harness/lib/git_changes.mjs";
 import {finalizeCiPlan, requireCoveredPlan, requireValidationLanes, verifyValidationPlan} from "./finalize_ci_plan.mjs";
+import {resolveMainBaseline} from "./main_ci_baseline.mjs";
 
 const read = (file) => JSON.parse(fs.readFileSync(new URL(file, import.meta.url), "utf8"));
 const graph = read("../harness/component_graph.json");
@@ -134,6 +135,48 @@ test("rewritten or backwards final baselines cannot skip or replace the validate
   f.write("functions/src/other.ts", "branch"); const other = f.commit();
   f.git("checkout", "--quiet", "main");
   assert.throws(() => finalizeCiPlan({...options, baseSha: other}), /Git ancestry/);
+});
+
+test("predecessor reruns retain the exact validated window through final publication", async (context) => {
+  const f = fixture(context);
+  f.write("functions/src/a.ts", "zero"); const older = f.commit();
+  f.write("firestore.indexes.json", "{}"); const floor = f.commit();
+  f.write("functions/src/a.ts", "current"); f.commit();
+  const options = f.options(floor);
+  const immutable = structuredClone(options.validationPlan);
+  verifyValidationPlan(options);
+  const repository = "owner/catch";
+  const current = {id: 123, run_number: 10, run_attempt: 2, workflow_id: 7,
+    path: ".github/workflows/ci.yml", name: "CI", event: "push", head_branch: "main",
+    head_sha: options.sourceSha, repository: {id: 1, full_name: repository},
+    head_repository: {id: 1, full_name: repository}};
+  const predecessor = {...current, id: 122, run_number: 9, run_attempt: 2, head_sha: floor};
+  const success = {...predecessor, id: 121, run_number: 8, run_attempt: 1, head_sha: older,
+    status: "completed", conclusion: "success"};
+  let reads = 0;
+  const snapshots = [[success, {...predecessor, status: "in_progress", conclusion: null}],
+    [success, {...predecessor, status: "completed", conclusion: "failure"}]];
+  const baseline = await resolveMainBaseline({repository, runId: options.runId, runAttempt: options.runAttempt,
+    sourceSha: options.sourceSha, fallbackBase: floor, minimumBaseSha: options.validationPlan.baseSha, wait: true,
+    request: async (_endpoint, requestOptions) => requestOptions ?
+      [{workflow_runs: snapshots[Math.min(reads++, snapshots.length - 1)]}] : current,
+    ensureAncestor: (base, head) => f.git("merge-base", "--is-ancestor", base, head),
+    isAncestor: (base, head) => {
+      const result = spawnSync("git", ["merge-base", "--is-ancestor", base, head], {cwd: f.cwd});
+      assert.ok([0, 1].includes(result.status));
+      return result.status === 0;
+    }, sleep: async () => {}, onWait: () => {}});
+  assert.equal(baseline.baseSha, floor);
+  const final = finalizeCiPlan({...options, baseSha: baseline.baseSha});
+  assert.deepEqual(final.changedPaths, ["functions/src/a.ts"]);
+  assert.deepEqual(final.operations.deployGroups, ["functions"]);
+  assert.equal(final.sourceSha, options.sourceSha);
+  assert.equal(final.sourceCiRunId, "123");
+  assert.equal(final.sourceCiRunAttempt, "2");
+  assert.deepEqual(options.validationPlan, immutable, "the validation artifact must remain unchanged");
+  // The resolver must retain the covered window, not permit the older candidate
+  // to include the indexes that this attempt never validated.
+  assert.throws(() => finalizeCiPlan({...options, baseSha: older}), /Git ancestry/);
 });
 
 test("final plans cannot add paths, lanes, generators or registered checks", () => {
