@@ -39,7 +39,10 @@ extension _WorkspaceTopBarGeometry on CatchTopBar {
     BuildContext context,
   ) {
     final painter = TextPainter(
-      text: TextSpan(text: 'M', style: CatchTextStyles.headline(context)),
+      text: TextSpan(
+        text: (identityName ?? title ?? '').split('\n').first,
+        style: CatchTextStyles.headline(context),
+      ),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
@@ -47,7 +50,9 @@ extension _WorkspaceTopBarGeometry on CatchTopBar {
       0.0,
       (CatchToolbarMetrics.targetExtent - painter.height) / 2,
     );
-    final baseline = painter.computeLineMetrics().first.baseline + inset;
+    final baseline =
+        painter.computeDistanceToActualBaseline(TextBaseline.alphabetic) +
+        inset;
     painter.dispose();
     return (baseline: baseline, inset: inset);
   }
