@@ -340,6 +340,10 @@ test("auth, refusal, truncation, empty output, schema/usage failures do not retr
     wire({choices: [{finish_reason: "stop", message: {content: JSON.stringify({...output, draft: 1})}}]}),
     ...badUsage.map((usage) => wire({usage}))];
   for (const transport of [async () => new Response("synthetic private auth body", {status: 401}),
+    async () => {
+      const redirected = new Response("synthetic redirect", {status: 429});
+      Object.defineProperty(redirected, "redirected", {value: true}); return redirected;
+    },
     async () => new Response("x".repeat(262_145), {status: 200}),
     async () => {throw Object.assign(new Error("private cause"), {code: "MODEL_PROVIDER_synthetic-secret"});},
     ...badWire.map((value) => async () => response(value))]) {

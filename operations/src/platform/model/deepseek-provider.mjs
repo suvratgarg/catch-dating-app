@@ -137,6 +137,7 @@ export function createDeepSeekProvider({enabled = false, modelId, promptVersion,
         }));
         // Only an explicit rejection is retryable. Transport/5xx/timeout outcomes
         // may have incurred a paid call; never retry them or switch providers.
+        if (response?.redirected) throw providerError("MODEL_PROVIDER_HTTP_ERROR", {attemptCount, outcome});
         if (response?.status === 429) {
           outcome = "rejected";
           await bounded(Promise.resolve(response.body?.cancel?.()));
@@ -145,7 +146,7 @@ export function createDeepSeekProvider({enabled = false, modelId, promptVersion,
           await bounded(delay(100 * attemptCount, undefined, {signal: controller.signal}));
           continue;
         }
-        if (response?.status !== 200 || response.redirected) {
+        if (response?.status !== 200) {
           throw providerError("MODEL_PROVIDER_HTTP_ERROR", {attemptCount, outcome,
             status: Number.isInteger(response?.status) ? response.status : null});
         }
