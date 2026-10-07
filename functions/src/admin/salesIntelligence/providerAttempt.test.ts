@@ -3,7 +3,7 @@ import {test} from "node:test";
 import {checkedProviderBudget, providerAttemptId} from "./providerAttempt";
 import {createSalesWritingPreparationWorker} from "./providerRuntime";
 
-test("writing defaults disabled before inspecting requests or ports", async () => {
+test("disabled writing does not inspect requests or ports", async () => {
   const request = {get jobId(): string {
     throw new Error("Synthetic private sentinel must not be read.");
   }, leaseOwner: "unused"};
