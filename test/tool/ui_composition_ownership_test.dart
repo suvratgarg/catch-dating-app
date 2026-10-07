@@ -5,6 +5,42 @@ import 'package:test/test.dart';
 import '../../tool/architecture/check_ui_composition_contracts.dart';
 
 void main() {
+  test('workspace roots govern every returned layout branch', () {
+    const owner = <String, Object?>{
+      'symbol': 'ExampleScreen',
+      'family': 'root',
+      'expression': 'CatchNavigationViewport',
+      'bodyGeometry': 'full-bleed',
+      'topEdge': 'safe-area',
+    };
+    expect(
+      evaluateLayoutOwnerContract(
+        screenId: 'screen.fixture',
+        owner: owner,
+        declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchNavigationViewport(panes: panes);
+}
+''',
+      ),
+      isEmpty,
+    );
+    expect(
+      evaluateLayoutOwnerContract(
+        screenId: 'screen.fixture',
+        owner: owner,
+        declarationSource: '''
+class ExampleScreen {
+  Object build() => compact
+      ? const SizedBox()
+      : CatchNavigationViewport(panes: panes);
+}
+''',
+      ),
+      isNotEmpty,
+    );
+  });
+
   test('flags raw Scaffold ownership', () {
     final lines = rawScaffoldLines('''
 class ExampleScreen {
