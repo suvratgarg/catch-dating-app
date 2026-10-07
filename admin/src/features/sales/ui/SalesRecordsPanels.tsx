@@ -13,8 +13,9 @@ function PageControls({previous, next, onPrevious, onNext}: {
     <AdminButton disabled={!next} onClick={onNext}>Next</AdminButton></p>;
 }
 
-function SalesPeoplePanel({detail, controller}: {
+function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
+  assignedStaffOnly: boolean;
 }) {
   const organizerId = detail.account.organizerId;
   const [name, setName] = useState("");
@@ -53,6 +54,7 @@ function SalesPeoplePanel({detail, controller}: {
       setEndpointValue("");}
   };
   const review = async () => {
+    if (assignedStaffOnly) return;
     if (!selected || contactChanged || selectedRevision === null || !reason.trim() ||
       (status === "draft_reviewed" && !evidenceId)) return;
     const saved = await controller.saveContactability({organizerId,
@@ -102,7 +104,9 @@ function SalesPeoplePanel({detail, controller}: {
       <AdminButton type="submit" disabled={!name.trim() || !role.trim() ||
         controller.isSaving}>Add contact</AdminButton>
     </AdminForm>
-    {contacts.length ? <AdminForm onSubmit={(event) => {event.preventDefault(); void review();}}>
+    {assignedStaffOnly ? <p>Contact restrictions and draft eligibility require an
+      authorized reviewer. Adding contact details never grants permission to send.</p> : null}
+    {contacts.length && !assignedStaffOnly ? <AdminForm onSubmit={(event) => {event.preventDefault(); void review();}}>
       <h3>Contact restriction or draft review</h3>
       <SelectField label="Contact on this page" value={selectedContact}
         onChange={(value) => selectContact(contacts.find((item) =>
@@ -142,8 +146,9 @@ function SalesPeoplePanel({detail, controller}: {
   </Panel>;
 }
 
-function EvidenceSuggestion({proposal, controller}: {
+function EvidenceSuggestion({proposal, controller, assignedStaffOnly}: {
   proposal: SalesEvidenceProposal; controller: SalesWorkspaceController;
+  assignedStaffOnly: boolean;
 }) {
   const [reason, setReason] = useState("");
   const review = (decision: "accept" | "reject") => controller.reviewEvidenceProposal({
@@ -159,7 +164,8 @@ function EvidenceSuggestion({proposal, controller}: {
       value={proposal.evidence.excerpt} /> : null}
     <StateRow label="Valid until" value={proposal.evidence.validThrough ?? "No expiry supplied"} />
     <StateRow label="Submitted by" value={proposal.clientId ? "Assistant" : "Employee"} />
-    {proposal.status === "pending" ? <>
+    {proposal.status === "pending" && assignedStaffOnly ?
+      <p>Awaiting authorized evidence review.</p> : proposal.status === "pending" ? <>
       <TextareaField label="Review reason" value={reason} onChange={setReason}
         maxLength={2000} rows={2} />
       <AdminButton disabled={!reason.trim() || controller.isSaving}
@@ -170,8 +176,9 @@ function EvidenceSuggestion({proposal, controller}: {
   </Panel>;
 }
 
-function SalesEvidencePanel({detail, controller}: {
+function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
+  assignedStaffOnly: boolean;
 }) {
   const [contactId, setContactId] = useState("");
   const [claimKey, setClaimKey] = useState<SalesEvidence["claimKey"]>("identity");
@@ -216,7 +223,8 @@ function SalesEvidencePanel({detail, controller}: {
         <AdminButton onClick={() => void controller.evidenceProposals.refetch()}>Try again</AdminButton>
       </EmptyState> : (controller.evidenceProposals?.data?.rows ?? []).map((proposal) =>
         <EvidenceSuggestion key={`${proposal.proposalId}:${proposal.revision}`}
-          proposal={proposal} controller={controller} />)}
+          proposal={proposal} controller={controller}
+          assignedStaffOnly={assignedStaffOnly} />)}
     {controller.evidenceProposals?.data?.rows.length === 0 ?
       <EmptyState>No evidence suggestions for this host.</EmptyState> : null}
     <PageControls previous={controller.hasPreviousProposalPage}
@@ -332,9 +340,10 @@ function taskStatusLabel(status: string) {
     letter.toUpperCase());
 }
 
-function SalesTasksPanel({detail, controller, currentUserUid}: {
+function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}: {
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
   currentUserUid: string;
+  assignedStaffOnly: boolean;
 }) {
   const [title, setTitle] = useState("");
   const [dueAt, setDueAt] = useState("");
@@ -387,7 +396,8 @@ function SalesTasksPanel({detail, controller, currentUserUid}: {
         <p>A contact review permits draft consideration only. The server checks
           current restrictions before recording this task; it does not send anything.</p>
         {!reviewedContacts.length ? <p role="alert">No reviewed contacts on this page.
-          Review a contact in People, or choose Internal research.</p> : null}
+          {assignedStaffOnly ? " Ask an authorized reviewer, or choose Internal research." :
+            " Review a contact in People, or choose Internal research."}</p> : null}
       </> : null}
       <p>Assigned to you</p>
       <TextField label="Due" type="datetime-local" value={dueAt}
@@ -407,17 +417,23 @@ function SalesDraftReadinessPanel() {
   </Panel>;
 }
 
-export function SalesRecordsWorkspace({section, detail, controller, currentUserUid}: {
+export function SalesRecordsWorkspace({section, detail, controller, currentUserUid,
+  assignedStaffOnly = false}: {
   section: "people" | "evidence" | "suppression" | "draft" | "tasks";
   currentUserUid?: string;
+  assignedStaffOnly?: boolean;
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
 }) {
   if (section === "tasks") return <SalesTasksPanel key={detail.account.organizerId}
-    detail={detail} controller={controller} currentUserUid={currentUserUid ?? ""} />;
+    detail={detail} controller={controller} currentUserUid={currentUserUid ?? ""}
+    assignedStaffOnly={assignedStaffOnly} />;
   if (section === "people") return <SalesPeoplePanel key={detail.account.organizerId}
-    detail={detail} controller={controller} />;
+    detail={detail} controller={controller} assignedStaffOnly={assignedStaffOnly} />;
   if (section === "evidence") return <SalesEvidencePanel detail={detail}
-    controller={controller} />;
+    controller={controller} assignedStaffOnly={assignedStaffOnly} />;
+  if (section === "suppression" && assignedStaffOnly) {
+    return <EmptyState>Account restrictions require an authorized reviewer.</EmptyState>;
+  }
   if (section === "suppression") return <SalesSuppressionPanel
     key={detail.account.organizerId} detail={detail} controller={controller} />;
   return <SalesDraftReadinessPanel />;

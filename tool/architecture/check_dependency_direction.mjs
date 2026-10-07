@@ -80,7 +80,14 @@ export function scanDependencyDirection({snapshot, baseline = emptyBaseline()}) 
   }));
 
   const baselineKeys = new Set(
-    (baseline.allowedFindings ?? []).map((finding) => findingKey(finding)),
+    (baseline.allowedFindings ?? [])
+      .filter((finding) => finding.rule !== "manualProviderDeclaration" || (
+        typeof finding.symbol === "string" && typeof finding.operation === "string" &&
+        typeof finding.rationale === "string" && finding.rationale.trim().length > 0 &&
+        (finding.status === "accepted-exception" || (finding.status === "planned" &&
+          typeof finding.debtId === "string" && finding.debtId.trim().length > 0))
+      ))
+      .map((finding) => findingKey(finding)),
   );
   const findings = [];
   const baselineFindings = [];
@@ -104,11 +111,14 @@ export function scanDependencyDirection({snapshot, baseline = emptyBaseline()}) 
 
 export function scanFile({relativePath, source}) {
   const findings = [];
-  const addSourceFinding = ({rule, line, reason}) => {
-    if (findings.some((finding) => finding.rule === rule && finding.import == null)) {
+  const addSourceFinding = ({rule, line, reason, symbol, operation}) => {
+    const candidate = {rule, path: relativePath, line, reason,
+      ...(symbol == null ? {} : {symbol}),
+      ...(operation == null ? {} : {operation})};
+    if (findings.some((finding) => findingKey(finding) === findingKey(candidate))) {
       return;
     }
-    findings.push({rule, path: relativePath, line, reason});
+    findings.push(candidate);
   };
 
   for (const match of source.matchAll(/^import\s+['"]([^'"]+)['"][^;]*;/gmu)) {
@@ -288,11 +298,12 @@ export function scanFile({relativePath, source}) {
     }
 
     if (!relativePath.startsWith("lib/core/")) {
-      const providerDeclaration = manualProviderDeclarationMatch(source);
-      if (providerDeclaration) {
+      for (const providerDeclaration of manualProviderDeclarationMatches(source)) {
         addSourceFinding({
           rule: "manualProviderDeclaration",
           line: lineForOffset(source, providerDeclaration.index),
+          symbol: providerDeclaration[1],
+          operation: providerDeclaration[2].replace(/\s+/gu, ""),
           reason:
             "handwritten providers outside core should use @riverpod codegen unless explicitly grandfathered",
         });
@@ -313,9 +324,11 @@ function baselineFromFindings(findings) {
       "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
     allowedFindings: findings
       .filter((finding) => !hardGateRules.has(finding.rule))
-      .map(({rule, path: findingPath, import: uri}) => {
+      .map(({rule, path: findingPath, import: uri, symbol, operation}) => {
         const finding = {rule, path: findingPath};
         if (uri != null) finding.import = uri;
+        if (symbol != null) finding.symbol = symbol;
+        if (operation != null) finding.operation = operation;
         return finding;
       })
       .sort((a, b) => findingKey(a).localeCompare(findingKey(b))),
@@ -338,6 +351,9 @@ function countByRule(findings) {
 }
 
 function findingKey(finding) {
+  if (finding.symbol != null || finding.operation != null) {
+    return `${finding.rule}|${finding.path}|${finding.symbol ?? ""}|${finding.operation ?? ""}`;
+  }
   return finding.import == null
     ? `${finding.rule}|${finding.path}`
     : `${finding.rule}|${finding.path}|${finding.import}`;
@@ -540,13 +556,22 @@ function firstKeepAliveLineWithoutMarker(source) {
   return null;
 }
 
-function manualProviderDeclarationMatch(source) {
-  return (
-    /=\s*Provider(?:\.family)?(?:<|\()/u.exec(source) ??
-    /\b(?:StateProvider|FutureProvider|StreamProvider)(?:\.family)?(?:<|\()/u.exec(
-      source,
-    )
+function* manualProviderDeclarationMatches(source) {
+  // Keep offsets while ignoring comments and strings; this remains the small
+  // declaration ratchet. Class ancestry and ownership are AST graph checks.
+  const code = source.replace(
+    /\/\*[\s\S]*?\*\/|\/\/[^\r\n]*|r?(?:'''[\s\S]*?'''|"""[\s\S]*?"""|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")/gu,
+    (text) => text.replace(/[^\r\n]/gu, " "),
   );
+  const prefixes = new Set([...source.matchAll(/^import\s+['"]package:(?:flutter_riverpod|hooks_riverpod|riverpod)\/[^'"]+['"]\s+as\s+(\w+)\b[^;]*;/gmu)].map((match) => match[1]));
+  for (const match of code.matchAll(
+    /\b([A-Za-z_]\w*)\s*=\s*(?:(\w+)\s*\.\s*)?((?:Provider|StateProvider|FutureProvider|StreamProvider|NotifierProvider|AsyncNotifierProvider|StreamNotifierProvider|ChangeNotifierProvider|StateNotifierProvider)(?:\s*\.\s*(?:autoDispose|family))*)(?=\s*[<(])/gu,
+  )) {
+    if (match[2] != null && !prefixes.has(match[2])) continue;
+    const declaration = [match[0], match[1], match[3]];
+    declaration.index = match.index;
+    yield declaration;
+  }
 }
 
 function classBlocks(source) {

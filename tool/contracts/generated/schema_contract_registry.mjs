@@ -314678,7 +314678,8 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -314697,7 +314698,8 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
         "safetyReviewer",
         "support",
         "finance",
-        "analyticsViewer"
+        "analyticsViewer",
+        "salesStaff"
       ]
     }
   }
@@ -314765,7 +314767,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "safetyReviewer",
               "support",
               "finance",
-              "analyticsViewer"
+              "analyticsViewer",
+              "salesStaff"
             ]
           }
         },
@@ -314786,7 +314789,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -314801,7 +314805,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     }
@@ -314815,7 +314820,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
         "safetyReviewer",
         "support",
         "finance",
-        "analyticsViewer"
+        "analyticsViewer",
+        "salesStaff"
       ]
     },
     "roles": {
@@ -314829,7 +314835,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -314893,7 +314900,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "safetyReviewer",
               "support",
               "finance",
-              "analyticsViewer"
+              "analyticsViewer",
+              "salesStaff"
             ]
           }
         },

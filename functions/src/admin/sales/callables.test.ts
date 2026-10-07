@@ -51,3 +51,32 @@ test("Sales callable rejects a session revoked after token issue", async () => {
       error instanceof HttpsError && error.code === "permission-denied",
   );
 });
+
+test("Sales staff uses current assignments and bounded actions", async () => {
+  const staffRequest = {auth: {uid: "staff-1", token: {
+    salesStaff: true, auth_time: 1_800_000_000,
+  }}} as unknown as CallableRequest<unknown>;
+  let lookups = 0;
+  const active = await currentSalesEmployee(staffRequest, async () => ({
+    disabled: false, customClaims: {salesStaff: true},
+  }), async (uid) => {
+    assert.equal(uid, "staff-1"); lookups++; return ["org-1"];
+  });
+  assert.deepEqual(active.organizerIds, ["org-1"]);
+  assert.equal(lookups, 1);
+  assert(active.allowedActions?.includes("activities.log"));
+  assert(!active.allowedActions?.includes("hosts.create"));
+  for (const user of [
+    {disabled: true, customClaims: {salesStaff: true}},
+    {disabled: false, customClaims: {support: true}},
+    {disabled: false, customClaims: {salesStaff: true},
+      tokensValidAfterTime: "2027-02-01T00:00:00.000Z"},
+  ]) {
+    await assert.rejects(currentSalesEmployee(staffRequest, async () => user,
+      async () => {
+        throw new Error("Must deny before assignment lookup");
+      }),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied");
+  }
+});

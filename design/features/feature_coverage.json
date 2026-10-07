@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-04",
+  "updated": "2026-10-07",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -559,6 +559,13 @@
       "priority": "P1",
       "reason": "Compiled Organizer Publishing contract covers canonical editing, publish checklist, index publication, and claim decisions.",
       "featureContract": "feature.admin_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_operator_session",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Internal operator credential handoff is governed by exact-account and source-bound transport, protected local-file permissions, and synthetic security/route tests. It exports an existing session only; it adds no product or business mutation, role grant, sign-in, or shared cross-surface feature workflow."
     },
     {
       "authority": "admin_routes",
