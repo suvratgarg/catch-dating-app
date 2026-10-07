@@ -21,7 +21,7 @@ export function OperatorSessionScreen() {
       if (connection.current && event.data && Object.keys(event.data).sort().join(",") === "challenge,kind" &&
           event.data.kind === "catch-operator-session-cancel" &&
           event.origin === connection.current.origin && event.data.challenge === connection.current.request.challenge) {
-        alive.current = false; setPending(false); setStatus("Cancelled. No session was transferred."); return;
+        alive.current = false; setPending(false); setStatus("Cancelled. Check the local helper for its save status."); return;
       }
       if (connection.current) return;
       try {
@@ -47,14 +47,14 @@ export function OperatorSessionScreen() {
       saved.opener.postMessage(value, saved.origin);
       setStatus("Session transferred to the selected local helper. Check its save receipt.");
     } catch {
-      setStatus("Session unavailable. Use Catch’s normal Google sign-in UI, then restart the local handoff. A token refresh does not replace a fresh sign-in.");
+      if (isCurrent()) setStatus("Session unavailable. Use Catch’s normal Google sign-in UI, then restart the local handoff. A token refresh does not replace a fresh sign-in.");
     } finally {if (alive.current) setPending(false);}
   };
   const cancel = () => {
     alive.current = false;
     const saved = connection.current;
     saved?.opener.postMessage({kind: "catch-operator-session-cancel", challenge: saved.request.challenge}, saved.origin);
-    setPending(false); setStatus("Cancelled. No session was transferred.");
+    setPending(false); setStatus("Cancellation requested. Check the local helper for its save status.");
   };
   return <AdminSignInScreen><AdminSignInPanel>
     <h1>Catch operator session</h1><p>{status}</p>

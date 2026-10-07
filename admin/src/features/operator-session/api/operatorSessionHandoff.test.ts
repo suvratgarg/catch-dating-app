@@ -23,7 +23,9 @@ describe("protected session protocol", () => {
     for (const origin of ["https://127.0.0.1:12345", "http://localhost:12345", "http://127.0.0.1:80", "http://127.0.0.1:12345/path", "http://user@127.0.0.1:12345", "http://127.0.0.1:12345#fragment"]) expect(loopbackOrigin(origin)).toBe(false);
     expect(sessionRequest(request, now)).toEqual(request);
     for (const invalid of [{...request, extra: true}, {...request, expiresAtMillis: now},
-      {...request, expiresAtMillis: now + 300001}, {...request, sourceSha: "bad"}, {...request, challenge: "bad"}]) expect(() => sessionRequest(invalid, now)).toThrow("Protected session handoff unavailable.");
+      {...request, expiresAtMillis: now + 300001}, {...request, sourceSha: "bad"},
+      {...request, challenge: "bad"}, {...request, challenge: [request.challenge]},
+      {...request, actorUid: 12345}]) expect(() => sessionRequest(invalid, now)).toThrow("Protected session handoff unavailable.");
   });
   it("exports only the exact signed-in user's current token after forced public SDK verification", async () => {
     const value = await transferSession(auth(), request, () => true, () => now);

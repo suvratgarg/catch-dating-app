@@ -84,7 +84,7 @@ function fixture(t, {existing = false, verify} = {}) {
   }
   const save = () => request("/session", {challenge: transfer.challenge, idToken: privateToken});
   return {home, helper, binding, profile, scope, decoded, file, start, request, bootstrap, configure, save,
-    calls: () => calls, setNow: value => now = value, get transfer() {return transfer;}};
+    calls: () => calls, setNow: value => now = value, get transfer() {return transfer;}, get cookie() {return cookie;}};
 }
 
 test("private one-use bootstrap, exact Host/Origin, cookie and CSRF precede configuration", async t => {
@@ -122,6 +122,13 @@ test("offline profile validation writes nothing; valid confirmed handoff saves o
   assert.equal(fs.statSync(f.home).mode & 0o777, 0o700);
   assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), privateToken + "\n");
   assert.equal(f.calls(), 1);
+});
+
+test("a prior launch's cookie does not prevent reuse; duplicate selected cookies fail closed", async t => {
+  const f = fixture(t); await f.start(); await f.bootstrap();
+  assert.equal((await f.request("/configure", f.profile, {Cookie: f.cookie + "; " + f.cookie})).status, 400);
+  assert.equal((await f.request("/configure", f.profile, {Cookie: "unrelated_previous=old; " + f.cookie})).status, 200);
+  assert.equal(f.calls(), 0);
 });
 
 test("existing profile is byte-preserved; only the verified actor session is replaced", async t => {
@@ -239,26 +246,42 @@ test("CLI rejects unapproved argument forms without exposing credential-shaped i
   }
 });
 
-const {JSDOM} = require("jsdom");
+const vm = require("node:vm");
 const {localPage} = require("../scripts/operations/catch-whatsapp-session-handoff-ui.cjs");
 async function localBrowser(t, {saveWaiting} = {}) {
   const calls = [], messages = [];
   const transfer = {challenge: "a".repeat(64), expiresAtMillis: Date.now() + 300000};
   const child = {closed: false, postMessage: (...args) => messages.push(args)};
   const capability = "e".repeat(64);
-  const dom = new JSDOM(localPage.html, {url: "http://127.0.0.1:12345/#" + capability,
-    runScripts: "dangerously", beforeParse(window) {
-      window.open = () => child;
-      window.fetch = async (url, options) => {
-        calls.push({url, options});
-        if (url === "/session" && saveWaiting) await saveWaiting;
-        return {ok: true, status: 200, json: async () => url === "/bootstrap" ?
-          {csrf: "f".repeat(64), profile: {synthetic: true}, runtime: {sourceSha: "b".repeat(40)}} :
-          url === "/configure" ? {clientOrigin, request: transfer} :
-          url === "/cancel" ? {state: "cancelled"} : {state: "saved", expiresAtMillis: Date.now() + 3600000}};
-      };
+  const elements = new Map();
+  for (const id of ["status", "config", "confirm", "open", "cancel", "binding"]) {
+    const element = {textContent: "", value: "", disabled: ["confirm", "open", "cancel"].includes(id),
+      click() {if (!this.disabled) this.onclick?.();}};
+    elements.set(id, element);
+  }
+  const events = new Map(), intervals = new Set();
+  const window = {open: () => child, addEventListener: (name, handler) => events.set(name, handler),
+    dispatchEvent: event => events.get(event.type)?.(event)};
+  const document = {getElementById: id => elements.get(id), body: {
+    get textContent() {return [...elements.values()].map(value => value.textContent).join(" ");},
+  }};
+  const location = {hash: "#" + capability};
+  const dom = {window: {...window, location, document,
+    MessageEvent: class {constructor(type, value) {Object.assign(this, value, {type});}}}};
+  const script = localPage.html.match(/<script>([\s\S]*)<\/script>/u)[1];
+  vm.runInNewContext(script, {window, document, location, Date,
+    history: {replaceState: () => {location.hash = "";}},
+    setInterval: (callback, millis) => {const timer = setInterval(callback, millis); intervals.add(timer); return timer;},
+    clearInterval,
+    fetch: async (url, options) => {
+      calls.push({url, options});
+      if (url === "/session" && saveWaiting) await saveWaiting;
+      return {ok: true, status: 200, json: async () => url === "/bootstrap" ?
+        {csrf: "f".repeat(64), profile: {synthetic: true}, runtime: {sourceSha: "b".repeat(40)}} :
+        url === "/configure" ? {clientOrigin, request: transfer} :
+        url === "/cancel" ? {state: "cancelled"} : {state: "saved", expiresAtMillis: Date.now() + 3600000}};
     }});
-  t.after(() => dom.window.close());
+  t.after(() => {for (const timer of intervals) clearInterval(timer);});
   const tick = () => new Promise(resolve => setImmediate(resolve));
   await tick();
   assert.equal(dom.window.location.hash, "");

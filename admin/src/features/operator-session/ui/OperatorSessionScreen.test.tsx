@@ -2,8 +2,12 @@
 import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 import {OperatorSessionScreen} from "./OperatorSessionScreen";
-const mocks = vi.hoisted(() => ({transfer: vi.fn()}));
-vi.mock("../../../shared/api/firebase", () => ({auth: {app: {options: {projectId: "demo-catch-setup"}}}}));
+const mocks = vi.hoisted(() => ({transfer: vi.fn(), authListener: vi.fn()}));
+vi.mock("firebase/auth", () => ({getIdTokenResult: vi.fn(), onIdTokenChanged: mocks.authListener}));
+vi.mock("../../../shared/api/firebaseCore", () => ({firebaseApp: {options: {projectId: "demo-catch-setup"}}}));
+vi.mock("../../../shared/api/firebase", () => ({auth: {app: {options: {projectId: "demo-catch-setup"}}},
+  confirmPhoneSignInCode: vi.fn(), requestPhoneSignInCode: vi.fn(), resetPhoneSignIn: vi.fn(),
+  signInWithGoogleAdmin: vi.fn(), signOutAdmin: vi.fn()}));
 vi.mock("../api/operatorSessionHandoff", async importOriginal => ({
   ...await importOriginal<typeof import("../api/operatorSessionHandoff")>(), transferSession: mocks.transfer,
 }));
@@ -61,4 +65,23 @@ it("uses fixed error text even when an SDK failure contains a token", async () =
   await screen.findByText(/Use Catch’s normal Google sign-in UI/u);
   expect(document.body.textContent).not.toContain("synthetic.private.signature");
   expect(opener.postMessage).toHaveBeenCalledTimes(1);
+});
+it("does not claim an already transferred session was undone by Cancel", async () => {
+  render(<OperatorSessionScreen />); message(request());
+  fireEvent.click(screen.getByRole("button", {name: "Transfer my current Google session"}));
+  await screen.findByText(/Session transferred to the selected local helper/u);
+  fireEvent.click(screen.getByRole("button", {name: "Cancel"}));
+  expect(screen.getByText(/Cancellation requested. Check the local helper/u)).not.toBeNull();
+  expect(opener.postMessage).toHaveBeenLastCalledWith({kind: "catch-operator-session-cancel", challenge: "a".repeat(64)}, origin);
+});
+it("retains cancellation status when a pending SDK request rejects later", async () => {
+  let reject!: (reason: Error) => void;
+  mocks.transfer.mockReturnValue(new Promise((_resolve, r) => {reject = r;}));
+  render(<OperatorSessionScreen />); message(request());
+  fireEvent.click(screen.getByRole("button", {name: "Transfer my current Google session"}));
+  fireEvent.click(screen.getByRole("button", {name: "Cancel"}));
+  await act(async () => reject(new Error("synthetic.private.signature")));
+  expect(screen.getByText(/Cancellation requested. Check the local helper/u)).not.toBeNull();
+  expect(document.body.textContent).not.toContain("synthetic.private.signature");
+  expect(opener.postMessage).toHaveBeenCalledTimes(2);
 });

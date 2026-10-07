@@ -26,6 +26,8 @@ export function sessionRequest(value: unknown, now = Date.now()): SessionRequest
   if (Object.keys(request).sort().join(",") !==
       "actorEmailSha256,actorUid,challenge,expiresAtMillis,kind,projectId,schemaVersion,scopeSha256,sourceSha" ||
       request.kind !== "catch-operator-session-request" || request.schemaVersion !== 1 ||
+      ![request.actorUid, request.projectId, request.challenge, request.actorEmailSha256,
+        request.scopeSha256, request.sourceSha].every(value => typeof value === "string") ||
       !/^[A-Za-z0-9_-]{1,128}$/u.test(request.actorUid) ||
       !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(request.projectId) ||
       ![request.challenge, request.actorEmailSha256, request.scopeSha256].every(value => /^[a-f0-9]{64}$/u.test(value)) ||

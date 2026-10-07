@@ -167,12 +167,14 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
         current();
         if (phase !== "bootstrap" || !equal(request.headers["x-catch-bootstrap"], capability)) unavailable();
         phase = "configuration";
-        response.setHeader("Set-Cookie", `${cookieName}=${cookie}; HttpOnly; SameSite=Strict; Path=/`);
+        response.setHeader("Set-Cookie", `${cookieName}=${cookie}; HttpOnly; SameSite=Strict; Path=/; Max-Age=300`);
         reply(response, 200, {csrf, profile: profile ?? null, runtime: binding.runtime});
         return;
       }
-      if (!equal(request.headers["x-catch-csrf"], csrf) ||
-          request.headers.cookie !== `${cookieName}=${cookie}`) unavailable();
+      const selectedCookies = (request.headers.cookie ?? "").split(";").map(value => value.trim())
+        .filter(value => value.startsWith(cookieName + "="));
+      if (!equal(request.headers["x-catch-csrf"], csrf) || selectedCookies.length !== 1 ||
+          !equal(selectedCookies[0], `${cookieName}=${cookie}`)) unavailable();
       if (request.url === "/cancel") {
         if (phase === "saved") {reply(response, 409, {state: "saved"}); return;}
         phase = "cancelled"; cleanup();
