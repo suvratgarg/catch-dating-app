@@ -1017,7 +1017,7 @@ test("default SDK binds lookup and effective Secret Manager auth quota without c
       const original = structuredClone(json);
       resolved = UserRefreshClient.fromJSON(json);
       resolved.setCredentials({access_token: "synthetic-existing-access-token",
-        expiry_date: Date.now() + 60 * 60 * 1000});
+        token_type: "Bearer", expiry_date: Date.now() + 60 * 60 * 1000});
       const credentials = structuredClone(resolved.credentials);
       assert.equal(resolved.quotaProjectId, quota, "synthetic ADC can override constructor options");
       const client = await secretOptions.auth.getClient();
