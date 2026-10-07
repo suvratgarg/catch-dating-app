@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   requestPhoneSignInCode: vi.fn(),
   resetPhoneSignIn: vi.fn(),
   signOutAdmin: vi.fn(),
+  signInWithGoogleAdmin: vi.fn(),
 }));
 
 vi.mock("firebase/auth", () => ({
@@ -28,6 +29,7 @@ vi.mock("../shared/api/firebase", () => ({
   requestPhoneSignInCode: mocks.requestPhoneSignInCode,
   resetPhoneSignIn: mocks.resetPhoneSignIn,
   signOutAdmin: mocks.signOutAdmin,
+  signInWithGoogleAdmin: mocks.signInWithGoogleAdmin,
 }));
 
 vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
@@ -79,7 +81,7 @@ describe("App live deep-link ownership", () => {
     window.history.replaceState({}, "", "/overview");
   });
 
-  it("supports only phone OTP and completes the sign-in flow", async () => {
+  it("preserves phone OTP beside the existing Google account sign-in", async () => {
     const user = userEvent.setup();
     mocks.onIdTokenChanged.mockImplementation(() => () => undefined);
     mocks.requestPhoneSignInCode.mockResolvedValue(undefined);
@@ -87,8 +89,7 @@ describe("App live deep-link ownership", () => {
 
     render(<App />);
 
-    expect(screen.queryByRole("button", {name: "Sign in with Google"}))
-      .toBeNull();
+    expect(screen.getByRole("button", {name: "Sign in with Google"})).toBeTruthy();
     await user.type(
       screen.getByRole("textbox", {name: "Phone number"}),
       "+91 90000 00000"
@@ -117,9 +118,17 @@ describe("App live deep-link ownership", () => {
 
     expect(await screen.findByRole("button", {name: "Send verification code"}))
       .not.toBeNull();
-    expect(screen.queryByRole("button", {name: "Sign in with Google"}))
-      .toBeNull();
+    expect(screen.getByRole("button", {name: "Sign in with Google"})).toBeTruthy();
     expect(window.location.pathname).toBe("/safety/reports%2Freport-1");
+  });
+
+  it("offers Google sign-in through the existing guarded Admin shell", async () => {
+    mocks.onIdTokenChanged.mockImplementation(() => () => undefined);
+    mocks.signInWithGoogleAdmin.mockResolvedValue(undefined);
+    render(<App />);
+    await userEvent.setup().click(screen.getByRole("button", {name: "Sign in with Google"}));
+    expect(mocks.signInWithGoogleAdmin).toHaveBeenCalledOnce();
+    expect(screen.queryByText("Overview fixture")).toBeNull();
   });
 
   it("preserves a requested route while admin claims resolve", async () => {

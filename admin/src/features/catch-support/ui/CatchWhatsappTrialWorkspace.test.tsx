@@ -22,9 +22,9 @@ function mount(enabled = false) {
   </QueryClientProvider>);
   return api;
 }
-it("shows the default-disabled trial without interactive sending controls", () => {
+it("shows unavailable support without interactive sending controls", () => {
   const api = mount();
-  expect(screen.getByText(/trial is not enabled/)).toBeTruthy();
+  expect(screen.getByText(/support is currently unavailable/)).toBeTruthy();
   expect(screen.queryByRole("button")).toBeNull();
   expect(api.prepare).not.toHaveBeenCalled();
 });

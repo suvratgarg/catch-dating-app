@@ -63,8 +63,10 @@ import {
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
   resetPhoneSignIn,
+  signInWithGoogleAdmin,
   signOutAdmin,
 } from "../shared/api/firebase";
+import {firebaseApp} from "../shared/api/firebaseCore";
 import {useAdminSession} from "./useAdminSession";
 import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
@@ -451,6 +453,18 @@ function AdminRouteApp() {
     }
   }, [phoneNumber]);
 
+  const handleGoogleSignIn = useCallback(async () => {
+    setAuthError(null);
+    setIsAuthActionPending(true);
+    try {
+      await signInWithGoogleAdmin();
+    } catch {
+      setAuthError("Unable to sign in with Google. Try again.");
+    } finally {
+      setIsAuthActionPending(false);
+    }
+  }, []);
+
   const handleVerifyPhoneCode = useCallback(async () => {
     const normalizedCode = phoneCode.replace(/\s+/gu, "");
     if (!/^\d{6}$/u.test(normalizedCode)) {
@@ -567,6 +581,7 @@ function AdminRouteApp() {
         onRequestPhoneCode={() => void handleRequestPhoneCode()}
         onResetPhoneSignIn={handleResetPhoneSignIn}
         onVerifyPhoneCode={() => void handleVerifyPhoneCode()}
+        onGoogleSignIn={() => void handleGoogleSignIn()}
       />
     );
   }
@@ -694,7 +709,7 @@ function AdminRouteApp() {
             (adminRoles.includes("support") || adminRoles.includes("adminOwner")) ? (
             <Suspense fallback={<AdminFeatureLoadingState label="Loading support trial" />}>
               <CatchWhatsappTrialWorkspace
-                scope={{actorUid: user?.uid ?? "", projectId: "catchdates-dev",
+                scope={{actorUid: user?.uid ?? "", projectId: firebaseApp.options.projectId ?? "",
                   sessionKey, isCurrent: session.isCurrent}}
               />
             </Suspense>
@@ -1189,6 +1204,7 @@ function SignInScreen({
   onRequestPhoneCode,
   onResetPhoneSignIn,
   onVerifyPhoneCode,
+  onGoogleSignIn,
   phoneCode,
   phoneNumber,
   phoneSignInStage,
@@ -1200,6 +1216,7 @@ function SignInScreen({
   onRequestPhoneCode: () => void;
   onResetPhoneSignIn: () => void;
   onVerifyPhoneCode: () => void;
+  onGoogleSignIn: () => void;
   phoneCode: string;
   phoneNumber: string;
   phoneSignInStage: PhoneSignInStage;
@@ -1227,6 +1244,9 @@ function SignInScreen({
             {error}
           </StatusBanner>
         )}
+        <AdminButton disabled={isSigningIn} onClick={onGoogleSignIn}>
+          Sign in with Google
+        </AdminButton>
         <AdminForm onSubmit={handlePhoneSubmit}>
           {phoneSignInStage === "phone" ? (
             <TextField

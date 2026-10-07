@@ -126,6 +126,12 @@
       },
       "description": "Host App Store URL used once the listing is public."
     },
+    "catch_whatsapp_support_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Admin Catch WhatsApp client availability only; setup approval, access grants, backend readiness and human reply approval remain separate."
+    },
     "host_wedding_phone_import_enabled": {
       "defaultValue": {
         "value": "false"
