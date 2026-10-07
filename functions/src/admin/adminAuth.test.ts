@@ -3,6 +3,19 @@ import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import {adminRolesFromToken, requireAdmin, requireAdminRole} from "./adminAuth";
 
+test("Sales staff needs explicit endpoint admission", () => {
+  const request = {auth: {uid: "staff-1", token: {salesStaff: true}}} as
+    unknown as Parameters<typeof requireAdmin>[0];
+  assert.deepEqual(adminRolesFromToken({salesStaff: true}), ["salesStaff"]);
+  assert.throws(() => requireAdmin(request), (error) =>
+    error instanceof HttpsError && error.code === "permission-denied");
+  assert.throws(() => requireAdminRole(request, ["adminOwner", "support"]),
+    (error) =>
+      error instanceof HttpsError && error.code === "permission-denied");
+  assert.deepEqual(requireAdminRole(request, ["salesStaff"]),
+    {uid: "staff-1", roles: ["salesStaff"]});
+});
+
 test("adminRolesFromToken returns only enabled admin claims", () => {
   assert.deepEqual(adminRolesFromToken({
     admin: true,
