@@ -3080,6 +3080,52 @@
         "grantId": "grant_example-grant-operation-0001",
         "reason": "Invoice INV-2026-0042 was reversed before activation."
       }
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoPartnerReview",
+      "callable": "adminGetSalesDemoPartnerReview",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_sales_demo_partner_review_payload.schema.json",
+      "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
+      "example": {
+        "blueprintId": "example-blueprint"
+      }
+    },
+    {
+      "actionId": "sales.demo.ShareSalesDemoPartnerReview",
+      "callable": "adminShareSalesDemoPartnerReview",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_share_sales_demo_partner_review_payload.schema.json",
+      "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
+      "example": {
+        "blueprintId": "example-blueprint",
+        "requestId": "example-demo-share",
+        "expectedBlueprintRevision": 2,
+        "expectedSharingRevision": 0,
+        "partnerUid": "example-partner",
+        "expectedAssignmentRevision": 1,
+        "expectedPreviewHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "decision": "share",
+        "expiresAt": "2026-10-05T12:00:00.000Z"
+      },
+      "confirmation": "action-and-target",
+      "targetField": "blueprintId"
     }
   ],
   "workflows": [
@@ -3353,7 +3399,9 @@
         "sales.privacy.plan.preview",
         "sales.privacy.plan.review",
         "sales.privacy.batch.apply",
-        "sales.privacy.case.get"
+        "sales.privacy.case.get",
+        "sales.demo.GetSalesDemoPartnerReview",
+        "sales.demo.ShareSalesDemoPartnerReview"
       ]
     }
   ]

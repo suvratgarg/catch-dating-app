@@ -3975,6 +3975,65 @@
         "onCatchWhatsappWebhookEventCreated",
         "onCatchWhatsappReplyOperationWritten"
       ]
+    },
+    {
+      "id": "salesPartnerMemberships",
+      "path": "salesPartnerMemberships/{id}",
+      "rulesMatch": "/salesPartnerMemberships/{privateDocument=**}",
+      "typescriptInterface": "SalesPartnerMembershipDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "partner Sales scoped services",
+      "read": "server only; partner scoped projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getSalesPartnerWorkspace",
+        "registerSalesPartner",
+        "adminAssignSalesPartner",
+        "adminRevokeSalesPartnerAccess"
+      ]
+    },
+    {
+      "id": "salesPartnerAssignments",
+      "path": "salesPartnerAssignments/{id}",
+      "rulesMatch": "/salesPartnerAssignments/{privateDocument=**}",
+      "typescriptInterface": "SalesPartnerAssignmentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "partner Sales scoped services",
+      "read": "server only; partner scoped projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getSalesPartnerWorkspace",
+        "registerSalesPartner",
+        "adminAssignSalesPartner",
+        "adminRevokeSalesPartnerAccess"
+      ]
+    },
+    {
+      "id": "salesDemoContinuations",
+      "path": "salesDemoContinuations/{continuationId}",
+      "rulesMatch": "/salesDemoContinuations/{privateDocument=**}",
+      "typescriptInterface": "SalesDemoContinuationDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "rulesTestNames": [
+        "sales records stay private behind server operations"
+      ],
+      "owner": "private Sales Demo continuation boundary",
+      "read": "server only; current own completion projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "createSalesDemoContinuation",
+        "getSalesDemoContinuation",
+        "prepareSalesDemoContinuationForm"
+      ]
     }
   ]
 }

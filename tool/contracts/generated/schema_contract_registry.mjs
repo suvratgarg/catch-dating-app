@@ -5856,6 +5856,2034 @@ export const hostRosterIntakeReceiptDocumentSchema = {
   }
 };
 
+export const adminGetSalesDemoPartnerReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_sales_demo_partner_review_payload.schema.json",
+  "title": "AdminGetSalesDemoPartnerReviewCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "blueprintId"
+  ],
+  "properties": {
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesDemoPartnerReview"
+  ]
+};
+
+export const adminGetSalesDemoPartnerReviewResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_sales_demo_partner_review_response.schema.json",
+  "title": "AdminGetSalesDemoPartnerReviewResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "blueprintId",
+    "blueprintRevision",
+    "partnerUid",
+    "assignmentRevision",
+    "preview",
+    "previewHash",
+    "sharingRevision",
+    "proposedWording",
+    "proposalRevision",
+    "sharingState",
+    "expiresAt",
+    "sharingCurrent",
+    "maximumExpiresAt",
+    "evaluatedAt",
+    "sendAuthority",
+    "capabilityApprovalAuthority",
+    "organizerControlAuthority"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "partnerUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "brandName",
+        "headline",
+        "scenario",
+        "steps",
+        "retainedTools",
+        "limitations",
+        "cta"
+      ],
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "retainedTools": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "cta": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sharingRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "proposedWording": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "headline",
+            "scenario",
+            "cta"
+          ],
+          "properties": {
+            "headline": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[^<>\\u0000-\\u001f]+$"
+            },
+            "scenario": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[^<>\\u0000-\\u001f]+$"
+            },
+            "cta": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[^<>\\u0000-\\u001f]+$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "proposalRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sharingState": {
+      "type": "string",
+      "enum": [
+        "none",
+        "active",
+        "withdrawn"
+      ]
+    },
+    "expiresAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sharingCurrent": {
+      "type": "boolean"
+    },
+    "maximumExpiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    },
+    "organizerControlAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesDemoPartnerReview"
+  ]
+};
+
+export const adminShareSalesDemoPartnerReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_share_sales_demo_partner_review_payload.schema.json",
+  "title": "AdminShareSalesDemoPartnerReviewCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "blueprintId",
+    "expectedBlueprintRevision",
+    "expectedSharingRevision",
+    "partnerUid",
+    "expectedAssignmentRevision",
+    "expectedPreviewHash",
+    "decision",
+    "expiresAt"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "expectedBlueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "expectedSharingRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "partnerUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "expectedPreviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "share",
+        "withdraw"
+      ]
+    },
+    "expiresAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminShareSalesDemoPartnerReview"
+  ]
+};
+
+export const adminShareSalesDemoPartnerReviewResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_share_sales_demo_partner_review_response.schema.json",
+  "title": "AdminShareSalesDemoPartnerReviewResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "blueprintId",
+    "blueprintRevision",
+    "sharingRevision",
+    "sharingState",
+    "previewHash",
+    "expiresAt",
+    "sendAuthority",
+    "capabilityApprovalAuthority",
+    "organizerControlAuthority"
+  ],
+  "properties": {
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sharingRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sharingState": {
+      "type": "string",
+      "enum": [
+        "active",
+        "withdrawn"
+      ]
+    },
+    "previewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    },
+    "organizerControlAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "adminShareSalesDemoPartnerReview"
+  ]
+};
+
+export const getSalesPartnerDemoReviewsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_demo_reviews_payload.schema.json",
+  "title": "GetSalesPartnerDemoReviewsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerDemoReviews"
+  ]
+};
+
+export const getSalesPartnerDemoReviewsResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_sales_partner_demo_reviews_response.schema.json",
+  "title": "GetSalesPartnerDemoReviewsResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "assignmentRevision",
+    "rows",
+    "evaluatedAt",
+    "sendAuthority",
+    "capabilityApprovalAuthority",
+    "organizerControlAuthority"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "assignmentRevision",
+          "blueprintId",
+          "blueprintRevision",
+          "preview",
+          "previewHash",
+          "validUntil",
+          "evaluatedAt",
+          "synthetic",
+          "interactiveAvailable",
+          "sendAuthority",
+          "capabilityApprovalAuthority",
+          "organizerControlAuthority",
+          "proposalRevision",
+          "proposedWording"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{3,128}$"
+          },
+          "assignmentRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "blueprintId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{3,128}$"
+          },
+          "blueprintRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "preview": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "brandName",
+              "headline",
+              "scenario",
+              "steps",
+              "retainedTools",
+              "limitations",
+              "cta"
+            ],
+            "properties": {
+              "brandName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "headline": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "scenario": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "steps": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              },
+              "retainedTools": {
+                "type": "array",
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              },
+              "limitations": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              },
+              "cta": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          },
+          "previewHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "synthetic": {
+            "const": true
+          },
+          "interactiveAvailable": {
+            "const": false
+          },
+          "sendAuthority": {
+            "const": false
+          },
+          "capabilityApprovalAuthority": {
+            "const": false
+          },
+          "organizerControlAuthority": {
+            "const": false
+          },
+          "proposalRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "proposedWording": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "headline",
+                  "scenario",
+                  "cta"
+                ],
+                "properties": {
+                  "headline": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[^<>\\u0000-\\u001f]+$"
+                  },
+                  "scenario": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[^<>\\u0000-\\u001f]+$"
+                  },
+                  "cta": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[^<>\\u0000-\\u001f]+$"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    },
+    "organizerControlAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerDemoReviews"
+  ]
+};
+
+export const proposeSalesPartnerDemoWordingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/propose_sales_partner_demo_wording_payload.schema.json",
+  "title": "ProposeSalesPartnerDemoWordingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "blueprintId",
+    "expectedPreviewHash",
+    "expectedProposalRevision",
+    "wording"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "expectedPreviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expectedProposalRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wording": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "headline",
+        "scenario",
+        "cta"
+      ],
+      "properties": {
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[^<>\\u0000-\\u001f]+$"
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[^<>\\u0000-\\u001f]+$"
+        },
+        "cta": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[^<>\\u0000-\\u001f]+$"
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "proposeSalesPartnerDemoWording"
+  ]
+};
+
+export const proposeSalesPartnerDemoWordingResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/propose_sales_partner_demo_wording_response.schema.json",
+  "title": "ProposeSalesPartnerDemoWordingResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "blueprintId",
+    "proposalRevision",
+    "sourcePreviewHash",
+    "state",
+    "sendAuthority",
+    "capabilityApprovalAuthority",
+    "organizerControlAuthority"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "proposalRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sourcePreviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "state": {
+      "const": "pending_owner_review"
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    },
+    "organizerControlAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "proposeSalesPartnerDemoWording"
+  ]
+};
+
+export const salesDemoContinuationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_demo_continuations.schema.json",
+  "title": "SalesDemoContinuationDocument",
+  "description": "Bounded own completed-demo proof for private claim review delay. Contains references and hashes, never grant tokens or synthetic guest data. Every resume rechecks current identity, scope and real manager authority before Forms materialization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "classification",
+    "continuationId",
+    "actorUid",
+    "organizerId",
+    "invitationId",
+    "invitationRevision",
+    "invitationExpiresAt",
+    "blueprintId",
+    "blueprintRevision",
+    "sessionId",
+    "sessionRevision",
+    "setupHash",
+    "completedAt",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "invitationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "invitationRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "invitationExpiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "blueprintId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "blueprintRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "sessionRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "setupHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-firestore-collection": "salesDemoContinuations",
+  "x-firestore-path": "salesDemoContinuations/{continuationId}",
+  "x-document-id-field": "continuationId",
+  "x-owner": "private Sales Demo continuation boundary"
+};
+
+export const createSalesDemoContinuationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_sales_demo_continuation_payload.schema.json",
+  "title": "CreateSalesDemoContinuationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "grantToken"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "grantToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  },
+  "x-callable-aliases": [
+    "createSalesDemoContinuation"
+  ]
+};
+
+export const getSalesDemoContinuationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_demo_continuation_payload.schema.json",
+  "title": "GetSalesDemoContinuationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "continuationId"
+  ],
+  "properties": {
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesDemoContinuation"
+  ]
+};
+
+export const prepareSalesDemoContinuationFormCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_sales_demo_continuation_form_payload.schema.json",
+  "title": "PrepareSalesDemoContinuationFormCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "continuationId",
+    "setupHash"
+  ],
+  "properties": {
+    "continuationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "setupHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "prepareSalesDemoContinuationForm"
+  ]
+};
+
+export const generateSalesPartnerOutreachCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/generate_sales_partner_outreach_payload.schema.json",
+  "title": "GenerateSalesPartnerOutreachCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "sourceRequest",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceRequest": {
+      "title": "AdminBuildSalesOutreachInputPayload",
+      "description": "Selects only existing approved clause IDs; trusted server builds the Operations snapshot. No source prose is accepted from the caller.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "observationIds",
+        "capabilityIds",
+        "referenceIds",
+        "ctaIds",
+        "channel",
+        "purpose"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "observationIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "capabilityIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "referenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "ctaIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "first_message",
+            "follow_up"
+          ]
+        },
+        "priorActivityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "generateSalesPartnerOutreach"
+  ]
+};
+
+export const getSalesPartnerOutreachJobCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_outreach_job_payload.schema.json",
+  "title": "GetSalesPartnerOutreachJobCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachJob"
+  ]
+};
+
+export const getSalesPartnerOutreachDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_outreach_draft_payload.schema.json",
+  "title": "GetSalesPartnerOutreachDraftCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachDraft"
+  ]
+};
+
+export const reviewSalesPartnerOutreachDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/review_sales_partner_outreach_draft_payload.schema.json",
+  "title": "ReviewSalesPartnerOutreachDraftCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId",
+    "expectedContentHash",
+    "factualValidity",
+    "tone",
+    "channelReadiness"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "factualValidity": {
+      "const": "verified",
+      "type": "string"
+    },
+    "tone": {
+      "const": "approved",
+      "type": "string"
+    },
+    "channelReadiness": {
+      "const": "manual_copy_only",
+      "type": "string"
+    }
+  },
+  "x-callable-aliases": [
+    "reviewSalesPartnerOutreachDraft"
+  ]
+};
+
+export const copySalesPartnerOutreachDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/copy_sales_partner_outreach_draft_payload.schema.json",
+  "title": "CopySalesPartnerOutreachDraftCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId",
+    "expectedContentHash"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "x-callable-aliases": [
+    "copySalesPartnerOutreachDraft"
+  ]
+};
+
+export const recordSalesPartnerManualSendCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_sales_partner_manual_send_payload.schema.json",
+  "title": "RecordSalesPartnerManualSendCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedAssignmentRevision",
+    "draftId",
+    "expectedContentHash",
+    "channel",
+    "occurredAt",
+    "attestation"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "whatsapp",
+        "other"
+      ]
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "attestation": {
+      "type": "string",
+      "const": "i_manually_sent_this_reviewed_draft"
+    }
+  },
+  "x-callable-aliases": [
+    "recordSalesPartnerManualSend"
+  ]
+};
+
+export const getSalesPartnerPreparationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_preparation_payload.schema.json",
+  "title": "GetSalesPartnerPreparationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "expectedAssignmentRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerPreparation"
+  ]
+};
+
+export const getSalesPartnerOutreachDraftResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_sales_partner_outreach_draft_response.schema.json",
+  "title": "GetSalesPartnerOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draft",
+    "status",
+    "reviewedAt",
+    "sendAuthority"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draft": {
+      "title": "OutreachDraft",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "draftId",
+        "organizerId",
+        "contactId",
+        "opportunityId",
+        "language",
+        "channel",
+        "subject",
+        "text",
+        "sentences",
+        "selection",
+        "inputHash",
+        "contentHash",
+        "sourceRevisions",
+        "model",
+        "reviewStatus",
+        "sendAuthority"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "draftId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "opportunityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "const": "en"
+        },
+        "channel": {
+          "enum": [
+            "email",
+            "message"
+          ]
+        },
+        "subject": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sentences": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "kind",
+              "sourceIds"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "enum": [
+                  "observation",
+                  "capability",
+                  "reference",
+                  "cta",
+                  "prior_interaction"
+                ]
+              },
+              "sourceIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "selection": {
+          "title": "OutreachDraftingSelection",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "contactId",
+            "opportunityId",
+            "language",
+            "observationId",
+            "capabilityId",
+            "referenceId",
+            "ctaId",
+            "reasonToBlock",
+            "omittedIds"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "opportunityId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "language": {
+              "const": "en"
+            },
+            "observationId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "capabilityId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "referenceId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ctaId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reasonToBlock": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "omittedIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          }
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceRevisions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "modelId",
+            "promptVersion",
+            "playbookVersion",
+            "cacheHit",
+            "usage"
+          ],
+          "properties": {
+            "modelId": {
+              "type": "string"
+            },
+            "promptVersion": {
+              "type": "string"
+            },
+            "playbookVersion": {
+              "type": "string"
+            },
+            "cacheHit": {
+              "type": "boolean"
+            },
+            "usage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inputTokens",
+                "outputTokens",
+                "costMicros"
+              ],
+              "properties": {
+                "inputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "outputTokens": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "costMicros": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "reviewStatus": {
+          "const": "pending_review"
+        },
+        "sendAuthority": {
+          "const": false
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "pending_review",
+        "approved"
+      ]
+    },
+    "reviewedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachDraft"
+  ]
+};
+
+export const reviewSalesPartnerOutreachDraftResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "exactContentHash",
+    "compositionReviewed",
+    "capabilityApprovalAuthority",
+    "sendAuthority",
+    "providerConfirmed"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "exactContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "compositionReviewed": {
+      "const": true
+    },
+    "capabilityApprovalAuthority": {
+      "const": false
+    },
+    "sendAuthority": {
+      "const": false
+    },
+    "providerConfirmed": {
+      "const": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/review_sales_partner_outreach_draft_response.schema.json",
+  "title": "ReviewSalesPartnerOutreachDraftResponse",
+  "x-callable-aliases": [
+    "reviewSalesPartnerOutreachDraft"
+  ]
+};
+
+export const recordSalesPartnerManualSendResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "draftId",
+    "activityId",
+    "exactContentHash",
+    "occurredAt",
+    "outcome",
+    "providerConfirmed",
+    "sendAuthority"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "activityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "exactContentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 48
+    },
+    "outcome": {
+      "const": "actor_attested_sent"
+    },
+    "providerConfirmed": {
+      "const": false
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_sales_partner_manual_send_response.schema.json",
+  "title": "RecordSalesPartnerManualSendResponse",
+  "x-callable-aliases": [
+    "recordSalesPartnerManualSend"
+  ]
+};
+
+export const registerSalesPartnerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/register_sales_partner_payload.schema.json",
+  "title": "RegisterSalesPartnerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "displayName",
+    "termsVersion"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "termsVersion": {
+      "const": "referral-preview-v1"
+    }
+  },
+  "x-callable-aliases": [
+    "registerSalesPartner"
+  ]
+};
+
+export const nominateSalesOrganizerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/nominate_sales_organizer_payload.schema.json",
+  "title": "NominateSalesOrganizerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "name",
+    "city",
+    "url",
+    "relationshipContext"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "city": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "nominateSalesOrganizer"
+  ]
+};
+
+export const getSalesPartnerWorkspaceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_sales_partner_workspace_payload.schema.json",
+  "title": "GetSalesPartnerWorkspaceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerWorkspace"
+  ]
+};
+
+export const updateSalesPartnerAssignmentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_sales_partner_assignment_payload.schema.json",
+  "title": "UpdateSalesPartnerAssignmentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedRevision",
+    "relationshipContext",
+    "channel",
+    "nextAction",
+    "reviewAt"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "whatsapp",
+        "other"
+      ]
+    },
+    "nextAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-callable-aliases": [
+    "updateSalesPartnerAssignment"
+  ]
+};
+
+export const decideSalesPartnerAssignmentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/decide_sales_partner_assignment_payload.schema.json",
+  "title": "DecideSalesPartnerAssignmentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "expectedRevision",
+    "decision",
+    "relationshipContext",
+    "channel"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "decision": {
+      "enum": [
+        "accept",
+        "decline"
+      ]
+    },
+    "relationshipContext": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "channel": {
+      "enum": [
+        "email",
+        "whatsapp",
+        "other",
+        null
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "decideSalesPartnerAssignment"
+  ]
+};
+
+export const adminAssignSalesPartnerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_assign_sales_partner_payload.schema.json",
+  "title": "AdminAssignSalesPartnerCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "partnerUid",
+    "expectedRevision",
+    "nextAction",
+    "reviewAt",
+    "expiresAt",
+    "reason",
+    "originatorUid"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "originatorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "x-callable-aliases": [
+    "adminAssignSalesPartner"
+  ]
+};
+
+export const adminRevokeSalesPartnerAccessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_revoke_sales_partner_access_payload.schema.json",
+  "title": "AdminRevokeSalesPartnerAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "partnerUid",
+    "expectedRevision",
+    "reason"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "x-callable-aliases": [
+    "adminRevokeSalesPartnerAccess"
+  ]
+};
+
 export const manageProgramLodgingCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_program_lodging_payload.schema.json",
@@ -11168,6 +13196,362 @@ export const workspaceMembershipDecisionDocumentSchema = {
       "minimum": 1,
       "maximum": 9007199254740991,
       "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const salesPartnerMembershipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_partner_memberships.schema.json",
+  "title": "SalesPartnerMembershipDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesPartnerMemberships",
+  "x-firestore-path": "salesPartnerMemberships/{id}",
+  "x-document-id-field": "uid",
+  "x-owner": "partner Sales scoped services",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "uid",
+    "status",
+    "termsVersion",
+    "acceptedAt",
+    "expiresAt",
+    "displayName",
+    "marketingGrants"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "status": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "termsVersion": {
+      "const": "referral-preview-v1"
+    },
+    "acceptedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "marketingGrants": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "campaignId",
+          "channel",
+          "assetIds",
+          "expiresAt",
+          "schemaVersion",
+          "grantId",
+          "revision",
+          "status",
+          "organizerId",
+          "assignmentRevision",
+          "sourceHash",
+          "reviewedAt",
+          "reviewedBy",
+          "reason",
+          "purpose",
+          "approvalReceiptId",
+          "approvedMembershipRevision"
+        ],
+        "properties": {
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "channel": {
+            "enum": [
+              "email",
+              "whatsapp",
+              "other"
+            ]
+          },
+          "assetIds": {
+            "type": "array",
+            "maxItems": 12,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "minItems": 1
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "schemaVersion": {
+            "const": 1
+          },
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "status": {
+            "enum": [
+              "active",
+              "revoked"
+            ]
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "assignmentRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "purpose": {
+            "const": "manual_partner_outreach"
+          },
+          "approvalReceiptId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "approvedMembershipRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "description": "Explicit employee-reviewed capability scope for exact approved Sales wording, a canonical organizer, campaign and channel. Source drift, changed assignment, expiry or revocation blocks preview. It grants no delivery, publication, event, guest, consent or provider authority."
+      }
+    }
+  }
+};
+
+export const salesPartnerAssignmentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_partner_assignments.schema.json",
+  "title": "SalesPartnerAssignmentDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "salesPartnerAssignments",
+  "x-firestore-path": "salesPartnerAssignments/{id}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "partner Sales scoped services",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "revision",
+    "updatedAt",
+    "organizerId",
+    "partnerUid",
+    "status",
+    "originatorUid",
+    "introducingSenderUid",
+    "catchOwnerUid",
+    "activationOwnerUid",
+    "relationshipContext",
+    "relationshipConfirmedAt",
+    "channel",
+    "nextAction",
+    "reviewAt",
+    "expiresAt",
+    "assignedAt",
+    "reason"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "status": {
+      "enum": [
+        "offered",
+        "accepted",
+        "declined",
+        "revoked"
+      ]
+    },
+    "originatorUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "introducingSenderUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "catchOwnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "activationOwnerUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "relationshipContext": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "relationshipConfirmedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "channel": {
+      "anyOf": [
+        {
+          "enum": [
+            "email",
+            "whatsapp",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextAction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "reviewAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assignedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
     }
   }
 };
@@ -19206,6 +21590,31 @@ export const adminSalesIntelligenceClauseMutationResponseSchema = {
           "minLength": 1,
           "maxLength": 96,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "partnerCitations": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
         }
       },
       "definitions": {
@@ -19782,6 +22191,31 @@ export const adminReviewSalesIntelligenceClauseRequestSchema = {
         "approve",
         "withdraw"
       ]
+    },
+    "partnerCitations": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidenceId",
+          "sourceHash"
+        ],
+        "properties": {
+          "evidenceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -20844,14 +23278,8 @@ export const adminGetSalesIntelligenceCatalogResponseSchema = {
       "type": "array",
       "maxItems": 50,
       "items": {
-        "title": "SalesIntelligenceClauseDocument",
-        "description": "Private exact prose approved for one organizer. Revoked or expired source and reference permission block future use.",
         "type": "object",
         "additionalProperties": false,
-        "x-firestore-collection": "salesIntelligenceClauses",
-        "x-firestore-path": "salesIntelligenceClauses/{clauseId}",
-        "x-document-id-field": "clauseId",
-        "x-owner": "private Sales intelligence clause callable",
         "required": [
           "schemaVersion",
           "classification",
@@ -20963,14 +23391,102 @@ export const adminGetSalesIntelligenceCatalogResponseSchema = {
             "minLength": 1,
             "maxLength": 96,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-          }
-        },
-        "definitions": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 96,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "partnerCitations": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceHash"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          },
+          "partnerCitationOptions": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceId",
+                "sourceRef",
+                "observedAt",
+                "validThrough",
+                "excerpt",
+                "confidence",
+                "sourceHash"
+              ],
+              "properties": {
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320,
+                  "format": "uri"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 48
+                },
+                "validThrough": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "maxLength": 48
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "excerpt": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "confidence": {
+                  "enum": [
+                    "high",
+                    "medium",
+                    "low"
+                  ]
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
           }
         }
       }
@@ -20982,7 +23498,229 @@ export const adminGetSalesIntelligenceCatalogResponseSchema = {
   },
   "x-callable-aliases": [
     "adminGetSalesIntelligenceCatalog"
-  ]
+  ],
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "catalogClause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "classification",
+        "clauseId",
+        "organizerId",
+        "revision",
+        "kind",
+        "text",
+        "state",
+        "evidenceIds",
+        "validUntil",
+        "permission",
+        "reviewedAt",
+        "reviewedBy",
+        "updatedAt",
+        "updatedBy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "classification": {
+          "const": "sales_private"
+        },
+        "clauseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "enum": [
+            "observation",
+            "capability",
+            "reference",
+            "cta"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "approved",
+            "withdrawn"
+          ]
+        },
+        "evidenceIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "permission": {
+          "enum": [
+            "not_required",
+            "private_mention",
+            "withdrawn"
+          ]
+        },
+        "reviewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reviewedBy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "partnerCitations": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "partnerCitationOptions": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "sourceRef",
+              "observedAt",
+              "validThrough",
+              "excerpt",
+              "confidence",
+              "sourceHash"
+            ],
+            "properties": {
+              "evidenceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 320,
+                "format": "uri"
+              },
+              "observedAt": {
+                "type": "string",
+                "format": "date-time",
+                "maxLength": 48
+              },
+              "validThrough": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time",
+                    "maxLength": 48
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "excerpt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "confidence": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Private current catalog projects reviewed clause records with bounded, transient safe-public citation options; options are not persisted sharing grants."
 };
 
 export const adminGetSalesIntelligenceScoreResponseSchema = {
@@ -25730,6 +28468,26 @@ export const salesOutreachJobsDocumentSchema = {
         "null"
       ],
       "maxLength": 160
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     }
   },
   "definitions": {
@@ -30555,7 +33313,16 @@ export const salesActionReceiptDocumentSchema = {
         "commercial.quotes.accept",
         "commercial.finance.attest",
         "imports.compensation.apply",
-        "imports.history.apply"
+        "imports.history.apply",
+        "partner.register",
+        "partner.nominate",
+        "partner.assign",
+        "partner.assignment.decide",
+        "partner.revoke",
+        "partner.assignment.update",
+        "partner.demo.wording.propose",
+        "partner.marketing.review",
+        "partner.marketing.revoke"
       ]
     },
     "actorUid": {
@@ -30621,7 +33388,7 @@ export const salesActionReceiptDocumentSchema = {
     },
     "result": {
       "type": "object",
-      "maxProperties": 7,
+      "maxProperties": 8,
       "additionalProperties": {
         "anyOf": [
           {
@@ -31265,7 +34032,73 @@ export const salesActionReceiptDocumentSchema = {
         ]
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "partner.demo.wording.propose"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "blueprintId",
+              "proposalRevision",
+              "sourcePreviewHash",
+              "state",
+              "sendAuthority",
+              "capabilityApprovalAuthority",
+              "organizerControlAuthority"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{3,128}$"
+              },
+              "blueprintId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{3,128}$"
+              },
+              "proposalRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "sourcePreviewHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "state": {
+                "const": "pending_owner_review"
+              },
+              "sendAuthority": {
+                "const": false
+              },
+              "capabilityApprovalAuthority": {
+                "const": false
+              },
+              "organizerControlAuthority": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "result": {
+            "maxProperties": 7
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const salesImportJobDocumentSchema = {
@@ -34055,7 +36888,7 @@ export const salesDemoPreviewCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/sales_demo_preview.schema.json",
   "title": "GetSalesDemoPreviewCallablePayload",
-  "description": "Anonymous read-only preview. Fetching never opens or consumes an invitation.",
+  "description": "Generic anonymous unfurl; personalized preview requires current invited contact and bearer grant. No session consumption.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -34065,6 +36898,10 @@ export const salesDemoPreviewCallablePayloadSchema = {
     "invitationId": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "grantToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
     }
   },
   "x-callable": "getSalesDemoPreview"
@@ -34629,6 +37466,134 @@ export const salesDemoBlueprintsDocumentSchema = {
           }
         }
       ]
+    },
+    "partnerReviewGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "state",
+        "partnerUid",
+        "assignmentRevision",
+        "blueprintRevision",
+        "previewHash",
+        "expiresAt",
+        "ownerReviewedByUid",
+        "ownerReviewedAt"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "withdrawn"
+          ]
+        },
+        "partnerUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "blueprintRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ownerReviewedByUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "ownerReviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "partnerPreviewProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "state",
+        "partnerUid",
+        "assignmentRevision",
+        "blueprintRevision",
+        "sourcePreviewHash",
+        "wording",
+        "proposedAt"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "const": "pending_owner_review"
+        },
+        "partnerUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "blueprintRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourcePreviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "wording": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "headline",
+            "scenario",
+            "cta"
+          ],
+          "properties": {
+            "headline": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[^<>\\u0000-\\u001f]+$"
+            },
+            "scenario": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[^<>\\u0000-\\u001f]+$"
+            },
+            "cta": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[^<>\\u0000-\\u001f]+$"
+            }
+          }
+        },
+        "proposedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   },
   "definitions": {
@@ -34912,7 +37877,8 @@ export const salesDemoReceiptsDocumentSchema = {
         "salesDemo.session.reviewApplication",
         "salesDemo.session.prepareReply",
         "salesDemo.session.admitGuest",
-        "salesDemo.session.requestAssistance"
+        "salesDemo.session.requestAssistance",
+        "salesDemo.blueprint.partnerReview.share"
       ]
     },
     "targetId": {
@@ -35085,6 +38051,30 @@ export const salesDemoReceiptsDocumentSchema = {
         },
         "assistanceRequested": {
           "type": "boolean"
+        },
+        "sharingRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sharingState": {
+          "type": "string",
+          "enum": [
+            "active",
+            "withdrawn"
+          ]
+        },
+        "previewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sendAuthority": {
+          "const": false
+        },
+        "capabilityApprovalAuthority": {
+          "const": false
+        },
+        "organizerControlAuthority": {
+          "const": false
         }
       }
     },
@@ -37322,7 +40312,10 @@ export const salesInboundIntentsDocumentSchema = {
       "pattern": "^[a-f0-9]{64}$"
     },
     "source": {
-      "const": "website"
+      "enum": [
+        "website",
+        "partner"
+      ]
     },
     "submissionId": {
       "type": "string",
@@ -37366,9 +40359,16 @@ export const salesInboundIntentsDocumentSchema = {
       "maxLength": 100
     },
     "email": {
-      "type": "string",
-      "format": "email",
-      "maxLength": 320
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "city": {
       "type": "string",
@@ -37676,6 +40676,11 @@ export const salesInboundIntentsDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   },
   "allOf": [
@@ -37706,6 +40711,37 @@ export const salesInboundIntentsDocumentSchema = {
           "organizerId": {
             "type": "null"
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "partner"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "partnerUid"
+        ],
+        "properties": {
+          "email": {
+            "type": "null"
+          },
+          "entryRoute": {
+            "const": "/partners/"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "partnerUid": false
         }
       }
     }
@@ -37942,6 +40978,31 @@ export const salesIntelligenceClauseDocumentSchema = {
       "minLength": 1,
       "maxLength": 96,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "partnerCitations": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidenceId",
+          "sourceHash"
+        ],
+        "properties": {
+          "evidenceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -38117,7 +41178,7 @@ export const salesIntelligenceReceiptDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_intelligence_receipts.schema.json",
   "title": "SalesIntelligenceReceiptDocument",
-  "description": "Immutable employee-scoped exact-retry receipt for private policy, evidence assessment, score, clause and manual-copy actions. Never proof of sending.",
+  "description": "Immutable actor-scoped exact-retry receipt for private employee intelligence and assignment-bound partner composition actions. Never proof of sending.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesIntelligenceReceipts",
@@ -38163,7 +41224,11 @@ export const salesIntelligenceReceiptDocumentSchema = {
         "score.snapshot",
         "draft.record",
         "draft.review",
-        "draft.copy"
+        "draft.copy",
+        "partner.draft.record",
+        "partner.draft.review",
+        "partner.draft.copy",
+        "partner.draft.manual_send"
       ]
     },
     "requestId": {
@@ -38815,6 +41880,33 @@ export const salesOutreachDraftsDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "participantScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partnerUid",
+        "assignmentRevision",
+        "renderedDraftId"
+      ],
+      "properties": {
+        "partnerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "renderedDraftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "definitions": {

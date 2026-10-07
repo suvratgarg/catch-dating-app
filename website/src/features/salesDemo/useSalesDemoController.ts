@@ -8,6 +8,12 @@ type Choice = "approve" | "needs_info" | "welcome" | "clarify";
 type ActionInput = {action: SalesDemoAction; choice?: Choice};
 type PendingAction = ActionInput & {requestId: string; expectedRevision: number};
 
+function deniesPrivateAccess(error: unknown): boolean {
+  const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+  const message = error instanceof Error ? error.message : String(error);
+  return /permission-denied|unauthenticated|not-found|failed-precondition|data-loss|expired|revoked|suppressed|source drift|Invalid .* projection/iu.test(`${code} ${message}`);
+}
+
 function errorMessage(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   if (/permission-denied|verified contact does not match/iu.test(message)) {
@@ -31,12 +37,18 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
 }) {
   const [viewer, setViewer] = useState<SalesDemoViewer | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [authEpoch, setAuthEpoch] = useState(0);
+  const [privateAccessDenied, setPrivateAccessDenied] = useState(false);
+  const suspendedSession = useRef<SalesDemoSession | null>(null);
+  const [preservationAttempt, setPreservationAttempt] = useState(false);
+  const preservationRecovery = useRef<SalesDemoSession | null>(null);
   const [session, setSession] = useState<SalesDemoSession | null>(null);
   const sessionRef = useRef<SalesDemoSession | null>(null);
   const [fresh, setFresh] = useState(false);
   const [setup, setSetup] = useState<SalesDemoSetup | null>(null);
   const [setupFresh, setSetupFresh] = useState(false);
   const [setupNotice, setSetupNotice] = useState("");
+  const [continuationId, setContinuationId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [retryAction, setRetryAction] = useState<ActionInput | null>(null);
   const startRequestId = useRef<string | null>(null);
@@ -47,44 +59,62 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
   sessionRef.current = session;
 
   const preview = useQuery({
-    queryKey: ["sales-demo-preview", invitationId],
-    enabled: /^[A-Za-z0-9_-]{3,128}$/u.test(invitationId),
-    queryFn: () => api.preview({invitationId}),
+    queryKey: ["sales-demo-preview", invitationId, viewer?.uid ?? null,
+      viewer?.email ?? null, viewer?.emailVerified ?? false, viewer?.phoneNumber ?? null, authEpoch],
+    enabled: !privateAccessDenied && authReady && /^[A-Za-z0-9_-]{3,128}$/u.test(invitationId),
+    queryFn: () => api.preview({invitationId, ...(viewer && grantToken ? {grantToken} : {})}),
     retry: false, staleTime: 0, gcTime: 0,
   });
 
   useEffect(() => {
     const unsubscribe = auth.watch((next) => {
-      if (authUid.current !== next?.uid && authUid.current !== null) {
-        epoch.current += 1;
-        setSession(null); setFresh(false); setNotice("");
-        setSetup(null); setSetupFresh(false); setSetupNotice("");
-        startRequestId.current = null; actionAttempt.current = null;
-        setRetryAction(null);
-      }
+      const changedUid = authUid.current !== (next?.uid ?? null);
+      epoch.current += 1; setAuthEpoch(epoch.current); setPrivateAccessDenied(false);
+      if (changedUid) {
+        suspendedSession.current = null; preservationRecovery.current = null; setContinuationId(null); setPreservationAttempt(false);
+        startRequestId.current = null; actionAttempt.current = null; setRetryAction(null);
+      } else if (sessionRef.current) suspendedSession.current = sessionRef.current;
+      setSession(null); setFresh(false); setNotice("");
+      setSetup(null); setSetupFresh(false); setSetupNotice("");
       authUid.current = next?.uid ?? null;
       setViewer(next); setAuthReady(true);
     });
     return () => {epoch.current += 1; unsubscribe();};
   }, [auth]);
 
-  const canTry = Boolean(preview.data?.interactiveAvailable && grantToken &&
+  const hidePrivateProjection = useCallback((error: unknown) => {
+    suspendedSession.current = sessionRef.current ?? suspendedSession.current;
+    setSession(null); setFresh(false); setSetup(null); setSetupFresh(false);
+    if (deniesPrivateAccess(error)) {
+      setPrivateAccessDenied(true); setContinuationId(null);
+      actionAttempt.current = null; setRetryAction(null);
+    }
+  }, []);
+  const retryPreview = async () => {
+    const startedEpoch = epoch.current;
+    const result = await preview.refetch();
+    if (startedEpoch === epoch.current && result.isSuccess) setPrivateAccessDenied(false);
+  };
+
+  const canTry = Boolean(!privateAccessDenied && preview.isSuccess && !preview.isFetching && preview.data?.interactiveAvailable && grantToken &&
     viewer && (viewer.emailVerified || viewer.phoneNumber));
 
   const performStart = useCallback(async () => {
     if (locked.current || sessionRef.current || !canTry || !grantToken || !viewer ||
-        (preview.data && Date.parse(preview.data.expiresAt) <= Date.now())) return;
+        (preview.data?.expiresAt && Date.parse(preview.data.expiresAt) <= Date.now())) return;
     locked.current = true; setNotice("");
     const requestId = startRequestId.current ?? crypto.randomUUID();
     startRequestId.current = requestId;
     const startedEpoch = epoch.current;
     try {
-      const next = await api.start({invitationId, grantToken, requestId});
+      const candidate = suspendedSession.current;
+      const next = candidate ? await api.getSession({sessionId: candidate.sessionId, grantToken}) :
+        await api.start({invitationId, grantToken, requestId});
       if (epoch.current !== startedEpoch) return;
       if (next.synthetic !== true || next.invitationId !== invitationId) {
         throw new Error("Invalid synthetic session projection.");
       }
-      setSession(next); setFresh(true); startRequestId.current = null;
+      setSession(next); setFresh(true); suspendedSession.current = null; startRequestId.current = null;
       setSetup(null); setSetupFresh(false);
     } catch (error) {
       if (epoch.current === startedEpoch) setNotice(errorMessage(error));
@@ -110,12 +140,12 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
         actionAttempt.current = null; setRetryAction(null);
       }
     } catch (error) {
-      if (epoch.current === startedEpoch) {setFresh(false); setSetupFresh(false);
+      if (epoch.current === startedEpoch) {hidePrivateProjection(error);
         setNotice(errorMessage(error));}
     } finally {
       locked.current = false;
     }
-  }, [api, grantToken, session]);
+  }, [api, grantToken, hidePrivateProjection, session]);
 
   const performAdvance = useCallback(async ({action, choice}: ActionInput) => {
     if (locked.current || !session || sessionRef.current?.revision !== session.revision ||
@@ -155,13 +185,15 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
           actionAttempt.current = null; setRetryAction(null);
           setNotice("The latest sample state is shown.");
         } else setNotice(errorMessage(error));
-      } catch {
-        if (epoch.current === startedEpoch) setNotice(errorMessage(error));
+      } catch (readError) {
+        if (epoch.current === startedEpoch) {
+          hidePrivateProjection(readError); setNotice(errorMessage(readError));
+        }
       }
     } finally {
       locked.current = false;
     }
-  }, [api, fresh, grantToken, session]);
+  }, [api, fresh, grantToken, hidePrivateProjection, session]);
 
   const performReadSetup = useCallback(async () => {
     if (locked.current || !session || session.status !== "completed" ||
@@ -180,9 +212,12 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
       }
       setSetup(latest); setSetupFresh(true);
     } catch (error) {
-      if (epoch.current === startedEpoch) setSetupNotice(errorMessage(error));
+      if (epoch.current === startedEpoch) {
+        if (deniesPrivateAccess(error)) hidePrivateProjection(error);
+        setSetupNotice(errorMessage(error));
+      }
     } finally {locked.current = false;}
-  }, [api, fresh, grantToken, session, viewer]);
+  }, [api, fresh, grantToken, hidePrivateProjection, session, viewer]);
 
   const performPrepareSetup = useCallback(async () => {
     if (locked.current || !session || session.status !== "completed" ||
@@ -215,10 +250,34 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
           setSetup(latest); setSetupFresh(true);
           if (latest.status === "prepared") setSetupNotice("");
         }
-      } catch { /* Keep the explicit retry-read action available. */ }
+      } catch (readError) {
+        if (epoch.current === startedEpoch && deniesPrivateAccess(readError)) {
+          hidePrivateProjection(readError); setSetupNotice(errorMessage(readError));
+        }
+      }
     } finally {locked.current = false;}
-  }, [api, fresh, grantToken, session, setup, setupFresh, viewer]);
+  }, [api, fresh, grantToken, hidePrivateProjection, session, setup, setupFresh, viewer]);
 
+  const performPreserve = useCallback(async () => {
+    const completion = preservationRecovery.current ?? session ?? suspendedSession.current;
+    if (locked.current || !api.preserve || !completion || completion.status !== "completed" ||
+        (!fresh && !preservationAttempt) || !viewer || !grantToken) return;
+    locked.current = true; setSetupNotice(""); setPreservationAttempt(true);
+    preservationRecovery.current = completion;
+    const startedEpoch = epoch.current;
+    try {
+      const saved = await api.preserve({sessionId: completion.sessionId, grantToken});
+      if (epoch.current !== startedEpoch) return;
+      if (saved.publicationAuthority !== false || !/^[a-f0-9]{64}$/u.test(saved.continuationId) ||
+          !Number.isFinite(Date.parse(saved.expiresAt)) || Date.parse(saved.expiresAt) <= Date.now()) {
+        throw new Error("Invalid preserved setup projection.");
+      }
+      setContinuationId(saved.continuationId); setPreservationAttempt(false);
+      preservationRecovery.current = null;
+    } catch (error) {if (epoch.current === startedEpoch) setSetupNotice(errorMessage(error));}
+    finally {locked.current = false;}
+  }, [api, fresh, grantToken, preservationAttempt, session, viewer]);
+  const preserveMutation = useMutation({mutationFn: performPreserve, retry: false, gcTime: 0});
   const startMutation = useMutation({mutationFn: performStart,
     retry: false, gcTime: 0});
   const refreshMutation = useMutation({mutationFn: performRefresh,
@@ -231,14 +290,24 @@ export function useSalesDemoController({invitationId, grantToken, api, auth}: {
     retry: false, gcTime: 0});
   const pending = startMutation.isPending || refreshMutation.isPending ||
     advanceMutation.isPending || setupMutation.isPending ||
-    prepareMutation.isPending;
+    prepareMutation.isPending || preserveMutation.isPending;
   const start = () => startMutation.mutateAsync();
+  const restartSample = () => {
+    if (locked.current || !canTry || !suspendedSession.current) return Promise.resolve();
+    suspendedSession.current = null; startRequestId.current = null;
+    actionAttempt.current = null; setRetryAction(null);
+    return startMutation.mutateAsync();
+  };
   const refresh = () => refreshMutation.mutateAsync();
   const advance = (input: ActionInput) => advanceMutation.mutateAsync(input);
   const readSetup = () => setupMutation.mutateAsync();
   const prepareSetup = () => prepareMutation.mutateAsync();
 
-  return {preview, viewer, authReady, session, fresh, pending, notice,
-    canTry, start, refresh, advance, retryAction, setup, setupFresh,
-    setupNotice, readSetup, prepareSetup};
+  const preserveSetup = () => preserveMutation.mutateAsync();
+
+  return {preview, privateAccessDenied, retryPreview, viewer, authReady, session, fresh, pending, notice,
+    canTry, start, restartSample, canRestartSample: Boolean(canTry && suspendedSession.current),
+    refresh, advance, retryAction, setup, setupFresh,
+    setupNotice, readSetup, prepareSetup, continuationId, preserveSetup,
+    canPreserve: Boolean(api.preserve), canRecoverPreservation: preservationAttempt && Boolean(viewer)};
 }

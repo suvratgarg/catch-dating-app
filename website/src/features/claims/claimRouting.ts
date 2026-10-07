@@ -11,6 +11,7 @@ export type ClaimUrlState =
   | null;
 
 export interface ClaimRouteState {
+  continuationId?: string;
   lookup: string | null;
   listing: HostListing | null;
   requestId: string | null;
@@ -31,7 +32,9 @@ export function claimRouteStateForLocation(
   const lookup = getClaimListingLookupFromLocation(location, routeListing);
   const listing = getClaimListingForLookup(lookup);
   const requestId = getClaimRequestIdFromLocation(location);
+  const continuationId = new URLSearchParams(location.search).get("continuation");
   return {
+    ...(continuationId ? {continuationId} : {}),
     lookup,
     listing,
     requestId,

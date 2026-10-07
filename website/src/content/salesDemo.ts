@@ -1,5 +1,14 @@
 /** Copy for the private, synthetic host workflow preview. */
 export const salesDemoCopy = {
+  continuePreservedSetup: "Continue preserved private setup",
+  restartSample: "Restart synthetic sample",
+  recoverSetup: "Recover preserved setup",
+  verifyInvitedContact: "Verify the invited contact to review your private sample.",
+  verifyGoogle: "Verify Google for this account",
+  continueGoogle: "Continue with Google",
+  signOut: "Sign out to recover a different account",
+  preserveSetup: "Preserve this setup for claim review",
+  preservedSetupGuidance: "The private setup is available to this account for 30 days. Claim review and publication remain separate.",
   privateExample: "Private example",
   privateWorkflowPreview: "Private workflow preview",
   "phonePlaceholder": "+91…",

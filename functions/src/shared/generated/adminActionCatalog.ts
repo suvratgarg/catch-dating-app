@@ -1115,6 +1115,22 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner",
       "finance"
     ]
+  },
+  "sales.demo.GetSalesDemoPartnerReview": {
+    "callable": "adminGetSalesDemoPartnerReview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "sales.demo.ShareSalesDemoPartnerReview": {
+    "callable": "adminShareSalesDemoPartnerReview",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
   }
 } as const;
 

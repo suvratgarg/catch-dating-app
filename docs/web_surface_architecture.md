@@ -1394,3 +1394,60 @@ These require explicit contract/authority approval. No broad manager read,
 new grant, source-rule bypass, OTP or payment was attempted in consolidation.
 The safe layout increment can reuse EventDetailHeroLayout/ActionPanel/FactGrid
 and existing controllers after that structure is reviewed.
+
+### Partner workspace in the React console
+
+`/partners/` uses the existing React console, Firebase session epoch and Query
+provider with a dedicated route shell. It does not enter the Admin navigation or
+require an employee claim. Current server-owned referral membership and canonical
+organizer assignment determine every read or mutation. Query caches and controller
+state rotate on token/identity change; the existing pending-operation lease freezes
+request controls and sign-out. Nomination and offer review use stable request IDs
+for exact retries. Research, private preview, outreach and Host continuation are
+subsequent slices of this workflow; this initial surface exposes no send control.
+
+
+### Partner workflow implementation sequence and shared ownership
+
+The partner route is a scoped projection of existing Intake and Sales services.
+Phase one owns bounded membership, private nominations, canonical assignment
+reservation and acceptance. It does not grant employee roles or mutate organizer
+claim/publication state. Existing Intake review links nominations to one canonical
+organizer, rather than creating another organizer store.
+
+The next phase extends existing Sales evidence, tasks, opportunities and reviewed
+outreach through durable Operations work items. Research and writing have separate
+frozen configuration, execution mode and budgets; provider billing remains inactive
+until separately authorized. Deterministic execution remains available and paid
+fallback is explicit. Facts retain observed/inferred/unknown labels and source
+versions. Writing proposals must be edited and reviewed against current sources
+before a partner records a manual send and next action.
+
+The onboarding phase owns Sales Demo and authenticated claim continuation. It
+reuses the existing private Forms materializer and current manager authority;
+partner assignment does not confer organizer control. A completed synthetic demo
+must remain recoverable through reviewed claim delay without storing bearer grants.
+Google/phone linking must preserve the authenticated UID and fail into supported
+collision recovery. Forms response identity seams remain separately owned.
+
+The Operations Sales adapter suite omitted by current top-level test discovery
+(CAT-132) is a direct integration obligation of the Operations phase. Readiness
+producer defaults (CAT-127) concern event publication dependencies, and organizer
+contract retirement (CAT-131) concerns existing canonical DTO/adapters. Their
+current-source census is required before touched consumers change; this partner
+flow does not claim blanket retirement or migrate unrelated event publishing.
+
+
+The Sales Demo auth adapter observes ID-token changes so linking a phone or Google
+credential to the same UID refreshes current contact and private preview queries.
+OTP confirmation fences the original account; credential collisions provide
+explicit recovery without account merging. Public Forms and guest phone auth
+adapters keep their existing semantics. Private preview keys contain actor/contact
+state but never grants; retained private data is hidden during authority rechecks.
+`/claim/?continuation=…` reads an authenticated private continuation, not the public
+listing index. It uses the existing claim request mutation and current server
+Forms materializer. The URL identifier is not authority. Expired/revoked proofs
+hide the private target; each preparation reconciles uncertain outcomes before
+another action. This is source implementation pending its separate exact
+contract, backend, React, rules and release verification; it does not complete the
+research/writing worker or partner outreach workspace phases.
