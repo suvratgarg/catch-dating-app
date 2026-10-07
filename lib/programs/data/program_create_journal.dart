@@ -14,9 +14,9 @@ class ProgramCreateJournalValues {
 
   factory ProgramCreateJournalValues.fromJson(Map<String, Object?> json) =>
       ProgramCreateJournalValues(
-        title: _requiredString(json, 'title'),
+        title: _draftString(json, 'title'),
         kind: _optionalString(json, 'kind'),
-        timezone: _requiredString(json, 'timezone'),
+        timezone: _draftString(json, 'timezone'),
         startsAtMillis: _optionalInt(json, 'startsAtMillis'),
         endsAtMillis: _optionalInt(json, 'endsAtMillis'),
       );
@@ -93,7 +93,12 @@ class ProgramCreateJournalEntry {
 /// committed. The request identity and submitted body remain inseparable until
 /// the exact saved program has been confirmed.
 class ProgramCreateJournal {
-  const ProgramCreateJournal();
+  const ProgramCreateJournal({this.preferences});
+
+  final SharedPreferences? preferences;
+
+  Future<SharedPreferences> _getPreferences() async =>
+      preferences ?? await SharedPreferences.getInstance();
 
   String _key({required String accountId, required String organizerId}) =>
       'program_create_${Uri.encodeComponent(accountId)}_'
@@ -104,7 +109,7 @@ class ProgramCreateJournal {
     required String organizerId,
   }) => withAppErrorContext<ProgramCreateJournalEntry?>(
     () async {
-      final raw = (await SharedPreferences.getInstance()).getString(
+      final raw = (await _getPreferences()).getString(
         _key(accountId: accountId, organizerId: organizerId),
       );
       if (raw == null) return null;
@@ -130,10 +135,11 @@ class ProgramCreateJournal {
   Future<void> save(ProgramCreateJournalEntry entry) =>
       withAppErrorContext<void>(
         () async {
-          await (await SharedPreferences.getInstance()).setString(
+          final saved = await (await _getPreferences()).setString(
             _key(accountId: entry.accountId, organizerId: entry.organizerId),
             jsonEncode(entry.toJson()),
           );
+          if (!saved) throw StateError('Program command could not be saved');
         },
         context: const AppErrorContext(
           operation: AppOperation.localPersistence,
@@ -148,13 +154,15 @@ class ProgramCreateJournal {
     required String requestId,
   }) => withAppErrorContext<void>(
     () async {
-      final preferences = await SharedPreferences.getInstance();
+      final preferences = await _getPreferences();
       final key = _key(accountId: accountId, organizerId: organizerId);
       final raw = preferences.getString(key);
       if (raw == null) return;
       final decoded = jsonDecode(raw);
       if (decoded is! Map || decoded['requestId'] != requestId) return;
-      await preferences.remove(key);
+      if (!await preferences.remove(key)) {
+        throw StateError('Confirmed program command could not be cleared');
+      }
     },
     context: const AppErrorContext(
       operation: AppOperation.localPersistence,
@@ -165,6 +173,15 @@ class ProgramCreateJournal {
 }
 
 final _requestIdPattern = RegExp(r'^[A-Za-z0-9_-]{16,128}$');
+
+// Partial local drafts may contain blank form fields. The create controller
+// validates a draft before freezing a new command; durable account/request
+// identities remain nonempty and strict.
+String _draftString(Map<String, Object?> json, String key) {
+  final value = json[key];
+  if (value is! String) throw FormatException('Invalid $key');
+  return value;
+}
 
 String _requiredString(Map<String, Object?> json, String key) {
   final value = json[key];

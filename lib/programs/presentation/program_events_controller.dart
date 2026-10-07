@@ -62,7 +62,7 @@ final programCreateControllerProvider = FutureProvider.autoDispose
         organizerId: scope.organizerId,
         requestId: recovered?.requestId ?? _newProgramRequestId(),
         initialValues: _createValues(recovered?.values),
-        initialSubmittedValues: _createValues(recovered?.submittedValues),
+        initialSubmittedValues: _submittedCreateValues(recovered),
         initialProgramId: recovered?.programId,
         newRequestId: _newProgramRequestId,
         persist: (snapshot) => journal.save(
@@ -115,6 +115,24 @@ final programCreateControllerProvider = FutureProvider.autoDispose
       ref.onDispose(controller.dispose);
       return controller;
     });
+
+ProgramCreateValues? _submittedCreateValues(ProgramCreateJournalEntry? entry) {
+  final submitted = entry?.submittedValues;
+  if (submitted == null) return null;
+  // The original provider converted an absent command into exactly this empty
+  // body. Its null kind failed before the callable could be invoked. Recover
+  // only that known artifact; every other command and every receipt stays
+  // locked to its original identity and body.
+  if (entry!.programId == null &&
+      submitted.title == '' &&
+      submitted.kind == null &&
+      submitted.timezone == '' &&
+      submitted.startsAtMillis == null &&
+      submitted.endsAtMillis == null) {
+    return null;
+  }
+  return _createValues(submitted);
+}
 
 ProgramCreateValues _createValues(ProgramCreateJournalValues? values) {
   if (values == null) return const ProgramCreateValues();
