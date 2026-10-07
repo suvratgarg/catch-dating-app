@@ -176,7 +176,9 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
   ) async {
     ++_generation;
     ref.onDispose(() => ++_generation);
-    ref.watch(privateEventSetupTimelineRepositoryProvider);
+    if (ref.watch(privateEventSetupAvailableProvider)) {
+      ref.watch(privateEventSetupTimelineRepositoryProvider);
+    }
     final repository = ref.watch(eventRepositoryProvider);
     final activePage = await repository.fetchActiveEventsPage(
       organizerId: request.organizerId,
