@@ -280,11 +280,10 @@ jobs:
               functions/scripts/set-callable-invokers-public.cjs firebase.json .firebaserc
           fi
           if [[ "${SALES_PR543_RELEASE:-false}" == true ]]; then
-            git -C "$SOURCE_CHECKOUT" diff --quiet "$SOURCE_SHA" refs/remotes/origin/main -- \
-              functions/src functions/package.json functions/package-lock.json \
-              functions/scripts/set-callable-invokers-public.cjs operations/src/platform \
-              operations/src/workflows/outreach-drafting contracts/operations \
-              firestore.rules firebase.json .firebaserc
+            node tool/ci/selective_backend_release.mjs source \
+              --source-sha "$SOURCE_SHA" \
+              --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
+              --source-root "$SOURCE_CHECKOUT"
           fi
           if [[ "$REQUIRE_CURRENT_MAIN" == "true" ]]; then
             test "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA"
@@ -1110,11 +1109,10 @@ jobs:
               test "$(jq -er '.paramsSha256' <<< "$result")" = "${{ steps.whatsapp_params.outputs.sha256 }}"
             fi
             if [[ "${SALES_PR543_RELEASE:-false}" == true ]]; then
-              git -C "$SOURCE_CHECKOUT" diff --quiet "$SOURCE_SHA" refs/remotes/origin/main -- \
-                functions/src functions/package.json functions/package-lock.json \
-                functions/scripts/set-callable-invokers-public.cjs operations/src/platform \
-                operations/src/workflows/outreach-drafting contracts/operations \
-                firestore.rules firebase.json .firebaserc
+              node tool/ci/selective_backend_release.mjs source \
+                --source-sha "$SOURCE_SHA" \
+                --current-main "$(git -C "$SOURCE_CHECKOUT" rev-parse refs/remotes/origin/main)" \
+                --source-root "$SOURCE_CHECKOUT"
               node tool/ci/selective_backend_release.mjs stage --stage "$stage" --target "$target" > /dev/null
               if [[ "$stage" == functions ]]; then
                 result="$(node tool/ci/selective_backend_release.mjs params \

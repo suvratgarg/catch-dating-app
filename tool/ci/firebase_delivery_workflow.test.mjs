@@ -733,7 +733,14 @@ test("PR543 Sales caller pins 44 Functions plus rules behind existing protected 
   assert.match(caller, /prod-sales-pr543:[\s\S]*needs: authorize-sales-pr543[\s\S]*sales_pr543_release: true/);
   assert.match(caller, /resume_delivery_run_id:[\s\S]*resume_delivery_attempt:/);
   assert.match(caller, /prod-sales-pr543:[\s\S]*resume_delivery_run_id: \$\{\{ inputs\.resume_delivery_run_id \}\}[\s\S]*resume_delivery_attempt: \$\{\{ inputs\.resume_delivery_attempt \}\}/);
-  assert.match(caller, /git diff --quiet "\$REQUESTED_SHA" "\$GITHUB_SHA" --[\s\S]*firestore\.rules/);
+  assert.match(caller, /selective_backend_release\.mjs source \\\n\s+--source-sha "\$REQUESTED_SHA" --current-main "\$GITHUB_SHA" --source-root \./);
+  const sourceChecks = promotion.match(/node tool\/ci\/selective_backend_release\.mjs source[^\n]*\n[^\n]*\n[^\n]*\n[^\n]*/g);
+  assert.equal(sourceChecks?.length, 2);
+  for (const check of sourceChecks) {
+    assert.ok(check.includes('--source-sha "$SOURCE_SHA"'));
+    assert.ok(check.includes('rev-parse refs/remotes/origin/main'));
+    assert.ok(check.trimEnd().endsWith('--source-root "$SOURCE_CHECKOUT"'));
+  }
   assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /SALES_PR543_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.sales_pr543_release/);

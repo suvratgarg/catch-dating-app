@@ -13,7 +13,102 @@ import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger,
   prepareMixedImpactRelease, completeMixedImpactRelease,
   prepareBaselineImpactRelease, completeBaselineImpactRelease,
   SELECTIVE_IMPACT_SCHEMA} from "./selective_backend_release.mjs";
+import {SALES_PR543_RELEASE, SALES_SOURCE_CHECKPOINT, SALES_SOURCE_DELTA,
+  SALES_SOURCE_GUARDED_PATHS, verifySalesSourceCompatibility, checkSalesGitCompatibility,
+  runSalesPr543ReleaseCli} from "./selective_backend_release.mjs";
 import "./sales_pr543_release.test.mjs";
+
+const salesSourceEvidence = () => ({sourceSha: SALES_PR543_RELEASE.sourceSha,
+  currentSha: SALES_SOURCE_CHECKPOINT, sourceAncestor: true, checkpointAncestor: true,
+  changedPaths: SALES_SOURCE_DELTA.map((row) => row.path), currentDifference: [],
+  rows: SALES_SOURCE_DELTA.map((row) => ({...row, candidateMode: "100644", checkpointMode: "100644"}))});
+
+test("Sales source compatibility accepts only exact reviewed PR575 blobs", () => {
+  assert.deepEqual(verifySalesSourceCompatibility(salesSourceEvidence()), {
+    sourceSha: SALES_PR543_RELEASE.sourceSha, compatibilityCheckpoint: SALES_SOURCE_CHECKPOINT,
+  });
+});
+
+for (const [name, mutate] of [
+  ["other immutable source", (e) => {e.sourceSha = "0".repeat(40);} ],
+  ["missing source ancestry", (e) => {e.sourceAncestor = false;} ],
+  ["missing checkpoint ancestry", (e) => {e.checkpointAncestor = false;} ],
+  ["altered operator runtime content", (e) => {e.rows[0].mergedGitBlob = "0".repeat(40);} ],
+  ["altered operator test content", (e) => {e.rows[1].mergedGitBlob = "0".repeat(40);} ],
+  ["different original blob", (e) => {e.rows[0].candidateGitBlob = "0".repeat(40);} ],
+  ["symlink substitution", (e) => {e.rows[0].checkpointMode = "120000";} ],
+  ["duplicate row", (e) => {e.rows[1] = e.rows[0];} ],
+  ["omitted exact delta", (e) => {e.changedPaths.pop();} ],
+  ["extra checkpoint source change", (e) => {e.changedPaths.push("functions/src/new.ts");} ],
+  ["new Sales import creating target intersection", (e) => {
+    e.currentDifference.push("functions/src/admin/salesIntelligence/runtime.ts");
+  } ],
+  ["entrypoint initialization creating target intersection", (e) => {
+    e.currentDifference.push("functions/src/index.ts");
+  } ],
+  ["later alteration of an admitted file", (e) => {e.currentDifference.push(SALES_SOURCE_DELTA[0].path);} ],
+]) {
+  test(`Sales source compatibility rejects ${name}`, () => {
+    const e = salesSourceEvidence(); mutate(e);
+    assert.throws(() => verifySalesSourceCompatibility(e));
+  });
+}
+
+for (const guarded of SALES_SOURCE_GUARDED_PATHS) {
+  test(`Sales source compatibility retains the guard for ${guarded}`, () => {
+    const e = salesSourceEvidence(); e.currentDifference.push(guarded);
+    assert.throws(() => verifySalesSourceCompatibility(e));
+  });
+}
+
+test("Sales source compatibility reads historical Git objects and binds its CLI", async () => {
+  const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
+  const expected = {sourceSha: SALES_PR543_RELEASE.sourceSha, compatibilityCheckpoint: SALES_SOURCE_CHECKPOINT};
+  assert.deepEqual(checkSalesGitCompatibility(SALES_PR543_RELEASE.sourceSha, SALES_SOURCE_CHECKPOINT, root), expected);
+  assert.deepEqual(await runSalesPr543ReleaseCli(["source", "--source-sha", SALES_PR543_RELEASE.sourceSha,
+    "--current-main", SALES_SOURCE_CHECKPOINT, "--source-root", root]), expected);
+  // Reviewed parity control plane predates PR575 and cannot borrow its allowance.
+  assert.throws(() => checkSalesGitCompatibility(SALES_PR543_RELEASE.sourceSha,
+    "b623f19437c1a5caa62edf97bb960c0b9f6a6686", root));
+  await assert.rejects(runSalesPr543ReleaseCli(["source", "--source-sha", SALES_PR543_RELEASE.sourceSha,
+    "--current-main", SALES_SOURCE_CHECKPOINT, "--source-root", root,
+    "--targets", "functions:importWeddingPhoneContacts"]));
+});
+
+test("Sales Git compatibility rejects real altered blobs and new runtime intersections", () => {
+  const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "sales-source-compatibility-"));
+  const repo = path.join(temporary, "repo");
+  const git = (args, options = {}) => {
+    const result = spawnSync("git", args, {cwd: repo, encoding: "utf8", timeout: 10000,
+      env: {...process.env, GIT_AUTHOR_NAME: "Synthetic test", GIT_AUTHOR_EMAIL: "test@example.invalid",
+        GIT_COMMITTER_NAME: "Synthetic test", GIT_COMMITTER_EMAIL: "test@example.invalid"}, ...options});
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  try {
+    git(["clone", "--shared", "--no-checkout", root, repo], {cwd: temporary});
+    for (const [file, appended] of [
+      [SALES_SOURCE_DELTA[0].path, "\n// altered operator content\n"],
+      [SALES_SOURCE_DELTA[1].path, "\n// altered operator test\n"],
+      ["firestore.rules", "\n// unrelated guarded content\n"],
+      ["functions/src/admin/salesIntelligence/runtime.ts",
+        '\nimport "../../catchMessaging/whatsappOperatorSetup";\n'],
+      ["functions/src/index.ts", '\nimport "./catchMessaging/whatsappOperatorSetup";\n'],
+    ]) {
+      git(["read-tree", SALES_SOURCE_CHECKPOINT]);
+      const original = git(["show", `${SALES_SOURCE_CHECKPOINT}:${file}`]);
+      const blob = git(["hash-object", "-w", "--stdin"], {input: original + appended});
+      git(["update-index", "--add", "--cacheinfo", `100644,${blob},${file}`]);
+      const tree = git(["write-tree"]);
+      const current = git(["commit-tree", tree, "-p", SALES_SOURCE_CHECKPOINT], {input: "Synthetic guarded drift\n"});
+      assert.throws(() => checkSalesGitCompatibility(SALES_PR543_RELEASE.sourceSha, current, repo),
+        undefined, `Must reject actual guarded change: ${file}`);
+    }
+  } finally {
+    fs.rmSync(temporary, {recursive: true, force: true});
+  }
+});
 
 const hash = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const clone = structuredClone;

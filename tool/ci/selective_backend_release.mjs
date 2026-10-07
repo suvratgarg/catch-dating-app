@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -690,6 +691,73 @@ export const SALES_PR543_RELEASE = Object.freeze({
 export const SALES_PR543_RETAINED_TARGETS = Object.freeze(SALES_PR543_RELEASE.targets
   .filter((target) => !SALES_PR543_RELEASE.addedTargets.includes(target)));
 
+// PR575 changes only protected operator CLI planning. Neither module is in
+// index.ts's runtime closure (including initialization of every re-export).
+// Bind that reviewed separation to exact Git objects, never a path exclusion.
+export const SALES_SOURCE_CHECKPOINT = "6256356bb9b41dbb5727354f5cb77384773c0454";
+export const SALES_SOURCE_GUARDED_PATHS = Object.freeze([
+  "functions/src", "functions/package.json", "functions/package-lock.json",
+  "functions/scripts/set-callable-invokers-public.cjs", "operations/src/platform",
+  "operations/src/workflows/outreach-drafting", "contracts/operations",
+  "firestore.rules", "firebase.json", ".firebaserc",
+]);
+export const SALES_SOURCE_DELTA = Object.freeze([
+  Object.freeze({path: "functions/src/catchMessaging/whatsappOperatorSetup.ts",
+    candidateGitBlob: "e0e2ce455c5f08ccc73003a051f4471c15ea0238",
+    mergedGitBlob: "2a2b8b3bf9e5b95f8ca33f7f5bb49cea6a9ffc98"}),
+  Object.freeze({path: "functions/src/catchMessaging/whatsappOperatorSetup.test.ts",
+    candidateGitBlob: "d8aec1c0c2b9a82d45a879f054090d68563b9158",
+    mergedGitBlob: "de98ec81ac63692a73040b639da582e4f6e7ebcc"}),
+]);
+
+export function verifySalesSourceCompatibility(evidence) {
+  assert.equal(evidence.sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.match(evidence.currentSha, shaPattern);
+  assert.equal(evidence.sourceAncestor, true);
+  assert.equal(evidence.checkpointAncestor, true);
+  assert.deepEqual([...evidence.changedPaths].sort(), SALES_SOURCE_DELTA.map((row) => row.path).sort());
+  assert.deepEqual(evidence.currentDifference, []);
+  assert.equal(evidence.rows.length, SALES_SOURCE_DELTA.length);
+  for (const row of SALES_SOURCE_DELTA) {
+    assert.deepEqual(evidence.rows.find((entry) => entry.path === row.path),
+      {...row, candidateMode: "100644", checkpointMode: "100644"});
+  }
+  return {sourceSha: SALES_PR543_RELEASE.sourceSha, compatibilityCheckpoint: SALES_SOURCE_CHECKPOINT};
+}
+
+export function checkSalesGitCompatibility(sourceSha, currentSha, cwd = process.cwd()) {
+  assert.equal(sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.match(currentSha, shaPattern);
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd, encoding: "utf8", timeout: 10000, maxBuffer: 1024 * 1024});
+    assert.ifError(result.error);
+    assert.equal(result.status, 0, "Sales compatibility Git proof failed.");
+    return result.stdout;
+  };
+  for (const sha of [sourceSha, currentSha, SALES_SOURCE_CHECKPOINT]) {
+    assert.equal(git(["rev-parse", "--verify", `${sha}^{commit}`]).trim(), sha);
+  }
+  git(["merge-base", "--is-ancestor", sourceSha, currentSha]);
+  git(["merge-base", "--is-ancestor", SALES_SOURCE_CHECKPOINT, currentSha]);
+  const differences = (before, after) => git([
+    "diff", "--name-only", "--no-renames", "-z", before, after, "--", ...SALES_SOURCE_GUARDED_PATHS,
+  ]).split("\0").filter(Boolean);
+  const entry = (sha, file) => {
+    const match = /^(\d{6}) blob ([0-9a-f]{40})\t/.exec(git(["ls-tree", sha, "--", file]).trim());
+    assert.ok(match, "Sales compatibility requires regular tracked source.");
+    return {mode: match[1], blob: match[2]};
+  };
+  const rows = SALES_SOURCE_DELTA.map(({path}) => {
+    const candidate = entry(sourceSha, path);
+    const checkpoint = entry(SALES_SOURCE_CHECKPOINT, path);
+    return {path, candidateGitBlob: candidate.blob, mergedGitBlob: checkpoint.blob,
+      candidateMode: candidate.mode, checkpointMode: checkpoint.mode};
+  });
+  return verifySalesSourceCompatibility({sourceSha, currentSha, sourceAncestor: true, checkpointAncestor: true,
+    changedPaths: differences(sourceSha, SALES_SOURCE_CHECKPOINT), rows,
+    currentDifference: differences(SALES_SOURCE_CHECKPOINT, currentSha)});
+}
+
 const bytesDigest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const salesFail = () => { throw new Error("Invalid Sales PR543 selective release evidence."); };
 const salesSafe = (action) => { try { return action(); } catch { return salesFail(); } };
@@ -816,13 +884,16 @@ const salesOptions = (args) => {
 export async function runSalesPr543ReleaseCli(argv, {readLive = liveFunctions} = {}) {
   try {
     const [command, ...rest] = argv;
-    assert.ok(["prepare", "params", "stage", "before", "verify-before", "complete"].includes(command));
+    assert.ok(["source", "prepare", "params", "stage", "before", "verify-before", "complete"].includes(command));
     const args = salesOptions(rest);
-    salesExactKeys(args, command === "params" ? ["params-file"] :
+    salesExactKeys(args, command === "source" ? ["source-sha", "current-main", "source-root"] :
+      command === "params" ? ["params-file"] :
       command === "stage" ? ["stage", "target"] :
       command === "verify-before" ? ["manifest", "package-plan", "before"] :
       command === "complete" ? ["manifest", "package-plan", "before", "deployment", "params-sha256", "output"] :
         ["manifest", "package-plan", "output"]);
+    if (command === "source") return checkSalesGitCompatibility(
+      args["source-sha"], args["current-main"], args["source-root"]);
     if (command === "params") return verifySalesPr543Params(args["params-file"]);
     if (command === "stage") {
       if (args.stage === "functions") assert.equal(args.target, SALES_PR543_RELEASE.targets.join(","));
