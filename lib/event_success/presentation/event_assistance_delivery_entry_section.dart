@@ -19,7 +19,6 @@ class EventAssistanceDeliveryEntrySection extends StatelessWidget {
     actionLabel: confirmationNeeded
         ? context.l10n.eventAssistanceDeliveryPending
         : context.l10n.eventAssistanceDeliveryReview,
-    actionEmphasis: CatchSectionEmphasis.primary,
     onAction: onReview,
   );
 }
