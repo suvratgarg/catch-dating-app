@@ -79,6 +79,8 @@
         "containedLoadingRows",
         "dependentFieldRows",
         "action",
+        "collection",
+        "status",
         "content",
         "sliverRows",
         "sliverLoadingRows"
