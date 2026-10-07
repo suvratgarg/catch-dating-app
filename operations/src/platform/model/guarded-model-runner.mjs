@@ -4,6 +4,11 @@ import {OperationsError, invariant} from "../errors.mjs";
 import {validateJsonSchema} from "../json-schema.mjs";
 
 export class GuardedModelRunner {
+  /** @param {{enabled?:boolean, provider?:{run:(request:any)=>Promise<any>}|null,
+   * cache?:{get:(key:string)=>Promise<any>, put:(key:string, record:any)=>Promise<any>},
+   * budget?:BudgetLedger, monthlyBudget?:BudgetLedger|null, monthlyWindow?:string|null,
+   * modelId?:string, providerId?:string|null, validateOutput?:((output:any)=>unknown)|null,
+   * maxInputBytes?:number}} [options] */
   constructor({
     enabled = false,
     provider = null,
@@ -38,6 +43,8 @@ export class GuardedModelRunner {
   async run(request) {
     request = snapshotRequest(request);
     validateRequest(request, this.maxInputBytes);
+    invariant(this.providerId === null || /^[a-z0-9][a-z0-9._-]{0,99}$/i.test(request.task),
+      "INVALID_MODEL_REQUEST", "Provider task identity must be a bounded identifier.");
     const requestMetadata = this.providerId === null ? null : boundedRequest(request, this.maxInputBytes);
     checkCancellation(request.signal, "not_submitted");
     const cacheKey = hashValue({
@@ -335,6 +342,8 @@ const SAFE_PROVIDER_ERRORS = new Set([
   "MODEL_PROVIDER_USAGE_INVALID", "MODEL_PROVIDER_DISABLED", "MODEL_PROVIDER_REQUEST_INVALID",
   "MODEL_PROVIDER_INPUT_INVALID", "MODEL_SCHEMA_UNSUPPORTED", "MODEL_CAPABILITY_UNSUPPORTED",
   "MODEL_PROVIDER_RESULT_INVALID", "MODEL_PROVIDER_BODY_INVALID", "MODEL_PROVIDER_SECRET_UNAVAILABLE",
+  "MODEL_PROVIDER_TRANSPORT_ERROR", "MODEL_PROVIDER_RESPONSE_TOO_LARGE",
+  "MODEL_PROVIDER_CONFIG_INVALID", "MODEL_PROVIDER_PORT_REQUIRED",
 ]);
 
 function redactedProviderError(error) {

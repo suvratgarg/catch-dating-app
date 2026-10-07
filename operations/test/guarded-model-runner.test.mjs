@@ -148,6 +148,8 @@ test("invalid schema, metadata or over-reservation usage cannot release ceilings
     (response) => {response.metadata.attemptCount = 3;},
     (response) => {response.metadata.tokens.cacheRead = 8;},
     (response) => {response.metadata.requestId = "Authorization: private";},
+    (response) => {response.schemaVersion = 2;},
+    (response) => {response.usage.costMicros = 0;},
     (response) => {response.usage.inputTokens = 21; response.metadata.tokens.inputTotal = 21;},
   ]) {
     const f = fixture();

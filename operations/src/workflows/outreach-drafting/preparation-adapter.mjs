@@ -39,6 +39,15 @@ workflowComparison: object({knowledgeStatus: choice(["inferred", "unknown"]),
  * Named factories are the native adapters from dependent PR #582, injected at
  * the eventual Functions boundary. No arbitrary provider registry or fallback.
  * This helper neither persists Sales records nor renders or sends message prose.
+ * @param {{enabled?:boolean, factories?:{
+ * createDeepSeekProvider?:(options:Record<string,any>)=>{run:(request:any)=>Promise<any>},
+ * createOpenAIProvider?:(options:Record<string,any>)=>{run:(request:any)=>Promise<any>},
+ * createAnthropicProvider?:(options:Record<string,any>)=>{run:(request:any)=>Promise<any>}},
+ * cache?:{get:(key:string)=>Promise<any>,put:(key:string,record:any)=>Promise<any>},
+ * monthlyBudget?:BudgetLedger, monthlyWindow?:string,
+ * activationPort?:{current:(binding:any)=>Promise<any>}, clock?:()=>Date,
+ * providerOptions?:{serverSecretRef?:string, resolveSecret?:(ref:string,options:{signal:AbortSignal})=>Promise<string>,
+ * transport?:(url:string,options:RequestInit)=>Promise<Response>,timeoutMs?:number}}} [options]
  */
 export function createSalesPreparationAdapter({enabled = false, factories = {}, cache,
   monthlyBudget, monthlyWindow, activationPort, clock = () => new Date(),
