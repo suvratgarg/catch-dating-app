@@ -4,11 +4,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
-const {createHash, randomBytes, timingSafeEqual} = require("node:crypto");
+const {createHash, randomBytes, timingSafeEqual, generateKeyPairSync, privateDecrypt,
+  createDecipheriv, sign, constants} = require("node:crypto");
 const {execFileSync} = require("node:child_process");
 const {executionIdentity, protectedHome, createOperatorRuntime} =
   require("./catch-whatsapp-operator-runtime.cjs");
-const {localPage, launchPage} = require("./catch-whatsapp-session-handoff-ui.cjs");
+const {launchPage} = require("./catch-whatsapp-session-handoff-ui.cjs");
 const repo = path.resolve(__dirname, "../../..");
 const unavailable = () => {throw new Error("Protected session handoff unavailable.");};
 const hash = value => createHash("sha256").update(value).digest("hex");
@@ -85,19 +86,21 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
   const expiresAtMillis = startedAtMillis + maxAge;
   const capability = randomBytes(32).toString("hex");
   const csrf = randomBytes(32).toString("hex");
-  const cookie = randomBytes(32).toString("hex");
-  const cookieName = "catch_session_" + randomBytes(8).toString("hex");
+  const encryptionKeys = generateKeyPairSync("rsa", {modulusLength: 2048});
+  const signingKeys = generateKeyPairSync("rsa", {modulusLength: 2048});
+  const serverEncryptionKey = encryptionKeys.publicKey.export({type: "spki", format: "der"}).toString("base64url");
+  const serverSigningKey = signingKeys.publicKey.export({type: "spki", format: "der"}).toString("base64url");
   const challenge = randomBytes(32).toString("hex");
   const temporary = fs.mkdtempSync(path.join(home, ".session-handoff-"));
   fs.chmodSync(temporary, 0o700);
-  let origin, launchFile, launchStat, initialProfile, profile, profileHash, verifier;
+  let origin, launchFile, launchStat, initialProfile, profile, profileHash, verifier, session;
   let phase = "bootstrap", consumed = false, timer;
   const current = () => {
     const stat = fs.lstatSync(home);
     if (stat.dev !== homeStat.dev || stat.ino !== homeStat.ino ||
         hash(JSON.stringify(identity())) !== bindingHash || !Number.isSafeInteger(now()) ||
         now() < startedAtMillis || now() >= expiresAtMillis ||
-        (profileHash && hash(JSON.stringify([profile, challenge, expiresAtMillis, binding])) !== profileHash) ||
+        (profileHash && hash(JSON.stringify([profile, challenge, expiresAtMillis, binding, serverEncryptionKey, serverSigningKey])) !== profileHash) ||
         ["cancelled", "saved"].includes(phase)) unavailable();
     protectedHome(home);
   };
@@ -137,9 +140,34 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
     }
     try {fs.rmdirSync(temporary);} catch { /* Preserve any unexpected files. */ }
   };
-  const reply = (response, status, value) => {
+  const binary = (value, size, limit = size) => {
+    if (typeof value !== "string" || value.length > Math.ceil(limit * 4 / 3) || !/^[A-Za-z0-9_-]+$/u.test(value)) unavailable();
+    const bytes = Buffer.from(value, "base64url");
+    if (bytes.length < size || bytes.length > limit || bytes.toString("base64url") !== value) unavailable();
+    return bytes;
+  };
+  const decrypt = (value, label) => privateDecrypt({key: encryptionKeys.privateKey,
+    padding: constants.RSA_PKCS1_OAEP_PADDING, oaepHash: "sha256", oaepLabel: Buffer.from(label)}, binary(value, 256));
+  const openSession = value => {
+    if (!value || Object.keys(value).sort().join(",") !== "ciphertext,iv,wrappedKey") unavailable();
+    const context = JSON.stringify(Object.keys(session).sort().map(key => [key, session[key]]));
+    const key = decrypt(value.wrappedKey, "catch-operator-session/token/" + context);
+    if (key.length !== 32) unavailable();
+    const ciphertext = binary(value.ciphertext, 17, 16400);
+    const decipher = createDecipheriv("aes-256-gcm", key, binary(value.iv, 12));
+    decipher.setAAD(Buffer.from(context));
+    decipher.setAuthTag(ciphertext.subarray(-16));
+    return new TextDecoder("utf-8", {fatal: true}).decode(Buffer.concat([
+      decipher.update(ciphertext.subarray(0, -16)), decipher.final()]));
+  };
+  const reply = (response, status, value, request) => {
+    const payload = JSON.stringify(value);
+    const signed = JSON.stringify([challenge, binding.runtime.sourceSha, expiresAtMillis, request.method, request.url,
+      request.headers["x-catch-request"], request.bodySha256 ?? null, status, payload]);
+    const signature = sign("sha256", Buffer.from(signed), {key: signingKeys.privateKey,
+      padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: 32}).toString("base64url");
     response.writeHead(status, {"Content-Type": "application/json", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"});
-    response.end(JSON.stringify(value));
+    response.end(JSON.stringify({payload, signature}));
   };
   const body = async request => {
     if (request.headers["content-type"] !== "application/json") unavailable();
@@ -149,65 +177,75 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       if ((size += chunk.length) > 32768) unavailable();
       chunks.push(chunk);
     }
-    return JSON.parse(new TextDecoder("utf-8", {fatal: true}).decode(Buffer.concat(chunks)));
+    const bytes = Buffer.concat(chunks);
+    request.bodySha256 = hash(bytes);
+    return JSON.parse(new TextDecoder("utf-8", {fatal: true}).decode(bytes));
   };
   const server = http.createServer(async (request, response) => {
     try {
       if (request.headers.host !== new URL(origin).host || request.socket.remoteAddress !== "127.0.0.1") unavailable();
-      if (request.method === "GET" && request.url === "/") {
-        response.writeHead(200, {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "Referrer-Policy": "no-referrer",
-          "Content-Security-Policy": "default-src 'none'; script-src 'sha256-" + localPage.scriptHash + "'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
-          "X-Content-Type-Options": "nosniff"});
-        response.end(localPage.html);
-        return;
+      if (request.headers.origin !== clientOrigin) unavailable();
+      response.setHeader("Access-Control-Allow-Origin", clientOrigin);
+      response.setHeader("Vary", "Origin");
+      if (request.method === "OPTIONS") {
+        const headers = (request.headers["access-control-request-headers"] ?? "").split(",").map(value => value.trim().toLowerCase());
+        if (request.headers["access-control-request-method"] !== "POST" ||
+            headers.some(value => !["content-type", "x-catch-csrf", "x-catch-request"].includes(value))) unavailable();
+        response.writeHead(204, {"Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, X-Catch-CSRF, X-Catch-Request", "Access-Control-Allow-Private-Network": "true", "Cache-Control": "no-store"});
+        response.end(); return;
       }
-      if (request.method !== "POST" || request.headers.origin !== origin ||
-          request.headers["sec-fetch-site"] !== "same-origin") unavailable();
+      if (request.method !== "POST" || request.headers["sec-fetch-site"] !== "cross-site" ||
+          !/^[a-f0-9]{64}$/u.test(request.headers["x-catch-request"] ?? "")) unavailable();
       if (request.url === "/bootstrap") {
         current();
-        if (phase !== "bootstrap" || !equal(request.headers["x-catch-bootstrap"], capability)) unavailable();
+        const input = await body(request);
+        current();
+        if (phase !== "bootstrap" || !input || Object.keys(input).join(",") !== "encryptedBootstrap" ||
+            !equal(decrypt(input.encryptedBootstrap, "catch-operator-session/bootstrap/" + challenge).toString("utf8"), capability)) unavailable();
         phase = "configuration";
-        response.setHeader("Set-Cookie", `${cookieName}=${cookie}; HttpOnly; SameSite=Strict; Path=/; Max-Age=300`);
-        reply(response, 200, {csrf, profile: profile ?? null, runtime: binding.runtime});
+        reply(response, 200, {csrf, profile: profile ?? null, runtime: binding.runtime, home}, request);
         return;
       }
-      const selectedCookies = (request.headers.cookie ?? "").split(";").map(value => value.trim())
-        .filter(value => value.startsWith(cookieName + "="));
-      if (!equal(request.headers["x-catch-csrf"], csrf) || selectedCookies.length !== 1 ||
-          !equal(selectedCookies[0], `${cookieName}=${cookie}`)) unavailable();
+      if (!equal(request.headers["x-catch-csrf"], csrf)) unavailable();
       if (request.url === "/cancel") {
-        if (phase === "saved") {reply(response, 409, {state: "saved"}); return;}
+        const input = await body(request);
+        if (!input || Object.keys(input).length) unavailable();
+        if (phase === "saved") {reply(response, 409, {state: "saved"}, request); return;}
         phase = "cancelled"; cleanup();
-        reply(response, 200, {state: "cancelled"}); server.close(); return;
+        reply(response, 200, {state: "cancelled"}, request); server.close(); return;
       }
       current(); unchangedProfile();
       if (request.url === "/configure") {
         if (phase !== "configuration") unavailable();
         const candidate = await body(request);
         current(); unchangedProfile();
+        if (phase !== "configuration") unavailable();
         validate(candidate);
         const bytes = JSON.stringify(candidate) + "\n";
         if (initialProfile && bytes.trim() !== initialProfile.toString("utf8").trim()) unavailable();
         profile = structuredClone(candidate);
-        profileHash = hash(JSON.stringify([profile, challenge, expiresAtMillis, binding]));
+        profileHash = hash(JSON.stringify([profile, challenge, expiresAtMillis, binding, serverEncryptionKey, serverSigningKey]));
         phase = "transfer";
-        reply(response, 200, {clientOrigin, request: {kind: "catch-operator-session-request", schemaVersion: 1,
+        session = {kind: "catch-operator-session-request", schemaVersion: 1,
           challenge, projectId: profile.scope.projectId, actorUid: profile.scope.actorUid,
           actorEmailSha256: profile.scope.actorEmailSha256, scopeSha256: hash(JSON.stringify(profile.scope)),
-          sourceSha: profile.sourceSha, expiresAtMillis}});
+          sourceSha: profile.sourceSha, expiresAtMillis, serverEncryptionKey, serverSigningKey};
+        reply(response, 200, {request: session}, request);
         return;
       }
       if (request.url !== "/session" || phase !== "transfer" || consumed) unavailable();
       consumed = true; phase = "verifying";
       const input = await body(request);
-      if (!input || Object.keys(input).sort().join(",") !== "challenge,idToken" ||
-          !equal(input.challenge, challenge) || typeof input.idToken !== "string" ||
-          input.idToken.length > 16384 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/u.test(input.idToken)) unavailable();
+      if (!input || Object.keys(input).sort().join(",") !== "challenge,sealedSession" ||
+          !equal(input.challenge, challenge)) unavailable();
+      const idToken = openSession(input.sealedSession);
+      if (idToken.length > 16384 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/u.test(idToken)) unavailable();
       current(); unchangedProfile();
       const priorToken = oldToken();
       verifier ??= verifierFactory(profile.scope.projectId);
       let deadline;
-      const verified = await Promise.race([verifier(input.idToken), new Promise((_, reject) => {
+      const verified = await Promise.race([verifier(idToken), new Promise((_, reject) => {
         deadline = setTimeout(() => reject(new Error("Protected session handoff unavailable.")), 10000);
       })]).finally(() => clearTimeout(deadline));
       current(); unchangedProfile();
@@ -215,7 +253,7 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       assertSession(verified, profile.scope, now());
       const tokenStage = path.join(temporary, "actor-id-token.txt");
       const fd = fs.openSync(tokenStage, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | fs.constants.O_NOFOLLOW, 0o600);
-      try {fs.writeFileSync(fd, input.idToken + "\n"); fs.fsyncSync(fd);} finally {fs.closeSync(fd);}
+      try {fs.writeFileSync(fd, idToken + "\n"); fs.fsyncSync(fd);} finally {fs.closeSync(fd);}
       let createdProfile;
       try {
         current(); unchangedProfile();
@@ -235,9 +273,9 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       }
       phase = "saved"; cleanup();
       reply(response, 200, {kind: "catch-operator-session", state: "saved", sourceSha: profile.sourceSha,
-        expiresAtMillis: verified.exp * 1000}); server.close();
+        expiresAtMillis: verified.exp * 1000}, request); server.close();
     } catch {
-      reply(response, 400, {state: "unavailable"});
+      reply(response, 400, {state: "unavailable"}, request);
     }
   });
   return {
@@ -245,7 +283,9 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       await new Promise((resolve, reject) => {server.once("error", reject); server.listen(0, "127.0.0.1", resolve);});
       origin = "http://127.0.0.1:" + server.address().port;
       launchFile = path.join(temporary, "launch.html");
-      fs.writeFileSync(launchFile, launchPage(origin, capability), {flag: "wx", mode: 0o600});
+      fs.writeFileSync(launchFile, launchPage(clientOrigin, {kind: "catch-operator-session-launch", schemaVersion: 1,
+        localOrigin: origin, bootstrapCapability: capability, challenge, serverEncryptionKey, serverSigningKey,
+        sourceSha: binding.runtime.sourceSha, expiresAtMillis}), {flag: "wx", mode: 0o600});
       launchStat = fs.lstatSync(launchFile);
       timer = setTimeout(() => {phase = "cancelled"; cleanup(); server.close();}, maxAge);
       return {launchFile, expiresAtMillis};

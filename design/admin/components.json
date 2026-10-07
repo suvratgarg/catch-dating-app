@@ -5602,7 +5602,7 @@
           "unavailable"
         ]
       },
-      "notes": "Exports only the already signed-in actor’s fresh Google session to an exact owner-protected loopback helper after explicit confirmation. No admin queries, role changes, sign-in or persistence migration."
+      "notes": "Exports only the already signed-in actor’s fresh Google session encrypted to an owner-protected helper pinned by its private launch file after explicit confirmation. No admin queries, role changes, sign-in or persistence migration."
     }
   ]
 }

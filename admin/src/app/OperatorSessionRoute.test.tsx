@@ -16,5 +16,5 @@ it("routes the export-only view without starting the role-gated Admin workspace 
   await screen.findByRole("heading", {name: "Catch operator session"});
   expect(mocks.session).not.toHaveBeenCalled();
   expect(mocks.getIdTokenResult).not.toHaveBeenCalled();
-  expect((screen.getByRole("button", {name: "Transfer my current Google session"}) as HTMLButtonElement).disabled).toBe(true);
+  expect((screen.getByRole("button", {name: "Save my current Google session"}) as HTMLButtonElement).disabled).toBe(true);
 });

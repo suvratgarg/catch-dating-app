@@ -1,41 +1,9 @@
 import {getIdTokenResult, type Auth} from "firebase/auth";
 
-export interface SessionRequest {
-  kind: "catch-operator-session-request";
-  schemaVersion: 1;
-  challenge: string;
-  projectId: string;
-  actorUid: string;
-  actorEmailSha256: string;
-  scopeSha256: string;
-  sourceSha: string;
-  expiresAtMillis: number;
-}
+import {sessionRequest, sealSession, type SessionRequest} from "./operatorSessionTransport";
+export {loopbackOrigin, sessionRequest} from "./operatorSessionTransport";
+export type {SessionRequest} from "./operatorSessionTransport";
 function unavailable(): never {throw new Error("Protected session handoff unavailable.");}
-export function loopbackOrigin(origin: string): boolean {
-  try {
-    const url = new URL(origin);
-    return url.origin === origin && url.protocol === "http:" &&
-      url.hostname === "127.0.0.1" && Number(url.port) > 1023 &&
-      url.pathname === "/" && !url.username && !url.password;
-  } catch {return false;}
-}
-export function sessionRequest(value: unknown, now = Date.now()): SessionRequest {
-  if (!value || typeof value !== "object") unavailable();
-  const request = value as SessionRequest;
-  if (Object.keys(request).sort().join(",") !==
-      "actorEmailSha256,actorUid,challenge,expiresAtMillis,kind,projectId,schemaVersion,scopeSha256,sourceSha" ||
-      request.kind !== "catch-operator-session-request" || request.schemaVersion !== 1 ||
-      ![request.actorUid, request.projectId, request.challenge, request.actorEmailSha256,
-        request.scopeSha256, request.sourceSha].every(value => typeof value === "string") ||
-      !/^[A-Za-z0-9_-]{1,128}$/u.test(request.actorUid) ||
-      !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(request.projectId) ||
-      ![request.challenge, request.actorEmailSha256, request.scopeSha256].every(value => /^[a-f0-9]{64}$/u.test(value)) ||
-      !/^[a-f0-9]{40}$/u.test(request.sourceSha) ||
-      !Number.isSafeInteger(request.expiresAtMillis) || request.expiresAtMillis <= now ||
-      request.expiresAtMillis > now + 5 * 60 * 1000) unavailable();
-  return {...request};
-}
 
 // Export only: no sign-in, reauthentication, linking, custom tokens, persistence
 // changes or extra credential store. Refresh cannot update auth_time.
@@ -67,5 +35,7 @@ export async function transferSession(auth: Auth, request: SessionRequest,
       Number(claims.exp) * 1000 <= time || Number(claims.exp) <= Number(claims.iat) ||
       Number(claims.exp) - Number(claims.iat) > 3600 || typeof result.token !== "string" ||
       result.token.length > 16384 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/u.test(result.token)) unavailable();
-  return {kind: "catch-operator-session-transfer", challenge: request.challenge, idToken: result.token};
+  const sealedSession = await sealSession(request, result.token);
+  if (!isCurrent() || auth.currentUser !== user || now() >= request.expiresAtMillis) unavailable();
+  return {challenge: request.challenge, sealedSession};
 }

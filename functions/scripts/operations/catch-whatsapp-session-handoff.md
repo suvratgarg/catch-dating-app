@@ -7,11 +7,13 @@ setup planning, account-incarnation, recipient preservation, endpoint, receipt,
 STOP and replay enforcement remain in the operator runtime.
 
 Source publication alone does not activate this flow. The parent owns CI,
-merge and hosting promotion. Any real-account operation, credential use or
-owner grant still needs its separate explicit action approval. This change was
-validated with synthetic identities only.
+merge and hosting promotion. Any real-account operation, credential use,
+provider change or owner grant still needs its separate explicit action approval.
+Validation uses synthetic identities only. Google sign-in must already be
+available through the existing normal UI; this helper cannot enable it or
+substitute another provider.
 
-After the exact reviewed source and Admin route are available:
+After the reviewed source and matching Admin route are available:
 
 1. Select an absolute owner-only directory outside every Git checkout. Use the
    same directory for `CATCH_WHATSAPP_OPERATOR_HOME` in subsequent existing
@@ -22,15 +24,15 @@ After the exact reviewed source and Admin route are available:
    `node functions/scripts/operations/setup-catch-whatsapp-reply.cjs fingerprint`.
    Prepare the existing six-field profile shape (`schemaVersion`, `scope`,
    `sourceSha`, `executionSha256`, `credentialVersionName`, `runtimePrincipal`)
-   from approved operator inputs. `credentialVersionName` is a numeric version
-   resource address, never a secret payload. The helper does not discover live
-   accounts, endpoints, credentials, IAM or approval state.
-3. Sign in as the exact selected Google actor using Catch's existing normal
-   sign-in UI for the selected Firebase project. The actor must already exist;
-   this helper introduces no sign-in, account creation, linking, custom token,
-   OAuth scope or persistence migration. A refresh cannot replace a fresh
-   sign-in. Sign-in must be less than five minutes old at save time.
-4. Start the helper with non-secret directory and HTTPS Admin origin inputs:
+   from approved operator inputs. The credential version is a numeric resource
+   address, never a secret payload. No live accounts, endpoints, credentials,
+   IAM or approval state are discovered by this helper.
+3. Sign in as the exact selected Google actor through Catch's existing normal
+   sign-in UI for the selected Firebase project, using the same browser profile.
+   The actor must already exist. This helper adds no sign-in, account creation,
+   linking, custom token, OAuth scope or persistence migration. A refresh cannot
+   replace a fresh sign-in; `auth_time` must be less than five minutes old at save.
+4. Start the helper with non-secret directory and existing HTTPS Admin origin:
 
    ```sh
    node functions/scripts/operations/catch-whatsapp-session-handoff.cjs \
@@ -38,35 +40,42 @@ After the exact reviewed source and Admin route are available:
      --client-origin https://your-existing-admin-origin.example
    ```
 
-5. Open the returned `launchFile` directly in the same browser profile as the
-   normal sign-in. The file is mode `0600`, inside a mode `0700` directory. Its
-   private one-use launch capability is not printed; do not share the file.
-   Enter only the selected non-secret profile configuration in the local UI.
-   Validation does not persist it or approve setup. An existing profile is
-   displayed read-only and is never rebound or overwritten automatically.
-6. Open the handoff view from the local UI. Check its exact project, actor UID,
-   local destination and source; choose **Transfer my current Google session**.
-   Only that window and origin can return that request's token. The local
-   helper verifies the signed token with revocation checking, exact account,
-   Google provider, project, email fingerprint and fresh `auth_time`. After all
-   bindings are rechecked it saves `profile.json` if absent and atomically
-   replaces `actor-id-token.txt`, each mode `0600`. The receipt contains no token.
+5. Open the returned `launchFile` directly. It is mode `0600` inside a mode
+   `0700` directory. Do not share it. Its button navigates directly to the
+   protected HTTPS Catch view with the original helper's keys and private
+   one-use bootstrap capability. The view scrubs its fragment and severs its
+   opener before any HTTP interaction; no loopback page supplies its trust root.
+6. If the browser requests local-network permission for this explicit local
+   handoff, refusal leaves it unavailable. Enter only the selected non-secret
+   profile configuration in the protected HTTPS view. Validation does not persist
+   it or approve setup. An existing profile is read-only and is never rebound or
+   overwritten automatically. Check the selected directory, source/runtime
+   fingerprints, project, actor and endpoint scope before saving.
+7. Choose **Save my current Google session**. The view exports only the already
+   signed-in exact actor, encrypting the session to the original helper process.
+   The helper verifies the signed token with revocation checking, exact Google
+   account, project, email fingerprint and fresh `auth_time`. After rechecking
+   every binding it saves `profile.json` only if absent and atomically replaces
+   `actor-id-token.txt`, each mode `0600`. The verified receipt contains no token.
 
-The launch expires after five minutes and is one-use. Cancel in either protected
-UI, close the local UI, or stop the helper before saving to abort. Interrupted
-window/opener communication, including browser COOP restrictions, fails closed;
-restart through the protected UI rather than copying credentials manually.
-A cancellation racing a completed save reports the saved state where the helper
-can confirm it; an unconfirmed cancellation requires checking the helper before
-retrying. The session file contains no refresh credential and expires at the
-signed token's expiry; the runtime must verify it on every use. The file is not
-automatically deleted at expiry.
+The launch expires after five minutes and is one-use. Explicit Cancel remains
+available during verification. Closing the view attempts cancellation and
+prevents further exports; an already committed save cannot be undone by closing
+or losing a receipt. Unconfirmed save/cancellation outcomes require checking the
+helper and session file before retrying. There is no automatic retry. The session
+file contains no refresh credential and expires at the signed token's expiry;
+the runtime verifies it on each use. The file is not automatically deleted.
 
-Permissions bind access to the delegated OS owner; they do not defend against
-another process running as that same owner or prove human approval. Other
-local users cannot initialize the helper from its public loopback page alone.
-Host, Origin, one-use capability, exclusive HttpOnly SameSite cookie and CSRF
-checks protect the local endpoints. Configuration, session, home or committed
-helper/runtime drift, account mismatch, expiry, revocation and cancellation
-stop the save without granting authority. Existing unrelated operator files
-and retained source/recovery evidence are preserved.
+The helper holds separate ephemeral RSA-OAEP and RSA-PSS private keys only in
+memory. Bootstrap capabilities are encrypted, and tokens use RSA-OAEP wrapped
+AES-GCM bound to the immutable challenge, scope, source, expiry and keys. Signed
+responses bind method/path, a fresh request ID and the exact request digest.
+Replacement loopback listeners cannot decrypt credentials, substitute keys or
+forge receipts, including before the first HTTP response. Redirects and browser
+credentials are disabled; CORS allows only the explicitly selected HTTPS origin.
+
+Permissions bind the local files to the delegated OS owner; they do not defend
+against a hostile process running as that same owner or prove human approval.
+Configuration/session/home/source drift, account mismatch, expiry, revocation
+and confirmed cancellation stop the save without granting authority. Unrelated
+operator files and retained source/recovery evidence remain preserved.

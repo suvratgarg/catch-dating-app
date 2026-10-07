@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const http = require("node:http");
-const {createHash} = require("node:crypto");
+const {createHash, randomBytes, publicEncrypt, createPublicKey, createCipheriv, constants, verify: verifySignature} = require("node:crypto");
 const {spawnSync} = require("node:child_process");
 const {createSessionHandoff, assertSession, verifyFactory} = require("../scripts/operations/catch-whatsapp-session-handoff.cjs");
 const sha = input => createHash("sha256").update(input).digest("hex");
@@ -47,34 +47,40 @@ function fixture(t, {existing = false, verify} = {}) {
       return async token => {assert.equal(token, privateToken); return verify ? verify(decoded()) : decoded();};
     }});
   t.after(() => {helper.close(); fs.rmSync(home, {recursive: true, force: true});});
-  let origin, capability, cookie, csrf, transfer;
+  let origin, anchor, csrf, transfer;
   async function start() {
     const launch = await helper.start();
     assert.equal(fs.statSync(launch.launchFile).mode & 0o777, 0o600);
     assert.equal(fs.statSync(path.dirname(launch.launchFile)).mode & 0o777, 0o700);
     assert.deepEqual(Object.keys(launch).sort(), ["expiresAtMillis", "launchFile"]);
-    const match = fs.readFileSync(launch.launchFile, "utf8").match(/http:\/\/127\.0\.0\.1:\d+\/#([a-f0-9]{64})/u);
-    assert.ok(match);
-    capability = match[1]; origin = match[0].split("/#")[0];
+    const source = fs.readFileSync(launch.launchFile, "utf8");
+    assert.match(source, /window.opener = null/u);
+    const target = JSON.parse(source.match(/location\.replace\(("[^\n]*")\)/u)[1]);
+    assert.equal(new URL(target).origin, clientOrigin);
+    anchor = JSON.parse(Buffer.from(new URL(target).hash.slice(1), "base64url").toString("utf8"));
+    origin = anchor.localOrigin;
+    assert.notEqual(anchor.serverEncryptionKey, anchor.serverSigningKey);
     return launch;
   }
   function request(route, value = {}, headers = {}, method = "POST") {
     return new Promise((resolve, reject) => {
-      const req = http.request(origin + route, {method, headers: {Origin: origin,
-        "Sec-Fetch-Site": "same-origin", "Content-Type": "application/json",
-        ...(cookie ? {Cookie: cookie, "X-Catch-CSRF": csrf} : {}), ...headers}}, response => {
+      const req = http.request(origin + route, {method, headers: {Origin: clientOrigin,
+        "Sec-Fetch-Site": "cross-site", "Content-Type": "application/json", "X-Catch-Request": randomBytes(32).toString("hex"),
+        ...(csrf ? {"X-Catch-CSRF": csrf} : {}), ...headers}}, response => {
         let text = ""; response.setEncoding("utf8"); response.on("data", chunk => text += chunk);
         response.on("end", () => resolve({status: response.statusCode, text, headers: response.headers,
-          value: response.headers["content-type"] === "application/json" ? JSON.parse(text) : null}));
+          value: response.headers["content-type"] === "application/json" ? JSON.parse(JSON.parse(text).payload) : null}));
       });
       req.on("error", reject); req.end(method === "GET" ? undefined : JSON.stringify(value));
     });
   }
   async function bootstrap() {
-    const result = await request("/bootstrap", {}, {"X-Catch-Bootstrap": capability});
+    const encryptedBootstrap = publicEncrypt({key: createPublicKey({key: Buffer.from(anchor.serverEncryptionKey, "base64url"), type: "spki", format: "der"}), oaepHash: "sha256", oaepLabel: Buffer.from("catch-operator-session/bootstrap/" + anchor.challenge)}, Buffer.from(anchor.bootstrapCapability)).toString("base64url");
+    const result = await request("/bootstrap", {encryptedBootstrap});
     assert.equal(result.status, 200, result.text);
-    cookie = result.headers["set-cookie"][0].split(";")[0]; csrf = result.value.csrf;
-    assert.match(result.headers["set-cookie"][0], /HttpOnly; SameSite=Strict/u);
+    csrf = result.value.csrf;
+    assert.equal(result.headers["access-control-allow-origin"], clientOrigin);
+    assert.equal(result.headers["set-cookie"], undefined);
     return result;
   }
   async function configure(candidate = profile) {
@@ -82,23 +88,30 @@ function fixture(t, {existing = false, verify} = {}) {
     if (result.status === 200) transfer = result.value.request;
     return result;
   }
-  const save = () => request("/session", {challenge: transfer.challenge, idToken: privateToken});
-  return {home, helper, binding, profile, scope, decoded, file, start, request, bootstrap, configure, save,
-    calls: () => calls, setNow: value => now = value, get transfer() {return transfer;}, get cookie() {return cookie;}};
+  const seal = (token = privateToken, contextRequest = transfer) => {
+    const context = JSON.stringify(Object.keys(contextRequest).sort().map(key => [key, contextRequest[key]]));
+    const key = randomBytes(32), iv = randomBytes(12);
+    const cipher = createCipheriv("aes-256-gcm", key, iv); cipher.setAAD(Buffer.from(context));
+    const ciphertext = Buffer.concat([cipher.update(token), cipher.final(), cipher.getAuthTag()]);
+    const wrappedKey = publicEncrypt({key: createPublicKey({key: Buffer.from(anchor.serverEncryptionKey, "base64url"), format: "der", type: "spki"}), oaepHash: "sha256", oaepLabel: Buffer.from("catch-operator-session/token/" + context)}, key);
+    return {wrappedKey: wrappedKey.toString("base64url"), iv: iv.toString("base64url"), ciphertext: ciphertext.toString("base64url")};
+  };
+  const save = () => request("/session", {challenge: transfer.challenge, sealedSession: seal()});
+  return {home, helper, binding, profile, scope, decoded, file, start, request, bootstrap, configure, save, seal,
+    calls: () => calls, setNow: value => now = value, get transfer() {return transfer;}, get anchor() {return anchor;}};
 }
 
-test("private one-use bootstrap, exact Host/Origin, cookie and CSRF precede configuration", async t => {
+test("encrypted private bootstrap, exact Host/Origin and CSRF precede configuration", async t => {
   const f = fixture(t); await f.start();
   const page = await f.request("/", {}, {}, "GET");
-  assert.equal(page.status, 200); assert.match(page.headers["content-security-policy"], /frame-ancestors 'none'/u);
+  assert.equal(page.status, 400);
   assert.ok(!page.text.includes(f.scope.actorUid)); assert.ok(!page.text.includes(f.binding.runtime.sourceSha));
-  for (const headers of [{"X-Catch-Bootstrap": "0".repeat(64)}, {Origin: clientOrigin},
-    {Host: "evil.invalid"}, {"Sec-Fetch-Site": "cross-site"}]) {
+  for (const headers of [{Origin: "https://evil.invalid"}, {Host: "evil.invalid"}, {"Sec-Fetch-Site": "same-origin"}]) {
     assert.equal((await f.request("/bootstrap", {}, headers)).status, 400);
   }
   assert.equal(f.calls(), 0); await f.bootstrap();
   assert.equal((await f.request("/bootstrap")).status, 400);
-  for (const headers of [{Cookie: ""}, {"X-Catch-CSRF": "wrong"}, {Origin: clientOrigin}]) {
+  for (const headers of [{"X-Catch-CSRF": ""}, {"X-Catch-CSRF": "wrong"}, {Origin: "https://evil.invalid"}]) {
     assert.equal((await f.request("/configure", f.profile, headers)).status, 400);
   }
   assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
@@ -122,13 +135,6 @@ test("offline profile validation writes nothing; valid confirmed handoff saves o
   assert.equal(fs.statSync(f.home).mode & 0o777, 0o700);
   assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), privateToken + "\n");
   assert.equal(f.calls(), 1);
-});
-
-test("a prior launch's cookie does not prevent reuse; duplicate selected cookies fail closed", async t => {
-  const f = fixture(t); await f.start(); await f.bootstrap();
-  assert.equal((await f.request("/configure", f.profile, {Cookie: f.cookie + "; " + f.cookie})).status, 400);
-  assert.equal((await f.request("/configure", f.profile, {Cookie: "unrelated_previous=old; " + f.cookie})).status, 200);
-  assert.equal(f.calls(), 0);
 });
 
 test("existing profile is byte-preserved; only the verified actor session is replaced", async t => {
@@ -189,7 +195,7 @@ test("verification rejection and malformed token are redacted, one-shot and writ
   for (const malformed of [false, true]) {
     const f = fixture(t, {verify: async () => {throw new Error(privateToken + " revoked or invalid");}});
     await f.start(); await f.bootstrap(); await f.configure();
-    const response = malformed ? await f.request("/session", {challenge: f.transfer.challenge, idToken: "sensitive-invalid-token"}) : await f.save();
+    const response = malformed ? await f.request("/session", {challenge: f.transfer.challenge, sealedSession: f.seal("sensitive-invalid-token")}) : await f.save();
     assert.equal(response.status, 400); assert.deepEqual(response.value, {state: "unavailable"});
     assert.equal((await f.save()).status, 400); assert.equal(f.calls(), malformed ? 0 : 1);
     assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
@@ -246,83 +252,23 @@ test("CLI rejects unapproved argument forms without exposing credential-shaped i
   }
 });
 
-const vm = require("node:vm");
-const {localPage} = require("../scripts/operations/catch-whatsapp-session-handoff-ui.cjs");
-async function localBrowser(t, {saveWaiting, lostSaveResponse = false} = {}) {
-  const calls = [], messages = [];
-  const transfer = {challenge: "a".repeat(64), expiresAtMillis: Date.now() + 300000};
-  const child = {closed: false, postMessage: (...args) => messages.push(args)};
-  const capability = "e".repeat(64);
-  const elements = new Map();
-  for (const id of ["status", "config", "confirm", "open", "cancel", "binding"]) {
-    const element = {textContent: "", value: "", disabled: ["confirm", "open", "cancel"].includes(id),
-      click() {if (!this.disabled) this.onclick?.();}};
-    elements.set(id, element);
+
+test("raw tokens and tampered or differently bound ciphertext never reach SDK verification", async t => {
+  for (const mode of ["raw", "ciphertext", "scope", "source", "expiry", "challenge"]) {
+    const f = fixture(t); await f.start(); await f.bootstrap(); await f.configure();
+    const context = {...f.transfer};
+    if (mode === "scope") context.scopeSha256 = "e".repeat(64);
+    if (mode === "source") context.sourceSha = "e".repeat(40);
+    if (mode === "expiry") context.expiresAtMillis -= 1;
+    if (mode === "challenge") context.challenge = "e".repeat(64);
+    const sealedSession = f.seal(privateToken, context);
+    if (mode === "ciphertext") {
+      const bytes = Buffer.from(sealedSession.ciphertext, "base64url"); bytes[0] ^= 1;
+      sealedSession.ciphertext = bytes.toString("base64url");
+    }
+    const input = mode === "raw" ? {challenge: f.transfer.challenge, idToken: privateToken} : {challenge: f.transfer.challenge, sealedSession};
+    const result = await f.request("/session", input);
+    assert.equal(result.status, 400); assert.equal(f.calls(), 0); assert.ok(!result.text.includes(privateToken));
+    assert.equal(fs.existsSync(path.join(f.home, "actor-id-token.txt")), false);
   }
-  const events = new Map(), intervals = new Set();
-  const window = {open: () => child, addEventListener: (name, handler) => events.set(name, handler),
-    dispatchEvent: event => events.get(event.type)?.(event)};
-  const document = {getElementById: id => elements.get(id), body: {
-    get textContent() {return [...elements.values()].map(value => value.textContent).join(" ");},
-  }};
-  const location = {hash: "#" + capability};
-  const dom = {window: {...window, location, document,
-    MessageEvent: class {constructor(type, value) {Object.assign(this, value, {type});}}}};
-  const script = localPage.html.match(/<script>([\s\S]*)<\/script>/u)[1];
-  vm.runInNewContext(script, {window, document, location, Date,
-    history: {replaceState: () => {location.hash = "";}},
-    setInterval: (callback, millis) => {const timer = setInterval(callback, millis); intervals.add(timer); return timer;},
-    clearInterval,
-    fetch: async (url, options) => {
-      calls.push({url, options});
-      if (url === "/session" && saveWaiting) await saveWaiting;
-      if (url === "/session" && lostSaveResponse) throw new Error("synthetic committed save then response lost " + privateToken);
-      return {ok: true, status: 200, json: async () => url === "/bootstrap" ?
-        {csrf: "f".repeat(64), profile: {synthetic: true}, runtime: {sourceSha: "b".repeat(40)}} :
-        url === "/configure" ? {clientOrigin, request: transfer} :
-        url === "/cancel" ? {state: "cancelled"} : {state: "saved", expiresAtMillis: Date.now() + 3600000}};
-    }});
-  t.after(() => {for (const timer of intervals) clearInterval(timer);});
-  const tick = () => new Promise(resolve => setImmediate(resolve));
-  await tick();
-  assert.equal(dom.window.location.hash, "");
-  assert.equal(calls[0].options.headers["X-Catch-Bootstrap"], capability);
-  assert.ok(!dom.window.document.body.textContent.includes(capability));
-  dom.window.document.getElementById("confirm").click(); await tick();
-  dom.window.document.getElementById("open").click();
-  const send = (data, source = child, origin = clientOrigin) => dom.window.dispatchEvent(
-    new dom.window.MessageEvent("message", {data, source, origin}));
-  return {dom, child, calls, messages, transfer, tick, send};
-}
-test("local UI accepts a token only from the selected child, HTTPS origin and exact challenge", async t => {
-  const b = await localBrowser(t);
-  const message = {kind: "catch-operator-session-transfer", challenge: b.transfer.challenge, idToken: privateToken};
-  b.send(message, {}, clientOrigin); b.send(message, b.child, "https://evil.invalid");
-  b.send({...message, challenge: "0".repeat(64)}); b.send({...message, extra: true});
-  await b.tick(); assert.equal(b.calls.filter(call => call.url === "/session").length, 0);
-  b.send({kind: "catch-operator-session-ready", challenge: b.transfer.challenge});
-  b.send(message); b.send(message); await b.tick();
-  const sessionCalls = b.calls.filter(call => call.url === "/session"); assert.equal(sessionCalls.length, 1);
-  assert.deepEqual(JSON.parse(sessionCalls[0].options.body), {challenge: b.transfer.challenge, idToken: privateToken});
-  assert.ok(!b.dom.window.document.body.textContent.includes(privateToken));
-  assert.match(b.dom.window.document.getElementById("status").textContent, /Session saved/u);
-});
-test("local cancel remains available during verification and ignores a later save response", async t => {
-  let resolve; const waiting = new Promise(r => resolve = r);
-  const b = await localBrowser(t, {saveWaiting: waiting});
-  b.send({kind: "catch-operator-session-transfer", challenge: b.transfer.challenge, idToken: privateToken});
-  await b.tick(); const cancel = b.dom.window.document.getElementById("cancel");
-  assert.equal(cancel.disabled, false); cancel.click(); await b.tick();
-  assert.equal(b.calls.filter(call => call.url === "/cancel").length, 1);
-  resolve(); await b.tick();
-  assert.match(b.dom.window.document.getElementById("status").textContent, /Cancelled/u);
-  assert.ok(!b.dom.window.document.body.textContent.includes(privateToken));
-});
-test("a lost save receipt reports an unknown outcome and does not retry or expose a token", async t => {
-  const b = await localBrowser(t, {lostSaveResponse: true});
-  const message = {kind: "catch-operator-session-transfer", challenge: b.transfer.challenge, idToken: privateToken};
-  b.send(message); await b.tick(); b.send(message); await b.tick();
-  assert.equal(b.calls.filter(call => call.url === "/session").length, 1);
-  assert.match(b.dom.window.document.getElementById("status").textContent, /Save status unconfirmed/u);
-  assert.ok(!b.dom.window.document.body.textContent.includes(privateToken));
 });
