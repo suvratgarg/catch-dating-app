@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.26
-updated: 2026-10-06
+version: 2.7.29
+updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -1342,17 +1342,203 @@ authority, retention policy and support owner. Enabling organizer WhatsApp must
 not make the Catch route active. Personal `wa.me` handoff requires no backend
 provider activation and generates no Catch delivery receipt.
 
-The first Catch WhatsApp operator runner is source-only and disconnected. Its
-plan inspection CLI is offline; it supplies no live apply command or default
-activation policy. Before a separately authorized operator apply, review the
-exact protected plan/source SHA, fixed identity and sender scope, metadata-only
-credential evidence, independent review/ingress/history sources, current guards,
-and the documented out-of-band Auth/Firestore race. A fresh sign-in is required
-after the seed receipt; interrupted or unknown effects require exact permanent
-receipt reconciliation. Never reset or delete the project setup slot to retry.
-Source publication and backend deployment do not authorize bootstrap, history
-publication or provider activation. See
+### Protected Catch WhatsApp operator CLI
+
+The CLI composes the merged operator planner, protected sources, Firestore
+journal and existing authority store. It is not exported from Functions or
+invoked by deployment. Source publication and backend deployment do not approve
+operator execution, Auth grants, history publication, provider activation or
+sending. Before a separately authorized production bootstrap, review the exact
+plan/source/executable artifact, fixed identity/sender, current guards and the
+concrete external Auth race. This source task uses synthetic tests only.
+
+The executable sequence after authorization is:
+
+```sh
+npm --prefix functions run build
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs fingerprint
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs plan
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs apply --plan-id <id>
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs reconcile --plan-id <id>
+```
+
+`fingerprint` is offline and requires clean tracked source at the reviewed Git
+HEAD. Other commands require `CATCH_WHATSAPP_OPERATOR_HOME` to select a private
+non-symlink directory outside the checkout, owned by the explicitly delegated
+policy/configuration writer with mode 0700. Regular bounded files must be
+owner-only mode 0600, single-link, opened with `O_NOFOLLOW` and checked after open.
+JSON records use compact `JSON.stringify` encoding; duplicate keys and ambiguous
+encodings are rejected. Private subdirectories are also mode 0700. This POSIX
+trust root does not certify independent human review or protect against a hostile
+same-UID process. Do not create it from public request facts, commit it, or publish
+its contents. Existing ADC and existing IAM are reused; no executor credentials,
+users, secrets or IAM grants are created by this runner.
+
+Required private inputs:
+
+- `profile.json`: exact keys `schemaVersion` (1), `scope` (existing
+  `OperatorSetupScope`), `sourceSha`, `executionSha256`,
+  `credentialVersionName`, `runtimePrincipal`. The credential is the existing
+  numeric `CATCH_WHATSAPP_ACCESS_TOKEN` version in the scope's project;
+  `scope.credentialVersionSha256` is SHA-256 of its UTF-8 resource name. The
+  principal is the existing deployed runtime service account, not CLI ADC.
+  Source/execution fields match `fingerprint`; never update an approved digest
+  automatically after changing source or compiled files.
+- `actor-id-token.txt`: the existing Google actor's current Firebase ID token,
+  provided through the protected session path, never argv, logs or token-valued
+  environment variables. Current signature, project and revocation are verified.
+
+Planning reads current state and creates only `pending-plans/<id>.json`
+(`plan`, `executionSha256`) and `requests/<id>.json` (existing strict request with
+a stable private replay key). It never creates approval. The separately
+authorized policy writer reviews that envelope and the account consequences,
+then writes only the plan to `reviewed-plans/<id>.json`, and writes
+`approvals/<id>.json` with exact keys `schemaVersion` (1), `action`
+(`bootstrap-apply`), `planSha256`, `scopeSha256`, `sourceSha`, `executionSha256`,
+`replaySha256`, `expiresAtMillis`. Scope, plan and replay hashes use `setupHash`;
+the execution hash comes from `fingerprint`. Approval cannot outlive the plan's
+15-minute expiry. There is no `--yes`, approval command, Remote Config approval
+or automatic promotion. Missing/mismatched approval fails before SDK/ADC access;
+policy is checked again at each mutation admission, including after OAuth header
+waits immediately before the single Auth request. A runtime instance retains one
+exact plan/request binding; concurrent different-plan apply cannot replace it.
+Preserve the exact request.
+
+**Account consequence:** bootstrap adds project-wide `adminOwner=true` and the
+canonical `adminRoleAssignments` projection to the existing Google UID,
+preserving other claims. This grants broad existing Admin access, including role
+management; it is not a WhatsApp-only role. Separately, Catch root revision 2 has
+only `review`/`reply`, and the pinned recipient gets only endpoint-bound `receive`.
+The operator must accept the broader Admin grant before live approval. Readiness
+revoke does not remove that Admin claim or undo a send. There is no second user,
+Google identity, new IAM role or global Auth mutex.
+
+After the seed receipt, `fresh-sign-in-required` means a new Google sign-in after
+the seed's next-second cutoff; refreshing the old token is insufficient. Replace
+only the private session token through the existing protected path and resume the
+same approved `apply` request before expiry. The guarded claim setter uses a
+single authenticated REST request; the Admin SDK's automatic mutation retry is
+not used. Connection reset, lost committed response and 503 remain unknown
+without another dispatch. Unknown effects use read-only `reconcile`; it never
+dispatches another setter, advances a phase, resumes revoke or renews readiness.
+Expired plans remain readable. Never reset/delete the
+permanent project slot or change the replay key to retry. Unsupported
+inherited/group/conditional Secret Manager access is unproven by the direct-IAM
+adapter, not evidence of missing IAM or a request to expand it.
+
+`complete` establishes bootstrap only. Readiness uses the same immutable plan,
+request and permanent project slot, with separate short-lived stage approvals.
+It can follow bootstrap plan expiry without modifying that expiry. It cannot
+reactivate or renew existing readiness.
+
+Before readiness planning, the separately authorized audit custodian supplies
+these fixed private files keyed by the original plan's `createReviewRef` (`ref`).
+They must contain actual owner-audited sources. A JSON shape, digest, file mode or
+source publication does not establish provenance or delegate live authority.
+
+| Private input | Required binding |
+|---|---|
+| `readiness-audit-delegation.json` | Schema 1, `authorityRef`, `delegationRef`, `ingressOwnerRef`, `historyOwnerRef`; the separately authorized custody delegation, with no default owner. |
+| `audit-admissions/<ref>.json` | Custodian/delegation, full original operator scope, `ingressAuditSha256`, `historyAuditSha256`, `archiveSha256`, bounded `admittedAtMillis`/`expiresAtMillis`. Record hashes use `setupHash`; archive hash uses exact raw bytes. |
+| `ingress-audits/<ref>.json` | Schema 1, full scope, canonical active ingress `document`, actual authenticated deployment `sourceAudit`; sender, revision, cutover, verified time and document evidence hash must agree. |
+| `history-audits/<ref>.json` | Schema 1, full scope, existing `trustedPin`, actual authenticated `sourceAudit` for archive path/generation/bytes, epoch-to-exact-cutover coverage and independent source authenticity, retention, normalization and late-arrival audit bodies. |
+| `archives/<ref>.json` | Exact authorized custody copy of the audited generation, at most 512 KiB. Nonempty supported untruncated text, complete epoch-to-cutover segments and STOP absence remain enforced by the existing verifier; no retained-receipt query substitutes for it. |
+
+The executable stage sequence after those inputs and separate execution
+authorization is:
+
+```sh
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs readiness-plan --plan-id <id>
+# Custodian reviews the private pending candidate and writes exact review/action approval.
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs readiness-ingress --plan-id <id>
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs readiness-publish --plan-id <id>
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs readiness-review --plan-id <id>
+# Independent publication admission and exact readiness-apply approval are required.
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs readiness-apply --plan-id <id>
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs reconcile --plan-id <id>
+```
+
+`readiness-plan` reads live current authority and derives a receipt-backed Google
+review session. It creates only `authentication-audits/<ref>.json` and
+`pending-readiness/<ref>.json`. The receipt binds actual verified Auth/session,
+roles, decision and authority observations without retaining a token. The pending
+candidate is **not approved**. The authorized custodian independently reviews it
+and writes the exact candidate to `reviewed-readiness/<ref>.json`. No command
+copies, approves or refreshes it automatically; approval lifetime is at most ten
+minutes and is bounded by the current token and evidence admission.
+
+For each mutating stage, the policy writer supplies
+`approvals/<id>.<action>.json`, where action is `readiness-ingress`,
+`readiness-publish` or `readiness-apply`. It has the bootstrap approval's exact
+keys and original plan/scope/source/execution/replay bindings, its own bounded
+expiry, plus `readinessSha256` (hash of the reviewed candidate) and
+`auditBindingSha256` (hash of the exact delegation/admission/ingress/history
+bundle). Apply also requires `publicationAuditSha256`. All action approvals fail
+before SDK/ADC initialization when missing or mismatched. Each invocation pins
+its first admitted full approval/evidence binding and rereads it before commit;
+changes during Auth waits fail closed.
+
+Only the bootstrap-complete phase admits ingress. It creates the exact audited
+canonical record or observes that same record; a conflicting or revoked record is never reset. Publication
+uses the existing publisher and permanent phase receipts. Its actual transaction
+captures `pending-publications/<ref>.json` before the create, binding the exact
+publication digest including `authorityFenceSha256`. A lost response is reconciled
+against the committed publication without republishing. A witness alone cannot
+approve apply, even if it was created before a transaction failed.
+
+`readiness-review` uses a read-only current-authority transaction to verify the
+actual publication, full archive, pin and witness at a published-or-later phase.
+It returns `approved=false` and opaque publication/witness hashes. The independent
+custodian then supplies `publication-audits/<ref>.json`: schema 1, custodian and
+delegation refs, approval ID, original plan/scope/source/execution bindings,
+publication/witness hashes and fresh bounded review/expiry times. This audit must
+come from a separately authorized independent review; the CLI never authors it.
+The exact audit hash is bound by the readiness-apply action approval. Existing
+provisioning then rechecks current authority, recipient, transactional STOP,
+preferences, deletion and active ingress before create-only readiness. The CLI
+has no revoke command; the merged root-only revoke model remains unchanged.
+
+Read-only reconciliation never dispatches effects. It reports
+`readinessVerified=true` only after proving a current unexpired, unsuppressed
+ready record, consumed approval/audit, actual publication and current authorities.
+Historical publication inspection can outlive stage or bootstrap expiry; it cannot
+approve or renew anything. Unknown outcomes retain the exact slot and request.
+
+The production Admin overview reuses its existing human inbound/reply review and
+one-shot send flow. Google sign-in is added to existing Firebase Auth so the
+configured Google operator can meet the required post-seed sign-in cutoff; phone
+sign-in remains available. Normal existing Admin roles, App Check and backend
+Catch capabilities still authorize access. This source adds no role writer or
+auth framework. Standard Firebase Google sign-in may create an unclaimed account
+for a previously unknown identity; that account receives no Admin grant here.
+Use the existing configured operator for authorized setup.
+
+The panel uses the initialized Firebase project's regional callable endpoint
+(`asia-south1`) for `adminReviewCatchWhatsappInbound` and
+`adminSendCatchWhatsappReply`. There is no DEV prerequisite or trial build flag.
+Availability requires successful remote-origin `true` for the canonical
+`catch_whatsapp_support_enabled` Remote Config key, plus live Auth, App Check and
+current session in the initialized project. The client and checked-in Remote
+Config template declare `false` defaults; no build-time key-name input is required.
+Absent, local/default or remote-false values, failed fetch or retired session
+keep it closed.
+This source declaration does not prove the live parameter exists, create it or
+enable it. Availability cannot approve bootstrap or a reply; exact human
+confirmation, pre-resolved one-use
+tokens, synchronous final dispatch guard and no automatic send retry remain.
+
+Live custody delegation, actual audited history/cutover/publication, private
+profile/session/approvals, live canonical Remote Config availability and deployed
+atomic ingress must be supplied or verified by their authorized owners before
+live execution. Missing input is not evidence of missing IAM or grounds to
+recreate the existing token. Source/tests/PR publication do not authorize live
+execution, provider activation, flags, deployment or sends. See
 [First Catch WhatsApp operator source boundary](data_contracts.md#first-catch-whatsapp-operator-source-boundary).
+
+Backend webhook, receipt, reply and atomic-ingress switches remain Firebase
+Functions `defineBoolean` deployment parameters. This Admin availability contract
+does not migrate their activation mechanism; any backend switch migration or
+live activation requires its own authorized source and release work.
 
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,

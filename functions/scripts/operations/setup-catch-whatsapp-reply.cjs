@@ -4,12 +4,11 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Deliberately offline. No Admin initialization, token reader or apply command.
-// An inspected local JSON receipt is never promoted to a protected reviewed plan.
+// Inspection stays offline. It never promotes caller JSON to a reviewed plan.
 function inspect(argv = process.argv.slice(2)) {
   if (argv.length !== 3 || argv[0] !== "inspect-plan" ||
       argv[1] !== "--plan-file" || !argv[2]) {
-    throw new Error("Use inspect-plan --plan-file <receipt>. Live apply is unavailable.");
+    throw new Error("Invalid operator command.");
   }
   const file = path.resolve(argv[2]);
   const stat = fs.lstatSync(file);
@@ -25,14 +24,32 @@ function inspect(argv = process.argv.slice(2)) {
     createdAtMillis: plan.createdAtMillis, expiresAtMillis: plan.expiresAtMillis,
     liveApplyAvailable: false};
 }
-if (require.main === module) {
-  try {
-    process.stdout.write(JSON.stringify(inspect()) + "\n");
-  } catch {
-    // Never echo arguments, private plan values or backend errors.
-    process.stderr.write("Offline operator plan inspection unavailable. " +
-      "Use inspect-plan --plan-file <receipt>; live apply is unavailable.\n");
-    process.exitCode = 1;
+async function run(argv = process.argv.slice(2)) {
+  if (argv[0] === "inspect-plan") return inspect(argv);
+  const command = argv[0];
+  if (!((argv.length === 1 && ["fingerprint", "plan"].includes(command)) ||
+      (argv.length === 3 && ["apply", "reconcile", "readiness-plan", "readiness-ingress",
+        "readiness-publish", "readiness-review", "readiness-apply"].includes(command) &&
+        argv[1] === "--plan-id" && /^[A-Za-z0-9_-]{1,128}$/u.test(argv[2])))) {
+    throw new Error("Invalid operator command.");
   }
+  const {createOperatorRuntime, executionIdentity} = require("./catch-whatsapp-operator-runtime.cjs");
+  if (command === "fingerprint") return executionIdentity();
+  const runtime = createOperatorRuntime();
+  if (command.startsWith("readiness-")) {
+    const method = {"readiness-plan": "readinessPlan", "readiness-ingress": "readinessIngress",
+      "readiness-publish": "readinessPublish", "readiness-review": "readinessReview", "readiness-apply": "readinessApply"}[command];
+    return runtime[method](argv[2]);
+  }
+  return command === "plan" ? runtime.plan() : runtime[command](argv[2]);
 }
-module.exports = {inspect};
+if (require.main === module) run().then((receipt) => {
+  process.stdout.write(JSON.stringify(receipt) + "\n");
+}).catch(() => {
+  // Never echo arguments, token/profile values or private backend errors.
+  process.stderr.write("Protected operator command unavailable. " +
+    "Use inspect-plan --plan-file <receipt>, fingerprint, plan, " +
+    "apply/reconcile --plan-id <id>, or readiness-plan/ingress/publish/review/apply --plan-id <id>.\n");
+  process.exitCode = 1;
+});
+module.exports = {inspect, run};

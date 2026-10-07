@@ -2,7 +2,8 @@ import {getToken} from "firebase/app-check";
 import type {HttpsCallableResult} from "firebase/functions";
 import {auth} from "../../../shared/api/firebase";
 import {adminAppCheck, firebaseApp} from "../../../shared/api/firebaseCore";
-import {dataMode} from "../../../shared/api/dataMode";
+import {catchWhatsappSupportAvailable, refreshCatchWhatsappAvailability} from
+  "./catchWhatsappAvailability";
 import {validateAdminCallableRequest, validateAdminCallableResponse} from
   "../../../generated/validators/adminCallableValidators";
 import type {CatchInboundReview, CatchReplyCommand, CatchReplyResult} from
@@ -21,18 +22,13 @@ export interface CatchTrialApi {
     Promise<CatchReplyResult>;
 }
 
-export function catchWhatsappTrialEnabled(): boolean {
-  return import.meta.env.VITE_CATCH_WHATSAPP_TRIAL_ENABLED === "true" &&
-    dataMode() === "live" &&
-    firebaseApp.options.projectId === "catchdates-dev" &&
-    Boolean(import.meta.env.VITE_ADMIN_APPCHECK_SITE_KEY && adminAppCheck);
-}
-function assertScope(scope: CatchTrialScope): void {
-  if (!catchWhatsappTrialEnabled() || !scope.sessionKey ||
+function assertScope(scope: CatchTrialScope, requireAvailability = true): void {
+  if ((requireAvailability && !catchWhatsappSupportAvailable(scope)) || !scope.sessionKey ||
       !scope.isCurrent() || !scope.actorUid ||
       scope.actorUid !== auth.currentUser?.uid ||
+      !adminAppCheck || !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(scope.projectId) ||
       scope.projectId !== firebaseApp.options.projectId) {
-    throw new Error("Controlled support trial is unavailable.");
+    throw new Error("Support workspace is unavailable.");
   }
 }
 type Prepared = {assertCurrent: () => void; authToken: string; appToken: string};
@@ -54,7 +50,7 @@ async function call<Response>(name: string, payload: unknown,
     // No await may be introduced between this guard and the actual fetch.
     session.assertCurrent();
     const response = await fetch(
-      `https://asia-south1-catchdates-dev.cloudfunctions.net/${name}`, {
+      `https://asia-south1-${scope.projectId}.cloudfunctions.net/${name}`, {
         method: "POST", body, signal: abort.signal, credentials: "omit",
         redirect: "error", cache: "no-store", referrerPolicy: "no-referrer",
         headers: {"Content-Type": "application/json",
@@ -83,11 +79,13 @@ async function call<Response>(name: string, payload: unknown,
 export const catchWhatsappTrialApi: CatchTrialApi = {
   async prepare(scope) {
     prepared.delete(scope);
-    assertScope(scope);
+    assertScope(scope, false);
     const user = auth.currentUser!;
-    const [authToken, appToken] = await Promise.all([
+    const [authToken, appToken, available] = await Promise.all([
       user.getIdToken(), getToken(adminAppCheck!, false),
+      refreshCatchWhatsappAvailability(scope),
     ]);
+    if (!available) throw new Error("Support workspace is unavailable.");
     const assertCurrent = () => {
       assertScope(scope);
       if (auth.currentUser !== user || !authToken || !appToken.token) {
