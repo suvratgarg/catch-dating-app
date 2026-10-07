@@ -1,7 +1,7 @@
 ---
 doc_id: program_operations_rollout_spec
-version: 1.3.0
-updated: 2026-10-03
+version: 1.4.0
+updated: 2026-10-06
 owner: product
 status: active
 ---
@@ -11,9 +11,9 @@ status: active
 Status: living tracking spec for allocating the remaining wedding/conference
 program-platform work. Companion: `wedding_planner_platform_plan.md` owns the
 product/architecture rationale; this document owns *what exists, what does
-not, and what needs a decision*. Measured against `main` at `440b88301`
-(2026-09-28). "In review" marks an open PR — code exists on a branch, not
-yet on main.
+not, and what needs a decision*. Measured against `main` at `510220f1f`
+(2026-10-05) plus the CAT152 source where explicitly marked in review.
+"In review" marks an open PR — code exists on a branch, not yet on main.
 
 Legend: **built** = code exists on main and is deployable · **partial** =
 backend or model exists, surface/consumer missing · **missing** = nothing on
@@ -73,7 +73,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | Program staff | `/host/work/:programId` (+ `?invite=` token claim) → `getProgramWorkAccess` resolves duty-scoped destinations → `/arrivals/:pickupPointId`, `/dispatch/:pickupPointId`, `/hotel/:hotelId`, `/trips` |
 | Program staff (unified) | `listMyHostAssignments` callable deployed — **no Flutter assignment-picker shell yet** |
 | Guest (RSVP) | Web `/rsvp/:householdToken` (HMAC link via `issueProgramHouseholdRsvpLink`); `.ics` feed via `programHouseholdItineraryIcs` (`onRequest`) |
-| Organizer program workspace | Host shell → `/host/programs` → `/host/programs/:programId` (schedule/guests/team/import, W1 #452) |
+| Organizer program workspace | Host shell → Events unified inventory → `/host/programs/:programId` (schedule/guests/team/import, W1 #452). The legacy `/host/programs` list URL redirects to Events and preserves organizer/saved-program context. |
 
 ---
 
@@ -106,7 +106,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | `communications` → program Inbox · Moments | **in review** — program Moments route + program Inbox scope chip + `communications`-duty destinations (#454); Inbox chip is organizer/coordinator-facing (`listProgramGuests` needs `programCoordinator`) |
 | `reconciliationViewer` → Trips · Exceptions · Export | **in review** — needs-review strip + review-only filter on the `/trips` ledger, bounded CSV export via external share, void affordance gated to dispatch authority (#471); per-function attendance report + CSV export (#460) |
 | `stakeholderViewer` → counts-only overview | **in review** — `getProgramStakeholderCounts` callable + `ProgramStakeholderScreen` counts surface at `/host/work/:programId/counts` (#458) |
-| `programCoordinator` → program workspace | **built** — `/host/programs` list/workspace/guests/team/import (W1 #452) |
+| `programCoordinator` → program workspace | **built** — Events owns the consolidated list; `/host/programs/:programId` retains workspace/guests/team/import (W1 #452) |
 | Unified `HostWorkShell` + assignment picker | **built** — shell + picker (#447); `/host/operator/:eventId` redirects onto `/host/work/event/:eventId` |
 
 ### 3.3 Logistics
@@ -185,12 +185,12 @@ receipts, since either can resend an already contacted guest.
 | Feature | State |
 |---|---|
 | Program CRUD + wedding preset + function upsert + staff grant/invite + guest/household upsert + manifest import | **callables built + deployed** |
-| Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **built** (#452) — `/host/programs` list/workspace/guests/team/import (W1) |
-| Programs under Events tab + Organizer → Plan screen | **in review** — Events "Programs" header action → `/host/programs` (this batch); Organizer → Plan screen still missing |
+| Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **built** (#452) — `/host/programs/:programId` owns workspace/guests/team/import (W1); CAT152 consolidates its bounded Program inventory into Events |
+| Programs under Events tab + Organizer → Plan screen | **in review (CAT152)** — Programs render as identifiable date-range/function-count rows in Events, with direct creation and lifecycle actions; the retired list URL redirects into Events. Organizer → Plan screen remains missing. |
 | Program logistics editors (pickup points, hotels) | **in review** (#474) — workspace Logistics section |
 | Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **in review** — rebased onto current main and re-verified (#455) |
 | Attendance report / export per function | **built** (#460) — `/host/work/:programId/attendance` + CSV export |
-| Retention / anonymization on archive | **missing** |
+| Retention / anonymization on archive | **built in source** — dedicated archive/unarchive callables, 14-day grace, deleted-account and organizer/revision fences, resumable anonymization journal and scheduled sweep |
 
 ---
 
@@ -254,7 +254,7 @@ list at verify time (#453); the prod delivery cursor is caught up through
 | R8 | `stakeholderViewer` counts API + read surface | **in review #458** — counts-only contract answers 5.4 (headcounts only, no PII) | merge |
 | R9 | Entitlements merge + Plan screen + limits in callables | **in review #455** (rebased, re-verified) | merge |
 | R10 | `recipientSource: programSelection` + form-automation → triggered-moment migration | **in review #478** — programSelection dispatcher on main; companion-Moment + durable-intent handoff in review | merge |
-| R11 | Reconciliation/export, per-function attendance report, retention | **implemented** — reconciliation/export/attendance merged (#460, #471); retention implemented on `codex/r11-program-retention` per approved policy (14d grace, keep `contactId`, indefinite anonymized retention): `archiveProgram`/`unarchiveProgram` callables, archived mutation fencing, chunked idempotent anonymize worker with journaled cursor resume, daily sweep | `archiveProgram`/`unarchiveProgram` + `programRetentionRuns` journal |
+| R11 | Reconciliation/export, per-function attendance report, retention | **implemented** — reconciliation/export/attendance merged (#460, #471); retention follows the approved policy (14d grace, keep `contactId`, indefinite anonymized retention): `archiveProgram`/`unarchiveProgram` callables, archived mutation fencing, chunked idempotent anonymize worker with journaled cursor resume, daily sweep | Source complete; release admission and deployment remain release-owned. |
 | R12 | `verifyFirebaseDelivery` dormant-list fix | **merged #453** | — |
 
 Merge-ready now (no ordering dependency): R9's entitlements PR (#455).

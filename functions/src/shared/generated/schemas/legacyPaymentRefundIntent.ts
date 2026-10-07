@@ -161,6 +161,26 @@ export const legacyPaymentRefundIntentSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 80
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;

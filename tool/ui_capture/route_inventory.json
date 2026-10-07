@@ -4,12 +4,12 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "a3f08e9c0368b2460d9d9534f4500ffaa00282bcb586e478ae984ee47b732788",
-    "goRouteCount": 118,
+    "routeContractSha256": "1e13148137ef276164c247227042899061591db7a9838af7198daaa40d1c67e0",
+    "goRouteCount": 119,
     "shellBranchCount": 9,
-    "enumRouteCount": 103,
-    "referencedRouteCount": 103,
-    "runtimeRouteCount": 103,
+    "enumRouteCount": 104,
+    "referencedRouteCount": 104,
+    "runtimeRouteCount": 104,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -687,7 +687,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventsScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventsScreen(initialOrganizerId:_routeOrganizerQueryId(state))",
+      "presentationExpression": "(context,state)=>HostEventsScreen(initialOrganizerId:_routeOrganizerQueryId(state),initialProgramId:state.uri.queryParameters['programId'],initialProgramAnchor:state.extra is OrganizerProgramListAnchor?state.extra as OrganizerProgramListAnchor:null)",
       "presentationTarget": "HostEventsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1266,9 +1266,26 @@
       "runtimePath": "/host/programs",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostProgramsScreen.path",
+      "renderKind": "redirect",
+      "presentationExpression": "(context,state)=>hostProgramsLegacyRedirect(state.uri)",
+      "presentationTarget": "hostProgramsLegacyRedirect",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostCreateProgramScreen",
+      "path": "/host/organizers/:clubId/create-program",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizers/:clubId/create-program",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostCreateProgramScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>ProgramListScreen(initialOrganizerId:_routeOrganizerQueryId(state))",
-      "presentationTarget": "ProgramListScreen",
+      "presentationExpression": "(context,state)=>ProgramCreateScreen(organizerId:state.pathParameters['clubId']!)",
+      "presentationTarget": "ProgramCreateScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1912,6 +1929,7 @@
     "hostClubTeamScreen",
     "hostCreateClubScreen",
     "hostCreateEventScreen",
+    "hostCreateProgramScreen",
     "hostCreateSavedAudienceScreen",
     "hostCustomerDetailScreen",
     "hostCustomersLegacyScreen",

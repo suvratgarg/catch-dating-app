@@ -131,6 +131,10 @@ export interface OrganizerProgramDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Immutable normalized create-command fingerprint for request-key replay. Absent on legacy programs; never changed by program edits or lifecycle transitions.
+   */
+  createRequestHash?: string;
   revision: number;
   /**
    * Timestamp of the explicit archive action. Lifecycle: draft/active -> completed -> archived.

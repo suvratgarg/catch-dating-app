@@ -13,7 +13,6 @@ import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -364,73 +363,6 @@ class _DialogFrame extends StatelessWidget {
       ),
     );
   }
-}
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramListScreen,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programListScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramListScreen',
-    contractId: 'screen.programs.list',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'organizer programs',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: const ProgramListScreen(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Body states',
-  type: ProgramListPageBody,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programListPageBodyStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramListPageBody',
-    contractId: 'screen.programs.list',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'two programs',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _workspaceOverrides(),
-            child: const ProgramListPageBody(
-              organizerId: _organizerId,
-              organizerName: 'Kapoor Family',
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Create dialog',
-  type: ProgramCreateDialog,
-  path: '[P1 product surfaces]/Program workspace',
-)
-Widget programCreateDialogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramCreateDialog',
-    contractId: 'screen.programs.list',
-    children: const [
-      WidgetbookPageStateCard(
-        label: 'new program',
-        child: _DialogFrame(child: ProgramCreateDialog()),
-      ),
-    ],
-  );
 }
 
 @widgetbook.UseCase(

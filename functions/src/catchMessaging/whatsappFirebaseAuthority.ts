@@ -166,9 +166,13 @@ CatchFirebaseAuthorityOptions): {
         if (!Array.isArray(users) || users.length !== 1) deny();
         const user = record(users[0]);
         if (user.localId !== uid || user.tenantId !== undefined ||
-            user.disabled !== false) deny();
+            ("disabled" in user && user.disabled !== false)) deny();
         const creationTimeMillis = int64(user.createdAt, 1);
-        const tokensValidAfterMillis = int64(user.validSince, 1000);
+        // Identity Toolkit omits enabled/default fields. Like Admin UserRecord,
+        // absent validSince means no revocation cutoff; zero is that sentinel,
+        // not an invented account/session time. Present values stay strict.
+        const tokensValidAfterMillis = "validSince" in user ?
+          int64(user.validSince, 1000) : 0;
         if (creationTimeMillis > started || tokensValidAfterMillis > started) {
           deny();
         }

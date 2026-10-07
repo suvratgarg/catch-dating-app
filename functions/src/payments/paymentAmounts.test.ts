@@ -10,6 +10,8 @@ import {catchSpendProjection} from "../organizers/eventRosterInsights";
 function partialRefund(): PaymentDocument {
   const payment: PaymentDocument = {userId: "user1", eventId: "event1",
     orderId: "order_one", paymentId: "pay_one", amount: 1000, currency: "INR",
+    provider: "stripe", providerPaymentId: "pi_one",
+    stripeAccountId: "acct_one",
     status: "completed", signUpFailed: false,
     createdAt: Timestamp.fromMillis(1)};
   const intent = planLegacyCancellationRefund({payment,

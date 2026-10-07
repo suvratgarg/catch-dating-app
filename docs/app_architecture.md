@@ -1374,7 +1374,7 @@ those renderer fragments, the Section action recipe, Banner body feedback,
 and TopBar's measured frame, search field and selector-row renderers. These
 private fragments implement an existing cataloged owner's closed recipe or
 state lifecycle; they are not independently reusable components. The same
-inventory recognizes two typed domain/route factories. It does not exempt
+inventory recognizes three typed domain/route factories. It does not exempt
 sibling helpers, moved implementations, or arbitrary Widget-returning
 factories. Tests verify the named renderer methods still exist and mutation
 tests cover each identity dimension; resolved Catch UI lints separately

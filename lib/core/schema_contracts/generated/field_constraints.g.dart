@@ -28920,6 +28920,15 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const createOrganizerProgramCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createOrganizerProgramCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
   static const createOrganizerProgramCallablePayloadRsvpDeadlineAtMillis = CatchContractFieldConstraints(
     path: 'createOrganizerProgramCallablePayload.rsvpDeadlineAtMillis',
     valueTypes: <String>['integer'],
@@ -90018,6 +90027,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const legacyPaymentRefundIntentRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const legacyPaymentRefundIntentRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'legacyPaymentRefundIntent.razorpayOwnership.schema',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const legacyPaymentRefundIntentReason = CatchContractFieldConstraints(
     path: 'legacyPaymentRefundIntent.reason',
     required: true,
@@ -94849,6 +94871,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['draft', 'armed', 'paused', 'done'],
   );
 
+  static const listOrganizerProgramsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerProgramsCallablePayload.cursor',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listOrganizerProgramsCallablePayloadLimit = CatchContractFieldConstraints(
     path: 'listOrganizerProgramsCallablePayload.limit',
     valueTypes: <String>['integer'],
@@ -94858,6 +94888,14 @@ abstract final class CatchContractConstraints {
 
   static const listOrganizerProgramsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'listOrganizerProgramsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerProgramsCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'listOrganizerProgramsCallablePayload.programId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -98664,6 +98702,60 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentCursorNextAttemptOrderKey = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.cursor.nextAttemptOrderKey',
+    maxLength: 32,
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['double:nan', 'double:negativeInfinity', 'double:positiveInfinity'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentCursorPaymentId = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.cursor.paymentId',
+    maxLength: 1500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentProjectId = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.projectId',
+    maxLength: 30,
+    minLength: 6,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const nativeRefundRecoveryCursorDocumentRevision = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const nativeRefundRecoveryCursorDocumentSchema = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.schema',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentStateId = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.stateId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pendingRefunds', 'cancelledRazorpayPayments', 'pendingRazorpayOrders'],
+  );
+
+  static const nativeRefundRecoveryCursorDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'nativeRefundRecoveryCursorDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const nominateSalesOrganizerCallablePayloadCity = CatchContractFieldConstraints(
@@ -118579,6 +118671,15 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerProgramDocumentCreateRequestHash = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.createRequestHash',
+    maxLength: 64,
+    minLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const organizerProgramDocumentEndsAtNanoseconds = CatchContractFieldConstraints(
     path: 'organizerProgramDocument.endsAt._nanoseconds',
     required: true,
@@ -118866,6 +118967,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerProgramListCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.nextCursor',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerProgramListCallableResponsePrograms = CatchContractFieldConstraints(
     path: 'organizerProgramListCallableResponse.programs',
     required: true,
@@ -118914,6 +119022,12 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const organizerProgramListCallableResponseProgramsItemsFunctionCount = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.functionCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const organizerProgramListCallableResponseProgramsItemsKind = CatchContractFieldConstraints(
     path: 'organizerProgramListCallableResponse.programs.items.kind',
     required: true,
@@ -118948,6 +119062,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['draft', 'active', 'completed', 'archived'],
+  );
+
+  static const organizerProgramListCallableResponseProgramsItemsTimezone = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.timezone',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerProgramListCallableResponseProgramsItemsTitle = CatchContractFieldConstraints(
@@ -122778,6 +122900,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const paymentDocumentCancellationRefundRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const paymentDocumentCancellationRefundRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'paymentDocument.cancellationRefund.razorpayOwnership.schema',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const paymentDocumentCancellationRefundReason = CatchContractFieldConstraints(
     path: 'paymentDocument.cancellationRefund.reason',
     required: true,
@@ -122951,6 +123086,19 @@ abstract final class CatchContractConstraints {
   static const paymentDocumentProviderPaymentId = CatchContractFieldConstraints(
     path: 'paymentDocument.providerPaymentId',
     maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentDocumentRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'paymentDocument.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const paymentDocumentRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'paymentDocument.razorpayOwnership.schema',
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -137218,6 +137366,19 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['razorpay'],
+  );
+
+  static const razorpayPendingOrderDocumentRazorpayOwnershipProjectId = CatchContractFieldConstraints(
+    path: 'razorpayPendingOrderDocument.razorpayOwnership.projectId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{4,28}[a-z0-9]\$',
+  );
+
+  static const razorpayPendingOrderDocumentRazorpayOwnershipSchema = CatchContractFieldConstraints(
+    path: 'razorpayPendingOrderDocument.razorpayOwnership.schema',
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const razorpayPendingOrderDocumentStatus = CatchContractFieldConstraints(
@@ -168279,6 +168440,7 @@ abstract final class CatchContractConstraints {
     'createOrganizerProgramCallablePayload.endsAtMillis': createOrganizerProgramCallablePayloadEndsAtMillis,
     'createOrganizerProgramCallablePayload.kind': createOrganizerProgramCallablePayloadKind,
     'createOrganizerProgramCallablePayload.organizerId': createOrganizerProgramCallablePayloadOrganizerId,
+    'createOrganizerProgramCallablePayload.requestId': createOrganizerProgramCallablePayloadRequestId,
     'createOrganizerProgramCallablePayload.rsvpDeadlineAtMillis': createOrganizerProgramCallablePayloadRsvpDeadlineAtMillis,
     'createOrganizerProgramCallablePayload.startsAtMillis': createOrganizerProgramCallablePayloadStartsAtMillis,
     'createOrganizerProgramCallablePayload.timezone': createOrganizerProgramCallablePayloadTimezone,
@@ -176489,6 +176651,8 @@ abstract final class CatchContractConstraints {
     'legacyPaymentRefundIntent.paymentFingerprint': legacyPaymentRefundIntentPaymentFingerprint,
     'legacyPaymentRefundIntent.provider': legacyPaymentRefundIntentProvider,
     'legacyPaymentRefundIntent.providerPaymentId': legacyPaymentRefundIntentProviderPaymentId,
+    'legacyPaymentRefundIntent.razorpayOwnership.projectId': legacyPaymentRefundIntentRazorpayOwnershipProjectId,
+    'legacyPaymentRefundIntent.razorpayOwnership.schema': legacyPaymentRefundIntentRazorpayOwnershipSchema,
     'legacyPaymentRefundIntent.reason': legacyPaymentRefundIntentReason,
     'legacyPaymentRefundIntent.refundApplicationFee': legacyPaymentRefundIntentRefundApplicationFee,
     'legacyPaymentRefundIntent.requestedAtMillis': legacyPaymentRefundIntentRequestedAtMillis,
@@ -177151,8 +177315,10 @@ abstract final class CatchContractConstraints {
     'listOrganizerMomentsCallableResponse.moments.items.scope.programId': listOrganizerMomentsCallableResponseMomentsItemsScopeProgramId,
     'listOrganizerMomentsCallableResponse.moments.items.sense': listOrganizerMomentsCallableResponseMomentsItemsSense,
     'listOrganizerMomentsCallableResponse.moments.items.status': listOrganizerMomentsCallableResponseMomentsItemsStatus,
+    'listOrganizerProgramsCallablePayload.cursor': listOrganizerProgramsCallablePayloadCursor,
     'listOrganizerProgramsCallablePayload.limit': listOrganizerProgramsCallablePayloadLimit,
     'listOrganizerProgramsCallablePayload.organizerId': listOrganizerProgramsCallablePayloadOrganizerId,
+    'listOrganizerProgramsCallablePayload.programId': listOrganizerProgramsCallablePayloadProgramId,
     'listOrganizerSavedAudiencesCallablePayload.cursor': listOrganizerSavedAudiencesCallablePayloadCursor,
     'listOrganizerSavedAudiencesCallablePayload.includeFilterOptions': listOrganizerSavedAudiencesCallablePayloadIncludeFilterOptions,
     'listOrganizerSavedAudiencesCallablePayload.limit': listOrganizerSavedAudiencesCallablePayloadLimit,
@@ -177675,6 +177841,13 @@ abstract final class CatchContractConstraints {
     'mutateOrganizerContactNoteCallablePayload.expectedRevision': mutateOrganizerContactNoteCallablePayloadExpectedRevision,
     'mutateOrganizerContactNoteCallablePayload.noteId': mutateOrganizerContactNoteCallablePayloadNoteId,
     'mutateOrganizerContactNoteCallablePayload.organizerId': mutateOrganizerContactNoteCallablePayloadOrganizerId,
+    'nativeRefundRecoveryCursorDocument.cursor.nextAttemptOrderKey': nativeRefundRecoveryCursorDocumentCursorNextAttemptOrderKey,
+    'nativeRefundRecoveryCursorDocument.cursor.paymentId': nativeRefundRecoveryCursorDocumentCursorPaymentId,
+    'nativeRefundRecoveryCursorDocument.projectId': nativeRefundRecoveryCursorDocumentProjectId,
+    'nativeRefundRecoveryCursorDocument.revision': nativeRefundRecoveryCursorDocumentRevision,
+    'nativeRefundRecoveryCursorDocument.schema': nativeRefundRecoveryCursorDocumentSchema,
+    'nativeRefundRecoveryCursorDocument.stateId': nativeRefundRecoveryCursorDocumentStateId,
+    'nativeRefundRecoveryCursorDocument.updatedAtMillis': nativeRefundRecoveryCursorDocumentUpdatedAtMillis,
     'nominateSalesOrganizerCallablePayload.city': nominateSalesOrganizerCallablePayloadCity,
     'nominateSalesOrganizerCallablePayload.name': nominateSalesOrganizerCallablePayloadName,
     'nominateSalesOrganizerCallablePayload.relationshipContext': nominateSalesOrganizerCallablePayloadRelationshipContext,
@@ -180437,6 +180610,7 @@ abstract final class CatchContractConstraints {
     'organizerProgramDocument.createdAt._nanoseconds': organizerProgramDocumentCreatedAtNanoseconds,
     'organizerProgramDocument.createdAt._seconds': organizerProgramDocumentCreatedAtSeconds,
     'organizerProgramDocument.createdBy': organizerProgramDocumentCreatedBy,
+    'organizerProgramDocument.createRequestHash': organizerProgramDocumentCreateRequestHash,
     'organizerProgramDocument.endsAt._nanoseconds': organizerProgramDocumentEndsAtNanoseconds,
     'organizerProgramDocument.endsAt._seconds': organizerProgramDocumentEndsAtSeconds,
     'organizerProgramDocument.entitlement.capabilitiesAllowed': organizerProgramDocumentEntitlementCapabilitiesAllowed,
@@ -180474,6 +180648,7 @@ abstract final class CatchContractConstraints {
     'organizerProgramDocument.transportSettings.vehicleClasses.items.sortOrder': organizerProgramDocumentTransportSettingsVehicleClassesItemsSortOrder,
     'organizerProgramDocument.updatedAt._nanoseconds': organizerProgramDocumentUpdatedAtNanoseconds,
     'organizerProgramDocument.updatedAt._seconds': organizerProgramDocumentUpdatedAtSeconds,
+    'organizerProgramListCallableResponse.nextCursor': organizerProgramListCallableResponseNextCursor,
     'organizerProgramListCallableResponse.programs': organizerProgramListCallableResponsePrograms,
     'organizerProgramListCallableResponse.programs.items.anonymizeAtMillis': organizerProgramListCallableResponseProgramsItemsAnonymizeAtMillis,
     'organizerProgramListCallableResponse.programs.items.anonymizedAtMillis': organizerProgramListCallableResponseProgramsItemsAnonymizedAtMillis,
@@ -180481,11 +180656,13 @@ abstract final class CatchContractConstraints {
     'organizerProgramListCallableResponse.programs.items.capabilities': organizerProgramListCallableResponseProgramsItemsCapabilities,
     'organizerProgramListCallableResponse.programs.items.capabilities.items': organizerProgramListCallableResponseProgramsItemsCapabilitiesItems,
     'organizerProgramListCallableResponse.programs.items.endsAtMillis': organizerProgramListCallableResponseProgramsItemsEndsAtMillis,
+    'organizerProgramListCallableResponse.programs.items.functionCount': organizerProgramListCallableResponseProgramsItemsFunctionCount,
     'organizerProgramListCallableResponse.programs.items.kind': organizerProgramListCallableResponseProgramsItemsKind,
     'organizerProgramListCallableResponse.programs.items.programId': organizerProgramListCallableResponseProgramsItemsProgramId,
     'organizerProgramListCallableResponse.programs.items.revision': organizerProgramListCallableResponseProgramsItemsRevision,
     'organizerProgramListCallableResponse.programs.items.startsAtMillis': organizerProgramListCallableResponseProgramsItemsStartsAtMillis,
     'organizerProgramListCallableResponse.programs.items.status': organizerProgramListCallableResponseProgramsItemsStatus,
+    'organizerProgramListCallableResponse.programs.items.timezone': organizerProgramListCallableResponseProgramsItemsTimezone,
     'organizerProgramListCallableResponse.programs.items.title': organizerProgramListCallableResponseProgramsItemsTitle,
     'organizerProviderConnectionDocument.adapterClass': organizerProviderConnectionDocumentAdapterClass,
     'organizerProviderConnectionDocument.capabilities.eventList': organizerProviderConnectionDocumentCapabilitiesEventList,
@@ -181022,6 +181199,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.cancellationRefund.paymentFingerprint': paymentDocumentCancellationRefundPaymentFingerprint,
     'paymentDocument.cancellationRefund.provider': paymentDocumentCancellationRefundProvider,
     'paymentDocument.cancellationRefund.providerPaymentId': paymentDocumentCancellationRefundProviderPaymentId,
+    'paymentDocument.cancellationRefund.razorpayOwnership.projectId': paymentDocumentCancellationRefundRazorpayOwnershipProjectId,
+    'paymentDocument.cancellationRefund.razorpayOwnership.schema': paymentDocumentCancellationRefundRazorpayOwnershipSchema,
     'paymentDocument.cancellationRefund.reason': paymentDocumentCancellationRefundReason,
     'paymentDocument.cancellationRefund.refundApplicationFee': paymentDocumentCancellationRefundRefundApplicationFee,
     'paymentDocument.cancellationRefund.requestedAtMillis': paymentDocumentCancellationRefundRequestedAtMillis,
@@ -181047,6 +181226,8 @@ abstract final class CatchContractConstraints {
     'paymentDocument.paymentId': paymentDocumentPaymentId,
     'paymentDocument.provider': paymentDocumentProvider,
     'paymentDocument.providerPaymentId': paymentDocumentProviderPaymentId,
+    'paymentDocument.razorpayOwnership.projectId': paymentDocumentRazorpayOwnershipProjectId,
+    'paymentDocument.razorpayOwnership.schema': paymentDocumentRazorpayOwnershipSchema,
     'paymentDocument.scenario': paymentDocumentScenario,
     'paymentDocument.seedPrefix': paymentDocumentSeedPrefix,
     'paymentDocument.signUpFailed': paymentDocumentSignUpFailed,
@@ -182988,6 +183169,8 @@ abstract final class CatchContractConstraints {
     'razorpayPendingOrderDocument.eventId': razorpayPendingOrderDocumentEventId,
     'razorpayPendingOrderDocument.orderId': razorpayPendingOrderDocumentOrderId,
     'razorpayPendingOrderDocument.provider': razorpayPendingOrderDocumentProvider,
+    'razorpayPendingOrderDocument.razorpayOwnership.projectId': razorpayPendingOrderDocumentRazorpayOwnershipProjectId,
+    'razorpayPendingOrderDocument.razorpayOwnership.schema': razorpayPendingOrderDocumentRazorpayOwnershipSchema,
     'razorpayPendingOrderDocument.status': razorpayPendingOrderDocumentStatus,
     'razorpayPendingOrderDocument.updatedAt._nanoseconds': razorpayPendingOrderDocumentUpdatedAtNanoseconds,
     'razorpayPendingOrderDocument.updatedAt._seconds': razorpayPendingOrderDocumentUpdatedAtSeconds,

@@ -140,6 +140,32 @@ test("duplicate detection shares deployment normalization for aliases and implic
   );
 });
 
+test("explicit ascending document-name pagination reuses the implicit name index", () => {
+  const result = validateContracts({
+    sources: [{path: "functions/src/payments/legacyRefunds/recovery.ts",
+      contents: `
+/* firestore-index: payments (
+  cancellationRefund.state:ASCENDING,
+  cancellationRefund.nextAttemptAtMillis:ASCENDING
+) */
+let query = db.collection("payments")
+  .where("cancellationRefund.state", "==", "pending")
+  .where("cancellationRefund.nextAttemptAtMillis", "<=", nowMillis)
+  .orderBy("cancellationRefund.nextAttemptAtMillis")
+  .orderBy(admin.firestore.FieldPath.documentId());
+`,
+    }],
+    indexConfig: {indexes: [{collectionGroup: "payments",
+      queryScope: "COLLECTION", fields: [
+        {fieldPath: "cancellationRefund.state", order: "ASCENDING"},
+        {fieldPath: "cancellationRefund.nextAttemptAtMillis",
+          order: "ASCENDING"},
+      ]}]},
+  });
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.contractCount, 1);
+});
+
 test("distinct index scopes, field order, direction and vector dimensions remain valid", () => {
   const original = indexConfig.indexes[0];
   const indexes = [

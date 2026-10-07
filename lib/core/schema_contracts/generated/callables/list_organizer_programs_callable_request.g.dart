@@ -10,13 +10,19 @@ final class ListOrganizerProgramsCallableRequest {
   const ListOrganizerProgramsCallableRequest({
     required this.organizerId,
     this.limit,
+    this.cursor,
+    this.programId,
   });
 
   final String organizerId;
   final int? limit;
+  final String? cursor;
+  final String? programId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'limit': ?limit,
+    'cursor': ?cursor,
+    'programId': ?programId,
   };
 }

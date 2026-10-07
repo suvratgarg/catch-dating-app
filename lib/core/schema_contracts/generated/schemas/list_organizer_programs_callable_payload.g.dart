@@ -25,5 +25,23 @@ const schemaListOrganizerProgramsCallablePayloadSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 50,
     },
+    'cursor': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 512,
+      'description': 'Optional opaque value from nextCursor. Server verifies current organizer scope and continues after the immutable ordering tuple encoded by that cursor.',
+    },
+    'programId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Optional exact program ID for bounded saved-program confirmation. Organizer authority and document scope are rechecked; cannot be combined with cursor.',
+    },
+  },
+  'not': <String, Object?>{
+    'required': <Object?>[
+      'cursor',
+      'programId',
+    ],
   },
 };

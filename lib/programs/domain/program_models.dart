@@ -5,6 +5,8 @@
 /// operational projections never carry contact data.
 library;
 
+import 'package:catch_dating_app/programs/domain/program_calendar.dart';
+
 part 'program_access_models.dart';
 part 'program_door_models.dart';
 part 'program_workspace_models.dart';

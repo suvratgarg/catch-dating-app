@@ -5,7 +5,8 @@ import {validatePaymentDocument} from
   "../shared/generated/validators/paymentDocument";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {incrementInviteLinkCounterInTransaction} from "../events/inviteLinks";
-import {planLegacyCancellationRefund} from
+import {planLegacyCancellationRefund,
+  type LegacyRazorpayRefundAuthorization} from
   "./legacyRefunds/intent";
 
 /** Server-verified captured payment; committed in the admission transaction. */
@@ -29,6 +30,13 @@ function paymentRecord(booking: NativePaidBooking,
     if (existing?.[key] != null && existing[key] !== payment[key]) {
       throw new HttpsError("failed-precondition", "Payment authority changed.");
     }
+  }
+  if (existing?.razorpayOwnership !== undefined &&
+      (existing.razorpayOwnership.projectId !==
+        payment.razorpayOwnership?.projectId ||
+       existing.razorpayOwnership.schema !==
+        payment.razorpayOwnership?.schema)) {
+    throw new HttpsError("failed-precondition", "Payment authority changed.");
   }
   return payment;
 }
@@ -71,6 +79,7 @@ export async function prepareNativePaidBooking(input: {
  */
 export async function stageRejectedNativeBooking(input: {
   db: FirebaseFirestore.Firestore; booking: NativePaidBooking;
+  razorpayAuthorization?: LegacyRazorpayRefundAuthorization;
 }): Promise<"admitted" | "refund"> {
   const {db, booking} = input;
   const ref = db.collection("payments").doc(booking.paymentId);
@@ -99,7 +108,8 @@ export async function stageRejectedNativeBooking(input: {
       signUpFailed: true};
     const cancellationRefund = planLegacyCancellationRefund({payment: failed,
       reason: "bookingFailed", targetAmountMinor: failed.amount,
-      nowMillis: Date.now()});
+      nowMillis: Date.now(),
+      razorpayAuthorization: input.razorpayAuthorization});
     tx.set(ref, {...failed, cancellationRefund});
     return "refund";
   });

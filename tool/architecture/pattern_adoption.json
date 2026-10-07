@@ -1033,6 +1033,12 @@
           "role": "provider-free forms directory page and pagination display state extracted from the account-scoped controller; no provider reads or mutations",
           "providerFree": true,
           "status": "aligned"
+        },
+        {
+          "path": "lib/programs/presentation/program_create_state.dart",
+          "role": "provider-free Program creation draft values and validation adapter; route controllers retain provider reads and mutations",
+          "providerFree": true,
+          "status": "aligned"
         }
       ],
       "variantPatterns": [],

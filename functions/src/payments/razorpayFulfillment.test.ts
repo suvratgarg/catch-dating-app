@@ -134,8 +134,38 @@ test(
   }
 );
 
+test(
+  "fulfillRazorpayPayment rejects a terminal row for another checkout",
+  async () => {
+    const fake = createFulfillmentFirestore({
+      statusByGet: () => "completed",
+      paymentPatchByGet: () => ({orderId: "order-other"}),
+    });
+    let signUpCalls = 0;
+
+    await assert.rejects(fulfillRazorpayPayment({
+      db: fake.db,
+      orderId: "order-1",
+      paymentId: "pay-1",
+      booking,
+      deps: {
+        signUpForEvent: async () => {
+          signUpCalls++;
+        },
+        serverTimestamp: () => "server-now",
+      },
+    }), /Payment authority changed/u);
+
+    assert.equal(signUpCalls, 0);
+    assert.deepEqual(fake.paymentSetCalls, []);
+    assert.deepEqual(fake.inviteLinkSetCalls, []);
+    assert.deepEqual(fake.pendingDeletes, []);
+  }
+);
+
 function createFulfillmentFirestore(options: {
   statusByGet: (getCount: number) => string | undefined;
+  paymentPatchByGet?: (getCount: number) => Record<string, unknown>;
 }) {
   const paymentSetCalls: Array<Record<string, unknown>> = [];
   const inviteLinkSetCalls: Array<{
@@ -151,7 +181,18 @@ function createFulfillmentFirestore(options: {
       const status = options.statusByGet(paymentGetCount);
       return {
         exists: status !== undefined,
-        data: () => (status === undefined ? undefined : {status}),
+        data: () => (status === undefined ? undefined : {
+          status,
+          userId: booking.userId,
+          eventId: booking.eventId,
+          orderId: "order-1",
+          paymentId: "pay-1",
+          amount: booking.amountInPaise,
+          amountMinor: booking.amountInPaise,
+          currency: booking.currency,
+          provider: "razorpay",
+          ...options.paymentPatchByGet?.(paymentGetCount),
+        }),
       };
     },
     set: async (data: Record<string, unknown>) => {

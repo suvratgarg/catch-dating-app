@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -81,6 +84,19 @@ class WidgetbookHostShellScope extends StatelessWidget {
       for (final club in effectiveOwnedClubs) club.id: club,
     };
     final overrides = [
+      programEventsControllerProvider.overrideWith((ref, request) {
+        final controller = ProgramEventsController(
+          isActorCurrent: () => true,
+          fetchPage: ({cursor, programId}) async =>
+              OrganizerProgramInventoryPage(programs: const []),
+          mutate: (_, _) async =>
+              throw StateError('Preview inventory is read only'),
+          onMutation: (_) {},
+        );
+        ref.onDispose(controller.dispose);
+        unawaited(controller.refresh());
+        return controller;
+      }),
       hostTodayPreferenceProvider.overrideWith(
         (ref, scope) async => const HostTodayPreference.skipped(),
       ),

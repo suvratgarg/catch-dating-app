@@ -59,11 +59,15 @@ class HostEventEntrySheet extends StatefulWidget {
   State<HostEventEntrySheet> createState() => _HostEventEntrySheetState();
 }
 
+enum _HostCreateEntryTab { event, program }
+
 class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
+  _HostCreateEntryTab _tab = _HostCreateEntryTab.event;
   late final List<EventDraft> _drafts = List.of(
     widget.hideSavedDrafts
         ? widget.state.drafts.where(
-            (draft) => draft.eventCreateReceiptEventId == null)
+            (draft) => draft.eventCreateReceiptEventId == null,
+          )
         : widget.state.drafts,
   );
   String? _deletingDraftId;
@@ -91,12 +95,28 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
   Widget build(BuildContext context) {
     return CatchSheet.standard(
       key: const ValueKey<String>('host-event-entry-sheet'),
-      title: context.l10n.hostsHostEventsListLabelNewEvent,
+      title: context.l10n.programsEntryTitle,
       child: CatchSectionList(
         emptyStateOmitted: true,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (_drafts.isNotEmpty || widget.state.repeatSource != null)
+          CatchPageTabBar<_HostCreateEntryTab>(
+            groupKey: const ValueKey('host-create-entry-tabs'),
+            selected: _tab,
+            options: [
+              CatchOption(
+                value: _HostCreateEntryTab.event,
+                label: context.l10n.programsEntryEventTab,
+              ),
+              CatchOption(
+                value: _HostCreateEntryTab.program,
+                label: context.l10n.programsEntryProgramTab,
+              ),
+            ],
+            onChanged: (tab) => setState(() => _tab = tab),
+          ),
+          if (_tab == _HostCreateEntryTab.event &&
+              (_drafts.isNotEmpty || widget.state.repeatSource != null))
             CatchSection.fieldRows(
               first: true,
               title:
@@ -135,7 +155,11 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
             first: true,
             title: context.l10n.hostsHostEventEntrySheetSectionStartNew,
             children: [
-              for (final intent in widget.state.startIntents)
+              for (final intent in widget.state.startIntents.where(
+                (intent) => _tab == _HostCreateEntryTab.event
+                    ? intent == HostEventEntryIntent.createEvent
+                    : intent == HostEventEntryIntent.createProgram,
+              ))
                 _HostEventEntryRow(
                   intent: intent,
                   state: widget.state,
@@ -187,6 +211,7 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventsListLabelNewEvent,
     HostEventEntryIntent.resumePrivateEvent =>
       context.l10n.hostsPrivateEventContinueSaved,
+    HostEventEntryIntent.createProgram => context.l10n.programsListCreateLabel,
   };
 
   String _body(BuildContext context) => switch (intent) {
@@ -199,9 +224,9 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetBodyReuseEventSetup(
         eventTitle: state.repeatSource?.title ?? '',
       ),
-    HostEventEntryIntent.createEvent =>
-      context.l10n.hostsPrivateEventEntryBody,
+    HostEventEntryIntent.createEvent => context.l10n.hostsPrivateEventEntryBody,
     HostEventEntryIntent.resumePrivateEvent => '',
+    HostEventEntryIntent.createProgram => context.l10n.programsEntryProgramBody,
   };
 
   IconData get _icon => switch (intent) {
@@ -209,5 +234,6 @@ class _HostEventEntryRow extends StatelessWidget {
     HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
     HostEventEntryIntent.createEvent => CatchIcons.eventAvailableOutlined,
     HostEventEntryIntent.resumePrivateEvent => CatchIcons.editNoteRounded,
+    HostEventEntryIntent.createProgram => CatchIcons.calendarMonthOutlined,
   };
 }

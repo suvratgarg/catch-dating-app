@@ -3,10 +3,22 @@ import {validatePaymentDocument} from
   "../../shared/generated/validators/paymentDocument";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {PaymentDocument} from "../../shared/generated/firestoreAdminTypes";
+import {assertRazorpayOrderOwnership,
+  type OwnedRazorpayOrderEvidence,
+  type RazorpayOwnershipContext} from "../razorpayOrderOwnership";
 
 export type LegacyRefundIntent = NonNullable<
   PaymentDocument["cancellationRefund"]>;
 export type LegacyRefundAttempt = LegacyRefundIntent["attempts"][number];
+
+/** Opaque provider-order proof produced by a fresh Razorpay read. The WeakSet
+ * brand on the evidence prevents persisted context or a caller assertion from
+ * authorizing a new refund intent or provider request.
+ */
+export interface LegacyRazorpayRefundAuthorization {
+  evidence: OwnedRazorpayOrderEvidence;
+  runtimeProjectId: string;
+}
 
 /** The original payment owns the charge and maximum refund liability. */
 export function legacyPaymentFingerprint(payment: PaymentDocument): string {
@@ -28,6 +40,7 @@ export function planLegacyCancellationRefund(input: {
   reason: LegacyRefundIntent["reason"];
   targetAmountMinor: number;
   nowMillis: number;
+  razorpayAuthorization?: LegacyRazorpayRefundAuthorization;
 }): LegacyRefundIntent {
   const {payment, reason, targetAmountMinor, nowMillis} = input;
   if (!validatePaymentDocument(payment)) unavailable();
@@ -39,6 +52,7 @@ export function planLegacyCancellationRefund(input: {
       reason !== "guestCancelled" && targetAmountMinor !== payment.amount) {
     unavailable();
   }
+  const provider = payment.provider ?? "razorpay";
   const old = payment.cancellationRefund;
   if (old) {
     assertLegacyRefundAuthority(payment, old);
@@ -54,14 +68,20 @@ export function planLegacyCancellationRefund(input: {
     }
     if (old.reason === "bookingFailed" ||
         targetAmountMinor < old.targetAmountMinor) unavailable();
+    const razorpayOwnership = provider === "razorpay" ?
+      assertLegacyRazorpayRefundAuthorization(payment,
+        input.razorpayAuthorization) : undefined;
     return {...old, reason, targetAmountMinor,
+      ...(razorpayOwnership ? {razorpayOwnership} : {}),
       state: old.state === "reviewRequired" ? "reviewRequired" :
         old.confirmedAmountMinor >= targetAmountMinor ? "complete" : "pending",
       nextAttemptAtMillis: Math.min(old.nextAttemptAtMillis, nowMillis)};
   }
+  const razorpayOwnership = provider === "razorpay" ?
+    assertLegacyRazorpayRefundAuthorization(payment,
+      input.razorpayAuthorization) : undefined;
   // Old refunded records lack reliable partial/full amount evidence.
   const historicalRefund = payment.status === "refunded";
-  const provider = payment.provider ?? "razorpay";
   const providerPaymentId = provider === "stripe" ?
     payment.providerPaymentId : payment.paymentId;
   if (!providerPaymentId || !/^[A-Z]{3}$/u.test(payment.currency) ||
@@ -80,9 +100,31 @@ export function planLegacyCancellationRefund(input: {
     currency: payment.currency,
     stripeAccountId: payment.stripeAccountId ?? null,
     refundApplicationFee: (payment.applicationFeeAmount ?? 0) > 0,
+    ...(razorpayOwnership ? {razorpayOwnership} : {}),
     requestedAtMillis: nowMillis, nextAttemptAtMillis: nowMillis,
     leaseUntilMillis: 0, attempts: [], lastErrorCode: historicalRefund ?
       "historicalRefundAmountUnknown" : null};
+}
+
+/** Rebind a fresh provider-order proof to the exact persisted order/context. */
+export function assertLegacyRazorpayRefundAuthorization(
+  payment: Pick<PaymentDocument, "orderId" | "razorpayOwnership">,
+  authorization: LegacyRazorpayRefundAuthorization | undefined
+): RazorpayOwnershipContext {
+  if (!authorization || !payment.razorpayOwnership) unavailable();
+  let context: RazorpayOwnershipContext;
+  try {
+    context = assertRazorpayOrderOwnership({
+      evidence: authorization.evidence,
+      orderId: payment.orderId,
+      runtimeProjectId: authorization.runtimeProjectId,
+    });
+  } catch {
+    unavailable();
+  }
+  if (payment.razorpayOwnership.projectId !== context.projectId ||
+      payment.razorpayOwnership.schema !== context.schema) unavailable();
+  return context;
 }
 
 export function assertLegacyRefundAuthority(payment: PaymentDocument,
@@ -98,6 +140,8 @@ export function assertLegacyRefundAuthority(payment: PaymentDocument,
       intent.stripeAccountId !== (payment.stripeAccountId ?? null) ||
       intent.refundApplicationFee !==
         ((payment.applicationFeeAmount ?? 0) > 0) ||
+      !sameRazorpayOwnership(payment.razorpayOwnership,
+        intent.razorpayOwnership) ||
       intent.confirmedAmountMinor > intent.targetAmountMinor ||
       intent.targetAmountMinor > payment.amount ||
       intent.reason !== "guestCancelled" &&
@@ -110,6 +154,17 @@ export function assertLegacyRefundAuthority(payment: PaymentDocument,
       intent.attempts.filter((attempt) => attempt.state === "processed")
         .reduce((total, attempt) => total + attempt.amountMinor, 0) !==
           intent.confirmedAmountMinor) unavailable();
+}
+
+function sameRazorpayOwnership(
+  payment: PaymentDocument["razorpayOwnership"],
+  intent: LegacyRefundIntent["razorpayOwnership"]
+): boolean {
+  if (payment === undefined || intent === undefined) {
+    return payment === intent;
+  }
+  return payment.projectId === intent.projectId &&
+    payment.schema === intent.schema;
 }
 
 export function legacyRefundAttemptKey(paymentId: string,

@@ -1749,6 +1749,43 @@ not infer readiness from the recommendation badge alone.
 
 ### Native Payment and Refund Authority
 
+Native Razorpay ownership uses server-authored provider order notes
+`catchBookingProject` and `catchBookingSchema: "1"`, derived from the trusted
+runtime project. New pending orders, native payments and cancellation refund
+intents retain optional `razorpayOwnership: {projectId, schema: "1"}` context.
+The context is frozen independently of the existing version-1 refund fingerprint
+and idempotency keys. Stripe authority and client payload/response shapes remain
+unchanged. Optionality preserves historical document readability; it does not
+establish ownership of an unmarked legacy order.
+
+Provider notes are mutable and rely on trusted merchant credential custody.
+Fetched order context must match the current runtime and frozen local evidence
+before admission, refund intent staging or tracking cleanup. An explicit foreign,
+partial, unsupported or conflicting marker never falls back to matching local
+IDs. Bare local payment/pending/refund records may have been copied between
+projects and are not an independent legacy witness. Unknown unmarked history
+requires audited reconciliation; the runtime must not adopt or backfill it.
+
+A foreign or unknown webhook performs zero local writes/deletes and no refund.
+The native refund worker likewise validates ownership and provider context before
+lease, attempt, review or retry writes, and rebinds the reread payment/intent
+inside its claim transaction. Foreign or unknown persisted intent remains intact.
+The dormant pending-order reconciler resolves the fetched provider marker
+against frozen pending context before listing payments, expiring tracking state,
+or fulfilling a booking; foreign, unknown, invalid or conflicting ownership is
+skipped without order, payment, or booking mutation. Its project-bound durable
+discovery cursor advances before provider I/O and wraps after the tail, so a
+bounded page of quarantined or temporarily unavailable orders cannot starve
+later owned work and every skipped row becomes eligible again after wrap.
+Razorpay dispatch independently reclassifies the fetched order before POST;
+separate webhook signing secrets do not establish environment ownership.
+Exact owned terminal replay cannot re-admit, recreate refund intent, or interpret
+refunded provider truth as a new captured booking. Existing strict payment truth
+checks still apply to a nonterminal new admission. A completed payment carrying
+any cancellation refund intent is no longer a successful checkout replay: the
+webhook may acknowledge it without re-admission, while the callable reports the
+existing cancellation/refund outcome instead of returning verified success.
+
 Native captured checkout commits its payment and admission in the same
 transaction. A second payment cannot claim an existing seat; a retried completed
 payment cannot re-admit a cancelled participation. Rejected bookings persist a
@@ -1779,11 +1816,30 @@ Native Razorpay refunds use the original platform account and supported INR
 amounts; unsupported currency/sub-minimum refunds require review. Stripe native
 destination refunds reverse the original transfer and proportionate application
 fee when present. Historical refunded records without amount evidence are not
-assumed to prove a partial or full refund.
+assumed to prove a partial or full refund. Immediately before Razorpay refund
+dispatch or observation, fresh provider cumulative-refund truth must equal the
+locally confirmed total or that total plus the single unresolved same-key
+attempt that was already persisted at preflight. A newly claimed first attempt
+cannot explain intervening provider drift. Any other delta requires
+reconciliation before provider work.
 
-The cancelled-event trigger stages every completed payment in bounded pages;
-a payment trigger covers captures observed after cancellation. A bounded oldest
-due queue retries pending intents without a payment-age cutoff. Guest/provider
+The cancelled-event trigger stages eligible Stripe payments in bounded pages;
+a payment trigger covers captures observed after cancellation. The
+unsecret-bound event path never stages Razorpay. The existing secret-bound recovery
+scheduler advances `nativeRefundRecoveryCursors/cancelledRazorpayPayments` and
+fetches fresh provider-order ownership before any Razorpay refund-intent write.
+A bounded oldest-due queue retries pending intents without a payment-age cutoff.
+It advances the server-only, project-bound
+`nativeRefundRecoveryCursors/pendingRefunds` cursor before provider work and
+wraps after a short page, so foreign, unknown, unavailable, or malformed oldest
+rows cannot starve later owned Razorpay or Stripe work across invocations.
+Cursor revision compare-and-set rejects stale concurrent progress, and malformed
+or foreign cursor authority stops before payment discovery. Due-order cursor
+keys use canonical tagged strings so fractional and non-finite Firestore numbers
+can advance without allowing raw non-finite values into the persisted schema;
+raw integer values retain exact signed-int64 decimals and resume as bigint rather
+than passing through JavaScript's lossy number range;
+payment document IDs up to Firestore's 1,500-byte limit remain representable. Guest/provider
 failure does not roll back the already committed cancellation. Existing historical
 cancelled events with no refund intent require reviewed reconciliation before
 activation; the trigger does not invent historical guest refund terms.

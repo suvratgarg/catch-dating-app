@@ -445,15 +445,6 @@
       "occurrences": 1
     },
     {
-      "path": "lib/programs/presentation/program_list_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "occurrences": 7
-    },
-    {
       "path": "lib/programs/presentation/program_team_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",

@@ -785,6 +785,7 @@ export {validateSavedEventDocument} from "./validators/savedEventDocument";
 export {validateHostAnalyticsEvent} from "./validators/hostAnalyticsEvent";
 export {validateUserProfileExposureEvent} from "./validators/userProfileExposureEvent";
 export {validatePaymentDocument} from "./validators/paymentDocument";
+export {validateNativeRefundRecoveryCursorDocument} from "./validators/nativeRefundRecoveryCursorDocument";
 export {validateHostPaymentAccountDocument} from "./validators/hostPaymentAccountDocument";
 export {validateRazorpayPendingOrderDocument} from "./validators/razorpayPendingOrderDocument";
 export {validateSwipeDocument} from "./validators/swipeDocument";

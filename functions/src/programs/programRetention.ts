@@ -43,6 +43,7 @@ import {
 import {
   validateUnarchiveProgramCallablePayload,
 } from "../shared/generated/validators/unarchiveProgramInput";
+import {requireActiveProgramAccount} from "./programs";
 
 /** Approved policy: archive grants a 14-day grace window before the
  *  identity scrub runs; unarchive is only possible inside it. */
@@ -87,6 +88,7 @@ export async function archiveProgramHandler(
   let committed: {revision: number; anonymizeAtMillis: number;
     alreadyApplied: boolean} | null = null;
   await db.runTransaction(async (tx) => {
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     const {program, organizer} = await loadProgramBundle({
       db, programId: data.programId, transaction: tx,
     });
@@ -140,6 +142,7 @@ export async function unarchiveProgramHandler(
   let committed: {revision: number;
     restoredStatus: OrganizerProgramDocument["status"]} | null = null;
   await db.runTransaction(async (tx) => {
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     const [{program, organizer}, runSnap] = await Promise.all([
       loadProgramBundle({db, programId: data.programId, transaction: tx}),
       tx.get(runRef),
