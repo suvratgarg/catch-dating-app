@@ -9977,7 +9977,7 @@
         "role": "shell",
         "expression": "shell-owned",
         "owner": "CatchAdaptiveTabScaffold",
-        "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        "reason": "Today and Events delegate to the shared pane header rhythm; selected event management or recap remains adjacent to its root on wide layouts."
       },
       "statePolicy": {
         "requiredStates": [
@@ -16580,13 +16580,13 @@
       "shell": {
         "owner": "host",
         "nestedScaffoldAllowed": false,
-        "reason": "The Host adaptive tab shell owns directory navigation chrome; the nested detail route is presented above that shell."
+        "reason": "The Host shell owns global navigation; the shared viewport presents directory, person, and submitted-detail levels in full-height panes or one compact pane."
       },
       "topBar": {
         "role": "shell",
         "expression": "CatchTopBar.primaryRail + CatchScreenTopBar",
         "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
-        "reason": "The Audience destination uses People, Audiences, Forms, and Responses peer tabs. Add customer is explicitly People-only; Audiences exposes one in-workspace New audience action. Route-level customer, audience, and form editors own compact back titles."
+        "reason": "Each pane owns its actions and peer tabs. Audience and person tab rows align; person selection and nested submissions remain in the root navigation path at every width."
       },
       "statePolicy": {
         "requiredStates": [
@@ -17484,7 +17484,7 @@
         "role": "shell",
         "expression": "shell-owned",
         "owner": "CatchAdaptiveTabScaffold",
-        "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        "reason": "The Inbox directory and conversation each own full-height pane chrome, using the same local-width viewport as other Host destinations."
       },
       "statePolicy": {
         "requiredStates": [

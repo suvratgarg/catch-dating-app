@@ -169,12 +169,17 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
           )
         : null;
 
-    return CatchAdaptiveTabScaffold(
-      activeIndex: widget.navigationShell.currentIndex,
-      navigationBar: bottomNavigation,
-      mediumSideNavigation: railNavigation,
-      expandedSideNavigation: sidebarNavigation,
-      body: widget.navigationShell,
+    return CatchWorkspaceHeaderLayout(
+      child: CatchAdaptiveTabScaffold(
+        activeIndex: widget.navigationShell.currentIndex,
+        navigationBar: bottomNavigation,
+        mediumSideNavigation: railNavigation,
+        expandedSideNavigation: sidebarNavigation,
+        body: CatchWorkspacePaneScope(
+          isSinglePane: true,
+          child: widget.navigationShell,
+        ),
+      ),
     );
   }
 

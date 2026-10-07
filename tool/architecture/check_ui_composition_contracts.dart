@@ -76,7 +76,6 @@ const catchRootScreenBodyExpressions = <String>{
 const catchRootScreenPageSpecExpressions = <String>{
   'CatchRootScreenPageSpec.scroll',
   'CatchRootScreenPageSpec.surface',
-  'CatchRootScreenPageSpec.masterDetail',
 };
 
 /// Closed vocabulary shared with the screen-contract schema.
@@ -647,10 +646,7 @@ List<String> _evaluateBodyGeometryContract({
         )
         .toList();
     String? resolvePageOwnerRole(LayoutOwnerInstantiation spec) {
-      final pageArgument =
-          spec.signature == 'CatchRootScreenPageSpec.masterDetail'
-          ? spec.namedArguments['master']
-          : spec.namedArguments['page'];
+      final pageArgument = spec.namedArguments['page'];
       if (pageArgument == null) return null;
       final ownerSignature = _rootConstructorSignature(pageArgument);
       if (!_rootPageScrollRoles.containsKey(ownerSignature)) {
@@ -1464,10 +1460,7 @@ final class _StandardBodyGeometryTraversal {
     }
 
     if (catchRootScreenPageSpecExpressions.contains(signature)) {
-      final pageName = signature == 'CatchRootScreenPageSpec.masterDetail'
-          ? 'master'
-          : 'page';
-      final page = _namedArgumentExpression(arguments, pageName);
+      final page = _namedArgumentExpression(arguments, 'page');
       final pageArguments = page == null ? null : _rootArgumentList(page);
       final pageSignature = page == null
           ? null

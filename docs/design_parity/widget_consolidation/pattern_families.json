@@ -3287,10 +3287,10 @@
           "rationale": "Measures local box/sliver constraints and selects caller-owned layouts; threshold, sliver and bounded-scene variants use named constructors."
         },
         {
-          "symbol": "CatchMasterDetailViewport",
+          "symbol": "CatchNavigationViewport",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "Owns fixed-width index/detail pane composition and the shared divider; the adaptive constructor reports its split decision to the leading builder."
+          "rationale": "Owns ordered navigation panes, visible dividers, retained state and local-width selection of concurrent columns or the active compact pane."
         },
         {
           "symbol": "CatchViewportBreakpoint",
@@ -3316,14 +3316,14 @@
         {
           "symbol": "CatchMasterDetailLayout",
           "disposition": "unify",
-          "target": "CatchMasterDetailViewport",
+          "target": "CatchNavigationViewport",
           "preview": "not-applicable",
           "rationale": "Name the pane composition by its Viewport responsibility."
         },
         {
           "symbol": "CatchAdaptiveMasterDetailLayout",
           "disposition": "unify",
-          "target": "CatchMasterDetailViewport.adaptive",
+          "target": "CatchNavigationViewport",
           "preview": "not-applicable",
           "rationale": "Share one pane renderer and preserve its local-width navigation decision."
         }
@@ -4055,6 +4055,51 @@
           "target": "HostAudienceNoOrganizerEmptyState",
           "preview": "not-applicable",
           "rationale": "Retire repeated empty-state composition after caller migration."
+        }
+      ]
+    },
+    {
+      "id": "host-operational-section-composition",
+      "title": "One Host operational section anatomy",
+      "intent": "Use the approved Public visibility and Import phone contacts anatomy for Host task, collection and report sections.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "catch.section",
+      "qualityReference": "CatchSection.action",
+      "decisionSource": "owner-approved:2026-10-08 shared section migration after screenshot review",
+      "acceptedVisualDelta": [
+        "Quiet borderless surfaces for operational modules; outlined perimeters retained for actual field groups.",
+        "Full-width secondary collection commands; compact leading-aligned successful-empty content.",
+        "Pickup points and Hotels are peer collections; report statuses use the same surface.",
+        "Content determines height; existing shared spacing tokens and touch metrics remain."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSection",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Add named collection/status recipes to the existing section family, using the same private renderer as action."
+        },
+        {
+          "symbol": "EventSuccessReportEmptyState",
+          "disposition": "discard",
+          "target": "CatchSection.status",
+          "preview": "not-applicable",
+          "rationale": "Three callers migrate directly; delete the presentation-only wrapper."
+        },
+        {
+          "symbol": "EventAssistanceHelpEntrySection",
+          "disposition": "repair",
+          "target": "CatchSection.action",
+          "preview": "required",
+          "rationale": "Retain feature copy and navigation intent; delegate all section anatomy."
+        },
+        {
+          "symbol": "EventAssistanceDeliveryEntrySection",
+          "disposition": "repair",
+          "target": "CatchSection.action",
+          "preview": "required",
+          "rationale": "Retain pending-count copy and navigation intent; delegate all section anatomy."
         }
       ]
     }

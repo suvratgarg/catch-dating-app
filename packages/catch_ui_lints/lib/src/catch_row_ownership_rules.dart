@@ -223,7 +223,7 @@ class _RowVisitor extends SimpleAstVisitor<void> {
           final type = parent?.enclosingElement.name;
           if (isUi(parent, 'CatchSection') ||
               isUi(parent, 'CatchSectionList') ||
-              isUi(parent, 'CatchMasterDetailViewport')) {
+              isUi(parent, 'CatchNavigationViewport')) {
             break;
           }
           if (const {'Padding', 'SliverPadding'}.contains(type) &&

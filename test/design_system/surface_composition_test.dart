@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -5,7 +6,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
@@ -13,6 +13,7 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,17 +24,23 @@ import '../events/events_test_helpers.dart' show buildEvent;
 import '../test_pump_helpers.dart';
 
 void main() {
-  Future<void> mount(WidgetTester tester, Widget child) async {
+  Future<void> mount(
+    WidgetTester tester,
+    Widget child, {
+    Stream<List<Review>> Function()? reviews,
+    Finder? ready,
+  }) async {
     tester.view.physicalSize = const Size(390, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       ProviderScope(
+        retry: (retryCount, error) => null,
         overrides: [
           watchReviewsForEventProvider(
             'event',
-          ).overrideWith((ref) => Stream.value([])),
+          ).overrideWith((ref) => reviews?.call() ?? Stream.value([])),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -43,7 +50,12 @@ void main() {
         ),
       ),
     );
-    await pumpFeatureUi(tester);
+    if (reviews == null) {
+      await pumpFeatureUi(tester);
+    } else {
+      // Wait for the requested branch; pending progress never becomes idle.
+      await pumpUntilFound(tester, ready ?? find.byType(CatchLoadingIndicator));
+    }
   }
 
   testWidgets(
@@ -107,31 +119,77 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('public reviews is flat and empty copy has no icon gutter', (
-    tester,
-  ) async {
-    await mount(
-      tester,
-      const Padding(
-        padding: EdgeInsets.all(20),
-        child: HostEventReviewsPanel(eventId: 'event'),
-      ),
-    );
-    final empty = find.byType(CatchEmptyState);
-    expect(empty, findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(HostEventReviewsPanel),
-        matching: find.byType(CatchSurface),
-      ),
-      findsNothing,
-    );
-    expect(
-      find.descendant(of: empty, matching: find.byType(Icon)),
-      findsNothing,
-    );
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'public reviews uses the shared module and empty copy has no icon gutter',
+    (tester) async {
+      await mount(
+        tester,
+        const Padding(
+          padding: EdgeInsets.all(20),
+          child: HostEventReviewsPanel(eventId: 'event'),
+        ),
+      );
+      final empty = find.byType(CatchEmptyState);
+      expect(empty, findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(HostEventReviewsPanel),
+          matching: find.byType(CatchSurface),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: empty, matching: find.byType(Icon)),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'review failure stays in the module and retry recovers to empty',
+    (tester) async {
+      var loads = 0;
+      await mount(
+        tester,
+        const HostEventReviewsPanel(eventId: 'event'),
+        ready: find.widgetWithText(CatchButton, 'Try again'),
+        reviews: () {
+          loads++;
+          return loads == 1
+              ? Stream.error(Exception('review unavailable'))
+              : Stream.value([]);
+        },
+      );
+      expect(find.byType(CatchSurface), findsOneWidget);
+      expect(find.byType(CatchEmptyState), findsNothing);
+      final retry = find.widgetWithText(CatchButton, 'Try again');
+      expect(retry, findsOneWidget);
+      await tester.tap(retry);
+      await pumpFeatureUi(tester);
+      expect(loads, 2);
+      expect(find.byType(CatchEmptyState), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'pending reviews keep the module and do not show successful-empty copy',
+    (tester) async {
+      final controller = StreamController<List<Review>>();
+      await mount(
+        tester,
+        const HostEventReviewsPanel(eventId: 'event'),
+        reviews: () => controller.stream,
+      );
+      expect(find.byType(CatchSurface), findsOneWidget);
+      expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+      expect(find.byType(CatchEmptyState), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+      unawaited(controller.close());
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'report owns separation after message review in every empty branch',
@@ -168,14 +226,16 @@ void main() {
         final delivery = tester.getRect(
           find.byType(EventAssistanceDeliveryEntrySection),
         );
-        final empty = tester.getRect(find.byType(EventSuccessReportEmptyState));
+        final empty = tester.getRect(
+          find.byKey(const ValueKey('event-success-report-status')),
+        );
         expect(empty.top - delivery.bottom, CatchGaps.section, reason: state);
         expect(
           find.descendant(
-            of: find.byType(EventSuccessReportEmptyState),
+            of: find.byKey(const ValueKey('event-success-report-status')),
             matching: find.byType(CatchSurface),
           ),
-          findsNothing,
+          findsOneWidget,
         );
         expect(tester.takeException(), isNull);
       }

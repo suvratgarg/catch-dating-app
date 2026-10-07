@@ -85,6 +85,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
+import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -120,6 +121,18 @@ String hostProgramsLegacyRedirect(Uri uri) =>
 HostClubsScreen hostOrganizerScreenForUri(Uri uri) => HostClubsScreen(
   initialClubId: uri.queryParameters['clubId'],
   initialExpandedEditField: uri.queryParameters['editField'],
+  settingsRoute: Routes.values
+      .where(
+        (route) =>
+            const {
+              Routes.hostClubEventDefaultsScreen,
+              Routes.hostClubLiveGuideScreen,
+              Routes.hostClubTeamScreen,
+              Routes.hostClubPaymentsScreen,
+            }.contains(route) &&
+            route.name == uri.queryParameters['setting'],
+      )
+      .firstOrNull,
   initialTab: HostClubTab.values.firstWhere(
     (tab) => tab.name == uri.queryParameters['tab'],
     orElse: () => HostClubTab.edit,
@@ -142,6 +155,8 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialView: view,
       initialContactId: uri.queryParameters['contactId'],
       initialContactDisplayName: initialContactDisplayName,
+      responseId: uri.queryParameters['responseId'],
+      applicationId: uri.queryParameters['applicationId'],
     ),
   };
 }
@@ -311,7 +326,6 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           ),
         ),
       ],
-      if (isHostApp) ..._hostUtilityRoutes(keys.root),
       if (isHostApp)
         _hostShellRoute(analytics, keys)
       else
@@ -471,7 +485,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   return router;
 }
 
-List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
+List<RouteBase> _hostWorkspaceDestinationRoutes() {
   return [
     GoRoute(
       path: Routes.hostHomeScreen.path,
@@ -657,29 +671,28 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
     GoRoute(
       path: Routes.hostClubEventDefaultsScreen.path,
       name: Routes.hostClubEventDefaultsScreen.name,
-      builder: (context, state) => HostClubEventDefaultsScreen(
-        clubId: state.uri.queryParameters['clubId'] ?? '',
+      redirect: (context, state) => hostOrganizerWorkspaceRedirect(
+        state,
+        Routes.hostClubEventDefaultsScreen,
       ),
     ),
     GoRoute(
       path: Routes.hostClubLiveGuideScreen.path,
       name: Routes.hostClubLiveGuideScreen.name,
-      builder: (context, state) => HostClubLiveGuideScreen(
-        clubId: state.uri.queryParameters['clubId'] ?? '',
-      ),
+      redirect: (context, state) =>
+          hostOrganizerWorkspaceRedirect(state, Routes.hostClubLiveGuideScreen),
     ),
     GoRoute(
       path: Routes.hostClubTeamScreen.path,
       name: Routes.hostClubTeamScreen.name,
-      builder: (context, state) =>
-          HostClubTeamScreen(clubId: state.uri.queryParameters['clubId'] ?? ''),
+      redirect: (context, state) =>
+          hostOrganizerWorkspaceRedirect(state, Routes.hostClubTeamScreen),
     ),
     GoRoute(
       path: Routes.hostClubPaymentsScreen.path,
       name: Routes.hostClubPaymentsScreen.name,
-      builder: (context, state) => HostClubPaymentsScreen(
-        clubId: state.uri.queryParameters['clubId'] ?? '',
-      ),
+      redirect: (context, state) =>
+          hostOrganizerWorkspaceRedirect(state, Routes.hostClubPaymentsScreen),
     ),
     GoRoute(
       path: Routes.hostClubsScreen.path,
@@ -694,8 +707,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
         GoRoute(
           path: ':clubId',
           name: Routes.hostClubDetailScreen.name,
-          parentNavigatorKey: rootNavigatorKey,
-          pageBuilder: _clubDetailPage,
+          builder: (context, state) => _clubDetailScreen(state),
           routes: [
             GoRoute(
               path: 'create-event',
@@ -763,18 +775,12 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
             GoRoute(
               path: 'events/:eventId',
               name: Routes.hostAppEventDetailScreen.name,
-              parentNavigatorKey: rootNavigatorKey,
-              pageBuilder: _eventDetailPage,
+              builder: (context, state) => _eventDetailScreen(state),
             ),
             GoRoute(
               path: 'events/:eventId/manage',
               name: Routes.hostAppEventManageScreen.name,
-              builder: (context, state) => HostEventManageRouteScreen(
-                clubId: state.pathParameters['clubId']!,
-                eventId: state.pathParameters['eventId']!,
-                initialEvent: _routeEventExtra(state),
-                initialSection: _hostManageSectionFromState(state),
-              ),
+              redirect: (context, state) => hostEventWorkspaceRedirect(state),
             ),
             GoRoute(
               path: 'events/:eventId/edit',
@@ -820,7 +826,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   ];
 }
 
-GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
+GoRoute _hostAudienceRoute() {
   return GoRoute(
     path: Routes.hostAudienceScreen.path,
     name: Routes.hostAudienceScreen.name,
@@ -837,7 +843,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'applications/:applicationId',
         name: Routes.hostApplicationDetailScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostApplicationDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           applicationId: state.pathParameters['applicationId']!,
@@ -847,7 +852,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'people/new',
         name: Routes.hostAddCustomerScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostAddCustomerScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
@@ -855,7 +859,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'audiences/new',
         name: Routes.hostCreateSavedAudienceScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostSavedAudienceEditorScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
@@ -863,7 +866,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'audiences/:audienceId',
         name: Routes.hostSavedAudienceDetailScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostSavedAudienceEditorScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           audienceId: state.pathParameters['audienceId'],
@@ -873,7 +875,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'forms/new',
         name: Routes.hostFormTemplatesScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormTemplatesScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
@@ -881,7 +882,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'responses/:responseId',
         name: Routes.hostFormResponseDetailScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormResponseDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           responseId: state.pathParameters['responseId']!,
@@ -891,7 +891,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'forms/:formId/preview',
         name: Routes.hostFormPreviewScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormPreviewScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
@@ -900,7 +899,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'forms/:formId/share',
         name: Routes.hostFormShareScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormShareScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
@@ -909,7 +907,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'forms/:formId/analytics',
         name: Routes.hostFormAnalyticsScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormAnalyticsScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
@@ -918,7 +915,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'automations',
         name: Routes.hostAudienceAutomationsScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormAutomationsScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
@@ -926,7 +922,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'forms/:formId/automations',
         name: Routes.hostFormAutomationsScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormAutomationsScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
@@ -935,7 +930,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'forms/:formId',
         name: Routes.hostFormBuilderScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostFormBuilderScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
@@ -945,7 +939,6 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'people/:contactId',
         name: Routes.hostCustomerDetailScreen.name,
-        parentNavigatorKey: keys.root,
         builder: (context, state) => HostCustomerDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           contactId: state.pathParameters['contactId']!,
@@ -994,99 +987,299 @@ GoRoute _hostFormsLegacyRoute() {
   );
 }
 
+// One route graph for all Host destinations. Utility routes are flattened into
+// their owning branch, so a named push keeps its result contract while its
+// content appears beside the existing index instead of covering the shell.
+List<GoRoute> _hostWorkspaceRoutes(
+  List<RouteBase> routes, [
+  String prefix = '',
+]) {
+  return [
+    for (final route in routes.whereType<GoRoute>()) ...[
+      GoRoute(
+        path: prefix.isEmpty ? route.path : '$prefix/${route.path}',
+        name: route.name,
+        redirect: route.redirect,
+        builder: route.builder,
+      ),
+      ..._hostWorkspaceRoutes(
+        route.routes,
+        prefix.isEmpty ? route.path : '$prefix/${route.path}',
+      ),
+    ],
+  ];
+}
+
+Routes _hostWorkspaceOwner(GoRoute route) {
+  final path = route.path;
+  if (path.startsWith('/host/audience') ||
+      path.startsWith('/host/forms') ||
+      path.startsWith('/host/customers')) {
+    return Routes.hostAudienceScreen;
+  }
+  if (path.startsWith('/host/inbox')) return Routes.hostInboxScreen;
+  if (path.startsWith('/host/today') ||
+      path.startsWith('/host/work') ||
+      path.contains('/rehearsals/') ||
+      path == Routes.hostHomeScreen.path ||
+      path.startsWith('/host/operator/')) {
+    return Routes.hostTodayScreen;
+  }
+  if (path.startsWith('/host/programs') ||
+      path.startsWith('/host/events') ||
+      path.contains('/events/') ||
+      path.endsWith('/create-event') ||
+      path.endsWith('/create-program')) {
+    return Routes.hostEventsScreen;
+  }
+  return Routes.hostOrganizerScreen;
+}
+
+GoRoute? _hostWorkspaceParent(GoRoute leaf, List<GoRoute> routes) {
+  final parent = switch (leaf.name) {
+    'hostAppEditEventScreen' ||
+    'hostAppEventMomentsScreen' => Routes.hostAppEventManageScreen,
+    'hostProgramLodgingScreen' ||
+    'hostProgramGuestsScreen' ||
+    'hostProgramTeamScreen' ||
+    'hostProgramImportScreen' ||
+    'hostProgramMomentsScreen' => Routes.hostProgramWorkspaceScreen,
+    'hostFormPreviewScreen' ||
+    'hostFormShareScreen' ||
+    'hostFormAnalyticsScreen' ||
+    'hostFormAutomationsScreen' => Routes.hostFormBuilderScreen,
+    'hostWorkArrivalsScreen' ||
+    'hostWorkDispatchScreen' ||
+    'hostWorkHotelScreen' ||
+    'hostWorkHotelRoomsScreen' ||
+    'hostWorkDoorScreen' ||
+    'hostWorkNowScreen' ||
+    'hostWorkAttentionScreen' ||
+    'hostWorkTripsScreen' ||
+    'hostWorkGuestsScreen' ||
+    'hostWorkImportScreen' ||
+    'hostWorkPhoneImportScreen' ||
+    'hostWorkAttendanceReportScreen' ||
+    'hostWorkCountsScreen' => Routes.hostWorkProgramScreen,
+    _ => null,
+  };
+  return routes.where((route) => route.name == parent?.name).firstOrNull;
+}
+
+String _hostWorkspaceRouteLocation(GoRoute route, GoRouterState state) => state
+    .uri
+    .replace(
+      path: route.path.replaceAllMapped(
+        RegExp(r':([A-Za-z][A-Za-z0-9]*)'),
+        (match) => Uri.encodeComponent(state.pathParameters[match[1]]!),
+      ),
+    )
+    .toString();
+
+@visibleForTesting
+StatefulShellRoute hostWorkspaceRouteGraph(AppAnalytics analytics) =>
+    _hostShellRoute(analytics, _RouterNavigatorKeys());
+
 StatefulShellRoute _hostShellRoute(
   AppAnalytics analytics,
   _RouterNavigatorKeys keys,
 ) {
+  final audience = _hostAudienceRoute();
+  final destinations = _hostWorkspaceRoutes([
+    ..._hostWorkspaceDestinationRoutes(),
+    ...audience.routes,
+    _hostCustomersLegacyRoute(),
+    _hostFormsLegacyRoute(),
+    GoRoute(
+      path: Routes.hostTodayFocusScreen.path,
+      name: Routes.hostTodayFocusScreen.name,
+      builder: (context, state) => HostTodayFocusScreen(
+        organizerId: state.uri.queryParameters['organizerId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostChatScreen.path,
+      name: Routes.hostChatScreen.name,
+      builder: (context, state) => ChatScreen(
+        matchId: state.pathParameters['matchId']!,
+        otherProfile: _routePublicProfileExtra(state),
+      ),
+    ),
+  ]);
+  // Audience children were authored relative to their former parent.
+  final routes = [
+    for (final route in destinations)
+      if (route.path.startsWith('/'))
+        route
+      else
+        GoRoute(
+          path: '${Routes.hostAudienceScreen.path}/${route.path}',
+          name: route.name,
+          builder: route.builder,
+          redirect: route.redirect,
+        ),
+  ];
+
+  ShellRoute workspaceRoute(Routes root, String name) => ShellRoute(
+    builder: (context, state, child) {
+      final selected = routes
+          .where((route) => route.path == state.fullPath)
+          .firstOrNull;
+      final parent = selected == null
+          ? null
+          : _hostWorkspaceParent(selected, routes);
+      final uri = state.uri.replace(
+        path: root.path,
+        queryParameters: {
+          ...state.uri.queryParameters,
+          if (_routeOrganizerQueryId(state) == null &&
+              state.pathParameters['clubId'] != null)
+            'organizerId': state.pathParameters['clubId']!,
+          if (root == Routes.hostAudienceScreen && selected != null)
+            'view': selected.path.contains('/forms/')
+                ? 'forms'
+                : selected.path.contains('/responses/') ||
+                      selected.path.contains('/applications/')
+                ? 'responses'
+                : selected.path.contains('/audiences/')
+                ? 'audiences'
+                : 'people',
+        },
+      );
+      final index = switch (root) {
+        Routes.hostTodayScreen => HostNavigationWorkspace.event(
+          uri: uri,
+          initialEvent: _routeEventExtra(state),
+          index: HostTodayScreen(
+            initialOrganizerId: uri.queryParameters['organizerId'],
+          ),
+        ),
+        Routes.hostEventsScreen => HostNavigationWorkspace.event(
+          uri: uri,
+          initialEvent: _routeEventExtra(state),
+          index: HostEventsScreen(
+            initialOrganizerId: uri.queryParameters['organizerId'],
+            initialProgramId: uri.queryParameters['programId'],
+            initialProgramAnchor: state.extra is OrganizerProgramListAnchor
+                ? state.extra as OrganizerProgramListAnchor
+                : null,
+          ),
+        ),
+        Routes.hostAudienceScreen => switch (hostAudienceViewFromName(
+          uri.queryParameters['view'],
+        )) {
+          HostAudienceView.forms ||
+          HostAudienceView.responses => HostNavigationWorkspace(
+            uri: uri,
+            index: hostAudienceScreenForUri(uri),
+          ),
+          _ => hostAudienceScreenForUri(
+            uri,
+            initialContactDisplayName: _routeContactNameExtra(state),
+          ),
+        },
+        Routes.hostInboxScreen => hostInboxScreenForUri(
+          uri,
+          initialOrganizerId: _routeClubIdExtra(state),
+        ),
+        _ => hostOrganizerScreenForUri(uri),
+      };
+      return HostNavigationWorkspace.route(
+        index: index,
+        navigator: child,
+        selectedRoute: selected?.name,
+        ancestors: [
+          if (parent?.name == Routes.hostAppEventManageScreen.name)
+            CatchWorkspacePane(
+              id: parent!.name!,
+              child: CatchWorkspaceBackScope(
+                onBack: () => context.go(hostWorkspaceIndexUri(uri).toString()),
+                child: HostEventManageRouteScreen(
+                  clubId: state.pathParameters['clubId']!,
+                  eventId: state.pathParameters['eventId']!,
+                  initialEvent: _routeEventExtra(state),
+                ),
+              ),
+            ),
+          if (parent?.builder != null)
+            CatchWorkspacePane(
+              id: parent!.name!,
+              child: CatchWorkspaceBackScope(
+                onBack: () => context.go(hostWorkspaceIndexUri(uri).toString()),
+                child: parent.builder!(context, state),
+              ),
+            ),
+        ],
+        onBack: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(
+              parent == null
+                  ? hostWorkspaceIndexUri(uri).toString()
+                  : _hostWorkspaceRouteLocation(parent, state),
+            );
+          }
+        },
+      );
+    },
+    routes: [
+      GoRoute(
+        path: root.path,
+        name: name,
+        redirect: root == Routes.hostOrganizerScreen
+            ? _organizerAudienceUriRedirect
+            : null,
+        builder: (context, state) => const SizedBox.shrink(),
+      ),
+      ...routes.where((route) => _hostWorkspaceOwner(route) == root),
+    ],
+  );
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) => HostAppShell(
       navigationShell: navigationShell,
-      requestedOrganizerId: _routeOrganizerQueryId(state),
+      requestedOrganizerId:
+          _routeOrganizerQueryId(state) ?? state.pathParameters['clubId'],
     ),
     branches: [
       StatefulShellBranch(
         navigatorKey: keys.hostToday,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
-          GoRoute(
-            path: Routes.hostTodayScreen.path,
-            name: Routes.hostTodayScreen.name,
-            builder: (context, state) => HostTodayScreen(
-              initialOrganizerId: _routeOrganizerQueryId(state),
-            ),
-            routes: [
-              GoRoute(
-                path: 'focus',
-                name: Routes.hostTodayFocusScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => HostTodayFocusScreen(
-                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
-                ),
-              ),
-            ],
-          ),
+          workspaceRoute(Routes.hostTodayScreen, Routes.hostTodayScreen.name),
         ],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostEvents,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
-          GoRoute(
-            path: Routes.hostEventsScreen.path,
-            name: Routes.hostEventsScreen.name,
-            builder: (context, state) => HostEventsScreen(
-              initialOrganizerId: _routeOrganizerQueryId(state),
-              initialProgramId: state.uri.queryParameters['programId'],
-              initialProgramAnchor: state.extra is OrganizerProgramListAnchor
-                  ? state.extra as OrganizerProgramListAnchor
-                  : null,
-            ),
-          ),
+          workspaceRoute(Routes.hostEventsScreen, Routes.hostEventsScreen.name),
         ],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostAudience,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
-          _hostAudienceRoute(keys),
-          _hostCustomersLegacyRoute(),
-          _hostFormsLegacyRoute(),
+          workspaceRoute(
+            Routes.hostAudienceScreen,
+            Routes.hostAudienceScreen.name,
+          ),
         ],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostInbox,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
-          GoRoute(
-            path: Routes.hostInboxScreen.path,
-            name: Routes.hostInboxScreen.name,
-            builder: (context, state) => hostInboxScreenForUri(
-              state.uri,
-              initialOrganizerId: _routeClubIdExtra(state),
-            ),
-            routes: [
-              GoRoute(
-                path: ':matchId',
-                name: Routes.hostChatScreen.name,
-                parentNavigatorKey: keys.root,
-                builder: (context, state) => ChatScreen(
-                  matchId: state.pathParameters['matchId']!,
-                  otherProfile: _routePublicProfileExtra(state),
-                ),
-              ),
-            ],
-          ),
+          workspaceRoute(Routes.hostInboxScreen, Routes.hostInboxScreen.name),
         ],
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostOrganizer,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
-          GoRoute(
-            path: Routes.hostOrganizerScreen.path,
-            name: Routes.hostOrganizerScreen.name,
-            redirect: _organizerAudienceUriRedirect,
-            builder: (context, state) => hostOrganizerScreenForUri(state.uri),
+          workspaceRoute(
+            Routes.hostOrganizerScreen,
+            Routes.hostOrganizerScreen.name,
           ),
         ],
       ),

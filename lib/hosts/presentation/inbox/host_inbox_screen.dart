@@ -30,6 +30,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -144,7 +145,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     final showSearch = isInbox;
     final selectedThreadId = _selectedThreadId;
 
-    Widget buildMaster(BuildContext context, bool splitView) {
+    Widget buildMaster(BuildContext context) {
       final workspaceSliver = isInbox
           ? HostInboxWorkspaceSection(
               uidState: uidState,
@@ -241,20 +242,16 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
 
     return CatchScaffold.workspace(
       backgroundColor: t.bg,
-      body: isInbox
-          ? CatchMasterDetailViewport.adaptive(
-              minimumExpandedWidth: CatchLayout.hostMessagingSplitViewMinWidth,
-              leadingBuilder: (context, split) =>
-                  !split && selectedThreadId != null
-                  ? detail
-                  : buildMaster(context, split),
-              body: detail,
-            )
-          : CatchMasterDetailViewport(
-              expanded: false,
-              leading: buildMaster(context, false),
-              body: detail,
-            ),
+      body: HostNavigationWorkspace.panes(
+        onBack: isInbox && selectedThreadId != null ? _closePerson : null,
+        compactPaneId: isInbox && selectedThreadId != null
+            ? 'conversation'
+            : 'inbox',
+        panes: [
+          CatchWorkspacePane(id: 'inbox', child: buildMaster(context)),
+          if (isInbox) CatchWorkspacePane(id: 'conversation', child: detail),
+        ],
+      ),
     );
   }
 

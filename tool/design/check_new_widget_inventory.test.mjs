@@ -99,6 +99,10 @@ test("composition renderer recognition stays bound to real owner methods", () =>
   const entries = [
     {file: `${ui}catch_action_module.dart`, library: `${ui}catch_section.dart`,
       owner: null, name: "_buildActionModule", returnType: "Widget"},
+    {file: `${ui}catch_action_module.dart`, library: `${ui}catch_section.dart`,
+      owner: null, name: "_buildSectionModule", returnType: "Widget"},
+    {file: `${ui}catch_collection_section.dart`, library: `${ui}catch_section.dart`,
+      owner: null, name: "_buildCollectionModule", returnType: "Widget"},
     {file: `${ui}catch_banner.dart`, library: `${ui}catch_banner.dart`,
       owner: "CatchBanner", name: "_buildBodyFeedback", returnType: "Widget"},
     ...["_buildBar", "_searchField", "_selectorControls"].map((name) => ({

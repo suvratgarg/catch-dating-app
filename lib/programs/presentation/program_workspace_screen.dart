@@ -125,13 +125,13 @@ class _ProgramWorkspacePageBodyState
       body: CatchRouteBody.standardSections(
         sections: [
           CatchSectionListItem(
-            child: CatchSection.contained(
+            child: CatchSection.status(
               title: program.title,
-              subtitle:
+              message:
                   '${AppTimeFormatters.shortDate(program.startsAt)} – '
                   '${AppTimeFormatters.shortDate(program.endsAt)} · '
                   '${program.timezone}',
-              child: Wrap(
+              meta: Wrap(
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
@@ -167,14 +167,15 @@ class _ProgramWorkspacePageBodyState
             ),
           ),
           CatchSectionListItem(
-            child: CatchSection.contained(
+            child: CatchSection.collection(
               title: context.l10n.programsWorkspaceScheduleTitle,
-              subtitle: context.l10n.programsWorkspaceScheduleSubtitle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (days.length > 1) ...[
-                    CatchChoiceInput<int>.segmented(
+              message: context.l10n.programsWorkspaceScheduleSubtitle,
+              emptyMessage: days.isEmpty
+                  ? context.l10n.programsWorkspaceNoFunctions
+                  : context.l10n.programsWorkspaceDayEmpty,
+              controls: days.length <= 1
+                  ? null
+                  : CatchChoiceInput<int>.segmented(
                       scrollable: true,
                       options: [
                         for (var i = 0; i < days.length; i++)
@@ -192,187 +193,124 @@ class _ProgramWorkspacePageBodyState
                       onChanged: (index) =>
                           setState(() => _selectedDayIndex = index),
                     ),
-                    gapH12,
-                  ],
-                  CatchButton(
-                    label: context.l10n.programsWorkspaceFunctionNew,
-                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    variant: CatchButtonVariant.secondary,
-                    onPressed: () => _editFunction(context, null),
+              actionLabel: context.l10n.programsWorkspaceFunctionNew,
+              onAction: () => _editFunction(context, null),
+              children: [
+                for (final fn in dayFunctions)
+                  ProgramWorkspaceFunctionTile(
+                    function: fn,
+                    onEdit: () => _editFunction(context, fn),
+                    onInvitations: () => _editInvitations(context, fn),
                   ),
-                  const SizedBox(height: CatchSpacing.s2),
-                  if (dayFunctions.isEmpty) ...[
-                    gapH16,
-                    Text(
-                      days.isEmpty
-                          ? context.l10n.programsWorkspaceNoFunctions
-                          : context.l10n.programsWorkspaceDayEmpty,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    gapH16,
-                  ] else
-                    for (final fn in dayFunctions)
-                      ProgramWorkspaceFunctionTile(
-                        function: fn,
-                        onEdit: () => _editFunction(context, fn),
-                        onInvitations: () => _editInvitations(context, fn),
-                      ),
-                ],
-              ),
+              ],
             ),
           ),
           CatchSectionListItem(
-            child: CatchSection.contained(
-              title: context.l10n.programsWorkspaceLogisticsTitle,
-              subtitle: context.l10n.programsWorkspaceLogisticsSubtitle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    context.l10n.programsWorkspacePickupTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
+            child: CatchSection.collection(
+              title: context.l10n.programsWorkspacePickupTitle,
+              emptyMessage: context.l10n.programsWorkspacePickupEmpty,
+              actionLabel: context.l10n.programsWorkspacePickupNew,
+              onAction: () => _editPickupPoint(context, null),
+              children: [
+                for (final point in detail.pickupPoints)
+                  ProgramWorkspaceStationTile(
+                    station: point,
+                    onEdit: () => _editPickupPoint(context, point),
                   ),
-                  gapH8,
-                  CatchButton(
-                    label: context.l10n.programsWorkspacePickupNew,
-                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    variant: CatchButtonVariant.secondary,
-                    onPressed: () => _editPickupPoint(context, null),
-                  ),
-                  const SizedBox(height: CatchSpacing.s2),
-                  if (detail.pickupPoints.isEmpty) ...[
-                    gapH8,
-                    Text(
-                      context.l10n.programsWorkspacePickupEmpty,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ] else
-                    for (final point in detail.pickupPoints)
-                      ProgramWorkspaceStationTile(
-                        station: point,
-                        onEdit: () => _editPickupPoint(context, point),
-                      ),
-                  gapH16,
-                  Text(
-                    context.l10n.programsWorkspaceHotelsTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  gapH8,
-                  CatchButton(
-                    label: context.l10n.programsWorkspaceHotelNew,
-                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    variant: CatchButtonVariant.secondary,
-                    onPressed: () => _editHotel(context, null),
-                  ),
-                  const SizedBox(height: CatchSpacing.s2),
-                  if (detail.hotels.isEmpty) ...[
-                    gapH8,
-                    Text(
-                      context.l10n.programsWorkspaceHotelEmpty,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ] else
-                    for (final hotel in detail.hotels)
-                      ProgramWorkspaceHotelTile(
-                        hotel: hotel,
-                        onEdit: () => _editHotel(context, hotel),
-                      ),
-                ],
-              ),
+              ],
             ),
           ),
           CatchSectionListItem(
-            child: CatchSection.contained(
+            child: CatchSection.collection(
+              title: context.l10n.programsWorkspaceHotelsTitle,
+              emptyMessage: context.l10n.programsWorkspaceHotelEmpty,
+              actionLabel: context.l10n.programsWorkspaceHotelNew,
+              onAction: () => _editHotel(context, null),
+              children: [
+                for (final hotel in detail.hotels)
+                  ProgramWorkspaceHotelTile(
+                    hotel: hotel,
+                    onEdit: () => _editHotel(context, hotel),
+                  ),
+              ],
+            ),
+          ),
+          CatchSectionListItem(
+            child: CatchSection.fieldRows(
               title: context.l10n.programsWorkspaceManageTitle,
-              child: Column(
-                children: [
-                  CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.hotel),
-                    body: Text(
-                      context.l10n.programsLodgingTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    trailing: Icon(CatchIcons.chevronRightRounded),
-                    onTap: () => context.pushNamed(
-                      Routes.hostProgramLodgingScreen.name,
-                      pathParameters: {'programId': program.programId},
-                    ),
+              children: [
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.programsLodgingTitle,
+                  icon: CatchIcons.hotel,
+                  emphasis: CatchFieldEmphasis.title,
+                  onTap: () => context.pushNamed(
+                    Routes.hostProgramLodgingScreen.name,
+                    pathParameters: {'programId': program.programId},
                   ),
-                  CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.groupsOutlined),
-                    body: Text(
-                      context.l10n.programsWorkspaceGuestsTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    trailing: Icon(CatchIcons.chevronRightRounded),
-                    onTap: () => context.pushNamed(
-                      Routes.hostProgramGuestsScreen.name,
-                      pathParameters: {'programId': program.programId},
-                    ),
+                ),
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.programsWorkspaceGuestsTitle,
+                  icon: CatchIcons.groupsOutlined,
+                  emphasis: CatchFieldEmphasis.title,
+                  onTap: () => context.pushNamed(
+                    Routes.hostProgramGuestsScreen.name,
+                    pathParameters: {'programId': program.programId},
                   ),
-                  CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.workOutlineRounded),
-                    body: Text(
-                      context.l10n.programsWorkspaceTeamTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    trailing: Icon(CatchIcons.chevronRightRounded),
-                    onTap: () => context.pushNamed(
-                      Routes.hostProgramTeamScreen.name,
-                      pathParameters: {'programId': program.programId},
-                    ),
+                ),
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.programsWorkspaceTeamTitle,
+                  icon: CatchIcons.workOutlineRounded,
+                  emphasis: CatchFieldEmphasis.title,
+                  onTap: () => context.pushNamed(
+                    Routes.hostProgramTeamScreen.name,
+                    pathParameters: {'programId': program.programId},
                   ),
-                  CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.cloudUploadOutlined),
-                    body: Text(
-                      context.l10n.programsWorkspaceImportTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    trailing: Icon(CatchIcons.chevronRightRounded),
-                    onTap: () => context.pushNamed(
-                      Routes.hostProgramImportScreen.name,
-                      pathParameters: {'programId': program.programId},
-                    ),
+                ),
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.programsWorkspaceImportTitle,
+                  icon: CatchIcons.cloudUploadOutlined,
+                  emphasis: CatchFieldEmphasis.title,
+                  onTap: () => context.pushNamed(
+                    Routes.hostProgramImportScreen.name,
+                    pathParameters: {'programId': program.programId},
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           CatchSectionListItem(
-            child: CatchSection.contained(
+            child: CatchSection.fieldRows(
               title: context.l10n.programsWorkspaceCommunicationsTitle,
-              child: Column(
-                children: [
-                  CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.autoAwesomeOutlined),
-                    body: Text(
-                      context.l10n.programsWorkspaceMomentsTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    trailing: Icon(CatchIcons.chevronRightRounded),
-                    onTap: () => context.pushNamed(
-                      Routes.hostProgramMomentsScreen.name,
-                      pathParameters: {'programId': program.programId},
-                      queryParameters: {'title': program.title},
-                    ),
+              children: [
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.programsWorkspaceMomentsTitle,
+                  icon: CatchIcons.autoAwesomeOutlined,
+                  emphasis: CatchFieldEmphasis.title,
+                  onTap: () => context.pushNamed(
+                    Routes.hostProgramMomentsScreen.name,
+                    pathParameters: {'programId': program.programId},
+                    queryParameters: {'title': program.title},
                   ),
-                  CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.forumOutlined),
-                    body: Text(
-                      context.l10n.programsWorkspaceInboxTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    trailing: Icon(CatchIcons.chevronRightRounded),
-                    onTap: () => context.pushNamed(
-                      Routes.hostInboxScreen.name,
-                      queryParameters: {
-                        'programId': program.programId,
-                        'organizerId': program.organizerId,
-                      },
-                    ),
+                ),
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.programsWorkspaceInboxTitle,
+                  icon: CatchIcons.forumOutlined,
+                  emphasis: CatchFieldEmphasis.title,
+                  onTap: () => context.pushNamed(
+                    Routes.hostInboxScreen.name,
+                    queryParameters: {
+                      'programId': program.programId,
+                      'organizerId': program.organizerId,
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

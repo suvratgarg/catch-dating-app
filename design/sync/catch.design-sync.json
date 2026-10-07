@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-23",
+  "updated": "2026-10-07",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "8f716e80755bb8deeec134b3dae394385aff50343a2eb839893560be73badcfb",
+  "sourceDigest": "655b59f30f08dfa2892d86d86859a6266eabc2a91ca3d0a4bb1ef2f9cfb10a57",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "8f716e80755bb8deeec134b3dae394385aff50343a2eb839893560be73badcfb",
-    "contractDigest": "8f716e80755bb8deeec134b3dae394385aff50343a2eb839893560be73badcfb"
+    "digest": "655b59f30f08dfa2892d86d86859a6266eabc2a91ca3d0a4bb1ef2f9cfb10a57",
+    "contractDigest": "655b59f30f08dfa2892d86d86859a6266eabc2a91ca3d0a4bb1ef2f9cfb10a57"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "59b3189835082df3f9f9630690a797fb628e52793b7ece04c65eb3aa5f32eb40",
+    "handoffRequestDigest": "082cd3cab768f726d95530bf605366e3229637593e5d2be7ea90541b47e70b33",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 65,
-    "publicClassCount": 226,
+    "publicClassCount": 231,
     "conceptCount": 58,
-    "memberCount": 150,
-    "membersPerConcept": 2.59,
+    "memberCount": 155,
+    "membersPerConcept": 2.67,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 58,
-      "member": 150,
+      "member": 155,
       "screen": 15
     },
     "collisionCount": 28,
@@ -311,7 +311,7 @@
           "CatchFormStepRowListStatus",
           "CatchFormStepSpec",
           "CatchFractionalViewport",
-          "CatchMasterDetailViewport",
+          "CatchNavigationViewport",
           "CatchPageBody",
           "CatchPagerFocusViewport",
           "CatchRootScreenBody",
@@ -328,7 +328,12 @@
           "CatchScaffold",
           "CatchScrollTerminalGap",
           "CatchScrollView",
-          "CatchTabViewportScope"
+          "CatchTabViewportScope",
+          "CatchWorkspaceBackScope",
+          "CatchWorkspaceHeader",
+          "CatchWorkspaceHeaderLayout",
+          "CatchWorkspacePaneScaffold",
+          "CatchWorkspacePaneScope"
         ]
       },
       {
@@ -807,8 +812,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 21,
-      "figmaExpectedPropertyDigest": "818dc183bf8e242df3316acd2017c49641c671b5e109e292cf566eaef8e20e03",
+      "figmaExpectedPropertyCount": 23,
+      "figmaExpectedPropertyDigest": "aa2bfc3201ed9a9c343065609b57fed6ef31108dd769981c864592a417d441fe",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -816,7 +821,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "bff70b5d44e8846cd50101642278f30fd08d7cea2b358f887a5791387d94de28"
+      "contractDigest": "fb3c159cd44281f2f4f7f1e6d80ca0903309e356cf88a3e835455b4f14030a81"
     },
     {
       "contractId": "catch.skeleton",
@@ -1360,7 +1365,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "dec5e7cce0a9fcc5dba8b410c2762cd1d31abcd171ab6e38d421b24b100a9faf"
+      "contractDigest": "aeed06cb8d86863ea63593c0959322567d502c2171e889ec5c03cd27ddff6299"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -1456,7 +1461,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PageBody",
       "claudeAllowed": true,
-      "contractDigest": "33fac0747b01f691a7ffb389b3ce945439729424879f87d040966b2fe148ca38"
+      "contractDigest": "1660a0cb6c4f2a5e2bcb8ef089470a15c72c9d16e68a72cb22cb054ee6e167bb"
     },
     {
       "contractId": "catch.section_stack",

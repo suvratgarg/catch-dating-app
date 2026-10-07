@@ -7,6 +7,8 @@ import 'package:catch_ui/src/components/catch_content_section.dart';
 import 'package:catch_ui/src/components/catch_dependent_row_section.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
+import 'package:catch_ui/src/components/catch_empty_state.dart';
+import 'package:catch_ui/src/components/catch_empty_state_variant.dart';
 import 'package:catch_ui/src/components/catch_field.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
@@ -30,6 +32,7 @@ import 'package:flutter/material.dart';
 part 'catch_section_render.dart';
 part 'catch_section_configs.dart';
 part 'catch_action_module.dart';
+part 'catch_collection_section.dart';
 
 enum _CatchSectionVariant { divided, contained, plain }
 
@@ -566,6 +569,63 @@ class CatchSection extends StatelessWidget {
         actionEmphasis: actionEmphasis,
         actionStatus: actionStatus,
         feedback: footer,
+      ),
+    ),
+  );
+
+  /// A content-sized collection. Section owns successful-empty presentation,
+  /// description, record separators and the optional full-width command.
+  factory CatchSection.collection({
+    Key? key,
+    required String title,
+    String? message,
+    String? emptyTitle,
+    required String emptyMessage,
+    IconData? emptyIcon,
+    required List<Widget> children,
+    Widget? controls,
+    String? actionLabel,
+    VoidCallback? onAction,
+    CatchButtonStatus actionStatus = CatchButtonStatus.idle,
+    Widget? footer,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: Builder(
+      builder: (context) => _buildCollectionModule(
+        context,
+        title: title,
+        message: message,
+        emptyTitle: emptyTitle,
+        emptyMessage: emptyMessage,
+        emptyIcon: emptyIcon,
+        children: children,
+        controls: controls,
+        actionLabel: actionLabel,
+        onAction: onAction,
+        actionStatus: actionStatus,
+        footer: footer,
+      ),
+    ),
+  );
+
+  /// A quiet section-level status; it shares the action/collection anatomy.
+  factory CatchSection.status({
+    Key? key,
+    required String title,
+    required String message,
+    IconData? icon,
+    Widget? meta,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: Builder(
+      builder: (context) => _buildSectionModule(
+        context,
+        title: title,
+        message: message,
+        icon: icon,
+        details: meta,
       ),
     ),
   );

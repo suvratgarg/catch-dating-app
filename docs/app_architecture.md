@@ -600,7 +600,7 @@ cannot accept callbacks. Secondary targets belong to `CatchFieldSecondaryAction`
 
 `CatchPageBody` remains the semantic inset owner for non-row content and legacy
 form flows. Never wrap full-width row sections with an additional horizontal
-page inset. `CatchScaffold`, `CatchMasterDetailViewport` and
+page inset. `CatchScaffold`, `CatchNavigationViewport` and
 `CatchSectionList.panes` publish local viewport bounds for geometry assertions.
 Square full-width feedback requires a matching published paint extent. Missing
 geometry context uses rounded containment; a known mismatch asserts in debug
@@ -646,13 +646,15 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   and one `CatchRootScreenPageScrollView` per page. Every page must declare
   geometry through the page owner's `standard`, `fullBleed`, or
   `embeddedViewport` constructor; `CatchRootScreenPageSpec` only selects the
-  scroll, surface, or master-detail adapter and cannot redeclare geometry or
+  scroll or surface adapter and cannot redeclare geometry or
   terminal-clearance policy.
   Overlap injection, restoration, focus isolation, body geometry, refresh, and
   terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
-  `CatchSectionList.page`; master-detail workspaces use
-  `CatchMasterDetailViewport.adaptive` at their actual responsive boundary.
+  `CatchSectionList.page`. Navigation depth uses `CatchNavigationViewport`
+  with ordered `CatchWorkspacePane` levels; local available width selects
+  concurrent columns or the active compact level. Feature pages never choose
+  different navigation destinations by device width.
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
 
@@ -661,8 +663,22 @@ The named `withPrimaryRail` constructor is a typed parameter bundle, not a
 second scaffold: it requires the rail, closed page body, and root-header spec
 together, preventing impossible half-configured states that nullable unrelated
 properties would allow. The root owner privately selects `CustomScrollView`
-without a rail or overlap-safe `NestedScrollView` with one. The adaptive app
-shell remains the separate owner of bottom navigation and its obstruction.
+without a rail or overlap-safe `NestedScrollView` with one outside a workspace.
+Inside `CatchWorkspacePaneScope`, both root and route owners delegate chrome to
+`CatchWorkspacePaneScaffold`: each full-height pane owns its title, actions, peer
+rail and body scroll. Peer rails start at the same header boundary; actions stay
+in the pane they affect. Visited ancestors keep state across resizing, while
+unvisited previews do not initialize until visible. `CatchWorkspaceBackScope`
+provides parent navigation to existing top bars; viewport back handling uses the
+same path on mobile. Events and Today encode event selection in root query
+parameters; Organizer settings replace the adjacent preview; Audience can add a
+response/application level after a person. Every Host destination is registered
+inside one of the five workspace branches. `HostNavigationWorkspace` attaches
+the selected route navigator and its declared ancestors to the existing index;
+Program subpages, Audience editors, setup flows and live work use this same
+adapter. Named push/pop results remain intact. No Host content route escapes
+to the root navigator based on width. The adaptive app shell remains the
+separate owner of bottom navigation and its obstruction.
 
 `CatchPageBodyMode.standard` is the one regular body contract: 20 pt phone
 gutters and 16 pt from the preceding title/tab boundary to the standard body
@@ -980,9 +996,10 @@ captures. Reference images alone cannot reopen or bypass this boundary.
    notifications, native menus, and window restoration stay behind replaceable
    services. Layout widgets never infer capabilities from the current window
    class.
-6. Compact child routes may continue above the root navigator. Master-detail
-   routes must later preserve selected ids in the branch/URL so resizing,
-   browser back/forward, deep links, and window restoration remain truthful.
+6. Host child routes remain in their owning workspace branch on every width.
+   The adapter presents the active level on compact screens and its available
+   ancestors on wider screens. Route identity, Back, push/pop results, drafts
+   and scroll state must survive resizing; detail selections remain in URLs.
 
 **Section-page composition**
 

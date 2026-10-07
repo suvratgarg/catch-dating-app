@@ -5,6 +5,8 @@ import 'package:catch_ui/src/components/catch_banner.dart';
 import 'package:catch_ui/src/components/catch_banner_status.dart';
 import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
+import 'package:catch_ui/src/components/catch_primary_rail.dart';
+import 'package:catch_ui/src/patterns/catch_navigation_viewport.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
@@ -14,6 +16,7 @@ import 'package:catch_ui/src/patterns/catch_section_list.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
+import 'package:catch_ui/src/patterns/catch_workspace_pane_scaffold.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchRouteTopBarBuilder =
@@ -363,6 +366,7 @@ class CatchRouteScaffold extends StatefulWidget {
     required this.body,
     this.statuses = const [],
     this.footer,
+    this.actions,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
   });
@@ -371,6 +375,7 @@ class CatchRouteScaffold extends StatefulWidget {
   final CatchRouteBody body;
   final List<CatchBannerStatus> statuses;
   final Widget? footer;
+  final CatchPrimaryRail? actions;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
 
@@ -399,22 +404,38 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
       ...widget.statuses,
       ...CatchBannerStatusScope.of(context),
     ];
+    final body = NotificationListener<ScrollNotification>(
+      onNotification: _handleScroll,
+      child: widget.body._build(context),
+    );
+    final inWorkspace = CatchWorkspacePaneScope.isSinglePaneOf(context) != null;
     return CatchBannerStatusScope(
       statuses: const [],
       child: CatchScaffold.workspace(
         backgroundColor: background,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-        title: widget.topBarBuilder(context, _scrolledUnder),
+        title: inWorkspace
+            ? null
+            : widget.topBarBuilder(context, _scrolledUnder),
         footer: widget.footer,
-        body: NotificationListener<ScrollNotification>(
-          onNotification: _handleScroll,
-          child: Column(
-            children: [
-              CatchBanner.statuses(statuses: statuses),
-              Expanded(child: widget.body._build(context)),
-            ],
-          ),
-        ),
+        body: inWorkspace
+            ? CatchWorkspacePaneScaffold(
+                title: widget.topBarBuilder(context, _scrolledUnder) as Widget,
+                actions: widget.actions,
+                body: Column(
+                  children: [
+                    CatchBanner.statuses(statuses: statuses),
+                    Expanded(child: body),
+                  ],
+                ),
+              )
+            : Column(
+                children: [
+                  if (widget.actions != null) widget.actions as Widget,
+                  CatchBanner.statuses(statuses: statuses),
+                  Expanded(child: body),
+                ],
+              ),
       ),
     );
   }

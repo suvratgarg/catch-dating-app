@@ -27,6 +27,12 @@ Widget catchSectionContractStates(BuildContext context) {
       'action-loading',
       'action-disabled',
       'action-details',
+      'collection-empty',
+      'collection-populated',
+      'collection-controls',
+      'collection-loading-action',
+      'collection-disabled-action',
+      'status-module',
       'plain-section',
       'divided-field-rows',
       'divided-field-rows-full-bleed',
@@ -51,6 +57,52 @@ Widget catchSectionContractStates(BuildContext context) {
       'horizontal-footer',
     ],
     children: [
+      for (final state in [
+        'collection-empty',
+        'collection-populated',
+        'collection-controls',
+        'collection-loading-action',
+        'collection-disabled-action',
+      ])
+        WidgetbookContractStateCard(
+          label: state,
+          child: CatchSection.collection(
+            title: 'Pickup points',
+            emptyMessage:
+                'Add airports, railway stations or other meeting points.',
+            actionLabel: 'Add pickup point',
+            onAction: state == 'collection-disabled-action'
+                ? null
+                : widgetbookNoop,
+            actionStatus: state == 'collection-loading-action'
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
+            controls: state == 'collection-controls'
+                ? CatchChoiceInput<int>.segmented(
+                    options: const [
+                      CatchOption(value: 0, label: 'Day 1'),
+                      CatchOption(value: 1, label: 'Day 2'),
+                    ],
+                    selected: 0,
+                    onChanged: (_) {},
+                    contractExemption:
+                        'Local collection filter; no payload field.',
+                  )
+                : null,
+            children: [
+              if (state == 'collection-populated')
+                const Text('Indore airport · Arrivals'),
+            ],
+          ),
+        ),
+      WidgetbookContractStateCard(
+        label: 'status-module',
+        child: CatchSection.status(
+          title: 'Waiting for attendee feedback',
+          message: 'The report appears once attendees share feedback.',
+          icon: CatchIcons.autoAwesomeOutlined,
+        ),
+      ),
       for (final emphasis in CatchSectionEmphasis.values)
         WidgetbookContractStateCard(
           label: 'action-${emphasis.name}',
