@@ -8,6 +8,7 @@ export class GuardedModelRunner {
    * cache?:{get:(key:string)=>Promise<any>, put:(key:string, record:any)=>Promise<any>},
    * budget?:BudgetLedger, monthlyBudget?:BudgetLedger|null, monthlyWindow?:string|null,
    * modelId?:string, providerId?:string|null, validateOutput?:((output:any)=>unknown)|null,
+   * beforeUse?:((context:{cacheHit:boolean})=>Promise<void>)|null,
    * maxInputBytes?:number}} [options] */
   constructor({
     enabled = false,
@@ -19,6 +20,7 @@ export class GuardedModelRunner {
     modelId = "disabled",
     providerId = null,
     validateOutput = null,
+    beforeUse = null,
     maxInputBytes = 32_768,
   } = {}) {
     invariant(cache?.get && cache?.put, "INVALID_MODEL_RUNNER", "A model cache port with get/put is required.");
@@ -37,6 +39,7 @@ export class GuardedModelRunner {
       /^[a-z0-9][a-z0-9._-]{0,127}$/i.test(modelId)),
     "INVALID_MODEL_RUNNER", "Model identity must be a bounded identifier.");
     this.validateOutput = validateOutput;
+    this.beforeUse = beforeUse;
     this.maxInputBytes = maxInputBytes;
   }
 
@@ -57,7 +60,14 @@ export class GuardedModelRunner {
       // Keep legacy keys for existing workflows with no provider identity.
       ...(this.providerId === null ? {} : {providerId: this.providerId}),
     });
-    const cached = await this.cache.get(cacheKey);
+    let cached;
+    try {cached = await this.cache.get(cacheKey);} catch (error) {
+      if (this.providerId === null) throw error;
+      throw new OperationsError("MODEL_CACHE_UNAVAILABLE", "Model cache lookup failed.");
+    }
+    // The trusted workflow refreshes authority after cache waits and before
+    // either replay or spending. This hook supplies no provider fallback.
+    if (this.beforeUse) await this.beforeUse({cacheHit: Boolean(cached)});
     checkCancellation(request.signal, "not_submitted");
     if (cached) {
       let metadata;
@@ -77,7 +87,7 @@ export class GuardedModelRunner {
       const validation = validateJsonSchema(request.outputSchema, cached.output);
       if (!validation.valid) {
         throw new OperationsError("MODEL_CACHE_INVALID", "Cached model output no longer matches its output schema.", {
-          details: {cacheKey, errors: validation.errors},
+          details: this.providerId === null ? {cacheKey, errors: validation.errors} : {cacheKey},
         });
       }
       this.validateOutput?.(cached.output);
@@ -197,7 +207,10 @@ export class GuardedModelRunner {
           request: requestMetadata}),
       },
     };
-    await this.cache.put(cacheKey, record);
+    try {await this.cache.put(cacheKey, record);} catch (error) {
+      if (this.providerId === null) throw error;
+      throw new OperationsError("MODEL_CACHE_UNAVAILABLE", "Validated model result could not be cached.");
+    }
     return {output: record.output, provenance: record.provenance};
   }
 }

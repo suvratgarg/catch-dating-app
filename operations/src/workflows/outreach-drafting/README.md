@@ -40,14 +40,19 @@ run/month model and network ceilings, forwarded cancellation and redacted,
 bounded request/usage metadata. A stage policy hash also separates prompt and
 budget revisions even when a prompt version is reused. No provider fallback is
 permitted; the composition fixes attempts and network requests to one.
+Current stage authority and the live UTC budget month are checked again after
+cache waits, before provider invocation and before returning any prepared result.
+Provider-aware cache and activation read errors omit raw messages and causes.
 
 The trusted worker supplies `publicClauses` or `publicSources` explicitly marked
 `dataClassification: reviewed_public`. Classification is a worker obligation:
 schemas and this marker cannot prove arbitrary free text is public. The helper
 projects allowlisted text into local option/source aliases. Organizer, contact,
 opportunity and canonical source/clause IDs, URL metadata, private CRM extras and
-unapproved clauses are absent from provider input. Writing returns a canonical
-ID selection, with no generated message prose. Research returns an unverified,
+unapproved clauses are absent from provider input. Public projection fields must
+be captured own values; live getters are rejected. Writing returns a canonical
+ID selection with observation, capability and CTA, or an explicit blocking
+reason, with no generated message prose. Research returns an unverified,
 source-bound proposal. Both full canonical contracts and literal source checks
 run before caching or releasing any reservation. A trusted prompt must also
 contain only approved public instructions.

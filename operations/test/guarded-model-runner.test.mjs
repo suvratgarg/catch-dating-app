@@ -182,3 +182,21 @@ test("input/schema snapshot remains stable across an asynchronous cache lookup",
   assert.equal(sent.input.text, "original");
   assert.equal(sent.outputSchema.properties.draft.type, "string");
 });
+
+test("provider-aware cache read/write exceptions and invalid cached keys are redacted", async () => {
+  const fail = async () => {throw new Error("private-cache-token");};
+  for (const cache of [{get: fail, put: async () => {}}, {get: async () => null, put: fail}]) {
+    const f = fixture({cache});
+    await assert.rejects(f.runner.run(request()), (error) => {
+      assert.equal(error.code, "MODEL_CACHE_UNAVAILABLE"); assert.equal(error.cause, undefined);
+      assert.doesNotMatch(JSON.stringify(error), /private-cache-token/); return true;
+    });
+  }
+  const f = fixture(); const result = await f.runner.run(request());
+  f.records.get(result.provenance.cacheKey).output["private-cache-property"] = "private-cache-token";
+  await assert.rejects(f.runner.run(request()), (error) => {
+    assert.equal(error.code, "MODEL_CACHE_INVALID");
+    assert.doesNotMatch(JSON.stringify(error), /private-cache-property|private-cache-token/); return true;
+  });
+  assert.equal(f.calls(), 1);
+});

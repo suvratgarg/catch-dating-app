@@ -85,7 +85,7 @@ for (const providerId of ["deepseek", "openai", "anthropic"]) {
     assert.equal(result.provenance.metadata.costBasis, "reserved_ceiling");
     const cached = await f.adapter.run(f.request());
     assert.equal(cached.provenance.cacheHit, true); assert.equal(f.calls(), 1);
-    assert.equal(f.activations(), 2);
+    assert.ok(f.activations() >= 2);
   });
 }
 
@@ -193,4 +193,69 @@ test("cancellation and unknown outcomes retain spending without another provider
   assert.equal(calls, 1); assert.equal(f.records.size, 0);
   assert.equal(f.monthlyBudget.snapshot().consumed.modelCostMicros, 1000);
   assert.equal(f.monthlyBudget.snapshot().consumed.networkRequests, 1);
+});
+
+test("authority expiring during cache waits prevents spending and cached replay", async () => {
+  for (const cached of [false, true]) {
+    let now = new Date("2026-10-07T13:00:00.000Z");
+    const seed = fixture();
+    const seedResult = cached ? await seed.adapter.run(seed.request()) : null;
+    const f = fixture({clock: () => now, cache: {
+      get: async () => {now = new Date("2026-10-09T00:00:00.000Z");
+        return seedResult ? seed.records.get(seedResult.provenance.cacheKey) : null;},
+      put: async () => assert.fail("expired result must not be cached"),
+    }});
+    await assert.rejects(f.adapter.run(f.request()), {code: "SALES_API_INACTIVE"});
+    assert.equal(f.calls(), 0); assert.equal(f.monthlyBudget.snapshot().consumed.modelCalls, 0);
+  }
+});
+
+test("current UTC month is required initially and after asynchronous cache waits", async () => {
+  const stale = fixture({monthlyWindow: "2026-09"});
+  await assert.rejects(stale.adapter.run(stale.request()), {code: "MODEL_MONTHLY_WINDOW_REQUIRED"});
+  assert.equal(stale.calls(), 0);
+  let now = new Date("2026-10-31T23:59:59.000Z");
+  const f = fixture({clock: () => now,
+    activationPort: {current: async (binding) => ({...binding, status: "active",
+      authorizationId: "fixture-auth", expiresAt: "2026-12-01T00:00:00.000Z"})},
+    cache: {get: async () => {now = new Date("2026-11-01T00:00:00.000Z"); return null;}, put: async () => {}}});
+  await assert.rejects(f.adapter.run(f.request()), {code: "MODEL_MONTHLY_WINDOW_REQUIRED"});
+  assert.equal(f.calls(), 0); assert.equal(f.monthlyBudget.snapshot().consumed.networkRequests, 0);
+});
+
+test("live public field getters reject before authorization without exposing their values", async () => {
+  for (const [stage, key] of [["writing", "text"], ["research", "url"], ["research", "text"]]) {
+    const f = fixture(); const request = f.request(stage);
+    const row = stage === "writing" ? request.publicClauses[0] : request.publicSources[0];
+    let reads = 0;
+    Object.defineProperty(row, key, {get: () => {reads++; return "private-getter-value";}});
+    await assert.rejects(f.adapter.run(request), (error) => {
+      assert.equal(error.code, "SALES_PUBLIC_INPUT_INVALID");
+      assert.doesNotMatch(JSON.stringify(error), /private-getter-value/); return true;
+    });
+    assert.equal(reads, 0); assert.equal(f.activations(), 0); assert.equal(f.calls(), 0);
+  }
+});
+
+test("activation read exceptions are redacted without secrets, raw causes or fallback", async () => {
+  const f = fixture({activationPort: {current: async () => {throw new Error("private-activation-token");}}});
+  await assert.rejects(f.adapter.run(f.request()), (error) => {
+    assert.equal(error.code, "SALES_API_INACTIVE"); assert.equal(error.cause, undefined);
+    assert.doesNotMatch(JSON.stringify(error), /private-activation-token/); return true;
+  });
+  assert.equal(f.calls(), 0); assert.equal(f.creations(), 0);
+});
+
+test("unblocked writing requires observation, capability and CTA before caching", async () => {
+  for (const output of [
+    {...writing, observationAlias: null}, {...writing, capabilityAlias: null},
+    {...writing, ctaAlias: null}, {...writing, reasonToBlock: "   "},
+  ]) {
+    const f = fixture({output});
+    await assert.rejects(f.adapter.run(f.request()), {code: "SALES_SELECTION_INVALID"});
+    assert.equal(f.records.size, 0); assert.equal(f.monthlyBudget.snapshot().consumed.modelInputTokens, 100);
+  }
+  const f = fixture({output: {...writing, observationAlias: null, capabilityAlias: null,
+    ctaAlias: null, reasonToBlock: "Missing reviewed clauses."}});
+  assert.equal((await f.adapter.run(f.request())).selection.reasonToBlock, "Missing reviewed clauses.");
 });

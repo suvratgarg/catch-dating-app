@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import {BudgetLedger} from "../../platform/budget.mjs";
 import {hashValue} from "../../platform/canonical-json.mjs";
-import {invariant} from "../../platform/errors.mjs";
+import {OperationsError, invariant} from "../../platform/errors.mjs";
 import {validateJsonSchema} from "../../platform/json-schema.mjs";
 import {GuardedModelRunner} from "../../platform/model/guarded-model-runner.mjs";
 import {authorizePreparationStage} from "./preparation-policy.mjs";
@@ -66,8 +66,23 @@ export function createSalesPreparationAdapter({enabled = false, factories = {}, 
     const frozen = structuredClone(request.frozen);
     const currentPolicy = structuredClone(request.currentPolicy);
     const estimatedInputTokens = request.estimatedInputTokens;
-    const authority = await authorizePreparationStage({frozen, currentPolicy, stage,
-      activationPort, ownerUid: request.ownerUid, clock});
+    const ownerUid = request.ownerUid;
+    let authority;
+    const ensureCurrentAuthority = async () => {
+      cancelled(signal);
+      try {
+        authority = await authorizePreparationStage({frozen, currentPolicy, stage,
+          activationPort, ownerUid, clock});
+      } catch (error) {
+        throw new OperationsError(SAFE_AUTHORITY_ERRORS.has(error?.code) ? error.code : "SALES_API_INACTIVE",
+          "Current exact stage authorization could not be established.");
+      }
+      cancelled(signal);
+      const at = new Date(clock());
+      invariant(Number.isFinite(at.getTime()) && at.toISOString().slice(0, 7) === monthlyWindow,
+        "MODEL_MONTHLY_WINDOW_REQUIRED", "Spending requires the current UTC monthly window.");
+    };
+    await ensureCurrentAuthority();
     cancelled(signal);
     invariant(authority.providerAuthority, "SALES_PROVIDER_STAGE_INACTIVE",
       "Only the independently authorized API stage can invoke a provider.");
@@ -93,15 +108,19 @@ export function createSalesPreparationAdapter({enabled = false, factories = {}, 
       serverSecretRef: providerOptions.serverSecretRef,
       resolveSecret: providerOptions.resolveSecret, transport: providerOptions.transport,
       timeoutMs: providerOptions.timeoutMs});
-    const runner = new GuardedModelRunner({enabled: true, provider, cache, budget,
+    const guardedProvider = {run: async (value) => {
+      await ensureCurrentAuthority();
+      return provider.run(value);
+    }};
+    const runner = new GuardedModelRunner({enabled: true, provider: guardedProvider, cache, budget,
       monthlyBudget, monthlyWindow, providerId: config.providerId, modelId: config.modelId, maxInputBytes,
-      validateOutput: projection.compose});
+      validateOutput: projection.compose, beforeUse: ensureCurrentAuthority});
     const result = await runner.run({task: `sales-${stage}-${frozen.stageHashes[stage]}`, promptVersion: config.promptVersion,
       input: projection.input, outputSchema: projection.outputSchema,
       estimatedInputTokens,
       maxOutputTokens: config.budget.modelOutputTokens, maxCostMicros: config.budget.modelCostMicros,
       maxNetworkRequests: 1, signal});
-    cancelled(signal);
+    await ensureCurrentAuthority();
     return {...projection.compose(result.output), provenance: result.provenance,
       budget: budget.snapshot(), policyHash: frozen.policyHash, stageHash: frozen.stageHashes[stage],
       stage, authorizationId: authority.authorizationId, sendAuthority: false};
@@ -126,7 +145,8 @@ function projectWriting({context, publicClauses}) {
     "SALES_PUBLIC_INPUT_INVALID", "Local selection identities are required.");
   const byAlias = new Map();
   const seen = new Set();
-  const options = publicClauses.map((clause, index) => {
+  const options = publicClauses.map((value, index) => {
+    const clause = publicFields(value, ["dataClassification", "approved", "kind", "id", "text"]);
     invariant(clause.dataClassification === "reviewed_public" && clause.approved === true &&
       kinds.includes(clause.kind) && typeof clause.id === "string" && clause.id.length > 0 &&
       clause.id.length <= 160 && !seen.has(clause.id) && typeof clause.text === "string" &&
@@ -148,6 +168,11 @@ function projectWriting({context, publicClauses}) {
     compose(output) {
       invariant(validateJsonSchema(writingOutput, output).valid,
         "SALES_SELECTION_INVALID", "Writing output must match the wire DTO.");
+      invariant(output.reasonToBlock !== null ||
+        [output.observationAlias, output.capabilityAlias, output.ctaAlias].every((alias) => alias !== null),
+      "SALES_SELECTION_INVALID", "An unblocked selection requires observation, capability and CTA.");
+      invariant(output.reasonToBlock === null || output.reasonToBlock.trim().length > 0,
+        "SALES_SELECTION_INVALID", "A blocked selection requires a meaningful reason.");
       const selection = {...binding, language: "en", reasonToBlock: output.reasonToBlock,
         omittedIds: output.omittedAliases.map((alias) => lookup(alias))};
       for (const kind of kinds) selection[`${kind}Id`] = lookup(output[`${kind}Alias`], kind);
@@ -162,7 +187,8 @@ function projectResearch({context, publicSources}) {
     context.organizerId.length <= 128 && Array.isArray(publicSources) && publicSources.length <= 50,
   "SALES_PUBLIC_INPUT_INVALID", "Research requires an organizer and bounded reviewed public sources.");
   const organizerId = context.organizerId;
-  const sources = publicSources.map((source) => {
+  const sources = publicSources.map((value) => {
+    const source = publicFields(value, ["dataClassification", "sourceId", "url", "text", "capturedAt", "contentHash"]);
     invariant(source.dataClassification === "reviewed_public", "SALES_PUBLIC_INPUT_INVALID",
       "Research accepts only reviewed public captures.");
     let url;
@@ -201,3 +227,22 @@ function projectResearch({context, publicSources}) {
 function cancelled(signal) {
   invariant(!signal?.aborted, "MODEL_PROVIDER_CANCELLED", "Sales preparation was cancelled.");
 }
+
+// Public projections must be plain captured data, never live accessors. Read
+// only allowlisted own value fields once; private extras are never inspected.
+function publicFields(value, keys) {
+  try {
+    const fields = Object.fromEntries(keys.map((key) => {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor || !Object.hasOwn(descriptor, "value")) throw new Error();
+      return [key, descriptor.value];
+    }));
+    return fields;
+  } catch {
+    throw new OperationsError("SALES_PUBLIC_INPUT_INVALID", "Reviewed public projection must contain captured value fields.");
+  }
+}
+
+const SAFE_AUTHORITY_ERRORS = new Set(["SALES_API_INACTIVE", "SALES_PREPARATION_POLICY_STALE",
+  "SALES_PREPARATION_POLICY_DRIFT", "SALES_PREPARATION_POLICY_INVALID", "SALES_API_POLICY_INCOMPLETE",
+  "SALES_DETERMINISTIC_POLICY_INVALID", "SALES_IMPORT_POLICY_INVALID", "SALES_PREPARATION_STAGE_INVALID"]);
