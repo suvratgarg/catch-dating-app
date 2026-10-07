@@ -206,7 +206,7 @@ function abortDuringBudgetRead(controller, shouldAbort) {
       if (method !== "get") return typeof original[method] === "function" ? original[method].bind(original) : original[method];
       return async ref => {
         const snapshot = await original.get(ref);
-        if (!fired && ref.path.startsWith("salesProviderBudgets/") && shouldAbort()) {
+        if (!fired && typeof ref.path === "string" && ref.path.startsWith("salesProviderBudgets/") && shouldAbort()) {
           fired = true;
           controller.abort("SYNTHETIC-PRIVATE-TRANSACTION-CANCEL");
         }
@@ -378,6 +378,7 @@ test("cancellation during final budget reads blocks intent and completion writes
       providerReturned = true; return response("deepseek");
     }}, {signal: controller.signal}), error => error.code === "aborted" &&
       !JSON.stringify(error).includes("SYNTHETIC-PRIVATE-TRANSACTION-CANCEL"));
+    assert.equal(controller.signal.aborted, true);
     const row = await f.attempt();
     if (phase === "reservation") {
       assert.equal(row, undefined); assert.equal(f.calls(), 0); assert.equal(f.secrets(), 0);
