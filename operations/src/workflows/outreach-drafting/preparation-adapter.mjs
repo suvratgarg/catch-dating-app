@@ -67,7 +67,8 @@ export function createSalesPreparationAdapter({enabled = false, factories = {}, 
     const currentPolicy = structuredClone(request.currentPolicy);
     const estimatedInputTokens = request.estimatedInputTokens;
     const ownerUid = request.ownerUid;
-    let authority;
+    /** @type {Awaited<ReturnType<typeof authorizePreparationStage>>|null} */
+    let authority = null;
     const ensureCurrentAuthority = async () => {
       cancelled(signal);
       try {
