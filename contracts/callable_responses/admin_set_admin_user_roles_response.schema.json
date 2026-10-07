@@ -29,7 +29,8 @@
         "safetyReviewer",
         "support",
         "finance",
-        "analyticsViewer"
+        "analyticsViewer",
+        "salesStaff"
       ]
     },
     "roles": {

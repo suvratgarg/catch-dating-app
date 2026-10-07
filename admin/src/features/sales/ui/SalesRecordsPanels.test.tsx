@@ -139,3 +139,54 @@ it("reviews the displayed suggestion revision and clears the reason on a refresh
   expect(accept()).toHaveProperty("disabled", true);
   expect((screen.getByLabelText("Review reason") as HTMLTextAreaElement).value).toBe("");
 });
+
+it("staff can add contacts without contactability approval controls", async () => {
+  const saveContact = vi.fn().mockResolvedValue(true);
+  const saveContactability = vi.fn();
+  const controller = {isSaving: false, saveContact, saveContactability,
+    contacts: {data: {rows: [contact(1, "unknown")]}, isPending: false},
+    evidence: {data: {rows: []}}};
+  render(<SalesRecordsWorkspace section="people" detail={detail()}
+    assignedStaffOnly controller={controller as unknown as SalesWorkspaceController} />);
+  expect(screen.queryByRole("button", {name: "Record contact decision"})).toBeNull();
+  expect(screen.queryByLabelText("Contact on this page")).toBeNull();
+  fireEvent.change(screen.getByLabelText("Name"), {target: {value: "Synthetic Contact"}});
+  fireEvent.change(screen.getByLabelText("Role with host"), {target: {value: "operator"}});
+  fireEvent.click(screen.getByRole("button", {name: "Add contact"}));
+  await waitFor(() => expect(saveContact).toHaveBeenCalledWith(expect.objectContaining({
+    organizerId: "host-one", contact: {displayName: "Synthetic Contact"},
+  })));
+  expect(saveContactability).not.toHaveBeenCalled();
+});
+
+it("staff records sourced evidence but cannot approve assistant suggestions", async () => {
+  const saveEvidence = vi.fn().mockResolvedValue(true);
+  const reviewEvidenceProposal = vi.fn();
+  const controller = {isSaving: false, saveEvidence, reviewEvidenceProposal,
+    contacts: {data: {rows: []}}, evidence: {data: {rows: []}},
+    evidenceProposals: {data: {rows: [{proposalId: "proposal-one",
+      organizerId: "host-one", revision: 1, status: "pending",
+      evidence: {claimKey: "identity", sourceRef: "https://example.test",
+        observedAt: "2026-09-28T00:00:00Z", confidence: "medium"}}]}}};
+  render(<SalesRecordsWorkspace section="evidence" detail={detail()}
+    assignedStaffOnly controller={controller as unknown as SalesWorkspaceController} />);
+  expect(screen.getByText("Awaiting authorized evidence review.")).toBeTruthy();
+  expect(screen.queryByRole("button", {name: "Accept as reviewed evidence"})).toBeNull();
+  expect(screen.queryByRole("button", {name: "Reject suggestion"})).toBeNull();
+  fireEvent.change(screen.getByLabelText("Source reference"),
+    {target: {value: "synthetic:reviewed-source"}});
+  fireEvent.click(screen.getByRole("button", {name: "Record evidence"}));
+  await waitFor(() => expect(saveEvidence).toHaveBeenCalledWith(expect.objectContaining({
+    organizerId: "host-one", sourceRef: "synthetic:reviewed-source",
+  })));
+  expect(reviewEvidenceProposal).not.toHaveBeenCalled();
+});
+
+it("staff cannot mount account-restriction controls through shared records", () => {
+  const saveAccountSuppression = vi.fn();
+  render(<SalesRecordsWorkspace section="suppression" detail={detail()}
+    assignedStaffOnly controller={{saveAccountSuppression} as unknown as SalesWorkspaceController} />);
+  expect(screen.getByText("Account restrictions require an authorized reviewer.")).toBeTruthy();
+  expect(screen.queryByRole("button", {name: "Record account decision"})).toBeNull();
+  expect(saveAccountSuppression).not.toHaveBeenCalled();
+});
