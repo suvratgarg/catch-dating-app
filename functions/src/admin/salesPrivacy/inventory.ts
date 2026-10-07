@@ -26,7 +26,7 @@ export interface SalesPrivacyInventory {
 
 /** Only these private, organizer-scoped collections can enter a cleanup plan. */
 export const DIRECT_SALES_COLLECTIONS = [
-  "salesTasks", "salesOpportunities", "salesActivities",
+  "salesPartnerAssignments", "salesTasks", "salesOpportunities", "salesActivities",
   "salesEvidence", "salesEvidenceProposals", "salesInboundIntents",
   "salesContactRelationships", "salesSuppressionDecisions", "salesIntakeLinks",
   "salesImportRows", "salesImportCompensations",
@@ -35,7 +35,7 @@ export const DIRECT_SALES_COLLECTIONS = [
   "salesIntelligenceScoreSnapshots", "salesOutreachDrafts",
   "salesPilotPlans", "salesQuotes", "salesQuoteVersions",
   "salesCommercialDecisions", "salesOpportunityStageHistory",
-  "salesDemoBlueprints", "salesDemoSetups", "salesFitQueueEntries",
+  "salesDemoBlueprints", "salesDemoSetups", "salesDemoContinuations", "salesFitQueueEntries",
   "salesHostSettlementAttestations", "salesHostSettlementEvidenceUses",
   "salesHostSettlementIdentities",
 ] as const;

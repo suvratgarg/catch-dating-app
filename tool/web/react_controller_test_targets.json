@@ -258,6 +258,31 @@
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/partners/controllers/usePartnerWorkspaceController.ts",
+      "test": "admin/src/features/partners/controllers/usePartnerWorkspaceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/claims/useDemoContinuationController.ts",
+      "test": "website/src/features/claims/useDemoContinuationController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/partners/controllers/usePartnerOutreachController.ts",
+      "test": "admin/src/features/partners/controllers/usePartnerOutreachController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/partners/controllers/usePartnerDemoReviewController.ts",
+      "test": "admin/src/features/partners/controllers/usePartnerDemoReviewController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesDemoPartnerReviewController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesDemoPartnerReviewController.test.tsx",
+      "status": "required"
     }
   ]
 }

@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.95.0
+version: 1.96.0
 updated: 2026-10-06
 owner: recursive_audit_loop
 status: active
@@ -718,19 +718,21 @@ in one Firestore transaction. It validates the actual project and default
 database, complete scope, pinned `catchWhatsappReadinessIngress/{ingressId}`
 evidence and current STOP, withdrawal, deletion and readiness records. These
 three collections deny all client reads/writes, have no TTL, and contain no
-message body, raw endpoint or credential. No approval or ingress writer is
-provided. An existing readiness cannot be renewed or reactivated; revocation
+message body, raw endpoint or credential. The internal protected publisher writes
+review approvals; the operator adapter also admits exact revoke approvals. No
+live approval producer or ingress writer is provided. An existing readiness cannot be renewed or reactivated; revocation
 requires the approved digest of its exact current record. Ingress state is checked
 during provisioning; the existing send path reads readiness, not this ingress
 record. Later ingress revocation must also revoke readiness or disable outbound
 gates: changing the ingress record alone is not a sending kill switch.
 
-The required external authority fence remains unimplemented. It must cover
-reviewer roles, enabled/session state and recipient identity through the actual
-Firestore commit; Firebase Auth reads or role-assignment documents alone cannot
-provide that guarantee. All relevant Auth mutations, including administrative
-changes, must participate in an independently audited protocol before a live
-caller can be wired. The adapter itself invokes the bounded offline
+The source uses bounded current Auth observations and Firestore transaction
+read sets for authority, consent and readiness. Auth observations do not make
+Firebase Auth and Firestore atomic: an out-of-band role, identity or session
+mutation can race the commit. Observed drift fails closed. Before live apply,
+the operator must review that concrete residual race and any unresolved partial
+outcome; this source does not require a new global Auth serialization platform.
+The adapter itself invokes the bounded offline
 `catch.whatsapp-history-archive/v1` verifier; this is a Catch normalization,
 not a native Meta export parser. The trusted immutable source loader must pin
 exact bytes and an independent authenticity/completeness audit. Empty history,
@@ -756,25 +758,76 @@ requires independent authenticated-review, actual atomic-ingress audit and
 immutable archive/pin sources. It validates existing contracts, exact decision
 binding and historical session observations; unexpected fields and private
 backend errors are rejected without exposing their values. Dependency arguments,
-results and archive bytes are copied across awaits. Its create-only publisher is
-an interface only: there is no implementation, new collection, live producer,
-publication call or enabled readiness output. Hashes and synthetic tests prove
-neither source authenticity nor historical completeness.
+results and archive bytes are copied across awaits. The internal create-only
+Firestore publisher and protected archive loader are implemented in
+`whatsappReadinessFirestore.ts`. The operator setup adapter binds them to the
+reviewed fixed scope and journals their effects in the same transaction. There
+is no live authenticated producer or enabled readiness output. Hashes and
+synthetic tests prove neither source authenticity nor historical completeness.
 
 The review observation binds the verified token UID/project/auth_time and token
 expiry to the observed tokens-valid-after cutoff, enabled owner role, review
 time, exact decision digest and authenticated source provenance. Token expiry
-bounds the proposed approval expiry. This records authentication at that review;
-it is not `sessionCurrent`, an authority epoch, protection against revoke/regrant
-or delete/recreate races, or the mandatory full-span Auth fence. The protected
-archive loader revalidates the exact approval and existing history verifier but
-cannot authenticate arbitrary caller-supplied bytes or pins. Actual immutable
-storage, authorized publication and independently audited sources remain absent.
+bounds the proposed approval expiry. The current-session check also observes
+the reviewer's revocation cutoff through the existing authority store. Neither
+historical nor current observation prevents an out-of-band revoke/regrant or
+delete/recreate race. The protected archive loader revalidates the exact approval
+and existing history verifier; the operator loader additionally pins an immutable
+storage generation, bytes and an independently authenticated completeness audit.
+Caller-supplied hashes or pins cannot establish those facts. Live authorized
+source configuration and independently audited history remain separate work.
 
 The scoped Auth mutation inventory and remaining external-administration gap are
 recorded in [Readiness authority mutation boundary](data_contracts.md#readiness-authority-mutation-boundary).
-Role projections, token observations and application deletion tombstones are not
-a substitute for the mandatory full-span authority fence.
+Role projections, token observations and application deletion tombstones do not
+make Auth observations atomic with Firestore commits.
+
+### First Catch WhatsApp operator source boundary
+
+`whatsappOperatorSetup.ts`, `whatsappOperatorSetupFirestore.ts` and
+`whatsappOperatorSetupSources.ts` implement an internal, disconnected first
+operator runner. They are not exported from the Functions index or exposed by a
+callable or UI. The protected source binds one project, Google actor, recipient,
+sender, credential-version digest and reviewed source SHA. Request input contains
+only `planId`, `planSha256` and `replayKey`; identities, role claims, credential
+metadata and history evidence never become caller facts. Configuration and tests
+use synthetic identities. Planning is read-only and expires within 15 minutes.
+
+The permanent project slot in `catchWhatsappOperatorSetupOperations` and
+create-only phase receipts in `catchWhatsappOperatorSetupAudits` have no TTL or
+reset path. The runner preserves unrelated custom claims, rejects pre-existing
+owner/authority or actor assignment state, and journals Auth intent before the
+single claim replacement. The concrete writer also consumes a create-only Auth
+dispatch-intent receipt before calling Auth, so direct adapter replay cannot
+redispatch even when the first call throws before applying. Unknown effects
+require exact receipt reconciliation;
+there is no blind second claim dispatch. The Firestore seed writes the canonical
+denied authorities, admin assignment, admin audit and setup phase atomically.
+The seed's next-second cutoff requires a new sign-in before root activation;
+token refresh alone is insufficient. Root revision 2 has only reply/review;
+recipient receive activation reuses the existing prepare/finalize store.
+
+The concrete adapters include exact setup intent and pinned authority in the
+actual transaction read set. Receive, publication and readiness effects share a
+transaction with their setup phase receipt. Publication uses independent protected
+review, ingress and immutable archive evidence; the archive loader pins generation
+and byte digest and reuses the epoch-complete verifier. Revoke admits an exact
+protected review and works after STOP or recipient deletion without loading
+history or the recipient. Replays retain exact plan, scope, nonce and replay-key
+binding and cannot renew or broaden a grant.
+
+No default apply policy is supplied. Missing independently reviewed activation
+policy fails before mutation, including direct concrete adapter calls. Credential
+checks accept metadata only; they do not read secret payloads or contact Meta.
+Auth claim replacement and Firestore commit remain separate services with the
+bounded observation race described above. Source tests do not authorize live
+bootstrap, history publication, provider calls, deployment or sending.
+
+The offline command
+`node functions/scripts/operations/setup-catch-whatsapp-reply.cjs inspect-plan --plan-file <receipt>`
+validates a bounded local receipt and prints hashes/times with
+`liveApplyAvailable=false`. It does not initialize Admin SDK, read ADC or accept a
+live apply command. A local receipt is not a protected reviewed plan.
 
 ### Program Lodging Planner
 

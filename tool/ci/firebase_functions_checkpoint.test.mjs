@@ -344,6 +344,21 @@ test("restore verifies the complete archive and historical producer before accep
   assert.equal(fs.existsSync(path.join(path.dirname(f.checkpointPath), FUNCTIONS_DEPLOYMENT_FILE)), false);
 });
 
+test("selective recovery binds its own producer role and checkpoint artifact name", async (t) => {
+  const f = await fixture(t);
+  const entries = {"checkpoint.json": createCheckpointState(f.manifest, scope)};
+  const gh = githubFixture(f, entries);
+  Object.assign(gh.run, {workflow_id: 90, path: ".github/workflows/selective-backend-release.yml",
+    event: "workflow_dispatch"});
+  gh.metadata.name = `sales-pr543-firebase-checkpoint-dev-demo-project-${sha}-1`;
+  gh.responses.delete("repos/owner/catch/actions/workflows/delivery.yml");
+  gh.responses.set("repos/owner/catch/actions/workflows/selective-backend-release.yml",
+    {id: 90, path: ".github/workflows/selective-backend-release.yml"});
+  assert.deepEqual(await restoreCheckpointArchive({...gh.args, producerRole: "selective"}), entries);
+  await assert.rejects(restoreCheckpointArchive(gh.args), /workflow path/);
+  await assert.rejects(restoreCheckpointArchive({...gh.args, producerRole: "cursor"}), /producer role/);
+});
+
 test("unchanged v2 core and actual legacy Delivery reader ignore a valid companion and replay the failed stage", async (t) => {
   const f = await fixture(t);
   const state = recordStageCheckpoint({manifest: f.manifest, state: createCheckpointState(f.manifest, scope),

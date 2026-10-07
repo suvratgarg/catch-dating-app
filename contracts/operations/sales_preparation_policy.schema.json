@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/sales_preparation_policy.schema.json",
+  "title": "SalesPreparationPolicy",
+  "description": "Frozen Operations job input with independent research and writing configuration. API configuration never activates billing. No personal token pooling or implicit fallback.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "revision",
+    "research",
+    "writing"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "research": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executionMode",
+        "providerId",
+        "modelId",
+        "promptVersion",
+        "prompt",
+        "budget",
+        "billingSourceId",
+        "fallback"
+      ],
+      "properties": {
+        "executionMode": {
+          "enum": [
+            "deterministic",
+            "reviewed_import",
+            "api"
+          ]
+        },
+        "providerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "modelId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "billingSourceId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32000
+        },
+        "fallback": {
+          "const": "disabled"
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "modelCalls",
+            "modelInputTokens",
+            "modelOutputTokens",
+            "modelCostMicros",
+            "networkRequests"
+          ],
+          "properties": {
+            "modelCalls": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "modelInputTokens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "modelOutputTokens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "modelCostMicros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "networkRequests": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        }
+      }
+    },
+    "writing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executionMode",
+        "providerId",
+        "modelId",
+        "promptVersion",
+        "prompt",
+        "budget",
+        "billingSourceId",
+        "fallback"
+      ],
+      "properties": {
+        "executionMode": {
+          "enum": [
+            "deterministic",
+            "reviewed_import",
+            "api"
+          ]
+        },
+        "providerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "modelId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "billingSourceId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32000
+        },
+        "fallback": {
+          "const": "disabled"
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "modelCalls",
+            "modelInputTokens",
+            "modelOutputTokens",
+            "modelCostMicros",
+            "networkRequests"
+          ],
+          "properties": {
+            "modelCalls": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "modelInputTokens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "modelOutputTokens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "modelCostMicros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "networkRequests": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        }
+      }
+    }
+  }
+}

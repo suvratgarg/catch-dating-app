@@ -1,3 +1,17 @@
+import {
+  validateAdminGetSalesDemoPartnerReviewCallablePayload,
+} from "../shared/generated/validators/adminGetSalesDemoPartnerReviewInput";
+import {
+  validateAdminShareSalesDemoPartnerReviewCallablePayload,
+} from "../shared/generated/validators/adminShareSalesDemoPartnerReviewInput";
+import {validateCallableWithAjv} from "../shared/validation";
+import {getOwnerPartnerDemoReview, sharePartnerDemoReview, DemoDeps,
+  adminGetBlueprint, adminGetCapability, adminGetInvitation,
+  adminListBlueprints, adminListInvitations, advanceSession,
+  getPreview, getSession, issueInvitation, reviewBlueprint,
+  revokeInvitation, saveBlueprint, salesDemoSetup, startSession,
+  withdrawBlueprint, createDemoContinuation,
+  resumeDemoContinuation} from "./service";
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
@@ -5,11 +19,6 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import {appCheckCallableOptionsWithLimits,
   appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {Identity} from "./model";
-import {DemoDeps, adminGetBlueprint, adminGetCapability, adminGetInvitation,
-  adminListBlueprints, adminListInvitations, advanceSession,
-  getPreview, getSession, issueInvitation, reviewBlueprint,
-  revokeInvitation, saveBlueprint, salesDemoSetup, startSession,
-  withdrawBlueprint} from "./service";
 
 const demoGrantKey = defineSecret("SALES_DEMO_GRANT_KEY");
 function deps(): DemoDeps {
@@ -24,10 +33,13 @@ function identity(request: CallableRequest<unknown>): Identity {
   return {uid: request.auth.uid, token: request.auth.token};
 }
 
-/** Public read-only projection; link unfurls never materialize a session. */
+/**
+ * Generic unfurls and contact-gated private read; never materializes a session.
+ */
 export const getSalesDemoPreview = onCall(
-  appCheckCallableOptionsWithLimits({maxInstances: 10}),
-  async (request) => getPreview(deps(), request.data));
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) => getPreview(deps(), request.data,
+    request.auth ? identity(request) : undefined));
 export const startSalesDemo = onCall(
   appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) =>
@@ -90,7 +102,12 @@ export const expireSalesDemos = onSchedule({schedule: "every 60 minutes",
   timeZone: "UTC", maxInstances: 1}, async () => {
   const db = admin.firestore();
   const cutoff = new Date().toISOString();
-  for (const collection of ["salesDemoSessions", "salesDemoReceipts"]) {
+  const collections = [
+    "salesDemoSessions",
+    "salesDemoReceipts",
+    "salesDemoContinuations",
+  ];
+  for (const collection of collections) {
     const expired = await db.collection(collection)
       .where("expiresAt", "<=", cutoff).limit(200).get();
     if (expired.empty) continue;
@@ -99,3 +116,36 @@ export const expireSalesDemos = onSchedule({schedule: "every 60 minutes",
     await batch.commit();
   }
 });
+
+
+export const createSalesDemoContinuation = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) => createDemoContinuation(
+    deps(), identity(request), request.data));
+export const getSalesDemoContinuation = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) => resumeDemoContinuation(
+    deps(), identity(request), request.data, false));
+export const prepareSalesDemoContinuationForm = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) => resumeDemoContinuation(
+    deps(), identity(request), request.data, true));
+
+/**
+ * Sharing a composition preview does not need the interactive credential
+ * secret.
+ */
+export const adminGetSalesDemoPartnerReview = onCall(
+  appCheckCallableOptionsWithLimits({
+    maxInstances: 5, concurrency: 10, timeoutSeconds: 30,
+  }),
+  async (request) => getOwnerPartnerDemoReview(deps(), identity(request),
+    validateCallableWithAjv(
+      request, validateAdminGetSalesDemoPartnerReviewCallablePayload)));
+export const adminShareSalesDemoPartnerReview = onCall(
+  appCheckCallableOptionsWithLimits({
+    maxInstances: 5, concurrency: 10, timeoutSeconds: 30,
+  }),
+  async (request) => sharePartnerDemoReview(deps(), identity(request),
+    validateCallableWithAjv(
+      request, validateAdminShareSalesDemoPartnerReviewCallablePayload)));

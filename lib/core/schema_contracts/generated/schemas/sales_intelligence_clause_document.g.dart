@@ -127,6 +127,31 @@ const schemaSalesIntelligenceClauseDocumentSchema = <String, Object?>{
       'maxLength': 96,
       'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
     },
+    'partnerCitations': <String, Object?>{
+      'type': 'array',
+      'maxItems': 8,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'evidenceId',
+          'sourceHash',
+        ],
+        'properties': <String, Object?>{
+          'evidenceId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 96,
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+          },
+          'sourceHash': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{64}\$',
+          },
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'id': <String, Object?>{

@@ -8,7 +8,7 @@ const schemaSalesDemoPreviewCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/sales_demo_preview.schema.json',
   'title': 'GetSalesDemoPreviewCallablePayload',
-  'description': 'Anonymous read-only preview. Fetching never opens or consumes an invitation.',
+  'description': 'Generic anonymous unfurl; personalized preview requires current invited contact and bearer grant. No session consumption.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -18,6 +18,10 @@ const schemaSalesDemoPreviewCallablePayloadSchema = <String, Object?>{
     'invitationId': <String, Object?>{
       'type': 'string',
       'pattern': '^[A-Za-z0-9_-]{3,128}\$',
+    },
+    'grantToken': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Za-z0-9_-]{43}\$',
     },
   },
   'x-callable': 'getSalesDemoPreview',

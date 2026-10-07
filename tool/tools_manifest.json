@@ -1720,8 +1720,12 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React admin app, feature, shared, and generated import boundaries.",
+      "impactPaths": [
+        "tool/admin/check_import_boundaries.test.mjs"
+      ],
       "checks": [
         "node --check tool/admin/check_import_boundaries.mjs",
+        "node --test tool/admin/check_import_boundaries.test.mjs",
         "node tool/admin/check_import_boundaries.mjs"
       ],
       "role": "finder"
@@ -5177,6 +5181,32 @@
       }
     },
     {
+      "id": "marketing:hosted-capture-export",
+      "category": "marketing",
+      "path": "tool/marketing/export_hosted_captures.mjs",
+      "impactPaths": [
+        "tool/marketing/export_hosted_captures.test.mjs",
+        ".github/workflows/marketing-captures.yml",
+        ".github/workflows/ci.yml",
+        "tool/ci/pr_ci_admission.mjs"
+      ],
+      "command": "node tool/marketing/export_hosted_captures.mjs",
+      "safety": "local-writes-artifacts",
+      "status": "active",
+      "role": "generator",
+      "description": "Validates manual or same-repository capture-label requests, runs the canonical 12-image macOS exporter from exact source/controller checkouts, and packages media plus distinct workflow and trigger provenance without changing goldens or publishing.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "checks": [
+        "node --check tool/marketing/export_hosted_captures.mjs",
+        "node --test tool/marketing/export_hosted_captures.test.mjs"
+      ]
+    },
+    {
       "id": "marketing:app-screenshot-export",
       "category": "marketing",
       "path": "tool/marketing/export_app_screenshots.mjs",
@@ -7763,6 +7793,47 @@
           "cancellation during the final identity recheck revokes reuse"
         ]
       }
+    },
+    {
+      "id": "ci:whatsapp-five-release",
+      "category": "ci",
+      "path": "tool/ci/whatsapp_five_release.mjs",
+      "command": "node --test tool/ci/whatsapp_five_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/whatsapp_five_release.test.mjs",
+        ".github/workflows/selective-backend-release.yml",
+        ".github/workflows/_firebase-promote.yml",
+        "tool/ci/firebase_delivery_workflow.test.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/ci/delivery_core.mjs"
+      ],
+      "description": "One pinned protected PROD release of only five Catch WhatsApp Functions from the immutable historical package, with closed gates and selected-only physical receipt.",
+      "checks": [
+        "node --check tool/ci/whatsapp_five_release.mjs",
+        "node --test tool/ci/whatsapp_five_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/whatsapp_five_release.test.mjs",
+        "contains": [
+          "immutable 580-export package selects exactly the authorized five",
+          "four Catch gates must be explicitly false in the generated deploy params",
+          "selected-only completion binds all five fresh serving revisions and exact params"
+        ]
+      },
+      "alsoCheckIds": [
+        "ci:firebase-delivery-workflow",
+        "ci:firebase-functions-checkpoint"
+      ]
     },
     {
       "id": "ci:wedding-phone-import-release",

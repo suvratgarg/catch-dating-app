@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.25
-updated: 2026-10-03
+version: 2.7.26
+updated: 2026-10-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -1341,6 +1341,18 @@ WABA/number, credentials, templates, consent/suppression ledger, webhook/thread
 authority, retention policy and support owner. Enabling organizer WhatsApp must
 not make the Catch route active. Personal `wa.me` handoff requires no backend
 provider activation and generates no Catch delivery receipt.
+
+The first Catch WhatsApp operator runner is source-only and disconnected. Its
+plan inspection CLI is offline; it supplies no live apply command or default
+activation policy. Before a separately authorized operator apply, review the
+exact protected plan/source SHA, fixed identity and sender scope, metadata-only
+credential evidence, independent review/ingress/history sources, current guards,
+and the documented out-of-band Auth/Firestore race. A fresh sign-in is required
+after the seed receipt; interrupted or unknown effects require exact permanent
+receipt reconciliation. Never reset or delete the project setup slot to retry.
+Source publication and backend deployment do not authorize bootstrap, history
+publication or provider activation. See
+[First Catch WhatsApp operator source boundary](data_contracts.md#first-catch-whatsapp-operator-source-boundary).
 
 Mobile artifacts remain separate from backend deployment. A successful
 same-repository `main` CI attempt wakes `.github/workflows/mobile-internal-release.yml`,

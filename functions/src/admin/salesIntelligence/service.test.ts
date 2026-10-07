@@ -215,7 +215,7 @@ test("bounded catalog and draft list recheck employee authority after reads", as
   memory.docs.set("salesIntelligenceAssessments/assessment-one", {...assessments[0]});
   memory.docs.set("salesIntelligenceClauses/clause-one", {
     classification: "sales_private", organizerId: "org-one",
-    clauseId: "clause-one", kind: "observation", state: "approved"});
+    clauseId: "clause-one", kind: "observation", state: "approved", evidenceIds: []});
   const principal: SalesPrincipal = {uid: "employee-1", roles: ["admin"]};
   let calls = 0;
   const deps: IntelligenceDeps = {db: memory as unknown as FirebaseFirestore.Firestore,

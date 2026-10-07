@@ -21,7 +21,8 @@ export interface SalesDemoReceiptsDocument {
     | "salesDemo.session.reviewApplication"
     | "salesDemo.session.prepareReply"
     | "salesDemo.session.admitGuest"
-    | "salesDemo.session.requestAssistance";
+    | "salesDemo.session.requestAssistance"
+    | "salesDemo.blueprint.partnerReview.share";
   targetId: string;
   materialHash: string;
   result: {
@@ -66,6 +67,12 @@ export interface SalesDemoReceiptsDocument {
       displayName: "Sample Applicant";
     };
     assistanceRequested?: boolean;
+    sharingRevision?: number;
+    sharingState?: "active" | "withdrawn";
+    previewHash?: string;
+    sendAuthority?: false;
+    capabilityApprovalAuthority?: false;
+    organizerControlAuthority?: false;
   };
   createdAt: string;
   expiresAt?: string;

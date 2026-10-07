@@ -1511,6 +1511,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Source-only permanent setup state and immutable phase/dispatch receipts.
+    match /catchWhatsappOperatorSetupOperations/{operationId} {
+      allow read, write: if false;
+    }
+
+    match /catchWhatsappOperatorSetupAudits/{auditId} {
+      allow read, write: if false;
+    }
+
     match /catchWhatsappReplyOperations/{operationId} {
       allow read, write: if false;
     }
@@ -2778,6 +2787,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    match /salesPartnerMemberships/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesPartnerAssignments/{privateDocument=**} {
+      allow read, write: if false;
+    }
     // Private Sales authority is available only through scoped server APIs.
     match /organizerSalesAccounts/{privateDocument=**} {
       allow read, write: if false;
@@ -2873,6 +2888,9 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /salesImportCompensations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /salesDemoContinuations/{privateDocument=**} {
       allow read, write: if false;
     }
     match /salesDemoSetups/{privateDocument=**} {
