@@ -75,7 +75,10 @@ export async function fulfillRazorpayPayment({
         "Payment authority changed.");
     }
     await deletePendingOrderBestEffort(db, orderId);
-    return {fulfilled: existingStatus === "completed", alreadyFinalized: true};
+    return {fulfilled: existingStatus === "completed" &&
+      existingPayment?.signUpFailed !== true &&
+      existingPayment?.cancellationRefund === undefined,
+    alreadyFinalized: true};
   }
 
   const paidBooking: NativePaidBooking = {

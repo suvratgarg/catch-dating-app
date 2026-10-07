@@ -1774,7 +1774,10 @@ Razorpay dispatch independently reclassifies the fetched order before POST;
 separate webhook signing secrets do not establish environment ownership.
 Exact owned terminal replay cannot re-admit, recreate refund intent, or interpret
 refunded provider truth as a new captured booking. Existing strict payment truth
-checks still apply to a nonterminal new admission.
+checks still apply to a nonterminal new admission. A completed payment carrying
+any cancellation refund intent is no longer a successful checkout replay: the
+webhook may acknowledge it without re-admission, while the callable reports the
+existing cancellation/refund outcome instead of returning verified success.
 
 Native captured checkout commits its payment and admission in the same
 transaction. A second payment cannot claim an existing seat; a retried completed
@@ -1806,7 +1809,12 @@ Native Razorpay refunds use the original platform account and supported INR
 amounts; unsupported currency/sub-minimum refunds require review. Stripe native
 destination refunds reverse the original transfer and proportionate application
 fee when present. Historical refunded records without amount evidence are not
-assumed to prove a partial or full refund.
+assumed to prove a partial or full refund. Immediately before Razorpay refund
+dispatch or observation, fresh provider cumulative-refund truth must equal the
+locally confirmed total or that total plus the single unresolved same-key
+attempt that was already persisted at preflight. A newly claimed first attempt
+cannot explain intervening provider drift. Any other delta requires
+reconciliation before provider work.
 
 The cancelled-event trigger stages eligible Stripe payments in bounded pages;
 a payment trigger covers captures observed after cancellation. The

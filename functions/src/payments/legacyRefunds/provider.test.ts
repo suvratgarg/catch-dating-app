@@ -175,6 +175,86 @@ test("Razorpay reclassifies ownership after claim and before refund POST",
     assert.equal(refundPosts, 0);
   });
 
+test("Razorpay blocks unexplained cumulative refund drift before POST",
+  async () => {
+    const h = setup("razorpay");
+    const attempt = {...h.attempt, amountMinor: 300};
+    const intent = {...h.intent, reason: "guestCancelled" as const,
+      targetAmountMinor: 300, attempts: [attempt]};
+    let paymentReads = 0;
+    let refundPosts = 0;
+    h.respondWith((url, init) => {
+      if (url.includes("/orders/")) return {body: razorpayOrder()};
+      if (init.method === "POST") {
+        refundPosts++;
+        return {body: {entity: "refund", id: "rfnd_one",
+          payment_id: "pay_one", amount: 300, currency: "INR",
+          status: "processed"}};
+      }
+      paymentReads++;
+      return {body: {...razorpayPayment(), amount_refunded:
+        paymentReads === 1 ? 0 : 100}};
+    });
+
+    const authorization = await h.client.verifyPayment(h.payment, intent);
+    await assert.rejects(h.client.createRefund(intent, attempt,
+      authorization), LegacyRefundReviewRequired);
+    assert.equal(paymentReads, 2);
+    assert.equal(refundPosts, 0);
+  });
+
+test("Razorpay cannot explain fresh equal drift with a new claim attempt",
+  async () => {
+    const h = setup("razorpay");
+    const attempt = {...h.attempt, amountMinor: 300};
+    const preflightIntent = {...h.intent, reason: "guestCancelled" as const,
+      targetAmountMinor: 300, attempts: []};
+    const claimedIntent = {...preflightIntent, attempts: [attempt]};
+    let paymentReads = 0;
+    let refundPosts = 0;
+    h.respondWith((url, init) => {
+      if (url.includes("/orders/")) return {body: razorpayOrder()};
+      if (init.method === "POST") {
+        refundPosts++;
+        return {body: {entity: "refund", id: "rfnd_one",
+          payment_id: "pay_one", amount: 300, currency: "INR",
+          status: "processed"}};
+      }
+      paymentReads++;
+      return {body: {...razorpayPayment(), amount_refunded:
+        paymentReads === 1 ? 0 : 300}};
+    });
+
+    const authorization = await h.client.verifyPayment(h.payment,
+      preflightIntent);
+    await assert.rejects(h.client.createRefund(claimedIntent, attempt,
+      authorization), LegacyRefundReviewRequired);
+    assert.equal(paymentReads, 2);
+    assert.equal(refundPosts, 0);
+  });
+
+test("Razorpay preserves same-key recovery for an explained cumulative refund",
+  async () => {
+    const h = setup("razorpay");
+    let refundPosts = 0;
+    h.respondWith((url, init) => {
+      if (url.includes("/orders/")) return {body: razorpayOrder()};
+      if (init.method === "POST") {
+        refundPosts++;
+        return {body: {entity: "refund", id: "rfnd_one",
+          payment_id: "pay_one", amount: 1000, currency: "INR",
+          status: "processed"}};
+      }
+      return {body: {...razorpayPayment(), status: "refunded",
+        amount_refunded: 1000}};
+    });
+
+    const authorization = await h.client.verifyPayment(h.payment, h.intent);
+    assert.equal((await h.client.createRefund(h.intent, h.attempt,
+      authorization)).state, "processed");
+    assert.equal(refundPosts, 1);
+  });
+
 
 test("definite provider rejection needs review while outages remain retryable",
   async () => {

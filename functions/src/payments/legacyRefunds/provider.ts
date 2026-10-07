@@ -16,6 +16,12 @@ import {
   resolveRazorpayOrderOwnership,
 } from "../razorpayOrderOwnership";
 
+interface RazorpayRefundDispatchAuthorization extends
+  LegacyRazorpayRefundAuthorization {
+  preflightPendingAttempt: Pick<LegacyRefundAttempt,
+    "amountMinor" | "idempotencyKey"> | null;
+}
+
 /** Native checkout used Catch's platform credentials. Organizer routing changes
  * cannot redirect an existing refund to a different account or provider.
  */
@@ -46,7 +52,12 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
           observed.amount !== payment.amount ||
           observed.currency !== intent.currency || !observed.captured ||
           !["captured", "refunded"].includes(observed.status)) review();
-      return authorization;
+      assertRazorpayRefundCumulative(intent, observed.amountRefunded);
+      const pending = intent.attempts.filter((attempt) =>
+        attempt.state === "pending");
+      return {...authorization, preflightPendingAttempt: pending.length === 1 ?
+        {amountMinor: pending[0].amountMinor,
+          idempotencyKey: pending[0].idempotencyKey} : null};
     }
     if (!intent.stripeAccountId ||
         !/^acct_[A-Za-z0-9]+$/u.test(intent.stripeAccountId)) review();
@@ -87,9 +98,11 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
     authorization?: unknown):
     Promise<LegacyRefundObservation> {
     if (intent.provider === "razorpay") {
-      requireRazorpayAuthorization(authorization, intent.orderId);
-      await this.refreshRazorpayAuthorization(intent);
+      const refundAuthorization = requireRazorpayAuthorization(
+        authorization, intent.orderId);
       const {client, token} = this.razorpay();
+      await this.refreshRazorpayAuthorization(intent, attempt,
+        refundAuthorization, client, token);
       const result = await razorpayResult(client.refundPayment(token, {
         paymentId: intent.providerPaymentId, amount: attempt.amountMinor,
         idempotencyKey: attempt.idempotencyKey}));
@@ -109,9 +122,11 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
     const id = attempt.providerRefundId;
     if (!id) review();
     if (intent.provider === "razorpay") {
-      requireRazorpayAuthorization(authorization, intent.orderId);
-      await this.refreshRazorpayAuthorization(intent);
+      const refundAuthorization = requireRazorpayAuthorization(
+        authorization, intent.orderId);
       const {client, token} = this.razorpay();
+      await this.refreshRazorpayAuthorization(intent, attempt,
+        refundAuthorization, client, token);
       const result = await razorpayResult(client.fetchRefund(token, id));
       return {id: result.id, paymentId: result.paymentId,
         amountMinor: result.amount, currency: "INR", state: result.status};
@@ -135,15 +150,27 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
   /** Reclassify the mutable provider marker after the local claim and before
    * any refund dispatch or refund observation can affect local state.
    */
-  private async refreshRazorpayAuthorization(intent: LegacyRefundIntent):
+  private async refreshRazorpayAuthorization(intent: LegacyRefundIntent,
+    attempt: LegacyRefundAttempt,
+    authorization: RazorpayRefundDispatchAuthorization,
+    client: RazorpayPaymentProvider, token: string):
     Promise<void> {
     const runtimeProjectId = razorpayRuntimeProject();
+    const [order, observed] = await Promise.all([
+      this.razorpayOrder(intent.orderId),
+      razorpayResult(client.fetchPayment(token, intent.providerPaymentId)),
+    ]);
     const ownership = resolveRazorpayOrderOwnership({runtimeProjectId,
-      order: await this.razorpayOrder(intent.orderId),
+      order,
       frozenContexts: [intent.razorpayOwnership]});
     if (ownership.kind !== "owned") review();
     assertRazorpayOrderOwnership({evidence: ownership.evidence,
       orderId: intent.orderId, runtimeProjectId});
+    if (observed.orderId !== intent.orderId ||
+        observed.currency !== intent.currency || !observed.captured ||
+        !["captured", "refunded"].includes(observed.status)) review();
+    assertRazorpayRefundCumulative(intent, observed.amountRefunded, attempt,
+      authorization.preflightPendingAttempt);
   }
 
   private async razorpayOrder(orderId: string): Promise<{
@@ -215,15 +242,46 @@ export class NativeCancellationRefundProvider implements LegacyRefundProvider {
   }
 }
 
-function requireRazorpayAuthorization(value: unknown, orderId: string): void {
+/** A fresh provider total may equal locally confirmed refunds or include the
+ * one persisted unresolved attempt whose exact idempotency key will be reused.
+ * Any other delta could be an external/legacy refund and must stop before POST.
+ */
+function assertRazorpayRefundCumulative(intent: LegacyRefundIntent,
+  amountRefunded: number, expectedAttempt?: LegacyRefundAttempt,
+  preflightPendingAttempt?: Pick<LegacyRefundAttempt,
+    "amountMinor" | "idempotencyKey"> | null): void {
+  const pending = intent.attempts.filter((value) =>
+    value.state === "pending");
+  if (pending.length > 1 || expectedAttempt &&
+      !pending.some((value) =>
+        value.idempotencyKey === expectedAttempt.idempotencyKey &&
+        value.amountMinor === expectedAttempt.amountMinor)) review();
+  const allowed = new Set([intent.confirmedAmountMinor]);
+  if (pending.length === 1 && (expectedAttempt === undefined ||
+      preflightPendingAttempt?.idempotencyKey === pending[0].idempotencyKey &&
+      preflightPendingAttempt.amountMinor === pending[0].amountMinor)) {
+    allowed.add(intent.confirmedAmountMinor + pending[0].amountMinor);
+  }
+  if (!allowed.has(amountRefunded)) review();
+}
+
+function requireRazorpayAuthorization(value: unknown, orderId: string):
+  RazorpayRefundDispatchAuthorization {
   try {
-    const authorization = value as LegacyRazorpayRefundAuthorization;
+    const authorization = value as RazorpayRefundDispatchAuthorization;
     assertRazorpayOrderOwnership({
       evidence: authorization.evidence as OwnedRazorpayOrderEvidence,
       orderId,
       runtimeProjectId: authorization.runtimeProjectId,
     });
     if (authorization.runtimeProjectId !== razorpayRuntimeProject()) review();
+    const pending = authorization.preflightPendingAttempt;
+    if (pending !== null && (typeof pending !== "object" ||
+        !Number.isSafeInteger(pending.amountMinor) ||
+        pending.amountMinor <= 0 ||
+        typeof pending.idempotencyKey !== "string" ||
+        pending.idempotencyKey.length === 0)) review();
+    return authorization;
   } catch {
     review();
   }

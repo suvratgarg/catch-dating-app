@@ -308,6 +308,53 @@ test(
   }
 );
 
+test("a cancelled completed payment cannot confirm " +
+  "checkout again", async () => {
+  const existing = {status: "completed", signUpFailed: false,
+    userId: "runner-1", eventId: "trusted-event", orderId: "order_123",
+    paymentId: "pay_123", amount: 25000, amountMinor: 25000,
+    currency: "INR", provider: "razorpay",
+    razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
+    cancellationRefund: {
+      version: 1, reason: "guestCancelled", state: "complete",
+      targetAmountMinor: 0, confirmedAmountMinor: 0,
+      paymentFingerprint: "a".repeat(64), provider: "razorpay",
+      providerPaymentId: "pay_123", orderId: "order_123", currency: "INR",
+      stripeAccountId: null, refundApplicationFee: false,
+      razorpayOwnership: {projectId: "catchdates-dev", schema: "1"},
+      requestedAtMillis: 1, nextAttemptAtMillis: 1, leaseUntilMillis: 0,
+      attempts: [], lastErrorCode: null,
+    }};
+  const paymentDoc = createPaymentDocRecorder({existing});
+  let signUpCalled = false;
+
+  await assert.rejects(verifyRazorpayPaymentHandler(buildRequest({
+    auth: {uid: "runner-1"},
+    data: {paymentId: "pay_123", orderId: "order_123",
+      signature: "sig_123"},
+  }), {
+    firestore: () => createPaymentsFirestore(paymentDoc),
+    createClient: () => ({
+      orders: {fetch: async () => ({id: "order_123", amount: 25000,
+        currency: "INR", amount_paid: 25000, amount_due: 0,
+        notes: {eventId: "trusted-event", userId: "runner-1",
+          catchBookingProject: "catchdates-dev", catchBookingSchema: "1"}})},
+      payments: {fetch: async () => ({id: "pay_123",
+        order_id: "order_123", amount: 25000, currency: "INR",
+        status: "captured", amount_refunded: 0})},
+    }) as unknown as Razorpay,
+    serverTimestamp: () => "server-now",
+    signUpForEvent: async () => {
+      signUpCalled = true;
+    },
+    verifySignature: () => true,
+  }), isHttpsError("failed-precondition",
+    "This booking was not admitted. Check its refund status in Payments."));
+
+  assert.equal(signUpCalled, false);
+  assert.deepEqual(paymentDoc.setCalls, []);
+});
+
 test("a fully refunded replay cannot confirm checkout", async () => {
   const existing = {status: "refundFailed", userId: "runner-1",
     eventId: "trusted-event", orderId: "order_123",
