@@ -12,27 +12,24 @@ void main() {
     () {
       final root = const ConsumerPlatformApp().build(_FakeBuildContext());
 
-      expect(root, isA<ConsumerPlatformScope>());
-      final platformScope = root as ConsumerPlatformScope;
+      expect(root, isA<ProviderScope>());
+      final platformScope = root as ProviderScope;
+      expect(platformScope.overrides, hasLength(2));
       expect(platformScope.child, isA<MyApp>());
       expect(
         (platformScope.child as MyApp).routerProvider,
         same(consumerGoRouterProvider),
       );
-
-      final scope = platformScope.build(_FakeBuildContext());
-      expect(scope, isA<ProviderScope>());
-      expect((scope as ProviderScope).overrides, hasLength(2));
-      expect(scope.child, same(platformScope.child));
     },
   );
 
-  testWidgets('reusable platform scope exposes native checkout', (
+  testWidgets('reusable platform overrides expose native checkout', (
     tester,
   ) async {
     RazorpayCheckoutFactory? observedFactory;
     await tester.pumpWidget(
-      ConsumerPlatformScope(
+      ProviderScope(
+        overrides: consumerPlatformOverrides(),
         child: Consumer(
           builder: (context, ref, child) {
             observedFactory = ref.watch(razorpayCheckoutFactoryProvider);
