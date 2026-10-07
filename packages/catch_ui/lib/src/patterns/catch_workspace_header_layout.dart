@@ -129,8 +129,18 @@ class _RenderWorkspaceHeader extends RenderProxyBox {
     super.detach();
   }
 
-  double topIn(_RenderWorkspaceHeaderLayout group) =>
-      MatrixUtils.transformPoint(getTransformTo(group), Offset.zero).dy;
+  double topIn(_RenderWorkspaceHeaderLayout group) {
+    var top = 0.0;
+    RenderObject? ancestor = this;
+    while (ancestor != null && !identical(ancestor, group)) {
+      final data = ancestor.parentData;
+      if (data is BoxParentData) top += data.offset.dy;
+      ancestor = ancestor.parent;
+    }
+    // Align layout origins. Route animation transforms belong to painting and
+    // may read descendant sizes outside the permitted layout scope.
+    return top;
+  }
 
   bool visibleIn(_RenderWorkspaceHeaderLayout group) {
     RenderObject? ancestor = parent;
