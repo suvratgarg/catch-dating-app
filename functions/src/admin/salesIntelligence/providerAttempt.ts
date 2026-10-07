@@ -24,6 +24,7 @@ export interface CurrentProviderAttempt {
 export interface ProviderAttemptDeps {
   db: FirebaseFirestore.Firestore; now: () => Date;
   current: (tx: FirebaseFirestore.Transaction) => Promise<CurrentProviderAttempt>;
+  assertActive: () => void;
 }
 
 /** Binding drift must not create a second paid identity for the same stage. */
@@ -66,13 +67,17 @@ function assertCurrent(current: CurrentProviderAttempt, now: Date): void {
   }
 }
 function checkedAttempt(raw: unknown, current: CurrentProviderAttempt): ProviderAttempt {
+  const ids = providerBudgetIds(current);
   if (!validateSalesProviderAttemptDocument(raw) ||
       raw.attemptId !== providerAttemptId(current.jobId) ||
+      raw.month !== current.month || raw.runBucketId !== ids.run || raw.monthlyBucketId !== ids.month ||
+      hash(raw.reservation) !== hash(current.reservation) ||
       raw.bindingHash !== bindingHash(current) ||
       raw.bindingHash !== hash({jobId: raw.jobId, actorUid: raw.actorUid,
         organizerId: raw.organizerId, stage: raw.stage, binding: raw.binding})) {
     fail("aborted", "Provider preparation identity or frozen material changed.");
   }
+  if (raw.status === "completed") checkedUsage(raw, raw.cache!, raw.result!);
   return raw;
 }
 function bucket(raw: unknown, current: CurrentProviderAttempt,
@@ -120,6 +125,7 @@ export async function reserveProviderAttempt(deps: ProviderAttemptDeps): Promise
     if (prior) {
       const attempt = checkedAttempt(prior, current);
       assertCurrent(current, deps.now());
+      deps.assertActive();
       return {attempt, dispatch: false};
     }
     const ids = providerBudgetIds(current);
@@ -140,6 +146,7 @@ export async function reserveProviderAttempt(deps: ProviderAttemptDeps): Promise
     }
     const nextRun = reserve(bucket(run.data(), current, "run", now), current.reservation, now);
     const nextMonth = reserve(bucket(month.data(), current, "month", now), current.reservation, now);
+    deps.assertActive();
     tx.set(runRef, nextRun);
     tx.set(monthRef, nextMonth);
     tx.create(ref, attempt);
@@ -155,6 +162,7 @@ export async function checkProviderDispatch(deps: ProviderAttemptDeps,
     const row = checkedAttempt((await tx.get(deps.db.collection("salesProviderAttempts")
       .doc(attempt.attemptId))).data(), current);
     assertCurrent(current, deps.now());
+    deps.assertActive();
     if (row.status !== "intent" || row.submissionNonce !== attempt.submissionNonce ||
         row.leaseOwner !== current.leaseOwner || row.month !== current.month) {
       fail("aborted", "Provider submission fence changed.");
@@ -216,6 +224,7 @@ export async function completeProviderAttempt(deps: ProviderAttemptDeps,
       if (hash(prior.cache) !== hash(cache) || hash(prior.result) !== hash(result)) {
         fail("already-exists", "Provider completion receipt differs.");
       }
+      deps.assertActive();
       return prior;
     }
     if (prior.month !== current.month) fail("aborted", "Provider budget window changed.");
@@ -232,6 +241,7 @@ export async function completeProviderAttempt(deps: ProviderAttemptDeps,
     assertCurrent(current, deps.now());
     const nextRun = reconcile(bucket(run.data(), current, "run", now), prior.reservation, actual, now);
     const nextMonth = reconcile(bucket(month.data(), current, "month", now), prior.reservation, actual, now);
+    deps.assertActive();
     tx.set(ref, next);
     tx.set(runRef, nextRun);
     tx.set(monthRef, nextMonth);

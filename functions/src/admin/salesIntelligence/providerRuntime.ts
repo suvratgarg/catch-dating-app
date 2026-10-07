@@ -205,7 +205,9 @@ async function runWriting(options: WritingWorkerOptions,
     }
     return next;
   };
-  const deps = {db, now, current: async (tx: FirebaseFirestore.Transaction) => (await fresh(tx)).current};
+  let transactionSignal = callerSignal;
+  const deps = {db, now, assertActive: () => cancelled(transactionSignal),
+    current: async (tx: FirebaseFirestore.Transaction) => (await fresh(tx)).current};
   const {attempt, dispatch} = await reserveProviderAttempt(deps);
   if (!dispatch && attempt.status !== "completed") {
     fail("failed-precondition", "Uncertain provider intent cannot automatically resubmit.");
@@ -213,6 +215,7 @@ async function runWriting(options: WritingWorkerOptions,
   const remaining = Math.min(provider.timeoutMs, initial.current.deadline - now().getTime() - 250);
   if (!Number.isSafeInteger(remaining) || remaining < 1) fail("aborted", "Insufficient worker deadline remains.");
   const signal = AbortSignal.any([AbortSignal.timeout(remaining), ...(callerSignal ? [callerSignal] : [])]);
+  transactionSignal = signal;
   let buffered: PreparationCache | null = null;
   const adapter = modules.preparation.createSalesPreparationAdapter({enabled: true,
     factories: modules.factories, clock: now, monthlyWindow: initial.current.month,

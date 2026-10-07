@@ -6,6 +6,7 @@ const {getEmulatorFirestore} = require("../lib/shared/testing/emulatorFirestore"
 const {createSalesWritingPreparationWorker} = require("../lib/admin/salesIntelligence/providerRuntime");
 const {providerAttemptId, providerBudgetIds, reserveProviderAttempt,
   completeProviderAttempt} = require("../lib/admin/salesIntelligence/providerAttempt");
+const {validateSalesProviderAttemptDocument} = require("../lib/shared/generated/validators/salesProviderAttemptDocument");
 const {claimDraftJob, claimPartnerDraftJob} = require("../lib/admin/salesIntelligence/job");
 const {hash, parsePolicy} = require("../lib/admin/salesIntelligence/model");
 const {qualificationPolicyHash} = require("../lib/admin/sales/qualificationPolicy");
@@ -197,6 +198,24 @@ function crashDatabase(mode) {
   }});
 }
 
+function abortDuringBudgetRead(controller, shouldAbort) {
+  let fired = false;
+  return new Proxy(db, {get(target, key) {
+    if (key !== "runTransaction") return typeof target[key] === "function" ? target[key].bind(target) : target[key];
+    return callback => target.runTransaction(tx => callback(new Proxy(tx, {get(original, method) {
+      if (method !== "get") return typeof original[method] === "function" ? original[method].bind(original) : original[method];
+      return async ref => {
+        const snapshot = await original.get(ref);
+        if (!fired && ref.path.startsWith("salesProviderBudgets/") && shouldAbort()) {
+          fired = true;
+          controller.abort("SYNTHETIC-PRIVATE-TRANSACTION-CANCEL");
+        }
+        return snapshot;
+      };
+    }})));
+  }});
+}
+
 test("compiled native adapters persist canonical selections and replay without spending", async () => {
   for (const provider of ["deepseek", "openai", "anthropic"]) {
     const f = await fixture({provider});
@@ -349,6 +368,32 @@ test("cancellation after submission blocks a second call even if transport ignor
   await assert.rejects(f.run()); assert.equal(f.calls(), 1); assert.equal((await f.attempt()).status, "intent");
 });
 
+test("cancellation during final budget reads blocks intent and completion writes", async () => {
+  for (const phase of ["reservation", "completion"]) {
+    const f = await fixture(); const controller = new AbortController();
+    let providerReturned = false;
+    const database = abortDuringBudgetRead(controller,
+      () => phase === "reservation" || providerReturned);
+    await assert.rejects(f.run({database, transport: async () => {
+      providerReturned = true; return response("deepseek");
+    }}, {signal: controller.signal}), error => error.code === "aborted" &&
+      !JSON.stringify(error).includes("SYNTHETIC-PRIVATE-TRANSACTION-CANCEL"));
+    const row = await f.attempt();
+    if (phase === "reservation") {
+      assert.equal(row, undefined); assert.equal(f.calls(), 0); assert.equal(f.secrets(), 0);
+      const runId = `provider-run-${hash([f.job().jobId, "writing"]).slice(0, 40)}`;
+      assert.equal((await db.doc(`salesProviderBudgets/${runId}`).get()).exists, false);
+      await f.run(); assert.equal(f.calls(), 1);
+    } else {
+      assert.equal(row.status, "intent"); assert.equal(row.cache, null); assert.equal(row.result, null);
+      for (const bucketId of [row.runBucketId, row.monthlyBucketId]) {
+        assert.deepEqual((await db.doc(`salesProviderBudgets/${bucketId}`).get()).data().consumed, limits);
+      }
+      await assert.rejects(f.run()); assert.equal(f.calls(), 1); assert.equal(f.secrets(), 1);
+    }
+  }
+});
+
 test("changed monthly limits cannot replace an existing bucket or bypass a reservation", async () => {
   const one = await fixture({billing: "synthetic-immutable-limit"}); await one.run();
   const two = await fixture({billing: "synthetic-immutable-limit", monthly: {...limits, modelCalls: 2, networkRequests: 2}});
@@ -389,7 +434,7 @@ test("completion is idempotent and malformed usage cannot reconcile twice", asyn
     leaseOwner: row.leaseOwner, deadline: Date.parse(f.job().leaseUntil), month: row.month,
     binding: row.binding, reservation: row.reservation, runLimits: limits, monthlyLimits: limits,
     billingScopeHash: hash(f.policy.writing.billingSourceId)};
-  const deps = {db, now: f.deps.now, current: async () => current};
+  const deps = {db, now: f.deps.now, current: async () => current, assertActive: () => {}};
   assert.deepEqual(await completeProviderAttempt(deps, row, row.cache, row.result), row);
   assert.deepEqual(await completeProviderAttempt(deps, row, row.cache, row.result), row);
   const bad = structuredClone(row.cache); bad.provenance.usage.inputTokens = 1001;
@@ -397,6 +442,29 @@ test("completion is idempotent and malformed usage cannot reconcile twice", asyn
   assert.equal((await db.doc(`salesProviderBudgets/${row.monthlyBucketId}`).get()).data().consumed.modelCalls, 1);
   const reopened = await reserveProviderAttempt(deps); assert.equal(reopened.dispatch, false);
   assert.equal(providerBudgetIds(current).month, row.monthlyBucketId);
+});
+
+test("schema-valid corrupted receipts cannot replay beyond the frozen reservation", async () => {
+  for (const change of ["input", "request-cost", "reservation", "bucket"]) {
+    const f = await fixture(); await f.run(); const row = await f.attempt();
+    const bucketIds = [row.runBucketId, row.monthlyBucketId];
+    const before = await Promise.all(bucketIds.map(async id => (await db.doc(`salesProviderBudgets/${id}`).get()).data()));
+    if (change === "input") {
+      row.cache.provenance.usage.inputTokens = 1001;
+      row.cache.provenance.metadata.tokens.inputTotal = 1001;
+    }
+    if (change === "request-cost") {
+      row.cache.provenance.request.maxCostMicros = 1001;
+      row.cache.provenance.usage.costMicros = 1001;
+    }
+    if (change === "reservation") row.reservation.modelCostMicros = 1001;
+    if (change === "bucket") row.monthlyBucketId = `provider-month-${"a".repeat(40)}`;
+    assert.equal(validateSalesProviderAttemptDocument(row), true);
+    await db.doc(`salesProviderAttempts/${row.attemptId}`).set(row);
+    await assert.rejects(f.run()); assert.equal(f.calls(), 1); assert.equal(f.secrets(), 1);
+    const after = await Promise.all(bucketIds.map(async id => (await db.doc(`salesProviderBudgets/${id}`).get()).data()));
+    assert.deepEqual(after, before);
+  }
 });
 
 test("reviewed privacy cleanup removes result content while permanent fence prevents renewed I/O", async () => {
