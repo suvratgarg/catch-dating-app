@@ -42,6 +42,8 @@ const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "pilots", label: "Pilots"},
   {id: "settings", label: "Settings"},
 ];
+const staffAreaOptions = areaOptions.filter((option) =>
+  option.id === "today" || option.id === "hosts" || option.id === "pipeline");
 const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "overview", label: "Overview"},
   {id: "people", label: "People"},
@@ -90,6 +92,7 @@ export function SalesWorkspaceScreen({
   area,
   currentUserUid,
   isAdminOwner = false,
+  assignedStaffOnly = false,
   selectedOrganizerId,
   onAreaChange,
   onOpenHost,
@@ -100,6 +103,7 @@ export function SalesWorkspaceScreen({
   area: SalesArea;
   currentUserUid: string;
   isAdminOwner?: boolean;
+  assignedStaffOnly?: boolean;
   selectedOrganizerId: string | null;
   onAreaChange: (area: SalesArea) => void;
   onOpenHost: (organizerId: string) => void;
@@ -112,11 +116,15 @@ export function SalesWorkspaceScreen({
   const [showPrivacy, setShowPrivacy] = useState(false);
   useEffect(() => setShowPrivacy(false), [selectedOrganizerId, currentUserUid]);
   const controller = useSalesWorkspaceController({
-    area, selectedOrganizerId, onError: setError, onNotice: setNotice,
+    area, selectedOrganizerId, assignedStaffOnly,
+    onError: setError, onNotice: setNotice,
   });
+  const staffAreaAllowed = area === "today" || area === "hosts" ||
+    area === "pipeline";
   const pageTitle = selectedOrganizerId ?
     controller.detail.data?.organizerSummary.name ?? "Host" :
-    areaOptions.find((option) => option.id === area)?.label ?? "Sales";
+    assignedStaffOnly && !staffAreaAllowed ? "Assigned Sales" :
+      areaOptions.find((option) => option.id === area)?.label ?? "Sales";
 
   return (
     <AdminDirectoryScreenStack>
@@ -125,13 +133,15 @@ export function SalesWorkspaceScreen({
           Back to hosts
         </AdminButton>
       ) : undefined}>
-        {selectedOrganizerId ? "Private host workspace" :
+        {selectedOrganizerId ? "Private host workspace" : assignedStaffOnly ?
+          "Work only on Sales records currently assigned to you." :
           "Keep research, conversations, tasks and opportunities together."}
         {dataMode() === "sample" ? " Sample data is shown." : ""}
       </PageHeader>
-      {!selectedOrganizerId ? (
+      {!selectedOrganizerId && (!assignedStaffOnly || staffAreaAllowed) ? (
         <SegmentedControl ariaLabel="Sales area" mobileLayout="content"
-          mobileSelectLabel="Sales area" options={areaOptions}
+          mobileSelectLabel="Sales area"
+          options={assignedStaffOnly ? staffAreaOptions : areaOptions}
           value={area} onChange={onAreaChange} />
       ) : null}
       {selectedOrganizerId ? (
@@ -147,16 +157,24 @@ export function SalesWorkspaceScreen({
             organizerId: selectedOrganizerId,
             organizerName: controller.detail.data?.organizerSummary.name,
           }) : <HostDetail controller={controller} currentUserUid={currentUserUid}
-            isAdminOwner={isAdminOwner} onOpenOrganizer={onOpenOrganizer} />}
+            isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
+            onOpenOrganizer={onOpenOrganizer} />}
         </>
+      ) : assignedStaffOnly && !staffAreaAllowed ? (
+        <Panel title="Assigned Sales access" icon={<ClipboardList size={18} />}>
+          <p>Your role can use Today, Hosts and Pipeline for records currently
+            assigned to you.</p>
+          <AdminButton onClick={() => onAreaChange("today")}>Go to Today</AdminButton>
+        </Panel>
       ) : area === "today" ? (
         <TodayView controller={controller} currentUserUid={currentUserUid}
           onOpenHost={onOpenHost} />
       ) : area === "hosts" ? (
         <HostsView controller={controller} currentUserUid={currentUserUid}
-          onOpenHost={onOpenHost} onOpenIntake={onOpenIntake} />
+          assignedStaffOnly={assignedStaffOnly} onOpenHost={onOpenHost}
+          onOpenIntake={onOpenIntake} />
       ) : area === "pipeline" ? (
-        <>{renderSalesFunnelWorkspace(currentUserUid)}
+        <>{assignedStaffOnly ? null : renderSalesFunnelWorkspace(currentUserUid)}
           <PipelineView controller={controller} currentUserUid={currentUserUid}
             onOpenHost={onOpenHost} /></>
       ) : area === "research" ? (
@@ -243,9 +261,11 @@ function TaskRow({task, currentUserUid, onOpenHost}: {
   </>} />;
 }
 
-function HostsView({controller, currentUserUid, onOpenHost, onOpenIntake}: {
+function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
+  onOpenIntake}: {
   controller: SalesWorkspaceController;
   currentUserUid: string;
+  assignedStaffOnly: boolean;
   onOpenHost: (id: string) => void;
   onOpenIntake: () => void;
 }) {
@@ -253,8 +273,8 @@ function HostsView({controller, currentUserUid, onOpenHost, onOpenIntake}: {
   const [selectedCanonicalId, setSelectedCanonicalId] = useState("");
   const rows = controller.accounts.data?.rows ?? [];
   return <>
-  {renderSalesFitQueueWorkspace(currentUserUid, onOpenHost)}
-  {showAddHost ? <Panel title="Add a host" icon={<Search size={18} />}>
+  {assignedStaffOnly ? null : renderSalesFitQueueWorkspace(currentUserUid, onOpenHost)}
+  {!assignedStaffOnly && showAddHost ? <Panel title="Add a host" icon={<Search size={18} />}>
     <p>First find the existing organizer identity. Adding it to Sales creates a
       private record and does not publish a listing or approve a claim.</p>
     <SearchField ariaLabel="Search existing organizers" icon={<Search size={16} />}
@@ -285,7 +305,8 @@ function HostsView({controller, currentUserUid, onOpenHost, onOpenIntake}: {
       <AdminButton onClick={() => setShowAddHost(false)}>Cancel</AdminButton>
     </AdminToolbar>
   </Panel> : null}
-  <Panel title="Hosts" icon={<ClipboardList size={18} />} action={
+  <Panel title={assignedStaffOnly ? "Assigned hosts" : "Hosts"}
+    icon={<ClipboardList size={18} />} action={assignedStaffOnly ? undefined :
     <AdminButton onClick={() => setShowAddHost(true)}>Add host</AdminButton>
   }>
     <AdminToolbar>
@@ -301,11 +322,12 @@ function HostsView({controller, currentUserUid, onOpenHost, onOpenIntake}: {
         })}
         options={[{value: "all", label: "All research statuses"},
           ...researchStatusOptions]} />
-      <SelectField label="Owner" value={controller.ownerUid ? "mine" : "all"}
+      {assignedStaffOnly ? null : <SelectField label="Owner"
+        value={controller.ownerUid ? "mine" : "all"}
         onChange={(value) => controller.setAccountFilters({
           ownerUid: value === "mine" ? currentUserUid : "",
         })} options={[{value: "all", label: "All owners"},
-          {value: "mine", label: "Assigned to me"}]} />
+          {value: "mine", label: "Assigned to me"}]} />}
     </AdminToolbar>
     <QueryState loading={controller.accounts.isPending} error={controller.accounts.error}
       empty={!rows.length} onRetry={() => void controller.accounts.refetch()} />
@@ -505,9 +527,11 @@ function PilotsView({controller, onOpenHost}: {
   </Panel>;
 }
 
-function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}: {
+function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly,
+  onOpenOrganizer}: {
   controller: SalesWorkspaceController; currentUserUid: string;
   isAdminOwner: boolean;
+  assignedStaffOnly: boolean;
   onOpenOrganizer: (id: string) => void;
 }) {
   const [tab, setTab] = useState<DetailTab>("overview");
@@ -517,47 +541,55 @@ function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}:
     Host details could not be loaded.
     <AdminButton onClick={() => void controller.detail.refetch()}>Try again</AdminButton>
   </EmptyState>;
+  const availableDetailTabs = assignedStaffOnly ? detailTabs.filter((item) =>
+    item.id !== "demo" && item.id !== "commercial") : detailTabs;
+  const visibleTab = assignedStaffOnly && (tab === "demo" || tab === "commercial") ?
+    "overview" : tab;
   return <AdminDetailScreenStack>
     <AdminToolbar>
       <AdminTag tone="neutral">Research: {labelFor(detail.account.researchStatus)}</AdminTag>
       <AdminTag tone="neutral">Listing: {labelFor(detail.organizerSummary.appVisibility)}</AdminTag>
       <AdminTag tone="neutral">Claim: {labelFor(detail.organizerSummary.claimStatus)}</AdminTag>
-      <AdminButton onClick={() => onOpenOrganizer(detail.account.organizerId)}>
+      {assignedStaffOnly ? null : <AdminButton
+        onClick={() => onOpenOrganizer(detail.account.organizerId)}>
         Open organizer record
-      </AdminButton>
+      </AdminButton>}
     </AdminToolbar>
     <SegmentedControl ariaLabel="Host detail tab" mobileLayout="content"
-      mobileSelectLabel="Host detail section" options={detailTabs}
-      value={tab} onChange={setTab} />
-    {tab === "overview" || tab === "research" ?
+      mobileSelectLabel="Host detail section" options={availableDetailTabs}
+      value={visibleTab} onChange={setTab} />
+    {visibleTab === "overview" || visibleTab === "research" ?
       <HostAccountEditor key={detail.account.organizerId} detail={detail}
-        controller={controller} currentUserUid={currentUserUid} /> : null}
-    {tab === "activity" ? <>
+        controller={controller} currentUserUid={currentUserUid}
+        assignedStaffOnly={assignedStaffOnly} /> : null}
+    {visibleTab === "activity" ? <>
       <HostActivity detail={detail} controller={controller} />
       {renderSalesImportedHistory(detail.account.organizerId, currentUserUid)}
     </> : null}
-    {tab === "opportunities" ? <HostOpportunities detail={detail}
+    {visibleTab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
-    {tab === "intelligence" ? <SalesIntelligenceWorkspace
+    {visibleTab === "intelligence" ? <SalesIntelligenceWorkspace
       organizerId={detail.account.organizerId}
       organizerName={detail.organizerSummary.name}
       currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
-    {tab === "commercial" ? renderSalesCommercialWorkspace(detail,
+    {visibleTab === "commercial" && !assignedStaffOnly ? renderSalesCommercialWorkspace(detail,
       controller.evidence.data?.rows ?? [], isAdminOwner) : null}
-    {tab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
+    {visibleTab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
       controller={controller} /> : null}
-    {tab === "demo" ? <SalesDemoWorkspace
+    {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
       key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
       organizerId={detail.account.organizerId}
       organizerName={detail.organizerSummary.name}
       isAdminOwner={isAdminOwner} currentUserUid={currentUserUid} /> : null}
-    {tab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
+    {visibleTab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
       controller={controller} /> : null}
-    {tab === "research" ? <SalesRecordsWorkspace section="evidence" detail={detail}
+    {visibleTab === "research" ? <SalesRecordsWorkspace section="evidence" detail={detail}
       controller={controller} /> : null}
-    {tab === "overview" || tab === "research" ? <SalesRecordsWorkspace
+    {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
+      <SalesRecordsWorkspace
       section="suppression" detail={detail} controller={controller} /> : null}
-    {tab === "overview" || tab === "research" ? <HostCustomFields
+    {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
+      <HostCustomFields
       detail={detail} controller={controller} /> : null}
     <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}
       currentUserUid={currentUserUid} />
@@ -630,9 +662,10 @@ function CustomFieldValueEditor({field, detail, controller}: {
   </AdminForm>;
 }
 
-function HostAccountEditor({detail, controller, currentUserUid}: {
+function HostAccountEditor({detail, controller, currentUserUid, assignedStaffOnly}: {
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
   currentUserUid: string;
+  assignedStaffOnly: boolean;
 }) {
   const [form, setForm] = useState(() => accountFormValues(detail.account));
   const [dirty, setDirty] = useState(false);
@@ -648,7 +681,10 @@ function HostAccountEditor({detail, controller, currentUserUid}: {
     const saved = await controller.saveAccount({
       organizerId: detail.account.organizerId,
       expectedRevision: baseRevision,
-      patch: {
+      patch: assignedStaffOnly ? {
+        summary: form.summary.trim() || null,
+        nextAction: form.nextAction.trim() || null,
+      } : {
         researchStatus: form.researchStatus,
         assignedOwnerUid: form.assignedOwnerUid.trim() || null,
         summary: form.summary.trim() || null,
@@ -660,7 +696,8 @@ function HostAccountEditor({detail, controller, currentUserUid}: {
   return <Panel title="Host summary" icon={<ClipboardList size={18} />} action={
     <AdminButton disabled={!dirty || changedElsewhere || controller.isSaving}
       variant="primary"
-      onClick={() => void save()}>{controller.isSaving ? "Saving…" : "Save research"}</AdminButton>
+      onClick={() => void save()}>{controller.isSaving ? "Saving…" :
+        assignedStaffOnly ? "Save summary" : "Save research"}</AdminButton>
   }>
     <p>{detail.organizerSummary.name} ·
       {[detail.organizerSummary.city, detail.organizerSummary.marketLabel]
@@ -668,15 +705,16 @@ function HostAccountEditor({detail, controller, currentUserUid}: {
     {changedElsewhere ? <p role="alert">This host changed since you started editing.
       Compare the latest version below; your edits are retained.</p> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <SelectField label="Research status" value={form.researchStatus}
+      {assignedStaffOnly ? null : <SelectField label="Research status"
+        value={form.researchStatus}
         options={researchStatusOptions}
         onChange={(value) => {
           setForm((current) => ({...current,
             researchStatus: value as SalesResearchStatus})); setDirty(true);
-        }} />
-      <StateRow label="Owner" value={ownerLabel(form.assignedOwnerUid,
-        currentUserUid)} />
-      {form.assignedOwnerUid !== currentUserUid ? <AdminButton
+        }} />}
+      {assignedStaffOnly ? null : <StateRow label="Owner" value={ownerLabel(form.assignedOwnerUid,
+        currentUserUid)} />}
+      {!assignedStaffOnly && form.assignedOwnerUid !== currentUserUid ? <AdminButton
         onClick={() => {setForm((current) => ({...current,
           assignedOwnerUid: currentUserUid})); setDirty(true);}}>
         Assign to me

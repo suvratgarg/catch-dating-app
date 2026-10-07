@@ -5,6 +5,7 @@ import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {currentSalesEmployee} from "../sales/callables";
 import type {SalesPrincipal} from "../sales/types";
+import {assertSalesStaffScope, isAssignedSalesStaff} from "../sales/staffAccess";
 import {getDraftJob} from "./job";
 import {generateSalesOutreachDraft} from "./runtime";
 import {buildOutreachInput, copyOutreachDraft, getIntelligenceCatalog,
@@ -27,6 +28,10 @@ async function context(request: CallableRequest<unknown>, action: string,
   return {principal, deps: {db, now: () => new Date(),
     authorize: async (_principal, owner) => {
       const current = await currentSalesEmployee(request);
+      if (isAssignedSalesStaff(_principal) !== isAssignedSalesStaff(current)) {
+        throw new HttpsError("permission-denied", "Sales role changed; sign in again.");
+      }
+      await assertSalesStaffScope(db, _principal);
       if (owner && !current.roles.includes("adminOwner")) {
         throw new HttpsError("permission-denied", "Admin Owner review is required.");
       }

@@ -67,6 +67,12 @@ vi.mock("../features/overview/ui/OverviewRouteScreen", () => ({
   OverviewRouteScreen: () => <p>Overview fixture</p>,
 }));
 
+vi.mock("../features/sales/ui/SalesWorkspaceScreen", () => ({
+  SalesWorkspaceScreen: ({assignedStaffOnly, currentUserUid}: {
+    assignedStaffOnly: boolean; currentUserUid: string;
+  }) => <p>Sales fixture: {currentUserUid} · {assignedStaffOnly ? "assigned" : "admin"}</p>,
+}));
+
 describe("App live deep-link ownership", () => {
   afterEach(cleanup);
 
@@ -159,6 +165,32 @@ describe("App live deep-link ownership", () => {
     expect(await screen.findByRole("heading", {name: "Admin claim required"}))
       .not.toBeNull();
     expect(window.location.pathname).toBe("/organizers/afterfly");
+  });
+
+  it("limits Sales staff navigation and resets authority after account switch", async () => {
+    type User = {email: string; uid: string};
+    let authChanged: ((user: User | null) => void) | undefined;
+    mocks.onIdTokenChanged.mockImplementation((_auth: unknown, callback: typeof authChanged) => {
+      authChanged = callback;
+      callback?.({email: "staff@catch.local", uid: "staff-1"});
+      return () => undefined;
+    });
+    mocks.getIdTokenResult.mockImplementation(async (user: User) => ({
+      claims: user.uid === "staff-1" ? {salesStaff: true} : {adminOwner: true},
+    }));
+    window.history.replaceState({}, "", "/organizers/other");
+    render(<App />);
+    expect(await screen.findByText("Sales fixture: staff-1 · assigned")).toBeTruthy();
+    expect(window.location.pathname.startsWith("/sales")).toBe(true);
+    for (const name of ["Overview", "Organizers", "Marketing", "Admin roles", "Payments"]) {
+      expect(screen.queryByRole("button", {name})).toBeNull();
+    }
+    await act(async () => authChanged?.({email: "owner@catch.local", uid: "owner-1"}));
+    expect(await screen.findByText("Sales fixture: owner-1 · admin")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Overview"})).toBeTruthy();
+    await act(async () => authChanged?.(null));
+    expect(await screen.findByRole("button", {name: "Sign in with Google"})).toBeTruthy();
+    expect(screen.queryByText("Sales fixture: owner-1 · admin")).toBeNull();
   });
 });
 

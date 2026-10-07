@@ -172,6 +172,10 @@ test("policy receipts return exact retry, reject changed material and recheck ow
   const principal: SalesPrincipal = {uid: "owner-1", roles: ["adminOwner"]};
   const payload = {requestId: "policy-request-1", expectedRevision: 0,
     policy};
+  await assert.rejects(saveIntelligencePolicy(deps,
+    {uid: "staff-1", roles: ["salesStaff"], organizerIds: ["org-one"]},
+    payload), /Admin Owner review is required/u);
+  assert.equal(memory.docs.size, 0);
   const first = await saveIntelligencePolicy(deps, principal, payload);
   const retry = await saveIntelligencePolicy(deps, principal, payload);
   assert.deepEqual(retry, first);
@@ -239,6 +243,38 @@ test("bounded catalog and draft list recheck employee authority after reads", as
   calls = 0;
   await assert.rejects(listOutreachDrafts(deps, principal,
     {organizerId: "org-one"}), /employee revoked mid-read/u);
+});
+
+test("assigned staff draft list excludes partner artifacts and denies reassignment", async () => {
+  const memory = new MemoryDb();
+  const account = {schemaVersion: 1, classification: "sales_private",
+    organizerId: "org-one", revision: 1, assignedOwnerUid: "staff-1"};
+  memory.docs.set("organizerSalesAccounts/org-one", account);
+  const draft = {classification: "sales_private", organizerId: "org-one",
+    draftId: "draft-staff", contactId: "contact-one", opportunityId: "opp-one",
+    draft: {subject: "Synthetic", contentHash: "a".repeat(64)},
+    createdAt: at, status: "pending_review"};
+  memory.docs.set("salesOutreachDrafts/draft-staff", draft);
+  memory.docs.set("salesOutreachDrafts/draft-partner", {...draft,
+    draftId: "draft-partner", participantScope: {partnerUid: "partner-1"}});
+  const staff: SalesPrincipal = {uid: "staff-1", roles: ["salesStaff"],
+    organizerIds: ["org-one"]};
+  const deps: IntelligenceDeps = {db: memory as unknown as FirebaseFirestore.Firestore,
+    now: () => new Date(at), authorize: async () => undefined};
+  const result = await listOutreachDrafts(deps, staff, {organizerId: "org-one"});
+  assert.deepEqual((result.rows as Array<{draftId: string}>).map((row) => row.draftId), ["draft-staff"]);
+  await assert.rejects(listOutreachDrafts(deps, staff, {organizerId: "other"}), /outside Sales staff scope/u);
+  memory.docs.set("organizerSalesAccounts/org-one", {...account, assignedOwnerUid: "other"});
+  await assert.rejects(listOutreachDrafts(deps, staff, {organizerId: "org-one"}), /Current Sales assignment/u);
+  memory.docs.set("organizerSalesAccounts/org-one", account);
+  let checks = 0;
+  deps.authorize = async () => {
+    if (++checks === 2) {
+      memory.docs.set("organizerSalesAccounts/org-one", {...account, assignedOwnerUid: "other"});
+    }
+  };
+  await assert.rejects(listOutreachDrafts(deps, staff,
+    {organizerId: "org-one"}), /Current Sales assignment/u);
 });
 
 test("a replaced policy factor ignores historical assessment documents", async () => {

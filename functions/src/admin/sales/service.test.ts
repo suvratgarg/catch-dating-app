@@ -38,8 +38,8 @@ class FakeCollection {
   doc(id?: string) {
     return new FakeRef(this.db, `${this.path}/${id ?? `auto${++this.db.seq}`}`);
   }
-  where(field: string, _op: string, value: unknown) {
-    return new FakeQuery(this.db, this.path, [[field, value]]);
+  where(field: string, op: string, value: unknown) {
+    return new FakeQuery(this.db, this.path, [[String(field), op, value]]);
   }
   limit(value: number) {
     return new FakeQuery(this.db, this.path, []).limit(value);
@@ -50,10 +50,11 @@ class FakeQuery {
   constructor(
     readonly db: FakeDb,
     readonly path: string,
-    readonly filters: Array<[string, unknown]>,
+    readonly filters: Array<[string, string, unknown]>,
   ) {}
-  where(field: string, _op: string, value: unknown) {
-    return new FakeQuery(this.db, this.path, [...this.filters, [field, value]]);
+  where(field: string, op: string, value: unknown) {
+    return new FakeQuery(this.db, this.path,
+      [...this.filters, [String(field), op, value]]);
   }
   limit(value: number) {
     this.max = value;
@@ -68,7 +69,15 @@ class FakeQuery {
         ([path, data]) =>
           path.startsWith(`${this.path}/`) &&
           path.slice(this.path.length + 1).indexOf("/") === -1 &&
-          this.filters.every(([field, value]) => data[field] === value),
+          this.filters.every(([field, op, value]) => {
+            const actual = field === "__name__" ?
+              path.split("/").at(-1) : data[field];
+            if (op === "in") return (value as unknown[]).includes(actual);
+            if (op === "array-contains") {
+              return Array.isArray(actual) && actual.includes(value);
+            }
+            return actual === value;
+          }),
       )
       .slice(0, this.max)
       .map(([path, data]) => ({
@@ -144,6 +153,83 @@ function fixture() {
   return {db, deps};
 }
 const create = {organizerId: "org-1", requestId: "req-create-0001"};
+
+test("staff edits and replay require current assignment and Auth", async () => {
+  const {db, deps} = fixture();
+  await executeSalesAction(employee, "hosts.create", create, deps);
+  const account = db.docs.get("organizerSalesAccounts/org-1")!;
+  db.docs.set("organizerSalesAccounts/org-1", {
+    ...account, assignedOwnerUid: "staff-1"});
+  db.docs.set("organizerSalesAccounts/org-other", {
+    ...account, organizerId: "org-other", assignedOwnerUid: "other"});
+  const staff: SalesPrincipal = {uid: "staff-1", roles: ["salesStaff"],
+    organizerIds: ["org-1"]};
+  let current = true;
+  let checks = 0;
+  deps.authorizeInTransaction = async () => {
+    checks++;
+    if (!current) throw new HttpsError("permission-denied", "Staff revoked");
+  };
+  deps.authorizeRead = async () => {
+    if (!current) throw new HttpsError("permission-denied", "Staff revoked");
+  };
+  const list = await executeSalesRead(staff, "hosts.search", {}, deps);
+  assert.deepEqual((list.rows as Array<{organizerId: string}>)
+    .map((row) => row.organizerId), ["org-1"]);
+  await assert.rejects(executeSalesRead(staff, "hosts.get",
+    {organizerId: "org-other"}, deps),
+  (error: unknown) =>
+    error instanceof HttpsError && error.code === "permission-denied");
+  const update = {organizerId: "org-1", requestId: "staff-summary-0001",
+    expectedRevision: 1, patch: {summary: "Synthetic sourced working note",
+      nextAction: "Ask Owner to review"}};
+  const result = await executeSalesAction(staff, "hosts.update", update, deps);
+  assert.equal((result.account as Doc).summary, update.patch.summary);
+  assert.deepEqual(
+    await executeSalesAction(staff, "hosts.update", update, deps), result);
+  assert(checks >= 2);
+  const deny = (error: unknown) =>
+    error instanceof HttpsError && error.code === "permission-denied";
+  for (const patch of [
+    {assignedOwnerUid: "other"}, {researchStatus: "qualified"},
+  ]) {
+    await assert.rejects(executeSalesAction(staff, "hosts.update",
+      {...update, requestId: "staff-forbidden-0001", patch}, deps), deny);
+  }
+  await assert.rejects(executeSalesAction(staff, "hosts.create",
+    {...create, requestId: "staff-create-0001"}, deps), deny);
+  await assert.rejects(executeSalesAction(staff, "hosts.update",
+    {...update, organizerId: "org-other"}, deps), deny);
+  current = false;
+  await assert.rejects(executeSalesRead(staff, "hosts.search", {}, deps), deny);
+  await assert.rejects(
+    executeSalesAction(staff, "hosts.update", update, deps), deny);
+  current = true;
+  db.docs.set("organizerSalesAccounts/org-1", {
+    ...db.docs.get("organizerSalesAccounts/org-1"), assignedOwnerUid: "other"});
+  await assert.rejects(executeSalesRead(staff, "hosts.search", {}, deps), deny);
+  await assert.rejects(
+    executeSalesAction(staff, "hosts.update", update, deps), deny);
+  assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.revision, 2);
+});
+
+test("staff needs operation-specific fresh Auth hooks", async () => {
+  const {deps} = fixture();
+  const staff: SalesPrincipal = {uid: "staff-1", roles: ["salesStaff"],
+    organizerIds: []};
+  const deny = (error: unknown) =>
+    error instanceof HttpsError && error.code === "permission-denied";
+  await assert.rejects(executeSalesRead(staff, "hosts.search", {}, deps), deny);
+  deps.authorizeInTransaction = async () => undefined;
+  await assert.rejects(executeSalesRead(staff, "hosts.search", {}, deps), deny);
+  deps.authorizeRead = async () => undefined;
+  assert.deepEqual(await executeSalesRead(staff, "hosts.search", {}, deps),
+    {rows: [], nextCursor: null});
+  deps.authorizeInTransaction = undefined;
+  await assert.rejects(executeSalesAction({...staff, organizerIds: ["org-1"]},
+    "hosts.update", {organizerId: "org-1", requestId: "staff-no-hook-0001",
+      expectedRevision: 1, patch: {summary: "Synthetic"}}, deps), deny);
+});
 
 test("compensation rechecks current Owner on apply and receipt replay",
   async () => {

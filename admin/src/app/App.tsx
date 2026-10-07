@@ -250,13 +250,13 @@ const navigationGroups: Array<{
 const navigation = navigationGroups.flatMap((group) => group.items);
 
 const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
-  overview: adminRoleClaimKeys,
+  overview: adminRoleClaimKeys.filter((role) => role !== "salesStaff"),
   safety: ["admin", "adminOwner", "safetyReviewer", "support"],
   access: ["admin", "adminOwner", "support"],
   "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
   growth: ["adminOwner", "analyticsViewer"],
   "marketing-ops": ["admin", "adminOwner", "support"],
-  sales: ["admin", "adminOwner"],
+  sales: ["admin", "adminOwner", "salesStaff"],
   "organizer-intake": ["admin", "adminOwner", "support"],
   organizers: ["admin", "adminOwner", "support"],
   events: ["admin", "adminOwner", "support"],
@@ -720,6 +720,8 @@ function AdminRouteApp() {
             <SalesWorkspaceScreen
               area={salesAreaForPath(location.pathname)}
               isAdminOwner={adminRoles.includes("adminOwner")}
+              assignedStaffOnly={adminRoles.includes("salesStaff") &&
+                !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
               currentUserUid={user?.uid ?? (mode === "sample" ? "sample-owner" : "")}
               selectedOrganizerId={salesOrganizerIdForPath(location.pathname)}
               onAreaChange={(area) => navigate(`/sales/${area}`)}
