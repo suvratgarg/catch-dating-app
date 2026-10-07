@@ -83,7 +83,7 @@ function fixture() {
 
 test("construction is lazy and protected lookup projects only required fields",
   async () => {
-    const live = createCatchGoogleFirebaseLookupTransport();
+    const live = createCatchGoogleFirebaseLookupTransport(projectId);
     assert.equal(typeof live.lookup, "function");
     const f = fixture();
     assert.equal(f.requests.length, 0);
@@ -415,7 +415,7 @@ test("real lazy transport rejects endpoint substitution before loading ADC",
   async () => {
     const f = fixture();
     await f.adapter.observe(uid);
-    const live = createCatchGoogleFirebaseLookupTransport();
+    const live = createCatchGoogleFirebaseLookupTransport(projectId);
     for (const url of ["http://identitytoolkit.googleapis.com/v1/projects/" +
       projectId + "/accounts:lookup", "https://example.com/accounts:lookup",
     "https://identitytoolkit.googleapis.com/v1/projects/" +
@@ -425,6 +425,14 @@ test("real lazy transport rejects endpoint substitution before loading ADC",
     }
     await assert.rejects(live.lookup({...f.requests[0],
       body: {localId: [uid, "other"]}}), unavailable);
+    await assert.rejects(live.lookup({...f.requests[0],
+      projectId: "foreign-project",
+      url: "https://identitytoolkit.googleapis.com/v1/projects/" +
+        "foreign-project/accounts:lookup"}), unavailable);
+    for (const invalid of ["", "123456", "foreign/project", " project-id"]) {
+      assert.throws(() => createCatchGoogleFirebaseLookupTransport(invalid),
+        unavailable);
+    }
   });
 
 test("session verification timeout denies even an unresolved fake verifier",
@@ -453,8 +461,10 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
     const {GoogleAuth} = await import("google-auth-library");
     const authorizationUrls: (string | URL | undefined)[] = [];
     const fetchCalls: Parameters<typeof fetch>[] = [];
-    context.mock.method(GoogleAuth.prototype, "getProjectId",
-      async () => projectId);
+    // The real project resolver must use the supplied project without ADC.
+    const projectResolver = context.mock.method(GoogleAuth.prototype,
+      "getApplicationDefault",
+      async () => assert.fail("ambient project discovery forbidden"));
     context.mock.method(GoogleAuth.prototype, "getRequestHeaders",
       async (url?: string | URL) => {
         authorizationUrls.push(url);
@@ -467,10 +477,12 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
           headers: {"Content-Type": "application/json"}});
       });
     const f = fixture();
-    f.options.transport = createCatchGoogleFirebaseLookupTransport();
+    f.options.transport = createCatchGoogleFirebaseLookupTransport(projectId);
     assert.equal(authorizationUrls.length, 0);
     assert.equal(fetchCalls.length, 0);
+    assert.equal(await f.options.transport.getProjectId(), projectId);
     assert.equal((await f.adapter.observe(uid)).creationTimeMillis, 1001);
+    assert.equal(projectResolver.mock.callCount(), 0);
     assert.deepEqual(authorizationUrls,
       ["https://identitytoolkit.googleapis.com" +
       "/v1/projects/catchdates-dev/accounts:lookup"]);
@@ -491,6 +503,20 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
     assert.equal(headers.get("Authorization"),
       "Bearer fake-oauth-access-token");
     assert.equal(headers.get("Content-Type"), "application/json");
+    assert.equal(headers.get("X-Goog-User-Project"), projectId);
+
+    const before = fetchCalls.length;
+    await assert.rejects(f.options.transport.lookup({...f.requests[0],
+      projectId: "foreign-project",
+      url: "https://identitytoolkit.googleapis.com/v1/projects/" +
+        "foreign-project/accounts:lookup"}), unavailable);
+    assert.equal(fetchCalls.length, before);
+    context.mock.method(GoogleAuth.prototype, "getProjectId",
+      async () => "foreign-project");
+    await assert.rejects(f.adapter.observe(uid), unavailable);
+    assert.equal(fetchCalls.length, before);
+    context.mock.method(GoogleAuth.prototype, "getProjectId",
+      async () => projectId);
 
     // Native fetch rejects redirects under redirect:error. A 3xx response from
     // any alternate transport is also rejected before parsing a response body.
@@ -522,7 +548,7 @@ test("successful transport with malformed JSON fails privately without retry",
     const fakeFetch = context.mock.method(globalThis, "fetch", async () =>
       new Response("{private-account-data:", {status: 200}));
     const f = fixture();
-    f.options.transport = createCatchGoogleFirebaseLookupTransport();
+    f.options.transport = createCatchGoogleFirebaseLookupTransport(projectId);
     await assert.rejects(f.adapter.observe(uid), unavailable);
     assert.equal(fakeFetch.mock.callCount(), 1);
   });
