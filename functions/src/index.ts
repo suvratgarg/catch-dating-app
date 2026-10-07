@@ -905,3 +905,7 @@ export {adminGetSalesDemoPartnerReview,
   adminShareSalesDemoPartnerReview} from "./salesDemo/callables";
 export {getSalesPartnerDemoReviews,
   proposeSalesPartnerDemoWording} from "./partners/callables";
+
+export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
+  onHostContactChannelSummaryChanged, onHostContactVocabularySummaryChanged} from
+  "./hostReadModels/triggers";

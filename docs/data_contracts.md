@@ -2403,6 +2403,35 @@ live source binding without granting Host authority or activating a deployment.
 
 ### Organizer Communication Preferences And CRM
 
+`hostContactSummaries/{contactId}` is the server-owned list read model. It
+contains the existing host-visible contact row plus its indexed sort/filter
+keys; linked account IDs, merge candidate IDs, identity evidence, raw answers,
+and permission receipts are excluded. Current organizer managers can read only
+summaries belonging to their organizer through the SDK. All client writes and
+reads of the internal CRM documents remain denied. View fields never authorize
+mutations, identity linking, messaging, or delivery.
+
+`hostDirectorySummaries/{organizerId}` stores visible-contact and segment counts,
+manual tag labels, projection coverage, and the per-organizer migration marker.
+Contact, trait, channel-state and vocabulary changes reconcile current source
+records. The view and its count delta commit atomically; replayed or delayed
+trigger payloads cannot increment counts twice or restore removed rows.
+
+The scoped `functions/scripts/backfill-host-read-models.cjs` command defaults to
+dry run and requires explicit `--project` and `--organizer`. `--apply` rebuilds
+views. `--activate` additionally verifies current source/view parity in one
+transaction before setting `contactSummaryVersion: 1`. Deploy rules, indexes
+and writers before a client using SDK reads, then backfill and activate each
+organizer. Missing/unverified markers retain callable reads; authorization
+failures never trigger a fallback. Activation has not been applied to a live
+environment by this source change.
+
+The normal SDK contact page reads at most `limit + 1` small summaries and one
+counts document. Single segment and single filter-family queries use indexes;
+intersecting filter groups and text search retain server evaluation. Detail
+history, permission evidence and financial facts remain callable reads until
+an independently verified detail read contract is available.
+
 `organizerCommunicationPreferences/{organizerId_uid}` is a server-only,
 organizer-scoped permission ledger. WhatsApp and SMS each have independent
 `unknown`, `optedIn`, or `optedOut` state, terms version, source event, source,

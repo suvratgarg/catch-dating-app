@@ -1189,6 +1189,25 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Host list views contain only the explicitly allowlisted presentation DTO.
+    // Authority always comes from the current organizer, never from the view.
+    function isHostSummaryManager(organizerId) {
+      return isAuthed() && organizerId is string
+        && exists(/databases/$(database)/documents/organizers/$(organizerId))
+        && isClubHostData(get(
+          /databases/$(database)/documents/organizers/$(organizerId)).data);
+    }
+    match /hostDirectorySummaries/{organizerId} {
+      // A missing migration marker is readable as missing by its manager.
+      allow get: if isHostSummaryManager(organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostContactSummaries/{contactId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+
     // Organizer Audience/CRM projections contain restricted operational PII,
     // identity candidates, and business traits. All client access is through
     // manager-authorized, purpose-built callable projections.

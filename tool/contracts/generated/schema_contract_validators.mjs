@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  hostContactSummaryDocumentSchema,
+  hostDirectorySummaryDocumentSchema,
   catchWhatsappOperatorSetupOperationDocumentSchema,
   catchWhatsappOperatorSetupAuditDocumentSchema,
   manageHostRosterIntakeCallablePayloadSchema,
@@ -1244,6 +1246,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateHostContactSummaryDocument = ajv.compile(hostContactSummaryDocumentSchema);
+export const validateHostDirectorySummaryDocument = ajv.compile(hostDirectorySummaryDocumentSchema);
 export const validateCatchWhatsappOperatorSetupOperationDocument = ajv.compile(catchWhatsappOperatorSetupOperationDocumentSchema);
 export const validateCatchWhatsappOperatorSetupAuditDocument = ajv.compile(catchWhatsappOperatorSetupAuditDocumentSchema);
 export const validateManageHostRosterIntakeCallablePayload = ajv.compile(manageHostRosterIntakeCallablePayloadSchema);

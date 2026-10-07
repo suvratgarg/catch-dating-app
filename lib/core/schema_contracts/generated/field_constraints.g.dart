@@ -87144,6 +87144,385 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const hostContactSummaryDocumentContactId = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentImportedContact = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.importedContact',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostContactSummaryDocumentLastSeenAtMillis = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.lastSeenAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostContactSummaryDocumentLinkedAccount = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.linkedAccount',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostContactSummaryDocumentManualTagIds = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.manualTagIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const hostContactSummaryDocumentManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.manualTagIds.items',
+    maxLength: 32,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentRowAmbiguousCandidateCount = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.ambiguousCandidateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const hostContactSummaryDocumentRowAttendedEventCount = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.attendedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const hostContactSummaryDocumentRowContactId = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentRowDisplayName = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentRowEmail = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const hostContactSummaryDocumentRowExpectedEventCount = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.expectedEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const hostContactSummaryDocumentRowIdentityConfidence = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.identityConfidence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventOnly', 'proposed', 'verified'],
+  );
+
+  static const hostContactSummaryDocumentRowIdentityState = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.identityState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unlinked', 'verified', 'ambiguous'],
+  );
+
+  static const hostContactSummaryDocumentRowLastAttendedAtMillis = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.lastAttendedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostContactSummaryDocumentRowManualTags = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.manualTags',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const hostContactSummaryDocumentRowManualTagsItemsLabel = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.manualTags.items.label',
+    maxLength: 40,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentRowManualTagsItemsTagId = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.manualTags.items.tagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const hostContactSummaryDocumentRowPhoneE164 = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const hostContactSummaryDocumentRowRevision = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const hostContactSummaryDocumentRowSegmentIds = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 16,
+    uniqueItems: true,
+  );
+
+  static const hostContactSummaryDocumentRowSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.segmentIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const hostContactSummaryDocumentRowSmsStatus = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.smsStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const hostContactSummaryDocumentRowSourceCoverage = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.sourceCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial', 'insufficientData'],
+  );
+
+  static const hostContactSummaryDocumentRowWhatsappAdminSuppressed = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.whatsappAdminSuppressed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostContactSummaryDocumentRowWhatsappStatus = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.whatsappStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const hostContactSummaryDocumentSearchName = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.searchName',
+    maxLength: 320,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentVersion = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.version',
+    required: true,
+  );
+
+  static const hostDirectorySummaryDocumentContactSummaryVersion = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.contactSummaryVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const hostDirectorySummaryDocumentManualTagVocabulary = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.manualTagVocabulary',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const hostDirectorySummaryDocumentManualTagVocabularyItemsLabel = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.manualTagVocabulary.items.label',
+    maxLength: 40,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostDirectorySummaryDocumentManualTagVocabularyItemsTagId = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.manualTagVocabulary.items.tagId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const hostDirectorySummaryDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostDirectorySummaryDocumentProjectionVersion = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.projectionVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const hostDirectorySummaryDocumentSegmentCounts = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.segmentCounts',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const hostDirectorySummaryDocumentSourceCoverage = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.sourceCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['exact', 'partial'],
+  );
+
+  static const hostDirectorySummaryDocumentSummaryAdvocateCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.advocateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryContactCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.contactCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryHighImpactAdvocateCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.highImpactAdvocateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryImportedContactCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.importedContactCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryLinkedAccountCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.linkedAccountCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryOrganizerId = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostDirectorySummaryDocumentSummaryPastAttendeeCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.pastAttendeeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryReadinessInApp = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.readiness.inApp',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['currentEventOnly'],
+  );
+
+  static const hostDirectorySummaryDocumentSummaryReadinessSms = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.readiness.sms',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['providerAndDltSetupRequired'],
+  );
+
+  static const hostDirectorySummaryDocumentSummaryReadinessWhatsapp = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.readiness.whatsapp',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['providerSetupRequired'],
+  );
+
+  static const hostDirectorySummaryDocumentSummaryRepeatAttendeeCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.repeatAttendeeCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummarySmsOptInCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.smsOptInCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const hostDirectorySummaryDocumentSummaryTruncated = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostDirectorySummaryDocumentSummaryWhatsappOptInCount = CatchContractFieldConstraints(
+    path: 'hostDirectorySummaryDocument.summary.whatsappOptInCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const hostPaymentAccountDocumentChargesEnabled = CatchContractFieldConstraints(
     path: 'hostPaymentAccountDocument.chargesEnabled',
     required: true,
@@ -176247,6 +176626,57 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.trend.items.periodStart': hostAnalyticsSnapshotDocumentResponseTrendItemsPeriodStart,
     'hostAnalyticsSnapshotDocument.scopeHash': hostAnalyticsSnapshotDocumentScopeHash,
     'hostAnalyticsSnapshotDocument.uid': hostAnalyticsSnapshotDocumentUid,
+    'hostContactSummaryDocument.contactId': hostContactSummaryDocumentContactId,
+    'hostContactSummaryDocument.importedContact': hostContactSummaryDocumentImportedContact,
+    'hostContactSummaryDocument.lastSeenAtMillis': hostContactSummaryDocumentLastSeenAtMillis,
+    'hostContactSummaryDocument.linkedAccount': hostContactSummaryDocumentLinkedAccount,
+    'hostContactSummaryDocument.manualTagIds': hostContactSummaryDocumentManualTagIds,
+    'hostContactSummaryDocument.manualTagIds.items': hostContactSummaryDocumentManualTagIdsItems,
+    'hostContactSummaryDocument.organizerId': hostContactSummaryDocumentOrganizerId,
+    'hostContactSummaryDocument.row.ambiguousCandidateCount': hostContactSummaryDocumentRowAmbiguousCandidateCount,
+    'hostContactSummaryDocument.row.attendedEventCount': hostContactSummaryDocumentRowAttendedEventCount,
+    'hostContactSummaryDocument.row.contactId': hostContactSummaryDocumentRowContactId,
+    'hostContactSummaryDocument.row.displayName': hostContactSummaryDocumentRowDisplayName,
+    'hostContactSummaryDocument.row.email': hostContactSummaryDocumentRowEmail,
+    'hostContactSummaryDocument.row.expectedEventCount': hostContactSummaryDocumentRowExpectedEventCount,
+    'hostContactSummaryDocument.row.identityConfidence': hostContactSummaryDocumentRowIdentityConfidence,
+    'hostContactSummaryDocument.row.identityState': hostContactSummaryDocumentRowIdentityState,
+    'hostContactSummaryDocument.row.lastAttendedAtMillis': hostContactSummaryDocumentRowLastAttendedAtMillis,
+    'hostContactSummaryDocument.row.manualTags': hostContactSummaryDocumentRowManualTags,
+    'hostContactSummaryDocument.row.manualTags.items.label': hostContactSummaryDocumentRowManualTagsItemsLabel,
+    'hostContactSummaryDocument.row.manualTags.items.tagId': hostContactSummaryDocumentRowManualTagsItemsTagId,
+    'hostContactSummaryDocument.row.phoneE164': hostContactSummaryDocumentRowPhoneE164,
+    'hostContactSummaryDocument.row.revision': hostContactSummaryDocumentRowRevision,
+    'hostContactSummaryDocument.row.segmentIds': hostContactSummaryDocumentRowSegmentIds,
+    'hostContactSummaryDocument.row.segmentIds.items': hostContactSummaryDocumentRowSegmentIdsItems,
+    'hostContactSummaryDocument.row.smsStatus': hostContactSummaryDocumentRowSmsStatus,
+    'hostContactSummaryDocument.row.sourceCoverage': hostContactSummaryDocumentRowSourceCoverage,
+    'hostContactSummaryDocument.row.whatsappAdminSuppressed': hostContactSummaryDocumentRowWhatsappAdminSuppressed,
+    'hostContactSummaryDocument.row.whatsappStatus': hostContactSummaryDocumentRowWhatsappStatus,
+    'hostContactSummaryDocument.searchName': hostContactSummaryDocumentSearchName,
+    'hostContactSummaryDocument.version': hostContactSummaryDocumentVersion,
+    'hostDirectorySummaryDocument.contactSummaryVersion': hostDirectorySummaryDocumentContactSummaryVersion,
+    'hostDirectorySummaryDocument.manualTagVocabulary': hostDirectorySummaryDocumentManualTagVocabulary,
+    'hostDirectorySummaryDocument.manualTagVocabulary.items.label': hostDirectorySummaryDocumentManualTagVocabularyItemsLabel,
+    'hostDirectorySummaryDocument.manualTagVocabulary.items.tagId': hostDirectorySummaryDocumentManualTagVocabularyItemsTagId,
+    'hostDirectorySummaryDocument.organizerId': hostDirectorySummaryDocumentOrganizerId,
+    'hostDirectorySummaryDocument.projectionVersion': hostDirectorySummaryDocumentProjectionVersion,
+    'hostDirectorySummaryDocument.segmentCounts': hostDirectorySummaryDocumentSegmentCounts,
+    'hostDirectorySummaryDocument.sourceCoverage': hostDirectorySummaryDocumentSourceCoverage,
+    'hostDirectorySummaryDocument.summary.advocateCount': hostDirectorySummaryDocumentSummaryAdvocateCount,
+    'hostDirectorySummaryDocument.summary.contactCount': hostDirectorySummaryDocumentSummaryContactCount,
+    'hostDirectorySummaryDocument.summary.highImpactAdvocateCount': hostDirectorySummaryDocumentSummaryHighImpactAdvocateCount,
+    'hostDirectorySummaryDocument.summary.importedContactCount': hostDirectorySummaryDocumentSummaryImportedContactCount,
+    'hostDirectorySummaryDocument.summary.linkedAccountCount': hostDirectorySummaryDocumentSummaryLinkedAccountCount,
+    'hostDirectorySummaryDocument.summary.organizerId': hostDirectorySummaryDocumentSummaryOrganizerId,
+    'hostDirectorySummaryDocument.summary.pastAttendeeCount': hostDirectorySummaryDocumentSummaryPastAttendeeCount,
+    'hostDirectorySummaryDocument.summary.readiness.inApp': hostDirectorySummaryDocumentSummaryReadinessInApp,
+    'hostDirectorySummaryDocument.summary.readiness.sms': hostDirectorySummaryDocumentSummaryReadinessSms,
+    'hostDirectorySummaryDocument.summary.readiness.whatsapp': hostDirectorySummaryDocumentSummaryReadinessWhatsapp,
+    'hostDirectorySummaryDocument.summary.repeatAttendeeCount': hostDirectorySummaryDocumentSummaryRepeatAttendeeCount,
+    'hostDirectorySummaryDocument.summary.smsOptInCount': hostDirectorySummaryDocumentSummarySmsOptInCount,
+    'hostDirectorySummaryDocument.summary.truncated': hostDirectorySummaryDocumentSummaryTruncated,
+    'hostDirectorySummaryDocument.summary.whatsappOptInCount': hostDirectorySummaryDocumentSummaryWhatsappOptInCount,
     'hostPaymentAccountDocument.chargesEnabled': hostPaymentAccountDocumentChargesEnabled,
     'hostPaymentAccountDocument.country': hostPaymentAccountDocumentCountry,
     'hostPaymentAccountDocument.createdAt._nanoseconds': hostPaymentAccountDocumentCreatedAtNanoseconds,

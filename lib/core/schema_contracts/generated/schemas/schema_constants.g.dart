@@ -615,6 +615,8 @@ export 'host_analytics_callable_response.g.dart';
 export 'host_analytics_event.g.dart';
 export 'host_analytics_query_callable_payload.g.dart';
 export 'host_analytics_snapshot_document.g.dart';
+export 'host_contact_summary_document.g.dart';
+export 'host_directory_summary_document.g.dart';
 export 'host_payment_account_document.g.dart';
 export 'host_profile_document.g.dart';
 export 'host_roster_intake_receipt_document.g.dart';

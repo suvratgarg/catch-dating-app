@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'HostContactSummaryDocument',
+    source: 'firestore/host_contact_summaries.schema.json',
+    schema: schemaHostContactSummaryDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostDirectorySummaryDocument',
+    source: 'firestore/host_directory_summaries.schema.json',
+    schema: schemaHostDirectorySummaryDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappOperatorSetupOperationDocument',
     source: 'firestore/catch_whatsapp_operator_setup_operations.schema.json',
     schema: schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
@@ -6104,6 +6114,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'HostContactSummaryDocument': schemaHostContactSummaryDocumentSchema,
+  'HostDirectorySummaryDocument': schemaHostDirectorySummaryDocumentSchema,
   'CatchWhatsappOperatorSetupOperationDocument': schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
   'CatchWhatsappOperatorSetupAuditDocument': schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
   'ManageHostRosterIntakeCallablePayload': schemaManageHostRosterIntakeCallablePayloadSchema,
@@ -7324,6 +7336,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/host_contact_summaries.schema.json': schemaHostContactSummaryDocumentSchema,
+  'firestore/host_directory_summaries.schema.json': schemaHostDirectorySummaryDocumentSchema,
   'firestore/catch_whatsapp_operator_setup_operations.schema.json': schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
   'firestore/catch_whatsapp_operator_setup_audits.schema.json': schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
   'callables/manage_host_roster_intake_payload.schema.json': schemaManageHostRosterIntakeCallablePayloadSchema,

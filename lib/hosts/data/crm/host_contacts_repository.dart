@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_crm_callable.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_contact_summary_reads.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
 import 'package:catch_dating_app/hosts/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
@@ -18,19 +20,25 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'host_contacts_repository.g.dart';
 
 class HostContactsRepository {
-  const HostContactsRepository(this._functions);
+  const HostContactsRepository(this._functions, {this.summaries});
+
+  final HostContactSummaryReads? summaries;
 
   final FirebaseFunctions _functions;
 
-  Future<HostCrmSummary> getSummary(String organizerId) => callHostCrm(
-    _functions,
-    name: 'getOrganizerCrmSummary',
-    payload: GetOrganizerCrmSummaryCallableRequest(
-      organizerId: organizerId,
-    ).toJson(),
-    action: 'load organizer CRM summary',
-    parse: HostCrmSummary.fromCallableData,
-  );
+  Future<HostCrmSummary> getSummary(String organizerId) async {
+    final summary = await summaries?.summary(organizerId);
+    if (summary != null) return summary;
+    return callHostCrm(
+      _functions,
+      name: 'getOrganizerCrmSummary',
+      payload: GetOrganizerCrmSummaryCallableRequest(
+        organizerId: organizerId,
+      ).toJson(),
+      action: 'load organizer CRM summary',
+      parse: HostCrmSummary.fromCallableData,
+    );
+  }
 
   Future<HostEventRosterInsights> getEventRosterInsights(String eventId) =>
       callHostCrm(
@@ -47,31 +55,37 @@ class HostContactsRepository {
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
     int limit = ReadLimitPolicy.directoryPage,
-  }) => callHostCrm(
-    _functions,
-    name: 'listOrganizerContacts',
-    payload: ListOrganizerContactsCallableRequest(
-      organizerId: organizerId,
-      limit: limit,
-      cursor: query.cursor,
-      query: query.search?.trim().isEmpty ?? true ? null : query.search?.trim(),
-      // The callable's canonical default is lastSeen. Omitting it keeps the
-      // default directory compatible during a rolling client/server rollout.
-      sort: query.sort == HostAudienceSort.lastSeen
-          ? null
-          : query.sort.wireValue,
-      segmentIds: query.segments.isEmpty
-          ? null
-          : (query.segments.map((s) => s.wireValue).toList()..sort()),
-      manualTagIds: query.manualTagIds.isEmpty
-          ? null
-          : (query.manualTagIds.toList()..sort()),
-      segmentId: query.segment?.wireValue,
-      manualTagId: query.manualTagId,
-    ).toJson(),
-    action: 'load organizer audience',
-    parse: HostAudiencePage.fromCallableData,
-  );
+  }) async {
+    final page = await summaries?.list(organizerId, query: query, limit: limit);
+    if (page != null) return page;
+    return callHostCrm(
+      _functions,
+      name: 'listOrganizerContacts',
+      payload: ListOrganizerContactsCallableRequest(
+        organizerId: organizerId,
+        limit: limit,
+        cursor: query.cursor,
+        query: query.search?.trim().isEmpty ?? true
+            ? null
+            : query.search?.trim(),
+        // The callable's canonical default is lastSeen. Omitting it keeps the
+        // default directory compatible during a rolling client/server rollout.
+        sort: query.sort == HostAudienceSort.lastSeen
+            ? null
+            : query.sort.wireValue,
+        segmentIds: query.segments.isEmpty
+            ? null
+            : (query.segments.map((s) => s.wireValue).toList()..sort()),
+        manualTagIds: query.manualTagIds.isEmpty
+            ? null
+            : (query.manualTagIds.toList()..sort()),
+        segmentId: query.segment?.wireValue,
+        manualTagId: query.manualTagId,
+      ).toJson(),
+      action: 'load organizer audience',
+      parse: HostAudiencePage.fromCallableData,
+    );
+  }
 
   Future<HostAudienceContactDetail> getContactDetail(
     String organizerId,
@@ -357,7 +371,15 @@ class HostContactsRepository {
 // keepalive: Reuse the callable client for the contacts subdomain.
 @Riverpod(keepAlive: true)
 HostContactsRepository hostContactsRepository(Ref ref) =>
-    HostContactsRepository(ref.watch(firebaseFunctionsProvider));
+    HostContactsRepository(
+      ref.watch(firebaseFunctionsProvider),
+      summaries: HostContactSummaryReads(
+        HostSummaryReader(
+          ref.watch(firebaseFirestoreProvider),
+          actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+        ),
+      ),
+    );
 
 @riverpod
 Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) =>

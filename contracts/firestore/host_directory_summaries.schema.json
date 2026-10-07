@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_directory_summaries.schema.json",
+  "title": "HostDirectorySummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostDirectorySummaries",
+  "x-firestore-path": "hostDirectorySummaries/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "contactSummaryVersion",
+    "segmentCounts",
+    "summary",
+    "manualTagVocabulary",
+    "sourceCoverage",
+    "projectionVersion"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "contactSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "segmentCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "summary": {
+      "$ref": "../callable_responses/get_organizer_crm_summary_response.schema.json",
+      "x-catch-ownership": "server-only"
+    },
+    "manualTagVocabulary": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "../callable_responses/get_organizer_contact_detail_response.schema.json#/definitions/manualTag"
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "projectionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

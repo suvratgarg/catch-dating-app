@@ -19,6 +19,7 @@ import type {EventOfferManualPayment} from "./eventOfferManualPayment";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
 import type {QueryOrganizerFormResponsesCallablePayload} from "./queryOrganizerFormResponsesCallablePayload";
 import type {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallablePayload";
+import type {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 
 /**
  * Schema-derived Admin SDK Firestore document types.
@@ -548,6 +549,85 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostContactSummaryDocument {
+  organizerId: string;
+  contactId: string;
+  searchName: string;
+  lastSeenAtMillis: number;
+  /**
+   * @maxItems 5
+   */
+  manualTagIds: string[];
+  linkedAccount: boolean;
+  importedContact: boolean;
+  row: {
+    contactId: string;
+    displayName: string;
+    phoneE164: string | null;
+    email: string | null;
+    identityState: "unlinked" | "verified" | "ambiguous";
+    identityConfidence: "eventOnly" | "proposed" | "verified";
+    ambiguousCandidateCount: number;
+    attendedEventCount: number;
+    expectedEventCount: number;
+    lastAttendedAtMillis: number | null;
+    /**
+     * @maxItems 16
+     */
+    segmentIds: (
+      | "new_to_organizer"
+      | "past_attendee"
+      | "first_time_attendee"
+      | "repeat_attendee"
+      | "regular"
+      | "lapsed_regular"
+      | "reliable_attendee"
+      | "needs_confirmation"
+      | "advocate"
+      | "high_impact_advocate"
+      | "whatsapp_reachable"
+      | "sms_reachable"
+    )[];
+    /**
+     * @maxItems 5
+     */
+    manualTags?: {
+      tagId: string;
+      label: string;
+    }[];
+    whatsappStatus: "unknown" | "optedIn" | "optedOut";
+    whatsappAdminSuppressed: boolean;
+    smsStatus: "unknown" | "optedIn" | "optedOut";
+    sourceCoverage: "exact" | "partial" | "insufficientData";
+    revision: number;
+  };
+  version: 1;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostDirectorySummaryDocument {
+  organizerId: string;
+  contactSummaryVersion: number;
+  segmentCounts: {
+    [k: string]: number;
+  };
+  summary: GetOrganizerCrmSummaryCallableResponse;
+  /**
+   * @maxItems 20
+   */
+  manualTagVocabulary: {
+    tagId: string;
+    label: string;
+  }[];
+  sourceCoverage: "exact" | "partial";
+  projectionVersion: number;
 }
 
 /**

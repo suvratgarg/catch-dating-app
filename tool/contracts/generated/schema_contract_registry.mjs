@@ -1,6 +1,431 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const hostContactSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_contact_summaries.schema.json",
+  "title": "HostContactSummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostContactSummaries",
+  "x-firestore-path": "hostContactSummaries/{contactId}",
+  "x-document-id-field": "contactId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "contactId",
+    "searchName",
+    "lastSeenAtMillis",
+    "manualTagIds",
+    "linkedAccount",
+    "importedContact",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "searchName": {
+      "type": "string",
+      "maxLength": 320,
+      "x-catch-ownership": "server-only"
+    },
+    "lastSeenAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "manualTagIds": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 32
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "linkedAccount": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "importedContact": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contactId",
+        "displayName",
+        "phoneE164",
+        "email",
+        "identityState",
+        "identityConfidence",
+        "ambiguousCandidateCount",
+        "attendedEventCount",
+        "expectedEventCount",
+        "lastAttendedAtMillis",
+        "segmentIds",
+        "whatsappStatus",
+        "whatsappAdminSuppressed",
+        "smsStatus",
+        "sourceCoverage",
+        "revision"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "identityState": {
+          "type": "string",
+          "enum": [
+            "unlinked",
+            "verified",
+            "ambiguous"
+          ]
+        },
+        "identityConfidence": {
+          "type": "string",
+          "enum": [
+            "eventOnly",
+            "proposed",
+            "verified"
+          ]
+        },
+        "ambiguousCandidateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "attendedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "expectedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "lastAttendedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "segmentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "past_attendee",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "manualTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
+          }
+        },
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "whatsappAdminSuppressed": {
+          "type": "boolean"
+        },
+        "smsStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "sourceCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "insufficientData"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostDirectorySummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_directory_summaries.schema.json",
+  "title": "HostDirectorySummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostDirectorySummaries",
+  "x-firestore-path": "hostDirectorySummaries/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "contactSummaryVersion",
+    "segmentCounts",
+    "summary",
+    "manualTagVocabulary",
+    "sourceCoverage",
+    "projectionVersion"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "segmentCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "summary": {
+      "title": "GetOrganizerCrmSummaryCallableResponse",
+      "description": "Projected Host CRM counts. No attendee identity or contact field is returned.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactCount",
+        "pastAttendeeCount",
+        "repeatAttendeeCount",
+        "advocateCount",
+        "highImpactAdvocateCount",
+        "linkedAccountCount",
+        "importedContactCount",
+        "whatsappOptInCount",
+        "smsOptInCount",
+        "truncated",
+        "readiness"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "pastAttendeeCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "repeatAttendeeCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "advocateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "highImpactAdvocateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "linkedAccountCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "importedContactCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "whatsappOptInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "smsOptInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "readiness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inApp",
+            "whatsapp",
+            "sms"
+          ],
+          "properties": {
+            "inApp": {
+              "type": "string",
+              "enum": [
+                "currentEventOnly"
+              ]
+            },
+            "whatsapp": {
+              "type": "string",
+              "enum": [
+                "providerSetupRequired"
+              ]
+            },
+            "sms": {
+              "type": "string",
+              "enum": [
+                "providerAndDltSetupRequired"
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "manualTagVocabulary": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "projectionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const catchWhatsappOperatorSetupOperationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_operator_setup_operations.schema.json",

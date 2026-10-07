@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {hostContactSummaryDocumentSchema} from "./schemas/hostContactSummaryDocument";
+export {hostDirectorySummaryDocumentSchema} from "./schemas/hostDirectorySummaryDocument";
 export {catchWhatsappOperatorSetupOperationDocumentSchema} from "./schemas/catchWhatsappOperatorSetupOperationDocument";
 export {catchWhatsappOperatorSetupAuditDocumentSchema} from "./schemas/catchWhatsappOperatorSetupAuditDocument";
 export {manageHostRosterIntakeCallablePayloadSchema} from "./schemas/manageHostRosterIntakeInput";

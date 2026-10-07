@@ -19,6 +19,8 @@ const {
   orderBy,
   query,
   serverTimestamp,
+  startAfter,
+  documentId,
   setDoc,
   updateDoc,
   where,
@@ -657,6 +659,77 @@ describe("firestore.rules", () => {
 
   after(async () => {
     await testEnv.cleanup();
+  });
+
+  describe("Host summary reads", () => {
+    async function setup() {
+      await seed(["organizers", "org"], club({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], club({hostUserId: "other-host"}));
+      for (let index = 0; index < 31; index++) {
+        await seed(["hostContactSummaries", `person-${index}`], {
+          organizerId: "org", contactId: `person-${index}`, version: 1,
+          lastSeenAtMillis: index,
+        });
+      }
+      await seed(["hostContactSummaries", "foreign"], {
+        organizerId: "other", contactId: "foreign", version: 1,
+      });
+    }
+    it("authorizes 31 rows using current organizer membership", async () => {
+      await setup();
+      for (const uid of ["host-1", "manager"]) {
+        const page = await assertSucceeds(getDocs(query(
+          collection(authedDb(uid), "hostContactSummaries"),
+          where("organizerId", "==", "org"),
+          orderBy("lastSeenAtMillis", "desc"), limit(31),
+        )));
+        assert.equal(page.size, 31);
+      }
+      await seed(["organizers", "org"], club({hostUserId: "new-host"}));
+      await assertFails(getDoc(doc(authedDb("host-1"),
+        "hostContactSummaries", "person-0")));
+    });
+    it("denies foreign IDs, unscoped queries, ordinary staff and all writes", async () => {
+      await setup();
+      const db = authedDb("host-1");
+      await assertFails(getDoc(doc(db, "hostContactSummaries", "foreign")));
+      await assertFails(getDocs(collection(db, "hostContactSummaries")));
+      await assertFails(getDocs(query(collection(db, "hostContactSummaries"),
+        where("organizerId", "==", "other"))));
+      await assertFails(getDoc(doc(authedDb("operator-1"),
+        "hostContactSummaries", "person-0")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "hostContactSummaries", "person-0")));
+      await assertFails(setDoc(doc(db, "hostContactSummaries", "injected"),
+        {organizerId: "org"}));
+      await assertFails(updateDoc(doc(db, "hostContactSummaries", "person-0"),
+        {organizerId: "other"}));
+      await assertFails(deleteDoc(doc(db, "hostContactSummaries", "person-0")));
+      await assertFails(getDoc(doc(db, "organizerContacts", "person-0")));
+    });
+    it("continues tied SDK pages without duplicates or omissions", async () => {
+      await seed(["organizers", "org"], club());
+      for (const id of ["a", "b", "c"]) {
+        await seed(["hostContactSummaries", id], {
+          organizerId: "org", lastSeenAtMillis: 10, version: 1,
+        });
+      }
+      const ordered = query(collection(authedDb("host-1"),
+        "hostContactSummaries"), where("organizerId", "==", "org"),
+      orderBy("lastSeenAtMillis", "desc"), orderBy(documentId(), "desc"));
+      const first = await getDocs(query(ordered, limit(2)));
+      assert.deepEqual(first.docs.map((row) => row.id), ["c", "b"]);
+      const second = await getDocs(query(ordered, startAfter(10, "b"), limit(2)));
+      assert.deepEqual(second.docs.map((row) => row.id), ["a"]);
+    });
+    it("allows only the owner to read a missing cutover marker", async () => {
+      await seed(["organizers", "org"], club());
+      const snapshot = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "hostDirectorySummaries", "org")));
+      assert.equal(snapshot.exists(), false);
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "hostDirectorySummaries", "org")));
+    });
   });
 
   describe("clubs", () => {
