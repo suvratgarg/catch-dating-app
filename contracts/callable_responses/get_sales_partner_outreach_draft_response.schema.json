@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_sales_partner_outreach_draft_response.schema.json",
+  "title": "GetSalesPartnerOutreachDraftResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "draft",
+    "status",
+    "reviewedAt",
+    "sendAuthority"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "draft": {
+      "$ref": "../operations/outreach_drafting_draft.schema.json"
+    },
+    "status": {
+      "enum": [
+        "pending_review",
+        "approved"
+      ]
+    },
+    "reviewedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 48
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sendAuthority": {
+      "const": false
+    }
+  },
+  "x-callable-aliases": [
+    "getSalesPartnerOutreachDraft"
+  ]
+}

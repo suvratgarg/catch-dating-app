@@ -2,12 +2,17 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
-const repoRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
+const modulePath = fileURLToPath(import.meta.url);
+const defaultRepoRoot = path.resolve(
+  path.dirname(modulePath),
   "../.."
 );
-const adminSrcRoot = path.join(repoRoot, "admin/src");
 const allowedSourceExtensions = new Set([".ts", ".tsx"]);
+const browserContractSchemaDirectories = [
+  "callables",
+  "callable_responses",
+  "operations",
+];
 
 function walkSourceFiles(directory) {
   const files = [];
@@ -24,7 +29,7 @@ function walkSourceFiles(directory) {
   return files;
 }
 
-function relativeToAdminSource(absolutePath) {
+function relativeToAdminSource(adminSrcRoot, absolutePath) {
   return path.relative(adminSrcRoot, absolutePath).split(path.sep).join("/");
 }
 
@@ -65,9 +70,50 @@ function importSpecifiers(source) {
   return specifiers;
 }
 
-function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
-  return sourceRelativePath.startsWith("shared/contracts/") &&
-    isInside(path.join(repoRoot, "functions/src/shared/generated"), targetAbsolutePath);
+function isFeatureApiModule(sourceRelativePath) {
+  const parts = sourceRelativePath.split("/");
+  return parts[0] === "features" && Boolean(parts[1]) && parts[2] === "api";
+}
+
+function isCanonicalBrowserContractSchema(repoRoot, targetAbsolutePath) {
+  if (!targetAbsolutePath.endsWith(".schema.json")) return false;
+
+  let realRepoRoot;
+  try {
+    realRepoRoot = fs.realpathSync(repoRoot);
+  } catch {
+    return false;
+  }
+
+  return browserContractSchemaDirectories.some((directory) => {
+    const contractRoot = path.join(repoRoot, "contracts", directory);
+    if (path.dirname(targetAbsolutePath) !== contractRoot) return false;
+
+    try {
+      const realContractRoot = fs.realpathSync(contractRoot);
+      const expectedRealContractRoot = path.join(
+        realRepoRoot,
+        "contracts",
+        directory
+      );
+      return realContractRoot === expectedRealContractRoot &&
+        fs.lstatSync(targetAbsolutePath).isFile() &&
+        path.dirname(fs.realpathSync(targetAbsolutePath)) === realContractRoot;
+    } catch {
+      return false;
+    }
+  });
+}
+
+function allowedExternalImport(repoRoot, sourceRelativePath, targetAbsolutePath) {
+  if (sourceRelativePath.startsWith("shared/contracts/")) {
+    return isInside(
+      path.join(repoRoot, "functions/src/shared/generated"),
+      targetAbsolutePath
+    );
+  }
+  return isFeatureApiModule(sourceRelativePath) &&
+    isCanonicalBrowserContractSchema(repoRoot, targetAbsolutePath);
 }
 
 function violationFor(sourceLayer, targetLayer) {
@@ -101,53 +147,62 @@ function violationFor(sourceLayer, targetLayer) {
   return null;
 }
 
-const violations = [];
-for (const file of walkSourceFiles(adminSrcRoot)) {
-  const sourceRelativePath = relativeToAdminSource(file);
-  const sourceLayer = layerFor(sourceRelativePath);
-  const source = fs.readFileSync(file, "utf8");
+export function scanAdminImportBoundaries(repoRoot = defaultRepoRoot) {
+  const adminSrcRoot = path.join(repoRoot, "admin/src");
+  const violations = [];
+  for (const file of walkSourceFiles(adminSrcRoot)) {
+    const sourceRelativePath = relativeToAdminSource(adminSrcRoot, file);
+    const sourceLayer = layerFor(sourceRelativePath);
+    const source = fs.readFileSync(file, "utf8");
 
-  for (const specifier of importSpecifiers(source)) {
-    if (specifier.startsWith("@catch/web-ui/")) {
-      violations.push({
-        source: sourceRelativePath,
-        specifier,
-        reason: "shared web UI must be imported from @catch/web-ui without deep imports",
-      });
-      continue;
-    }
-    if (!specifier.startsWith(".")) {
-      continue;
-    }
-
-    const targetAbsolutePath = path.resolve(path.dirname(file), specifier);
-    if (!isInside(adminSrcRoot, targetAbsolutePath)) {
-      if (!allowedExternalImport(sourceRelativePath, targetAbsolutePath)) {
+    for (const specifier of importSpecifiers(source)) {
+      if (specifier.startsWith("@catch/web-ui/")) {
         violations.push({
           source: sourceRelativePath,
           specifier,
-          reason: "relative import leaves admin/src without an explicit allowlist",
+          reason: "shared web UI must be imported from @catch/web-ui without deep imports",
         });
+        continue;
       }
-      continue;
-    }
+      if (!specifier.startsWith(".")) {
+        continue;
+      }
 
-    const targetLayer = layerFor(relativeToAdminSource(targetAbsolutePath));
-    const reason = violationFor(sourceLayer, targetLayer);
-    if (reason !== null) {
-      violations.push({source: sourceRelativePath, specifier, reason});
+      const targetAbsolutePath = path.resolve(path.dirname(file), specifier);
+      if (!isInside(adminSrcRoot, targetAbsolutePath)) {
+        if (!allowedExternalImport(repoRoot, sourceRelativePath, targetAbsolutePath)) {
+          violations.push({
+            source: sourceRelativePath,
+            specifier,
+            reason: "relative import leaves admin/src without an explicit allowlist",
+          });
+        }
+        continue;
+      }
+
+      const targetLayer = layerFor(
+        relativeToAdminSource(adminSrcRoot, targetAbsolutePath)
+      );
+      const reason = violationFor(sourceLayer, targetLayer);
+      if (reason !== null) {
+        violations.push({source: sourceRelativePath, specifier, reason});
+      }
     }
   }
+  return violations;
 }
 
-if (violations.length > 0) {
-  console.error("Admin import boundary violations:");
-  for (const violation of violations) {
-    console.error(
-      `- ${violation.source} imports ${violation.specifier}: ${violation.reason}`
-    );
+if (process.argv[1] && path.resolve(process.argv[1]) === modulePath) {
+  const violations = scanAdminImportBoundaries();
+  if (violations.length > 0) {
+    console.error("Admin import boundary violations:");
+    for (const violation of violations) {
+      console.error(
+        `- ${violation.source} imports ${violation.specifier}: ${violation.reason}`
+      );
+    }
+    process.exitCode = 1;
+  } else {
+    console.log("Admin import boundaries passed.");
   }
-  process.exitCode = 1;
-} else {
-  console.log("Admin import boundaries passed.");
 }

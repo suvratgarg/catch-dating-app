@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";

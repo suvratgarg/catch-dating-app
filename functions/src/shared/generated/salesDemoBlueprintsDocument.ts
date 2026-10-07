@@ -78,4 +78,29 @@ export interface SalesDemoBlueprintsDocument {
         templateHash: string;
         materializerVersion: 1;
       };
+  partnerReviewGrant?: {
+    revision: number;
+    state: "active" | "withdrawn";
+    partnerUid: string;
+    assignmentRevision: number;
+    blueprintRevision: number;
+    previewHash: string;
+    expiresAt: string;
+    ownerReviewedByUid: string;
+    ownerReviewedAt: string;
+  };
+  partnerPreviewProposal?: {
+    revision: number;
+    state: "pending_owner_review";
+    partnerUid: string;
+    assignmentRevision: number;
+    blueprintRevision: number;
+    sourcePreviewHash: string;
+    wording: {
+      headline: string;
+      scenario: string;
+      cta: string;
+    };
+    proposedAt: string;
+  };
 }

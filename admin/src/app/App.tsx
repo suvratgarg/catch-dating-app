@@ -78,6 +78,8 @@ import {AdminPendingOperationProvider} from "../shared/pendingOperation";
 import type {OverviewQueueDestination} from
   "../features/overview/ui/OverviewScreen";
 
+const PartnerRouteApp = lazy(() => import("./PartnerRouteApp").then((m) => ({default: m.PartnerRouteApp})));
+
 type AdminNavId =
   | "overview"
   | "safety"
@@ -309,7 +311,7 @@ const adminSectionTitles: Record<AdminNavId, string> = {
 };
 
 export function App() {
-  const [router] = useState(() => createBrowserRouter([{
+  const [router] = useState(() => createBrowserRouter([{path: "/partners/*", element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}><PartnerRouteApp /></Suspense>}, {
     path: "*",
     element: <AdminRouteApp />,
   }]));

@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/sales_research_proposal.schema.json",
+  "title": "SalesResearchProposal",
+  "description": "Private captured-source observations and inferences for existing Sales evidence review. No automatic verification or qualification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "sourceHash",
+    "facts",
+    "workflowComparison"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "facts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claimKey",
+          "knowledgeStatus",
+          "value",
+          "excerpt",
+          "sourceIds",
+          "rationale"
+        ],
+        "properties": {
+          "claimKey": {
+            "enum": [
+              "identity",
+              "recurrence",
+              "operation",
+              "stack",
+              "other"
+            ]
+          },
+          "knowledgeStatus": {
+            "enum": [
+              "observed",
+              "inferred",
+              "unknown"
+            ]
+          },
+          "value": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "excerpt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "sourceIds": {
+            "type": "array",
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    "workflowComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "knowledgeStatus",
+        "visibleTools",
+        "strongestPlausibleWorkflow",
+        "incrementalValue",
+        "remainingQuestions"
+      ],
+      "properties": {
+        "knowledgeStatus": {
+          "enum": [
+            "inferred",
+            "unknown"
+          ]
+        },
+        "visibleTools": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "sourceId"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "sourceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            }
+          }
+        },
+        "strongestPlausibleWorkflow": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "incrementalValue": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "remainingQuestions": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    }
+  }
+}

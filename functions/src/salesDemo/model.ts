@@ -1,3 +1,7 @@
+import type {
+  PartnerDemoReviewGrant,
+  PartnerDemoPreviewProposal,
+} from "./partnerReview";
 import type {SetupPlan} from "./setupPlan";
 import {HttpsError} from "firebase-functions/v2/https";
 
@@ -47,6 +51,8 @@ export interface Blueprint {
   fieldMappings: FieldMappingReview[];
   setupPlan?: SetupPlan;
   preview: Preview;
+  partnerReviewGrant?: PartnerDemoReviewGrant;
+  partnerPreviewProposal?: PartnerDemoPreviewProposal;
   reviewedByUid: string | null;
   reviewedAt: string | null;
   updatedAt: string;

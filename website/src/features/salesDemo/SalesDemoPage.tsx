@@ -1,3 +1,4 @@
+import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
 import {salesDemoCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useParams} from "react-router";
@@ -35,15 +36,23 @@ function SalesDemoInvitation({invitationId, api, auth}: {
       `${window.location.pathname}${search.size ? `?${search.toString()}` : ""}`);
   }, []);
   const controller = useSalesDemoController({invitationId, grantToken, api, auth});
-  const preview = controller.preview.data;
+  const preview = !controller.privateAccessDenied && controller.preview.isSuccess && !controller.preview.isFetching ? controller.preview.data : undefined;
   const invalidId = !/^[A-Za-z0-9_-]{3,128}$/u.test(invitationId);
 
   return <EventRuntimeFrame brandLabel={salesDemoCopy.catch} brandWord={salesDemoCopy.catch}
     eventTitle={preview?.preview.brandName}>
-    {invalidId || controller.preview.isError ? <EventRuntimePanel
+    {invalidId || controller.privateAccessDenied || controller.preview.isError ? <EventRuntimePanel
       kicker={salesDemoCopy.privateExample} title={salesDemoCopy.thisPreviewIsUnavailable}
       body={salesDemoCopy.theInvitationMayHaveExpiredOr}>
-      <Button type="button" onClick={() => void controller.preview.refetch()}>{salesDemoCopy.tryAgain}</Button>
+      <Button type="button" onClick={() => void controller.retryPreview()}>{salesDemoCopy.tryAgain}</Button>
+      {controller.continuationId ? <ButtonLink href={`/claim/?continuation=${encodeURIComponent(controller.continuationId)}`}>
+        {salesDemoCopy.continuePreservedSetup}</ButtonLink> : controller.canRecoverPreservation ?
+        <Button disabled={controller.pending} onClick={() => void controller.preserveSetup()}>
+          {salesDemoCopy.recoverSetup}</Button> : null}
+      {controller.setupNotice || controller.notice ? <FormStatus status={{tone: "is-error", message: controller.setupNotice || controller.notice}} /> : null}
+      {!invalidId && grantToken ? <DemoAccessView controller={controller} auth={auth}
+        hasGrant cta={salesDemoCopy.verifyInvitedContact}
+        interactiveAvailable={false} /> : null}
     </EventRuntimePanel> : controller.preview.isPending || !preview ?
       <EventRuntimeLoading label={salesDemoCopy.loadingPrivatePreview} /> :
       <EventRuntimePanel kicker={salesDemoCopy.privateWorkflowPreview}
@@ -64,7 +73,7 @@ function SalesDemoInvitation({invitationId, api, auth}: {
             <ul>{preview.preview.limitations.map((limit) =>
               <li key={limit}>{limit}</li>)}</ul>
           </EventRuntimeModule> : null}
-          <p>{salesDemoCopy.availableUntil}{" "}{new Date(preview.expiresAt).toLocaleString()}.</p>
+          {preview.expiresAt ? <p>{salesDemoCopy.availableUntil}{" "}{new Date(preview.expiresAt).toLocaleString()}.</p> : null}
           <p>{salesDemoCopy.noRealMessagesChargesGuestAdmission}</p>
           {controller.notice ? <FormStatus status={{message: controller.notice,
             tone: "is-error"}} /> : null}
@@ -92,26 +101,26 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
   const google = async () => {
     if (authPending) return;
     setAuthPending(true); setAuthError("");
-    try {await auth.signInGoogle();} catch {
-      setAuthError(salesDemoCopy.googleSigninDidNotCompleteYou);
+    try {await auth.signInGoogle();} catch (error) {
+      setAuthError(claimAccountLinkingErrorMessage(error, salesDemoCopy.googleSigninDidNotCompleteYou));
     } finally {setAuthPending(false);}
   };
   const sendCode = async () => {
     if (authPending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())) return;
     setAuthPending(true); setAuthError("");
     try {setChallenge(await auth.beginPhone(phone.trim(), "sales-demo-recaptcha"));}
-    catch {setAuthError(salesDemoCopy.phoneVerificationCouldNotStartCheck);}
+    catch (error) {setAuthError(claimAccountLinkingErrorMessage(error, salesDemoCopy.phoneVerificationCouldNotStartCheck));}
     finally {setAuthPending(false);}
   };
   const verifyCode = async () => {
     if (authPending || !challenge || !code.trim()) return;
     setAuthPending(true); setAuthError("");
     try {await challenge.confirm(code.trim()); setCode(""); setPhone("");
-      setChallenge(null);} catch {
-      setAuthError(salesDemoCopy.thatVerificationCodeCouldNotBe);
+      setChallenge(null);} catch (error) {
+      setAuthError(claimAccountLinkingErrorMessage(error, salesDemoCopy.thatVerificationCodeCouldNotBe));
     } finally {setAuthPending(false);}
   };
-  if (!interactiveAvailable) return <EventRuntimeModule title={salesDemoCopy.previewOnly}>
+  if (!interactiveAvailable && !hasGrant) return <EventRuntimeModule title={salesDemoCopy.previewOnly}>
     <p>{salesDemoCopy.interactiveAccessHasNotBeenEnabled}</p>
   </EventRuntimeModule>;
   if (!hasGrant) return <EventRuntimeModule title={salesDemoCopy.interactiveLinkNeeded}>
@@ -127,12 +136,18 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
         <Button type="button" onClick={() => void controller.start()}
           disabled={controller.pending || authPending} loading={controller.pending}
           loadingLabel={salesDemoCopy.openingSample}>{salesDemoCopy.openInteractiveExample}</Button>
+        {controller.canRestartSample ? <Button type="button" disabled={controller.pending || authPending}
+          onClick={() => void controller.restartSample()}>{salesDemoCopy.restartSample}</Button> : null}
       </> : null}
         <p>{salesDemoCopy.useTheInvitedEmailOrVerify}</p>
         <EventRuntimeActionGrid><Button type="button" onClick={() => void google()}
           disabled={authPending || controller.pending} loading={authPending}>
-          {controller.viewer ? "Use another Google account" : "Continue with Google"}
+          {controller.viewer ? salesDemoCopy.verifyGoogle : salesDemoCopy.continueGoogle}
         </Button>
+        {controller.viewer && auth.signOut ? <Button type="button" variant="ghost"
+          disabled={authPending || controller.pending} onClick={async () => {
+            setChallenge(null); setCode(""); setAuthError(""); await auth.signOut?.();
+          }}>{salesDemoCopy.signOut}</Button> : null}
         </EventRuntimeActionGrid>
         <TextField id="sales-demo-phone" label={salesDemoCopy.orVerifyPhoneInternationalFormat}
           type="tel" autoComplete="tel" value={phone}
@@ -213,7 +228,12 @@ function DemoSetupView({controller}: {controller: Controller}) {
       {setup.status === "manual_setup" ? <p>{salesDemoCopy.manualSetupNeeded}</p> : null}
       {setup.status === "claim_required" ? <>
         <p>{salesDemoCopy.claimRequiredForDraft}</p>
-        <ButtonLink href="/claim/">{salesDemoCopy.openClaimSetup}</ButtonLink>
+        {controller.continuationId ? <ButtonLink
+          href={`/claim/?continuation=${encodeURIComponent(controller.continuationId)}`}>
+          {salesDemoCopy.openClaimSetup}</ButtonLink> : controller.canPreserve ?
+          <Button type="button" disabled={controller.pending || !controller.fresh}
+            onClick={() => void controller.preserveSetup()}>{salesDemoCopy.preserveSetup}</Button> : null}
+        <p>{salesDemoCopy.preservedSetupGuidance}</p>
       </> : null}
       {setup.status === "ready" ? <>
         <p>{salesDemoCopy.templateDraftNotPublished}</p>

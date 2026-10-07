@@ -24,4 +24,11 @@ export interface SalesIntelligenceClauseDocument {
   reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
+  /**
+   * @maxItems 8
+   */
+  partnerCitations?: {
+    evidenceId: string;
+    sourceHash: string;
+  }[];
 }
