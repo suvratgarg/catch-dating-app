@@ -189,5 +189,29 @@ const schemaHostDirectorySummaryDocumentSchema = <String, Object?>{
       'maximum': 1000,
       'x-catch-ownership': 'server-only',
     },
+    'formSummaryVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 1,
+      'x-catch-ownership': 'server-only',
+    },
+    'eventSummaryVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 1,
+      'x-catch-ownership': 'server-only',
+    },
+    'groupSummaryVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 1,
+      'x-catch-ownership': 'server-only',
+    },
+    'responseSummaryVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 1,
+      'x-catch-ownership': 'server-only',
+    },
   },
 };

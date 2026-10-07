@@ -1192,7 +1192,8 @@ service cloud.firestore {
     // Host list views contain only the explicitly allowlisted presentation DTO.
     // Authority always comes from the current organizer, never from the view.
     function isHostSummaryManager(organizerId) {
-      return isAuthed() && organizerId is string
+      return isAuthed() && !isDeletedUser(request.auth.uid)
+        && organizerId is string
         && exists(/databases/$(database)/documents/organizers/$(organizerId))
         && isClubHostData(get(
           /databases/$(database)/documents/organizers/$(organizerId)).data);
@@ -1201,6 +1202,30 @@ service cloud.firestore {
       // A missing migration marker is readable as missing by its manager.
       allow get: if isHostSummaryManager(organizerId);
       allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostFormSummaries/{formId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventSummaries/{eventId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId)
+        && get(/databases/$(database)/documents/organizers/$(
+          resource.data.organizerId)).data.status == 'active'
+        && !get(/databases/$(database)/documents/organizers/$(
+          resource.data.organizerId)).data.archived;
+      allow write: if false;
+    }
+    match /hostGroupSummaries/{audienceId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostGroupDetails/{audienceId} {
+      allow get: if isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    match /hostResponseSummaries/{summaryId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
     match /hostContactSummaries/{contactId} {

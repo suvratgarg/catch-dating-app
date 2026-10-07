@@ -57,7 +57,7 @@ final class PrivateEventSetupTimelineRepositoryProvider
 }
 
 String _$privateEventSetupTimelineRepositoryHash() =>
-    r'07c12aa1f178f6fa373446af8bb606075790c5fa';
+    r'e729f2bbf842f1b1530f7e57a4de4a6c6acaf36f';
 
 @ProviderFor(HostEventsTimelineController)
 final hostEventsTimelineControllerProvider =
@@ -107,7 +107,7 @@ final class HostEventsTimelineControllerProvider
 }
 
 String _$hostEventsTimelineControllerHash() =>
-    r'b29bdfdf334c9f5f8fcf9a59f0d1bafe850e2c22';
+    r'fc1316911a504b06de24d4d43d78ccaea7df6151';
 
 final class HostEventsTimelineControllerFamily extends $Family
     with

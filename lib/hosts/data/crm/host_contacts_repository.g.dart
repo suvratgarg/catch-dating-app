@@ -55,7 +55,7 @@ final class HostContactsRepositoryProvider
 }
 
 String _$hostContactsRepositoryHash() =>
-    r'fa4ff000178ee21d74dc868a6d0054f7b68e011f';
+    r'3c229b63abbd38fdc9eadd0a74285e6b65f73841';
 
 @ProviderFor(hostCrmSummary)
 final hostCrmSummaryProvider = HostCrmSummaryFamily._();
@@ -112,7 +112,7 @@ final class HostCrmSummaryProvider
   }
 }
 
-String _$hostCrmSummaryHash() => r'1b61890692236986fc2f7dc9b4a8328b123b68e2';
+String _$hostCrmSummaryHash() => r'4a697b9d2801950f7d53f093cfa3473f97a52101';
 
 final class HostCrmSummaryFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostCrmSummary>, String> {
@@ -191,7 +191,7 @@ final class HostEventRosterInsightsProvider
 }
 
 String _$hostEventRosterInsightsHash() =>
-    r'153289efcd7f7669b55f97a01ee5c39881caf65f';
+    r'9ba8b0247c817f689b9abde6ed163e20418dcb9a';
 
 final class HostEventRosterInsightsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostEventRosterInsights>, String> {
@@ -266,7 +266,7 @@ final class HostAudienceProvider
   }
 }
 
-String _$hostAudienceHash() => r'757f4e96a1f95f64baec95f76f514e136efbedec';
+String _$hostAudienceHash() => r'2f0fe5ec04e5ef6ddd0f588c95694b2a7b302b28';
 
 final class HostAudienceFamily extends $Family
     with
@@ -349,7 +349,7 @@ final class HostAudienceContactDetailProvider
 }
 
 String _$hostAudienceContactDetailHash() =>
-    r'3d8c031b2b49a9da6a0ce217bf65fe54a171e7df';
+    r'528ff06e5ba8a801b99b89e4672fb3d1e8edd437';
 
 final class HostAudienceContactDetailFamily extends $Family
     with
@@ -437,7 +437,7 @@ final class HostAudienceContactHistoryProvider
 }
 
 String _$hostAudienceContactHistoryHash() =>
-    r'9d38341647301118c06bafa37073ed74ec75f9bc';
+    r'830333676526fd666dbabd3f5982b295d5e12177';
 
 final class HostAudienceContactHistoryFamily extends $Family
     with

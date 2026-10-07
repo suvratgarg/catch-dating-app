@@ -14,6 +14,19 @@ class HostContactSummaryReads {
     return HostCrmSummary.fromCallableData(data!['summary']);
   }
 
+  Future<int?> count(String organizerId, HostAudienceQuery query) async {
+    if (!supports(query)) return null;
+    final segments = {...query.segments, ?query.segment};
+    final tags = {...query.manualTagIds, ?query.manualTagId};
+    if (tags.isNotEmpty || segments.length > 1) return null;
+    final data = await reader.directory(organizerId);
+    if (data?['contactSummaryVersion'] != 1) return null;
+    return segments.isEmpty
+        ? (data!['summary'] as Map)['contactCount'] as int
+        : ((data!['segmentCounts'] as Map)[segments.single.wireValue] as int? ??
+              0);
+  }
+
   static bool supports(HostAudienceQuery query) {
     final segments = {...query.segments, ?query.segment};
     final tags = {...query.manualTagIds, ?query.manualTagId};

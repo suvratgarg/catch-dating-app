@@ -662,9 +662,11 @@ describe("firestore.rules", () => {
   });
 
   describe("Host summary reads", () => {
+    const summaryOrganizer = (overrides = {}) =>
+      club({status: "active", archived: false, ...overrides});
     async function setup() {
-      await seed(["organizers", "org"], club({hostUserIds: ["manager"]}));
-      await seed(["organizers", "other"], club({hostUserId: "other-host"}));
+      await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
       for (let index = 0; index < 31; index++) {
         await seed(["hostContactSummaries", `person-${index}`], {
           organizerId: "org", contactId: `person-${index}`, version: 1,
@@ -685,7 +687,7 @@ describe("firestore.rules", () => {
         )));
         assert.equal(page.size, 31);
       }
-      await seed(["organizers", "org"], club({hostUserId: "new-host"}));
+      await seed(["organizers", "org"], summaryOrganizer({hostUserId: "new-host"}));
       await assertFails(getDoc(doc(authedDb("host-1"),
         "hostContactSummaries", "person-0")));
     });
@@ -708,7 +710,7 @@ describe("firestore.rules", () => {
       await assertFails(getDoc(doc(db, "organizerContacts", "person-0")));
     });
     it("continues tied SDK pages without duplicates or omissions", async () => {
-      await seed(["organizers", "org"], club());
+      await seed(["organizers", "org"], summaryOrganizer());
       for (const id of ["a", "b", "c"]) {
         await seed(["hostContactSummaries", id], {
           organizerId: "org", lastSeenAtMillis: 10, version: 1,
@@ -722,8 +724,46 @@ describe("firestore.rules", () => {
       const second = await getDocs(query(ordered, startAfter(10, "b"), limit(2)));
       assert.deepEqual(second.docs.map((row) => row.id), ["a"]);
     });
+    it("isolates all summary collections and selected Group definitions", async () => {
+      await seed(["organizers", "org"], summaryOrganizer());
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
+      for (const name of ["hostFormSummaries", "hostEventSummaries",
+        "hostGroupSummaries", "hostResponseSummaries", "hostGroupDetails"]) {
+        await seed([name, "own"], {organizerId: "org", version: 1});
+        await seed([name, "foreign"], {organizerId: "other", version: 1});
+        const db = authedDb("host-1");
+        await assertSucceeds(getDoc(doc(db, name, "own")));
+        await assertFails(getDoc(doc(db, name, "foreign")));
+        const scoped = query(collection(db, name),
+          where("organizerId", "==", "org"));
+        if (name === "hostGroupDetails") await assertFails(getDocs(scoped));
+        else await assertSucceeds(getDocs(scoped));
+        await assertFails(getDocs(collection(db, name)));
+        await assertFails(getDocs(query(collection(db, name),
+          where("organizerId", "==", "other"))));
+        await assertFails(setDoc(doc(db, name, "injected"),
+          {organizerId: "org"}));
+        await assertFails(updateDoc(doc(db, name, "own"), {version: 2}));
+        await assertFails(deleteDoc(doc(db, name, "own")));
+        await assertFails(getDoc(doc(authedDb("operator-1"), name, "own")));
+      }
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      for (const name of ["hostFormSummaries", "hostEventSummaries",
+        "hostGroupSummaries", "hostResponseSummaries", "hostGroupDetails"]) {
+        await assertFails(getDoc(doc(authedDb("host-1"), name, "own")));
+      }
+    });
+    it("revokes unpublished Event summary reads when the organizer archives", async () => {
+      await seed(["organizers", "org"], summaryOrganizer());
+      await seed(["hostEventSummaries", "event"], {organizerId: "org"});
+      await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "hostEventSummaries", "event")));
+      await seed(["organizers", "org"], summaryOrganizer({status: "archived", archived: true}));
+      await assertFails(getDoc(doc(authedDb("host-1"),
+        "hostEventSummaries", "event")));
+    });
     it("allows only the owner to read a missing cutover marker", async () => {
-      await seed(["organizers", "org"], club());
+      await seed(["organizers", "org"], summaryOrganizer());
       const snapshot = await assertSucceeds(getDoc(doc(authedDb("host-1"),
         "hostDirectorySummaries", "org")));
       assert.equal(snapshot.exists(), false);

@@ -631,7 +631,7 @@ async function assertManualTagsExist(
   }
 }
 
-function savedAudienceResponse(
+export function savedAudienceResponse(
   audience: OrganizerSavedAudienceDocument,
 ): OrganizerSavedAudienceCallableResponse {
   return {

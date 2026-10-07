@@ -35,7 +35,7 @@ void main() {
     expect(
       HostSummaryCursor.decode(
         first.nextCursor,
-        '["host","org","hostContactSummaries","all"]',
+        HostSummaryCursor.scope('host', 'org', 'hostContactSummaries', 'all'),
       ),
       [10, 'b'],
     );

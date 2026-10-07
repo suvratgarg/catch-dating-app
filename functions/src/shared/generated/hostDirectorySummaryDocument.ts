@@ -23,4 +23,8 @@ export interface HostDirectorySummaryDocument {
   }[];
   sourceCoverage: "exact" | "partial";
   projectionVersion: number;
+  formSummaryVersion?: number;
+  eventSummaryVersion?: number;
+  groupSummaryVersion?: number;
+  responseSummaryVersion?: number;
 }

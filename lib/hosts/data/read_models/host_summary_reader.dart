@@ -1,10 +1,23 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 
 /// Scoped cursors never authorize access; current Firestore rules do.
 class HostSummaryCursor {
   static const prefix = 'hs1.';
+  static String scope(
+    String actor,
+    String organizerId,
+    String collection,
+    String queryKey,
+  ) => sha256
+      .convert(
+        utf8.encode(jsonEncode([actor, organizerId, collection, queryKey])),
+      )
+      .toString();
   static String encode(String scope, Object value, String id) =>
       '$prefix${base64Url.encode(utf8.encode(jsonEncode([scope, value, id])))}';
   static List<Object?>? decode(String? cursor, String scope) {
@@ -75,14 +88,47 @@ class HostSummaryReader {
     String organizerId,
     String actor,
   ) async {
-    final snapshot = await _firestore
-        .collection('hostDirectorySummaries')
-        .doc(organizerId)
-        .get(const GetOptions(source: Source.server));
+    final snapshot = await withBackendErrorContext(
+      () => _firestore
+          .collection('hostDirectorySummaries')
+          .doc(organizerId)
+          .get(const GetOptions(source: Source.server)),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'load Host directory readiness',
+        resource: 'hostDirectorySummaries',
+      ),
+    );
     _checkActor(actor);
     final data = snapshot.data();
     if (data != null && data['organizerId'] != organizerId) {
       throw const FormatException('Directory owner does not match.');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>?> document({
+    required String collection,
+    required String organizerId,
+    required String id,
+  }) async {
+    final actor = _actor();
+    final snapshot = await withBackendErrorContext(
+      () => _firestore
+          .collection(collection)
+          .doc(id)
+          .get(const GetOptions(source: Source.server)),
+      context: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'load selected Host record',
+        resource: collection,
+      ),
+    );
+    _checkActor(actor);
+    final data = snapshot.data();
+    if (data != null &&
+        (data['organizerId'] != organizerId || data['version'] != 1)) {
+      throw const FormatException('Selected record owner or version changed.');
     }
     return data;
   }
@@ -95,13 +141,21 @@ class HostSummaryReader {
     required String queryKey,
     required int limit,
     Map<String, Object> equalities = const {},
+    Map<String, List<String>> inFilters = const {},
+    num? lowerInclusive,
+    num? upperExclusive,
     String? arrayField,
     List<String> arrayValues = const [],
     String? prefix,
     String? cursor,
   }) async {
     final actor = _actor();
-    final scope = jsonEncode([actor, organizerId, collection, queryKey]);
+    final scope = HostSummaryCursor.scope(
+      actor,
+      organizerId,
+      collection,
+      queryKey,
+    );
     final position = HostSummaryCursor.decode(cursor, scope);
     final boundedLimit = limit.clamp(1, 100);
     Query<Map<String, dynamic>> query = _firestore
@@ -109,6 +163,15 @@ class HostSummaryReader {
         .where('organizerId', isEqualTo: organizerId);
     for (final entry in equalities.entries) {
       query = query.where(entry.key, isEqualTo: entry.value);
+    }
+    for (final entry in inFilters.entries) {
+      query = query.where(entry.key, whereIn: entry.value);
+    }
+    if (lowerInclusive != null) {
+      query = query.where(orderField, isGreaterThanOrEqualTo: lowerInclusive);
+    }
+    if (upperExclusive != null) {
+      query = query.where(orderField, isLessThan: upperExclusive);
     }
     if (arrayField != null) {
       query = query.where(arrayField, arrayContainsAny: arrayValues);
@@ -122,9 +185,16 @@ class HostSummaryReader {
         .orderBy(orderField, descending: descending)
         .orderBy(FieldPath.documentId, descending: descending);
     if (position != null) query = query.startAfter(position);
-    final snapshot = await query
-        .limit(boundedLimit + 1)
-        .get(const GetOptions(source: Source.server));
+    final snapshot = await withBackendErrorContext(
+      () => query
+          .limit(boundedLimit + 1)
+          .get(const GetOptions(source: Source.server)),
+      context: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'load Host list summaries',
+        resource: collection,
+      ),
+    );
     _checkActor(actor);
     final docs = snapshot.docs.take(boundedLimit).toList(growable: false);
     final data = docs

@@ -55,7 +55,7 @@ final class HostFormsRepositoryProvider
 }
 
 String _$hostFormsRepositoryHash() =>
-    r'97dcc5e861025c84d665d7a166fe6815ddc83bff';
+    r'6ad259adaa78706c2c197ccfc1728848d0f3b5cd';
 
 @ProviderFor(hostFormTemplates)
 final hostFormTemplatesProvider = HostFormTemplatesFamily._();
@@ -114,7 +114,7 @@ final class HostFormTemplatesProvider
   }
 }
 
-String _$hostFormTemplatesHash() => r'942341af27b372ea8500e0dd2989265fbeb96be1';
+String _$hostFormTemplatesHash() => r'd39b3b8569acdaa6228cc1818d582343f18d0945';
 
 final class HostFormTemplatesFamily extends $Family
     with
@@ -200,7 +200,7 @@ final class HostFormShareAssetsProvider
 }
 
 String _$hostFormShareAssetsHash() =>
-    r'76c0d455912cb8da022ab85da4242237261c0655';
+    r'9b8163c639fa7588e0b559848c292eb8ac41214a';
 
 final class HostFormShareAssetsFamily extends $Family
     with

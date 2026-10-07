@@ -186,6 +186,30 @@ export const hostDirectorySummaryDocumentSchema: Record<string, unknown> = {
       "minimum": 1,
       "maximum": 1000,
       "x-catch-ownership": "server-only"
+    },
+    "formSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "eventSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "groupSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "responseSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;

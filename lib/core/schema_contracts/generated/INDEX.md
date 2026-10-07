@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| HostResponseSummaryDocument | `firestore/host_response_summaries.schema.json` | `functions/src/shared/generated/hostResponseSummaryDocument.ts` |
+| HostGroupDetailDocument | `firestore/host_group_details.schema.json` | `functions/src/shared/generated/hostGroupDetailDocument.ts` |
+| HostGroupSummaryDocument | `firestore/host_group_summaries.schema.json` | `functions/src/shared/generated/hostGroupSummaryDocument.ts` |
+| HostEventSummaryDocument | `firestore/host_event_summaries.schema.json` | `functions/src/shared/generated/hostEventSummaryDocument.ts` |
+| HostFormSummaryDocument | `firestore/host_form_summaries.schema.json` | `functions/src/shared/generated/hostFormSummaryDocument.ts` |
 | HostContactSummaryDocument | `firestore/host_contact_summaries.schema.json` | `functions/src/shared/generated/hostContactSummaryDocument.ts` |
 | HostDirectorySummaryDocument | `firestore/host_directory_summaries.schema.json` | `functions/src/shared/generated/hostDirectorySummaryDocument.ts` |
 | CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupOperationDocument.ts` |
@@ -1236,6 +1241,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaHostResponseSummaryDocumentSchema` | HostResponseSummaryDocument | `firestore/host_response_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_response_summary_document.g.dart` |
+| `schemaHostGroupDetailDocumentSchema` | HostGroupDetailDocument | `firestore/host_group_details.schema.json` | `lib/core/schema_contracts/generated/schemas/host_group_detail_document.g.dart` |
+| `schemaHostGroupSummaryDocumentSchema` | HostGroupSummaryDocument | `firestore/host_group_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_group_summary_document.g.dart` |
+| `schemaHostEventSummaryDocumentSchema` | HostEventSummaryDocument | `firestore/host_event_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_event_summary_document.g.dart` |
+| `schemaHostFormSummaryDocumentSchema` | HostFormSummaryDocument | `firestore/host_form_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_form_summary_document.g.dart` |
 | `schemaHostContactSummaryDocumentSchema` | HostContactSummaryDocument | `firestore/host_contact_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_contact_summary_document.g.dart` |
 | `schemaHostDirectorySummaryDocumentSchema` | HostDirectorySummaryDocument | `firestore/host_directory_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_directory_summary_document.g.dart` |
 | `schemaCatchWhatsappOperatorSetupOperationDocumentSchema` | CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_operation_document.g.dart` |

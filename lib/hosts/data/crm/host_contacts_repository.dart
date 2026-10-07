@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -19,6 +20,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_contacts_repository.g.dart';
 
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, lastSeenAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, row.segmentIds:CONTAINS, lastSeenAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, manualTagIds:CONTAINS, lastSeenAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, row.attendedEventCount:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, row.segmentIds:CONTAINS, row.attendedEventCount:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, manualTagIds:CONTAINS, row.attendedEventCount:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, searchName:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, row.segmentIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostContactSummaries (organizerId:ASCENDING, manualTagIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
 class HostContactsRepository {
   const HostContactsRepository(this._functions, {this.summaries});
 
@@ -85,6 +95,18 @@ class HostContactsRepository {
       action: 'load organizer audience',
       parse: HostAudiencePage.fromCallableData,
     );
+  }
+
+  Future<({int count, HostAudienceMatchCountCoverage coverage})> countContacts(
+    String organizerId, {
+    HostAudienceQuery query = const HostAudienceQuery(),
+  }) async {
+    final count = await summaries?.count(organizerId, query);
+    if (count != null) {
+      return (count: count, coverage: HostAudienceMatchCountCoverage.exact);
+    }
+    final page = await listContacts(organizerId, query: query, limit: 1);
+    return (count: page.matchCount, coverage: page.matchCountCoverage);
   }
 
   Future<HostAudienceContactDetail> getContactDetail(
@@ -370,26 +392,28 @@ class HostContactsRepository {
 
 // keepalive: Reuse the callable client for the contacts subdomain.
 @Riverpod(keepAlive: true)
-HostContactsRepository hostContactsRepository(Ref ref) =>
-    HostContactsRepository(
-      ref.watch(firebaseFunctionsProvider),
-      summaries: HostContactSummaryReads(
-        HostSummaryReader(
-          ref.watch(firebaseFirestoreProvider),
-          actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
-        ),
+HostContactsRepository hostContactsRepository(Ref ref) {
+  ref.watch(authenticatedSessionProvider);
+  return HostContactsRepository(
+    ref.watch(firebaseFunctionsProvider),
+    summaries: HostContactSummaryReads(
+      HostSummaryReader(
+        ref.watch(firebaseFirestoreProvider),
+        actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
-    );
+    ),
+  );
+}
 
 @riverpod
 Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) =>
-    ref.read(hostContactsRepositoryProvider).getSummary(organizerId);
+    ref.watch(hostContactsRepositoryProvider).getSummary(organizerId);
 
 @riverpod
 Future<HostEventRosterInsights> hostEventRosterInsights(
   Ref ref,
   String eventId,
-) => ref.read(hostContactsRepositoryProvider).getEventRosterInsights(eventId);
+) => ref.watch(hostContactsRepositoryProvider).getEventRosterInsights(eventId);
 
 @riverpod
 Future<HostAudiencePage> hostAudience(
@@ -397,7 +421,7 @@ Future<HostAudiencePage> hostAudience(
   String organizerId,
   HostAudienceQuery query,
 ) => ref
-    .read(hostContactsRepositoryProvider)
+    .watch(hostContactsRepositoryProvider)
     .listContacts(organizerId, query: query);
 
 @riverpod
@@ -406,7 +430,7 @@ Future<HostAudienceContactDetail> hostAudienceContactDetail(
   String organizerId,
   String contactId,
 ) => ref
-    .read(hostContactsRepositoryProvider)
+    .watch(hostContactsRepositoryProvider)
     .getContactOverview(organizerId, contactId);
 
 @riverpod
@@ -415,5 +439,5 @@ Future<HostAudienceContactDetail> hostAudienceContactHistory(
   String organizerId,
   String contactId,
 ) => ref
-    .read(hostContactsRepositoryProvider)
+    .watch(hostContactsRepositoryProvider)
     .getContactDetail(organizerId, contactId);

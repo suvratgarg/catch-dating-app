@@ -101,8 +101,10 @@ export async function reconcileContactSummary(
         "exact" : "partial";
       directory.projectionVersion = source.coverage?.projectionVersion ?? 1;
       directory.summary.truncated = directory.sourceCoverage !== "exact";
-      tx.set(db.collection("hostDirectorySummaries").doc(source.organizerId),
-        directory);
+      if (!isDeepStrictEqual(source.directory ?? null, directory)) {
+        tx.set(db.collection("hostDirectorySummaries").doc(source.organizerId),
+          directory);
+      }
     }
     if (next) tx.set(viewRef, next);
     else if (old) tx.delete(viewRef);

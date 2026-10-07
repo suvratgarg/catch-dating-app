@@ -1,3 +1,5 @@
+import {redactResponseSummary} from "../hostReadModels/responseRedaction";
+import {responseSummaryId} from "../hostReadModels/responseIds";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -367,10 +369,12 @@ export async function revokeParticipantOrganizerDataGrantHandler(
   const applicationRef = db.collection("organizerApplications")
     .doc(data.applicationId);
   const now = deps.timestamp();
+  const summaryRef = db.collection("hostResponseSummaries")
+    .doc(responseSummaryId("application", data.applicationId));
   return db.runTransaction(async (tx) => {
-    const [grantSnap, applicationSnap] = await Promise.all([
+    const [grantSnap, applicationSnap, summarySnap] = await Promise.all([
       tx.get(grantRef),
-      tx.get(applicationRef),
+      tx.get(applicationRef), tx.get(summaryRef),
     ]);
     const grant = grantSnap.data() as
       ParticipantOrganizerDataGrantDocument | undefined;
@@ -382,7 +386,16 @@ export async function revokeParticipantOrganizerDataGrantHandler(
         application.organizerId !== data.organizerId) {
       throw new HttpsError("not-found", "Application grant not found.");
     }
+    // Privacy removal is part of revocation, including idempotent replays.
+    const redacted = redactResponseSummary(summarySnap.data(),
+      data.organizerId, "application", data.applicationId,
+      grant.revokedAt?.toMillis() ?? now.toMillis());
+    const removeIdentity = () => {
+      if (redacted) tx.set(summaryRef, redacted);
+      else tx.delete(summaryRef);
+    };
     if (grant.revokedAt !== null) {
+      removeIdentity();
       return {
         organizerId: data.organizerId,
         applicationId: data.applicationId,
@@ -398,6 +411,7 @@ export async function revokeParticipantOrganizerDataGrantHandler(
       );
     }
     const revision = application.revision + 1;
+    removeIdentity();
     tx.update(grantRef, {revokedAt: now});
     tx.update(applicationRef, {
       reviewStatus: "withdrawn",
