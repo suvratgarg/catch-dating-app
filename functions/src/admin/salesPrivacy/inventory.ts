@@ -32,7 +32,7 @@ export const DIRECT_SALES_COLLECTIONS = [
   "salesImportRows", "salesImportCompensations",
   "salesImportHistoryRows", "salesImportHistoryRecords",
   "salesIntelligenceAssessments", "salesIntelligenceClauses",
-  "salesIntelligenceScoreSnapshots", "salesOutreachDrafts",
+  "salesIntelligenceScoreSnapshots", "salesOutreachDrafts", "salesProviderAttempts",
   "salesPilotPlans", "salesQuotes", "salesQuoteVersions",
   "salesCommercialDecisions", "salesOpportunityStageHistory",
   "salesDemoBlueprints", "salesDemoSetups", "salesDemoContinuations", "salesFitQueueEntries",
@@ -310,7 +310,7 @@ export async function inventorySalesOrganizer(port: InventoryPort,
   for (const code of ["external_exports_unverified",
     "upstream_intake_unverified", "product_forms_untouched",
     "assistant_shared_client_scope_unverified",
-    "assistant_budget_metadata_unverified"]) {
+    "assistant_budget_metadata_unverified", "provider_budget_accounting_retained"]) {
     block(code, `external:${code}:${organizerId}`);
   }
   // A later plan must still be able to attribute every surviving dependent.

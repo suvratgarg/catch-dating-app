@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'SalesProviderAttemptDocument',
+    source: 'firestore/sales_provider_attempts.schema.json',
+    schema: schemaSalesProviderAttemptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SalesProviderBudgetDocument',
+    source: 'firestore/sales_provider_budgets.schema.json',
+    schema: schemaSalesProviderBudgetDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchWhatsappOperatorSetupOperationDocument',
     source: 'firestore/catch_whatsapp_operator_setup_operations.schema.json',
     schema: schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
@@ -6104,6 +6114,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'SalesProviderAttemptDocument': schemaSalesProviderAttemptDocumentSchema,
+  'SalesProviderBudgetDocument': schemaSalesProviderBudgetDocumentSchema,
   'CatchWhatsappOperatorSetupOperationDocument': schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
   'CatchWhatsappOperatorSetupAuditDocument': schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
   'ManageHostRosterIntakeCallablePayload': schemaManageHostRosterIntakeCallablePayloadSchema,
@@ -7324,6 +7336,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/sales_provider_attempts.schema.json': schemaSalesProviderAttemptDocumentSchema,
+  'firestore/sales_provider_budgets.schema.json': schemaSalesProviderBudgetDocumentSchema,
   'firestore/catch_whatsapp_operator_setup_operations.schema.json': schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
   'firestore/catch_whatsapp_operator_setup_audits.schema.json': schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
   'callables/manage_host_roster_intake_payload.schema.json': schemaManageHostRosterIntakeCallablePayloadSchema,

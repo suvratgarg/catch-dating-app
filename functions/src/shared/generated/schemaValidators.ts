@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateSalesProviderAttemptDocument} from "./validators/salesProviderAttemptDocument";
+export {validateSalesProviderBudgetDocument} from "./validators/salesProviderBudgetDocument";
 export {validateCatchWhatsappOperatorSetupOperationDocument} from "./validators/catchWhatsappOperatorSetupOperationDocument";
 export {validateCatchWhatsappOperatorSetupAuditDocument} from "./validators/catchWhatsappOperatorSetupAuditDocument";
 export {validateManageHostRosterIntakeCallablePayload} from "./validators/manageHostRosterIntakeInput";

@@ -606,6 +606,18 @@ Draft review/copy recheck source material and suppression and grant no send
 permission. Production draft execution remains a separate runtime acceptance
 step.
 
+`admin/salesIntelligence/providerRuntime.ts` is a disabled internal writing
+preparation worker, with no callable or trigger export. It reuses current
+employee/assigned-staff or own participant drafting eligibility, requires
+separate trusted public-disclosure and exact stage/billing authorization ports,
+and invokes the packaged native adapters through the existing preparation
+helper. Firestore intent and run/month reservations precede provider I/O;
+uncertain intent never authorizes another submission. Validated clause
+selections and cache receipts commit with bounded accounting under the current
+source and lease fence. They are separate preparation records, not rendered
+drafts consumed by existing review/copy callables. General research orchestration,
+live authorization sources, pricing, credentials and activation remain separate.
+
 `salesAssistant` provides scoped third-party access through a registered service
 identity and short-lived employee delegation. Every operation revalidates the
 client, employee, delegation and budget; there is no direct database credential

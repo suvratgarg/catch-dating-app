@@ -1078,6 +1078,8 @@ export 'sales_privacy_batch_receipt.g.dart';
 export 'sales_privacy_plan.g.dart';
 export 'sales_privacy_policy.g.dart';
 export 'sales_privacy_restriction.g.dart';
+export 'sales_provider_attempt_document.g.dart';
+export 'sales_provider_budget_document.g.dart';
 export 'sales_quote_versions_document.g.dart';
 export 'sales_quotes_document.g.dart';
 export 'sales_setting_document.g.dart';

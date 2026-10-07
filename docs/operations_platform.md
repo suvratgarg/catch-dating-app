@@ -1052,6 +1052,31 @@ activation and acceptance gates. Runtime port
 details are maintained in the
 [outreach workflow README](../operations/src/workflows/outreach-drafting/README.md).
 
+The disabled internal Functions writing-preparation worker separately composes
+the accepted native DeepSeek, OpenAI and Anthropic adapters with
+`createSalesPreparationAdapter` and `GuardedModelRunner`. Its 25-file packaged
+dependency closure is checked during Functions build. A stable Firestore
+job/stage intent reserves both explicit run and UTC-month buckets before any
+provider I/O. Intent survives uncertain commit responses, crashes, cache misses
+and lease renewal; it cannot retry or fall back automatically. The helper's
+local ledger validates the worker's already-durable grant and never represents
+the shared monthly balance. Its cache write is buffered until final canonical
+validation and current authority, source and lease checks can atomically commit
+the private selection/cache receipt and accounting. Unknown usage retains
+ceilings; adapter cost remains a reservation, not inferred billed usage.
+
+No callable, trigger, credential, activation or public-review source is supplied
+by this bridge. A trusted worker must provide fresh exact stage/billing and
+public-disclosure review, including the prompt and whole rendered-request token
+ceiling. Approved drafting clauses and partner citation grants alone do not
+authorize external disclosure. Deadlines and cancellation cover remaining
+lease/authorization time. Existing public drafting callables stay deterministic;
+provider selections are not yet their rendered/reviewed drafts. General research
+jobs require a separate eligibility boundary. Real pricing, runtime authorization
+sources and controlled acceptance remain prerequisites for any activation.
+Private attempt cleanup uses the permanent Sales processing fence; retained
+aggregate accounting cannot grant renewed submission authority.
+
 ## Reviewed host discovery batches
 
 The optional private discovery policy is supplied through the ordinary

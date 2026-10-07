@@ -17,6 +17,8 @@ const privatePaths = [
   "salesHostSettlementIdentities/synthetic-private",
 
   "salesOutreachJobs/synthetic-private",
+  "salesProviderAttempts/synthetic-private",
+  "salesProviderBudgets/synthetic-private",
   "salesEvidenceProposals/synthetic-private",
   "salesPilotPlans/synthetic-private",
   "salesQuotes/synthetic-private",
