@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.26
-updated: 2026-10-06
+version: 2.7.27
+updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -1342,16 +1342,110 @@ authority, retention policy and support owner. Enabling organizer WhatsApp must
 not make the Catch route active. Personal `wa.me` handoff requires no backend
 provider activation and generates no Catch delivery receipt.
 
-The first Catch WhatsApp operator runner is source-only and disconnected. Its
-plan inspection CLI is offline; it supplies no live apply command or default
-activation policy. Before a separately authorized operator apply, review the
-exact protected plan/source SHA, fixed identity and sender scope, metadata-only
-credential evidence, independent review/ingress/history sources, current guards,
-and the documented out-of-band Auth/Firestore race. A fresh sign-in is required
-after the seed receipt; interrupted or unknown effects require exact permanent
-receipt reconciliation. Never reset or delete the project setup slot to retry.
-Source publication and backend deployment do not authorize bootstrap, history
-publication or provider activation. See
+### Protected Catch WhatsApp operator CLI
+
+The CLI composes the merged operator planner, protected sources, Firestore
+journal and existing authority store. It is not exported from Functions or
+invoked by deployment. Source publication and backend deployment do not approve
+operator execution, Auth grants, history publication, provider activation or
+sending. Before a separately authorized production bootstrap, review the exact
+plan/source/executable artifact, fixed identity/sender, current guards and the
+concrete external Auth race. This source task uses synthetic tests only.
+
+The executable sequence after authorization is:
+
+```sh
+npm --prefix functions run build
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs fingerprint
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs plan
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs apply --plan-id <id>
+node functions/scripts/operations/setup-catch-whatsapp-reply.cjs reconcile --plan-id <id>
+```
+
+`fingerprint` is offline and requires clean tracked source at the reviewed Git
+HEAD. Other commands require `CATCH_WHATSAPP_OPERATOR_HOME` to select a private
+non-symlink directory outside the checkout, owned by the explicitly delegated
+policy/configuration writer with mode 0700. Regular bounded files must be
+owner-only mode 0600, single-link, opened with `O_NOFOLLOW` and checked after open.
+JSON records use compact `JSON.stringify` encoding; duplicate keys and ambiguous
+encodings are rejected. Private subdirectories are also mode 0700. This POSIX
+trust root does not certify independent human review or protect against a hostile
+same-UID process. Do not create it from public request facts, commit it, or publish
+its contents. Existing ADC and existing IAM are reused; no executor credentials,
+users, secrets or IAM grants are created by this runner.
+
+Required private inputs:
+
+- `profile.json`: exact keys `schemaVersion` (1), `scope` (existing
+  `OperatorSetupScope`), `sourceSha`, `executionSha256`,
+  `credentialVersionName`, `runtimePrincipal`. The credential is the existing
+  numeric `CATCH_WHATSAPP_ACCESS_TOKEN` version in the scope's project;
+  `scope.credentialVersionSha256` is SHA-256 of its UTF-8 resource name. The
+  principal is the existing deployed runtime service account, not CLI ADC.
+  Source/execution fields match `fingerprint`; never update an approved digest
+  automatically after changing source or compiled files.
+- `actor-id-token.txt`: the existing Google actor's current Firebase ID token,
+  provided through the protected session path, never argv, logs or token-valued
+  environment variables. Current signature, project and revocation are verified.
+
+Planning reads current state and creates only `pending-plans/<id>.json`
+(`plan`, `executionSha256`) and `requests/<id>.json` (existing strict request with
+a stable private replay key). It never creates approval. The separately
+authorized policy writer reviews that envelope and the account consequences,
+then writes only the plan to `reviewed-plans/<id>.json`, and writes
+`approvals/<id>.json` with exact keys `schemaVersion` (1), `action`
+(`bootstrap-apply`), `planSha256`, `scopeSha256`, `sourceSha`, `executionSha256`,
+`replaySha256`, `expiresAtMillis`. Scope, plan and replay hashes use `setupHash`;
+the execution hash comes from `fingerprint`. Approval cannot outlive the plan's
+15-minute expiry. There is no `--yes`, approval command, Remote Config approval
+or automatic promotion. Missing/mismatched approval fails before SDK/ADC access;
+policy is checked again at each mutation admission, including after OAuth header
+waits immediately before the single Auth request. A runtime instance retains one
+exact plan/request binding; concurrent different-plan apply cannot replace it.
+Preserve the exact request.
+
+**Account consequence:** bootstrap adds project-wide `adminOwner=true` and the
+canonical `adminRoleAssignments` projection to the existing Google UID,
+preserving other claims. This grants broad existing Admin access, including role
+management; it is not a WhatsApp-only role. Separately, Catch root revision 2 has
+only `review`/`reply`, and the pinned recipient gets only endpoint-bound `receive`.
+The operator must accept the broader Admin grant before live approval. Readiness
+revoke does not remove that Admin claim or undo a send. There is no second user,
+Google identity, new IAM role or global Auth mutex.
+
+After the seed receipt, `fresh-sign-in-required` means a new Google sign-in after
+the seed's next-second cutoff; refreshing the old token is insufficient. Replace
+only the private session token through the existing protected path and resume the
+same approved `apply` request before expiry. The guarded claim setter uses a
+single authenticated REST request; the Admin SDK's automatic mutation retry is
+not used. Connection reset, lost committed response and 503 remain unknown
+without another dispatch. Unknown effects use read-only `reconcile`; it never
+dispatches another setter, advances a phase, resumes revoke or claims readiness.
+Expired plans remain readable. Never reset/delete the
+permanent project slot or change the replay key to retry. Unsupported
+inherited/group/conditional Secret Manager access is unproven by the direct-IAM
+adapter, not evidence of missing IAM or a request to expand it.
+
+The CLI has no DEV-project/build-flag acceptance requirement. Production remains
+the intended target; no DEV trial is introduced as a prerequisite. The existing
+manual backend path uses `adminReviewCatchWhatsappInbound`, then
+`adminSendCatchWhatsappReply`, at the configured production project's callable
+endpoint with current `support`/`adminOwner` Auth, App Check, exact inbound/reply
+confirmation and a one-shot operation. Do not add another Function or sender
+route. The existing Admin overview trial panel hardcodes `catchdates-dev` and
+`VITE_CATCH_WHATSAPP_TRIAL_ENABLED`; that source constraint is not a production
+acceptance decision. A production panel must use the user's Remote Config
+control rather than that DEV gate. No live flag is read or changed here. Remote
+Config controls availability and cannot approve bootstrap or a reply.
+
+`complete` establishes bootstrap only. The merged readiness publisher/reviewer
+and archive adapters still require independently authenticated review, deployed
+atomic-ingress/cutover evidence, complete pinned history and independent
+publication-audit provenance. No fabricated producer or blind readiness action
+is supplied by this CLI. Existing activation flags and manual support review/send
+remain separately approved steps. Exact private profile/plan/approval/session and
+readiness producer bindings come from their authorized owners; absent
+configuration is not a reason to recreate the existing token. See
 [First Catch WhatsApp operator source boundary](data_contracts.md#first-catch-whatsapp-operator-source-boundary).
 
 Mobile artifacts remain separate from backend deployment. A successful

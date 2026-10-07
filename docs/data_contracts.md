@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.164.0
-updated: 2026-10-06
+version: 1.165.0
+updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -5017,9 +5017,9 @@ source configuration and independently audited history remain separate work.
 ### First Catch WhatsApp operator source boundary
 
 `whatsappOperatorSetup.ts`, `whatsappOperatorSetupFirestore.ts` and
-`whatsappOperatorSetupSources.ts` implement an internal, disconnected first
-operator runner. They are not exported from the Functions index or exposed by a
-callable or UI. The protected source binds one project, Google actor, recipient,
+`whatsappOperatorSetupSources.ts` implement an internal protected first
+operator engine. The private CLI composes these merged helpers; none is exported
+from the Functions index or exposed by a callable or UI. The protected source binds one project, Google actor, recipient,
 sender, credential-version digest and reviewed source SHA. Request input contains
 only `planId`, `planSha256` and `replayKey`; identities, role claims, credential
 metadata and history evidence never become caller facts. Configuration and tests
@@ -5048,18 +5048,51 @@ protected review and works after STOP or recipient deletion without loading
 history or the recipient. Replays retain exact plan, scope, nonce and replay-key
 binding and cannot renew or broaden a grant.
 
-No default apply policy is supplied. Missing independently reviewed activation
-policy fails before mutation, including direct concrete adapter calls. Credential
-checks accept metadata only; they do not read secret payloads or contact Meta.
-Auth claim replacement and Firestore commit remain separate services with the
-bounded observation race described above. Source tests do not authorize live
-bootstrap, history publication, provider calls, deployment or sending.
+The CLI supplies a concrete, default-denied approval loader from an explicitly
+delegated OS-owner policy directory. Planning creates a private pending plan and
+stable replay request; it never creates reviewed authorization. Apply requires a
+separately written reviewed plan and exact `bootstrap-apply` approval binding the
+plan, full scope, source SHA, compiled execution digest, replay digest and expiry.
+Missing approval fails before SDK initialization. The policy is reread before
+mutation admission and after OAuth header waits immediately before Auth dispatch;
+the runtime retains one exact plan/request binding. Remote enablement is not
+approval. The execution digest pins
+the bounded complete `functions/lib` tree, package/lock metadata, CLI and runtime
+files. It catches changed approved bytes; it is not independent proof of
+compilation or protection against a hostile process with the same OS UID.
 
-The offline command
-`node functions/scripts/operations/setup-catch-whatsapp-reply.cjs inspect-plan --plan-file <receipt>`
-validates a bounded local receipt and prints hashes/times with
-`liveApplyAvailable=false`. It does not initialize Admin SDK, read ADC or accept a
-live apply command. A local receipt is not a protected reviewed plan.
+The lazy runtime uses current project/default-tenant Admin Auth and default
+Firestore, existing protected Google lookup, a private signature/revocation-
+verified Google ID token, and exact Secret Manager version/IAM metadata. It never
+accesses a secret payload, changes IAM or contacts Meta. Emulator redirection is
+rejected in the default runtime. SDK reads/token verification are retained, but
+the guarded claim setter uses public authenticated project-bound REST with one
+HTTP attempt, redirect rejection and an abort deadline. The Admin SDK's default
+mutation retries are deliberately bypassed after unknown outcomes. Only an
+unambiguous unconditional direct accessor binding for the pinned runtime
+principal is established by this metadata adapter;
+unsupported inherited/group/conditional access remains unproven and is not a
+request for another grant. Auth claim replacement and Firestore commit remain
+separate services with the bounded observation race described above.
+
+The command `setup-catch-whatsapp-reply.cjs` supports offline `inspect-plan` and
+`fingerprint`, live read-only `plan`, separately approved bootstrap `apply`, and
+read-only `reconcile`. Reconcile checks the permanent slot, complete canonical
+phase audit chain, Auth dispatch intent and committed authority effect hashes in
+a read-only transaction, then reports current Auth observations separately. It
+never advances a phase, resumes an effect, renews expiry or calls readiness apply.
+Expired saved plans remain inspectable; an Auth dispatch receipt does not prove
+Auth committed. Bootstrap completion does not establish readiness. Independently
+authenticated review/ingress/history/publication sources and manual reply review
+remain required. No default readiness producer or activation is invented here.
+
+The preserved `inspect-plan --plan-file <receipt>` path remains offline and prints
+`liveApplyAvailable=false`: inspecting caller JSON never authorizes it. Runtime
+configuration, commands, global admin-role consequences and the existing
+production callable route are documented in
+[release operations](release_operations.md#protected-catch-whatsapp-operator-cli).
+Source tests and publication do not authorize live execution, grants, flags,
+provider calls, deployment or sending.
 
 ### Readiness authority mutation boundary
 
