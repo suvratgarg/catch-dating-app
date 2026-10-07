@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:971a7b4ff2bcbf2687607aeeadd9435e1421d88a327e681ea1c3399535adcffb",
-  "resolvedDigest": "sha256:aa8c0cade920ff400404951c33d971c7ea41e55cf9581d33ddd0a4ddf28f9c28",
+  "resolvedDigest": "sha256:8991592064e5c06f3004afe4ee9a28afe8c4c8ca569fc182558006dd8838ff8e",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1511,7 +1511,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

@@ -4564,7 +4564,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget",
-            "notes": "controls accepts a Widget; dependentFieldRows requires the controlling CatchField. The Section owns geometry for both recipes."
+            "notes": "controls accepts a Widget; collection accepts an optional leading filter; dependentFieldRows requires the controlling CatchField. The Section owns their geometry."
           },
           {
             "name": "navigable",
@@ -4715,12 +4715,6 @@
             "type": "object",
             "required": false,
             "dartType": "IconData?"
-          },
-          {
-            "name": "controls",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
           }
         ],
         "states": [

@@ -77,7 +77,7 @@ Widget catchSectionContractStates(BuildContext context) {
             actionStatus: state == 'collection-loading-action'
                 ? CatchButtonStatus.loading
                 : CatchButtonStatus.idle,
-            controls: state == 'collection-controls'
+            leading: state == 'collection-controls'
                 ? CatchChoiceInput<int>.segmented(
                     options: const [
                       CatchOption(value: 0, label: 'Day 1'),

@@ -100,7 +100,7 @@ void main() {
           CatchSection.collection(
             title: 'Schedule',
             emptyMessage: 'No functions yet',
-            controls: CatchChoiceInput<int>.segmented(
+            leading: CatchChoiceInput<int>.segmented(
               options: const [
                 CatchOption(value: 0, label: 'Day 1'),
                 CatchOption(value: 1, label: 'Day 2'),

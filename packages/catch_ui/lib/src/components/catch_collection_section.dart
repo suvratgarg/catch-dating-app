@@ -8,7 +8,7 @@ Widget _buildCollectionModule(
   required String emptyMessage,
   required IconData? emptyIcon,
   required List<Widget> children,
-  required Widget? controls,
+  required Widget? leading,
   required String? actionLabel,
   required VoidCallback? onAction,
   required CatchButtonStatus actionStatus,
@@ -21,8 +21,8 @@ Widget _buildCollectionModule(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      if (controls != null) ...[
-        controls,
+      if (leading != null) ...[
+        leading,
         const SizedBox(height: CatchSpacing.s3),
       ],
       if (children.isEmpty)

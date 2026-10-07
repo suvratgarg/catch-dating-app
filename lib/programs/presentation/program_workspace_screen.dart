@@ -173,7 +173,7 @@ class _ProgramWorkspacePageBodyState
               emptyMessage: days.isEmpty
                   ? context.l10n.programsWorkspaceNoFunctions
                   : context.l10n.programsWorkspaceDayEmpty,
-              controls: days.length <= 1
+              leading: days.length <= 1
                   ? null
                   : CatchChoiceInput<int>.segmented(
                       scrollable: true,
