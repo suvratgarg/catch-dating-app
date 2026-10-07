@@ -9,6 +9,7 @@ const {createHash} = require("node:crypto");
 const {createOperatorRuntime, protectedHome, credentialMetadata,
   createSingleAttemptClaimsSetter} = require("../scripts/operations/catch-whatsapp-operator-runtime.cjs");
 const {setupHash} = require("../lib/catchMessaging/whatsappOperatorSetup.js");
+const {authorizeCatchAppCapability} = require("../lib/catchMessaging/whatsappAppAuthority.js");
 const {operatorEmailHash} = require("../lib/catchMessaging/whatsappOperatorSetupSources.js");
 const {catchEndpointHash} = require("../lib/catchMessaging/whatsappReply.js");
 const root = path.resolve(__dirname, "..");
@@ -268,6 +269,17 @@ test("exact reviewed legacy recipient admin remains unchanged and gets only Catc
     const target = h.records.get("catchWhatsappAppAuthorities/recipient");
     assert.deepEqual(target.capabilities, ["receive"]);
     assert.equal(target.endpointHash, h.profile.scope.endpointHash);
+    const principal = {record: target, auth: {projectId: target.projectId,
+      uid: target.uid, creationTimeMillis: saved.plan.recipientCreationTimeMillis,
+      observedAtMillis: h.clock(), disabled: false, relevantRoles: [],
+      endpointHash: target.endpointHash, tokensValidAfterMillis: 0},
+    session: {projectId: target.projectId, uid: target.uid,
+      authTimeSeconds: h.clock() / 1000, expiresAtSeconds: h.clock() / 1000 + 1800}};
+    assert.equal(authorizeCatchAppCapability(principal, "receive", h.clock(),
+      {projectId: target.projectId, uid: target.uid, endpointHash: target.endpointHash}).capability, "receive");
+    for (const capability of ["review", "reply"]) assert.throws(() =>
+      authorizeCatchAppCapability(principal, capability, h.clock(),
+        {projectId: target.projectId, uid: target.uid}));
     assert.equal((await h.runtime().reconcile(receipt.planId)).state, "bootstrap-complete");
     assert.equal(JSON.stringify(h.recipientClaims()), original);
     assert.equal(h.counts().setters, 1);
@@ -292,6 +304,7 @@ test("legacy recipient admin never admits owner/support or extra privileged clai
 test("legacy recipient preservation rejects current claim/owner/incarnation/endpoint drift", async () => {
   for (const change of [h => h.setRecipientClaims({}), h => h.setRecipientClaims({admin: false}),
     h => h.setRecipientClaims({admin: true, added: true}), h => h.setRecipientClaims({admin: true, support: true}),
+    h => h.setRecipientClaims({admin: true, adminOwner: true}),
     h => h.addOtherOwner(), h => h.recreateRecipient(), h => h.changeRecipientPhone(), h => h.changeClaims(),
     h => h.records.set("adminRoleAssignments/operator", {roles: ["support"]}),
     h => h.records.set("catchWhatsappAppAuthorities/recipient", {syntheticExisting: true}),
@@ -383,6 +396,31 @@ test("legacy recipient drift at receive admission prevents activation", async ()
       if (result[0].status === "fulfilled") assert.equal(result[0].value.state, "reconciliation-required");
       assert.notEqual(h.records.get("catchWhatsappAppAuthorities/recipient").state, "active");
       assert.equal(h.counts().setters, 1);
+    } finally {h.close();}
+  }
+});
+
+test("completed legacy recipient claim drift denies apply and read-only reconciliation", async () => {
+  for (const value of [{}, {admin: false}, {admin: true, added: true},
+    {admin: true, support: true}, {admin: true, adminOwner: true}]) {
+    const h = runtimeFixture();
+    try {
+      h.setRecipientClaims({admin: true});
+      const receipt = await h.runtime().plan(); h.review(receipt);
+      assert.equal((await h.runtime().apply(receipt.planId)).state, "fresh-sign-in-required");
+      h.signIn();
+      assert.equal((await h.runtime().apply(receipt.planId)).state, "complete");
+      h.setRecipientClaims(value);
+      const before = h.counts();
+      const records = JSON.stringify([...h.records]);
+      await assert.rejects(() => h.runtime().apply(receipt.planId));
+      const result = await h.runtime().reconcile(receipt.planId);
+      assert.equal(result.state, "reconciliation-required");
+      assert.equal(result.recipientAuthState, "drift-observed");
+      assert.equal(h.counts().setters, before.setters);
+      assert.equal(h.counts().writes, before.writes);
+      assert.equal(JSON.stringify([...h.records]), records);
+      assert.deepEqual(h.recipientClaims(), value);
     } finally {h.close();}
   }
 });

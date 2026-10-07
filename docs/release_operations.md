@@ -1415,7 +1415,7 @@ Google identity, new IAM role or global Auth mutex.
 
 The existing recipient's exact `{admin: true}` claim may be preserved by the
 reviewed plan. Its exact UID and full claim hash remain bound to source and
-approval and are rechecked before mutations. The CLI never writes recipient
+approval and are rechecked before bootstrap mutations and during reconciliation. The CLI never writes recipient
 claims or strips existing general Admin access; that legacy claim supplies no
 Catch review/reply authority. Receive still requires its separate endpoint-bound
 Catch authority. Any claim drift or broader privileged recipient shape fails

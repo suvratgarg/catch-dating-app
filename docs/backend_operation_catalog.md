@@ -810,13 +810,17 @@ recipient receive activation reuses the existing prepare/finalize store.
 Recipient planning also admits the exact existing single-key claim shape
 `{admin: true}` for preservation. The reviewed plan binds that decision through
 the exact recipient UID, full `recipientClaimsSha256`, source SHA and plan digest;
-apply rechecks the full fingerprint at each mutation admission. No recipient
+bootstrap apply rechecks the full fingerprint at each mutation admission. No recipient
 Auth claim is written or removed. Its pre-existing general Admin access remains;
 legacy `admin` supplies no Catch capability. Only separately approved
 endpoint-bound `receive` is granted. Recipient `adminOwner`, `support`, other
 privileged combinations or extra claims alongside `admin: true` remain rejected.
 Actor admission, no-existing-owner/authority/assignment checks and permanent
 receipts are unchanged.
+
+Read-only reconciliation checks the current full recipient fingerprint alongside
+account incarnation and endpoint. Observed claim drift requires reconciliation;
+the status read neither changes claims nor redispatches an effect.
 
 The concrete adapters include exact setup intent and pinned authority in the
 actual transaction read set. Receive, publication and readiness effects share a
