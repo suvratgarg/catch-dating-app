@@ -24,9 +24,9 @@ function fixtureHelper(options) {
   };
   try {return createSessionHandoff(options);} finally {fs.lstatSync = original;}
 }
-function fixture(t, {existing = false, verify} = {}) {
+function fixture(t, {existing = false, verify, nowMillis = 1800000000000} = {}) {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "catch-session-test-"));
-  let now = 1800000000000, calls = 0;
+  let now = nowMillis, calls = 0;
   const binding = {runtime: {sourceSha: "a".repeat(40), executionSha256: "b".repeat(64)}, helperSha256: "c".repeat(64)};
   const credentialVersionName = "projects/demo-catch-setup/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/7";
   const scope = {projectId: "demo-catch-setup", actorUid: "fake-google-actor",
@@ -100,6 +100,27 @@ function fixture(t, {existing = false, verify} = {}) {
   return {home, helper, binding, profile, scope, decoded, file, start, request, bootstrap, configure, save, seal,
     calls: () => calls, setNow: value => now = value, get transfer() {return transfer;}, get anchor() {return anchor;}};
 }
+
+// The Functions lane compiles the existing profile validator before this
+// actual HTTP exchange. Admin's independent lane needs no generated backend.
+test("browser WebCrypto transport completes a real synthetic encrypted HTTP handoff and verifies signed receipts", async t => {
+  const {sessionLaunch, createSessionTransport, sealSession} =
+    require("../../admin/src/features/operator-session/api/operatorSessionTransport.ts");
+  const f = fixture(t, {nowMillis: Math.floor(Date.now() / 1000) * 1000});
+  await f.start();
+  const launch = sessionLaunch("#" + Buffer.from(JSON.stringify(f.anchor)).toString("base64url"));
+  const dispatch = (url, init) => fetch(url, {...init, headers: {...init.headers,
+    Origin: clientOrigin, "Sec-Fetch-Site": "cross-site"}});
+  const transport = createSessionTransport(launch, dispatch);
+  const boot = await transport.bootstrap();
+  const configured = await transport.post("/configure", f.profile, boot.csrf);
+  const sealedSession = await sealSession(configured.request, privateToken);
+  const receipt = await transport.post("/session", {challenge: launch.challenge, sealedSession}, boot.csrf);
+  assert.equal(receipt.state, "saved");
+  assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), privateToken + "\n");
+  assert.equal(fs.statSync(path.join(f.home, "actor-id-token.txt")).mode & 0o777, 0o600);
+  assert.equal(f.calls(), 1);
+});
 
 test("encrypted private bootstrap, exact Host/Origin and CSRF precede configuration", async t => {
   const f = fixture(t); await f.start();

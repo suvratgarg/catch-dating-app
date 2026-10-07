@@ -1,5 +1,4 @@
 import {webcrypto, generateKeyPairSync, createHash, privateDecrypt, sign, constants} from "node:crypto";
-import type {PathLike} from "node:fs";
 import {beforeEach, expect, it, vi} from "vitest";
 import {createSessionTransport, sessionLaunch, takeSessionLaunch, type SessionLaunch} from "./operatorSessionTransport";
 const encryption = generateKeyPairSync("rsa", {modulusLength: 2048});
@@ -68,51 +67,6 @@ it("rejects a previously signed response when another request has a fresh ID", a
 it("does not retry a lost response or local-network denial", async () => {
   const launch = anchor(); const dispatch = vi.fn().mockRejectedValue(new Error("network unavailable"));
   await expect(createSessionTransport(launch, dispatch).bootstrap()).rejects.toThrow(); expect(dispatch).toHaveBeenCalledOnce();
-});
-it("completes a real synthetic encrypted HTTP handoff with the Node helper and signed receipts", async () => {
-  const fs = await import("node:fs"); const os = await import("node:os"); const path = await import("node:path");
-  const {createRequire} = await import("node:module");
-  const require = createRequire(import.meta.url);
-  const nodeFs = require("node:fs") as typeof fs;
-  const {createSessionHandoff} = require("../../../../../functions/scripts/operations/catch-whatsapp-session-handoff.cjs");
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), "catch-encrypted-browser-test-"));
-  const runtime = {sourceSha: "a".repeat(40), executionSha256: "b".repeat(64)};
-  const credentialVersionName = "projects/demo-catch-setup/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/7";
-  const scope = {projectId: "demo-catch-setup", actorUid: "fake-google-actor", recipientUid: "fake-phone-recipient",
-    actorEmailSha256: createHash("sha256").update(JSON.stringify("actor@example.invalid")).digest("hex"), endpointHash: "c".repeat(64),
-    appId: "10001", wabaId: "10002", phoneNumberId: "10003", credentialVersionSha256: createHash("sha256").update(credentialVersionName).digest("hex")};
-  const profile = {schemaVersion: 1, scope, ...runtime, credentialVersionName, runtimePrincipal: "serviceAccount:runtime@demo-catch-setup.iam.gserviceaccount.com"};
-  const original = nodeFs.lstatSync;
-  nodeFs.lstatSync = ((file: PathLike, ...args: never[]) => {
-    // Ignore only managed-host /tmp/.git scaffolding in this synthetic fixture.
-    if (file === path.join(os.tmpdir(), ".git")) throw Object.assign(new Error("synthetic absent marker"), {code: "ENOENT"});
-    return original(file, ...args);
-  }) as typeof fs.lstatSync;
-  let helper;
-  try {
-    helper = createSessionHandoff({home, clientOrigin: "https://console.example.invalid", identity: () => ({runtime, helperSha256: "d".repeat(64)}),
-      verifierFactory: () => async (token: string) => {
-        expect(token).toBe("synthetic.private.signature"); const now = Math.floor(Date.now() / 1000);
-        return {uid: scope.actorUid, sub: scope.actorUid, aud: scope.projectId, iss: "https://securetoken.google.com/" + scope.projectId,
-          email: "actor@example.invalid", email_verified: true, firebase: {sign_in_provider: "google.com"}, auth_time: now, iat: now, exp: now + 3600};
-      }});
-  } finally {nodeFs.lstatSync = original;}
-  try {
-    const opened = await helper.start();
-    const html = fs.readFileSync(opened.launchFile, "utf8");
-    const target = JSON.parse(html.match(/location\.replace\(("[^\n]*")\)/u)![1]!);
-    const launch = sessionLaunch(new URL(target).hash);
-    const dispatch = ((url, init) => fetch(url, {...init, headers: {...init!.headers,
-      Origin: "https://console.example.invalid", "Sec-Fetch-Site": "cross-site"}})) as typeof fetch;
-    const transport = createSessionTransport(launch, dispatch);
-    const boot = await transport.bootstrap() as {csrf: string};
-    const configured = await transport.post("/configure", profile, boot.csrf) as {request: import("./operatorSessionTransport").SessionRequest};
-    const {sealSession} = await import("./operatorSessionTransport");
-    const sealedSession = await sealSession(configured.request, "synthetic.private.signature");
-    const receipt = await transport.post("/session", {challenge: launch.challenge, sealedSession}, boot.csrf) as {state: string};
-    expect(receipt.state).toBe("saved"); expect(fs.readFileSync(path.join(home, "actor-id-token.txt"), "utf8")).toBe("synthetic.private.signature\n");
-    expect(fs.statSync(path.join(home, "actor-id-token.txt")).mode & 0o777).toBe(0o600);
-  } finally {helper.close(); fs.rmSync(home, {recursive: true, force: true});}
 });
 it("dispatches an unload cancellation immediately without trusting its response", () => {
   const dispatch = vi.fn().mockResolvedValue(new Response("forged response"));
