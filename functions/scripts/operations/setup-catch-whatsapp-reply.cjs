@@ -28,13 +28,19 @@ async function run(argv = process.argv.slice(2)) {
   if (argv[0] === "inspect-plan") return inspect(argv);
   const command = argv[0];
   if (!((argv.length === 1 && ["fingerprint", "plan"].includes(command)) ||
-      (argv.length === 3 && ["apply", "reconcile"].includes(command) &&
+      (argv.length === 3 && ["apply", "reconcile", "readiness-plan", "readiness-ingress",
+        "readiness-publish", "readiness-review", "readiness-apply"].includes(command) &&
         argv[1] === "--plan-id" && /^[A-Za-z0-9_-]{1,128}$/u.test(argv[2])))) {
     throw new Error("Invalid operator command.");
   }
   const {createOperatorRuntime, executionIdentity} = require("./catch-whatsapp-operator-runtime.cjs");
   if (command === "fingerprint") return executionIdentity();
   const runtime = createOperatorRuntime();
+  if (command.startsWith("readiness-")) {
+    const method = {"readiness-plan": "readinessPlan", "readiness-ingress": "readinessIngress",
+      "readiness-publish": "readinessPublish", "readiness-review": "readinessReview", "readiness-apply": "readinessApply"}[command];
+    return runtime[method](argv[2]);
+  }
   return command === "plan" ? runtime.plan() : runtime[command](argv[2]);
 }
 if (require.main === module) run().then((receipt) => {
@@ -43,7 +49,7 @@ if (require.main === module) run().then((receipt) => {
   // Never echo arguments, token/profile values or private backend errors.
   process.stderr.write("Protected operator command unavailable. " +
     "Use inspect-plan --plan-file <receipt>, fingerprint, plan, " +
-    "apply --plan-id <id>, or reconcile --plan-id <id>.\n");
+    "apply/reconcile --plan-id <id>, or readiness-plan/ingress/publish/review/apply --plan-id <id>.\n");
   process.exitCode = 1;
 });
 module.exports = {inspect, run};

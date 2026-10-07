@@ -46,7 +46,8 @@ function executionIdentity() {
   walk(path.join(repo, "functions/lib"));
   for (const name of ["functions/package.json", "functions/package-lock.json",
     "functions/scripts/operations/setup-catch-whatsapp-reply.cjs",
-    "functions/scripts/operations/catch-whatsapp-operator-runtime.cjs"]) {
+    "functions/scripts/operations/catch-whatsapp-operator-runtime.cjs",
+    "functions/scripts/operations/catch-whatsapp-operator-readiness.cjs"]) {
     execFileSync("git", ["cat-file", "-e", "HEAD:" + name], {cwd: repo,
       stdio: ["ignore", "ignore", "ignore"]});
     add(path.join(repo, name));
@@ -73,22 +74,27 @@ function protectedHome(input) {
     return file;
   };
   directory("");
-  const read = (relative, json = true) => {
+  const readBytes = (relative, limit = 65536) => {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 512 * 1024) unavailable();
     if (path.isAbsolute(relative) || relative.split(path.sep).includes("..")) unavailable();
     directory(path.dirname(relative));
     const fd = fs.openSync(path.join(home, relative), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
     try {
       const stat = fs.fstatSync(fd);
       if (!stat.isFile() || stat.uid !== process.getuid() || stat.nlink !== 1 ||
-          (stat.mode & 0o777) !== 0o600 || stat.size > 65536) unavailable();
-      const raw = fs.readFileSync(fd, "utf8");
-      if (Buffer.byteLength(raw) > 65536) unavailable();
-      if (!json) return raw.trim();
-      const value = JSON.parse(raw);
-      // One compact record rejects duplicate keys and ambiguous encodings.
-      if (raw.trim() !== JSON.stringify(value)) unavailable();
-      return value;
+          (stat.mode & 0o777) !== 0o600 || stat.size > limit) unavailable();
+      const bytes = fs.readFileSync(fd);
+      if (bytes.byteLength > limit) unavailable();
+      return bytes;
     } finally {fs.closeSync(fd);}
+  };
+  const read = (relative, json = true) => {
+    const raw = new TextDecoder("utf-8", {fatal: true}).decode(readBytes(relative));
+    if (!json) return raw.trim();
+    const value = JSON.parse(raw);
+    // One compact record rejects duplicate keys and ambiguous encodings.
+    if (raw.trim() !== JSON.stringify(value)) unavailable();
+    return value;
   };
   const create = (relative, value) => {
     const dir = path.dirname(relative);
@@ -101,7 +107,7 @@ function protectedHome(input) {
     try {fs.writeFileSync(fd, JSON.stringify(value) + "\n"); fs.fsyncSync(fd);}
     finally {fs.closeSync(fd);}
   };
-  return {read, create};
+  return {read, readBytes, create};
 }
 
 function liveSdk(profile, beforeDispatch) {
@@ -230,20 +236,38 @@ function createOperatorRuntime({home = process.env.CATCH_WHATSAPP_OPERATOR_HOME,
         setupHash(plan.scope) !== setupHash(profile.scope) || plan.sourceSha !== profile.sourceSha) unavailable();
     return {plan, request};
   };
-  const authorize = ({plan, request}) => async (digest) => {
-    assertBinding();
-    const approval = privateFiles.read(`approvals/${plan.planId}.json`);
-    setupExact(approval, ["schemaVersion", "action", "planSha256", "scopeSha256",
-      "sourceSha", "executionSha256", "replaySha256", "expiresAtMillis"]);
-    if (approval.schemaVersion !== 1 || approval.action !== "bootstrap-apply" ||
-        digest !== setupHash(plan) || approval.planSha256 !== digest ||
-        approval.scopeSha256 !== setupHash(profile.scope) ||
-        approval.sourceSha !== binding.sourceSha ||
-        approval.executionSha256 !== binding.executionSha256 ||
-        approval.replaySha256 !== setupHash(request.replayKey) ||
-        !Number.isSafeInteger(approval.expiresAtMillis) || now() >= approval.expiresAtMillis ||
-        approval.expiresAtMillis > plan.expiresAtMillis || now() >= plan.expiresAtMillis ||
-        setupHash(load(plan.planId)) !== setupHash({plan, request})) unavailable();
+  const authorize = (saved, action = "bootstrap-apply") => {
+    let admittedReadiness;
+    return async (digest) => {
+      const {plan, request} = saved;
+      assertBinding();
+      const bootstrap = action === "bootstrap-apply";
+      const approval = privateFiles.read(`approvals/${plan.planId}${bootstrap ? "" : "." + action}.json`);
+      setupExact(approval, ["schemaVersion", "action", "planSha256", "scopeSha256",
+        "sourceSha", "executionSha256", "replaySha256", "expiresAtMillis",
+        ...(!bootstrap ? ["readinessSha256", "auditBindingSha256"] : []),
+        ...(action === "readiness-apply" ? ["publicationAuditSha256"] : [])]);
+      if (approval.schemaVersion !== 1 || approval.action !== action ||
+          digest !== setupHash(plan) || approval.planSha256 !== digest ||
+          approval.scopeSha256 !== setupHash(profile.scope) ||
+          approval.sourceSha !== binding.sourceSha ||
+          approval.executionSha256 !== binding.executionSha256 ||
+          approval.replaySha256 !== setupHash(request.replayKey) ||
+          !Number.isSafeInteger(approval.expiresAtMillis) || now() >= approval.expiresAtMillis ||
+          (bootstrap && (approval.expiresAtMillis > plan.expiresAtMillis || now() >= plan.expiresAtMillis)) ||
+          setupHash(load(plan.planId)) !== setupHash({plan, request})) unavailable();
+      if (!bootstrap) {
+        const evidence = readinessFor(saved).authorizationBinding(action);
+        if (approval.readinessSha256 !== evidence.readinessSha256 ||
+            approval.auditBindingSha256 !== evidence.auditBindingSha256 ||
+            approval.expiresAtMillis > evidence.expiresAtMillis ||
+            (action === "readiness-apply" &&
+              approval.publicationAuditSha256 !== evidence.publicationAuditSha256)) unavailable();
+        const exactBinding = setupHash({approval, evidence});
+        if (admittedReadiness && admittedReadiness !== exactBinding) unavailable();
+        admittedReadiness ??= exactBinding;
+      }
+    };
   };
   const sourcesFor = (saved, policy) => {
     const {createProtectedOperatorSetupSources} = require("../../lib/catchMessaging/whatsappOperatorSetupSources.js");
@@ -262,7 +286,35 @@ function createOperatorRuntime({home = process.env.CATCH_WHATSAPP_OPERATOR_HOME,
       ...(policy ? {authorizeApply: policy} : {}),
       credentialMetadata: () => credentialMetadata(profile, secrets)});
   };
+  const servicesFor = (saved, policy, adaptDatabase = db => db) => {
+    const sources = sourcesFor(saved, policy);
+    const {CatchAppAuthorityStore, withCatchFreshAuthContext} = require("../../lib/catchMessaging/whatsappAppAuthorityStore.js");
+    const {createCatchFirebaseAuthority} = require("../../lib/catchMessaging/whatsappFirebaseAuthority.js");
+    const {FirestoreOperatorSetupJournal} = require("../../lib/catchMessaging/whatsappOperatorSetupFirestore.js");
+    const {auth, db: originalDb, transport} = clients();
+    const db = adaptDatabase(originalDb);
+    const firebase = createCatchFirebaseAuthority({projectId: profile.scope.projectId, auth, transport, now});
+    const store = new CatchAppAuthorityStore(db, {projectId: profile.scope.projectId,
+      now, firebase, withAuditedAuthFence: async () => unavailable(),
+      withFreshAuthContext: (who, callback) => withCatchFreshAuthContext(firebase, who, callback, now)});
+    const journal = new FirestoreOperatorSetupJournal(db, store, sources, token);
+    return {sources, store, journal, engine: new helper.CatchWhatsappOperatorSetup(sources, journal)};
+  };
+  const readinessFor = saved => require("./catch-whatsapp-operator-readiness.cjs")
+    .createProtectedReadinessRuntime({privateFiles, binding, now,
+      assertBinding, saved, load, servicesFor, token});
+  const readinessAction = async (id, action, method) => {
+    const saved = load(id);
+    const policy = authorize(saved, action);
+    await policy(saved.request.planSha256); // No SDK/ADC before exact action approval.
+    return readinessFor(saved)[method](policy);
+  };
   return {
+    readinessPlan: id => readinessFor(load(id)).plan(),
+    readinessIngress: id => readinessAction(id, "readiness-ingress", "ingress"),
+    readinessPublish: id => readinessAction(id, "readiness-publish", "publish"),
+    readinessReview: id => readinessFor(load(id)).review(),
+    readinessApply: id => readinessAction(id, "readiness-apply", "apply"),
     async plan() {
       assertBinding();
       const sources = sourcesFor();
@@ -293,17 +345,7 @@ function createOperatorRuntime({home = process.env.CATCH_WHATSAPP_OPERATOR_HOME,
         mutationBinding = savedBinding;
         mutationAdmission = () => policy(saved.request.planSha256);
       }
-      const sources = sourcesFor(saved, policy);
-      const {CatchAppAuthorityStore, withCatchFreshAuthContext} = require("../../lib/catchMessaging/whatsappAppAuthorityStore.js");
-      const {createCatchFirebaseAuthority} = require("../../lib/catchMessaging/whatsappFirebaseAuthority.js");
-      const {FirestoreOperatorSetupJournal} = require("../../lib/catchMessaging/whatsappOperatorSetupFirestore.js");
-      const {auth, db, transport} = clients();
-      const firebase = createCatchFirebaseAuthority({projectId: profile.scope.projectId, auth, transport, now});
-      const store = new CatchAppAuthorityStore(db, {projectId: profile.scope.projectId,
-        now, firebase, withAuditedAuthFence: async () => unavailable(),
-        withFreshAuthContext: (who, callback) => withCatchFreshAuthContext(firebase, who, callback, now)});
-      const journal = new FirestoreOperatorSetupJournal(db, store, sources, token);
-      const result = await new helper.CatchWhatsappOperatorSetup(sources, journal).apply(saved.request);
+      const result = await servicesFor(saved, policy).engine.apply(saved.request);
       return {kind: "catch-operator-apply", planSha256: saved.request.planSha256, state: result.state};
     },
     async reconcile(id) {
@@ -421,10 +463,15 @@ function createOperatorRuntime({home = process.env.CATCH_WHATSAPP_OPERATOR_HOME,
       else if (actorAuthorityState === "fresh-sign-in-required" ||
           (operation.phase === "seeded" && actor.session.authTimeSeconds < root.authNotBeforeSeconds)) state = "fresh-sign-in-required";
       else if (operation.phase === "complete") state = "bootstrap-complete";
+      let readinessVerified = false;
+      if (operation.phase === "ready") {
+        try {readinessVerified = await readinessFor({plan, request}).observe();} catch { /* Fail closed on missing or changed evidence. */ }
+        state = readinessVerified && state !== "reconciliation-required" ? "readiness-ready-observed" : "readiness-unavailable";
+      }
       return {kind: "catch-operator-reconciliation", state, phase: operation.phase,
         revision: operation.revision, claimsState, actorMatches, actorAuthorityState, effectsMatch,
         authDispatchConsumed: observed.dispatch, planExpired: now() >= plan.expiresAtMillis,
-        recipientPresent: recipient !== null, recipientAuthState, readinessVerified: false};
+        recipientPresent: recipient !== null, recipientAuthState, readinessVerified};
     },
   };
 }

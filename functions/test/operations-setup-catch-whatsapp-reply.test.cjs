@@ -100,6 +100,8 @@ function runtimeFixture() {
   let restClaims;
   let execution = "e".repeat(64);
   let afterCommit;
+  let onVerify;
+  const transactionErrors = [];
   const binding = () => ({sourceSha: "d".repeat(40), executionSha256: execution});
   const scope = {projectId: "demo-catch-setup", actorUid: "operator",
     actorEmailSha256: operatorEmailHash("operator@example.invalid"),
@@ -129,12 +131,13 @@ function runtimeFixture() {
     },
   });
   const db = {projectId: scope.projectId, databaseId: "(default)",
-    collection: (name) => ({...query(name), doc: (id) => ({path: name + "/" + id,
+    collection: (name) => ({...query(name), doc: (id) => ({id, path: name + "/" + id,
       get: async () => snapshot(name + "/" + id)})}),
     runTransaction: async (callback, options) => {
       assert.ok(options.readOnly === true || options.maxAttempts === 1);
       const pending = new Map();
-      const result = await callback({get: async (ref) => {
+      let result;
+      try {result = await callback({get: async (ref) => {
         assert.equal(pending.size, 0, "all reads precede writes");
         return ref.get();
       }, create: (ref, value) => {
@@ -145,7 +148,7 @@ function runtimeFixture() {
         assert.notEqual(options.readOnly, true, "read-only reconciliation cannot update");
         assert.ok(records.has(ref.path));
         pending.set(ref.path, {...records.get(ref.path), ...value});
-      }});
+      }});} catch (error) {transactionErrors.push(error.stack); throw error;}
       for (const [p, v] of pending) {records.set(p, v); writes++;}
       afterCommit?.(pending);
       return result;
@@ -159,6 +162,7 @@ function runtimeFixture() {
     },
     verifyIdToken: async (token, checkRevoked) => {
       assert.equal(token, "synthetic.google.token"); assert.equal(checkRevoked, true);
+      onVerify?.();
       return {uid: "operator", sub: "operator", aud: scope.projectId,
         iss: "https://securetoken.google.com/" + scope.projectId,
         email: "operator@example.invalid", email_verified: true,
@@ -201,6 +205,8 @@ function runtimeFixture() {
     return {plan, request, approval};
   };
   return {home, runtime, review, file, profile, records,
+    clock: () => now,
+    transactionErrors: () => transactionErrors,
     counts: () => ({setters, sdkCalls, writes, metadataReads}),
     claims: () => structuredClone(claims),
     failSetter: (mode) => {setterMode = mode;},
@@ -212,6 +218,7 @@ function runtimeFixture() {
     revokeObservedRole: () => {restClaims = {...claims, adminOwner: false};},
     restoreOldSession: () => {authTime = 1799999999;},
     onCommit: (callback) => {afterCommit = callback;},
+    onVerify: (callback) => {onVerify = callback;},
     close: () => fs.rmSync(home, {recursive: true, force: true})};
 }
 
@@ -229,6 +236,301 @@ test("real source planner reads metadata and current identity without writes or 
     for (const value of ["operator@example.invalid", "synthetic.google.token", "+15555550123", h.profile.runtimePrincipal]) {
       assert.ok(!printed.includes(value));
     }
+  } finally {h.close();}
+});
+
+function admittedReadiness(h, saved) {
+  const {plan, request} = saved;
+  const scope = plan.scope;
+  const reference = plan.createReviewRef;
+  const cutover = h.clock() - 1000;
+  const identity = {projectId: scope.projectId, wabaId: scope.wabaId,
+    phoneNumberId: scope.phoneNumberId, recipientUid: scope.recipientUid, endpointHash: scope.endpointHash};
+  const bytes = Buffer.from(JSON.stringify({schema: "catch.whatsapp-history-archive/v1",
+    identity, atomicIngressStartedAtMillis: cutover, segments: [{fromMillis: 0,
+      throughMillis: cutover, records: [{messageId: "synthetic-history", receivedAtMillis: 1000,
+        endpointHash: scope.endpointHash, messageType: "text", text: "Please help.", textTruncated: false}]}]}));
+  const byteHash = value => createHash("sha256").update(value).digest("hex");
+  const delegation = {schemaVersion: 1, authorityRef: "synthetic-audit-custodian",
+    delegationRef: "synthetic-separate-delegation", ingressOwnerRef: "synthetic-ingress-auditor",
+    historyOwnerRef: "synthetic-history-auditor"};
+  const ingressAudit = {schema: "catch.atomic-ingress-source-audit/v1", authorityRef: delegation.ingressOwnerRef,
+    authenticationRef: "synthetic-authenticated-deployment-audit", scopeSha256: setupHash(scope),
+    deployedRevisionSha256: "9".repeat(64), atomicIngressStartedAtMillis: cutover,
+    verifiedAtMillis: h.clock(), audit: {syntheticImmutableRevision: "test-only-atomic-persistence-review"}};
+  const ingress = {schemaVersion: 1, scope, document: {schemaVersion: 1,
+    ingressId: require("../lib/catchMessaging/whatsappReadinessFirestore.js").catchReadinessIngressId(scope),
+    projectId: scope.projectId, wabaId: scope.wabaId, phoneNumberId: scope.phoneNumberId,
+    state: "active", atomicIngressStartedAtMillis: cutover,
+    evidenceSha256: byteHash(JSON.stringify(ingressAudit)), verifiedAtMillis: h.clock()}, sourceAudit: ingressAudit};
+  const historyAudit = {schema: "catch.history-source-audit/v1", authorityRef: delegation.historyOwnerRef,
+    authenticationRef: "synthetic-authenticated-history-audit", scopeSha256: setupHash(scope),
+    archiveSha256: byteHash(bytes), objectPath: "catch-whatsapp-history/synthetic/test.json", generation: "7",
+    historyFromMillis: 0, coveredThroughMillis: cutover, atomicIngressStartedAtMillis: cutover,
+    sourceAuthenticityAudit: {syntheticSource: "test-only-source-review"},
+    retentionAudit: {syntheticSource: "test-only-retention-review"},
+    normalizationAudit: {syntheticSource: "test-only-normalization-review"},
+    lateArrivalAudit: {syntheticSource: "test-only-late-data-review"}};
+  const history = {schemaVersion: 1, scope, sourceAudit: historyAudit, trustedPin: {
+    schema: "catch.whatsapp-history-audit-pin/v1", approvalId: reference,
+    scope: {...identity, evidenceSha256: byteHash(bytes)}, sourceAuditSha256: byteHash(JSON.stringify(historyAudit)),
+    atomicIngressStartedAtMillis: cutover, coveredThroughMillis: cutover}};
+  const admission = {schemaVersion: 1, authorityRef: delegation.authorityRef, delegationRef: delegation.delegationRef,
+    scope, ingressAuditSha256: setupHash(ingress), historyAuditSha256: setupHash(history), archiveSha256: byteHash(bytes),
+    admittedAtMillis: h.clock(), expiresAtMillis: h.clock() + 3600000};
+  h.file("readiness-audit-delegation.json", delegation);
+  h.file(`audit-admissions/${reference}.json`, admission);
+  h.file(`ingress-audits/${reference}.json`, ingress);
+  h.file(`history-audits/${reference}.json`, history);
+  h.file(`archives/${reference}.json`, bytes.toString("utf8"), false);
+  const approve = action => {
+    const candidate = JSON.parse(fs.readFileSync(path.join(h.home, `pending-readiness/${reference}.json`)));
+    h.file(`reviewed-readiness/${reference}.json`, candidate);
+    const approval = {schemaVersion: 1, action, planSha256: request.planSha256,
+      scopeSha256: setupHash(scope), sourceSha: h.profile.sourceSha, executionSha256: h.profile.executionSha256,
+      replaySha256: setupHash(request.replayKey), expiresAtMillis: candidate.approval.approval.expiresAtMillis,
+      readinessSha256: setupHash(candidate), auditBindingSha256: candidate.auditBindingSha256};
+    if (action === "readiness-apply") {
+      const audit = JSON.parse(fs.readFileSync(path.join(h.home, `publication-audits/${reference}.json`)));
+      approval.publicationAuditSha256 = setupHash(audit);
+    }
+    h.file(`approvals/${plan.planId}.${action}.json`, approval);
+    return {candidate, approval};
+  };
+  const admitPublication = receipt => {
+    const candidate = JSON.parse(fs.readFileSync(path.join(h.home, `pending-readiness/${reference}.json`)));
+    const audit = {schemaVersion: 1, authorityRef: delegation.authorityRef, delegationRef: delegation.delegationRef,
+      approvalId: reference, planSha256: request.planSha256, scopeSha256: setupHash(scope),
+      sourceSha: h.profile.sourceSha, executionSha256: h.profile.executionSha256,
+      publicationSha256: receipt.publicationSha256, witnessSha256: receipt.witnessSha256,
+      reviewedAtMillis: h.clock(), expiresAtMillis: candidate.approval.approval.expiresAtMillis};
+    h.file(`publication-audits/${reference}.json`, audit);
+    return audit;
+  };
+  const replaceEvidence = action => {
+    // Simulate the delegated private writer replacing all evidence and approval
+    // coherently while the old invocation is waiting on current Auth reads.
+    ingress.sourceAudit.audit = {syntheticImmutableRevision: "separately-reviewed-new-source"};
+    ingress.document.evidenceSha256 = byteHash(JSON.stringify(ingress.sourceAudit));
+    admission.ingressAuditSha256 = setupHash(ingress);
+    h.file(`ingress-audits/${reference}.json`, ingress);
+    h.file(`audit-admissions/${reference}.json`, admission);
+    const candidate = JSON.parse(fs.readFileSync(path.join(h.home, `pending-readiness/${reference}.json`)));
+    const receipt = JSON.parse(fs.readFileSync(path.join(h.home, `authentication-audits/${reference}.json`)));
+    candidate.approval.ingressEvidenceSha256 = ingress.document.evidenceSha256;
+    candidate.auditBindingSha256 = setupHash({delegation, admission, ingress, history});
+    receipt.decisionSha256 = require("../lib/catchMessaging/whatsappReadinessEvidence.js")
+      .catchReadinessEvidenceDecisionDigest(candidate.approval);
+    candidate.reviewSession.decisionSha256 = receipt.decisionSha256;
+    candidate.reviewSession.authenticationAuditSha256 = setupHash(receipt);
+    h.file(`authentication-audits/${reference}.json`, receipt);
+    h.file(`pending-readiness/${reference}.json`, candidate);
+    approve(action);
+  };
+  return {reference, bytes, ingress, history, admission, approve, admitPublication, replaceEvidence};
+}
+
+async function completedBootstrap(h) {
+  const receipt = await h.runtime().plan(); const saved = h.review(receipt);
+  await h.runtime().apply(receipt.planId); h.signIn(); await h.runtime().apply(receipt.planId);
+  return {receipt, ...saved};
+}
+
+test("concrete readiness path plans, admits exact ingress, publishes and separately reviews before ready", async () => {
+  const h = runtimeFixture();
+  try {
+    const saved = await completedBootstrap(h);
+    h.expire(); // Readiness never renews the original expired bootstrap plan.
+    const input = admittedReadiness(h, saved);
+    const before = h.counts();
+    const planned = await h.runtime().readinessPlan(saved.plan.planId);
+    assert.equal(planned.reviewed, false);
+    assert.equal(h.counts().writes, before.writes);
+    assert.equal(fs.existsSync(path.join(h.home, "reviewed-readiness")), false);
+    await assert.rejects(() => h.runtime().readinessIngress(saved.plan.planId));
+    assert.equal(h.counts().sdkCalls, before.sdkCalls + 1, "missing action approval denies before SDK");
+    input.approve("readiness-ingress");
+    assert.equal((await h.runtime().readinessIngress(saved.plan.planId)).state, "ingress-created");
+    const created = h.counts().writes;
+    assert.equal((await h.runtime().readinessIngress(saved.plan.planId)).state, "exact-ingress-observed");
+    assert.equal(h.counts().writes, created);
+    input.approve("readiness-publish");
+    const publication = await h.runtime().readinessPublish(saved.plan.planId);
+    assert.equal(publication.state, "publication-review-required");
+    assert.equal(h.records.get("catchWhatsappOperatorSetupOperations/demo-catch-setup").phase, "published");
+    assert.equal(fs.existsSync(path.join(h.home, "publication-audits")), false);
+    const readBefore = h.counts();
+    const review = await h.runtime().readinessReview(saved.plan.planId);
+    assert.equal(review.approved, false);
+    assert.equal(h.counts().writes, readBefore.writes);
+    await assert.rejects(() => h.runtime().readinessApply(saved.plan.planId));
+    input.admitPublication(review); input.approve("readiness-apply");
+    assert.equal((await h.runtime().readinessApply(saved.plan.planId)).state, "ready", JSON.stringify(h.transactionErrors()));
+    assert.equal(h.records.get("catchWhatsappOperatorSetupOperations/demo-catch-setup").phase, "ready");
+    const readyBefore = h.counts();
+    assert.equal((await h.runtime().readinessApply(saved.plan.planId)).state, "ready");
+    assert.equal(h.counts().writes, readyBefore.writes, "same exact replay never renews readiness");
+    const observed = await h.runtime().reconcile(saved.plan.planId);
+    assert.equal(observed.state, "readiness-ready-observed");
+    assert.equal(observed.readinessVerified, true);
+    assert.equal(observed.planExpired, true);
+    assert.equal(h.counts().writes, readyBefore.writes, "read-only readiness verification never commits");
+    const publicationPath = "catchWhatsappReadinessPublications/" + input.reference;
+    const exactPublication = h.records.get(publicationPath);
+    h.records.set(publicationPath, {...exactPublication, unexpectedTopLevelField: true});
+    await assert.rejects(() => h.runtime().readinessReview(saved.plan.planId));
+    assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
+    assert.equal(h.counts().writes, readyBefore.writes);
+    h.records.set(publicationPath, exactPublication);
+    const stopPath = "catchWhatsappEndpointStops/cwstop_" + createHash("sha256").update(JSON.stringify([
+      saved.plan.scope.wabaId, saved.plan.scope.phoneNumberId, saved.plan.scope.endpointHash])).digest("hex");
+    h.records.set(stopPath, {syntheticStop: true});
+    assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
+    h.records.delete(stopPath);
+    h.records.set("deletedUsers/recipient", {syntheticDeletion: true});
+    assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
+    h.records.delete("deletedUsers/recipient");
+    const ingressPath = "catchWhatsappReadinessIngress/" + input.ingress.document.ingressId;
+    h.records.set(ingressPath, {...input.ingress.document, state: "revoked"});
+    assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
+    h.records.delete(ingressPath);
+    assert.equal((await h.runtime().readinessIngress(saved.plan.planId)).state, "reconciliation-required");
+    assert.equal(h.records.has(ingressPath), false, "later setup phases cannot recreate withdrawn ingress");
+    h.records.set(ingressPath, input.ingress.document);
+    h.expire();
+    const expired = await h.runtime().reconcile(saved.plan.planId);
+    assert.equal(expired.state, "readiness-unavailable");
+    assert.equal(expired.readinessVerified, false);
+    assert.equal((await h.runtime().readinessReview(saved.plan.planId)).approved, false);
+    await assert.rejects(() => h.runtime().readinessApply(saved.plan.planId));
+    assert.equal(h.counts().writes, readyBefore.writes, "expired inspection and denied apply never renew records");
+    assert.equal(h.counts().setters, 1);
+    assert.equal(h.counts().metadataReads, before.metadataReads);
+  } finally {h.close();}
+});
+
+test("admitted ingress conflicts and readiness expiry cannot replace or reactivate source records", async () => {
+  const h = runtimeFixture();
+  try {
+    const saved = await completedBootstrap(h); const input = admittedReadiness(h, saved);
+    await h.runtime().readinessPlan(saved.plan.planId); input.approve("readiness-ingress");
+    const ingressPath = "catchWhatsappReadinessIngress/" + input.ingress.document.ingressId;
+    const revoked = {...input.ingress.document, state: "revoked"};
+    h.records.set(ingressPath, revoked);
+    const before = h.counts();
+    assert.equal((await h.runtime().readinessIngress(saved.plan.planId)).state, "reconciliation-required");
+    assert.deepEqual(h.records.get(ingressPath), revoked);
+    assert.equal(h.counts().writes, before.writes);
+    h.expire();
+    const expiredBefore = h.counts();
+    await assert.rejects(() => h.runtime().readinessIngress(saved.plan.planId));
+    await assert.rejects(() => h.runtime().readinessPublish(saved.plan.planId));
+    assert.equal(h.counts().sdkCalls, expiredBefore.sdkCalls, "expired or missing action approval fails before SDK");
+    assert.equal(h.counts().writes, before.writes);
+  } finally {h.close();}
+});
+
+test("lost ingress commit response uses exact create-only replay without a second effect", async () => {
+  const h = runtimeFixture();
+  try {
+    const saved = await completedBootstrap(h); const input = admittedReadiness(h, saved);
+    await h.runtime().readinessPlan(saved.plan.planId); input.approve("readiness-ingress");
+    const ingressPath = "catchWhatsappReadinessIngress/" + input.ingress.document.ingressId;
+    h.onCommit(pending => {if (pending.has(ingressPath)) throw new Error("synthetic lost committed response");});
+    assert.equal((await h.runtime().readinessIngress(saved.plan.planId)).state, "reconciliation-required");
+    assert.deepEqual(h.records.get(ingressPath), input.ingress.document);
+    const before = h.counts();
+    assert.equal((await h.runtime().readinessIngress(saved.plan.planId)).state, "exact-ingress-observed");
+    assert.equal(h.counts().writes, before.writes);
+    assert.equal(h.counts().setters, 1);
+  } finally {h.close();}
+});
+
+test("a coherently replaced readiness approval cannot authorize captured older evidence after Auth waits", async () => {
+  for (const stage of ["ingress", "publish"]) {
+    const h = runtimeFixture();
+    try {
+      const saved = await completedBootstrap(h); const input = admittedReadiness(h, saved);
+      await h.runtime().readinessPlan(saved.plan.planId); input.approve("readiness-ingress");
+      if (stage === "publish") {
+        await h.runtime().readinessIngress(saved.plan.planId); input.approve("readiness-publish");
+      }
+      const before = h.counts();
+      let replaced = false;
+      h.onVerify(() => {
+        if (!replaced && (stage === "ingress" || h.records.get(
+          "catchWhatsappOperatorSetupOperations/demo-catch-setup")?.phase === "publish-intent")) {
+          replaced = true; input.replaceEvidence("readiness-" + stage);
+        }
+      });
+      const result = await h.runtime()[stage === "ingress" ? "readinessIngress" : "readinessPublish"](saved.plan.planId);
+      assert.equal(replaced, true);
+      assert.equal(result.state, "reconciliation-required");
+      assert.equal(h.records.has("catchWhatsappReadinessPublications/" + input.reference), false);
+      if (stage === "ingress") {
+        assert.equal(h.records.has("catchWhatsappReadinessIngress/" + input.ingress.document.ingressId), false);
+        assert.equal(h.counts().writes, before.writes);
+      }
+      assert.equal(h.counts().setters, 1);
+    } finally {h.close();}
+  }
+});
+
+test("readiness requires admitted actual audits and exact bytes; no profile or shape can replace them", async () => {
+  for (const change of ["missing-delegation", "unadmitted-audit", "newline-archive", "retired-role"]) {
+    const h = runtimeFixture();
+    try {
+      const saved = await completedBootstrap(h); const input = admittedReadiness(h, saved);
+      if (change === "missing-delegation") fs.unlinkSync(path.join(h.home, "readiness-audit-delegation.json"));
+      if (change === "unadmitted-audit") h.file(`audit-admissions/${input.reference}.json`, {...input.admission, historyAuditSha256: "f".repeat(64)});
+      if (change === "newline-archive") h.file(`archives/${input.reference}.json`, input.bytes.toString("utf8") + "\n", false);
+      if (change === "retired-role") h.revokeObservedRole();
+      const before = h.counts();
+      await assert.rejects(() => h.runtime().readinessPlan(saved.plan.planId));
+      assert.equal(h.counts().writes, before.writes);
+      if (change !== "retired-role") assert.equal(h.counts().sdkCalls, before.sdkCalls);
+    } finally {h.close();}
+  }
+});
+
+test("lost publication commit reconciles exact witness without republishing or auto-approving", async () => {
+  const h = runtimeFixture();
+  try {
+    const saved = await completedBootstrap(h); const input = admittedReadiness(h, saved);
+    await h.runtime().readinessPlan(saved.plan.planId); input.approve("readiness-ingress");
+    await h.runtime().readinessIngress(saved.plan.planId); input.approve("readiness-publish");
+    h.onCommit(writes => {
+      if (writes.has(`catchWhatsappReadinessPublications/${input.reference}`)) throw new Error("synthetic lost commit response");
+    });
+    assert.equal((await h.runtime().readinessPublish(saved.plan.planId)).state, "publication-review-required");
+    const before = h.counts();
+    assert.equal((await h.runtime().readinessPublish(saved.plan.planId)).state, "publication-review-required");
+    assert.equal(h.counts().writes, before.writes);
+    assert.equal(fs.existsSync(path.join(h.home, "publication-audits")), false);
+    assert.equal(h.counts().setters, 1);
+  } finally {h.close();}
+});
+
+test("exact publication approval and current STOP are checked before readiness grant", async () => {
+  const h = runtimeFixture();
+  try {
+    const saved = await completedBootstrap(h); const input = admittedReadiness(h, saved);
+    await h.runtime().readinessPlan(saved.plan.planId); input.approve("readiness-ingress");
+    await h.runtime().readinessIngress(saved.plan.planId); input.approve("readiness-publish");
+    await h.runtime().readinessPublish(saved.plan.planId);
+    const review = await h.runtime().readinessReview(saved.plan.planId);
+    const audit = input.admitPublication(review); input.approve("readiness-apply");
+    h.file(`publication-audits/${input.reference}.json`, {...audit, publicationSha256: "f".repeat(64)});
+    const before = h.counts();
+    await assert.rejects(() => h.runtime().readinessApply(saved.plan.planId));
+    assert.equal(h.counts().sdkCalls, before.sdkCalls);
+    h.file(`publication-audits/${input.reference}.json`, audit);
+    const endpointKey = createHash("sha256").update(JSON.stringify([saved.plan.scope.wabaId,
+      saved.plan.scope.phoneNumberId, saved.plan.scope.endpointHash])).digest("hex");
+    h.records.set(`catchWhatsappEndpointStops/cwstop_${endpointKey}`, {syntheticStop: true});
+    assert.equal((await h.runtime().readinessApply(saved.plan.planId)).state, "reconciliation-required");
+    assert.equal(h.records.has(`catchWhatsappReplyReadiness/cwready_${endpointKey}`), false);
+    assert.equal(h.counts().setters, 1);
   } finally {h.close();}
 });
 

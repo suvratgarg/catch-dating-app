@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.165.0
+version: 1.166.0
 updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
@@ -5057,8 +5057,8 @@ Missing approval fails before SDK initialization. The policy is reread before
 mutation admission and after OAuth header waits immediately before Auth dispatch;
 the runtime retains one exact plan/request binding. Remote enablement is not
 approval. The execution digest pins
-the bounded complete `functions/lib` tree, package/lock metadata, CLI and runtime
-files. It catches changed approved bytes; it is not independent proof of
+the bounded complete `functions/lib` tree, package/lock metadata, CLI, runtime
+and readiness loader files. It catches changed approved bytes; it is not independent proof of
 compilation or protection against a hostile process with the same OS UID.
 
 The lazy runtime uses current project/default-tenant Admin Auth and default
@@ -5076,15 +5076,42 @@ request for another grant. Auth claim replacement and Firestore commit remain
 separate services with the bounded observation race described above.
 
 The command `setup-catch-whatsapp-reply.cjs` supports offline `inspect-plan` and
-`fingerprint`, live read-only `plan`, separately approved bootstrap `apply`, and
-read-only `reconcile`. Reconcile checks the permanent slot, complete canonical
-phase audit chain, Auth dispatch intent and committed authority effect hashes in
-a read-only transaction, then reports current Auth observations separately. It
-never advances a phase, resumes an effect, renews expiry or calls readiness apply.
-Expired saved plans remain inspectable; an Auth dispatch receipt does not prove
-Auth committed. Bootstrap completion does not establish readiness. Independently
-authenticated review/ingress/history/publication sources and manual reply review
-remain required. No default readiness producer or activation is invented here.
+`fingerprint`, read-only `plan`/`reconcile`, and separately approved bootstrap
+`apply`. Its concrete readiness loader accepts fixed private files from separately
+authorized audit custody: actual deployed atomic-ingress audit, pinned epoch-to-
+cutover archive and independent source/retention/normalization/late-arrival audits.
+A delegated custodian admits their exact hashes and full operator scope. File
+permissions, structured audit bodies and digests do not authenticate an auditor;
+the custody delegation is an explicit live authorization prerequisite with no
+default. Source publication grants none of that authority.
+
+`readiness-plan` derives the review session from verified current Google Auth and
+current root/recipient authority, validates existing strict history evidence, and
+creates only private pending review and authentication receipts. Separate private
+`readiness-ingress`, `readiness-publish` and `readiness-apply` action approvals bind
+source, executable, original plan/scope/replay, review and audit hashes. The first
+successful binding is immutable for each invocation; a coherently changed policy
+or evidence bundle during an Auth wait cannot approve captured older effects.
+Stage approval cannot outlive the review, token or admitted evidence; it never
+renews the expired bootstrap plan or permanent project slot.
+
+Approved ingress admission is create-only and uses the actual audited cutover;
+conflicts and revocation are never overwritten. Publication reuses the merged
+transactional publisher and records the exact publication digest, including its
+actual authority-observation digest, as a private pre-write witness. That witness
+is not approval. `readiness-review` reads the committed publication and returns
+integrity evidence; an independent custodian must separately admit the exact
+publication before `readiness-apply` reuses existing provisioning. No command
+manufactures history, self-approves a review, renews readiness or sends a reply.
+
+Reconcile checks the permanent slot, complete canonical phase audit chain, Auth
+dispatch intent and authority effect hashes in a read-only transaction. At the
+ready phase it additionally proves the publication, independent audit, consumed
+approval and exact readiness record against current authority, ingress, STOP,
+preferences, deletion and expiry. `readinessVerified=true` reports only a current,
+unsuppressed, unexpired record. Expired plans and historical publication evidence
+remain inspectable without any effect retry. Bootstrap completion alone does not
+establish readiness, and readiness observation is not manual send approval.
 
 The preserved `inspect-plan --plan-file <receipt>` path remains offline and prints
 `liveApplyAvailable=false`: inspecting caller JSON never authorizes it. Runtime
@@ -5105,7 +5132,7 @@ live IAM, tenant configuration or every authorized principal:
 | `functions/src/safety/accountDeletion.ts` | Writes the recipient `deletedUsers` tombstone before Auth deletion. Readiness reads that guard; direct Auth deletion bypasses this application path. |
 | `tool/demo/cross_paths_demo_core.mjs` | Privileged fixture tooling can clear/reassign phone numbers, create users and alter test-phone configuration. It has scoped guards including an explicitly pinned production path, not a readiness lock. |
 | `tool/firebase/probe_chat_storage_rules.mjs` | Mints and exchanges a custom token for a selected user after its own data preflight; it does not establish a readiness authority fence. |
-| `lib/auth/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
+| `lib/auth/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions, Google Admin sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
 
 The client SDK also exposes account deletion, linking/unlinking, password and
 phone mutation capabilities independently of whether the current application UI

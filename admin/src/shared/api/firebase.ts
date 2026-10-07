@@ -1,14 +1,23 @@
 import {
   type ConfirmationResult,
   getAuth,
+  GoogleAuthProvider,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 import {firebaseApp} from "./firebaseCore";
 export {firebaseConfig} from "./firebaseCore";
 
 export const auth = getAuth(firebaseApp);
+
+export async function signInWithGoogleAdmin() {
+  resetPhoneSignIn();
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({prompt: "select_account"});
+  await signInWithPopup(auth, provider);
+}
 
 let phoneConfirmation: ConfirmationResult | null = null;
 let phoneRecaptchaVerifier: RecaptchaVerifier | null = null;

@@ -25,8 +25,8 @@ The app defaults to `live` data mode. Sample data is available only when a local
 development build explicitly sets `VITE_ADMIN_DATA_MODE=sample`; production
 builds resolve that value back to `live`. The account menu discloses explicit
 local sample mode and Firebase authentication is bypassed only in that mode.
-In live mode the shell supports phone OTP sign-in for claimed accounts before
-any callable data loads. Google sign-in is intentionally unsupported. The shell
+In live mode the shell supports Google account selection and phone OTP sign-in
+before any callable data loads. The existing admin-role checks apply to both. The shell
 shows the signed-in uid and custom admin claims after Auth resolves, blocks
 signed-in users with no Catch admin claim before dashboard data loads, and
 surfaces sign-in, claim refresh, and sign-out errors in the UI.
@@ -47,7 +47,7 @@ analytics workspace; access decisions, organizer claim decisions, and organizer
 indexing decisions are handled in their owning tabs where the operator must
 select a row and enter a review note.
 
-The app shell owns shared navigation, phone-only auth, role gating, the
+The app shell owns shared navigation, Firebase auth, role gating, the
 plain route title, and feature composition. Overview range state, refresh,
 analytics loading, and queue triage live in
 `admin/src/features/overview/controllers`.
@@ -55,6 +55,13 @@ The top bar omits the production environment label. Non-production environment
 and local-data context appear in the account menu only when they change
 operator risk; switching Firebase targets still happens through environment
 variables and rebuilds.
+Catch WhatsApp support on Overview uses the initialized Firebase project's
+existing review/send callables. Availability comes only from a successful remote
+value for the existing parameter named by `VITE_CATCH_WHATSAPP_REMOTE_CONFIG_KEY`;
+missing configuration, local/default values, failed fetch, stale or retired
+sessions keep it unavailable. Remote Config does not approve setup or sending.
+App Check, current roles, backend readiness/suppression and exact human review
+remain required. No flag is enabled by source publication.
 Admin feature import direction is enforced by
 `npm run check:boundaries` and by `npm run build`: app-shell modules may compose
 features and shared modules; feature modules may import their own top-level

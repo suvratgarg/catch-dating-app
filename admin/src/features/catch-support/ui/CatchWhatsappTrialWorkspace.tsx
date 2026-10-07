@@ -4,19 +4,21 @@ import {AdminButton, CheckboxField, Panel, TextareaField, TextField} from
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useCatchWhatsappTrialController} from
   "../controllers/useCatchWhatsappTrialController";
-import {catchWhatsappTrialEnabled, type CatchTrialApi, type CatchTrialScope} from
+import {type CatchTrialApi, type CatchTrialScope} from
   "../api/catchWhatsappTrialRepository";
+import {useCatchWhatsappAvailabilityController} from "../controllers/useCatchWhatsappAvailabilityController";
 
-export function CatchWhatsappTrialWorkspace({scope, enabled = catchWhatsappTrialEnabled(), api}: {
+export function CatchWhatsappTrialWorkspace({scope, enabled: override, api}: {
   scope: CatchTrialScope; enabled?: boolean; api?: CatchTrialApi;
 }) {
+  const enabled = useCatchWhatsappAvailabilityController(scope, override);
   const controller = useCatchWhatsappTrialController({scope, enabled, api});
   const operationPending = useAdminOperationPending();
   const locked = controller.busy || operationPending;
   const canEdit = enabled && !locked && !controller.terminal &&
     Boolean(controller.inbound) && !controller.expired;
-  return <Panel title="WhatsApp support trial" icon={<MessageCircle size={18} />}>
-    {!enabled ? <p>This controlled support trial is not enabled.</p> : <>
+  return <Panel title="WhatsApp support" icon={<MessageCircle size={18} />}>
+    {!enabled ? <p>WhatsApp support is currently unavailable.</p> : <>
       <p>Review one approved support request, then confirm the exact reply.</p>
       <TextField label="Support request ID" value={controller.eventId}
         onChange={controller.setEventId} maxLength={69}
