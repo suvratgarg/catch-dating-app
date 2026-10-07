@@ -333,36 +333,6 @@
       "rationale": "GoRouter requires a Listenable refresh bridge. This exact class bridges routing invalidation, owns no feature loaded/business state, and must retain listener cleanup; it is not a business controller migration."
     },
     {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/create_event_draft_controller.dart#CreateEventDraftController.createPrivateEvent:construct:PrivateEventSetupRepository",
-      "path": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
-      "symbol": "CreateEventDraftController.createPrivateEvent",
-      "operation": "construct:PrivateEventSetupRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "CreateEventDraftController.createPrivateEvent directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/create_event_draft_controller.dart#CreateEventDraftController.getPrivateEventSetup:construct:PrivateEventSetupRepository",
-      "path": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
-      "symbol": "CreateEventDraftController.getPrivateEventSetup",
-      "operation": "construct:PrivateEventSetupRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "CreateEventDraftController.getPrivateEventSetup directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/create_event_draft_controller.dart#CreateEventDraftController.updatePrivateEventBasics:construct:PrivateEventSetupRepository",
-      "path": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart",
-      "symbol": "CreateEventDraftController.updatePrivateEventBasics",
-      "operation": "construct:PrivateEventSetupRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "CreateEventDraftController.updatePrivateEventBasics directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
       "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart#_HostEventOfferPreferencesScreenState._bindSignedInManager:construct:EventOfferPreferencesRepository",
       "path": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
       "symbol": "_HostEventOfferPreferencesScreenState._bindSignedInManager",
