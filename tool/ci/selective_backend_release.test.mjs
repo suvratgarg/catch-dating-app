@@ -13,6 +13,7 @@ import {additiveIndexChanges, prepareSelectiveRelease, initializeFunctionLedger,
   prepareMixedImpactRelease, completeMixedImpactRelease,
   prepareBaselineImpactRelease, completeBaselineImpactRelease,
   SELECTIVE_IMPACT_SCHEMA} from "./selective_backend_release.mjs";
+import "./sales_pr543_release.test.mjs";
 
 const hash = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const clone = structuredClone;

@@ -467,3 +467,24 @@ test("historical run identity uses an allowed workflow path and numeric generati
     }
   }
 });
+
+test("selective recovery accepts only the exact manual selective workflow identity", async () => {
+  const repo = {id: 42, full_name: "owner/catch"};
+  const filename = "selective-backend-release.yml";
+  const run = {id: 901, run_attempt: 1, workflow_id: 90,
+    path: `.github/workflows/${filename}@refs/heads/main`, event: "workflow_dispatch",
+    repository: repo, head_repository: repo, head_branch: "main", status: "completed", conclusion: "failure"};
+  const metadata = {id: 90, path: `.github/workflows/${filename}`, name: "One-Time Selective Backend PROD Release"};
+  const request = async (endpoint) => endpoint.endsWith("/attempts/1") ? run : metadata;
+  const args = {repository: "owner/catch", repositoryId: 42, runId: "901", runAttempt: "1", request};
+  assert.deepEqual(await verifyWorkflowRun({...args, role: "selective"}), run);
+  await assert.rejects(verifyWorkflowRun({...args, role: "delivery"}), /workflow path/);
+  await assert.rejects(verifyWorkflowRun({...args, role: "cursor"}), /workflow path/);
+  for (const patch of [{event: "push"}, {head_branch: "feature"}, {workflow_id: 91},
+    {path: ".github/workflows/delivery.yml"}]) {
+    const original = {...run};
+    Object.assign(run, patch);
+    await assert.rejects(verifyWorkflowRun({...args, role: "selective"}));
+    Object.assign(run, original);
+  }
+});
