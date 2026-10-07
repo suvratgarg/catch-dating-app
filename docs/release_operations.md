@@ -103,17 +103,23 @@ dependency installation; do not move this gate into Firebase predeploy hooks.
 
 Repository checks prove the authored Functions package, not what a Firebase
 project currently exposes. After every Functions deployment, the safe deploy
-wrapper compares the live inventory with the deployment-eligible exports
-derived from `functions/src/index.ts` and confirms that every literal
-`defineSecret()` name exists in the selected project:
+wrapper compares the live inventory with the exact deployment-eligible target
+set resolved by its planner and confirms that every literal `defineSecret()`
+name exists in the selected project. A broad `functions` plan resolves every
+eligible export, so it retains full parity; an exact selective plan does not
+require unrelated exports:
 
 ```sh
 node tool/firebase/check_deploy_parity.mjs --env staging
 node tool/firebase/check_deploy_parity.mjs --env prod --json
+node tool/firebase/check_deploy_parity.mjs --env prod \
+  --targets functions:firstCallable,functions:secondCallable
 ```
 
-Missing deployment-eligible exports or declared secret names fail the
-deployment. Environment-only Functions are counted but ignored because
+Without `--targets`, the command remains a strict full-parity check. Missing
+selected exports (or any deployment-eligible export in full mode) and missing
+declared secret names fail the deployment. Selectors not eligible in the exact
+source fail closed. Environment-only Functions are counted but ignored because
 installed Firebase Extensions legitimately own exports that are absent from
 this repository. The check uses only `firebase functions:list` and Secret
 Manager resource-name metadata; it never requests a secret version or payload.

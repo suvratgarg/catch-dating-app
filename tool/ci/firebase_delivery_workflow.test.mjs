@@ -237,7 +237,7 @@ test("Functions deployment checks live parity against the exact source checkout"
   );
   assert.match(
     executor,
-    /check_deploy_parity\.mjs" \\\n+\s+--env "\$environment" \\\n+\s+--repo-root "\$\{CATCH_FIREBASE_SOURCE_ROOT:-\$repo_root\}"/u,
+    /check_deploy_parity\.mjs" \\\n+\s+--env "\$environment" \\\n+\s+--repo-root "\$\{CATCH_FIREBASE_SOURCE_ROOT:-\$repo_root\}" \\\n+\s+--targets "\$deploy_only"/u,
   );
 });
 
