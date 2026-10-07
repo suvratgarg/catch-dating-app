@@ -5,7 +5,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
-const providerGraphSchemaVersion = 1;
+const providerGraphSchemaVersion = 2;
 const providerGraphReviewPath = 'tool/architecture/provider_graph_reviews.json';
 
 const _providerConstructors = <String>{
@@ -176,6 +176,10 @@ final class ArchitectureCandidate {
     this.source,
     this.target,
     this.metric,
+    this.path,
+    this.symbol,
+    this.operation,
+    this.line,
   });
 
   final String id;
@@ -187,6 +191,10 @@ final class ArchitectureCandidate {
   final String? source;
   final String? target;
   final int? metric;
+  final String? path;
+  final String? symbol;
+  final String? operation;
+  final int? line;
 
   Map<String, Object?> toJson(Map<String, Object?>? review) => {
     'id': id,
@@ -198,6 +206,10 @@ final class ArchitectureCandidate {
     if (source != null) 'source': source,
     if (target != null) 'target': target,
     if (metric != null) 'metric': metric,
+    if (path != null) 'path': path,
+    if (symbol != null) 'symbol': symbol,
+    if (operation != null) 'operation': operation,
+    if (line != null) 'line': line,
     'review': review,
   };
 }
@@ -293,6 +305,19 @@ final class ProviderGraph {
       'architectureCandidates': candidates.length,
       'unreviewedArchitectureCandidates': unreviewedCandidateIds.length,
       'staleArchitectureReviews': staleReviewIds.length,
+      'ownershipCandidatesByKind': _countsBy(
+        candidates
+            .where((c) => c.kind.startsWith('ownership-'))
+            .map((c) => c.kind),
+      ),
+      'ownershipReviewDispositions': _countsBy(
+        candidates
+            .where((c) => c.kind.startsWith('ownership-'))
+            .map(
+              (c) =>
+                  reviewDecisions[c.id]?['status'] as String? ?? 'unreviewed',
+            ),
+      ),
     };
   }
 
@@ -462,6 +487,11 @@ Future<ProviderGraph> buildProviderGraph(
       )
       .toList();
   files.sort((a, b) => a.path.compareTo(b.path));
+  if (files.isEmpty) {
+    throw StateError(
+      'Provider graph cannot pass without handwritten lib Dart.',
+    );
+  }
 
   final providers = <ProviderGraphNode>[];
   final mutations = <MutationGraphNode>[];
@@ -538,12 +568,22 @@ Future<ProviderGraph> buildProviderGraph(
           final initializer = variable.initializer;
           if (initializer == null || !name.endsWith('Provider')) continue;
           final source = initializer.toSource().trim();
-          final constructor = RegExp(
-            r'^([A-Za-z_][A-Za-z0-9_]*)',
-          ).firstMatch(source)?.group(1);
-          final isManual =
-              constructor != null &&
-              _providerConstructors.contains(constructor);
+          final parts = source.split(RegExp(r'[<(]')).first.split('.');
+          final first = parts.first;
+          final prefixes = parseResult.unit.directives
+              .whereType<ImportDirective>()
+              .where(
+                (import) => RegExp(
+                  r'^package:(?:flutter_riverpod|hooks_riverpod|riverpod)/',
+                ).hasMatch(import.uri.stringValue ?? ''),
+              )
+              .map((import) => import.prefix?.name)
+              .whereType<String>()
+              .toSet();
+          final constructor = prefixes.contains(first) && parts.length > 1
+              ? parts[1]
+              : first;
+          final isManual = _providerConstructors.contains(constructor);
           final isAlias = RegExp(
             r'^[A-Za-z_][A-Za-z0-9_]*Provider$',
           ).hasMatch(source);
@@ -663,13 +703,31 @@ Future<ProviderGraph> buildProviderGraph(
     providerEdges.where((edge) => _reactiveOperations.contains(edge.operation)),
   );
   final allCycles = _stronglyConnectedComponents(providerEdges);
-  final candidates = _architectureCandidates(providers, providerEdges);
+  final candidates = [
+    ..._architectureCandidates(providers, providerEdges),
+    ..._ownershipCandidates(scannedFiles),
+  ]..sort((a, b) => a.id.compareTo(b.id));
   final decisions = _readReviewDecisions(
     File('${absoluteRoot.path}/$reviewPath'),
   );
   final candidateIds = candidates.map((candidate) => candidate.id).toSet();
   final unreviewed =
-      candidateIds.where((id) => !decisions.containsKey(id)).toList()..sort();
+      candidates
+          .where((candidate) {
+            final decision = decisions[candidate.id];
+            if (decision == null) return true;
+            // Ownership reviews cover an exact operation, never a file or count.
+            return candidate.kind.startsWith('ownership-') &&
+                (decision['path'] != candidate.path ||
+                    decision['symbol'] != candidate.symbol ||
+                    decision['operation'] != candidate.operation ||
+                    decision['maxCallsites'] is! int ||
+                    (decision['maxCallsites']! as int) <
+                        (candidate.metric ?? 1));
+          })
+          .map((candidate) => candidate.id)
+          .toList()
+        ..sort();
   final stale =
       decisions.keys.where((id) => !candidateIds.contains(id)).toList()..sort();
   return ProviderGraph(
@@ -844,6 +902,628 @@ String? _enclosingClassName(AstNode node) {
     cursor = cursor.parent;
   }
   return null;
+}
+
+// Parsed source ownership, not resolved Dart types. Follow local/imported class
+// ancestry without conflating unrelated classes with the same name. Unknown
+// aliases, re-exported types and dynamic dispatch still need manual review.
+final class _Owner {
+  const _Owner(this.file, this.declaration, [this.extension]);
+  final _ScannedFile file;
+  final ClassDeclaration declaration;
+  final ExtensionDeclaration? extension;
+  String get name =>
+      extension?.name?.lexeme ?? declaration.namePart.typeName.lexeme;
+  Iterable<ClassMember> get members =>
+      extension?.body.members ?? declaration.body.members;
+  String get id => '${file.path}#$name';
+  Iterable<NamedType> get parents => [
+    if (declaration.extendsClause case final clause?) clause.superclass,
+    ...?declaration.withClause?.mixinTypes,
+    ...?declaration.implementsClause?.interfaces,
+  ];
+}
+
+final class _OwnershipIndex {
+  _OwnershipIndex(List<_ScannedFile> files)
+    : owners = [
+        for (final file in files)
+          for (final type
+              in file.unit.declarations.whereType<ClassDeclaration>())
+            _Owner(file, type),
+      ];
+  final List<_Owner> owners;
+
+  _Owner? resolve(_ScannedFile file, String name, {String? prefix}) {
+    final localPaths = <String>{file.path};
+    for (final partOf in file.unit.directives.whereType<PartOfDirective>()) {
+      final uri = partOf.uri?.stringValue;
+      if (uri != null) localPaths.add(Uri.parse(file.path).resolve(uri).path);
+    }
+    final local = owners.where(
+      (owner) =>
+          prefix == null &&
+          localPaths.contains(owner.file.path) &&
+          owner.name == name,
+    );
+    if (local.length == 1) return local.single;
+    final imported = <String>{};
+    for (final directive in file.unit.directives.whereType<ImportDirective>()) {
+      final uri = directive.uri.stringValue;
+      if (uri == null) continue;
+      if (directive.prefix?.name != prefix) continue;
+      if (directive.combinators.any(
+        (combinator) => switch (combinator) {
+          ShowCombinator() => !combinator.shownNames.any(
+            (shown) => shown.name == name,
+          ),
+          HideCombinator() => combinator.hiddenNames.any(
+            (hidden) => hidden.name == name,
+          ),
+        },
+      )) {
+        continue;
+      }
+      if (uri.startsWith('package:catch_dating_app/')) {
+        imported.add(
+          'lib/${uri.substring('package:catch_dating_app/'.length)}',
+        );
+      } else if (!uri.contains(':')) {
+        imported.add(Uri.parse(file.path).resolve(uri).path);
+      }
+    }
+    final matches = owners.where(
+      (owner) => imported.contains(owner.file.path) && owner.name == name,
+    );
+    return matches.length == 1 ? matches.single : null;
+  }
+
+  bool descends(_Owner owner, Set<String> roots, [Set<String>? visited]) {
+    final seen = visited ?? <String>{};
+    if (!seen.add(owner.id)) return false;
+    for (final parent in owner.parents) {
+      final name = parent.name.lexeme;
+      final local = resolve(
+        owner.file,
+        name,
+        prefix: parent.importPrefix?.name.lexeme,
+      );
+      if (local != null) {
+        if (descends(local, roots, seen)) return true;
+      } else if (roots.contains(name)) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+const _listenableTypes = {'ChangeNotifier', 'ValueNotifier'};
+const _widgetTypes = {
+  'State',
+  'ConsumerState',
+  'StatelessWidget',
+  'StatefulWidget',
+  'ConsumerWidget',
+  'ConsumerStatefulWidget',
+};
+
+final class _OwnershipFacts extends RecursiveAstVisitor<void> {
+  final calls = <MethodInvocation>[];
+  final creations = <InstanceCreationExpression>[];
+  final awaits = <AwaitExpression>[];
+  final variables = <VariableDeclaration>[];
+  final functionCalls = <FunctionExpressionInvocation>[];
+  @override
+  void visitFunctionExpressionInvocation(FunctionExpressionInvocation node) {
+    functionCalls.add(node);
+    super.visitFunctionExpressionInvocation(node);
+  }
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    variables.add(node);
+    super.visitVariableDeclaration(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    calls.add(node);
+    super.visitMethodInvocation(node);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    creations.add(node);
+    super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitAwaitExpression(AwaitExpression node) {
+    awaits.add(node);
+    super.visitAwaitExpression(node);
+  }
+}
+
+String? _ownershipProviderReference(String argument, _OwnershipFacts facts) {
+  final direct = _providerReferencePattern.firstMatch(argument)?.group(1);
+  if (direct != null) return direct;
+  final localName = argument.split('.').first;
+  for (final variable in facts.variables) {
+    if (variable.name.lexeme != localName) continue;
+    return _providerReferencePattern
+        .firstMatch(variable.initializer?.toSource() ?? '')
+        ?.group(1);
+  }
+  return null;
+}
+
+Iterable<({AstNode node, String name, _Owner? owner})> _ownershipConstructions(
+  _OwnershipFacts facts,
+  _OwnershipIndex index,
+  _ScannedFile file,
+) sync* {
+  for (final node in facts.creations) {
+    final type = node.constructorName.type;
+    yield (
+      node: node,
+      name: type.name.lexeme,
+      owner: index.resolve(
+        file,
+        type.name.lexeme,
+        prefix: type.importPrefix?.name.lexeme,
+      ),
+    );
+  }
+  for (final node in facts.calls) {
+    String? name;
+    String? prefix;
+    final target = node.realTarget;
+    if (target == null) {
+      name = node.methodName.name;
+    } else if (target is SimpleIdentifier) {
+      if (RegExp(r'^_?[A-Z]').hasMatch(target.name)) {
+        name = target.name;
+      } else {
+        prefix = target.name;
+        name = node.methodName.name;
+      }
+    } else if (target is PropertyAccess &&
+        target.realTarget is SimpleIdentifier) {
+      prefix = target.realTarget.toSource();
+      name = target.propertyName.name;
+    }
+    if (name == null || !RegExp(r'^_?[A-Z]').hasMatch(name)) {
+      continue;
+    }
+    final owner = index.resolve(file, name, prefix: prefix);
+    if (owner == null && !name.endsWith('Repository')) continue;
+    if (owner != null &&
+        target != null &&
+        owner.declaration.body.members.whereType<MethodDeclaration>().any(
+          (m) => m.isStatic && m.name.lexeme == node.methodName.name,
+        )) {
+      continue;
+    }
+    yield (node: node, name: name, owner: owner);
+  }
+}
+
+String? _awaitedProviderOrigin(
+  MethodInvocation call,
+  _OwnershipFacts scopeFacts,
+) {
+  final target = call.realTarget;
+  if (target is! SimpleIdentifier) return null;
+  for (final variable in scopeFacts.variables) {
+    if (variable.name.lexeme != target.name) continue;
+    final initializer = variable.initializer;
+    if (initializer is! MethodInvocation ||
+        initializer.realTarget?.toSource() != 'ref' ||
+        !{'read', 'watch'}.contains(initializer.methodName.name)) {
+      continue;
+    }
+    return _ownershipProviderReference(
+      initializer.argumentList.arguments.firstOrNull?.toSource() ?? '',
+      scopeFacts,
+    );
+  }
+  return null;
+}
+
+String? _callbackReference(AstNode node) {
+  if (node is MethodInvocation) {
+    if (node.methodName.name == 'call') {
+      return node.realTarget?.toSource().replaceAll('!', '');
+    }
+    if (node.realTarget == null) return node.methodName.name;
+    if (node.realTarget?.toSource() == 'widget') {
+      return 'widget.${node.methodName.name}';
+    }
+  }
+  if (node is FunctionExpressionInvocation) {
+    return node.function.toSource().replaceAll('!', '');
+  }
+  return null;
+}
+
+List<ArchitectureCandidate> _ownershipCandidates(List<_ScannedFile> files) {
+  final index = _OwnershipIndex(files);
+  final findings = <String, ArchitectureCandidate>{};
+  void add(
+    _ScannedFile file,
+    AstNode node,
+    String kind,
+    String symbol,
+    String operation,
+    String reason,
+  ) {
+    final id = '$kind:${file.path}#$symbol:$operation';
+    final existing = findings[id];
+    findings[id] = ArchitectureCandidate(
+      id: id,
+      kind: kind,
+      severity: 'review',
+      subject: symbol,
+      path: file.path,
+      symbol: symbol,
+      operation: operation,
+      line: existing?.line ?? file.lineFor(node.offset),
+      metric: (existing?.metric ?? 0) + 1,
+      reason: reason,
+      recommendation:
+          'Review the responsibility against the controller contract. Record exact CAT156 debt or a reasoned mechanical/service exception; do not approve a directory or filename.',
+    );
+  }
+
+  final surfaces = [...index.owners];
+  for (final file in files) {
+    for (final extension
+        in file.unit.declarations.whereType<ExtensionDeclaration>()) {
+      final target = extension.onClause?.extendedType;
+      if (target is! NamedType) continue;
+      final owner = index.resolve(
+        file,
+        target.name.lexeme,
+        prefix: target.importPrefix?.name.lexeme,
+      );
+      if (owner != null) {
+        surfaces.add(_Owner(file, owner.declaration, extension));
+      }
+    }
+  }
+  for (final owner in surfaces) {
+    final file = owner.file;
+    final type = owner.declaration;
+    final listenable = index.descends(owner, _listenableTypes);
+    final widget = index.descends(owner, _widgetTypes);
+    final generated = _hasRiverpodAnnotation(type.metadata);
+    if (listenable && owner.extension == null) {
+      add(
+        file,
+        type,
+        'ownership-listenable',
+        owner.name,
+        'reactive-state',
+        'ChangeNotifier/ValueNotifier ancestry publishes manually managed reactive state. Business ownership requires a generated notifier; framework bridges and local mechanics require a reviewed exception.',
+      );
+    }
+    if (!widget && !generated && !listenable) continue;
+    for (final member in owner.members) {
+      final symbol = switch (member) {
+        MethodDeclaration() => '${owner.name}.${member.name.lexeme}',
+        ConstructorDeclaration() =>
+          '${owner.name}.${member.name?.lexeme ?? 'new'}',
+        FieldDeclaration() =>
+          '${owner.name}.${member.fields.variables.map((v) => v.name.lexeme).join(',')}',
+        _ => owner.name,
+      };
+      final facts = _OwnershipFacts();
+      member.accept(facts);
+      // Both explicit `new` and implicit constructors are represented in a
+      // parsed AST; no textual matches in comments/string literals participate.
+      for (final creation in _ownershipConstructions(facts, index, file)) {
+        final name = creation.name;
+        if (name.endsWith('Repository')) {
+          add(
+            file,
+            creation.node,
+            'ownership-repository-construction',
+            symbol,
+            'construct:$name',
+            'A widget or reactive controller constructs a repository instead of consuming an overridable repository factory. Generated function factories and pure orchestration helpers are separate responsibilities.',
+          );
+        }
+      }
+      for (final call in facts.calls) {
+        final name = call.methodName.name;
+        if (!widget ||
+            !_refOperations.contains(name) ||
+            call.realTarget?.toSource() != 'ref') {
+          continue;
+        }
+        final argument =
+            call.argumentList.arguments.firstOrNull?.toSource() ?? '';
+        final target = _ownershipProviderReference(argument, facts);
+        if (target == null) continue;
+        if (target.endsWith('RepositoryProvider')) {
+          add(
+            file,
+            call,
+            'ownership-widget-repository',
+            symbol,
+            '$name:$target',
+            'A widget reads a repository provider rather than its feature controller/view-model seam, regardless of the containing filename.',
+          );
+        } else if ({
+          'firebaseFunctionsProvider',
+          'firestoreProvider',
+          'firebaseFirestoreProvider',
+          'firebaseStorageProvider',
+        }.contains(target)) {
+          add(
+            file,
+            call,
+            'ownership-widget-backend',
+            symbol,
+            '$name:$target',
+            'A widget reaches a backend SDK dependency. Mere Auth current-user checks are excluded because they may fence account currentness.',
+          );
+        }
+      }
+      if (!widget || member is! MethodDeclaration) continue;
+      final ownsCompletion = facts.calls.any(
+        (call) => call.methodName.name == 'setState',
+      );
+      if (!ownsCompletion) continue;
+      for (final pending in facts.awaits) {
+        final awaited = _OwnershipFacts();
+        pending.expression.accept(awaited);
+        for (final call in awaited.calls) {
+          final argument =
+              call.argumentList.arguments.firstOrNull?.toSource() ?? '';
+          if (call.realTarget?.toSource() == 'ref' &&
+              {'read', 'watch'}.contains(call.methodName.name) &&
+              argument.endsWith('.future')) {
+            final provider = _ownershipProviderReference(argument, facts);
+            if (provider != null) {
+              add(
+                file,
+                call,
+                'ownership-widget-async',
+                symbol,
+                'await:$provider.future',
+                'The widget awaits provider-owned async data and publishes a second local completion state; classify retained business data separately from UI mechanics.',
+              );
+            }
+          }
+          if ({
+            'then',
+            'catchError',
+            'whenComplete',
+            'timeout',
+          }.contains(call.methodName.name)) {
+            continue;
+          }
+          final providers = <String>{};
+          final origin = _awaitedProviderOrigin(call, facts);
+          if (origin != null) providers.add(origin);
+          final receiverFacts = _OwnershipFacts();
+          call.realTarget?.accept(receiverFacts);
+          for (final read in receiverFacts.calls) {
+            if (read.realTarget?.toSource() != 'ref' ||
+                !{'read', 'watch'}.contains(read.methodName.name)) {
+              continue;
+            }
+            final provider = _ownershipProviderReference(
+              read.argumentList.arguments.firstOrNull?.toSource() ?? '',
+              facts,
+            );
+            if (provider != null) providers.add(provider);
+          }
+          for (final provider in providers.where(
+            (p) =>
+                p.endsWith('ControllerProvider') ||
+                p.endsWith('RepositoryProvider'),
+          )) {
+            add(
+              file,
+              call,
+              'ownership-widget-async',
+              symbol,
+              'await:$provider.${call.methodName.name}',
+              'The widget awaits a business seam and also publishes local completion state. Review which fields are business data/pending/error versus mechanical form feedback; delegated writes alone do not transfer lifecycle ownership.',
+            );
+          }
+        }
+        if (pending.expression is SimpleIdentifier) {
+          final name = (pending.expression as SimpleIdentifier).name;
+          for (final variable in facts.variables.where(
+            (v) => v.name.lexeme == name,
+          )) {
+            final initializer = variable.initializer;
+            if (initializer is! MethodInvocation ||
+                initializer.realTarget?.toSource() != 'ref') {
+              continue;
+            }
+            final argument =
+                initializer.argumentList.arguments.firstOrNull?.toSource() ??
+                '';
+            if (!argument.endsWith('.future')) continue;
+            final provider = _ownershipProviderReference(argument, facts);
+            if (provider != null) {
+              add(
+                file,
+                pending,
+                'ownership-widget-async',
+                symbol,
+                'await:$provider.future',
+                'An aliased provider future is copied into widget-owned completion state. Review retained business state versus temporary mechanics.',
+              );
+            }
+          }
+        }
+        for (final call in <AstNode>[
+          ...awaited.calls,
+          ...awaited.functionCalls,
+        ]) {
+          final reference = _callbackReference(call);
+          if (reference == null) continue;
+          final name = reference.startsWith('widget.')
+              ? reference.substring(7)
+              : reference;
+          final widgetType = owner.parents
+              .expand(
+                (parent) =>
+                    parent.typeArguments?.arguments ?? <TypeAnnotation>[],
+              )
+              .whereType<NamedType>()
+              .firstOrNull;
+          final widgetOwner = widgetType == null
+              ? null
+              : index.resolve(file, widgetType.name.lexeme);
+          final callback = widgetOwner?.declaration.body.members
+              .whereType<FieldDeclaration>()
+              .where(
+                (field) =>
+                    field.fields.variables.any((v) => v.name.lexeme == name) &&
+                    field.fields.type?.toSource().contains('Future<') == true,
+              )
+              .firstOrNull;
+          final parameter = member.parameters?.parameters
+              .where(
+                (p) =>
+                    p.name?.lexeme == name && p.toSource().contains('Future<'),
+              )
+              .firstOrNull;
+          if ((reference.startsWith('widget.') && callback == null) ||
+              (!reference.startsWith('widget.') && parameter == null)) {
+            continue;
+          }
+          add(
+            file,
+            pending,
+            'ownership-widget-async-callback',
+            symbol,
+            'await:$reference',
+            'The widget awaits an injected Future callback and publishes local completion state. Its injection may hide a server command; classify business state separately from temporary form/animation feedback.',
+          );
+        }
+      }
+    }
+  }
+  // A generated wrapper does not turn a mutable Listenable into a Riverpod
+  // state owner. Detect constructors in manual or generated function providers.
+  for (final file in files) {
+    for (final provider in file.providers.where(
+      (p) => p.kind != 'generated-class',
+    )) {
+      final declaration = file.unit.declarations
+          .where((d) => d.offset == provider.start)
+          .firstOrNull;
+      if (declaration == null) continue;
+      final facts = _OwnershipFacts();
+      declaration.accept(facts);
+      final wrappedTypes = <String>{};
+      for (final creation in _ownershipConstructions(facts, index, file)) {
+        final name = creation.name;
+        final owner = creation.owner;
+        if (owner != null && index.descends(owner, _listenableTypes)) {
+          wrappedTypes.add(name);
+          add(
+            file,
+            creation.node,
+            'ownership-listenable-wrapper',
+            provider.name,
+            'construct:$name',
+            'The provider constructs a ChangeNotifier/ValueNotifier owner. Code generation of the wrapper alone does not manage its manually published business state.',
+          );
+        }
+      }
+      if (declaration is FunctionDeclaration &&
+          declaration.returnType is NamedType) {
+        var returned = declaration.returnType! as NamedType;
+        while ({
+              'Future',
+              'Stream',
+              'FutureOr',
+            }.contains(returned.name.lexeme) &&
+            returned.typeArguments?.arguments.firstOrNull is NamedType) {
+          returned = returned.typeArguments!.arguments.first as NamedType;
+        }
+        final name = returned.name.lexeme;
+        final owner = index.resolve(
+          file,
+          name,
+          prefix: returned.importPrefix?.name.lexeme,
+        );
+        if (!wrappedTypes.contains(name) &&
+            owner != null &&
+            index.descends(owner, _listenableTypes)) {
+          add(
+            file,
+            declaration,
+            'ownership-listenable-wrapper',
+            provider.name,
+            'return-type:$name',
+            'The generated function returns a manually reactive Listenable owner through a factory or tear-off; wrapping it does not replace its business-state lifecycle.',
+          );
+        }
+      }
+    }
+  }
+  for (final file in files.where((f) => _featureFor(f.path) != 'core')) {
+    final facts = _OwnershipFacts();
+    file.unit.accept(facts);
+    for (final variable in facts.variables) {
+      if (variable.parent?.parent is TopLevelVariableDeclaration &&
+          variable.name.lexeme.endsWith('Provider')) {
+        continue;
+      }
+      final source = variable.initializer?.toSource() ?? '';
+      final parts = source.split(RegExp(r'[<(]')).first.split('.');
+      final prefixes = file.unit.directives
+          .whereType<ImportDirective>()
+          .where(
+            (import) => RegExp(
+              r'^package:(?:flutter_riverpod|hooks_riverpod|riverpod)/',
+            ).hasMatch(import.uri.stringValue ?? ''),
+          )
+          .map((import) => import.prefix?.name)
+          .whereType<String>()
+          .toSet();
+      final first = prefixes.contains(parts.first) && parts.length > 1 ? 1 : 0;
+      if (!_providerConstructors.contains(parts[first])) continue;
+      final operation = parts.skip(first).join('.');
+      AstNode? cursor = variable.parent;
+      var symbol = variable.name.lexeme;
+      while (cursor != null) {
+        if (cursor is MethodDeclaration) {
+          symbol =
+              '${_enclosingClassName(cursor)}.${cursor.name.lexeme}.$symbol';
+          break;
+        }
+        if (cursor is FunctionDeclaration) {
+          symbol = '${cursor.name.lexeme}.$symbol';
+          break;
+        }
+        if (cursor is ClassDeclaration) {
+          symbol = '${cursor.namePart.typeName.lexeme}.$symbol';
+          break;
+        }
+        cursor = cursor.parent;
+      }
+      add(
+        file,
+        variable,
+        'ownership-manual-provider',
+        symbol,
+        operation,
+        'A class/local handwritten provider bypasses uniform code generation and cannot inherit a same-name top-level provider exception. Review its exact declaration scope.',
+      );
+    }
+  }
+  return findings.values.toList();
 }
 
 List<ArchitectureCandidate> _architectureCandidates(

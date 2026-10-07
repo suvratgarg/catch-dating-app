@@ -1407,7 +1407,7 @@
       "applies_to": [
         "lib/**/presentation/**"
       ],
-      "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, repository-provider reads, validation decisions, mutation orchestration, product side effects, and WidgetRef-threaded provider access into controllers, view-model providers, or repositories.",
+      "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, repository-provider reads, validation decisions, mutation orchestration, product side effects, and WidgetRef-threaded provider access into controllers, view-model providers, or repositories. Business loaded data, cursors, pending/error/retry and completion identity remain controller responsibilities even when an injected callback or generated action performs the write. Consumer widgets and controller filenames do not exempt these responsibilities. Keep genuine mechanical feedback distinct; preserve domain currentness, cancellation, snapshot and idempotency fences when moving ownership.",
       "sunset_when": [
         "Presentation repository-provider scanner stays clean for five cleanup passes"
       ],
@@ -1522,7 +1522,7 @@
       "applies_to": [
         "lib/**"
       ],
-      "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider.",
+      "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider. Use generated overridable repository factories for dependency injection and generated Notifier/AsyncNotifier/StreamNotifier owners according to synchronous, loaded or streaming state responsibility. A generated wrapper around a business ChangeNotifier does not make its state lifecycle declarative. Pure imperative service helpers, local Flutter mechanics and named framework bridges remain valid. The AST graph requires exact path/symbol/operation reviews with bounded callsites; planned debt and watch signals are not compliance, and new owners or replacement operations cannot inherit a file/count exception. Its parsed-source limits still require manual lifecycle and domain-fence review.",
       "sunset_when": [
         "Feature screens consistently read view models/controllers and no scanner reaches remain"
       ],
