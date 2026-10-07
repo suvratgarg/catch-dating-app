@@ -164,7 +164,7 @@ const handlers = createCatchReplyHandlers({
     const firebase = createCatchFirebaseAuthority({
       projectId,
       auth: getAuth(),
-      transport: createCatchGoogleFirebaseLookupTransport(),
+      transport: createCatchGoogleFirebaseLookupTransport(projectId),
       now: Date.now,
     });
     return new CatchAppAuthorityStore(getFirestore(), {
