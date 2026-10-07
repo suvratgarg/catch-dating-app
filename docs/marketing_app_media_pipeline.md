@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.6.0
+version: 1.7.0
 updated: 2026-10-06
 owner: marketing_website
 status: active
@@ -156,24 +156,48 @@ They are not six wizard steps. Location scrolls to `WhereStep`; Guide opens the
 production customization disclosure. Catalog ids and website slot ids remain
 stable so existing consumers keep their coverage.
 
-## Manual Hosted Export (CAT159 Enabling Slice)
+## Hosted Export (CAT159 Enabling Slice)
 
 `.github/workflows/marketing-captures.yml` runs the existing canonical exporter
 on a standard GitHub-hosted `macos-26` runner, with repository-pinned Flutter
-and Node and the runner's local SFNS font. It accepts only a full lowercase
-40-character source commit SHA from this repository, and checks it out
-separately from the immutable workflow/exporter commit. Source and exporter
+and Node and the runner's local SFNS font. Manual dispatch accepts only a full
+lowercase 40-character source commit SHA from this repository. Applying
+`capture:requested` to an open same-repository PR into `main` selects that
+label event's exact PR head SHA. The source is checked out separately from
+the immutable exporter/controller commit. Source and exporter
 toolchain pins must match; dependency resolution enforces the source lockfile.
 A clean source checkout and all 12 active canonical slots are required.
 
-Execution prerequisite: GitHub requires the workflow file on the default
-branch before `workflow_dispatch` can run it. Admit and integrate this enabling
-PR through the existing owner-controlled queue first. A draft PR does not
-establish hosted rendering success. After registration:
+Execution prerequisite: integrate the workflow and request validator through
+the existing owner-controlled queue first. Manual dispatch requires the workflow
+on the default branch. A label request requires the new controller on the event's
+base commit and a mergeable PR; GitHub does not run `pull_request` workflows for
+merge conflicts. A draft source fix does not establish hosted rendering success.
+After integration, either apply the capture label with the authorized GitHub
+connector or dispatch manually:
 
 ```sh
 gh workflow run marketing-captures.yml --ref main -f source_sha=<full-source-sha>
 ```
+
+For a label request, checkout and receipt `workflowSha` identify the event's
+base commit, which owns the executed exporter/controller. The workflow
+definition still comes from GitHub's PR merge ref; `workflowDefinitionSha`
+records its separate commit and `request.eventSha` records the event merge SHA.
+The source is always the PR head, never that synthetic merge. The request
+validator repeats the label/open/main/same-repository checks, binds environment
+values to event JSON and verifies actual controller HEAD before source checkout.
+See [GitHub's PR event semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request).
+
+Only the exact `labeled` request starts a capture. Unrelated labels, forks,
+closed PRs, pushes and synchronize events do not render. Verify the published
+product head before labeling and compare it again before artifact handoff.
+After a new source head or an intentional retry, remove and reapply the label
+to request a new run. Eligible jobs share a concurrency key by source SHA across
+both trigger modes, preventing simultaneous duplicate renders; unrelated label
+events do not enter that queue. Completed runs are not a durable deduplication
+cache. `capture:requested` does not grant full-CI admission, satisfy Required CI
+or change merge/deployment authority; `ci:admitted` retains its existing policy.
 
 Use the currently published exact head of each product PR; short SHAs and local
 unpublished Programs commits cannot be dispatched. The job runs at most 12
@@ -188,7 +212,8 @@ The seven-day immutable artifact is named
 12 framed source PNGs, their 12 website copies, authored capture manifest,
 website manifest, design context, and `capture-receipt.json`. The receipt
 records per-file hashes/sizes, embedded PNG provenance, exact source SHA/tree,
-workflow SHA, helper hash, toolchain/runner identity and run/attempt URL.
+controller and workflow-definition SHAs, validated trigger request, helper hash,
+toolchain/runner identity and run/attempt URL.
 The job summary records the upload's artifact ID, digest and download URL;
 retain that identity together with the receipt when reviewing or handing off.
 SF font bytes, dependency caches and arbitrary checkout files are excluded.
