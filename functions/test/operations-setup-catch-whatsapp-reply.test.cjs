@@ -91,6 +91,10 @@ function runtimeFixture() {
   let now = 1800000000000;
   let authTime = now / 1000 - 1;
   let claims = {tenantLabel: "synthetic", nested: {flag: true}};
+  let recipientClaims = {};
+  let recipientCreation = "1001";
+  let recipientPhone = "+15555550123";
+  let otherOwner = false;
   let setters = 0;
   let sdkCalls = 0;
   let writes = 0;
@@ -156,7 +160,7 @@ function runtimeFixture() {
   const auth = {app: {options: {projectId: scope.projectId}},
     getUser: async (uid) => {
       if (uid === "recipient" && recipientDeleted) throw new Error("private recipient deleted");
-      return {uid, disabled: false, customClaims: uid === "operator" ? structuredClone(claims) : {},
+      return {uid, disabled: false, customClaims: structuredClone(uid === "operator" ? claims : recipientClaims),
         ...(uid === "operator" ? {email: "operator@example.invalid", emailVerified: true,
           providerData: [{providerId: "google.com", uid: "synthetic-google-subject"}]} : {})};
     },
@@ -169,7 +173,9 @@ function runtimeFixture() {
         auth_time: authTime, iat: authTime, exp: now / 1000 + 1800,
         firebase: {sign_in_provider: "google.com", identities: {"google.com": ["synthetic-google-subject"]}}};
     },
-    listUsers: async () => ({users: [{uid: "operator", customClaims: structuredClone(claims)}]}),
+    listUsers: async () => ({users: [{uid: "operator", customClaims: structuredClone(claims)},
+      {uid: "recipient", customClaims: structuredClone(recipientClaims)},
+      ...(otherOwner ? [{uid: "other-owner", customClaims: {adminOwner: true}}] : [])]}),
     setCustomUserClaims: async (uid, next) => {
       assert.equal(uid, "operator"); setters++;
       if (setterMode === "before") throw new Error("private Auth uncertainty");
@@ -180,9 +186,9 @@ function runtimeFixture() {
     lookup: async ({body}) => {
       const uid = body.localId[0];
       if (uid === "recipient" && recipientDeleted) return {users: []};
-      return {users: [{localId: uid, createdAt: "1001", validSince: "0", disabled: false,
-        customAttributes: JSON.stringify(uid === "operator" ? restClaims ?? claims : {}),
-        ...(uid === "recipient" ? {phoneNumber: "+15555550123"} : {})}]};
+      return {users: [{localId: uid, createdAt: uid === "recipient" ? recipientCreation : "1001", validSince: "0", disabled: false,
+        customAttributes: JSON.stringify(uid === "operator" ? restClaims ?? claims : recipientClaims),
+        ...(uid === "recipient" ? {phoneNumber: recipientPhone} : {})}]};
     }};
   const secrets = {getSecretVersion: async ({name}) => {
     metadataReads++; assert.equal(name, credentialVersionName);
@@ -209,6 +215,11 @@ function runtimeFixture() {
     transactionErrors: () => transactionErrors,
     counts: () => ({setters, sdkCalls, writes, metadataReads}),
     claims: () => structuredClone(claims),
+    recipientClaims: () => structuredClone(recipientClaims),
+    setRecipientClaims: (value) => {recipientClaims = structuredClone(value);},
+    recreateRecipient: () => {recipientCreation = "1002";},
+    changeRecipientPhone: () => {recipientPhone = "+15555550124";},
+    addOtherOwner: () => {otherOwner = true;},
     failSetter: (mode) => {setterMode = mode;},
     changeClaims: () => {claims = {...claims, unrelatedDrift: true};},
     changeExecution: () => {execution = "f".repeat(64);},
@@ -237,6 +248,143 @@ test("real source planner reads metadata and current identity without writes or 
       assert.ok(!printed.includes(value));
     }
   } finally {h.close();}
+});
+
+test("exact reviewed legacy recipient admin remains unchanged and gets only Catch receive", async () => {
+  const h = runtimeFixture();
+  try {
+    h.setRecipientClaims({admin: true});
+    const original = JSON.stringify(h.recipientClaims());
+    const receipt = await h.runtime().plan();
+    assert.equal(h.counts().setters, 0);
+    assert.equal(h.counts().writes, 0);
+    const saved = h.review(receipt);
+    assert.equal(saved.plan.recipientClaimsSha256, setupHash({admin: true}));
+    assert.equal((await h.runtime().apply(receipt.planId)).state, "fresh-sign-in-required");
+    h.signIn();
+    assert.equal((await h.runtime().apply(receipt.planId)).state, "complete");
+    assert.equal(JSON.stringify(h.recipientClaims()), original);
+    assert.equal(h.counts().setters, 1); // Fake setter asserts actor UID only.
+    const target = h.records.get("catchWhatsappAppAuthorities/recipient");
+    assert.deepEqual(target.capabilities, ["receive"]);
+    assert.equal(target.endpointHash, h.profile.scope.endpointHash);
+    assert.equal((await h.runtime().reconcile(receipt.planId)).state, "bootstrap-complete");
+    assert.equal(JSON.stringify(h.recipientClaims()), original);
+    assert.equal(h.counts().setters, 1);
+  } finally {h.close();}
+});
+
+test("legacy recipient admin never admits owner/support or extra privileged claims", async () => {
+  for (const value of [{adminOwner: true}, {support: true},
+    {admin: true, adminOwner: true}, {admin: true, support: true},
+    {admin: true, finance: true}, {admin: true, extra: true}]) {
+    const h = runtimeFixture();
+    try {
+      h.setRecipientClaims(value);
+      await assert.rejects(() => h.runtime().plan());
+      assert.equal(h.counts().writes, 0);
+      assert.equal(h.counts().setters, 0);
+      assert.deepEqual(h.recipientClaims(), value);
+    } finally {h.close();}
+  }
+});
+
+test("legacy recipient preservation rejects current claim/owner/incarnation/endpoint drift", async () => {
+  for (const change of [h => h.setRecipientClaims({}), h => h.setRecipientClaims({admin: false}),
+    h => h.setRecipientClaims({admin: true, added: true}), h => h.setRecipientClaims({admin: true, support: true}),
+    h => h.addOtherOwner(), h => h.recreateRecipient(), h => h.changeRecipientPhone(), h => h.changeClaims(),
+    h => h.records.set("adminRoleAssignments/operator", {roles: ["support"]}),
+    h => h.records.set("catchWhatsappAppAuthorities/recipient", {syntheticExisting: true}),
+    h => h.records.set("catchWhatsappOperatorSetupOperations/demo-catch-setup", {syntheticExisting: true})]) {
+    const h = runtimeFixture();
+    try {
+      h.setRecipientClaims({admin: true});
+      const receipt = await h.runtime().plan(); h.review(receipt);
+      change(h);
+      await assert.rejects(() => h.runtime().apply(receipt.planId));
+      assert.equal(h.counts().setters, 0);
+      assert.equal(h.records.has("catchWhatsappAppAuthorities/operator"), false);
+    } finally {h.close();}
+  }
+});
+
+test("recipient drift after durable Auth admissions never dispatches an actor setter", async () => {
+  for (const phase of ["auth-intent", "auth-dispatch"]) {
+    const h = runtimeFixture();
+    try {
+      h.setRecipientClaims({admin: true});
+      const receipt = await h.runtime().plan(); h.review(receipt);
+      let changed = false;
+      h.onCommit(pending => {
+        if (!changed && (phase === "auth-intent" ? [...pending.values()].some(row => row.phase === "auth-intent") :
+          pending.has("catchWhatsappOperatorSetupAudits/demo-catch-setup_auth_dispatch"))) {
+          changed = true; h.setRecipientClaims({});
+        }
+      });
+      const result = await Promise.allSettled([h.runtime().apply(receipt.planId)]);
+      assert.equal(changed, true);
+      if (result[0].status === "fulfilled") assert.equal(result[0].value.state, "reconciliation-required");
+      assert.equal(h.counts().setters, 0);
+      assert.equal(h.records.has("catchWhatsappAppAuthorities/operator"), false);
+    } finally {h.close();}
+  }
+});
+
+test("legacy recipient claim hash cannot be changed underneath its source-bound approval", async () => {
+  const h = runtimeFixture();
+  try {
+    h.setRecipientClaims({admin: true});
+    const receipt = await h.runtime().plan(); const {plan} = h.review(receipt);
+    h.file(`reviewed-plans/${receipt.planId}.json`, {...plan, recipientClaimsSha256: setupHash({})});
+    const before = h.counts();
+    await assert.rejects(() => h.runtime().apply(receipt.planId));
+    assert.deepEqual(h.counts(), before);
+  } finally {h.close();}
+});
+
+test("legacy admin cannot adopt mismatched Catch recipient authority", async () => {
+  for (const change of [row => ({...row, uid: "other-recipient"}),
+    row => ({...row, revision: row.revision + 1}),
+    row => ({...row, endpointHash: "9".repeat(64)}),
+    row => ({...row, capabilities: ["review", "reply"]})]) {
+    const h = runtimeFixture();
+    try {
+      h.setRecipientClaims({admin: true});
+      const receipt = await h.runtime().plan(); h.review(receipt);
+      assert.equal((await h.runtime().apply(receipt.planId)).state, "fresh-sign-in-required");
+      h.signIn();
+      const key = "catchWhatsappAppAuthorities/recipient";
+      const changed = change(h.records.get(key));
+      h.records.set(key, changed);
+      await assert.rejects(() => h.runtime().apply(receipt.planId));
+      assert.deepEqual(h.records.get(key), changed);
+      assert.deepEqual(h.recipientClaims(), {admin: true});
+      assert.equal(h.counts().setters, 1);
+    } finally {h.close();}
+  }
+});
+
+test("legacy recipient drift at receive admission prevents activation", async () => {
+  for (const phase of ["prepare-intent", "finalize-intent"]) {
+    const h = runtimeFixture();
+    try {
+      h.setRecipientClaims({admin: true});
+      const receipt = await h.runtime().plan(); h.review(receipt);
+      assert.equal((await h.runtime().apply(receipt.planId)).state, "fresh-sign-in-required");
+      h.signIn();
+      let changed = false;
+      h.onCommit(pending => {
+        if (!changed && [...pending.values()].some(row => row.phase === phase)) {
+          changed = true; h.setRecipientClaims({admin: true, concurrentClaim: true});
+        }
+      });
+      const result = await Promise.allSettled([h.runtime().apply(receipt.planId)]);
+      assert.equal(changed, true);
+      if (result[0].status === "fulfilled") assert.equal(result[0].value.state, "reconciliation-required");
+      assert.notEqual(h.records.get("catchWhatsappAppAuthorities/recipient").state, "active");
+      assert.equal(h.counts().setters, 1);
+    } finally {h.close();}
+  }
 });
 
 function admittedReadiness(h, saved) {
