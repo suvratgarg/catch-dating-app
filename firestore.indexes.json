@@ -5671,6 +5671,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programFunctions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "programId",
           "order": "ASCENDING"
         },

@@ -7,6 +7,7 @@ enum HostEventEntryIntent {
   resumeDraft,
   repeatLastEvent,
   createEvent,
+  createProgram,
   resumePrivateEvent,
 }
 
@@ -14,8 +15,10 @@ enum HostEventEntryIntent {
 @immutable
 class HostEventEntrySelection {
   const HostEventEntrySelection.start(this.intent)
-    : assert(intent != HostEventEntryIntent.resumeDraft &&
-          intent != HostEventEntryIntent.resumePrivateEvent),
+    : assert(
+        intent != HostEventEntryIntent.resumeDraft &&
+            intent != HostEventEntryIntent.resumePrivateEvent,
+      ),
       draft = null,
       savedEventId = null;
   const HostEventEntrySelection.resume(EventDraft this.draft)
@@ -82,7 +85,10 @@ class HostEventEntryState {
         if (matchingDrafts.isNotEmpty) HostEventEntryIntent.resumeDraft,
         if (matchingRepeatSource != null) HostEventEntryIntent.repeatLastEvent,
       ]),
-      startIntents: const <HostEventEntryIntent>[HostEventEntryIntent.createEvent],
+      startIntents: const <HostEventEntryIntent>[
+        HostEventEntryIntent.createEvent,
+        HostEventEntryIntent.createProgram,
+      ],
     );
   }
 

@@ -4,6 +4,7 @@
  */
 export type FakeData = Record<string, unknown>;
 type Where = {field: string; op: string; value: unknown};
+type Order = {field: string; dir: "asc" | "desc"};
 
 
 export function timestampMillis(value: unknown): number {
@@ -50,32 +51,33 @@ class FakeQuery {
   constructor(readonly firestore: FakeFirestore,
     readonly collectionPath: string,
     readonly wheres: Where[] = [],
-    readonly order: {field: string; dir: "asc" | "desc"} | null = null,
+    readonly orders: Order[] = [],
     readonly limitN: number | null = null,
-    readonly startAfterValue: unknown = null) {}
+    readonly startAfterValues: unknown[] | null = null) {}
   where(field: string, op: string, value: unknown) {
     return new FakeQuery(this.firestore, this.collectionPath,
-      [...this.wheres, {field, op, value}], this.order, this.limitN,
-      this.startAfterValue);
+      [...this.wheres, {field, op, value}], this.orders, this.limitN,
+      this.startAfterValues);
   }
   orderBy(field: string | {toString(): string}, dir: "asc" | "desc" = "asc") {
     return new FakeQuery(this.firestore, this.collectionPath, this.wheres,
-      {field: String(field), dir}, this.limitN, this.startAfterValue);
+      [...this.orders, {field: String(field), dir}], this.limitN,
+      this.startAfterValues);
   }
   limit(n: number) {
     return new FakeQuery(this.firestore, this.collectionPath, this.wheres,
-      this.order, n, this.startAfterValue);
+      this.orders, n, this.startAfterValues);
   }
-  startAfter(value: unknown) {
+  startAfter(...values: unknown[]) {
     return new FakeQuery(this.firestore, this.collectionPath, this.wheres,
-      this.order, this.limitN, value);
+      this.orders, this.limitN, values);
   }
   count() {
     return {
       get: async () => {
         const snap = await this.firestore.runQuery(
           new FakeQuery(this.firestore, this.collectionPath,
-            this.wheres, this.order, null, this.startAfterValue));
+            this.wheres, this.orders, null, this.startAfterValues));
         return {data: () => ({count: snap.size})};
       },
     };
@@ -212,35 +214,17 @@ export class FakeFirestore {
         docs.push(new FakeDocSnapshot(id, ref, data));
       }
     }
-    if (query.order) {
-      const {field, dir} = query.order;
-      docs.sort((a, b) => {
-        const av = field === "__name__" ? a.id :
-          timestampMillis(a.data()?.[field]) ||
-          String(a.data()?.[field] ?? "");
-        const bv = field === "__name__" ? b.id :
-          timestampMillis(b.data()?.[field]) ||
-          String(b.data()?.[field] ?? "");
-        const order = av < bv ? -1 : av > bv ? 1 :
-          a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-        return dir === "desc" ? -order : order;
-      });
+    if (query.orders.length > 0) {
+      docs.sort((a, b) => compareSnapshots(a, b, query.orders));
     }
     let filtered = docs;
-    if (query.startAfterValue !== null && query.order) {
-      const field = query.order.field;
-      const cursor = query.startAfterValue;
-      const cursorValue = cursor instanceof FakeDocSnapshot ?
-        (field === "__name__" ? cursor.id : cursor.data()?.[field]) : cursor;
-      filtered = docs.filter((doc) => {
-        const value = field === "__name__" ? doc.id : doc.data()?.[field];
-        const av = timestampMillis(value) || String(value ?? "");
-        const bv = timestampMillis(cursorValue) || String(cursorValue ?? "");
-        const order = av < bv ? -1 : av > bv ? 1 :
-          cursor instanceof FakeDocSnapshot ?
-            doc.id < cursor.id ? -1 : doc.id > cursor.id ? 1 : 0 : 0;
-        return query.order!.dir === "desc" ? order < 0 : order > 0;
-      });
+    if (query.startAfterValues !== null && query.orders.length > 0) {
+      const [snapshot] = query.startAfterValues;
+      filtered = snapshot instanceof FakeDocSnapshot ?
+        docs.filter((doc) => compareSnapshots(
+          doc, snapshot, query.orders) > 0) :
+        docs.filter((doc) => compareSnapshotToValues(
+          doc, query.startAfterValues!, query.orders) > 0);
     }
     const limited = query.limitN === null ?
       filtered : filtered.slice(0, query.limitN);
@@ -266,6 +250,61 @@ export class FakeFirestore {
     }
     throw new Error("Test transaction exhausted retries.");
   }
+}
+
+function compareSnapshots(
+  left: FakeDocSnapshot,
+  right: FakeDocSnapshot,
+  orders: Order[],
+): number {
+  for (const order of orders) {
+    const comparison = compareOrderedValues(
+      snapshotValue(left, order.field),
+      snapshotValue(right, order.field),
+      order.dir,
+    );
+    if (comparison !== 0) return comparison;
+  }
+  if (orders.some((order) => order.field === "__name__")) return 0;
+  return compareOrderedValues(
+    left.id,
+    right.id,
+    orders.at(-1)?.dir ?? "asc",
+  );
+}
+
+function compareSnapshotToValues(
+  snapshot: FakeDocSnapshot,
+  values: unknown[],
+  orders: Order[],
+): number {
+  for (let index = 0; index < values.length && index < orders.length;
+    index++) {
+    const order = orders[index];
+    const comparison = compareOrderedValues(
+      snapshotValue(snapshot, order.field),
+      values[index],
+      order.dir,
+    );
+    if (comparison !== 0) return comparison;
+  }
+  return 0;
+}
+
+function snapshotValue(snapshot: FakeDocSnapshot, field: string): unknown {
+  return field === "__name__" ? snapshot.id : snapshot.data()?.[field];
+}
+
+function compareOrderedValues(
+  left: unknown,
+  right: unknown,
+  direction: "asc" | "desc",
+): number {
+  const leftValue = timestampMillis(left) || String(left ?? "");
+  const rightValue = timestampMillis(right) || String(right ?? "");
+  const comparison = leftValue < rightValue ? -1 : leftValue > rightValue ?
+    1 : 0;
+  return direction === "desc" ? -comparison : comparison;
 }
 
 function applyFieldUpdate(
@@ -311,4 +350,3 @@ function matchWhere(data: FakeData, where: Where): boolean {
   if (where.op === "!=") return value !== where.value;
   throw new Error(`Unsupported where op: ${where.op}`);
 }
-

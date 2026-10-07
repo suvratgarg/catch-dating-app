@@ -98,6 +98,13 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     if (!mounted) return;
 
     if (picked == null) return;
+    if (picked.intent == HostEventEntryIntent.createProgram) {
+      await context.pushNamed(
+        Routes.hostCreateProgramScreen.name,
+        pathParameters: {'clubId': widget.club.id},
+      );
+      return;
+    }
     if (picked.draft case final draft?) {
       _restoreFromDraft(draft);
     }

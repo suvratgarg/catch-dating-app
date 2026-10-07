@@ -25,6 +25,10 @@ export interface CreateOrganizerProgramCallablePayload {
     | "forms"
     | "messaging"
   )[];
+  /**
+   * Optional create-command identity. Same actor, organizer, key and normalized body replay the saved program; changed-body reuse is rejected. Omission preserves legacy random-ID creation.
+   */
+  requestId?: string;
   transportSettings?: {
     /**
      * Anchored curb-time window used by grouping suggestions. Default 30 minutes.

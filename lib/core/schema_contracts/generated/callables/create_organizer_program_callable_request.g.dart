@@ -16,6 +16,7 @@ final class CreateOrganizerProgramCallableRequest {
     required this.endsAtMillis,
     this.rsvpDeadlineAtMillis,
     required this.capabilities,
+    this.requestId,
     this.transportSettings,
   });
 
@@ -27,6 +28,7 @@ final class CreateOrganizerProgramCallableRequest {
   final int endsAtMillis;
   final int? rsvpDeadlineAtMillis;
   final List<String> capabilities;
+  final String? requestId;
   final Map<String, Object?>? transportSettings;
 
   Map<String, Object?> toJson() => {
@@ -38,6 +40,7 @@ final class CreateOrganizerProgramCallableRequest {
     'endsAtMillis': endsAtMillis,
     'rsvpDeadlineAtMillis': ?rsvpDeadlineAtMillis,
     'capabilities': capabilities,
+    'requestId': ?requestId,
     'transportSettings': ?transportSettings,
   };
 }

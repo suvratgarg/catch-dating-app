@@ -2,6 +2,10 @@
   organizerId:ASCENDING,
   startsAt:DESCENDING
 ) */
+/* firestore-index: programFunctions (
+  organizerId:ASCENDING,
+  programId:ASCENDING
+) */
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
   kind:ASCENDING
@@ -10,7 +14,9 @@
   programId:ASCENDING,
   status:ASCENDING
 ) */
+import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
+import {FieldPath} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {logger} from "firebase-functions";
@@ -66,6 +72,22 @@ interface ProgramDeps {
   now: () => FirebaseFirestore.Timestamp;
 }
 
+export async function requireActiveProgramAccount(params: {
+  db: FirebaseFirestore.Firestore;
+  actorUid: string;
+  transaction?: FirebaseFirestore.Transaction;
+}): Promise<void> {
+  const ref = params.db.collection("deletedUsers").doc(params.actorUid);
+  const snapshot = params.transaction ?
+    await params.transaction.get(ref) : await ref.get();
+  if (snapshot.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "This account cannot access private program operations."
+    );
+  }
+}
+
 const defaultDeps: ProgramDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
@@ -107,13 +129,42 @@ export async function createOrganizerProgramHandler(
       "invalid-argument", "Program end must be after its start."
     );
   }
+  if (!isIanaTimeZone(data.timezone)) {
+    throw new HttpsError(
+      "invalid-argument", "Program timezone must be a valid IANA identifier."
+    );
+  }
   const settings = data.transportSettings ?? defaultTransportSettings;
   validateVehicleClasses(settings.vehicleClasses);
-  const ref = db.collection("organizerPrograms").doc();
-  await db.runTransaction(async (tx) => {
+  const requestHash = data.requestId === undefined ? undefined :
+    createHash("sha256").update(canonicalProgramCreateJson(data)).digest("hex");
+  const programId = data.requestId === undefined ? undefined :
+    "program_" + createHash("sha256")
+      .update(JSON.stringify([actorUid, data.organizerId, data.requestId]))
+      .digest("hex");
+  const programs = db.collection("organizerPrograms");
+  const ref = programId === undefined ?
+    programs.doc() : programs.doc(programId);
+  return db.runTransaction(async (tx) => {
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     await requireOrganizerManager({
       db, organizerId: data.organizerId, actorUid, transaction: tx,
     });
+    if (requestHash !== undefined) {
+      const existing = await tx.get(ref);
+      if (existing.exists) {
+        const program = requireDoc<OrganizerProgramDocument>(
+          existing, "OrganizerProgramDocument");
+        if (program.organizerId !== data.organizerId ||
+            program.createdBy !== actorUid ||
+            program.createRequestHash !== requestHash) {
+          throw new HttpsError("failed-precondition",
+            "Program create request was already used with different details.");
+        }
+        return {entityId: ref.id, revision: program.revision,
+          alreadyApplied: true};
+      }
+    }
     const now = deps.now();
     const document: OrganizerProgramDocument = {
       organizerId: data.organizerId,
@@ -131,10 +182,11 @@ export async function createOrganizerProgramHandler(
       createdAt: now,
       updatedAt: now,
       revision: 1,
+      ...(requestHash === undefined ? {} : {createRequestHash: requestHash}),
     };
     tx.set(ref, document);
+    return {entityId: ref.id, revision: 1, alreadyApplied: false};
   });
-  return {entityId: ref.id, revision: 1, alreadyApplied: false};
 }
 
 export async function updateOrganizerProgramHandler(
@@ -152,6 +204,7 @@ export async function updateOrganizerProgramHandler(
   const ref = db.collection("organizerPrograms").doc(data.programId);
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
     const {program, organizer} = await loadProgramBundle({
       db, programId: data.programId, transaction: tx,
     });
@@ -172,6 +225,11 @@ export async function updateOrganizerProgramHandler(
     }
     if (data.transportSettings) {
       validateVehicleClasses(data.transportSettings.vehicleClasses);
+    }
+    if (data.timezone !== undefined && !isIanaTimeZone(data.timezone)) {
+      throw new HttpsError(
+        "invalid-argument", "Program timezone must be a valid IANA identifier."
+      );
     }
     const startsAtMillis = data.startsAtMillis ?? program.startsAt.toMillis();
     const endsAtMillis = data.endsAtMillis ?? program.endsAt.toMillis();
@@ -249,16 +307,82 @@ export async function listOrganizerProgramsHandler(
     );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerPrograms");
-  await requireOrganizerManager({
-    db, organizerId: data.organizerId, actorUid,
+  const pageSize = data.limit ?? 50;
+  const {programDocs, hasMore} = await db.runTransaction(async (tx) => {
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
+    await requireOrganizerManager({
+      db, organizerId: data.organizerId, actorUid, transaction: tx,
+    });
+    if (data.programId !== undefined) {
+      const program = await tx.get(
+        db.collection("organizerPrograms").doc(data.programId)
+      );
+      if (!program.exists || program.data()?.organizerId !== data.organizerId) {
+        throw new HttpsError(
+          "not-found", "Program is unavailable in this organizer."
+        );
+      }
+      return {programDocs: [program], hasMore: false};
+    }
+    let query = db.collection("organizerPrograms")
+      .where("organizerId", "==", data.organizerId)
+      .orderBy("startsAt", "desc")
+      .orderBy(FieldPath.documentId(), "desc");
+    if (data.cursor !== undefined) {
+      const stableCursor = decodeProgramInventoryCursor(data.cursor);
+      const cursorId = stableCursor?.programId ?? data.cursor;
+      const cursor = await tx.get(
+        db.collection("organizerPrograms").doc(cursorId)
+      );
+      if (!cursor.exists || cursor.data()?.organizerId !== data.organizerId) {
+        throw new HttpsError(
+          "not-found", "Program inventory cursor is unavailable."
+        );
+      }
+      query = stableCursor === null ? query.startAfter(cursor) :
+        query.startAfter(
+          admin.firestore.Timestamp.fromMillis(stableCursor.startsAtMillis),
+          stableCursor.programId
+        );
+    }
+    const snap = await tx.get(query.limit(pageSize + 1));
+    return {
+      programDocs: snap.docs.slice(0, pageSize),
+      hasMore: snap.size > pageSize,
+    };
   });
-  const snap = await db.collection("organizerPrograms")
-    .where("organizerId", "==", data.organizerId)
-    .orderBy("startsAt", "desc")
-    .limit(data.limit ?? 50)
-    .get();
+  // Batch only the authorized inventory IDs. Bound work to two reads for the
+  // canonical 50-row inventory; partial or failed counts never conceal rows.
+  const functionCounts = new Map<string, number>();
+  const countReadLimit = 2000;
+  for (let offset = 0; offset < programDocs.length; offset += 30) {
+    const ids = programDocs.slice(offset, offset + 30).map((doc) => doc.id);
+    try {
+      const functions = await db.collection("programFunctions")
+        .where("organizerId", "==", data.organizerId)
+        .where("programId", "in", ids).limit(countReadLimit + 1).get();
+      if (functions.size > countReadLimit) continue;
+      for (const id of ids) functionCounts.set(id, 0);
+      for (const doc of functions.docs) {
+        const value = doc.data();
+        if (value.organizerId === data.organizerId &&
+            functionCounts.has(value.programId)) {
+          functionCounts.set(value.programId,
+            functionCounts.get(value.programId)! + 1);
+        }
+      }
+    } catch (error) {
+      logger.warn("Program inventory count unavailable", {error});
+    }
+  }
+  const lastProgram = hasMore ? requireDoc<OrganizerProgramDocument>(
+    programDocs.at(-1)!, "OrganizerProgramDocument") : null;
   return {
-    programs: snap.docs.map((doc) => {
+    nextCursor: lastProgram === null ? null : encodeProgramInventoryCursor({
+      startsAtMillis: lastProgram.startsAt.toMillis(),
+      programId: programDocs.at(-1)!.id,
+    }),
+    programs: programDocs.map((doc) => {
       const program = requireDoc<OrganizerProgramDocument>(
         doc, "OrganizerProgramDocument");
       return {
@@ -266,9 +390,12 @@ export async function listOrganizerProgramsHandler(
         kind: program.kind,
         title: program.title,
         status: program.status,
+        timezone: program.timezone,
         startsAtMillis: program.startsAt.toMillis(),
         endsAtMillis: program.endsAt.toMillis(),
         capabilities: program.capabilities,
+        ...(functionCounts.has(doc.id) ?
+          {functionCount: functionCounts.get(doc.id)!} : {}),
         archivedAtMillis: program.archivedAt?.toMillis() ?? null,
         anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
         anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
@@ -287,8 +414,11 @@ export async function getOrganizerProgramHandler(
     request, validateProgramIdCallablePayload, normalizeProgramPayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerProgram");
-  const {program, organizer} = await loadProgramBundle({
-    db, programId: data.programId,
+  const {program, organizer} = await db.runTransaction(async (tx) => {
+    await requireActiveProgramAccount({db, actorUid, transaction: tx});
+    return loadProgramBundle({
+      db, programId: data.programId, transaction: tx,
+    });
   });
   if (!isOrganizerManager(organizer, actorUid)) {
     throw new HttpsError(
@@ -397,6 +527,68 @@ export function validateVehicleClasses(
       );
     }
     ids.add(vehicle.id);
+  }
+}
+
+function canonicalProgramCreateJson(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalProgramCreateJson).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort()
+      .filter((key) => record[key] !== undefined)
+      .map((key) =>
+        `${JSON.stringify(key)}:${canonicalProgramCreateJson(record[key])}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+type ProgramInventoryCursor = {
+  startsAtMillis: number;
+  programId: string;
+};
+
+function encodeProgramInventoryCursor(cursor: ProgramInventoryCursor): string {
+  const payload = JSON.stringify({
+    v: 1,
+    s: cursor.startsAtMillis,
+    i: cursor.programId,
+  });
+  return `v1.${Buffer.from(payload).toString("base64url")}`;
+}
+
+function decodeProgramInventoryCursor(
+  value: string
+): ProgramInventoryCursor | null {
+  if (!value.startsWith("v1.")) return null;
+  try {
+    const decoded = JSON.parse(
+      Buffer.from(value.slice(3), "base64url").toString("utf8")
+    ) as {v?: unknown; s?: unknown; i?: unknown};
+    if (decoded.v !== 1 || !Number.isSafeInteger(decoded.s) ||
+        (decoded.s as number) < 0 || typeof decoded.i !== "string" ||
+        decoded.i.length < 1 || decoded.i.length > 180) {
+      throw new Error("Invalid cursor payload.");
+    }
+    return {
+      startsAtMillis: decoded.s as number,
+      programId: decoded.i,
+    };
+  } catch {
+    throw new HttpsError(
+      "invalid-argument", "Program inventory cursor is invalid."
+    );
+  }
+}
+
+function isIanaTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en-US", {timeZone: value}).format(0);
+    return true;
+  } catch {
+    return false;
   }
 }
 

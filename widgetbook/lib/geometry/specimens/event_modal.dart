@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../support/geometry_preview.dart';
+import '../../support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Create event modal · production',
@@ -16,6 +17,7 @@ import '../../support/geometry_preview.dart';
 Widget createEventModalSectionComparison(BuildContext context) {
   return widgetbookGeometryPage(
     context,
+    fitContentKey: widgetbookCatalogContentKey,
     title: 'Create event modal',
     contractIds: const ['catch.bottom_sheet', 'catch.section', 'catch.field'],
     principles: const [
