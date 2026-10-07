@@ -82,7 +82,7 @@ const approvedAddedTargets = [
 const manifest = {schema: "catch.delivery-provenance/v2", sourceSha: r.sourceSha,
   sourceCiRunId: r.sourceCiRunId, sourceCiRunAttempt: r.sourceCiRunAttempt,
   stages: ["functions", "firestore-rules"],
-  artifact: {name: "firebase-backend.tar.gz", sizeBytes: 8095760, sha256: r.packageSha256}};
+  artifact: {name: "firebase-backend.tar.gz", sizeBytes: 8144024, sha256: r.packageSha256}};
 const deferred = Array.from({length: 557}, (_, index) => `functions:other${index}`);
 const historical = [...deferred, ...r.targets].sort();
 const packagePlan = {schema: "catch.firebase-delivery-plan/v2", sourceSha: r.sourceSha, baseSha: r.baseSha,

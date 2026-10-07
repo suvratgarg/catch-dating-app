@@ -216,7 +216,7 @@ jobs:
           else
             test "$RESUME_ATTEMPT" = 1
           fi
-          test "$REQUESTED_SHA" = 63f13abe6fbc6051771ea6eeab1d147a956f0be5
+          test "$REQUESTED_SHA" = c0a213bd9663f69ed1f8df3b5bad9284930e5339
           (( ${#REASON} >= 12 && ${#REASON} <= 240 ))
           [[ "$REASON" != *$'\r'* && "$REASON" != *$'\n'* ]]
           [[ "$REASON" =~ [^[:space:]] ]]
@@ -229,17 +229,17 @@ jobs:
             functions/scripts/set-callable-invokers-public.cjs operations/src/platform \
             operations/src/workflows/outreach-drafting contracts/operations \
             firestore.rules firebase.json .firebaserc
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/37555898087/attempts/1" | jq -e '
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/37560236235/attempts/1" | jq -e '
             .status == "completed" and .conclusion == "success" and
             .event == "push" and .head_branch == "main" and
-            .head_sha == "63f13abe6fbc6051771ea6eeab1d147a956f0be5" and
+            .head_sha == "c0a213bd9663f69ed1f8df3b5bad9284930e5339" and
             .run_attempt == 1 and .workflow_id == 320377139
           ' > /dev/null
-          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11455770275" | jq -e '
-            .id == 11455770275 and .expired == false and
-            .name == "firebase-delivery-63f13abe6fbc6051771ea6eeab1d147a956f0be5-1" and
-            .digest == "sha256:9cde3d6457cf65bcd743fd575789d6c69e76c6ec37337187b2e166133642bad0" and
-            .workflow_run.id == 37555898087
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11456928387" | jq -e '
+            .id == 11456928387 and .expired == false and
+            .name == "firebase-delivery-c0a213bd9663f69ed1f8df3b5bad9284930e5339-1" and
+            .digest == "sha256:ad986512f9bf8d7dc8277475cf5b3dc0687c00ca372e3241a613c8639d8976ca" and
+            .workflow_run.id == 37560236235
           ' > /dev/null
 
   prod-sales-pr543:
@@ -250,9 +250,9 @@ jobs:
     with:
       environment: prod
       control_plane_sha: ${{ github.sha }}
-      source_sha: 63f13abe6fbc6051771ea6eeab1d147a956f0be5
-      base_sha: 5b75d553caaa84ff4ea5210a9353ec18c19303fc
-      source_ci_run_id: '37555898087'
+      source_sha: c0a213bd9663f69ed1f8df3b5bad9284930e5339
+      base_sha: 63f13abe6fbc6051771ea6eeab1d147a956f0be5
+      source_ci_run_id: '37560236235'
       source_ci_run_attempt: '1'
       sales_pr543_release: true
       resume_delivery_run_id: ${{ inputs.resume_delivery_run_id }}

@@ -606,15 +606,15 @@ export function completeSelectiveRelease(input) {
   });
 }
 
-// One protected projection of the immutable PR543 backend package. The
+// One protected projection of the immutable PR543-compatible main package. The
 // historical 601-Function plan remains unchanged on disk; this profile only
 // narrows its execution plan to the reviewed Sales closure and Firestore rules.
 export const SALES_PR543_RELEASE = Object.freeze({
-  sourceSha: "63f13abe6fbc6051771ea6eeab1d147a956f0be5",
-  baseSha: "5b75d553caaa84ff4ea5210a9353ec18c19303fc",
-  sourceCiRunId: "37555898087",
+  sourceSha: "c0a213bd9663f69ed1f8df3b5bad9284930e5339",
+  baseSha: "63f13abe6fbc6051771ea6eeab1d147a956f0be5",
+  sourceCiRunId: "37560236235",
   sourceCiRunAttempt: "1",
-  packageSha256: "b248529e41c9634688792cbccd3f58b196f6152bb57d924c6e967791073ef1fd",
+  packageSha256: "594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5",
   scope: "firebase:prod:catch-dating-app-64e51",
   projectId: "catch-dating-app-64e51",
   targets: Object.freeze([
@@ -705,7 +705,7 @@ const salesManifest = (raw) => {
   assert.equal(manifest.sourceCiRunAttempt, SALES_PR543_RELEASE.sourceCiRunAttempt);
   salesSame(manifest.stages, ["functions", "firestore-rules"]);
   assert.equal(manifest.artifact.name, "firebase-backend.tar.gz");
-  assert.equal(manifest.artifact.sizeBytes, 8095760);
+  assert.equal(manifest.artifact.sizeBytes, 8144024);
   assert.equal(manifest.artifact.sha256, SALES_PR543_RELEASE.packageSha256);
   return manifest;
 };

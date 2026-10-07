@@ -198,9 +198,9 @@ jobs:
             test "$GITHUB_REF" = refs/heads/main
             test "$GITHUB_EVENT_NAME" = workflow_dispatch
             test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
-            test "$SOURCE_SHA" = 63f13abe6fbc6051771ea6eeab1d147a956f0be5
-            test "$BASE_SHA" = 5b75d553caaa84ff4ea5210a9353ec18c19303fc
-            test "$SOURCE_CI_RUN_ID" = 37555898087
+            test "$SOURCE_SHA" = c0a213bd9663f69ed1f8df3b5bad9284930e5339
+            test "$BASE_SHA" = 63f13abe6fbc6051771ea6eeab1d147a956f0be5
+            test "$SOURCE_CI_RUN_ID" = 37560236235
             test "$SOURCE_CI_RUN_ATTEMPT" = 1
             test "$REQUIRE_CURRENT_MAIN" = false
           fi
@@ -386,7 +386,7 @@ jobs:
           fi
           if [[ "${SALES_PR543_RELEASE:-false}" == true ]]; then
             printf '%s  %s\n' \
-              b248529e41c9634688792cbccd3f58b196f6152bb57d924c6e967791073ef1fd \
+              594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5 \
               build/delivery/source/firebase-backend.tar.gz | sha256sum --check --status
           fi
           mkdir -p build/delivery/package

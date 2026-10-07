@@ -726,10 +726,10 @@ test("PR543 Sales caller pins 44 Functions plus rules behind existing protected 
   assert.match(caller, /confirm_sales_pr543/);
   assert.match(caller, /authorize-sales-pr543:[\s\S]*if: \$\{\{ inputs\.release_kind == 'sales-pr543' \}\}/);
   assert.match(caller, /test "\$LEGACY_CONFIRM" = false[\s\S]*test "\$WHATSAPP_CONFIRM" = false/);
-  assert.match(caller, /source_sha: 63f13abe6fbc6051771ea6eeab1d147a956f0be5/);
-  assert.match(caller, /base_sha: 5b75d553caaa84ff4ea5210a9353ec18c19303fc/);
-  assert.match(caller, /source_ci_run_id: '37555898087'/);
-  assert.match(caller, /11455770275[\s\S]*sha256:9cde3d6457cf65bcd743fd575789d6c69e76c6ec37337187b2e166133642bad0/);
+  assert.match(caller, /source_sha: c0a213bd9663f69ed1f8df3b5bad9284930e5339/);
+  assert.match(caller, /base_sha: 63f13abe6fbc6051771ea6eeab1d147a956f0be5/);
+  assert.match(caller, /source_ci_run_id: '37560236235'/);
+  assert.match(caller, /11456928387[\s\S]*sha256:ad986512f9bf8d7dc8277475cf5b3dc0687c00ca372e3241a613c8639d8976ca/);
   assert.match(caller, /prod-sales-pr543:[\s\S]*needs: authorize-sales-pr543[\s\S]*sales_pr543_release: true/);
   assert.match(caller, /resume_delivery_run_id:[\s\S]*resume_delivery_attempt:/);
   assert.match(caller, /prod-sales-pr543:[\s\S]*resume_delivery_run_id: \$\{\{ inputs\.resume_delivery_run_id \}\}[\s\S]*resume_delivery_attempt: \$\{\{ inputs\.resume_delivery_attempt \}\}/);
@@ -737,7 +737,7 @@ test("PR543 Sales caller pins 44 Functions plus rules behind existing protected 
   assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /SALES_PR543_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.sales_pr543_release/);
-  assert.match(promotion, /b248529e41c9634688792cbccd3f58b196f6152bb57d924c6e967791073ef1fd/);
+  assert.match(promotion, /594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5/);
   assert.match(promotion, /selective_backend_release\.mjs prepare[\s\S]*--output build\/delivery\/execution-plan\.json/);
   assert.match(promotion, /cmp build\/delivery\/execution-plan\.json build\/delivery\/sales-pr543-reverified-execution\.json/);
   assert.match(promotion, /selective_backend_release\.mjs before[\s\S]*sales-pr543-before\.json/);
