@@ -37,10 +37,15 @@ class HostResponseOfferScreen extends ConsumerStatefulWidget {
     super.key,
     required this.organizerId,
     this.responseId,
+    this.recipientLabel,
     this.queryController,
   }) : assert((responseId == null) != (queryController == null));
   final String organizerId;
   final String? responseId;
+
+  /// Display context from the originating review; fresh reads still decide
+  /// whether this response can receive an offer.
+  final String? recipientLabel;
   final HostResponseQueryController? queryController;
   @override
   ConsumerState<HostResponseOfferScreen> createState() =>
@@ -230,6 +235,7 @@ class _HostResponseOfferScreenState
                     organizerId: widget.organizerId,
                     accountId: _accountId,
                     responseId: widget.responseId,
+                    recipientLabel: widget.recipientLabel,
                     queryController: widget.queryController,
                     offerController: _offers!,
                     initiallyReviewSelection: true,

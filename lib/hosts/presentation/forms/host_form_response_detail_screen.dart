@@ -560,6 +560,7 @@ class _HostFormResponseDetailScreenState
         builder: (_) => HostResponseOfferScreen(
           organizerId: widget.organizerId,
           responseId: detail.response!.response.responseId,
+          recipientLabel: detail.response!.response.identity.primaryLabel,
         ),
       ),
     );
