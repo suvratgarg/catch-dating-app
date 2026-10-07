@@ -246,6 +246,20 @@ test("activation read exceptions are redacted without secrets, raw causes or fal
   assert.equal(f.calls(), 0); assert.equal(f.creations(), 0);
 });
 
+test("source metadata coercion cannot bypass the captured primitive boundary or leak", async () => {
+  for (const key of ["url", "capturedAt", "contentHash", "sourceId", "text"]) {
+    const f = fixture(); const request = f.request("research"); let conversions = 0;
+    request.publicSources[0][key] = {toString: () => {
+      conversions++; return conversions === 1 ? "https://example.com/public" : "private-coercion-token";
+    }};
+    await assert.rejects(f.adapter.run(request), (error) => {
+      assert.equal(error.code, "SALES_PUBLIC_INPUT_INVALID"); assert.equal(error.cause, undefined);
+      assert.doesNotMatch(JSON.stringify(error), /private-coercion-token/); return true;
+    });
+    assert.equal(conversions, 0); assert.equal(f.activations(), 0); assert.equal(f.calls(), 0);
+  }
+});
+
 test("unblocked writing requires observation, capability and CTA before caching", async () => {
   for (const output of [
     {...writing, observationAlias: null}, {...writing, capabilityAlias: null},

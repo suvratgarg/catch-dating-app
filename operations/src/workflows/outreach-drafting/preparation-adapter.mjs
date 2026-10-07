@@ -192,6 +192,9 @@ function projectResearch({context, publicSources}) {
     const source = publicFields(value, ["dataClassification", "sourceId", "url", "text", "capturedAt", "contentHash"]);
     invariant(source.dataClassification === "reviewed_public", "SALES_PUBLIC_INPUT_INVALID",
       "Research accepts only reviewed public captures.");
+    invariant(["sourceId", "url", "text", "capturedAt", "contentHash"].every((key) =>
+      typeof source[key] === "string"), "SALES_PUBLIC_INPUT_INVALID",
+    "Captured public source fields must be primitive strings.");
     let url;
     try {url = new URL(source.url);} catch { /* Do not expose a malformed URL. */ }
     invariant(url?.protocol === "https:" && !url.username && !url.password,
