@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_screen.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -171,7 +172,21 @@ void main() {
       ),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('Logistics'), findsOneWidget);
+    expect(find.text('Logistics'), findsNothing);
+    final pickupSection = find.ancestor(
+      of: find.text('Pickup points'),
+      matching: find.byType(CatchSection),
+    );
+    final hotelSection = find.ancestor(
+      of: find.text('Hotels'),
+      matching: find.byType(CatchSection),
+    );
+    expect(pickupSection, findsOneWidget);
+    expect(hotelSection, findsOneWidget);
+    expect(
+      tester.widget(pickupSection),
+      isNot(same(tester.widget(hotelSection))),
+    );
     expect(find.text('Pickup points'), findsOneWidget);
     expect(find.text('Hotels'), findsOneWidget);
     expect(find.text('DEL Terminal 3'), findsOneWidget);

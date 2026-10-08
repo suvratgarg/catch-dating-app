@@ -32,7 +32,9 @@ declare(`${ui}components/catch_row_section.dart`, `${ui}components/catch_row_sec
 // owns its measured frame, search lifecycle and selector reflow. They expose
 // no independently callable component or feature-level rendering API.
 declare(`${ui}components/catch_action_module.dart`, section, null,
-  ["_buildActionModule"], ["Widget"]);
+  ["_buildActionModule", "_buildSectionModule"], ["Widget"]);
+declare(`${ui}components/catch_collection_section.dart`, section, null,
+  ["_buildCollectionModule"], ["Widget"]);
 declare(`${ui}components/catch_banner.dart`, `${ui}components/catch_banner.dart`,
   "CatchBanner", ["_buildBodyFeedback"], ["Widget"]);
 declare(`${ui}components/catch_top_bar.dart`, `${ui}components/catch_top_bar.dart`,

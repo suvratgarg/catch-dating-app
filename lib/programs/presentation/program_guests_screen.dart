@@ -389,179 +389,157 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
               ),
             ),
           CatchSectionListItem(
-            child: CatchSection.contained(
+            child: CatchSection.collection(
               title: context.l10n.programsGuestsGridTitle,
-              subtitle: selectedFn == null
+              message: selectedFn == null
                   ? null
                   : context.l10n.programsGuestsGridSubtitle(
                       function: selectedFn.name,
                     ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.canManageGuests) ...[
-                    CatchButton(
-                      label: context.l10n.programsGuestsAddGuest,
-                      leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: () => _addGuest(context),
-                    ),
-                    const SizedBox(height: CatchSpacing.s3),
-                  ],
-                  if (page.guests.isEmpty)
-                    CatchEmptyState(
-                      icon: CatchIcons.groupsOutlined,
-                      title: context.l10n.programsGuestsEmptyTitle,
-                      message: context.l10n.programsGuestsEmptyMessage,
-                    )
-                  else ...[
-                    for (final householdId in householdIds)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  householdById[householdId]!.label,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ),
-                              if (widget.canShareRsvpLinks)
-                                CatchIconAction.icon(
-                                  icon: CatchIcons.linkRounded,
-                                  tooltip:
-                                      context.l10n.programsGuestsShareRsvpLink,
-                                  status: _pendingRsvpLinkHouseholdId != null
-                                      ? CatchIconActionStatus.disabled
-                                      : CatchIconActionStatus.enabled,
-                                  onPressed: () => _shareRsvpLink(
-                                    householdById[householdId]!,
-                                  ),
-                                ),
-                            ],
-                          ),
-                          gapH8,
-                          for (final member in guestsByHousehold[householdId]!)
-                            ProgramGuestsFunctionRow(
-                              guest: member,
-                              functions: widget.functions,
-                              selectedFunction: selectedFn,
-                              joinIndex: joinIndex,
-                              pending: _pendingGuestKey == member.guestId,
-                              onRsvp: _recordRsvp,
-                            ),
-                          gapH12,
-                        ],
-                      ),
-                    if (unaffiliated.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.l10n.programsGuestsNoHousehold,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          gapH8,
-                          for (final member in unaffiliated)
-                            ProgramGuestsFunctionRow(
-                              guest: member,
-                              functions: widget.functions,
-                              selectedFunction: selectedFn,
-                              joinIndex: joinIndex,
-                              pending: _pendingGuestKey == member.guestId,
-                              onRsvp: _recordRsvp,
-                            ),
-                        ],
-                      ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          CatchSectionListItem(
-            child: CatchSection.contained(
-              title: context.l10n.programsGuestsGroupsTitle,
-              subtitle: context.l10n.programsGuestsGroupsSubtitle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.canManageGuests) ...[
-                    CatchButton(
-                      label: context.l10n.programsGuestsGroupNew,
-                      leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: () => _addGroup(context),
-                    ),
-                    const SizedBox(height: CatchSpacing.s2),
-                  ],
-                  if (page.groups.isEmpty)
-                    Text(
-                      context.l10n.programsGuestsGroupsEmpty,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    )
-                  else
-                    for (final group in page.groups)
-                      CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.group),
-                        body: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+              emptyTitle: context.l10n.programsGuestsEmptyTitle,
+              emptyMessage: context.l10n.programsGuestsEmptyMessage,
+              emptyIcon: CatchIcons.groupsOutlined,
+              actionLabel: widget.canManageGuests
+                  ? context.l10n.programsGuestsAddGuest
+                  : null,
+              onAction: widget.canManageGuests
+                  ? () => _addGuest(context)
+                  : null,
+              children: [
+                if (page.guests.isNotEmpty) ...[
+                  for (final householdId in householdIds)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              group.label,
-                              style: Theme.of(context).textTheme.titleMedium,
+                            Expanded(
+                              child: Text(
+                                householdById[householdId]!.label,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
                             ),
-                            const SizedBox(height: CatchSpacing.s1),
-                            Text(
-                              '${group.dimension} · '
-                              '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            if (group.hotelId != null)
-                              Text(
-                                context.l10n.programsGuestsGroupHotelSummary(
-                                  hotel:
-                                      widget.hotels
-                                          .where(
-                                            (hotel) =>
-                                                hotel.hotelId == group.hotelId,
-                                          )
-                                          .firstOrNull
-                                          ?.name ??
-                                      context
-                                          .l10n
-                                          .programsGuestsHotelUnavailable,
-                                ),
-                                style: Theme.of(context).textTheme.bodySmall,
+                            if (widget.canShareRsvpLinks)
+                              CatchIconAction.icon(
+                                icon: CatchIcons.linkRounded,
+                                tooltip:
+                                    context.l10n.programsGuestsShareRsvpLink,
+                                status: _pendingRsvpLinkHouseholdId != null
+                                    ? CatchIconActionStatus.disabled
+                                    : CatchIconActionStatus.enabled,
+                                onPressed: () =>
+                                    _shareRsvpLink(householdById[householdId]!),
                               ),
                           ],
                         ),
-                        trailing: widget.canManageGuests
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CatchIconAction.icon(
-                                    icon: CatchIcons.editOutlined,
-                                    variant: CatchIconActionVariant.plain,
-                                    tooltip:
-                                        context.l10n.programsGuestsGroupEdit,
-                                    onPressed: () => _editGroup(context, group),
-                                  ),
-                                  CatchIconAction.icon(
-                                    icon: CatchIcons.deleteOutline,
-                                    variant: CatchIconActionVariant.plain,
-                                    accent: CatchTokens.of(context).danger,
-                                    tooltip:
-                                        context.l10n.programsGuestsGroupDelete,
-                                    onPressed: () =>
-                                        _deleteGroup(context, group),
-                                  ),
-                                ],
-                              )
-                            : null,
-                      ),
+                        gapH8,
+                        for (final member in guestsByHousehold[householdId]!)
+                          ProgramGuestsFunctionRow(
+                            guest: member,
+                            functions: widget.functions,
+                            selectedFunction: selectedFn,
+                            joinIndex: joinIndex,
+                            pending: _pendingGuestKey == member.guestId,
+                            onRsvp: _recordRsvp,
+                          ),
+                        gapH12,
+                      ],
+                    ),
+                  if (unaffiliated.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.programsGuestsNoHousehold,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        gapH8,
+                        for (final member in unaffiliated)
+                          ProgramGuestsFunctionRow(
+                            guest: member,
+                            functions: widget.functions,
+                            selectedFunction: selectedFn,
+                            joinIndex: joinIndex,
+                            pending: _pendingGuestKey == member.guestId,
+                            onRsvp: _recordRsvp,
+                          ),
+                      ],
+                    ),
                 ],
-              ),
+              ],
+            ),
+          ),
+          CatchSectionListItem(
+            child: CatchSection.collection(
+              title: context.l10n.programsGuestsGroupsTitle,
+              message: page.groups.isEmpty
+                  ? null
+                  : context.l10n.programsGuestsGroupsSubtitle,
+              emptyTitle: context.l10n.programsGuestsGroupsEmpty,
+              emptyMessage: context.l10n.programsGuestsGroupsSubtitle,
+              emptyIcon: CatchIcons.groupsOutlined,
+              actionLabel: widget.canManageGuests
+                  ? context.l10n.programsGuestsGroupNew
+                  : null,
+              onAction: widget.canManageGuests
+                  ? () => _addGroup(context)
+                  : null,
+              children: [
+                for (final group in page.groups)
+                  CatchFieldRow.standard(
+                    leading: Icon(CatchIcons.group),
+                    body: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          group.label,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: CatchSpacing.s1),
+                        Text(
+                          '${group.dimension} · '
+                          '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        if (group.hotelId != null)
+                          Text(
+                            context.l10n.programsGuestsGroupHotelSummary(
+                              hotel:
+                                  widget.hotels
+                                      .where(
+                                        (hotel) =>
+                                            hotel.hotelId == group.hotelId,
+                                      )
+                                      .firstOrNull
+                                      ?.name ??
+                                  context.l10n.programsGuestsHotelUnavailable,
+                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                      ],
+                    ),
+                    trailing: widget.canManageGuests
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CatchIconAction.icon(
+                                icon: CatchIcons.editOutlined,
+                                variant: CatchIconActionVariant.plain,
+                                tooltip: context.l10n.programsGuestsGroupEdit,
+                                onPressed: () => _editGroup(context, group),
+                              ),
+                              CatchIconAction.icon(
+                                icon: CatchIcons.deleteOutline,
+                                variant: CatchIconActionVariant.plain,
+                                accent: CatchTokens.of(context).danger,
+                                tooltip: context.l10n.programsGuestsGroupDelete,
+                                onPressed: () => _deleteGroup(context, group),
+                              ),
+                            ],
+                          )
+                        : null,
+                  ),
+              ],
             ),
           ),
         ],

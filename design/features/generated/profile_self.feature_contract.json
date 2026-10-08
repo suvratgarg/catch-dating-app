@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f34f97e784f0e6c20d8367e020a2878d1b3bf618e21d1bbb7911c9c00613561e",
-  "resolvedDigest": "sha256:9fac5ba534ac9e0148df1f0cda7012b4818bb07f3dcfb9e623dfa543f0e4150c",
+  "resolvedDigest": "sha256:2f63badeaee2cbe46921dcffd3fc7d66b54bdff3d7fabec36e7aed22c047ee79",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1249,7 +1249,9 @@
                 "CatchSection.content",
                 "CatchSection.formRows",
                 "CatchSection.dependentFieldRows",
-                "CatchSection.action"
+                "CatchSection.action",
+                "CatchSection.collection",
+                "CatchSection.status"
               ]
             }
           },
@@ -1276,7 +1278,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

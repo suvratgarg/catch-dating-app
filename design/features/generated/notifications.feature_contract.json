@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:9857e74fdeb534cff237afc5a947091b573fb9eeda30ce434a45e1bd4d1f97d3",
-  "resolvedDigest": "sha256:88614f9625af8e59c68c2f57831a049f6813b4237311d3fb30d77915e18326e9",
+  "resolvedDigest": "sha256:0c01518e251916760ead195589f8a02e086f771efc3857cb8189d0890918fe49",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -1134,7 +1134,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

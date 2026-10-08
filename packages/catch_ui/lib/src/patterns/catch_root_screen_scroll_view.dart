@@ -9,12 +9,14 @@ import 'package:catch_ui/src/components/catch_page_tab_bar.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
+import 'package:catch_ui/src/patterns/catch_navigation_viewport.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_scroll_view_placement.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
+import 'package:catch_ui/src/patterns/catch_workspace_pane_scaffold.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
 
@@ -142,6 +144,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     final obstruction = CatchTabViewportScope.bottomOverlayInsetOf(context);
     final statuses = CatchBannerStatusScope.of(context);
+    final inWorkspace = CatchWorkspacePaneScope.isSinglePaneOf(context) != null;
     Widget scrollView;
     if (actions == null) {
       scrollView = CustomScrollView(
@@ -152,8 +155,8 @@ class CatchRootScreenScrollView extends StatelessWidget {
             ? physics
             : AlwaysScrollableScrollPhysics(parent: physics),
         slivers: [
-          SliverToBoxAdapter(child: _title!),
-          if (statuses.isNotEmpty)
+          if (!inWorkspace) SliverToBoxAdapter(child: _title!),
+          if (!inWorkspace && statuses.isNotEmpty)
             PinnedHeaderSliver(child: CatchBanner.statuses(statuses: statuses)),
           if (_sectionRhythm)
             const SliverToBoxAdapter(
@@ -168,6 +171,9 @@ class CatchRootScreenScrollView extends StatelessWidget {
           const CatchScrollTerminalGap.sliver(),
         ],
       );
+    } else if (inWorkspace) {
+      _validatePrimaryRailGeometry(context);
+      scrollView = body!.build();
     } else {
       _validatePrimaryRailGeometry(context);
       scrollView = NestedScrollView(
@@ -210,6 +216,18 @@ class CatchRootScreenScrollView extends StatelessWidget {
       scrollView = RefreshIndicator.adaptive(
         onRefresh: onRefresh!,
         child: scrollView,
+      );
+    }
+    if (inWorkspace) {
+      scrollView = CatchWorkspacePaneScaffold(
+        title: _title ?? _primaryRailHeader!._build(context),
+        actions: actions,
+        body: Column(
+          children: [
+            CatchBanner.statuses(statuses: statuses),
+            Expanded(child: scrollView),
+          ],
+        ),
       );
     }
     if (semanticsLabel != null || semanticsHint != null) {

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
-  "resolvedDigest": "sha256:99be761af529105c1fe0ab353764cbf88516fd6fe42efec24292878d38203453",
+  "resolvedDigest": "sha256:1ed2328712e7dd29043e1d09c28b67ffa74b8cdf0ef804ec228a3adbd9672ac5",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1670,7 +1670,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:277529da748f2b95c0a8909b108cd7e06188b54521ae02fbe45c7eb4c3513f7b",
-  "resolvedDigest": "sha256:55edb76965be2c792eedeb075a18a8bc276df3d75ce6f3e07ee838e72a617c70",
+  "resolvedDigest": "sha256:a53340e06e83db36855eff472851bf31c76b27029d37639031af6744578a6131",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -2112,7 +2112,9 @@
                 "CatchSection.content",
                 "CatchSection.formRows",
                 "CatchSection.dependentFieldRows",
-                "CatchSection.action"
+                "CatchSection.action",
+                "CatchSection.collection",
+                "CatchSection.status"
               ]
             }
           },
@@ -2156,7 +2158,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

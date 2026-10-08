@@ -298,7 +298,28 @@ class AppShellSideNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-    final horizontalDestinations = expanded || largeText;
+    final destinations = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s4,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final item in items) ...[
+            CatchNavigationButton<int>.rail(
+              key: ValueKey('app_shell.navigation.destination.${item.id}'),
+              item: item,
+              selected: item.id == active,
+              expanded:
+                  expanded || MediaQuery.textScalerOf(context).scale(1) >= 1.6,
+              onTap: () => onChanged(item.id),
+            ),
+            if (item != items.last) const SizedBox(height: CatchSpacing.s2),
+          ],
+        ],
+      ),
+    );
     return DecoratedBox(
       key: ValueKey(
         expanded ? 'app_shell.navigation.sidebar' : 'app_shell.navigation.rail',
@@ -319,49 +340,12 @@ class AppShellSideNavigation extends StatelessWidget {
             color: Colors.transparent,
             child: FocusTraversalGroup(
               policy: OrderedTraversalPolicy(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s3,
-                  vertical: CatchSpacing.s4,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (title case final title?) ...[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          CatchSpacing.s2,
-                          CatchSpacing.s2,
-                          CatchSpacing.s2,
-                          CatchSpacing.s6,
-                        ),
-                        child: Text(
-                          title,
-                          maxLines: largeText ? 2 : 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.headlineS(
-                            context,
-                            color: t.ink,
-                          ),
-                        ),
-                      ),
-                    ],
-                    for (final item in items) ...[
-                      CatchNavigationButton<int>.rail(
-                        key: ValueKey(
-                          'app_shell.navigation.destination.${item.id}',
-                        ),
-                        item: item,
-                        selected: item.id == active,
-                        expanded: horizontalDestinations,
-                        onTap: () => onChanged(item.id),
-                      ),
-                      if (item != items.last)
-                        const SizedBox(height: CatchSpacing.s2),
-                    ],
-                  ],
-                ),
-              ),
+              child: title == null
+                  ? destinations
+                  : CatchWorkspacePaneScaffold(
+                      title: CatchTopBar.brand(title: title!),
+                      body: destinations,
+                    ),
             ),
           ),
         ),

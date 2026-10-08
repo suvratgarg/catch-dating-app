@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:0b0882433f2f4708dc327a21ccb82930a2b33ad54d3303d935854fa71f19a25b",
-  "resolvedDigest": "sha256:9c889afc34ef8330c5a4bb3612e315b0f2a7267a18732f28b04678f56b922612",
+  "resolvedDigest": "sha256:05adacd9d381245cf3f1721c741d6cf13914587c8937fa5317aa2eb31c20fa3c",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1192,7 +1192,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

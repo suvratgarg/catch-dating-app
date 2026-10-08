@@ -9,6 +9,8 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.communicationPlanLoading,
     required this.communicationPlanFailed,
     this.messageActionInHeader = false,
+    this.selectedView = HostCustomerDetailView.overview,
+    this.onOpenMemory,
     required this.openingConversation,
     required this.updatingCustomer,
     required this.onSaveDetails,
@@ -37,6 +39,8 @@ class HostCustomerDetailBody extends StatelessWidget {
   final bool communicationPlanLoading;
   final bool communicationPlanFailed;
   final bool messageActionInHeader;
+  final HostCustomerDetailView selectedView;
+  final VoidCallback? onOpenMemory;
   final bool openingConversation;
   final bool updatingCustomer;
   final HostCustomerDetailsSaveCallback onSaveDetails;
@@ -60,94 +64,89 @@ class HostCustomerDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        HostCustomerDetailTabs(
-          overviewBuilder: (openMemory) => CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerDetailOverview(
-                customer: customer,
-                onOpenRevenue: onOpenRevenue,
-              ),
-              HostCustomerMemoryPreview(
-                customer: customer,
-                onOpenMemory: openMemory,
-              ),
-              HostCustomerRecentEvents(
-                customer: customer,
-                onOpenEvent: onOpenEvent,
-              ),
-            ],
-          ),
-          details: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerDetailsSection(
-                customer: customer,
-                onCall: onCall,
-                onEmail: onEmail,
-                onEdit: () => _editDetails(context),
-              ),
-              HostCustomerReachSection(
-                includeSources: false,
-                customer: customer,
-                communicationPlan: communicationPlan,
-                communicationPlanLoading: communicationPlanLoading,
-                communicationPlanFailed: communicationPlanFailed,
-                messageLoading: openingConversation,
-                onMessage: onMessage,
-                onRetryCommunicationPlan: onRetryCommunicationPlan,
-                messageActionInHeader: messageActionInHeader,
-                onMessagingEnabledChanged: updatingCustomer
-                    ? null
-                    : onMessagingEnabledChanged,
-                onReviewDuplicates: customer.ambiguousCandidateCount > 0
-                    ? onReviewDuplicates
-                    : null,
-              ),
-              HostCustomerSubmissionsSection(
-                customer: customer,
-                onOpen: onOpenFormResponse,
-              ),
-              HostCustomerApplicationsPanel(
-                organizerId: customer.organizerId,
-                contactId: customer.contactId,
-                onOpenApplication: onOpenApplication,
-                onOpenContact: onOpenContact,
-              ),
-              HostCustomerSourcesSection(
-                customer: customer,
-                onReviewDuplicates: customer.ambiguousCandidateCount > 0
-                    ? onReviewDuplicates
-                    : null,
-              ),
-            ],
-          ),
-          memory: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerMemorySection(
-                customer: customer,
-                currentUid: currentUid,
-                onEditTags: onEditTags,
-                onAddNote: onAddNote,
-                onEditNote: onEditNote,
-              ),
-            ],
-          ),
-          history: HostCustomerHistoryPanel(
+    return switch (selectedView) {
+      HostCustomerDetailView.overview => CatchSectionList(
+        emptyStateOmitted: true,
+        children: [
+          HostCustomerDetailOverview(
             customer: customer,
-            onOpenFormResponse: onOpenFormResponse,
-            onOpenEvent: onOpenEvent,
-            onOpenCatchThread: onOpenCatchThread,
-            onOpenWhatsappThread: onOpenWhatsappThread,
-            onUndoMerge: onUndoMerge,
+            onOpenRevenue: onOpenRevenue,
           ),
-        ),
-      ],
-    );
+          HostCustomerMemoryPreview(
+            customer: customer,
+            onOpenMemory: onOpenMemory ?? () {},
+          ),
+          HostCustomerRecentEvents(
+            customer: customer,
+            onOpenEvent: onOpenEvent,
+          ),
+        ],
+      ),
+      HostCustomerDetailView.details => CatchSectionList(
+        emptyStateOmitted: true,
+        children: [
+          HostCustomerDetailsSection(
+            customer: customer,
+            onCall: onCall,
+            onEmail: onEmail,
+            onEdit: () => _editDetails(context),
+          ),
+          HostCustomerReachSection(
+            includeSources: false,
+            customer: customer,
+            communicationPlan: communicationPlan,
+            communicationPlanLoading: communicationPlanLoading,
+            communicationPlanFailed: communicationPlanFailed,
+            messageLoading: openingConversation,
+            onMessage: onMessage,
+            onRetryCommunicationPlan: onRetryCommunicationPlan,
+            messageActionInHeader: messageActionInHeader,
+            onMessagingEnabledChanged: updatingCustomer
+                ? null
+                : onMessagingEnabledChanged,
+            onReviewDuplicates: customer.ambiguousCandidateCount > 0
+                ? onReviewDuplicates
+                : null,
+          ),
+          HostCustomerSubmissionsSection(
+            customer: customer,
+            onOpen: onOpenFormResponse,
+          ),
+          HostCustomerApplicationsPanel(
+            organizerId: customer.organizerId,
+            contactId: customer.contactId,
+            onOpenApplication: onOpenApplication,
+            onOpenContact: onOpenContact,
+          ),
+          HostCustomerSourcesSection(
+            customer: customer,
+            onReviewDuplicates: customer.ambiguousCandidateCount > 0
+                ? onReviewDuplicates
+                : null,
+          ),
+        ],
+      ),
+      HostCustomerDetailView.memory => CatchSectionList(
+        emptyStateOmitted: true,
+        children: [
+          HostCustomerMemorySection(
+            customer: customer,
+            currentUid: currentUid,
+            onEditTags: onEditTags,
+            onAddNote: onAddNote,
+            onEditNote: onEditNote,
+          ),
+        ],
+      ),
+      HostCustomerDetailView.history => HostCustomerHistoryPanel(
+        customer: customer,
+        onOpenFormResponse: onOpenFormResponse,
+        onOpenEvent: onOpenEvent,
+        onOpenCatchThread: onOpenCatchThread,
+        onOpenWhatsappThread: onOpenWhatsappThread,
+        onUndoMerge: onUndoMerge,
+      ),
+    };
   }
 
   Future<void> _editDetails(BuildContext context) => showCatchBottomSheet<void>(

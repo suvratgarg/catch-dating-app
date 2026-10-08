@@ -83,12 +83,12 @@ Widget sceneViewportStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Compact and split panes',
-  type: CatchMasterDetailViewport,
+  type: CatchNavigationViewport,
   path: '[Core patterns]/Viewport',
 )
 Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Master and detail',
-  catalogId: 'catch.screen_body.master_detail_layout',
+  catalogId: 'catch.screen_body.navigation_workspace',
   children: [
     for (final expanded in [false, true]) ...[
       CatchMetadataText(
@@ -96,11 +96,18 @@ Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
         color: CatchTokens.of(context).ink2,
       ),
       WidgetbookLayoutViewport(
-        size: Size(expanded ? 760 : 360, 180),
-        child: CatchMasterDetailViewport(
-          expanded: expanded,
-          leading: const WidgetbookLayoutPane(label: 'Index'),
-          body: const WidgetbookLayoutPane(label: 'Detail', accent: false),
+        size: Size(expanded ? 1100 : 360, 180),
+        child: CatchNavigationViewport(
+          panes: [
+            CatchWorkspacePane(
+              id: 'index',
+              child: WidgetbookLayoutPane(label: 'Index'),
+            ),
+            CatchWorkspacePane(
+              id: 'detail',
+              child: WidgetbookLayoutPane(label: 'Detail', accent: false),
+            ),
+          ],
         ),
       ),
     ],
@@ -109,27 +116,39 @@ Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Route body breakpoint',
-  type: CatchMasterDetailViewport,
+  type: CatchNavigationViewport,
   path: '[Core patterns]/Viewport',
 )
 Widget adaptiveMasterDetailStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Adaptive master and detail',
-      catalogId: 'catch.screen_body.master_detail_layout',
+      catalogId: 'catch.screen_body.navigation_workspace',
       children: [
-        for (final width in [719.0, 720.0]) ...[
+        for (final width in [959.0, 961.0, 1400.0]) ...[
           CatchMetadataText(
             'Route body ${width.toInt()}',
             color: CatchTokens.of(context).ink2,
           ),
           WidgetbookLayoutViewport(
             size: Size(width, 180),
-            child: CatchMasterDetailViewport.adaptive(
-              minimumExpandedWidth: 720,
-              leadingBuilder: (context, expanded) => WidgetbookLayoutPane(
-                label: expanded ? 'Split index' : 'Compact index',
-              ),
-              body: const WidgetbookLayoutPane(label: 'Detail', accent: false),
+            child: CatchNavigationViewport(
+              panes: [
+                CatchWorkspacePane(
+                  id: 'index',
+                  child: WidgetbookLayoutPane(label: 'Index'),
+                ),
+                CatchWorkspacePane(
+                  id: 'person',
+                  child: WidgetbookLayoutPane(label: 'Person'),
+                ),
+                CatchWorkspacePane(
+                  id: 'detail',
+                  child: WidgetbookLayoutPane(
+                    label: 'Further detail',
+                    accent: false,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

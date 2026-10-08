@@ -102,6 +102,8 @@ test("extracts every current facade and semantic slot", () => {
     "containedLoadingRows",
     "dependentFieldRows",
     "action",
+    "collection",
+    "status",
     "content",
     "sliverRows",
     "sliverLoadingRows",

@@ -11,6 +11,8 @@ import {
   conceptTopologyProblems,
 } from "./component_concepts.mjs";
 
+import {checkHostSectionComposition} from './check_host_section_composition.mjs';
+
 const registryPath = fromRepo("design/components/catch.components.json");
 const tokenPath = fromRepo("design/tokens/catch.tokens.json");
 const schemaPath = fromRepo("design/components/catch.components.schema.json");
@@ -29,6 +31,7 @@ validateRoot(registry);
 validateSchema(registry);
 validateComponents(registry.components ?? []);
 failures.push(...conceptTopologyProblems(registry.components ?? []));
+failures.push(...checkHostSectionComposition(repoRoot));
 
 if (failures.length > 0) {
   console.error("Component contract check failed:");

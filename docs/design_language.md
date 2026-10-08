@@ -545,8 +545,18 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   use `CatchCountBadge.navigationIcon` in both placements.
 - Pushed utility/list and identity chrome routes through
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
-  vertical content has actually scrolled beneath the compact bar. Root tab
-  titles are scroll content rather than fixed app bars.
+  vertical content has actually scrolled beneath the compact bar. Outside navigation workspaces, root tab titles remain scroll content.
+  Within a workspace, each pane keeps its own title and peer rail fixed.
+  `CatchTopBar` shares an anchored title baseline across root, route, identity
+  and branded sidebar titles. The sidebar retains compact Archivo typography
+  and a two-tone qualifier on its own continuous navigation surface. Subtitles
+  do not move the title baseline. Headers flow from their actual contents and
+  canonical padding, with no workspace height floor. `CatchWorkspaceHeaderLayout`
+  measures visible headers at their pane widths and aligns their lower boundaries
+  to the tallest current content; hidden panes do not contribute. A single pane
+  uses only its own content height. The sidebar uses `CatchWorkspacePaneScaffold`
+  too; screens must not add their own header padding or compensating spacers. Back is shown when the parent pane is
+  hidden; a visible parent column provides that navigation context.
 - Root title screens route through `CatchRootScreenScaffold.standard` or
   `.fullBleed` (or the corresponding parent-scaffold
   `CatchRootScreenScrollView` role). The constructor jointly owns geometry,
@@ -565,6 +575,14 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchPageTabBar.minimumHeight` / `heightFor` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.
+- Host navigation depth uses `CatchNavigationViewport` and the same pane
+  widgets at every device width. Each pane owns its full-height header, actions,
+  tabs and scrolling body through `CatchWorkspacePaneScaffold`; a directory's
+  tabs do not span its selected detail. Navigation columns represent successive
+  levels, while a desktop Organizer preview occupies the next level until a
+  setting is selected. Width changes presentation only, preserving route
+  identity and visited pane state. Root and detail rails share the header
+  boundary; Today uses the same header rhythm even without peer tabs.
 - Every full-screen composition terminates in
   `CatchScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level
   root, tabbed, and pushed-route owners delegate to that role. Only the
@@ -971,3 +989,5 @@ platform-sized hit targets. Blocking source policy and rendered geometry tests
 cover these rules in `catch_bottom_sheet_policy_test.dart` and
 `host_sheet_composition_test.dart`; shared sheet tests cover action roles and
 persistent dismissal at small viewports and 200% text.
+
+Host operational modules use `CatchSection.action`, `.collection`, and `.status`: one quiet token surface with content-derived height, shared padding, and full-width commands. Collection owns empty/populated presentation and sibling separators; the feature owns data, permissions and callbacks. Use `.fieldRows` for navigation and outlined field recipes for actual form groups. `design:component-contracts` rejects generic card/flat-section and local empty-state composition on migrated Program and Recap surfaces.

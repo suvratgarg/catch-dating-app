@@ -172,7 +172,7 @@ class CatchSectionList extends StatelessWidget {
     super.key,
     required Widget body,
     Widget? trailing,
-    double trailingWidth = CatchLayout.hostTodayAttentionPaneWidth,
+    double trailingWidth = CatchLayout.workspaceDirectoryWidth,
   }) : _sequence = null,
        _responsive = null,
        _page = null,

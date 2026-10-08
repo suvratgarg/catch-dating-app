@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
-  "resolvedDigest": "sha256:7f29942f40b044064f345ee86998aa58ad200ed70dfeaadeeb61b2988eab2e5a",
+  "resolvedDigest": "sha256:f3e91bd2a4fc2b5f24ae61a6d2ad6142ec9d4b5e766ae700e3a5cc25d1cc0826",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5303,7 +5303,9 @@
                 "CatchSection.content",
                 "CatchSection.formRows",
                 "CatchSection.dependentFieldRows",
-                "CatchSection.action"
+                "CatchSection.action",
+                "CatchSection.collection",
+                "CatchSection.status"
               ]
             }
           },
@@ -5387,7 +5389,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

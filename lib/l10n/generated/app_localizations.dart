@@ -38455,18 +38455,6 @@ abstract class AppLocalizations {
   /// **'Guest inbox'**
   String get programsWorkspaceInboxTitle;
 
-  /// Program workspace copy: programsWorkspaceLogisticsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Logistics'**
-  String get programsWorkspaceLogisticsTitle;
-
-  /// Program workspace copy: programsWorkspaceLogisticsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pickup points and hotels staff operate against'**
-  String get programsWorkspaceLogisticsSubtitle;
-
   /// Program workspace copy: programsWorkspacePickupTitle.
   ///
   /// In en, this message translates to:

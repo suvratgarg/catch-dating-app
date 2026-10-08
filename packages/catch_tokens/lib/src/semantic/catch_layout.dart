@@ -11,6 +11,12 @@ abstract final class CatchLayout {
   /// Center full-bleed page bodies in a width-clamped [ConstrainedBox].
   static const double maxContentWidth = 600;
 
+  /// A leaf remains usable before another navigation ancestor is revealed.
+  static const double workspaceDetailMinWidth = 360;
+
+  /// An ancestor editor retains its reading lane when a child is visible.
+  static const double workspaceEditorWidth = maxContentWidth;
+
   static const int roomMapMaxVisiblePositions = 8;
   static const double roomMapPositionExtent = CatchSpacing.s5;
   static const double roomMapUnitWidthFactor = 0.62;
@@ -35,30 +41,6 @@ abstract final class CatchLayout {
 
   /// Supporting operations lane beside the live command stage.
   static const double hostEventLiveSupportingPaneWidth = 360;
-
-  /// Width at which Today can keep the current-event lane and its attention
-  /// queue visible together without compressing either into card fragments.
-  static const double hostTodayTwoPaneBreakpoint = 720;
-
-  /// Bounded command-centre workspace for Today on tablet and desktop.
-  static const double hostTodayWorkspaceMaxContentWidth = 1120;
-  static const double hostTodayWorkspacePageMaxExtent =
-      hostTodayWorkspaceMaxContentWidth + pageBodyHorizontalGutters;
-
-  /// Supporting attention lane beside Today's current-event workspace.
-  static const double hostTodayAttentionPaneWidth = 360;
-
-  /// Narrowest useful attention lane when the app rail leaves tablet content
-  /// less room than the desktop workspace.
-  static const double hostTodayAttentionPaneCompactWidth = 300;
-
-  /// Width at which Today's supporting pane can expand without narrowing the
-  /// primary current-event and seven-day lane.
-  static const double hostTodayExpandedAttentionPaneBreakpoint = 960;
-
-  /// Visual separation extent for the bounded Today command workspace. The
-  /// page remains scroll-owned; this rule only separates the initial lanes.
-  static const double hostTodayWorkspaceRuleExtent = 640;
 
   /// Plot height for the compact host demand/bookings trend.
   static const double analyticsTrendHeight = 120;
@@ -585,13 +567,8 @@ abstract final class CatchLayout {
   static const double appShellRailWidth = 96.0;
   static const double appShellLargeTextRailWidth = 168.0;
   static const double appShellSidebarWidth = 240.0;
-  static const double masterDetailIndexPaneWidth = 360.0;
+  static const double workspaceDirectoryWidth = 360.0;
 
-  /// Minimum width inside the Messaging route body that can hold the
-  /// canonical conversation index and an equally usable thread pane. This is
-  /// intentionally measured after shell navigation has taken its width.
-  static const double hostMessagingSplitViewMinWidth =
-      masterDetailIndexPaneWidth * 2;
   static const double hostMessagingSendsMaxContentWidth = 840.0;
   static const double hostMessagingSendsPageMaxExtent =
       hostMessagingSendsMaxContentWidth + pageBodyHorizontalGutters;
