@@ -31,10 +31,14 @@ import {
   OperationWorkItem,
 } from "./models";
 import {
+  AdminWorkItemListQuery,
+  AdminWorkItemPage,
   ListPage,
   OperationRunRepository,
+  OperationWorkItemAdminReadRepository,
   OperationWorkItemRepository,
   RunListQuery,
+  UnavailableWorkItem,
   WorkItemListQuery,
 } from "./repositories";
 import {
@@ -46,7 +50,8 @@ import {
 import {decodeRunCursor, encodeRunCursor} from "./runPagination";
 
 type DurableOperationsRepository =
-  OperationRunRepository & OperationWorkItemRepository;
+  OperationRunRepository & OperationWorkItemRepository &
+  OperationWorkItemAdminReadRepository;
 
 function clone<T>(value: T): T {
   return structuredClone(value);
@@ -348,6 +353,82 @@ export class FirestoreOperationsRepository extends
 
   async listWorkItems(query: WorkItemListQuery):
     Promise<ListPage<OperationWorkItem>> {
+    const snapshot = await this.workItemQuery(query).limit(query.limit + 1)
+      .get();
+    const hasMore = snapshot.docs.length > query.limit;
+    const docs = snapshot.docs.slice(0, query.limit);
+    const items = docs.map((doc) => clone(validated(
+      validateOperationWorkItem(doc.data()),
+      `stored work item ${doc.id}`
+    )));
+    return {
+      items,
+      nextCursor: hasMore ? docs[docs.length - 1].id : null,
+    };
+  }
+
+  /** Record validation failures are unavailable; query errors propagate. */
+  async listWorkItemsForAdmin(query: AdminWorkItemListQuery):
+    Promise<AdminWorkItemPage> {
+    const snapshot = await this.workItemQuery(query).limit(query.limit + 1)
+      .get();
+    const docs = snapshot.docs.slice(0, query.limit);
+    const items: OperationWorkItem[] = [];
+    const unavailableRecords: UnavailableWorkItem[] = [];
+    for (const doc of docs) {
+      const result = validateOperationWorkItem(doc.data());
+      if (!result.ok) {
+        // Never expose the raw document, validation messages or field values.
+        unavailableRecords.push({
+          documentId: doc.id,
+          reason: "invalid_record",
+          issues: result.issues.slice(0, 10).map((issue) => ({
+            path: issue.path.slice(0, 200),
+            code: issue.code.slice(0, 80),
+          })),
+          issuesTruncated: result.issues.length > 10 ||
+            result.issues.some((issue) => issue.path.length > 200 ||
+              issue.code.length > 80),
+        });
+        continue;
+      }
+      const item = result.value;
+      const scopeFields = ["workflowId", "runId", "primaryStage",
+        "entityKind", "lifecycleStatus"] as const;
+      const scopeMismatch = scopeFields.find((field) =>
+        query[field] !== undefined && item[field] !== query[field]);
+      const reason = item.workItemId !== doc.id ? "document_id_mismatch" :
+        scopeMismatch || (query.humanReviewRequired &&
+          !item.taskFlags.includes("human_review_required")) ?
+          "scope_mismatch" :
+          !query.allowedPrimaryStages.includes(item.primaryStage) ?
+            "unsupported_stage" : null;
+      if (reason) {
+        unavailableRecords.push({
+          documentId: doc.id,
+          reason,
+          issues: [{
+            path: reason === "document_id_mismatch" ? "workItemId" :
+              reason === "unsupported_stage" ? "primaryStage" :
+                scopeMismatch ?? "taskFlags",
+            code: reason,
+          }],
+          issuesTruncated: false,
+        });
+      } else {
+        items.push(clone(item));
+      }
+    }
+    return {
+      items,
+      scannedCount: docs.length,
+      unavailableRecords,
+      nextCursor: snapshot.docs.length > query.limit ?
+        docs[docs.length - 1].id : null,
+    };
+  }
+
+  private workItemQuery(query: WorkItemListQuery): Query<DocumentData> {
     assertPageLimit(query.limit);
     let firestoreQuery: Query<DocumentData> = this.db.collection(
       operationCollections.workItems
@@ -375,17 +456,7 @@ export class FirestoreOperationsRepository extends
     if (query.cursor) {
       firestoreQuery = firestoreQuery.startAfter(query.cursor);
     }
-    const snapshot = await firestoreQuery.limit(query.limit + 1).get();
-    const hasMore = snapshot.docs.length > query.limit;
-    const docs = snapshot.docs.slice(0, query.limit);
-    const items = docs.map((doc) => clone(validated(
-      validateOperationWorkItem(doc.data()),
-      `stored work item ${doc.id}`
-    )));
-    return {
-      items,
-      nextCursor: hasMore ? docs[docs.length - 1].id : null,
-    };
+    return firestoreQuery;
   }
 
   private async createVersioned<T extends {revision: number}>(

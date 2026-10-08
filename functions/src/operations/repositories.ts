@@ -34,6 +34,29 @@ export interface WorkItemListQuery {
   cursor?: string | null;
 }
 
+export interface AdminWorkItemListQuery extends WorkItemListQuery {
+  allowedPrimaryStages: readonly WorkItemPrimaryStage[];
+}
+
+export interface UnavailableWorkItem {
+  documentId: string;
+  reason: "invalid_record" | "document_id_mismatch" | "scope_mismatch" |
+    "unsupported_stage";
+  issues: Array<{path: string; code: string}>;
+  issuesTruncated: boolean;
+}
+
+export interface AdminWorkItemPage extends ListPage<OperationWorkItem> {
+  scannedCount: number;
+  unavailableRecords: UnavailableWorkItem[];
+}
+
+/** Read-only projection; unavailable records never become worker inputs. */
+export interface OperationWorkItemAdminReadRepository {
+  listWorkItemsForAdmin(query: AdminWorkItemListQuery):
+    Promise<AdminWorkItemPage>;
+}
+
 export interface ActionReceiptListQuery {
   runId?: string;
   workItemId?: string;
