@@ -1244,6 +1244,9 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
         assert.equal(fn.environment, "GEN_1");
         fn.iam = await get(`https://cloudfunctions.googleapis.com/v1/${fn.name}:getIamPolicy?options.requestedPolicyVersion=3`);
       }
+      // Eventarc criteria have no evaluation order; retain every complete filter.
+      if (Array.isArray(fn.eventTrigger?.eventFilters)) fn.eventTrigger.eventFilters.sort((a, b) =>
+        JSON.stringify(canonical(a)).localeCompare(JSON.stringify(canonical(b))));
       if (fn.name === intakeSelectedName) {
         const config = fn.serviceConfig;
         selected = {identity: captureFunctionIdentities([fn], INTAKE_PR596_RELEASE.scope, [INTAKE_PR596_RELEASE.target])[0],
