@@ -5,7 +5,6 @@ import type {
   OrganizerProgramDocument,
   ProgramStaffGrantDocument,
 } from "./generated/firestoreAdminTypes";
-import {isOrganizerManager} from "./organizerHosts";
 import {requireDoc} from "./validation";
 import {staffTimestampMillis} from "./eventOperatorAuthority";
 
@@ -85,7 +84,7 @@ export async function loadProgramBundle(params: {
   return {program, organizer};
 }
 
-/** Manager bypass first; otherwise an active, unexpired, matching grant. */
+/** Program ownership is independent of organizer membership or role changes. */
 export async function requireProgramAccess(params: {
   db: FirebaseFirestore.Firestore;
   programId: string;
@@ -94,7 +93,14 @@ export async function requireProgramAccess(params: {
   transaction?: FirebaseFirestore.Transaction;
 }): Promise<ProgramAccess> {
   const {program, organizer} = await loadProgramBundle(params);
-  if (isOrganizerManager(organizer, params.actorUid)) {
+  const accountRef = params.db.collection("deletedUsers").doc(params.actorUid);
+  const account = params.transaction ?
+    await params.transaction.get(accountRef) : await accountRef.get();
+  if (account.exists) {
+    throw new HttpsError("permission-denied",
+      "This account cannot access private program operations.");
+  }
+  if (program.createdBy === params.actorUid) {
     return {program, organizer, role: "manager", grant: null};
   }
   const grantRef = params.db.collection("programStaffGrants")
@@ -111,6 +117,11 @@ export async function requireProgramAccess(params: {
       "permission-denied",
       "This account does not have active program access."
     );
+  }
+  if (typeof program.createdBy !== "string" ||
+      program.createdBy.length === 0 || grant.createdBy !== program.createdBy) {
+    throw new HttpsError("permission-denied",
+      "The program owner must approve this program access.");
   }
   const duties = activeProgramDuties(grant, now.toMillis());
   if (duties.length === 0) {
@@ -154,6 +165,32 @@ export function requireProgramDuty(access: ProgramAccess,
     );
   }
   return assignments;
+}
+
+/** Full contact inventories require one duty covering the whole program. */
+export function requireProgramGuestDirectoryAccess(access: ProgramAccess):
+  ProgramDutyAssignment[] {
+  const assignments = requireProgramDuty(access, "guestRelations");
+  const wholeProgram = assignments.filter((assignment) =>
+    assignment.pickupPointIds.length === 0 &&
+    assignment.hotelIds.length === 0 &&
+    (assignment.functionIds ?? []).length === 0);
+  if (access.role !== "manager" && wholeProgram.length === 0) {
+    throw new HttpsError("permission-denied",
+      "Program-wide guest relations access is required.");
+  }
+  return wholeProgram;
+}
+
+/** Recheck time after resolving private rows, including read-only previews. */
+export function assertProgramGuestDirectoryCurrent(access: ProgramAccess,
+  nowMillis: number): void {
+  const assignments = requireProgramGuestDirectoryAccess(access)
+    .filter((assignment) => assignment.expiresAtMillis > nowMillis);
+  const expiry = programProjectionExpiresAt(access, assignments);
+  if (expiry !== null && expiry <= nowMillis) {
+    throw new HttpsError("permission-denied", "Guest directory duty expired.");
+  }
 }
 
 /** Empty scope list means all stations of that kind. */
