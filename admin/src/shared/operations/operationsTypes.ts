@@ -163,9 +163,21 @@ export interface AdminListIntakeOperationsResponse {
   };
   runs: OperationRun[];
   workItems: OperationWorkItem[];
+  workItemPage?: {
+    scannedCount: number;
+    unavailableRecords: OperationUnavailableRecord[];
+  };
   organizerDraftLinks: OrganizerDraftLink[];
   nextRunCursor: string | null;
   nextWorkItemCursor: string | null;
+}
+
+export interface OperationUnavailableRecord {
+  documentId: string;
+  reason: "invalid_record" | "document_id_mismatch" |
+    "scope_mismatch" | "unsupported_stage";
+  issues: Array<{path: string; code: string}>;
+  issuesTruncated: boolean;
 }
 
 export interface OrganizerDraftLink {
