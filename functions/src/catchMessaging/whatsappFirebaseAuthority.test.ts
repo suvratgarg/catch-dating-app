@@ -1,17 +1,35 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {test} from "node:test";
+import {UserRecord} from "firebase-admin/auth";
 import {createCatchFirebaseAuthority,
   createCatchGoogleFirebaseLookupTransport} from "./whatsappFirebaseAuthority";
 import type {CatchFirebaseAuthorityOptions,
   CatchFirebaseLookupRequest} from "./whatsappFirebaseAuthority";
 import {authorizeCatchAppCapability} from "./whatsappAppAuthority";
 import {catchEndpointHash} from "./whatsappReply";
+import {assertPlannedSetupIdentity, planOperatorSetup, setupHash} from
+  "./whatsappOperatorSetup";
 
 const projectId = "catchdates-dev";
 const uid = "recipient";
 const phone = "+919000000001";
 const unavailable = {message: "Catch app authority unavailable."};
+const currentTime = 1700000100000;
+function sdkRecord(wire: object): UserRecord {
+  // The published type omits the internal REST constructor argument. Exercise
+  // the pinned SDK's decoder without initializing Auth or touching credentials.
+  return Reflect.construct(UserRecord, [wire]) as UserRecord;
+}
+// Projected accounts:lookup wire fixtures; no real identity/session material.
+function optionalLookupUsers() {
+  return {
+    actor: {localId: "google-operator", createdAt: "1700000000123",
+      validSince: "1700000010", customAttributes: "{}"},
+    recipient: {localId: uid, createdAt: "1700000000456",
+      customAttributes: JSON.stringify({admin: true}), phoneNumber: phone},
+  };
+}
 function user() {
   return {localId: uid, createdAt: "1001", validSince: "1", disabled: false,
     customAttributes: JSON.stringify({adminOwner: true, support: true,
@@ -65,7 +83,7 @@ function fixture() {
 
 test("construction is lazy and protected lookup projects only required fields",
   async () => {
-    const live = createCatchGoogleFirebaseLookupTransport();
+    const live = createCatchGoogleFirebaseLookupTransport(projectId);
     assert.equal(typeof live.lookup, "function");
     const f = fixture();
     assert.equal(f.requests.length, 0);
@@ -106,6 +124,103 @@ test("current true role flags and canonical phone are used",
       catchEndpointHash(phone));
   });
 
+test("omitted optional wire fields agree with pinned Admin UserRecord defaults",
+  async () => {
+    const f = fixture();
+    f.setTime(currentTime);
+    const raw = optionalLookupUsers();
+    for (const response of [raw.actor, raw.recipient,
+      {...raw.recipient, disabled: false, validSince: "0"},
+      {...raw.actor, disabled: false}]) {
+      // JSON round-trip models the actual projected REST body, not SDK getters.
+      f.setResponse(JSON.parse(JSON.stringify({users: [response]})));
+      const observed = await f.adapter.observe(response.localId);
+      const sdk = sdkRecord(response);
+      assert.equal(observed.disabled, sdk.disabled);
+      assert.equal(observed.creationTimeMillis, Number(response.createdAt));
+      assert.equal(observed.tokensValidAfterMillis,
+        sdk.tokensValidAfterTime === undefined ? 0 :
+          Date.parse(sdk.tokensValidAfterTime));
+    }
+    f.setResponse({users: [raw.recipient]});
+    const recipient = await f.adapter.observe(uid);
+    assert.equal(recipient.creationTimeMillis, 1700000000456);
+    assert.equal(recipient.tokensValidAfterMillis, 0);
+    assert.deepEqual(recipient.relevantRoles, []);
+    assert.equal(recipient.endpointHash, catchEndpointHash(phone));
+    assert.equal(sdkRecord(raw.recipient).tokensValidAfterTime, undefined);
+  });
+
+test("realistic optional responses create a legacy Admin preserving setup plan",
+  async () => {
+    const f = fixture();
+    f.setTime(currentTime);
+    const raw = optionalLookupUsers();
+    f.setResponse({users: [raw.actor]});
+    const actorAuth = await f.adapter.observe(raw.actor.localId);
+    f.setResponse({users: [raw.recipient]});
+    const recipientAuth = await f.adapter.observe(uid);
+    f.setToken({uid: raw.actor.localId, sub: raw.actor.localId, aud: projectId,
+      iss: "https://securetoken.google.com/" + projectId,
+      auth_time: 1700000090, iat: 1700000090, exp: 1700003700,
+      firebase: {sign_in_provider: "google.com"}});
+    const session = await f.adapter.verifySession(raw.actor.localId,
+      "synthetic-signed-session");
+    const actorClaims = JSON.parse(raw.actor.customAttributes);
+    const recipientClaims = JSON.parse(raw.recipient.customAttributes);
+    const originalClaims = JSON.stringify(recipientClaims);
+    const scope = {projectId, actorUid: raw.actor.localId,
+      actorEmailSha256: setupHash("synthetic-operator@example.invalid"),
+      recipientUid: uid, endpointHash: catchEndpointHash(phone),
+      appId: "123456",
+      wabaId: "234567", phoneNumberId: "345678",
+      credentialVersionSha256: setupHash("synthetic-existing-version")};
+    const snapshot = {
+      actor: {auth: actorAuth, session, emailSha256: scope.actorEmailSha256,
+        googleSubjectSha256: setupHash("synthetic-google-subject"),
+        claims: actorClaims},
+      recipient: {auth: recipientAuth, claims: recipientClaims},
+      existingOwnerUids: [], authorityExists: false, bootstrapExists: false,
+      actorAssignmentExists: false,
+    };
+    const options = {planId: "synthetic-plan", sourceSha: "a".repeat(40),
+      grantNonce: setupHash("synthetic-nonce"),
+      createReviewRef: "synthetic-create",
+      revokeReviewRef: "synthetic-revoke", now: currentTime};
+    const plan = planOperatorSetup(scope, snapshot, options);
+    assert.equal(plan.actorCreationTimeMillis, 1700000000123);
+    assert.equal(plan.recipientCreationTimeMillis, 1700000000456);
+    assert.equal(plan.actorTokensValidAfterMillis, 1700000010000);
+    assert.equal(plan.recipientTokensValidAfterMillis, 0);
+    assert.equal(plan.recipientClaimsSha256, setupHash({admin: true}));
+    assert.equal(JSON.stringify(recipientClaims), originalClaims);
+    assert.equal(f.verifications[0][1], true);
+    assertPlannedSetupIdentity(plan, snapshot, currentTime);
+    for (const drift of [
+      {...raw.recipient, createdAt: "1700000000457"},
+      {...raw.recipient, validSince: "1700000091"},
+      {...raw.recipient, phoneNumber: "+919000000002"},
+      {...raw.recipient, customAttributes: "{}"},
+      {...raw.recipient, customAttributes:
+        JSON.stringify({admin: true, support: true})},
+      {...raw.recipient, customAttributes:
+        JSON.stringify({admin: true, adminOwner: true})},
+    ]) {
+      f.setResponse(JSON.parse(JSON.stringify({users: [drift]})));
+      const auth = await f.adapter.observe(uid);
+      assert.throws(() => assertPlannedSetupIdentity(plan, {...snapshot,
+        recipient: {auth, claims: JSON.parse(drift.customAttributes)}},
+      currentTime), {message: "Protected Catch operator setup unavailable."});
+    }
+    f.setResponse({users: [{...raw.recipient, validSince: "1700000091"}]});
+    const cutoffSnapshot = {...snapshot, recipient: {
+      auth: await f.adapter.observe(uid), claims: recipientClaims}};
+    const cutoffPlan = planOperatorSetup(scope, cutoffSnapshot, options);
+    // Dropping a previously reviewed cutoff cannot revive the reviewed plan.
+    assert.throws(() => assertPlannedSetupIdentity(cutoffPlan, snapshot,
+      currentTime), {message: "Protected Catch operator setup unavailable."});
+  });
+
 test("missing, disabled, tenant, malformed and future observations deny",
   async () => {
     const malformed: unknown[] = [null, {}, {users: []},
@@ -113,8 +228,10 @@ test("missing, disabled, tenant, malformed and future observations deny",
     for (const [key, values] of Object.entries({
       localId: ["foreign", undefined], createdAt: [undefined, 1001, "1.001",
         "-1", "01001", "9007199254740993", "10001"],
-      validSince: [undefined, 1, "1.1", "9007199254741", "11"],
-      disabled: [undefined, true, "false"], tenantId: ["tenant", "", null],
+      validSince: [undefined, null, false, 0, 1, "", "-1", "01", "1.1",
+        "1suffix", " 1", "9007199254741", "11"],
+      disabled: [undefined, null, 0, 1, "", true, "false", {}],
+      tenantId: ["tenant", "", null],
       customAttributes: [null, {}, "[]", "null", "{", "x".repeat(1001)],
       phoneNumber: [null, "919000000001", "+0919000000001",
         "+91 9000000001", "+919000000001 "],
@@ -201,6 +318,10 @@ test("timeout aborts fake transport and hides errors", async (context) => {
 test("1001 to 1002 creation milliseconds revoke the model incarnation",
   async () => {
     const f = fixture();
+    const optional: Record<string, unknown> = {...user()};
+    delete optional.disabled;
+    delete optional.validSince;
+    f.setResponse({users: [optional]});
     const first = await f.adapter.observe(uid);
     const endpointHash = catchEndpointHash(phone);
     const authority = {schemaVersion: 1, projectId, uid, revision: 1,
@@ -210,12 +331,17 @@ test("1001 to 1002 creation milliseconds revoke the model incarnation",
       capabilities: ["receive"], endpointHash, pending: null, grantedBy: null};
     assert.equal(authorizeCatchAppCapability({record: authority, auth: first},
       "receive", 10000, {projectId, uid, endpointHash}).revision, 1);
-    f.setResponse({users: [{...user(), createdAt: "1002"}]});
+    f.setResponse({users: [{...optional, createdAt: "1002"}]});
     const second = await f.adapter.observe(uid);
     assert.equal(second.creationTimeMillis, 1002);
     assert.throws(() => authorizeCatchAppCapability({record: authority,
       auth: second}, "receive", 10000, {projectId, uid, endpointHash}),
     unavailable);
+    f.setResponse({users: [{...optional, phoneNumber: "+919000000002"}]});
+    const endpointChanged = await f.adapter.observe(uid);
+    assert.throws(() => authorizeCatchAppCapability({record: authority,
+      auth: endpointChanged},
+    "receive", 10000, {projectId, uid, endpointHash}), unavailable);
   });
 
 test("session verifies signature and revocation before returning evidence",
@@ -259,8 +385,13 @@ test("wrong project, UID, tenant and invalid verified token times deny",
 test("verified sessions still require current Firebase revocation and roles",
   async () => {
     const f = fixture();
+    const optional: Record<string, unknown> = {...user()};
+    delete optional.disabled;
+    delete optional.validSince;
+    f.setResponse({users: [optional]});
     const session = await f.adapter.verifySession(uid, "signed");
     const auth = await f.adapter.observe(uid);
+    assert.equal(auth.tokensValidAfterMillis, 0);
     const authority = {schemaVersion: 1, projectId, uid, revision: 1,
       incarnation: createHash("sha256").update(JSON.stringify([
         "catch.firebase-creation/v1", projectId, uid, 1001])).digest("hex"),
@@ -270,11 +401,11 @@ test("verified sessions still require current Firebase revocation and roles",
     const expected = {projectId, uid};
     assert.equal(authorizeCatchAppCapability({record: authority, auth, session},
       "review", 10000, expected).revision, 1);
-    f.setResponse({users: [{...user(), validSince: "10"}]});
+    f.setResponse({users: [{...optional, validSince: "10"}]});
     const revoked = await f.adapter.observe(uid);
     assert.throws(() => authorizeCatchAppCapability({record: authority,
       auth: revoked, session}, "review", 10000, expected), unavailable);
-    f.setResponse({users: [{...user(), customAttributes: "{}"}]});
+    f.setResponse({users: [{...optional, customAttributes: "{}"}]});
     const roleRemoved = await f.adapter.observe(uid);
     assert.throws(() => authorizeCatchAppCapability({record: authority,
       auth: roleRemoved, session}, "review", 10000, expected), unavailable);
@@ -284,7 +415,7 @@ test("real lazy transport rejects endpoint substitution before loading ADC",
   async () => {
     const f = fixture();
     await f.adapter.observe(uid);
-    const live = createCatchGoogleFirebaseLookupTransport();
+    const live = createCatchGoogleFirebaseLookupTransport(projectId);
     for (const url of ["http://identitytoolkit.googleapis.com/v1/projects/" +
       projectId + "/accounts:lookup", "https://example.com/accounts:lookup",
     "https://identitytoolkit.googleapis.com/v1/projects/" +
@@ -294,6 +425,14 @@ test("real lazy transport rejects endpoint substitution before loading ADC",
     }
     await assert.rejects(live.lookup({...f.requests[0],
       body: {localId: [uid, "other"]}}), unavailable);
+    await assert.rejects(live.lookup({...f.requests[0],
+      projectId: "foreign-project",
+      url: "https://identitytoolkit.googleapis.com/v1/projects/" +
+        "foreign-project/accounts:lookup"}), unavailable);
+    for (const invalid of ["", "123456", "foreign/project", " project-id"]) {
+      assert.throws(() => createCatchGoogleFirebaseLookupTransport(invalid),
+        unavailable);
+    }
   });
 
 test("session verification timeout denies even an unresolved fake verifier",
@@ -322,8 +461,10 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
     const {GoogleAuth} = await import("google-auth-library");
     const authorizationUrls: (string | URL | undefined)[] = [];
     const fetchCalls: Parameters<typeof fetch>[] = [];
-    context.mock.method(GoogleAuth.prototype, "getProjectId",
-      async () => projectId);
+    // The real project resolver must use the supplied project without ADC.
+    const projectResolver = context.mock.method(GoogleAuth.prototype,
+      "getApplicationDefault",
+      async () => assert.fail("ambient project discovery forbidden"));
     context.mock.method(GoogleAuth.prototype, "getRequestHeaders",
       async (url?: string | URL) => {
         authorizationUrls.push(url);
@@ -336,10 +477,12 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
           headers: {"Content-Type": "application/json"}});
       });
     const f = fixture();
-    f.options.transport = createCatchGoogleFirebaseLookupTransport();
+    f.options.transport = createCatchGoogleFirebaseLookupTransport(projectId);
     assert.equal(authorizationUrls.length, 0);
     assert.equal(fetchCalls.length, 0);
+    assert.equal(await f.options.transport.getProjectId(), projectId);
     assert.equal((await f.adapter.observe(uid)).creationTimeMillis, 1001);
+    assert.equal(projectResolver.mock.callCount(), 0);
     assert.deepEqual(authorizationUrls,
       ["https://identitytoolkit.googleapis.com" +
       "/v1/projects/catchdates-dev/accounts:lookup"]);
@@ -360,6 +503,20 @@ test("lazy GoogleAuth sends a projected request with fake OAuth",
     assert.equal(headers.get("Authorization"),
       "Bearer fake-oauth-access-token");
     assert.equal(headers.get("Content-Type"), "application/json");
+    assert.equal(headers.get("X-Goog-User-Project"), projectId);
+
+    const before = fetchCalls.length;
+    await assert.rejects(f.options.transport.lookup({...f.requests[0],
+      projectId: "foreign-project",
+      url: "https://identitytoolkit.googleapis.com/v1/projects/" +
+        "foreign-project/accounts:lookup"}), unavailable);
+    assert.equal(fetchCalls.length, before);
+    context.mock.method(GoogleAuth.prototype, "getProjectId",
+      async () => "foreign-project");
+    await assert.rejects(f.adapter.observe(uid), unavailable);
+    assert.equal(fetchCalls.length, before);
+    context.mock.method(GoogleAuth.prototype, "getProjectId",
+      async () => projectId);
 
     // Native fetch rejects redirects under redirect:error. A 3xx response from
     // any alternate transport is also rejected before parsing a response body.
@@ -391,7 +548,7 @@ test("successful transport with malformed JSON fails privately without retry",
     const fakeFetch = context.mock.method(globalThis, "fetch", async () =>
       new Response("{private-account-data:", {status: 200}));
     const f = fixture();
-    f.options.transport = createCatchGoogleFirebaseLookupTransport();
+    f.options.transport = createCatchGoogleFirebaseLookupTransport(projectId);
     await assert.rejects(f.adapter.observe(uid), unavailable);
     assert.equal(fakeFetch.mock.callCount(), 1);
   });

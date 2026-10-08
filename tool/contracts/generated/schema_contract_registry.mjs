@@ -1,6 +1,276 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const catchWhatsappOperatorSetupOperationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_operator_setup_operations.schema.json",
+  "title": "CatchWhatsappOperatorSetupOperationDocument",
+  "description": "Permanent project-bound one-time operator setup slot. Never delete, reset or add TTL. Exact private reviewed plan/scope and replay digests bind source SHA, current account incarnations, Google identity, expected absence, fixed capabilities and server-owned readiness references. Phases journal non-atomic Auth/Firestore effects; unknown outcomes are reconciled without blind retry. Internal source only, no client writes or activation by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "operationId",
+    "projectId",
+    "planId",
+    "planSha256",
+    "replaySha256",
+    "scopeSha256",
+    "actorUid",
+    "recipientUid",
+    "phase",
+    "revision",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "operationId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "x-catch-ownership": "server-only"
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "x-catch-ownership": "server-only"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "x-catch-ownership": "server-only"
+    },
+    "planSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "replaySha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "scopeSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "x-catch-ownership": "server-only"
+    },
+    "recipientUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "x-catch-ownership": "server-only"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "reserved",
+        "auth-intent",
+        "auth-confirmed",
+        "seeded",
+        "root-active",
+        "prepare-intent",
+        "prepared",
+        "finalize-intent",
+        "complete",
+        "publish-intent",
+        "published",
+        "readiness-intent",
+        "ready",
+        "revoke-intent",
+        "revoked"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 15,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "x-firestore-collection": "catchWhatsappOperatorSetupOperations",
+  "x-firestore-path": "catchWhatsappOperatorSetupOperations/{operationId}",
+  "x-document-id-field": "operationId",
+  "x-owner": "Catch support operator setup"
+};
+
+export const catchWhatsappOperatorSetupAuditDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_operator_setup_audits.schema.json",
+  "title": "CatchWhatsappOperatorSetupAuditDocument",
+  "description": "Create-only, no-TTL private operator setup phase audit. Authority seeds, root activation, receive prepare/finalize and readiness effects commit with their phase/audit in one Firestore transaction. Auth claim replacement remains separately journaled; hashes provide binding, not independent authentication. No token, raw claims, archive or plaintext contact content. Auth-dispatch-intent receipt precedes the external Auth call and permanently consumes its dispatch permit; it is not proof that Auth committed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptKind",
+    "auditId",
+    "operationId",
+    "projectId",
+    "actorUid",
+    "planSha256",
+    "scopeSha256",
+    "fromPhase",
+    "toPhase",
+    "revision",
+    "atMillis",
+    "beforeSha256",
+    "afterSha256",
+    "effectSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "auditId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "x-catch-ownership": "server-only"
+    },
+    "operationId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "x-catch-ownership": "server-only"
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "x-catch-ownership": "server-only"
+    },
+    "planSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "scopeSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "fromPhase": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "reserved",
+            "auth-intent",
+            "auth-confirmed",
+            "seeded",
+            "root-active",
+            "prepare-intent",
+            "prepared",
+            "finalize-intent",
+            "complete",
+            "publish-intent",
+            "published",
+            "readiness-intent",
+            "ready",
+            "revoke-intent",
+            "revoked"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "toPhase": {
+      "type": "string",
+      "enum": [
+        "reserved",
+        "auth-intent",
+        "auth-confirmed",
+        "seeded",
+        "root-active",
+        "prepare-intent",
+        "prepared",
+        "finalize-intent",
+        "complete",
+        "publish-intent",
+        "published",
+        "readiness-intent",
+        "ready",
+        "revoke-intent",
+        "revoked"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 15,
+      "x-catch-ownership": "server-only"
+    },
+    "atMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "beforeSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "afterSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "effectSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "receiptKind": {
+      "type": "string",
+      "enum": [
+        "phase",
+        "auth-dispatch-intent"
+      ],
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "x-firestore-collection": "catchWhatsappOperatorSetupAudits",
+  "x-firestore-path": "catchWhatsappOperatorSetupAudits/{auditId}",
+  "x-document-id-field": "auditId",
+  "x-owner": "Catch support operator setup"
+};
+
 export const manageHostRosterIntakeCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_host_roster_intake_payload.schema.json",
@@ -42093,6 +42363,26 @@ export const legacyPaymentRefundIntentSchema = {
         "null"
       ],
       "maxLength": 80
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
@@ -182486,6 +182776,13 @@ export const organizerProgramDocumentSchema = {
         }
       }
     },
+    "createRequestHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Immutable normalized create-command fingerprint for request-key replay. Absent on legacy programs; never changed by program edits or lifecycle transitions."
+    },
     "revision": {
       "type": "integer",
       "minimum": 1,
@@ -194850,7 +195147,25 @@ export const listOrganizerProgramsCallablePayloadSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Optional opaque value from nextCursor. Server verifies current organizer scope and continues after the immutable ordering tuple encoded by that cursor."
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional exact program ID for bounded saved-program confirmation. Organizer authority and document scope are rechecked; cannot be combined with cursor."
     }
+  },
+  "not": {
+    "required": [
+      "cursor",
+      "programId"
+    ]
   }
 };
 
@@ -194942,6 +195257,13 @@ export const createOrganizerProgramCallablePayloadSchema = {
           "messaging"
         ]
       }
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Optional create-command identity. Same actor, organizer, key and normalized body replay the saved program; changed-body reuse is rejected. Omission preserves legacy random-ID creation."
     },
     "transportSettings": {
       "type": "object",
@@ -198403,6 +198725,7 @@ export const organizerProgramListCallableResponseSchema = {
           "kind",
           "title",
           "status",
+          "timezone",
           "startsAtMillis",
           "endsAtMillis",
           "capabilities",
@@ -198437,6 +198760,12 @@ export const organizerProgramListCallableResponseSchema = {
               "archived"
             ]
           },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "IANA timezone used to recover the Program's civil calendar dates from its stored instants."
+          },
           "startsAtMillis": {
             "type": "integer",
             "minimum": 0
@@ -198456,6 +198785,11 @@ export const organizerProgramListCallableResponseSchema = {
                 "messaging"
               ]
             }
+          },
+          "functionCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero."
           },
           "revision": {
             "type": "integer",
@@ -198487,6 +198821,15 @@ export const organizerProgramListCallableResponseSchema = {
           }
         }
       }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Opaque stable cursor for the last returned startsAt/program-ID tuple when another page exists, otherwise null. Optional for legacy readers."
     }
   }
 };
@@ -225535,6 +225878,26 @@ export const paymentDocumentSchema = {
             "null"
           ],
           "maxLength": 80
+        },
+        "razorpayOwnership": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "projectId",
+            "schema"
+          ],
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+            },
+            "schema": {
+              "type": "string",
+              "const": "1"
+            }
+          },
+          "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+          "x-catch-ownership": "server-only"
         }
       },
       "x-catch-ownership": "callable-owned"
@@ -225559,8 +225922,132 @@ export const paymentDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
+};
+
+export const nativeRefundRecoveryCursorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/native_refund_recovery_cursor.schema.json",
+  "title": "NativeRefundRecoveryCursorDocument",
+  "description": "Server-only, project-bound progress for bounded payment recovery queues. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest eligible row.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stateId",
+    "projectId",
+    "schema",
+    "revision",
+    "cursor",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "stateId": {
+      "type": "string",
+      "enum": [
+        "pendingRefunds",
+        "cancelledRazorpayPayments",
+        "pendingRazorpayOrders"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$",
+      "minLength": 6,
+      "maxLength": 30,
+      "x-catch-ownership": "server-only"
+    },
+    "schema": {
+      "type": "string",
+      "const": "1",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "cursor": {
+      "description": "Queue-specific exclusive discovery position. Refund queues use the next-attempt order key and payment document id. pendingRazorpayOrders uses integer epoch nanoseconds plus the complete pending-order document id.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "nextAttemptOrderKey",
+            "paymentId"
+          ],
+          "properties": {
+            "nextAttemptOrderKey": {
+              "description": "Canonical tagged primary Firestore order value for the selected recovery queue.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "double:nan",
+                    "double:negativeInfinity",
+                    "double:positiveInfinity"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "pattern": "^integer:-?(?:0|[1-9][0-9]*)$",
+                  "maxLength": 29
+                },
+                {
+                  "type": "string",
+                  "pattern": "^double:(?:-0|-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?)$",
+                  "maxLength": 32
+                }
+              ]
+            },
+            "paymentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1500,
+              "description": "Exclusive secondary key. pendingRazorpayOrders and refund queues store the complete Firestore document id."
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "x-firestore-collection": "nativeRefundRecoveryCursors",
+  "x-firestore-path": "nativeRefundRecoveryCursors/{stateId}",
+  "x-document-id-field": "stateId",
+  "x-owner": "payment recovery schedulers"
 };
 
 export const hostPaymentAccountDocumentSchema = {
@@ -225866,6 +226353,26 @@ export const razorpayPendingOrderDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "razorpayOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "schema"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "description": "Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.",
+      "x-catch-ownership": "server-only"
     }
   }
 };
@@ -314171,7 +314678,8 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -314190,7 +314698,8 @@ export const adminSetAdminUserRolesCallablePayloadSchema = {
         "safetyReviewer",
         "support",
         "finance",
-        "analyticsViewer"
+        "analyticsViewer",
+        "salesStaff"
       ]
     }
   }
@@ -314258,7 +314767,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "safetyReviewer",
               "support",
               "finance",
-              "analyticsViewer"
+              "analyticsViewer",
+              "salesStaff"
             ]
           }
         },
@@ -314279,7 +314789,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -314294,7 +314805,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     }
@@ -314308,7 +314820,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
         "safetyReviewer",
         "support",
         "finance",
-        "analyticsViewer"
+        "analyticsViewer",
+        "salesStaff"
       ]
     },
     "roles": {
@@ -314322,7 +314835,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -314386,7 +314900,8 @@ export const adminSetAdminUserRolesCallableResponseSchema = {
               "safetyReviewer",
               "support",
               "finance",
-              "analyticsViewer"
+              "analyticsViewer",
+              "salesStaff"
             ]
           }
         },

@@ -551,6 +551,93 @@ export interface EventPolicyDemandPricingRuleDocument {
 }
 
 /**
+ * Permanent project-bound one-time operator setup slot. Never delete, reset or add TTL. Exact private reviewed plan/scope and replay digests bind source SHA, current account incarnations, Google identity, expected absence, fixed capabilities and server-owned readiness references. Phases journal non-atomic Auth/Firestore effects; unknown outcomes are reconciled without blind retry. Internal source only, no client writes or activation by this schema.
+ */
+export interface CatchWhatsappOperatorSetupOperationDocument {
+  schemaVersion: 1;
+  operationId: string;
+  projectId: string;
+  planId: string;
+  planSha256: string;
+  replaySha256: string;
+  scopeSha256: string;
+  actorUid: string;
+  recipientUid: string;
+  phase:
+    | "reserved"
+    | "auth-intent"
+    | "auth-confirmed"
+    | "seeded"
+    | "root-active"
+    | "prepare-intent"
+    | "prepared"
+    | "finalize-intent"
+    | "complete"
+    | "publish-intent"
+    | "published"
+    | "readiness-intent"
+    | "ready"
+    | "revoke-intent"
+    | "revoked";
+  revision: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Create-only, no-TTL private operator setup phase audit. Authority seeds, root activation, receive prepare/finalize and readiness effects commit with their phase/audit in one Firestore transaction. Auth claim replacement remains separately journaled; hashes provide binding, not independent authentication. No token, raw claims, archive or plaintext contact content. Auth-dispatch-intent receipt precedes the external Auth call and permanently consumes its dispatch permit; it is not proof that Auth committed.
+ */
+export interface CatchWhatsappOperatorSetupAuditDocument {
+  schemaVersion: 1;
+  auditId: string;
+  operationId: string;
+  projectId: string;
+  actorUid: string;
+  planSha256: string;
+  scopeSha256: string;
+  fromPhase:
+    | (
+        | "reserved"
+        | "auth-intent"
+        | "auth-confirmed"
+        | "seeded"
+        | "root-active"
+        | "prepare-intent"
+        | "prepared"
+        | "finalize-intent"
+        | "complete"
+        | "publish-intent"
+        | "published"
+        | "readiness-intent"
+        | "ready"
+        | "revoke-intent"
+        | "revoked"
+      )
+    | null;
+  toPhase:
+    | "reserved"
+    | "auth-intent"
+    | "auth-confirmed"
+    | "seeded"
+    | "root-active"
+    | "prepare-intent"
+    | "prepared"
+    | "finalize-intent"
+    | "complete"
+    | "publish-intent"
+    | "published"
+    | "readiness-intent"
+    | "ready"
+    | "revoke-intent"
+    | "revoked";
+  revision: number;
+  atMillis: number;
+  beforeSha256: string | null;
+  afterSha256: string;
+  effectSha256: string | null;
+  receiptKind: "phase" | "auth-dispatch-intent";
+}
+
+/**
  * Private resumable Host review state for one existing event roster upload.
  */
 export interface HostRosterIntakeSessionDocument {
@@ -12547,6 +12634,10 @@ export interface OrganizerProgramDocument {
   createdBy: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  /**
+   * Immutable normalized create-command fingerprint for request-key replay. Absent on legacy programs; never changed by program edits or lifecycle transitions.
+   */
+  createRequestHash?: string;
   revision: number;
   /**
    * Timestamp of the explicit archive action. Lifecycle: draft/active -> completed -> archived.
@@ -17297,6 +17388,42 @@ export interface PaymentDocument {
   completedAt?: FirebaseFirestore.Timestamp;
   cancellationRefund?: LegacyPaymentRefundIntent;
   updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
+   */
+  razorpayOwnership?: {
+    projectId: string;
+    schema: "1";
+  };
+}
+
+/**
+ * Server-only, project-bound progress for bounded payment recovery queues. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest eligible row.
+ */
+export interface NativeRefundRecoveryCursorDocument {
+  stateId:
+    | "pendingRefunds"
+    | "cancelledRazorpayPayments"
+    | "pendingRazorpayOrders";
+  projectId: string;
+  schema: "1";
+  revision: number;
+  /**
+   * Queue-specific exclusive discovery position. Refund queues use the next-attempt order key and payment document id. pendingRazorpayOrders uses integer epoch nanoseconds plus the complete pending-order document id.
+   */
+  cursor: null | {
+    /**
+     * Canonical tagged primary Firestore order value for the selected recovery queue.
+     */
+    nextAttemptOrderKey:
+      | ("double:nan" | "double:negativeInfinity" | "double:positiveInfinity")
+      | string;
+    /**
+     * Exclusive secondary key. pendingRazorpayOrders and refund queues store the complete Firestore document id.
+     */
+    paymentId: string;
+  };
+  updatedAtMillis: number;
 }
 
 /**
@@ -17349,6 +17476,13 @@ export interface RazorpayPendingOrderDocument {
   status: "pending" | "failed" | "expired";
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
+   */
+  razorpayOwnership?: {
+    projectId: string;
+    schema: "1";
+  };
 }
 
 /**

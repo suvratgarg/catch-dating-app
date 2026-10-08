@@ -393,6 +393,13 @@ export const organizerProgramDocumentSchema: Record<string, unknown> = {
         }
       }
     },
+    "createRequestHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Immutable normalized create-command fingerprint for request-key replay. Absent on legacy programs; never changed by program edits or lifecycle transitions."
+    },
     "revision": {
       "type": "integer",
       "minimum": 1,

@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   requestPhoneSignInCode: vi.fn(),
   resetPhoneSignIn: vi.fn(),
   signOutAdmin: vi.fn(),
+  signInWithGoogleAdmin: vi.fn(),
 }));
 
 vi.mock("firebase/auth", () => ({
@@ -28,6 +29,7 @@ vi.mock("../shared/api/firebase", () => ({
   requestPhoneSignInCode: mocks.requestPhoneSignInCode,
   resetPhoneSignIn: mocks.resetPhoneSignIn,
   signOutAdmin: mocks.signOutAdmin,
+  signInWithGoogleAdmin: mocks.signInWithGoogleAdmin,
 }));
 
 vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
@@ -65,6 +67,12 @@ vi.mock("../features/overview/ui/OverviewRouteScreen", () => ({
   OverviewRouteScreen: () => <p>Overview fixture</p>,
 }));
 
+vi.mock("../features/sales/ui/SalesWorkspaceScreen", () => ({
+  SalesWorkspaceScreen: ({assignedStaffOnly, currentUserUid}: {
+    assignedStaffOnly: boolean; currentUserUid: string;
+  }) => <p>Sales fixture: {currentUserUid} · {assignedStaffOnly ? "assigned" : "admin"}</p>,
+}));
+
 describe("App live deep-link ownership", () => {
   afterEach(cleanup);
 
@@ -79,7 +87,7 @@ describe("App live deep-link ownership", () => {
     window.history.replaceState({}, "", "/overview");
   });
 
-  it("supports only phone OTP and completes the sign-in flow", async () => {
+  it("preserves phone OTP beside the existing Google account sign-in", async () => {
     const user = userEvent.setup();
     mocks.onIdTokenChanged.mockImplementation(() => () => undefined);
     mocks.requestPhoneSignInCode.mockResolvedValue(undefined);
@@ -87,8 +95,7 @@ describe("App live deep-link ownership", () => {
 
     render(<App />);
 
-    expect(screen.queryByRole("button", {name: "Sign in with Google"}))
-      .toBeNull();
+    expect(screen.getByRole("button", {name: "Sign in with Google"})).toBeTruthy();
     await user.type(
       screen.getByRole("textbox", {name: "Phone number"}),
       "+91 90000 00000"
@@ -117,9 +124,17 @@ describe("App live deep-link ownership", () => {
 
     expect(await screen.findByRole("button", {name: "Send verification code"}))
       .not.toBeNull();
-    expect(screen.queryByRole("button", {name: "Sign in with Google"}))
-      .toBeNull();
+    expect(screen.getByRole("button", {name: "Sign in with Google"})).toBeTruthy();
     expect(window.location.pathname).toBe("/safety/reports%2Freport-1");
+  });
+
+  it("offers Google sign-in through the existing guarded Admin shell", async () => {
+    mocks.onIdTokenChanged.mockImplementation(() => () => undefined);
+    mocks.signInWithGoogleAdmin.mockResolvedValue(undefined);
+    render(<App />);
+    await userEvent.setup().click(screen.getByRole("button", {name: "Sign in with Google"}));
+    expect(mocks.signInWithGoogleAdmin).toHaveBeenCalledOnce();
+    expect(screen.queryByText("Overview fixture")).toBeNull();
   });
 
   it("preserves a requested route while admin claims resolve", async () => {
@@ -150,6 +165,32 @@ describe("App live deep-link ownership", () => {
     expect(await screen.findByRole("heading", {name: "Admin claim required"}))
       .not.toBeNull();
     expect(window.location.pathname).toBe("/organizers/afterfly");
+  });
+
+  it("limits Sales staff navigation and resets authority after account switch", async () => {
+    type User = {email: string; uid: string};
+    let authChanged: ((user: User | null) => void) | undefined;
+    mocks.onIdTokenChanged.mockImplementation((_auth: unknown, callback: typeof authChanged) => {
+      authChanged = callback;
+      callback?.({email: "staff@catch.local", uid: "staff-1"});
+      return () => undefined;
+    });
+    mocks.getIdTokenResult.mockImplementation(async (user: User) => ({
+      claims: user.uid === "staff-1" ? {salesStaff: true} : {adminOwner: true},
+    }));
+    window.history.replaceState({}, "", "/organizers/other");
+    render(<App />);
+    expect(await screen.findByText("Sales fixture: staff-1 · assigned")).toBeTruthy();
+    expect(window.location.pathname.startsWith("/sales")).toBe(true);
+    for (const name of ["Overview", "Organizers", "Marketing", "Admin roles", "Payments"]) {
+      expect(screen.queryByRole("button", {name})).toBeNull();
+    }
+    await act(async () => authChanged?.({email: "owner@catch.local", uid: "owner-1"}));
+    expect(await screen.findByText("Sales fixture: owner-1 · admin")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Overview"})).toBeTruthy();
+    await act(async () => authChanged?.(null));
+    expect(await screen.findByRole("button", {name: "Sign in with Google"})).toBeTruthy();
+    expect(screen.queryByText("Sales fixture: owner-1 · admin")).toBeNull();
   });
 });
 

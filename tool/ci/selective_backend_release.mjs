@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
+import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {compareFunctionFingerprints, FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
-import {validateProvenanceManifest} from "./delivery_core.mjs";
+import {validateProvenanceManifest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
 import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBaselineArchive,
   readMaterializedParamsSha256, liveFunctions, captureFunctionIdentities,
   FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
 import {gcloudIndexList, inspectIndexReadiness} from "../firebase/wait_firestore_indexes_ready.mjs";
+import salesSourceGuardedPaths from "./sales_pr543_source_guard.json" with {type: "json"};
 
 export const SELECTIVE_RELEASE_SCHEMA = "catch.selective-backend-release/v1";
 export const FUNCTION_LEDGER_SCHEMA = "catch.function-deployment-ledger/v1";
@@ -600,5 +605,423 @@ export function completeSelectiveRelease(input) {
       baseline: binding(plan.baseline), candidate: binding(plan.candidate), coveredSources: [...plan.coveredSources],
       planSha256: digest(plan), ledgerSha256: digest(result), indexContractSha256: plan.indexContractSha256,
       deployedTargets: [...plan.targets], retainedTargets: [...plan.unchangedTargets]}};
+  });
+}
+
+// One protected projection of the immutable PR543-compatible main package. The
+// historical 601-Function plan remains unchanged on disk; this profile only
+// narrows its execution plan to the reviewed Sales closure and Firestore rules.
+export const SALES_PR543_RELEASE = Object.freeze({
+  sourceSha: "c0a213bd9663f69ed1f8df3b5bad9284930e5339",
+  baseSha: "63f13abe6fbc6051771ea6eeab1d147a956f0be5",
+  sourceCiRunId: "37560236235",
+  sourceCiRunAttempt: "1",
+  packageSha256: "594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5",
+  scope: "firebase:prod:catch-dating-app-64e51",
+  projectId: "catch-dating-app-64e51",
+  targets: Object.freeze([
+    "functions:adminApplySalesPrivacyBatch",
+    "functions:adminAssignSalesPartner",
+    "functions:adminBuildSalesOutreachInput",
+    "functions:adminCopySalesOutreachDraft",
+    "functions:adminGenerateSalesOutreachDraft",
+    "functions:adminGetSalesDemoPartnerReview",
+    "functions:adminGetSalesIntelligenceCatalog",
+    "functions:adminGetSalesIntelligenceScore",
+    "functions:adminGetSalesOutreachDraft",
+    "functions:adminGetSalesOutreachDraftJob",
+    "functions:adminGetSalesPrivacyCase",
+    "functions:adminLinkSalesInboundIntent",
+    "functions:adminListSalesInboundIntents",
+    "functions:adminListSalesOutreachDrafts",
+    "functions:adminPreviewSalesPrivacyPlan",
+    "functions:adminRestrictSalesOrganizer",
+    "functions:adminReviewSalesIntelligenceClause",
+    "functions:adminReviewSalesOutreachDraft",
+    "functions:adminReviewSalesPrivacyPlan",
+    "functions:adminReviewSalesPrivacyPolicy",
+    "functions:adminRevokeSalesPartnerAccess",
+    "functions:adminSaveSalesFactorAssessment",
+    "functions:adminSaveSalesIntelligenceClause",
+    "functions:adminSaveSalesIntelligencePolicy",
+    "functions:adminSaveSalesScoreSnapshot",
+    "functions:adminShareSalesDemoPartnerReview",
+    "functions:copySalesPartnerOutreachDraft",
+    "functions:createSalesDemoContinuation",
+    "functions:decideSalesPartnerAssignment",
+    "functions:expireSalesDemos",
+    "functions:generateSalesPartnerOutreach",
+    "functions:getSalesDemoContinuation",
+    "functions:getSalesPartnerDemoReviews",
+    "functions:getSalesPartnerOutreachDraft",
+    "functions:getSalesPartnerOutreachJob",
+    "functions:getSalesPartnerPreparation",
+    "functions:getSalesPartnerWorkspace",
+    "functions:nominateSalesOrganizer",
+    "functions:prepareSalesDemoContinuationForm",
+    "functions:proposeSalesPartnerDemoWording",
+    "functions:recordSalesPartnerManualSend",
+    "functions:registerSalesPartner",
+    "functions:reviewSalesPartnerOutreachDraft",
+    "functions:updateSalesPartnerAssignment",
+  ]),
+  addedTargets: Object.freeze([
+    "functions:adminAssignSalesPartner",
+    "functions:adminGetSalesDemoPartnerReview",
+    "functions:adminRevokeSalesPartnerAccess",
+    "functions:adminShareSalesDemoPartnerReview",
+    "functions:copySalesPartnerOutreachDraft",
+    "functions:createSalesDemoContinuation",
+    "functions:decideSalesPartnerAssignment",
+    "functions:generateSalesPartnerOutreach",
+    "functions:getSalesDemoContinuation",
+    "functions:getSalesPartnerDemoReviews",
+    "functions:getSalesPartnerOutreachDraft",
+    "functions:getSalesPartnerOutreachJob",
+    "functions:getSalesPartnerPreparation",
+    "functions:getSalesPartnerWorkspace",
+    "functions:nominateSalesOrganizer",
+    "functions:prepareSalesDemoContinuationForm",
+    "functions:proposeSalesPartnerDemoWording",
+    "functions:recordSalesPartnerManualSend",
+    "functions:registerSalesPartner",
+    "functions:reviewSalesPartnerOutreachDraft",
+    "functions:updateSalesPartnerAssignment",
+  ]),
+});
+export const SALES_PR543_RETAINED_TARGETS = Object.freeze(SALES_PR543_RELEASE.targets
+  .filter((target) => !SALES_PR543_RELEASE.addedTargets.includes(target)));
+
+// PR575 changes only protected operator CLI planning. Neither module is in
+// index.ts's runtime closure (including initialization of every re-export).
+// Bind that reviewed separation to exact Git objects, never a path exclusion.
+export const SALES_SOURCE_CHECKPOINT = "6256356bb9b41dbb5727354f5cb77384773c0454";
+export const SALES_SOURCE_GUARDED_PATHS = Object.freeze(salesSourceGuardedPaths);
+export const SALES_SOURCE_DELTA = Object.freeze([
+  Object.freeze({path: "functions/src/catchMessaging/whatsappOperatorSetup.ts",
+    candidateGitBlob: "e0e2ce455c5f08ccc73003a051f4471c15ea0238",
+    mergedGitBlob: "2a2b8b3bf9e5b95f8ca33f7f5bb49cea6a9ffc98"}),
+  Object.freeze({path: "functions/src/catchMessaging/whatsappOperatorSetup.test.ts",
+    candidateGitBlob: "d8aec1c0c2b9a82d45a879f054090d68563b9158",
+    mergedGitBlob: "de98ec81ac63692a73040b639da582e4f6e7ebcc"}),
+]);
+
+export function verifySalesSourceCompatibility(evidence) {
+  assert.equal(evidence.sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.match(evidence.currentSha, shaPattern);
+  assert.equal(evidence.sourceAncestor, true);
+  assert.equal(evidence.checkpointAncestor, true);
+  assert.deepEqual([...evidence.changedPaths].sort(), SALES_SOURCE_DELTA.map((row) => row.path).sort());
+  assert.deepEqual(evidence.currentDifference, []);
+  assert.equal(evidence.rows.length, SALES_SOURCE_DELTA.length);
+  for (const row of SALES_SOURCE_DELTA) {
+    assert.deepEqual(evidence.rows.find((entry) => entry.path === row.path),
+      {...row, candidateMode: "100644", checkpointMode: "100644"});
+  }
+  return {sourceSha: SALES_PR543_RELEASE.sourceSha, compatibilityCheckpoint: SALES_SOURCE_CHECKPOINT};
+}
+
+export function checkSalesGitCompatibility(sourceSha, currentSha, cwd = process.cwd()) {
+  assert.equal(sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.match(currentSha, shaPattern);
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd, encoding: "utf8", timeout: 10000, maxBuffer: 1024 * 1024});
+    assert.ifError(result.error);
+    assert.equal(result.status, 0, "Sales compatibility Git proof failed.");
+    return result.stdout;
+  };
+  for (const sha of [sourceSha, currentSha, SALES_SOURCE_CHECKPOINT]) {
+    assert.equal(git(["rev-parse", "--verify", `${sha}^{commit}`]).trim(), sha);
+  }
+  git(["merge-base", "--is-ancestor", sourceSha, currentSha]);
+  git(["merge-base", "--is-ancestor", SALES_SOURCE_CHECKPOINT, currentSha]);
+  const differences = (before, after) => git([
+    "diff", "--name-only", "--no-renames", "-z", before, after, "--", ...SALES_SOURCE_GUARDED_PATHS,
+  ]).split("\0").filter(Boolean);
+  const entry = (sha, file) => {
+    const match = /^(\d{6}) blob ([0-9a-f]{40})\t/.exec(git(["ls-tree", sha, "--", file]).trim());
+    assert.ok(match, "Sales compatibility requires regular tracked source.");
+    return {mode: match[1], blob: match[2]};
+  };
+  const rows = SALES_SOURCE_DELTA.map(({path}) => {
+    const candidate = entry(sourceSha, path);
+    const checkpoint = entry(SALES_SOURCE_CHECKPOINT, path);
+    return {path, candidateGitBlob: candidate.blob, mergedGitBlob: checkpoint.blob,
+      candidateMode: candidate.mode, checkpointMode: checkpoint.mode};
+  });
+  return verifySalesSourceCompatibility({sourceSha, currentSha, sourceAncestor: true, checkpointAncestor: true,
+    changedPaths: differences(sourceSha, SALES_SOURCE_CHECKPOINT), rows,
+    currentDifference: differences(SALES_SOURCE_CHECKPOINT, currentSha)});
+}
+
+// Only the original authenticated recovery artifacts may enter this route.
+// The workflow independently authenticates producer, archive digest and before
+// proof; this mode cannot create missing proof or deploy/repair Functions.
+export function checkSalesCheckpointSource(sourceSha, currentSha, cwd, runId, runAttempt) {
+  assert.equal(sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.equal(runId, "37576714164");
+  assert.equal(runAttempt, "1");
+  assert.match(currentSha, shaPattern);
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd, encoding: "utf8", timeout: 10000, maxBuffer: 1024 * 1024});
+    assert.ifError(result.error);
+    assert.equal(result.status, 0, "Sales checkpoint rules/source proof failed.");
+    return result.stdout;
+  };
+  for (const sha of [sourceSha, currentSha]) {
+    assert.equal(git(["rev-parse", "--verify", `${sha}^{commit}`]).trim(), sha);
+  }
+  git(["merge-base", "--is-ancestor", sourceSha, currentSha]);
+  git(["diff", "--quiet", sourceSha, currentSha, "--", "firestore.rules", "firebase.json", ".firebaserc"]);
+  const rules = git(["ls-tree", sourceSha, "--", "firestore.rules"]).trim();
+  assert.match(rules, /^100644 blob [0-9a-f]{40}\tfirestore\.rules$/);
+  return {checkpointOnly: true};
+}
+
+export async function verifySalesCheckpointOnly(input, {
+  readLive = liveFunctions, readPolicy, checkReadiness, checkParity,
+} = {}) {
+  const manifest = salesManifest(input.manifest);
+  prepareSalesPr543Release(input);
+  const state = validateCheckpointState(manifest, input.checkpoint, SALES_PR543_RELEASE.scope);
+  assert.ok(state.stageCheckpoints.some((row) => row.stage === "functions"),
+    "Sales checkpoint-only recovery requires an existing Functions checkpoint.");
+  assert.equal(resolveFirstIncompleteStage(manifest, state, SALES_PR543_RELEASE.scope).stage, input.stage);
+  assert.ok(["functions", "firestore-rules"].includes(input.stage));
+  assert.ok(Buffer.isBuffer(input.acceptedRules) && Buffer.isBuffer(input.packagedRules));
+  assert.ok(input.acceptedRules.equals(input.packagedRules), "Packaged rules must match the accepted source bytes.");
+  validateFunctionsDeployment(input.deployment, {manifest, scope: SALES_PR543_RELEASE.scope,
+    baseSha: SALES_PR543_RELEASE.baseSha, selectedTargets: SALES_PR543_RELEASE.targets,
+    paramsSha256: input.expectedParamsSha256});
+  validateSalesPr543Before(input.before);
+  assert.equal(typeof readPolicy, "function");
+  assert.equal(typeof checkReadiness, "function");
+  assert.equal(typeof checkParity, "function");
+  const functions = await readLive(SALES_PR543_RELEASE.projectId, SALES_PR543_RELEASE.targets);
+  completeSalesPr543Release({...input, functions});
+  for (const [index, target] of SALES_PR543_RELEASE.targets.entries()) {
+    if (target === "functions:expireSalesDemos") continue; // The sole scheduled target.
+    const policy = await readPolicy(input.deployment.functions[index].service);
+    assert.deepEqual(policy?.bindings, [{role: "roles/run.invoker", members: ["allUsers"]}],
+      "Sales callable IAM differs from its intended public invoker policy; repair is forbidden.");
+  }
+  await checkParity();
+  await checkReadiness();
+  // Fence drift during the IAM/readiness reads immediately before returning
+  // authority for the rules-only executor.
+  completeSalesPr543Release({...input,
+    functions: await readLive(SALES_PR543_RELEASE.projectId, SALES_PR543_RELEASE.targets)});
+  return {checkpointOnly: true, functionsDeploymentAllowed: false, iamRepairAllowed: false,
+    verifiedFunctions: 44, authorizedStage: input.stage};
+}
+
+const bytesDigest = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const salesFail = () => { throw new Error("Invalid Sales PR543 selective release evidence."); };
+const salesSafe = (action) => { try { return action(); } catch { return salesFail(); } };
+const salesSame = (a, b) => assert.deepEqual(a, b);
+const salesExactKeys = (value, names) => {
+  assert.ok(value && typeof value === "object" && !Array.isArray(value));
+  salesSame(Object.keys(value).sort(), [...names].sort());
+};
+const salesManifest = (raw) => {
+  const manifest = validateProvenanceManifest(raw);
+  assert.equal(manifest.sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.equal(manifest.sourceCiRunId, SALES_PR543_RELEASE.sourceCiRunId);
+  assert.equal(manifest.sourceCiRunAttempt, SALES_PR543_RELEASE.sourceCiRunAttempt);
+  salesSame(manifest.stages, ["functions", "firestore-rules"]);
+  assert.equal(manifest.artifact.name, "firebase-backend.tar.gz");
+  assert.equal(manifest.artifact.sizeBytes, 8144024);
+  assert.equal(manifest.artifact.sha256, SALES_PR543_RELEASE.packageSha256);
+  return manifest;
+};
+
+export function prepareSalesPr543Release({packagePlan, manifest: rawManifest}) {
+  return salesSafe(() => {
+    salesManifest(rawManifest);
+    const release = SALES_PR543_RELEASE;
+    assert.equal(packagePlan.sourceSha, release.sourceSha);
+    assert.equal(packagePlan.baseSha, release.baseSha);
+    assert.equal(packagePlan.sourceCiRunId, release.sourceCiRunId);
+    assert.equal(packagePlan.sourceCiRunAttempt, release.sourceCiRunAttempt);
+    assert.equal(packagePlan.schema, "catch.firebase-delivery-plan/v2");
+    salesSame(packagePlan.deployGroups, ["firestore-rules", "functions"]);
+    salesSame(packagePlan.stages, ["functions", "firestore-rules"]);
+    assert.equal(packagePlan.targets?.length, 2);
+    assert.equal(packagePlan.targets[1], "firestore:rules");
+    const historical = packagePlan.targets[0]?.split(",");
+    assert.equal(historical?.length, 601);
+    assert.equal(new Set(historical).size, 601);
+    assert.ok(historical.every((target) => /^functions:[A-Za-z][A-Za-z0-9_-]*$/u.test(target)));
+    salesSame(historical, [...historical].sort());
+    assert.ok(release.targets.every((target) => historical.includes(target)));
+    salesSame(release.targets, [...release.targets].sort());
+    salesSame(release.addedTargets, [...release.addedTargets].sort());
+    assert.ok(release.addedTargets.every((target) => release.targets.includes(target)));
+    assert.equal(SALES_PR543_RETAINED_TARGETS.length, 23);
+    return {...structuredClone(packagePlan), targets: [release.targets.join(","), "firestore:rules"]};
+  });
+}
+
+export function verifySalesPr543Params(file) {
+  return salesSafe(() => {
+    assert.equal(path.basename(file), `.env.${SALES_PR543_RELEASE.projectId}`);
+    const stat = fs.lstatSync(file);
+    assert.ok(stat.isFile() && !stat.isSymbolicLink() && stat.size < 1024 * 1024);
+    assert.equal(stat.mode & 0o077, 0);
+    return {paramsSha256: readMaterializedParamsSha256(file, SALES_PR543_RELEASE.projectId)};
+  });
+}
+
+export function captureSalesPr543Before({manifest: rawManifest, packagePlan, functions}) {
+  return salesSafe(() => {
+    prepareSalesPr543Release({packagePlan, manifest: rawManifest});
+    return {schema: "catch.sales-pr543-before/v1", scope: SALES_PR543_RELEASE.scope,
+      sourceSha: SALES_PR543_RELEASE.sourceSha, packageSha256: SALES_PR543_RELEASE.packageSha256,
+      selectedTargets: [...SALES_PR543_RELEASE.targets], absentTargets: [...SALES_PR543_RELEASE.addedTargets],
+      functions: captureFunctionIdentities(functions, SALES_PR543_RELEASE.scope, SALES_PR543_RETAINED_TARGETS)};
+  });
+}
+
+function salesBefore(value) {
+  salesExactKeys(value, ["schema", "scope", "sourceSha", "packageSha256", "selectedTargets", "absentTargets", "functions"]);
+  assert.equal(value.schema, "catch.sales-pr543-before/v1");
+  assert.equal(value.scope, SALES_PR543_RELEASE.scope);
+  assert.equal(value.sourceSha, SALES_PR543_RELEASE.sourceSha);
+  assert.equal(value.packageSha256, SALES_PR543_RELEASE.packageSha256);
+  salesSame(value.selectedTargets, SALES_PR543_RELEASE.targets);
+  salesSame(value.absentTargets, SALES_PR543_RELEASE.addedTargets);
+  assert.ok(Array.isArray(value.functions) && value.functions.length === SALES_PR543_RETAINED_TARGETS.length);
+  value.functions.forEach((identity, index) => validateFunctionIdentity(identity,
+    {scope: SALES_PR543_RELEASE.scope, target: SALES_PR543_RETAINED_TARGETS[index]}));
+  return structuredClone(value);
+}
+
+export function validateSalesPr543Before(value) {
+  return salesSafe(() => salesBefore(value));
+}
+
+export function completeSalesPr543Release({manifest: rawManifest, packagePlan, before, deployment,
+  expectedParamsSha256, functions}) {
+  return salesSafe(() => {
+    const manifest = salesManifest(rawManifest);
+    prepareSalesPr543Release({packagePlan, manifest});
+    before = salesBefore(before);
+    assert.match(expectedParamsSha256 ?? "", /^[0-9a-f]{64}$/u);
+    validateFunctionsDeployment(deployment, {manifest, scope: SALES_PR543_RELEASE.scope,
+      baseSha: SALES_PR543_RELEASE.baseSha, selectedTargets: SALES_PR543_RELEASE.targets,
+      paramsSha256: expectedParamsSha256});
+    const actual = captureFunctionIdentities(functions, SALES_PR543_RELEASE.scope, SALES_PR543_RELEASE.targets);
+    salesSame(actual, deployment.functions);
+    const actualByTarget = new Map(SALES_PR543_RELEASE.targets.map((target, index) => [target, actual[index]]));
+    SALES_PR543_RETAINED_TARGETS.forEach((target, index) => {
+      assert.notEqual(actualByTarget.get(target).revision, before.functions[index].revision);
+      assert.notEqual(actualByTarget.get(target).build, before.functions[index].build);
+    });
+    return {schema: "catch.sales-pr543-selected-receipt/v1", scope: SALES_PR543_RELEASE.scope,
+      sourceSha: SALES_PR543_RELEASE.sourceSha, packageSha256: SALES_PR543_RELEASE.packageSha256,
+      selectedTargets: [...SALES_PR543_RELEASE.targets], addedTargets: [...SALES_PR543_RELEASE.addedTargets],
+      paramsSha256: expectedParamsSha256, beforeSha256: bytesDigest(JSON.stringify(before)), functions: actual,
+      rulesTarget: "firestore:rules", coverage: "selected-physical-identities-and-exact-rules-only"};
+  });
+}
+
+const salesRead = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
+const salesWrite = (file, value) => fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, {flag: "wx", mode: 0o600});
+const salesOptions = (args) => {
+  const result = {};
+  for (let index = 0; index < args.length; index += 2) {
+    assert.ok(args[index]?.startsWith("--") && args[index + 1]);
+    const key = args[index].slice(2);
+    assert.ok(!Object.hasOwn(result, key));
+    result[key] = args[index + 1];
+  }
+  return result;
+};
+
+export async function runSalesPr543ReleaseCli(argv, {readLive = liveFunctions, runCommand = spawnSync} = {}) {
+  try {
+    const [command, ...rest] = argv;
+    assert.ok(["checkpoint-source", "checkpoint-only", "source", "prepare", "params", "stage", "before", "verify-before", "complete"].includes(command));
+    const args = salesOptions(rest);
+    salesExactKeys(args, command === "checkpoint-source" ? ["source-sha", "current-main", "source-root", "run-id", "run-attempt"] :
+      command === "checkpoint-only" ? ["manifest", "package-plan", "before", "deployment", "checkpoint",
+        "params-file", "stage", "source-root", "package-root", "current-main", "run-id", "run-attempt", "readiness-candidate"] :
+      command === "source" ? ["source-sha", "current-main", "source-root"] :
+      command === "params" ? ["params-file"] :
+      command === "stage" ? ["stage", "target"] :
+      command === "verify-before" ? ["manifest", "package-plan", "before"] :
+      command === "complete" ? ["manifest", "package-plan", "before", "deployment", "params-sha256", "output"] :
+        ["manifest", "package-plan", "output"]);
+    if (command === "source") return checkSalesGitCompatibility(
+      args["source-sha"], args["current-main"], args["source-root"]);
+    if (command === "checkpoint-source") return checkSalesCheckpointSource(
+      args["source-sha"], args["current-main"], args["source-root"], args["run-id"], args["run-attempt"]);
+    if (command === "checkpoint-only") {
+      checkSalesCheckpointSource(SALES_PR543_RELEASE.sourceSha, args["current-main"], args["source-root"],
+        args["run-id"], args["run-attempt"]);
+      const execute = (name, options) => {
+        const result = runCommand(name, options, {encoding: "utf8", timeout: 120000, maxBuffer: 1024 * 1024});
+        assert.ifError(result.error);
+        assert.equal(result.status, 0, "Sales checkpoint-only metadata verification failed.");
+        return result.stdout;
+      };
+      const sourceRoot = path.resolve(args["source-root"]);
+      const target = SALES_PR543_RELEASE.targets.join(",");
+      return await verifySalesCheckpointOnly({manifest: salesRead(args.manifest), packagePlan: salesRead(args["package-plan"]),
+        before: salesRead(args.before), deployment: salesRead(args.deployment), checkpoint: salesRead(args.checkpoint),
+        stage: args.stage, expectedParamsSha256: verifySalesPr543Params(args["params-file"]).paramsSha256,
+        acceptedRules: Buffer.from(execute("git", ["-C", sourceRoot, "show", `${SALES_PR543_RELEASE.sourceSha}:firestore.rules`])),
+        packagedRules: fs.readFileSync(path.join(args["package-root"], "firestore.rules"))}, {
+        readLive,
+        readPolicy: async (service) => JSON.parse(execute("gcloud", ["run", "services", "get-iam-policy",
+          service.split("/").at(-1), "--project", SALES_PR543_RELEASE.projectId,
+          "--region", "asia-south1", "--format=json"])),
+        checkParity: async () => execute(process.execPath, [path.join(path.dirname(fileURLToPath(import.meta.url)),
+          "../firebase/check_deploy_parity.mjs"), "--env", "prod", "--repo-root", sourceRoot, "--targets", target]),
+        checkReadiness: async () => execute(process.execPath, [path.join(path.dirname(fileURLToPath(import.meta.url)),
+          "../firebase/check_environment_readiness.mjs"), "--env", "prod", "--targets", target,
+        "--source-root", sourceRoot, "--source-sha", SALES_PR543_RELEASE.sourceSha,
+        "--candidate", args["readiness-candidate"], "--phase", "deployed"]),
+      });
+    }
+    if (command === "params") return verifySalesPr543Params(args["params-file"]);
+    if (command === "stage") {
+      if (args.stage === "functions") assert.equal(args.target, SALES_PR543_RELEASE.targets.join(","));
+      else {
+        assert.equal(args.stage, "firestore-rules");
+        assert.equal(args.target, "firestore:rules");
+      }
+      return {authorizedStage: args.stage};
+    }
+    const manifest = salesRead(args.manifest);
+    const packagePlan = salesRead(args["package-plan"]);
+    if (command === "verify-before") {
+      prepareSalesPr543Release({packagePlan, manifest});
+      validateSalesPr543Before(salesRead(args.before));
+      return {verifiedBefore: true, existingFunctions: 23, absentFunctions: 21};
+    }
+    if (command === "prepare") {
+      salesWrite(args.output, prepareSalesPr543Release({packagePlan, manifest}));
+      return {prepared: true, selectedFunctions: 44, selectedRules: 1};
+    }
+    if (command === "before") {
+      const functions = await readLive(SALES_PR543_RELEASE.projectId, SALES_PR543_RETAINED_TARGETS,
+        {absentTargets: SALES_PR543_RELEASE.addedTargets});
+      salesWrite(args.output, captureSalesPr543Before({manifest, packagePlan, functions}));
+      return {verifiedBefore: true, existingFunctions: 23, absentFunctions: 21};
+    }
+    const functions = await readLive(SALES_PR543_RELEASE.projectId, SALES_PR543_RELEASE.targets);
+    const result = completeSalesPr543Release({manifest, packagePlan, functions,
+      before: salesRead(args.before), deployment: salesRead(args.deployment),
+      expectedParamsSha256: args["params-sha256"]});
+    salesWrite(args.output, result);
+    return {verifiedComplete: true, selectedFunctions: 44, selectedRules: 1};
+  } catch { return salesFail(); }
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runSalesPr543ReleaseCli(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
   });
 }

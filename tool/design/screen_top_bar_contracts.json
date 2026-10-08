@@ -210,7 +210,7 @@
       "expression": "CatchTopBar.identity",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "backUnlessEmbedded"
+      "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_editor.dart",
@@ -443,15 +443,6 @@
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
-    },
-    {
-      "path": "lib/programs/presentation/program_list_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "occurrences": 7
     },
     {
       "path": "lib/programs/presentation/program_team_screen.dart",

@@ -55,12 +55,14 @@ export interface CatchFirebaseLookupTransport {
  * Uses Google's fixed HTTPS origin, OAuth and a projected protected lookup.
  * No SDK private internals or rounded UserMetadata.creationTime are used.
  */
-export function createCatchGoogleFirebaseLookupTransport():
+export function createCatchGoogleFirebaseLookupTransport(projectId: string):
 CatchFirebaseLookupTransport {
+  identity({projectId, uid: "project-validation"});
   let authPromise: Promise<GoogleAuth> | undefined;
   const auth = () => {
     authPromise ??= import("google-auth-library").then(({GoogleAuth}) =>
-      new GoogleAuth({scopes: [scope]}));
+      new GoogleAuth({projectId, scopes: [scope],
+        clientOptions: {quotaProjectId: projectId}}));
     return authPromise;
   };
   return {
@@ -76,7 +78,8 @@ CatchFirebaseLookupTransport {
         identity({projectId: request.projectId, uid: request.body.localId[0]});
         const expectedUrl = origin + "/v1/projects/" + request.projectId +
           "/accounts:lookup";
-        if (request.url !== expectedUrl || request.method !== "POST" ||
+        if (request.projectId !== projectId ||
+            request.url !== expectedUrl || request.method !== "POST" ||
             request.body.localId.length !== 1 || request.fields !== fields ||
             request.timeoutMillis !== lifetimeMillis ||
             request.retry !== false ||
@@ -86,6 +89,7 @@ CatchFirebaseLookupTransport {
         const headers = await google.getRequestHeaders(expectedUrl);
         if (request.signal.aborted) deny();
         headers.set("Content-Type", "application/json");
+        headers.set("X-Goog-User-Project", projectId);
         const url = new URL(expectedUrl);
         url.searchParams.set("fields", fields);
         // No fetch retry; every redirect is an error.
@@ -166,9 +170,13 @@ CatchFirebaseAuthorityOptions): {
         if (!Array.isArray(users) || users.length !== 1) deny();
         const user = record(users[0]);
         if (user.localId !== uid || user.tenantId !== undefined ||
-            user.disabled !== false) deny();
+            ("disabled" in user && user.disabled !== false)) deny();
         const creationTimeMillis = int64(user.createdAt, 1);
-        const tokensValidAfterMillis = int64(user.validSince, 1000);
+        // Identity Toolkit omits enabled/default fields. Like Admin UserRecord,
+        // absent validSince means no revocation cutoff; zero is that sentinel,
+        // not an invented account/session time. Present values stay strict.
+        const tokensValidAfterMillis = "validSince" in user ?
+          int64(user.validSince, 1000) : 0;
         if (creationTimeMillis > started || tokensValidAfterMillis > started) {
           deny();
         }

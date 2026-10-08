@@ -30465,6 +30465,24 @@
   "@hostEventOfferSelectEvent": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferSelectEventEmpty": "No eligible upcoming events are available.",
   "@hostEventOfferSelectEventEmpty": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
+  "hostEventOfferChooseForRecipient": "Choose an event for {name}",
+  "@hostEventOfferChooseForRecipient": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80, "placeholders": {"name": {"type": "String"}}},
+  "hostEventOfferChooseForRecipients": "Choose an event for {count} people",
+  "@hostEventOfferChooseForRecipients": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80, "placeholders": {"count": {"type": "int"}}},
+  "hostEventOfferLoadingEvents": "Loading events…",
+  "@hostEventOfferLoadingEvents": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
+  "hostEventOfferPreparing": "Preparing offer…",
+  "@hostEventOfferPreparing": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
+  "hostEventOfferLoadingExisting": "Loading offer…",
+  "@hostEventOfferLoadingExisting": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
+  "hostEventOfferPreparingMessage": "Preparing message…",
+  "@hostEventOfferPreparingMessage": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
+  "hostEventOfferCancelPreparation": "Cancel preparation",
+  "@hostEventOfferCancelPreparation": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
+  "hostEventOfferSetupRequired": "This event needs offer settings before you can create an offer. Review its payment method and offer expiry.",
+  "@hostEventOfferSetupRequired": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 180},
+  "hostResponseAddReviewNote": "Add note",
+  "@hostResponseAddReviewNote": {"description": "Host response event chooser or offer preparation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferNeedsContact": "Review these responses and add them to People before offering an event.",
   "@hostEventOfferNeedsContact": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferConvertContact": "Review response",
@@ -30485,8 +30503,6 @@
   "@hostEventOfferUntitledEvent": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferLoadMoreEvents": "Load more events",
   "@hostEventOfferLoadMoreEvents": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
-  "hostEventOfferConfigurePayment": "Configure event payment terms before creating offers.",
-  "@hostEventOfferConfigurePayment": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferOpenSettings": "Open event settings",
   "@hostEventOfferOpenSettings": {"description": "Host forms to event offer action or state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 80},
   "hostEventOfferStatusDraft": "Draft",
@@ -30679,16 +30695,8 @@
   "@hostFormPaymentCollectionUnavailable": {"description": "Selected form collection method is disabled or unsupported.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"},
   "programsListTitle": "Programs",
   "@programsListTitle": {"description": "Program workspace copy: programsListTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListNoOrganizerTitle": "No organizer selected",
-  "@programsListNoOrganizerTitle": {"description": "Program workspace copy: programsListNoOrganizerTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListNoOrganizerMessage": "Pick an organizer to manage its programs.",
-  "@programsListNoOrganizerMessage": {"description": "Program workspace copy: programsListNoOrganizerMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsListCreateLabel": "New program",
   "@programsListCreateLabel": {"description": "Program workspace copy: programsListCreateLabel.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListEmptyTitle": "No programs yet",
-  "@programsListEmptyTitle": {"description": "Program workspace copy: programsListEmptyTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsListEmptyMessage": "Create a multi-day program to coordinate functions, travel and guest RSVP.",
-  "@programsListEmptyMessage": {"description": "Program workspace copy: programsListEmptyMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsListRowActions": "Program actions",
   "@programsListRowActions": {"description": "Program workspace copy: programsListRowActions.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsListArchiveAction": "Archive program",
@@ -30723,9 +30731,9 @@
   "@programsCreateTimezoneLabel": {"description": "Program workspace copy: programsCreateTimezoneLabel.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsCreateTimezoneHint": "America/Los_Angeles",
   "@programsCreateTimezoneHint": {"description": "Program workspace copy: programsCreateTimezoneHint.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsCreateStartLabel": "First day",
+  "programsCreateStartLabel": "Start date",
   "@programsCreateStartLabel": {"description": "Program workspace copy: programsCreateStartLabel.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsCreateEndLabel": "Last day",
+  "programsCreateEndLabel": "End date",
   "@programsCreateEndLabel": {"description": "Program workspace copy: programsCreateEndLabel.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsCreateSubmit": "Create program",
   "@programsCreateSubmit": {"description": "Program workspace copy: programsCreateSubmit.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
@@ -30785,10 +30793,6 @@
   "@programsWorkspaceMomentsTitle": {"description": "Program workspace copy: programsWorkspaceMomentsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsWorkspaceInboxTitle": "Guest inbox",
   "@programsWorkspaceInboxTitle": {"description": "Program workspace copy: programsWorkspaceInboxTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsWorkspaceLogisticsTitle": "Logistics",
-  "@programsWorkspaceLogisticsTitle": {"description": "Program workspace copy: programsWorkspaceLogisticsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
-  "programsWorkspaceLogisticsSubtitle": "Pickup points and hotels staff operate against",
-  "@programsWorkspaceLogisticsSubtitle": {"description": "Program workspace copy: programsWorkspaceLogisticsSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsWorkspacePickupTitle": "Pickup points",
   "@programsWorkspacePickupTitle": {"description": "Program workspace copy: programsWorkspacePickupTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_workspace"},
   "programsWorkspacePickupNew": "Add pickup point",
@@ -31564,6 +31568,269 @@
   "@programsLodgingMembershipExpired": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen"},
   "programsLodgingMembershipEvidence": "{group}: {status} · {source}",
   "@programsLodgingMembershipEvidence": {"description": "Private source-labelled social membership review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_lodging_screen", "placeholders": {"group": {"type": "String"}, "status": {"type": "String"}, "source": {"type": "String"}}},
+  "programsEntryTitle": "Create",
+  "@programsEntryTitle": {
+    "description": "Host program creation and Events inventory: programsEntryTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEntryEventTab": "Event",
+  "@programsEntryEventTab": {
+    "description": "Host program creation and Events inventory: programsEntryEventTab.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEntryProgramTab": "Program",
+  "@programsEntryProgramTab": {
+    "description": "Host program creation and Events inventory: programsEntryProgramTab.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEntryProgramBody": "Coordinate a multi-day program and manage its events, travel and guest RSVP.",
+  "@programsEntryProgramBody": {
+    "description": "Host program creation and Events inventory: programsEntryProgramBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateKindLabel": "Program type",
+  "@programsCreateKindLabel": {
+    "description": "Host program creation and Events inventory: programsCreateKindLabel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateChooseKind": "Choose a program type",
+  "@programsCreateChooseKind": {
+    "description": "Host program creation and Events inventory: programsCreateChooseKind.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateKindWedding": "Wedding",
+  "@programsCreateKindWedding": {
+    "description": "Host program creation and Events inventory: programsCreateKindWedding.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateKindCorporate": "Corporate",
+  "@programsCreateKindCorporate": {
+    "description": "Host program creation and Events inventory: programsCreateKindCorporate.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateKindSocial": "Social",
+  "@programsCreateKindSocial": {
+    "description": "Host program creation and Events inventory: programsCreateKindSocial.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateKindOther": "Other",
+  "@programsCreateKindOther": {
+    "description": "Host program creation and Events inventory: programsCreateKindOther.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateRequired": "Required",
+  "@programsCreateRequired": {
+    "description": "Host program creation and Events inventory: programsCreateRequired.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateTooLong": "Use {maximum} characters or fewer.",
+  "@programsCreateTooLong": {
+    "description": "Host program creation and Events inventory: programsCreateTooLong.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create",
+    "placeholders": {
+      "maximum": {
+        "type": "int"
+      }
+    }
+  },
+  "programsCreateInvalidDate": "Choose a valid date.",
+  "@programsCreateInvalidDate": {
+    "description": "Host program creation and Events inventory: programsCreateInvalidDate.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateEndAfterStart": "End date must be after start date.",
+  "@programsCreateEndAfterStart": {
+    "description": "Host program creation and Events inventory: programsCreateEndAfterStart.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateRetry": "Retry and confirm program",
+  "@programsCreateRetry": {
+    "description": "Host program creation and Events inventory: programsCreateRetry.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreatePendingBody": "Your save may have reached Catch. Retry the same save to recover its result before changing these details.",
+  "@programsCreatePendingBody": {
+    "description": "Host program creation and Events inventory: programsCreatePendingBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateConfirmingBody": "Your program is saved. Confirming it appears in Events…",
+  "@programsCreateConfirmingBody": {
+    "description": "Host program creation and Events inventory: programsCreateConfirmingBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateNotVisibleBody": "Your program is saved, but Events has not confirmed it yet. Retry to refresh the list; this will not create another program.",
+  "@programsCreateNotVisibleBody": {
+    "description": "Host program creation and Events inventory: programsCreateNotVisibleBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateActorChangedTitle": "Organizer access changed",
+  "@programsCreateActorChangedTitle": {
+    "description": "Host program creation and Events inventory: programsCreateActorChangedTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateActorChangedBody": "Your account or selected organizer changed. Return to Events and start with the current organizer.",
+  "@programsCreateActorChangedBody": {
+    "description": "Host program creation and Events inventory: programsCreateActorChangedBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateLeaveTitle": "Leave this program?",
+  "@programsCreateLeaveTitle": {
+    "description": "Host program creation and Events inventory: programsCreateLeaveTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateLeaveDraftBody": "Your program details have not been saved. Stay to keep editing, or discard this draft.",
+  "@programsCreateLeaveDraftBody": {
+    "description": "Host program creation and Events inventory: programsCreateLeaveDraftBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateLeavePendingBody": "This save may have reached Catch. Stay and retry to confirm its result, or leave and check Events before starting another program.",
+  "@programsCreateLeavePendingBody": {
+    "description": "Host program creation and Events inventory: programsCreateLeavePendingBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateKeepEditing": "Keep editing",
+  "@programsCreateKeepEditing": {
+    "description": "Host program creation and Events inventory: programsCreateKeepEditing.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateLeaveAction": "Leave",
+  "@programsCreateLeaveAction": {
+    "description": "Host program creation and Events inventory: programsCreateLeaveAction.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEventRowLabel": "Program",
+  "@programsEventRowLabel": {
+    "description": "Host program creation and Events inventory: programsEventRowLabel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEventDateRange": "{start} – {end}",
+  "@programsEventDateRange": {
+    "description": "Host program creation and Events inventory: programsEventDateRange.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "programsEventCount": "{count, plural, =0{No events} =1{1 event} other{{count} events}}",
+  "@programsEventCount": {
+    "description": "Host program creation and Events inventory: programsEventCount.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "programsEventCountUnavailable": "Event count unavailable",
+  "@programsEventCountUnavailable": {
+    "description": "Host program creation and Events inventory: programsEventCountUnavailable.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEventArchived": "Archived",
+  "@programsEventArchived": {
+    "description": "Host program creation and Events inventory: programsEventArchived.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateSaving": "Creating program…",
+  "@programsCreateSaving": {
+    "description": "Host Program first-save progress and recovery: programsCreateSaving.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateConfirming": "Confirming program…",
+  "@programsCreateConfirming": {
+    "description": "Host Program first-save progress and recovery: programsCreateConfirming.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateViewEvents": "View in Events",
+  "@programsCreateViewEvents": {
+    "description": "Host Program first-save progress and recovery: programsCreateViewEvents.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsCreateSavedBody": "Your program is saved and available in Events.",
+  "@programsCreateSavedBody": {
+    "description": "Host Program first-save progress and recovery: programsCreateSavedBody.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_create"
+  },
+  "programsEventsLoadMore": "Load more programs",
+  "@programsEventsLoadMore": {
+    "description": "Loads the next bounded program inventory page in Events.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation"
+  },
   "hostsOperationalRosterIntakeReviewTitle": "Review guest changes",
   "@hostsOperationalRosterIntakeReviewTitle": {"description": "Title for the saved Host roster intake review sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet"},
   "hostsOperationalRosterIntakeResume": "Resume saved review",

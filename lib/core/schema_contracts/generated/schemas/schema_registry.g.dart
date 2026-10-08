@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'CatchWhatsappOperatorSetupOperationDocument',
+    source: 'firestore/catch_whatsapp_operator_setup_operations.schema.json',
+    schema: schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CatchWhatsappOperatorSetupAuditDocument',
+    source: 'firestore/catch_whatsapp_operator_setup_audits.schema.json',
+    schema: schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ManageHostRosterIntakeCallablePayload',
     source: 'callables/manage_host_roster_intake_payload.schema.json',
     schema: schemaManageHostRosterIntakeCallablePayloadSchema,
@@ -3907,6 +3917,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaPaymentDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'NativeRefundRecoveryCursorDocument',
+    source: 'firestore/native_refund_recovery_cursor.schema.json',
+    schema: schemaNativeRefundRecoveryCursorDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'HostPaymentAccountDocument',
     source: 'firestore/host_payment_accounts.schema.json',
     schema: schemaHostPaymentAccountDocumentSchema,
@@ -6089,6 +6104,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'CatchWhatsappOperatorSetupOperationDocument': schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
+  'CatchWhatsappOperatorSetupAuditDocument': schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
   'ManageHostRosterIntakeCallablePayload': schemaManageHostRosterIntakeCallablePayloadSchema,
   'HostRosterIntakeSessionDocument': schemaHostRosterIntakeSessionDocumentSchema,
   'HostRosterIntakeReceiptDocument': schemaHostRosterIntakeReceiptDocumentSchema,
@@ -6867,6 +6884,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'HostAnalyticsEvent': schemaHostAnalyticsEventSchema,
   'UserProfileExposureEvent': schemaUserProfileExposureEventSchema,
   'PaymentDocument': schemaPaymentDocumentSchema,
+  'NativeRefundRecoveryCursorDocument': schemaNativeRefundRecoveryCursorDocumentSchema,
   'HostPaymentAccountDocument': schemaHostPaymentAccountDocumentSchema,
   'RazorpayPendingOrderDocument': schemaRazorpayPendingOrderDocumentSchema,
   'SwipeDocument': schemaSwipeDocumentSchema,
@@ -7306,6 +7324,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/catch_whatsapp_operator_setup_operations.schema.json': schemaCatchWhatsappOperatorSetupOperationDocumentSchema,
+  'firestore/catch_whatsapp_operator_setup_audits.schema.json': schemaCatchWhatsappOperatorSetupAuditDocumentSchema,
   'callables/manage_host_roster_intake_payload.schema.json': schemaManageHostRosterIntakeCallablePayloadSchema,
   'firestore/host_roster_intake_sessions.schema.json': schemaHostRosterIntakeSessionDocumentSchema,
   'firestore/host_roster_intake_receipts.schema.json': schemaHostRosterIntakeReceiptDocumentSchema,
@@ -8084,6 +8104,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'bigquery/host_analytics_event.schema.json': schemaHostAnalyticsEventSchema,
   'bigquery/user_profile_exposure_event.schema.json': schemaUserProfileExposureEventSchema,
   'firestore/payments.schema.json': schemaPaymentDocumentSchema,
+  'firestore/native_refund_recovery_cursor.schema.json': schemaNativeRefundRecoveryCursorDocumentSchema,
   'firestore/host_payment_accounts.schema.json': schemaHostPaymentAccountDocumentSchema,
   'firestore/razorpay_pending_orders.schema.json': schemaRazorpayPendingOrderDocumentSchema,
   'firestore/swipes.schema.json': schemaSwipeDocumentSchema,

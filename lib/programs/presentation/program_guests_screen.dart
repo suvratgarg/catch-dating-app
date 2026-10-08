@@ -3,18 +3,26 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_access.dart';
+import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
+import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
+import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Household × function RSVP grid for the organizer workspace. One function
 /// is selected at a time; each household card lists members with their join
@@ -29,6 +37,19 @@ class ProgramGuestsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detailAsync = ref.watch(organizerProgramDetailProvider(programId));
     final guestsAsync = ref.watch(programGuestListProvider(programId));
+    final phoneImportEnabled = ref.watch(
+      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
+    );
+    final detailState = catchAsyncStateFromAsyncValue(detailAsync);
+    final program = detailState.isSettledData
+        ? detailState.value?.program
+        : null;
+    final workAccessAsync =
+        phoneImportEnabled &&
+            program?.kind == ProgramKind.wedding &&
+            program?.status != ProgramStatus.archived
+        ? ref.watch(programWorkEntryProvider(programId, null))
+        : null;
     return CatchAsyncBoundary<OrganizerProgramDetail>(
       retainDataOn: const {},
       value: detailAsync,
@@ -114,6 +135,53 @@ class ProgramGuestsScreen extends ConsumerWidget {
           guestPage: page,
           canManageGuests: true,
           canShareRsvpLinks: detail.program.status != ProgramStatus.archived,
+          phoneImportSection:
+              workAccessAsync != null &&
+                  detail.program.kind == ProgramKind.wedding &&
+                  detail.program.status != ProgramStatus.archived
+              ? CatchAsyncBoundary<ProgramReadView<ProgramWorkAccess>>(
+                  retainDataOn: const {},
+                  value: workAccessAsync,
+                  onRetry: () =>
+                      ref.invalidate(programWorkEntryProvider(programId, null)),
+                  loadingBuilder: (_) => const CatchLoadingIndicator(),
+                  errorBuilder: (context, error, _, onRetry) =>
+                      error is PermissionException ||
+                          error is SignInRequiredException ||
+                          error is DocumentNotFoundException
+                      ? const SizedBox.shrink()
+                      : CatchLocalizedErrorState(
+                          error,
+                          context: AppErrorContext.event,
+                          mode: CatchErrorStateMode.inline,
+                          onRetry: onRetry,
+                          retryLabel: context.l10n.sharedActionTryAgain,
+                        ),
+                  builder: (context, result) {
+                    final access = result.value;
+                    if (result.snapshotAt != null ||
+                        access.programId != programId ||
+                        access.organizerId != detail.program.organizerId ||
+                        !access.isManager ||
+                        !canImportWeddingPhoneContacts(
+                          access,
+                          DateTime.now(),
+                        )) {
+                      return const SizedBox.shrink();
+                    }
+                    return CatchSection.action(
+                      title: context.l10n.phoneImportEntryTitle,
+                      message: context.l10n.phoneImportEntryHelp,
+                      actionKey: const ValueKey('program-guests-phone-import'),
+                      actionLabel: context.l10n.phoneImportChooseContacts,
+                      onAction: () => context.pushNamed(
+                        Routes.hostWorkPhoneImportScreen.name,
+                        pathParameters: {'programId': programId},
+                      ),
+                    );
+                  },
+                )
+              : null,
         ),
       ),
     );
@@ -145,6 +213,7 @@ class ProgramGuestsPageBody extends ConsumerStatefulWidget {
     required this.guestPage,
     required this.canManageGuests,
     this.canShareRsvpLinks = false,
+    this.phoneImportSection,
   });
 
   final String programId;
@@ -159,6 +228,9 @@ class ProgramGuestsPageBody extends ConsumerStatefulWidget {
 
   /// Link issuance is independent of coordinator-only guest edits.
   final bool canShareRsvpLinks;
+
+  /// The manager route owns live import eligibility and navigation.
+  final Widget? phoneImportSection;
 
   @override
   ConsumerState<ProgramGuestsPageBody> createState() =>
@@ -287,6 +359,8 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
       ),
       body: CatchRouteBody.standardSections(
         sections: [
+          if (widget.phoneImportSection case final section?)
+            CatchSectionListItem(child: section),
           if (widget.functions.length > 1)
             CatchSectionListItem(
               child: CatchChoiceInput<String>.segmented(
@@ -315,179 +389,157 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
               ),
             ),
           CatchSectionListItem(
-            child: CatchSection.contained(
+            child: CatchSection.collection(
               title: context.l10n.programsGuestsGridTitle,
-              subtitle: selectedFn == null
+              message: selectedFn == null
                   ? null
                   : context.l10n.programsGuestsGridSubtitle(
                       function: selectedFn.name,
                     ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.canManageGuests) ...[
-                    CatchButton(
-                      label: context.l10n.programsGuestsAddGuest,
-                      leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: () => _addGuest(context),
-                    ),
-                    const SizedBox(height: CatchSpacing.s3),
-                  ],
-                  if (page.guests.isEmpty)
-                    CatchEmptyState(
-                      icon: CatchIcons.groupsOutlined,
-                      title: context.l10n.programsGuestsEmptyTitle,
-                      message: context.l10n.programsGuestsEmptyMessage,
-                    )
-                  else ...[
-                    for (final householdId in householdIds)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  householdById[householdId]!.label,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ),
-                              if (widget.canShareRsvpLinks)
-                                CatchIconAction.icon(
-                                  icon: CatchIcons.linkRounded,
-                                  tooltip:
-                                      context.l10n.programsGuestsShareRsvpLink,
-                                  status: _pendingRsvpLinkHouseholdId != null
-                                      ? CatchIconActionStatus.disabled
-                                      : CatchIconActionStatus.enabled,
-                                  onPressed: () => _shareRsvpLink(
-                                    householdById[householdId]!,
-                                  ),
-                                ),
-                            ],
-                          ),
-                          gapH8,
-                          for (final member in guestsByHousehold[householdId]!)
-                            ProgramGuestsFunctionRow(
-                              guest: member,
-                              functions: widget.functions,
-                              selectedFunction: selectedFn,
-                              joinIndex: joinIndex,
-                              pending: _pendingGuestKey == member.guestId,
-                              onRsvp: _recordRsvp,
-                            ),
-                          gapH12,
-                        ],
-                      ),
-                    if (unaffiliated.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.l10n.programsGuestsNoHousehold,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          gapH8,
-                          for (final member in unaffiliated)
-                            ProgramGuestsFunctionRow(
-                              guest: member,
-                              functions: widget.functions,
-                              selectedFunction: selectedFn,
-                              joinIndex: joinIndex,
-                              pending: _pendingGuestKey == member.guestId,
-                              onRsvp: _recordRsvp,
-                            ),
-                        ],
-                      ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          CatchSectionListItem(
-            child: CatchSection.contained(
-              title: context.l10n.programsGuestsGroupsTitle,
-              subtitle: context.l10n.programsGuestsGroupsSubtitle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (widget.canManageGuests) ...[
-                    CatchButton(
-                      label: context.l10n.programsGuestsGroupNew,
-                      leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: () => _addGroup(context),
-                    ),
-                    const SizedBox(height: CatchSpacing.s2),
-                  ],
-                  if (page.groups.isEmpty)
-                    Text(
-                      context.l10n.programsGuestsGroupsEmpty,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    )
-                  else
-                    for (final group in page.groups)
-                      CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.group),
-                        body: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+              emptyTitle: context.l10n.programsGuestsEmptyTitle,
+              emptyMessage: context.l10n.programsGuestsEmptyMessage,
+              emptyIcon: CatchIcons.groupsOutlined,
+              actionLabel: widget.canManageGuests
+                  ? context.l10n.programsGuestsAddGuest
+                  : null,
+              onAction: widget.canManageGuests
+                  ? () => _addGuest(context)
+                  : null,
+              children: [
+                if (page.guests.isNotEmpty) ...[
+                  for (final householdId in householdIds)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              group.label,
-                              style: Theme.of(context).textTheme.titleMedium,
+                            Expanded(
+                              child: Text(
+                                householdById[householdId]!.label,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
                             ),
-                            const SizedBox(height: CatchSpacing.s1),
-                            Text(
-                              '${group.dimension} · '
-                              '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            if (group.hotelId != null)
-                              Text(
-                                context.l10n.programsGuestsGroupHotelSummary(
-                                  hotel:
-                                      widget.hotels
-                                          .where(
-                                            (hotel) =>
-                                                hotel.hotelId == group.hotelId,
-                                          )
-                                          .firstOrNull
-                                          ?.name ??
-                                      context
-                                          .l10n
-                                          .programsGuestsHotelUnavailable,
-                                ),
-                                style: Theme.of(context).textTheme.bodySmall,
+                            if (widget.canShareRsvpLinks)
+                              CatchIconAction.icon(
+                                icon: CatchIcons.linkRounded,
+                                tooltip:
+                                    context.l10n.programsGuestsShareRsvpLink,
+                                status: _pendingRsvpLinkHouseholdId != null
+                                    ? CatchIconActionStatus.disabled
+                                    : CatchIconActionStatus.enabled,
+                                onPressed: () =>
+                                    _shareRsvpLink(householdById[householdId]!),
                               ),
                           ],
                         ),
-                        trailing: widget.canManageGuests
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CatchIconAction.icon(
-                                    icon: CatchIcons.editOutlined,
-                                    variant: CatchIconActionVariant.plain,
-                                    tooltip:
-                                        context.l10n.programsGuestsGroupEdit,
-                                    onPressed: () => _editGroup(context, group),
-                                  ),
-                                  CatchIconAction.icon(
-                                    icon: CatchIcons.deleteOutline,
-                                    variant: CatchIconActionVariant.plain,
-                                    accent: CatchTokens.of(context).danger,
-                                    tooltip:
-                                        context.l10n.programsGuestsGroupDelete,
-                                    onPressed: () =>
-                                        _deleteGroup(context, group),
-                                  ),
-                                ],
-                              )
-                            : null,
-                      ),
+                        gapH8,
+                        for (final member in guestsByHousehold[householdId]!)
+                          ProgramGuestsFunctionRow(
+                            guest: member,
+                            functions: widget.functions,
+                            selectedFunction: selectedFn,
+                            joinIndex: joinIndex,
+                            pending: _pendingGuestKey == member.guestId,
+                            onRsvp: _recordRsvp,
+                          ),
+                        gapH12,
+                      ],
+                    ),
+                  if (unaffiliated.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.programsGuestsNoHousehold,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        gapH8,
+                        for (final member in unaffiliated)
+                          ProgramGuestsFunctionRow(
+                            guest: member,
+                            functions: widget.functions,
+                            selectedFunction: selectedFn,
+                            joinIndex: joinIndex,
+                            pending: _pendingGuestKey == member.guestId,
+                            onRsvp: _recordRsvp,
+                          ),
+                      ],
+                    ),
                 ],
-              ),
+              ],
+            ),
+          ),
+          CatchSectionListItem(
+            child: CatchSection.collection(
+              title: context.l10n.programsGuestsGroupsTitle,
+              message: page.groups.isEmpty
+                  ? null
+                  : context.l10n.programsGuestsGroupsSubtitle,
+              emptyTitle: context.l10n.programsGuestsGroupsEmpty,
+              emptyMessage: context.l10n.programsGuestsGroupsSubtitle,
+              emptyIcon: CatchIcons.groupsOutlined,
+              actionLabel: widget.canManageGuests
+                  ? context.l10n.programsGuestsGroupNew
+                  : null,
+              onAction: widget.canManageGuests
+                  ? () => _addGroup(context)
+                  : null,
+              children: [
+                for (final group in page.groups)
+                  CatchFieldRow.standard(
+                    leading: Icon(CatchIcons.group),
+                    body: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          group.label,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: CatchSpacing.s1),
+                        Text(
+                          '${group.dimension} · '
+                          '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        if (group.hotelId != null)
+                          Text(
+                            context.l10n.programsGuestsGroupHotelSummary(
+                              hotel:
+                                  widget.hotels
+                                      .where(
+                                        (hotel) =>
+                                            hotel.hotelId == group.hotelId,
+                                      )
+                                      .firstOrNull
+                                      ?.name ??
+                                  context.l10n.programsGuestsHotelUnavailable,
+                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                      ],
+                    ),
+                    trailing: widget.canManageGuests
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CatchIconAction.icon(
+                                icon: CatchIcons.editOutlined,
+                                variant: CatchIconActionVariant.plain,
+                                tooltip: context.l10n.programsGuestsGroupEdit,
+                                onPressed: () => _editGroup(context, group),
+                              ),
+                              CatchIconAction.icon(
+                                icon: CatchIcons.deleteOutline,
+                                variant: CatchIconActionVariant.plain,
+                                accent: CatchTokens.of(context).danger,
+                                tooltip: context.l10n.programsGuestsGroupDelete,
+                                onPressed: () => _deleteGroup(context, group),
+                              ),
+                            ],
+                          )
+                        : null,
+                  ),
+              ],
             ),
           ),
         ],

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.74.0
-updated: 2026-09-23
+version: 1.75.0
+updated: 2026-10-07
 owner: app_architecture
 status: active
 ---
@@ -537,6 +537,43 @@ async providers should follow the generated family reference in
 `ARCH-PROVIDER-CODEGEN-001`; manual providers require an exact reviewed
 exception rather than an implicit allowlist.
 
+The graph also derives responsibility review candidates from class ancestry and
+AST callsites: Listenable state owners (including inherited ChangeNotifier and
+ValueNotifier types), provider wrappers around them, direct repository
+construction by reactive owners, widget repository/backend reads, and widget
+completion state around awaited business seams or declared Future callbacks.
+Named constructors, import prefixes, local provider aliases, and extension
+methods in URI-linked part files retain their exact owner/operation identity.
+A `*_controller.dart` filename does not exempt a widget or reactive owner.
+Generated repository function factories and pure orchestration helpers are
+different responsibilities; Firebase Auth current-user reads may be legitimate
+account-currentness fences. Consumer inheritance alone proves no boundary.
+
+Ownership decisions in `provider_graph_reviews.json` name the exact candidate
+id, path, symbol, operation, observed `maxCallsites`, and rationale. A new symbol
+in a reviewed file, a same-count operation replacement, or added callsites
+requires a new review. Remove stale decisions and lower the ceiling when debt
+shrinks. `planned` means confirmed debt with a stable task id; `watch` means an
+unresolved signal whose changed fields and caller contract still need review.
+Neither disposition claims compliance. Use `accepted-exception` only for a
+named mechanical/framework/service responsibility, such as the router
+Listenable bridge. Do not generate approvals from counts or use directory,
+filename, or whole-file ownership exceptions. Manual provider declarations in
+`dependency_direction_baseline.json` likewise require their exact symbol and
+canonical builder operation; the reviewed private Host family and Programs debt
+do not admit another declaration in the same file.
+
+This is a parsed-source review gate, not whole-program type/flow analysis.
+Dynamic dispatch, typedef/tear-off callback aliases, re-export-only ancestry,
+named-library parts, and callbacks delegated through unrelated helpers still
+require manual responsibility review. It inventories concrete operations, not
+all loading flags or listeners. A syntax match requires classification; passing
+the graph does not certify lifecycle/currentness or erase recorded debt. It
+scans `lib/**` excluding `.g.dart` and `.freezed.dart`; its source-file total
+still includes generated SDK/localization files with other names and is not the
+audit's production denominator. Tests, packages and vendored package sources
+are outside this graph's roots; package-local primitives need focused review.
+
 ## Screen Definition
 
 A screen is a route-level or major navigable surface. A screen file normally
@@ -600,7 +637,7 @@ cannot accept callbacks. Secondary targets belong to `CatchFieldSecondaryAction`
 
 `CatchPageBody` remains the semantic inset owner for non-row content and legacy
 form flows. Never wrap full-width row sections with an additional horizontal
-page inset. `CatchScaffold`, `CatchMasterDetailViewport` and
+page inset. `CatchScaffold`, `CatchNavigationViewport` and
 `CatchSectionList.panes` publish local viewport bounds for geometry assertions.
 Square full-width feedback requires a matching published paint extent. Missing
 geometry context uses rounded containment; a known mismatch asserts in debug
@@ -646,13 +683,15 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   and one `CatchRootScreenPageScrollView` per page. Every page must declare
   geometry through the page owner's `standard`, `fullBleed`, or
   `embeddedViewport` constructor; `CatchRootScreenPageSpec` only selects the
-  scroll, surface, or master-detail adapter and cannot redeclare geometry or
+  scroll or surface adapter and cannot redeclare geometry or
   terminal-clearance policy.
   Overlap injection, restoration, focus isolation, body geometry, refresh, and
   terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
-  `CatchSectionList.page`; master-detail workspaces use
-  `CatchMasterDetailViewport.adaptive` at their actual responsive boundary.
+  `CatchSectionList.page`. Navigation depth uses `CatchNavigationViewport`
+  with ordered `CatchWorkspacePane` levels; local available width selects
+  concurrent columns or the active compact level. Feature pages never choose
+  different navigation destinations by device width.
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
 
@@ -661,8 +700,26 @@ The named `withPrimaryRail` constructor is a typed parameter bundle, not a
 second scaffold: it requires the rail, closed page body, and root-header spec
 together, preventing impossible half-configured states that nullable unrelated
 properties would allow. The root owner privately selects `CustomScrollView`
-without a rail or overlap-safe `NestedScrollView` with one. The adaptive app
-shell remains the separate owner of bottom navigation and its obstruction.
+without a rail or overlap-safe `NestedScrollView` with one outside a workspace.
+Inside `CatchWorkspacePaneScope`, both root and route owners delegate chrome to
+`CatchWorkspacePaneScaffold`: each full-height pane owns its title, actions, peer
+rail and body scroll. Peer rails start at the same header boundary; actions stay
+in the pane they affect. Visited ancestors keep state across resizing, while
+unvisited previews do not initialize until visible. `CatchWorkspaceBackScope`
+provides parent navigation to existing top bars; viewport back handling uses the
+same path on mobile. Events and Today encode event selection in root query
+parameters; Organizer settings replace the adjacent preview; Audience can add a
+response/application level after a person. Every Host destination is registered
+inside one of the five workspace branches. `HostNavigationWorkspace` attaches
+the selected route navigator and its declared ancestors to the existing index;
+Program subpages, Audience editors, setup flows and live work use this same
+adapter. Named push/pop results remain intact. No Host content route escapes
+to the root navigator based on width. Every named route keeps one explicit,
+canonical absolute-path declaration. The shell uses its root recipe to build
+the visible index; a routing anchor retains the navigator root for Back and
+push results without mounting a duplicate index. The composition scanner checks
+all declarations and the canonical navigation viewport. The adaptive app shell
+remains the separate owner of bottom navigation and its obstruction.
 
 `CatchPageBodyMode.standard` is the one regular body contract: 20 pt phone
 gutters and 16 pt from the preceding title/tab boundary to the standard body
@@ -980,9 +1037,10 @@ captures. Reference images alone cannot reopen or bypass this boundary.
    notifications, native menus, and window restoration stay behind replaceable
    services. Layout widgets never infer capabilities from the current window
    class.
-6. Compact child routes may continue above the root navigator. Master-detail
-   routes must later preserve selected ids in the branch/URL so resizing,
-   browser back/forward, deep links, and window restoration remain truthful.
+6. Host child routes remain in their owning workspace branch on every width.
+   The adapter presents the active level on compact screens and its available
+   ancestors on wider screens. Route identity, Back, push/pop results, drafts
+   and scroll state must survive resizing; detail selections remain in URLs.
 
 **Section-page composition**
 
@@ -1374,7 +1432,7 @@ those renderer fragments, the Section action recipe, Banner body feedback,
 and TopBar's measured frame, search field and selector-row renderers. These
 private fragments implement an existing cataloged owner's closed recipe or
 state lifecycle; they are not independently reusable components. The same
-inventory recognizes two typed domain/route factories. It does not exempt
+inventory recognizes three typed domain/route factories. It does not exempt
 sibling helpers, moved implementations, or arbitrary Widget-returning
 factories. Tests verify the named renderer methods still exist and mutation
 tests cover each identity dimension; resolved Catch UI lints separately
@@ -2082,6 +2140,16 @@ Use the smallest controller pattern that owns the lifecycle correctly:
 | View-model provider | read-only composition of repository streams/futures into screen-ready state | generated function provider |
 | Domain/use-case class | shared or complex business logic independent of Flutter | pure Dart class/function |
 
+Code generation manages the provider seam, not the state model returned by an
+arbitrary helper. A generated function returning a business ChangeNotifier is
+still manually reactive business-state ownership. Conversely, a generated
+function may provide a pure imperative effects service and register disposal
+without turning that helper into a Notifier. Synchronous immutable editors with
+supplied reviewed snapshots remain valid flow controllers; microtask, listener,
+epoch and in-flight syntax alone does not justify converting them to
+AsyncNotifier. Preserve the pending-snapshot and account/authorization fences
+below when changing ownership.
+
 Mutation key grain must match the UI interaction grain. Route-level single
 actions such as book, cancel, submit, and delete for the route's single subject
 may use static `Mutation` fields. Repeated row or list actions such as
@@ -2243,6 +2311,31 @@ sign-out, or cancellation.
 Use `AsyncNotifier<T>` when state is loaded asynchronously and then mutated by
 user actions. Good fits include queues, async local caches, paged lists, and
 screens where the controller owns both loaded state and mutation methods.
+
+The executable bounded paging reference lives in
+`test/architecture/generated_provider_family_test.dart` (`_PagedRowsOwner`).
+It uses test-only manual provider wiring to exercise the locked Riverpod API;
+production ports use `@riverpod` and a generated auto-dispose family with the
+same value-equality account/organizer scope. This fixture is a decision contract,
+not a shared app framework or certification of an existing feature controller.
+
+| Operation | Published state and concurrency | Required proof |
+|---|---|---|
+| Initial read | `build` returns a Future; Riverpod owns initial loading/error/disposal. Refresh during initial loading is a documented no-op at the command boundary. | A duplicate refresh starts no second initial read. |
+| Load more | Keep immutable rows/cursor in AsyncData; publish continuation pending/error in that immutable value. Deduplicate one cursor request and retry the same cursor after failure. | Existing rows remain usable, duplicate calls share a future, and successful pages deduplicate row identities. |
+| Refresh | Supersede continuation generation; read from the first cursor. Keep immutable previous rows with refresh pending/error, distinct from continuation error. | Delayed old success and failure cannot replace the refreshed rows or cursor. |
+| Scope/disposal | Account and organizer belong in family identity. Fence imperative continuations with `ref.mounted` and the request generation; clear leases on disposal. | A switched account sees no prior-account rows; disposed late completions cannot publish or poison a reopened family. |
+
+The reference uses public AsyncValue APIs: initial loading/errors come from
+`build`, while retained refresh/continuation feedback belongs in immutable
+page data. Do not copy Riverpod-internal `copyWithPrevious` into a new owner.
+Widgets render this state and delegate refresh/load-more; they do not store a
+second future, page list, cursor, pending/error flags, or account generation.
+Read-only composition stays a generated function provider, a synchronous editor
+stays an immutable Notifier flow, and commands follow the Mutation contract.
+Paging generation is not an authorization decision or durable command journal:
+feature ports must additionally prove their real access deadlines, auth leases,
+frozen/versioned request snapshots, idempotency and uncertain-write recovery.
 
 ### View-Model Provider
 

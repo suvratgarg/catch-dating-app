@@ -14,12 +14,18 @@ import {
   razorpayWebhookSecret,
   verifyRazorpayWebhookSignature,
 } from "./razorpay";
+import {
+  assertRazorpayOrderOwnership,
+  razorpayRuntimeProject,
+  resolveRazorpayOrderOwnership,
+} from "./razorpayOrderOwnership";
 
 interface RazorpayWebhookDeps {
   firestore: () => FirebaseFirestore.Firestore;
   createClient: () => Razorpay;
   serverTimestamp: () => unknown;
   signUpForEvent: typeof signUpUserForEvent;
+  runtimeProjectId?: () => string;
 }
 
 const defaultDeps: RazorpayWebhookDeps = {
@@ -27,6 +33,7 @@ const defaultDeps: RazorpayWebhookDeps = {
   createClient: createRazorpayClient,
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   signUpForEvent: signUpUserForEvent,
+  runtimeProjectId: razorpayRuntimeProject,
 };
 
 /**
@@ -65,15 +72,7 @@ export async function razorpayWebhookHandler(
   }
 
   if (event.event === "payment.failed") {
-    const payment = paymentEntity(event);
-    if (payment.order_id) {
-      await markRazorpayPendingOrder({
-        db,
-        orderId: payment.order_id,
-        status: "failed",
-        serverTimestamp: deps.serverTimestamp,
-      });
-    }
+    await handlePaymentFailed({db, deps, payment: paymentEntity(event)});
     return;
   }
 
@@ -107,10 +106,34 @@ async function handlePaymentCaptured({
   // Re-fetch from Razorpay rather than trusting the webhook body, and discover
   // the booking owner from the order notes (the user id lives there, set at
   // order-creation time).
-  const [order, payment] = await Promise.all([
+  const paymentRef = db.collection("payments").doc(paymentId);
+  const pendingRef = db.collection("razorpayPendingOrders").doc(orderId);
+  const [order, payment, localPayment, pendingOrder] = await Promise.all([
     razorpay.orders.fetch(orderId),
     razorpay.payments.fetch(paymentId),
+    paymentRef.get(),
+    pendingRef.get(),
   ]);
+  const runtimeProjectId =
+    (deps.runtimeProjectId ?? razorpayRuntimeProject)();
+  const ownership = resolveRazorpayOrderOwnership({
+    runtimeProjectId,
+    order,
+    frozenContexts: [
+      localPayment.data()?.razorpayOwnership,
+      pendingOrder.data()?.razorpayOwnership,
+    ],
+  });
+  // Validly signed shared-merchant traffic from another environment is
+  // acknowledged without mutating local booking, payment or tracking state.
+  if (ownership.kind !== "owned") return;
+  const razorpayOwnership = assertRazorpayOrderOwnership({
+    evidence: ownership.evidence,
+    orderId,
+    runtimeProjectId,
+  });
+  const razorpayAuthorization = {evidence: ownership.evidence,
+    runtimeProjectId};
   const expectedUserId = noteString(
     order as {notes?: Record<string, unknown> | null},
     "userId"
@@ -118,6 +141,10 @@ async function handlePaymentCaptured({
   if (!expectedUserId) {
     throw new Error("Razorpay order is missing the userId note.");
   }
+
+  if (isExactTerminalRefundReplay({order, payment,
+    localPayment: localPayment.data(), orderId, paymentId,
+    userId: expectedUserId})) return;
 
   const booking = verifyPaidEventBooking({
     order,
@@ -130,11 +157,71 @@ async function handlePaymentCaptured({
     orderId,
     paymentId,
     booking,
+    razorpayOwnership,
+    razorpayAuthorization,
     deps: {
       signUpForEvent: deps.signUpForEvent,
       serverTimestamp: deps.serverTimestamp,
     },
   });
+}
+
+async function handlePaymentFailed({
+  db,
+  deps,
+  payment,
+}: {
+  db: FirebaseFirestore.Firestore;
+  deps: RazorpayWebhookDeps;
+  payment: RazorpayWebhookPayment;
+}): Promise<void> {
+  const orderId = payment.order_id;
+  if (!orderId) return;
+  const razorpay = deps.createClient();
+  const [order, localPayment, pendingOrder] = await Promise.all([
+    razorpay.orders.fetch(orderId),
+    db.collection("payments").doc(payment.id).get(),
+    db.collection("razorpayPendingOrders").doc(orderId).get(),
+  ]);
+  const runtimeProjectId =
+    (deps.runtimeProjectId ?? razorpayRuntimeProject)();
+  const ownership = resolveRazorpayOrderOwnership({runtimeProjectId, order,
+    frozenContexts: [localPayment.data()?.razorpayOwnership,
+      pendingOrder.data()?.razorpayOwnership]});
+  if (ownership.kind !== "owned") return;
+  assertRazorpayOrderOwnership({evidence: ownership.evidence, orderId,
+    runtimeProjectId});
+  await markRazorpayPendingOrder({
+    db,
+    orderId,
+    status: "failed",
+    serverTimestamp: deps.serverTimestamp,
+  });
+}
+
+function isExactTerminalRefundReplay(input: {
+  order: {id: string; amount: string | number; currency: string;
+    notes?: Record<string, string | number | null> | null};
+  payment: {id: string; order_id: string; amount: string | number;
+    currency: string; status: string; amount_refunded?: number};
+  localPayment: FirebaseFirestore.DocumentData | undefined;
+  orderId: string;
+  paymentId: string;
+  userId: string;
+}): boolean {
+  const {order, payment, localPayment, orderId, paymentId, userId} = input;
+  if (!localPayment || !["refunded", "refundFailed"]
+    .includes(String(localPayment.status))) return false;
+  const amount = Number(order.amount);
+  return order.id === orderId && payment.id === paymentId &&
+    payment.order_id === orderId && Number.isSafeInteger(amount) &&
+    amount > 0 &&
+    Number(payment.amount) === amount && payment.currency === order.currency &&
+    payment.status === "refunded" && payment.amount_refunded === amount &&
+    localPayment.provider === "razorpay" && localPayment.orderId === orderId &&
+    localPayment.paymentId === paymentId && localPayment.userId === userId &&
+    localPayment.eventId === noteString(order, "eventId") &&
+    localPayment.amount === amount && localPayment.currency === order.currency;
 }
 
 interface RazorpayWebhookPayment {

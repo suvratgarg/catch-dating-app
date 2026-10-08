@@ -344,6 +344,35 @@ test("archiveProgram requires organizer manager authority",
         (error as {code?: string}).code === "permission-denied");
   });
 
+test("deleted accounts cannot archive or unarchive programs", async () => {
+  const archiveDb = new FakeFirestore(retentionSeed());
+  archiveDb.setDoc("deletedUsers/manager-1", {status: "processing"});
+  const archiveBefore = new Map(archiveDb.docs);
+  await assert.rejects(
+    archiveProgramHandler(
+      request({programId: "program-1", expectedRevision: 3}, "manager-1"),
+      retentionDeps(archiveDb)
+    ),
+    (error: unknown) =>
+      (error as {code?: string}).code === "permission-denied"
+  );
+  assert.deepEqual(archiveDb.docs, archiveBefore);
+
+  const unarchiveDb = new FakeFirestore(retentionSeed());
+  archived(unarchiveDb);
+  unarchiveDb.setDoc("deletedUsers/manager-1", {status: "processing"});
+  const unarchiveBefore = new Map(unarchiveDb.docs);
+  await assert.rejects(
+    unarchiveProgramHandler(
+      request({programId: "program-1", expectedRevision: 3}, "manager-1"),
+      retentionDeps(unarchiveDb)
+    ),
+    (error: unknown) =>
+      (error as {code?: string}).code === "permission-denied"
+  );
+  assert.deepEqual(unarchiveDb.docs, unarchiveBefore);
+});
+
 test("archiveProgram fences on revision and replays idempotently",
   async () => {
     const db = new FakeFirestore(retentionSeed());

@@ -392,6 +392,17 @@
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostOrganizerScreen"
+          ],
+          "file": "lib/routing/host_navigation_workspace.dart",
+          "symbol": "HostNavigationWorkspace",
+          "family": "root",
+          "expression": "CatchNavigationViewport",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Organizer roots use the tabbed family; club spokes use the pushed-route family."
@@ -672,6 +683,17 @@
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostAudienceScreen"
+          ],
+          "file": "lib/routing/host_navigation_workspace.dart",
+          "symbol": "HostNavigationWorkspace",
+          "family": "root",
+          "expression": "CatchNavigationViewport",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Audience owns one primary-rail root and a complete set of canonical pushed editor, form, and customer routes."
@@ -1065,33 +1087,6 @@
           ],
           "file": "lib/programs/presentation/program_work_screen.dart",
           "symbol": "ProgramWorkPageBody",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        }
-      ],
-      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
-    },
-    "screen.programs.list": {
-      "owners": [
-        {
-          "routes": [
-            "hostProgramsScreen"
-          ],
-          "file": "lib/programs/presentation/program_list_screen.dart",
-          "symbol": "ProgramListScreen",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        },
-        {
-          "routes": [
-            "hostProgramsScreen"
-          ],
-          "file": "lib/programs/presentation/program_list_screen.dart",
-          "symbol": "_ProgramListPageBodyState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
@@ -1521,6 +1516,22 @@
         }
       ],
       "reason": "The routed state owns setup editing and proposal review directly. Loading, error and missing setup use ProgramLodgingScaffold; expired authority and membership review have explicit same-route pushed-route owners. All terminals use CatchRouteScaffold with typed standard route bodies."
+    },
+    "screen.programs.create": {
+      "owners": [
+        {
+          "routes": [
+            "hostCreateProgramScreen"
+          ],
+          "file": "lib/programs/presentation/program_create_screen.dart",
+          "symbol": "ProgramCreateScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "Program creation and access states share one route-owned event form step-flow surface."
     }
   },
   "layoutOnlyRoutes": {
@@ -9988,7 +9999,7 @@
         "role": "shell",
         "expression": "shell-owned",
         "owner": "CatchAdaptiveTabScaffold",
-        "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        "reason": "Today and Events delegate to the shared pane header rhythm; selected event management or recap remains adjacent to its root on wide layouts."
       },
       "statePolicy": {
         "requiredStates": [
@@ -10426,14 +10437,14 @@
           ]
         },
         {
-          "id": "open_programs_action",
+          "id": "program_inventory_rows",
           "kind": "populated",
-          "status": "tested",
-          "source": "HostEventsClubSection owns a Programs header action beside New event that pushes hostProgramsScreen with the selected organizer id; the program index and workspace remain under the programs feature.",
+          "status": "implemented",
+          "source": "Events renders identifiable program date-range/count rows opening the existing workspace, with bounded paging, exact saved-ID anchors and scoped read retry.",
           "tests": [
             "test/hosts/host_events_layout_test.dart"
           ],
-          "nextAction": "Fold the Programs header entry into the Events tab contract if the events route gains an inline program inventory.",
+          "nextAction": "Verify unified inventory and old-link redirect regressions and captures.",
           "previewIds": [
             "hostHomeRouteStates"
           ]
@@ -16591,13 +16602,13 @@
       "shell": {
         "owner": "host",
         "nestedScaffoldAllowed": false,
-        "reason": "The Host adaptive tab shell owns directory navigation chrome; the nested detail route is presented above that shell."
+        "reason": "The Host shell owns global navigation; the shared viewport presents directory, person, and submitted-detail levels in full-height panes or one compact pane."
       },
       "topBar": {
         "role": "shell",
         "expression": "CatchTopBar.primaryRail + CatchScreenTopBar",
         "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
-        "reason": "The Audience destination uses People, Audiences, Forms, and Responses peer tabs. Add customer is explicitly People-only; Audiences exposes one in-workspace New audience action. Route-level customer, audience, and form editors own compact back titles."
+        "reason": "Each pane owns its actions and peer tabs. Audience and person tab rows align; person selection and nested submissions remain in the root navigation path at every width."
       },
       "statePolicy": {
         "requiredStates": [
@@ -17495,7 +17506,7 @@
         "role": "shell",
         "expression": "shell-owned",
         "owner": "CatchAdaptiveTabScaffold",
-        "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        "reason": "The Inbox directory and conversation each own full-height pane chrome, using the same local-width viewport as other Host destinations."
       },
       "statePolicy": {
         "requiredStates": [
@@ -27983,61 +27994,64 @@
       ]
     },
     {
-      "id": "screen.programs.list",
-      "name": "Programs list",
+      "id": "screen.programs.create",
+      "name": "Create Program",
       "owner": "programs",
       "priority": "P1",
       "status": "in_progress",
       "routes": [
         {
-          "id": "hostProgramsScreen",
-          "path": "/host/programs",
+          "id": "hostCreateProgramScreen",
+          "path": "/host/organizers/:clubId/create-program",
           "role": "primary"
         }
       ],
       "source": {
-        "file": "lib/programs/presentation/program_list_screen.dart",
-        "symbol": "ProgramListScreen"
+        "file": "lib/programs/presentation/program_create_screen.dart",
+        "symbol": "ProgramCreateScreen"
       },
       "shell": {
         "owner": "host",
         "nestedScaffoldAllowed": false,
-        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+        "reason": "Pushed creation uses the same full-form step-flow chrome as Create Event."
       },
       "topBar": {
-        "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchRouteScaffold",
-        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+        "role": "step-flow",
+        "expression": "CatchStepHeader",
+        "owner": "CatchScaffold.stepFlow",
+        "reason": "The established step header owns back navigation and the form title."
       },
       "statePolicy": {
         "requiredStates": [
-          "data",
-          "empty",
+          "loading",
           "error",
-          "loading"
+          "empty",
+          "data",
+          "mutation",
+          "offline",
+          "permission"
         ],
-        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+        "owner": "ProgramCreateController and plain ProgramCreateValues"
       },
       "stateController": {
-        "primary": "organizerProgramList",
+        "primary": "ProgramCreateController",
         "files": [
           {
-            "file": "lib/programs/presentation/program_list_screen.dart",
-            "symbol": "ProgramListScreen"
+            "file": "lib/programs/presentation/program_create_controller.dart",
+            "symbol": "ProgramCreateController"
           },
           {
-            "file": "lib/programs/data/program_setup_repository.dart",
-            "symbol": "organizerProgramList"
+            "file": "lib/programs/presentation/program_create_state.dart",
+            "symbol": "ProgramCreateValues"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/programs/presentation/program_workspace_controller.dart",
-            "symbol": "ProgramWorkspaceController"
+            "file": "lib/programs/presentation/program_create_controller.dart",
+            "symbol": "ProgramCreateController"
           }
         ],
-        "notes": "Mutations route through ProgramWorkspaceController: creates programs through upsertProgram."
+        "notes": "The controller validates canonical fields, retains keyed commands and receipts, verifies exact saved identity and one bounded inventory row before successful navigation."
       },
       "designRefs": [
         {
@@ -28048,93 +28062,179 @@
           "notes": "R1 organizer program workspace surface."
         }
       ],
-      "captures": [],
+      "captures": [
+        {
+          "id": "program_create_draft",
+          "status": "planned",
+          "notes": "A labeled full form preserves its local draft."
+        },
+        {
+          "id": "program_create_validation",
+          "status": "planned",
+          "notes": "Required title, type, timezone and ordered dates report inline errors before any request."
+        },
+        {
+          "id": "program_create_pending",
+          "status": "planned",
+          "notes": "Creation and exact-ID confirmation show loading and prevent duplicate submits."
+        },
+        {
+          "id": "program_create_failure",
+          "status": "planned",
+          "notes": "Failure retains the submitted draft, request key and any saved receipt for retry."
+        }
+      ],
       "states": [
+        {
+          "id": "draft",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "A labeled full form preserves its local draft.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "validation",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Required title, type, timezone and ordered dates report inline errors before any request.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "pending",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "Creation and exact-ID confirmation show loading and prevent duplicate submits.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "failure",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Failure retains the submitted draft, request key and any saved receipt for retry.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "offline",
+          "kind": "offline",
+          "status": "implemented",
+          "source": "Unavailable persistence or confirmation retains the draft and exposes retry.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "permission",
+          "kind": "permission",
+          "status": "implemented",
+          "source": "Account, selected organizer and manager authority are rechecked; old-scope completion cannot navigate.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
+          ]
+        },
         {
           "id": "loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "ProgramListScreen renders the canonical loading viewport while providers resolve.",
-          "nextAction": "Review against program design references when they land.",
+          "source": "Organizer access resolves with established loading chrome.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
           "previewIds": [
-            "ProgramListScreen/Screen states"
+            "programCreateFormStates"
           ]
         },
         {
-          "id": "error",
-          "kind": "error",
-          "status": "implemented",
-          "source": "ProgramListScreen renders CatchLocalizedErrorState with scoped retry.",
-          "nextAction": "Review against program design references when they land.",
-          "previewIds": [
-            "ProgramListScreen/Screen states"
-          ]
-        },
-        {
-          "id": "populated",
+          "id": "form",
           "kind": "populated",
           "status": "implemented",
-          "source": "Program cards carry kind, status, dates and guest counts with workspace, guests, team and import navigation.",
-          "nextAction": "Review against program design references when they land.",
+          "source": "Authorized organizer access resolves to the retained Program creation form.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
           "previewIds": [
-            "ProgramListScreen/Screen states",
-            "ProgramListPageBody/Body states"
+            "programCreateFormStates"
           ]
         },
         {
-          "id": "empty",
-          "kind": "empty",
+          "id": "theme",
+          "kind": "theme",
           "status": "implemented",
-          "source": "Organizer with no programs renders CatchEmptyState and the create-program call to action.",
-          "nextAction": "Review against program design references when they land.",
+          "source": "The form uses canonical Catch fields, sections, step header and tokens in both themes.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
           "previewIds": [
-            "ProgramListScreen/Screen states",
-            "ProgramListPageBody/Body states"
+            "programCreateFormStates"
+          ]
+        },
+        {
+          "id": "large_text",
+          "kind": "accessibility",
+          "status": "implemented",
+          "source": "Form content scrolls with a safe-area footer at large text sizes.",
+          "nextAction": "Run focused regressions and inspect rendered states before completion.",
+          "previewIds": [
+            "programCreateFormStates"
           ]
         }
       ],
       "composition": {
-        "currentLayout": "ProgramListScreen resolves the signed-in host\u2019s operable organizer and composes the program index, empty state and create dialog through CatchRouteScaffold.",
-        "targetLayout": "The list continues reusing event-side organizer resolution while program counts and navigation stay data-driven.",
-        "sections": [
-          {
-            "id": "section.programs_work.adapter",
-            "name": "Program work route adapter",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [
-              "ProgramWorkScreen"
-            ],
-            "flutter": {
-              "file": "lib/programs/presentation/program_work_screen.dart",
-              "symbol": "ProgramWorkScreen"
-            },
-            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
-            "targetOwner": "provider-free program work body",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.section",
-              "catch.badge",
-              "catch.field"
-            ],
-            "states": [
-              "access_loading",
-              "access_error",
-              "workspaces",
-              "no_duties"
-            ],
-            "migration": "Keep section composition provider-free once the access payload is resolved.",
-            "previewIds": [
-              "ProgramWorkScreen/Screen states"
-            ]
-          }
-        ]
+      "currentLayout": "Labeled fields in CatchSection on the established scrollable form lane, with CatchStepHeader and SafeArea submit footer.",
+      "targetLayout": "Programs share Events discovery; this route only creates a program and returns to its exact scoped inventory row.",
+      "sections": [
+        {
+          "id": "section.programs.create_form",
+          "name": "Create program form",
+          "status": "implemented_local",
+          "layer": "screen-adapter",
+          "claudeComponents": [
+            "ProgramCreateScreen",
+            "ProgramCreatePageBody"
+          ],
+          "flutter": {
+            "file": "lib/programs/presentation/program_create_screen.dart",
+            "symbol": "ProgramCreateScreen"
+          },
+          "currentOwner": "ProgramCreateScreen + ProgramCreateController",
+          "targetOwner": "organizer-scoped route adapter plus provider-free form body",
+          "dependencies": [
+            "catch.button",
+            "catch.field",
+            "catch.section",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "states": [
+            "account_loading",
+            "organizer_loading",
+            "permission_error",
+            "draft",
+            "validation_error",
+            "submit_pending",
+            "submit_error",
+            "confirmed"
+          ],
+          "migration": "Keep authentication and organizer authority at the route boundary while the form body renders retained draft, validation, idempotent mutation, exact saved-program confirmation and retry state from ProgramCreateController.",
+          "previewIds": [
+            "programCreateScreenStates",
+            "programCreateFormStates"
+          ]
+        }
+      ]
       },
       "openGaps": [
         {
-          "id": "DP-PROGRAMS-LIST-001",
+          "id": "DP-PROGRAMS-CREATE-001",
           "status": "open",
-          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+          "nextAction": "Render genuine draft, validation, pending and failure captures and complete visual review."
         }
       ]
     },

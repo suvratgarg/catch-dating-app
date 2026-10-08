@@ -11,26 +11,14 @@ class EventAssistanceHelpEntrySection extends StatelessWidget {
   final VoidCallback onReview;
   final bool confirmationNeeded;
   @override
-  Widget build(BuildContext context) => CatchSection.divided(
+  Widget build(BuildContext context) => CatchSection.action(
     title: context.l10n.eventAssistanceHelpTitle,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          confirmationNeeded
-              ? context.l10n.eventAssistanceHelpPendingBody
-              : context.l10n.eventAssistanceHelpBody,
-          style: CatchTextStyles.supporting(context),
-        ),
-        gapH12,
-        CatchButton(
-          label: confirmationNeeded
-              ? context.l10n.eventAssistanceHelpPending
-              : context.l10n.eventAssistanceHelpReview,
-          variant: CatchButtonVariant.secondary,
-          onPressed: onReview,
-        ),
-      ],
-    ),
+    message: confirmationNeeded
+        ? context.l10n.eventAssistanceHelpPendingBody
+        : context.l10n.eventAssistanceHelpBody,
+    actionLabel: confirmationNeeded
+        ? context.l10n.eventAssistanceHelpPending
+        : context.l10n.eventAssistanceHelpReview,
+    onAction: onReview,
   );
 }

@@ -275,165 +275,167 @@ class _HostPersonConversationPageBodyState
         : catchMessages.keys.firstOrNull;
     final canSend =
         uid != null && selected != null && available.contains(selected);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchTopBar.identity(
-          identityName: person.displayName,
-          identityPhotoUrl: person.photoUrl,
-          identitySemanticLabel: person.displayName,
-          actions: [
-            if (uid != null &&
-                person.linkedUid != null &&
-                catchMessages.isNotEmpty)
-              HostPersonConversationMenu(
-                key: ValueKey('${person.key}/actions'),
-                matchId: actionSource!,
-                currentUid: uid,
-                personUid: person.linkedUid!,
-                name: person.displayName,
-                messages: catchMessages[actionSource] ?? const [],
-                onBlocked: widget.onBack,
-              ),
-          ],
-          navigation: CatchTopBarNavigation(
-            mode: widget.onBack == null
-                ? CatchTopBarNavigationMode.none
-                : CatchTopBarNavigationMode.back,
-            onPressed: widget.onBack,
-          ),
-        ),
-        CatchSection.content(
-          child: Text(
-            widget.scopeLabel ??
-                context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries,
-            style: CatchTextStyles.supporting(context),
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            controller: _scroll,
-            reverse: true,
-            key: PageStorageKey(
-              'person-history-${person.key}-${widget.scope.eventId ?? widget.scope.programId ?? 'general'}',
+    return CatchWorkspacePaneScaffold(
+      title: CatchTopBar.identity(
+        identityName: person.displayName,
+        identityPhotoUrl: person.photoUrl,
+        identitySemanticLabel: person.displayName,
+        actions: [
+          if (uid != null &&
+              person.linkedUid != null &&
+              catchMessages.isNotEmpty)
+            HostPersonConversationMenu(
+              key: ValueKey('${person.key}/actions'),
+              matchId: actionSource!,
+              currentUid: uid,
+              personUid: person.linkedUid!,
+              name: person.displayName,
+              messages: catchMessages[actionSource] ?? const [],
+              onBlocked: widget.onBack,
             ),
-            padding: CatchInsets.listBodyDense,
-            itemCount: entries.length + 1,
-            itemBuilder: (context, index) {
-              if (index == entries.length) {
+        ],
+        navigation: CatchTopBarNavigation(
+          mode: widget.onBack == null
+              ? CatchTopBarNavigationMode.none
+              : CatchTopBarNavigationMode.back,
+          onPressed: widget.onBack,
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchSection.content(
+            child: Text(
+              widget.scopeLabel ??
+                  context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              controller: _scroll,
+              reverse: true,
+              key: PageStorageKey(
+                'person-history-${person.key}-${widget.scope.eventId ?? widget.scope.programId ?? 'general'}',
+              ),
+              padding: CatchInsets.listBodyDense,
+              itemCount: entries.length + 1,
+              itemBuilder: (context, index) {
+                if (index == entries.length) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.hostInboxHistoryCoverage,
+                        style: CatchTextStyles.supporting(context),
+                      ),
+                      if (sharedScope)
+                        Text(
+                          context.l10n.hostInboxSharedThreadHistory,
+                          style: CatchTextStyles.supporting(context),
+                        ),
+                      if (partial) ...[
+                        Text(
+                          context.l10n.hostInboxPartialSources,
+                          style: CatchTextStyles.supporting(context),
+                        ),
+                        CatchButton(
+                          label: context.l10n.sharedActionTryAgain,
+                          variant: CatchButtonVariant.ghost,
+                          onPressed: _retry,
+                        ),
+                      ],
+                      for (final history in histories.entries)
+                        CatchButton(
+                          label: history.value.error == null
+                              ? context.l10n.hostInboxOlderMessages
+                              : context.l10n.sharedActionTryAgain,
+                          variant: CatchButtonVariant.ghost,
+                          onPressed: history.value.loading
+                              ? null
+                              : () => ref
+                                    .read(
+                                      hostConversationHistoryProvider(
+                                        history.key,
+                                      ).notifier,
+                                    )
+                                    .loadMore(),
+                        ),
+                      gapH12,
+                    ],
+                  );
+                }
+                final message = entries[entries.length - 1 - index];
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  key: ValueKey(message.id),
+                  crossAxisAlignment: message.isMe
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
-                      context.l10n.hostInboxHistoryCoverage,
+                      message.channel,
                       style: CatchTextStyles.supporting(context),
                     ),
-                    if (sharedScope)
-                      Text(
-                        context.l10n.hostInboxSharedThreadHistory,
-                        style: CatchTextStyles.supporting(context),
-                      ),
-                    if (partial) ...[
-                      Text(
-                        context.l10n.hostInboxPartialSources,
-                        style: CatchTextStyles.supporting(context),
-                      ),
-                      CatchButton(
-                        label: context.l10n.sharedActionTryAgain,
-                        variant: CatchButtonVariant.ghost,
-                        onPressed: _retry,
-                      ),
-                    ],
-                    for (final history in histories.entries)
-                      CatchButton(
-                        label: history.value.error == null
-                            ? context.l10n.hostInboxOlderMessages
-                            : context.l10n.sharedActionTryAgain,
-                        variant: CatchButtonVariant.ghost,
-                        onPressed: history.value.loading
-                            ? null
-                            : () => ref
-                                  .read(
-                                    hostConversationHistoryProvider(
-                                      history.key,
-                                    ).notifier,
-                                  )
-                                  .loadMore(),
-                      ),
-                    gapH12,
+                    MessageBubble(
+                      text: message.text,
+                      imageUrl: message.imageUrl,
+                      isMe: message.isMe,
+                      sentAt: message.sentAt,
+                    ),
                   ],
                 );
-              }
-              final message = entries[entries.length - 1 - index];
-              return Column(
-                key: ValueKey(message.id),
-                crossAxisAlignment: message.isMe
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
+              },
+            ),
+          ),
+          Padding(
+            padding: CatchInsets.pageHorizontal,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.hostInboxReplyVia,
+                  style: CatchTextStyles.labelL(context),
+                ),
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  children: [
+                    for (final route in routes.entries)
+                      CatchButton(
+                        label: route.value,
+                        variant: selected == route.key
+                            ? CatchButtonVariant.primary
+                            : CatchButtonVariant.secondary,
+                        size: CatchButtonSize.sm,
+                        onPressed: _sending || _sendingImage
+                            ? null
+                            : () => _selectRoute(route.key),
+                      ),
+                  ],
+                ),
+                if (!canSend)
                   Text(
-                    message.channel,
+                    selected == null
+                        ? context.l10n.hostInboxChooseReplyRoute
+                        : context.l10n.hostInboxRouteUnavailable,
                     style: CatchTextStyles.supporting(context),
                   ),
-                  MessageBubble(
-                    text: message.text,
-                    imageUrl: message.imageUrl,
-                    isMe: message.isMe,
-                    sentAt: message.sentAt,
-                  ),
-                ],
-              );
-            },
+              ],
+            ),
           ),
-        ),
-        Padding(
-          padding: CatchInsets.pageHorizontal,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.hostInboxReplyVia,
-                style: CatchTextStyles.labelL(context),
-              ),
-              Wrap(
-                spacing: CatchSpacing.s2,
-                children: [
-                  for (final route in routes.entries)
-                    CatchButton(
-                      label: route.value,
-                      variant: selected == route.key
-                          ? CatchButtonVariant.primary
-                          : CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
-                      onPressed: _sending || _sendingImage
-                          ? null
-                          : () => _selectRoute(route.key),
-                    ),
-                ],
-              ),
-              if (!canSend)
-                Text(
-                  selected == null
-                      ? context.l10n.hostInboxChooseReplyRoute
-                      : context.l10n.hostInboxRouteUnavailable,
-                  style: CatchTextStyles.supporting(context),
-                ),
-            ],
+          ChatInputBar(
+            controller: _text,
+            sending: _sending,
+            sendingImage: _sendingImage,
+            showImageButton: selected?.startsWith('catch:') == true,
+            onSendImage: canSend && selected.startsWith('catch:')
+                ? () => _sendImage(selected.substring(6), uid)
+                : null,
+            onSend: canSend
+                ? () => _send(selected, uid, whatsappDetails[selected])
+                : null,
           ),
-        ),
-        ChatInputBar(
-          controller: _text,
-          sending: _sending,
-          sendingImage: _sendingImage,
-          showImageButton: selected?.startsWith('catch:') == true,
-          onSendImage: canSend && selected.startsWith('catch:')
-              ? () => _sendImage(selected.substring(6), uid)
-              : null,
-          onSend: canSend
-              ? () => _send(selected, uid, whatsappDetails[selected])
-              : null,
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -15,6 +15,8 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "CatchWhatsappOperatorSetupOperationDocument", "source": "firestore/catch_whatsapp_operator_setup_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappOperatorSetupOperationDocument.ts"},
+  {"name": "CatchWhatsappOperatorSetupAuditDocument", "source": "firestore/catch_whatsapp_operator_setup_audits.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappOperatorSetupAuditDocument.ts"},
   {"name": "ManageHostRosterIntakeCallablePayload", "source": "callables/manage_host_roster_intake_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts"},
   {"name": "HostRosterIntakeSessionDocument", "source": "firestore/host_roster_intake_sessions.schema.json", "typeOutput": "functions/src/shared/generated/hostRosterIntakeSessionDocument.ts"},
   {"name": "HostRosterIntakeReceiptDocument", "source": "firestore/host_roster_intake_receipts.schema.json", "typeOutput": "functions/src/shared/generated/hostRosterIntakeReceiptDocument.ts"},
@@ -3203,6 +3205,12 @@ const schemaSpecs = [
     name: "PaymentDocument",
     source: "firestore/payments.schema.json",
     typeOutput: "functions/src/shared/generated/paymentDocument.ts",
+  },
+  {
+    name: "NativeRefundRecoveryCursorDocument",
+    source: "firestore/native_refund_recovery_cursor.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/nativeRefundRecoveryCursorDocument.ts",
   },
   {
     name: "HostPaymentAccountDocument",

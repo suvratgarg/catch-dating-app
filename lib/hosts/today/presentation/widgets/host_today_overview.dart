@@ -7,11 +7,9 @@ import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_event_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 export 'host_today_event_section.dart';
 
@@ -45,172 +43,40 @@ class HostTodayOverview extends StatelessWidget {
     final taskCount = state.attentionItems
         .where((data) => data.item.eventId == event?.id)
         .length;
-    final primary = _HostTodayPrimaryPane(
-      state: state,
-      event: event,
-      taskCount: taskCount,
-      taskCountIsComplete: state.attentionCountIsComplete,
-      now: now,
-      onOpenEvent: onOpenEvent,
-      onViewEvents: onViewEvents,
-      onStartRehearsal: onStartRehearsal,
-      onStartEventRehearsal: onStartEventRehearsal,
-    );
     final attention = HostTodayAttentionSection(
       state: state,
       onRetry: onRetry,
       onOpenAttention: onOpenAttention,
     );
 
-    return CatchViewport.atWidth(
-      breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compactBuilder: (_) => Column(
-        key: const ValueKey<String>('host-today-compact-layout'),
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (event != null)
-            CatchSection.content(
-              child: HostTodayEventSection(
-                event: event,
-                now: now,
-                taskCount: taskCount,
-                taskCountIsComplete: state.attentionCountIsComplete,
-                onPressed: () => onOpenEvent(event),
-                onRehearse:
-                    event.startTime.isAfter(now) &&
-                        onStartEventRehearsal != null
-                    ? () => onStartEventRehearsal!(event)
-                    : null,
-              ),
-            ),
-          if (event != null && attentionVisible) gapH28,
-          if (attentionVisible) attention,
-          if (event != null || attentionVisible) gapH28,
-          _HostTodayHorizonAndActions(
-            state: state,
-            onOpenEvent: onOpenEvent,
-            onViewEvents: onViewEvents,
-            onStartRehearsal:
-                event != null &&
-                    event.startTime.isAfter(now) &&
-                    onStartEventRehearsal != null
-                ? null
-                : onStartRehearsal,
-          ),
-        ],
-      ),
-      expandedBuilder: (_) => CatchViewport.atWidth(
-        breakpoint: CatchLayout.hostTodayExpandedAttentionPaneBreakpoint,
-        compactBuilder: (_) => _HostTodayWideLayout(
-          primary: primary,
-          attention: attention,
-          attentionVisible: attentionVisible,
-          attentionPaneWidth: CatchLayout.hostTodayAttentionPaneCompactWidth,
-        ),
-        expandedBuilder: (_) => _HostTodayWideLayout(
-          primary: primary,
-          attention: attention,
-          attentionVisible: attentionVisible,
-          attentionPaneWidth: CatchLayout.hostTodayAttentionPaneWidth,
-        ),
-      ),
-    );
-  }
-}
-
-class _HostTodayWideLayout extends StatelessWidget {
-  const _HostTodayWideLayout({
-    required this.primary,
-    required this.attention,
-    required this.attentionVisible,
-    required this.attentionPaneWidth,
-  });
-
-  final Widget primary;
-  final Widget attention;
-  final bool attentionVisible;
-  final double attentionPaneWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CatchLayout.hostTodayWorkspaceMaxContentWidth,
-        ),
-        child: CatchSectionList.panes(
-          key: const ValueKey<String>('host-today-wide-layout'),
-          body: KeyedSubtree(
-            key: const ValueKey<String>('host-today-primary-pane'),
-            child: primary,
-          ),
-          trailing: attentionVisible
-              ? KeyedSubtree(
-                  key: const ValueKey<String>('host-today-attention-pane'),
-                  child: attention,
-                )
-              : null,
-          trailingWidth: attentionPaneWidth,
-        ),
-      ),
-    );
-  }
-}
-
-class _HostTodayPrimaryPane extends StatelessWidget {
-  const _HostTodayPrimaryPane({
-    required this.state,
-    required this.event,
-    required this.taskCount,
-    required this.taskCountIsComplete,
-    required this.now,
-    required this.onOpenEvent,
-    required this.onViewEvents,
-    required this.onStartRehearsal,
-    this.onStartEventRehearsal,
-  });
-
-  final HostTodayState state;
-  final Event? event;
-  final int taskCount;
-  final bool taskCountIsComplete;
-  final DateTime now;
-  final ValueChanged<Event> onOpenEvent;
-  final VoidCallback onViewEvents;
-  final VoidCallback onStartRehearsal;
-  final ValueChanged<Event>? onStartEventRehearsal;
-
-  @override
-  Widget build(BuildContext context) {
-    final featuredEvent = event;
     return Column(
+      key: const ValueKey<String>('host-today-overview'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (featuredEvent != null) ...[
+        if (event != null)
           CatchSection.content(
             child: HostTodayEventSection(
-              event: featuredEvent,
+              event: event,
               now: now,
               taskCount: taskCount,
               taskCountIsComplete: state.attentionCountIsComplete,
-              contained: false,
-              onPressed: () => onOpenEvent(featuredEvent),
+              onPressed: () => onOpenEvent(event),
               onRehearse:
-                  featuredEvent.startTime.isAfter(now) &&
-                      onStartEventRehearsal != null
-                  ? () => onStartEventRehearsal!(featuredEvent)
+                  event.startTime.isAfter(now) && onStartEventRehearsal != null
+                  ? () => onStartEventRehearsal!(event)
                   : null,
             ),
           ),
-          gapH28,
-        ],
+        if (event != null && attentionVisible) gapH28,
+        if (attentionVisible) attention,
+        if (event != null || attentionVisible) gapH28,
         _HostTodayHorizonAndActions(
           state: state,
           onOpenEvent: onOpenEvent,
           onViewEvents: onViewEvents,
           onStartRehearsal:
-              featuredEvent != null &&
-                  featuredEvent.startTime.isAfter(now) &&
+              event != null &&
+                  event.startTime.isAfter(now) &&
                   onStartEventRehearsal != null
               ? null
               : onStartRehearsal,
@@ -253,7 +119,6 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
         if (state.laterEvents.isNotEmpty) gapH16,
         CatchSection.content(
           child: Wrap(
-            alignment: WrapAlignment.center,
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
@@ -263,18 +128,6 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
                 onPressed: onViewEvents,
-              ),
-              CatchButton(
-                key: const ValueKey<String>('host-today-view-programs'),
-                label: context.l10n.programsListTitle,
-                leading: Icon(
-                  CatchIcons.calendarMonthOutlined,
-                  size: CatchIcon.sm,
-                ),
-                variant: CatchButtonVariant.ghost,
-                size: CatchButtonSize.sm,
-                onPressed: () =>
-                    context.pushNamed(Routes.hostProgramsScreen.name),
               ),
               if (onStartRehearsal != null)
                 CatchButton(

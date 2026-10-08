@@ -97,6 +97,15 @@ HostEventOfferWorkspaceCopy hostEventOfferWorkspaceCopy(
 ) => HostEventOfferWorkspaceCopy(
   create: l10n.hostEventOfferCreate,
   selectEvent: l10n.hostEventOfferSelectEvent,
+  chooseForRecipient: (name) =>
+      l10n.hostEventOfferChooseForRecipient(name: name),
+  chooseForRecipients: (count) =>
+      l10n.hostEventOfferChooseForRecipients(count: count),
+  loadingEvents: l10n.hostEventOfferLoadingEvents,
+  preparingOffer: l10n.hostEventOfferPreparing,
+  loadingOffer: l10n.hostEventOfferLoadingExisting,
+  preparingMessage: l10n.hostEventOfferPreparingMessage,
+  cancelPreparation: l10n.hostEventOfferCancelPreparation,
   emptyEvents: l10n.hostEventOfferSelectEventEmpty,
   untitledEvent: l10n.hostEventOfferUntitledEvent,
   loadMoreEvents: l10n.hostEventOfferLoadMoreEvents,
@@ -108,7 +117,7 @@ HostEventOfferWorkspaceCopy hostEventOfferWorkspaceCopy(
   refresh: l10n.hostEventOfferRefresh,
   existing: l10n.hostEventOfferExisting,
   noOffers: l10n.hostEventOfferNoOffers,
-  configurePayment: l10n.hostEventOfferConfigurePayment,
+  configurePayment: l10n.hostEventOfferSetupRequired,
   openSettings: l10n.hostEventOfferOpenSettings,
   statusDraft: l10n.hostEventOfferStatusDraft,
   statusOffered: l10n.hostEventOfferStatusOffered,

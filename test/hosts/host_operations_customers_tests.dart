@@ -442,7 +442,7 @@ void _registerHostOperationsCustomersTests() {
     expect(tester.getRect(directoryRow).left, 0);
     expect(
       tester.getRect(directoryRow).right,
-      tester.view.physicalSize.width / tester.view.devicePixelRatio,
+      CatchLayout.workspaceDirectoryWidth,
     );
 
     await tester.tap(searchFinder);
@@ -494,22 +494,20 @@ void _registerHostOperationsCustomersTests() {
         ],
       );
 
-      expect(
-        find.byKey(const ValueKey('catch-master-detail-divider')),
-        findsOneWidget,
-      );
+      expect(find.byType(CatchNavigationViewport), findsOneWidget);
       expect(find.byType(HostCustomersDirectory), findsOneWidget);
       final detail = tester.widget<HostCustomerDetailScreen>(
         find.byType(HostCustomerDetailScreen),
       );
       expect(detail.embedded, isTrue);
-      final detailTopBar = tester.widget<CatchTopBar>(
-        find.descendant(
-          of: find.byType(HostCustomerDetailScreen),
-          matching: find.byType(CatchTopBar),
-        ),
+      final back = find.descendant(
+        of: find.byType(HostCustomerDetailScreen),
+        matching: find.byTooltip('Back'),
       );
-      expect(detailTopBar.navigation.mode, CatchTopBarNavigationMode.none);
+      expect(back, findsNothing);
+      tester.view.physicalSize = const Size(390, 900);
+      await pumpFeatureUi(tester);
+      expect(back, findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

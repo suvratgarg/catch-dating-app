@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:c1c4e4ea45011c007085788e64725e9eee2898db6b163a9311ac0543d95b198c",
+  "resolvedDigest": "sha256:5a2ab64075a2010378eb3e0511dce70bb91b335a43a1654a09b30adcf1cd7c56",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1873,7 +1873,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

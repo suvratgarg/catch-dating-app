@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-16",
+  "updated": "2026-10-08",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -5768,9 +5768,20 @@
         "node --test tool/design/component_concepts.test.mjs",
         "node --check tool/design/check_component_contracts.mjs",
         "node --test tool/design/check_component_contracts.test.mjs",
+        "node --test test/tool/host_section_composition_test.mjs",
         "node tool/design/check_component_contracts.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "tool/design/check_host_section_composition.mjs",
+        "test/tool/host_section_composition_test.mjs",
+        "lib/programs/presentation/program_workspace_screen.dart",
+        "lib/programs/presentation/program_guests_screen.dart",
+        "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
+        "lib/event_success/presentation/event_assistance_help_entry_section.dart",
+        "lib/event_success/presentation/event_assistance_delivery_entry_section.dart",
+        "lib/event_success/presentation/host_report/event_success_host_report_page_body.dart"
+      ]
     },
     {
       "id": "design:component-concepts",
@@ -7866,6 +7877,20 @@
       "alsoCheckIds": [
         "ci:firebase-functions-checkpoint",
         "ci:operator-prod-selective-release"
+      ]
+    },
+    {
+      "id": "design:host-section-composition",
+      "category": "design",
+      "path": "tool/design/check_host_section_composition.mjs",
+      "command": "node --test test/tool/host_section_composition_test.mjs",
+      "safety": "local",
+      "status": "internal",
+      "role": "finder",
+      "description": "Source guard imported by design:component-contracts; rejects generic operational card and local empty-state anatomy on migrated Host surfaces.",
+      "checks": [
+        "node --check tool/design/check_host_section_composition.mjs",
+        "node --test test/tool/host_section_composition_test.mjs"
       ]
     }
   ]

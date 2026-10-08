@@ -89,6 +89,8 @@ import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_ove
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -218,7 +220,19 @@ Future<void> _pumpHostScreen(
       GoRoute(
         path: Routes.hostOrganizerScreen.path,
         name: Routes.hostOrganizerScreen.name,
-        builder: (_, _) => const Text('Organizer route'),
+        builder: (_, state) => state.uri.queryParameters['setting'] == null
+            ? const Text('Organizer route')
+            : hostOrganizerScreenForUri(state.uri),
+      ),
+      GoRoute(
+        path: Routes.hostTodayScreen.path,
+        name: Routes.hostTodayScreen.name,
+        builder: (_, state) => Column(
+          children: [
+            Text('Manage ${state.uri.queryParameters['eventId']}'),
+            Text('Section ${state.uri.queryParameters['section'] ?? 'setup'}'),
+          ],
+        ),
       ),
       GoRoute(
         path: Routes.hostCreateClubScreen.path,

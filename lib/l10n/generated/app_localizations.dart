@@ -37468,6 +37468,60 @@ abstract class AppLocalizations {
   /// **'No eligible upcoming events are available.'**
   String get hostEventOfferSelectEventEmpty;
 
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event for {name}'**
+  String hostEventOfferChooseForRecipient({required String name});
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event for {count} people'**
+  String hostEventOfferChooseForRecipients({required int count});
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading events…'**
+  String get hostEventOfferLoadingEvents;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing offer…'**
+  String get hostEventOfferPreparing;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading offer…'**
+  String get hostEventOfferLoadingExisting;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing message…'**
+  String get hostEventOfferPreparingMessage;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel preparation'**
+  String get hostEventOfferCancelPreparation;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'This event needs offer settings before you can create an offer. Review its payment method and offer expiry.'**
+  String get hostEventOfferSetupRequired;
+
+  /// Host response event chooser or offer preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get hostResponseAddReviewNote;
+
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
@@ -37527,12 +37581,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load more events'**
   String get hostEventOfferLoadMoreEvents;
-
-  /// Host forms to event offer action or state.
-  ///
-  /// In en, this message translates to:
-  /// **'Configure event payment terms before creating offers.'**
-  String get hostEventOfferConfigurePayment;
 
   /// Host forms to event offer action or state.
   ///
@@ -38110,35 +38158,11 @@ abstract class AppLocalizations {
   /// **'Programs'**
   String get programsListTitle;
 
-  /// Program workspace copy: programsListNoOrganizerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No organizer selected'**
-  String get programsListNoOrganizerTitle;
-
-  /// Program workspace copy: programsListNoOrganizerMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick an organizer to manage its programs.'**
-  String get programsListNoOrganizerMessage;
-
   /// Program workspace copy: programsListCreateLabel.
   ///
   /// In en, this message translates to:
   /// **'New program'**
   String get programsListCreateLabel;
-
-  /// Program workspace copy: programsListEmptyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No programs yet'**
-  String get programsListEmptyTitle;
-
-  /// Program workspace copy: programsListEmptyMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a multi-day program to coordinate functions, travel and guest RSVP.'**
-  String get programsListEmptyMessage;
 
   /// Program workspace copy: programsListRowActions.
   ///
@@ -38245,13 +38269,13 @@ abstract class AppLocalizations {
   /// Program workspace copy: programsCreateStartLabel.
   ///
   /// In en, this message translates to:
-  /// **'First day'**
+  /// **'Start date'**
   String get programsCreateStartLabel;
 
   /// Program workspace copy: programsCreateEndLabel.
   ///
   /// In en, this message translates to:
-  /// **'Last day'**
+  /// **'End date'**
   String get programsCreateEndLabel;
 
   /// Program workspace copy: programsCreateSubmit.
@@ -38430,18 +38454,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest inbox'**
   String get programsWorkspaceInboxTitle;
-
-  /// Program workspace copy: programsWorkspaceLogisticsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Logistics'**
-  String get programsWorkspaceLogisticsTitle;
-
-  /// Program workspace copy: programsWorkspaceLogisticsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pickup points and hotels staff operate against'**
-  String get programsWorkspaceLogisticsSubtitle;
 
   /// Program workspace copy: programsWorkspacePickupTitle.
   ///
@@ -40135,6 +40147,216 @@ abstract class AppLocalizations {
     required String status,
     required String source,
   });
+
+  /// Host program creation and Events inventory: programsEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get programsEntryTitle;
+
+  /// Host program creation and Events inventory: programsEntryEventTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get programsEntryEventTab;
+
+  /// Host program creation and Events inventory: programsEntryProgramTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get programsEntryProgramTab;
+
+  /// Host program creation and Events inventory: programsEntryProgramBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinate a multi-day program and manage its events, travel and guest RSVP.'**
+  String get programsEntryProgramBody;
+
+  /// Host program creation and Events inventory: programsCreateKindLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Program type'**
+  String get programsCreateKindLabel;
+
+  /// Host program creation and Events inventory: programsCreateChooseKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a program type'**
+  String get programsCreateChooseKind;
+
+  /// Host program creation and Events inventory: programsCreateKindWedding.
+  ///
+  /// In en, this message translates to:
+  /// **'Wedding'**
+  String get programsCreateKindWedding;
+
+  /// Host program creation and Events inventory: programsCreateKindCorporate.
+  ///
+  /// In en, this message translates to:
+  /// **'Corporate'**
+  String get programsCreateKindCorporate;
+
+  /// Host program creation and Events inventory: programsCreateKindSocial.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get programsCreateKindSocial;
+
+  /// Host program creation and Events inventory: programsCreateKindOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get programsCreateKindOther;
+
+  /// Host program creation and Events inventory: programsCreateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get programsCreateRequired;
+
+  /// Host program creation and Events inventory: programsCreateTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Use {maximum} characters or fewer.'**
+  String programsCreateTooLong({required int maximum});
+
+  /// Host program creation and Events inventory: programsCreateInvalidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a valid date.'**
+  String get programsCreateInvalidDate;
+
+  /// Host program creation and Events inventory: programsCreateEndAfterStart.
+  ///
+  /// In en, this message translates to:
+  /// **'End date must be after start date.'**
+  String get programsCreateEndAfterStart;
+
+  /// Host program creation and Events inventory: programsCreateRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry and confirm program'**
+  String get programsCreateRetry;
+
+  /// Host program creation and Events inventory: programsCreatePendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your save may have reached Catch. Retry the same save to recover its result before changing these details.'**
+  String get programsCreatePendingBody;
+
+  /// Host program creation and Events inventory: programsCreateConfirmingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your program is saved. Confirming it appears in Events…'**
+  String get programsCreateConfirmingBody;
+
+  /// Host program creation and Events inventory: programsCreateNotVisibleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your program is saved, but Events has not confirmed it yet. Retry to refresh the list; this will not create another program.'**
+  String get programsCreateNotVisibleBody;
+
+  /// Host program creation and Events inventory: programsCreateActorChangedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer access changed'**
+  String get programsCreateActorChangedTitle;
+
+  /// Host program creation and Events inventory: programsCreateActorChangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account or selected organizer changed. Return to Events and start with the current organizer.'**
+  String get programsCreateActorChangedBody;
+
+  /// Host program creation and Events inventory: programsCreateLeaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this program?'**
+  String get programsCreateLeaveTitle;
+
+  /// Host program creation and Events inventory: programsCreateLeaveDraftBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your program details have not been saved. Stay to keep editing, or discard this draft.'**
+  String get programsCreateLeaveDraftBody;
+
+  /// Host program creation and Events inventory: programsCreateLeavePendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This save may have reached Catch. Stay and retry to confirm its result, or leave and check Events before starting another program.'**
+  String get programsCreateLeavePendingBody;
+
+  /// Host program creation and Events inventory: programsCreateKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get programsCreateKeepEditing;
+
+  /// Host program creation and Events inventory: programsCreateLeaveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get programsCreateLeaveAction;
+
+  /// Host program creation and Events inventory: programsEventRowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get programsEventRowLabel;
+
+  /// Host program creation and Events inventory: programsEventDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}'**
+  String programsEventDateRange({required String start, required String end});
+
+  /// Host program creation and Events inventory: programsEventCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
+  String programsEventCount({required int count});
+
+  /// Host program creation and Events inventory: programsEventCountUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Event count unavailable'**
+  String get programsEventCountUnavailable;
+
+  /// Host program creation and Events inventory: programsEventArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get programsEventArchived;
+
+  /// Host Program first-save progress and recovery: programsCreateSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating program…'**
+  String get programsCreateSaving;
+
+  /// Host Program first-save progress and recovery: programsCreateConfirming.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming program…'**
+  String get programsCreateConfirming;
+
+  /// Host Program first-save progress and recovery: programsCreateViewEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'View in Events'**
+  String get programsCreateViewEvents;
+
+  /// Host Program first-save progress and recovery: programsCreateSavedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your program is saved and available in Events.'**
+  String get programsCreateSavedBody;
+
+  /// Loads the next bounded program inventory page in Events.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more programs'**
+  String get programsEventsLoadMore;
 
   /// Title for the saved Host roster intake review sheet.
   ///

@@ -315,6 +315,8 @@ import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/unified_event_setup_use_cases.dart'
     as _widgetbook_workspace_hosts_unified_event_setup_use_cases;
+import 'package:widgetbook_workspace/layout/host_workspace_use_cases.dart'
+    as _widgetbook_workspace_layout_host_workspace_use_cases;
 import 'package:widgetbook_workspace/matches/catalog/celebration.dart'
     as _widgetbook_workspace_matches_catalog_celebration;
 import 'package:widgetbook_workspace/matches/catalog/consumer_inbox.dart'
@@ -537,6 +539,8 @@ import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
 import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
+import 'package:widgetbook_workspace/programs/program_create_use_cases.dart'
+    as _widgetbook_workspace_programs_program_create_use_cases;
 import 'package:widgetbook_workspace/programs/program_lodging_use_cases.dart'
     as _widgetbook_workspace_programs_program_lodging_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
@@ -2345,7 +2349,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMasterDetailViewport',
+            name: 'CatchNavigationViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Compact and split panes',
@@ -2391,6 +2395,56 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_viewport_layout_use_cases
                         .sceneViewportStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWorkspaceBackScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route-owned parent back',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .workspaceBackScope,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWorkspaceHeader',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Natural pane header',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .workspaceHeader,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWorkspaceHeaderLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content-driven header alignment',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .workspaceHeaderGroup,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWorkspacePaneScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Aligned pane chrome',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .workspacePaneScaffold,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWorkspacePaneScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Local pane presentation',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .workspacePaneScope,
               ),
             ],
           ),
@@ -5478,6 +5532,46 @@ final directories = <_widgetbook.WidgetbookNode>[
     ],
   ),
   _widgetbook.WidgetbookCategory(
+    name: 'Host',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Layout',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostNavigationWorkspace',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Parent selection and preview',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostNavigationWorkspace,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceIndexScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared Today route index',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceIndexScreen,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceRouteScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Router path attachment',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceRouteScope,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
     name: 'P1 product surfaces',
     children: [
       _widgetbook.WidgetbookFolder(
@@ -6782,6 +6876,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Host workspace components',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .previewEventSuccessReportStatus,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessFunnelSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6844,17 +6949,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_host_workspace_components_use_cases
                             .eventSuccessStrictReadinessIssues,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportEmptyState',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .previewEventSuccessReportEmptyState,
                   ),
                 ],
               ),
@@ -9859,6 +9953,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerActiveMergesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Merged contact history',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerActiveMergesSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerApplicationSnapshot',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9925,7 +10030,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerDetailTabs',
+                name: 'HostCustomerDetailTabBar',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
@@ -13115,12 +13220,32 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Program workspace',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'ProgramCreateDialog',
+            name: 'ProgramCreatePageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Create dialog',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programCreateDialogStates,
+                name: 'Form states',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programCreateFormStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramCreateScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route loading',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programCreateScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramEventsRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inventory row',
+                builder: _widgetbook_workspace_programs_program_create_use_cases
+                    .programEventsRowStates,
               ),
             ],
           ),
@@ -13142,26 +13267,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_programs_workspace_use_cases_logistics
                         .programHotelEditDialogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramListPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Body states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programListPageBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ProgramListScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Screen states',
-                builder: _widgetbook_workspace_programs_workspace_use_cases
-                    .programListScreenStates,
               ),
             ],
           ),

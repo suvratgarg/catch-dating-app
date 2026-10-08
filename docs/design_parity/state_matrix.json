@@ -4783,13 +4783,13 @@
               ]
             },
             {
-              "id": "open_programs_action",
+              "id": "program_inventory_rows",
               "kind": "populated",
-              "status": "tested",
+              "status": "implemented",
               "tests": [
                 "test/hosts/host_events_layout_test.dart"
               ],
-              "notes": "HostEventsClubSection owns the typed Programs header action and pushes hostProgramsScreen with the selected club organizer id so host teams can jump from the Events list to the program index.",
+              "notes": "Events shows one program row with dates and event count, workspace navigation, bounded cursor paging and an exact saved-ID anchor. The separate Programs navigation is retired.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -8523,7 +8523,7 @@
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
             "packages/catch_ui/lib/src/components/catch_field.dart",
-            "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
+            "packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
@@ -12948,11 +12948,12 @@
           ]
         },
         {
-          "id": "programs.list",
-          "routeId": "hostProgramsScreen",
+          "id": "programs.create",
+          "routeId": "hostCreateProgramScreen",
           "implementationPaths": [
-            "lib/programs/presentation/program_list_screen.dart",
-            "lib/programs/data/program_setup_repository.dart"
+            "lib/programs/presentation/program_create_screen.dart",
+            "lib/programs/presentation/program_create_controller.dart",
+            "lib/programs/data/program_inventory_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12963,7 +12964,12 @@
             "catch.section",
             "catch.top_bar"
           ],
-          "captureIds": [],
+          "captureIds": [
+            "program_create_draft",
+            "program_create_validation",
+            "program_create_pending",
+            "program_create_failure"
+          ],
           "designRefs": [
             {
               "id": "repo.program-rollout-spec",
@@ -12975,28 +12981,64 @@
           ],
           "states": [
             {
+              "id": "draft",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "A labeled full form preserves its local draft."
+            },
+            {
+              "id": "validation",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Required title, type, timezone and ordered dates report inline errors before any request."
+            },
+            {
+              "id": "pending",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Creation and exact-ID confirmation show loading and prevent duplicate submits."
+            },
+            {
+              "id": "failure",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Failure retains the submitted draft, request key and any saved receipt for retry."
+            },
+            {
+              "id": "offline",
+              "kind": "offline",
+              "status": "implemented",
+              "notes": "Unavailable persistence or confirmation retains the draft and exposes retry."
+            },
+            {
+              "id": "permission",
+              "kind": "permission",
+              "status": "implemented",
+              "notes": "Account, selected organizer and manager authority are rechecked; old-scope completion cannot navigate."
+            },
+            {
               "id": "loading",
               "kind": "loading",
               "status": "implemented",
-              "notes": "Loading viewport while organizer and program providers resolve."
+              "notes": "Organizer access resolves with established loading chrome."
             },
             {
-              "id": "error",
-              "kind": "error",
-              "status": "implemented",
-              "notes": "Localized error state with retry for clubs and program list."
-            },
-            {
-              "id": "populated",
+              "id": "form",
               "kind": "populated",
               "status": "implemented",
-              "notes": "Program index with kind, status, date range and workspace navigation."
+              "notes": "Authorized organizer access resolves to the retained Program creation form."
             },
             {
-              "id": "empty",
-              "kind": "empty",
+              "id": "theme",
+              "kind": "theme",
               "status": "implemented",
-              "notes": "No programs or no operable organizer render the empty state with create entry."
+              "notes": "The form uses canonical Catch fields, sections, step header and tokens in both themes."
+            },
+            {
+              "id": "large_text",
+              "kind": "accessibility",
+              "status": "implemented",
+              "notes": "Form content scrolls with a safe-area footer at large text sizes."
             }
           ]
         },

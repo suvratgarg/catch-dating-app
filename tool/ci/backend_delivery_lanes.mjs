@@ -248,17 +248,19 @@ export async function verifyWorkflowRun({repository, repositoryId, runId, runAtt
   number(repositoryId, "Repository id");
   id(runId, "Run id");
   id(runAttempt, "Run attempt");
-  assert.ok(["delivery", "cursor"].includes(role), "Unknown workflow identity role.");
+  assert.ok(["delivery", "cursor", "selective"].includes(role), "Unknown workflow identity role.");
   const root = `repos/${repository}/actions`;
   const run = await request(`${root}/runs/${runId}/attempts/${runAttempt}`);
   const workflowPath = run.path?.split("@")[0];
-  const allowed = role === "cursor" ? ["delivery.yml", "backend-rebaseline.yml"] : ["delivery.yml"];
+  const allowed = role === "cursor" ? ["delivery.yml", "backend-rebaseline.yml"] :
+    role === "selective" ? ["selective-backend-release.yml"] : ["delivery.yml"];
   assert.ok(allowed.some((file) => workflowPath === `.github/workflows/${file}`), "Unexpected producer workflow path.");
   // API run.name is the custom run-name, not the workflow's name. Resolve the
   // allowed path to its current numeric workflow generation instead.
   const workflow = await request(`${root}/workflows/${path.posix.basename(workflowPath)}`);
   assert.equal(workflow.path, workflowPath, "Workflow metadata path mismatch.");
   runIdentity(run, {repository, repositoryId}, {runId, attempt: runAttempt}, workflow.id, workflowPath);
+  if (role === "selective") assert.equal(run.event, "workflow_dispatch", "Selective recovery must be manually dispatched.");
   return run;
 }
 function validateAuthority(authority, receipt) {

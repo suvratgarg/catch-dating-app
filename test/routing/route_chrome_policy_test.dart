@@ -4,7 +4,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('app shell child routes render on the root navigator', () {
+  test('consumer detail routes render above the floating tab shell', () {
     final source = File('lib/routing/go_router.dart').readAsStringSync();
 
     for (final route in <Routes>[
@@ -13,9 +13,6 @@ void main() {
       Routes.clubDetailScreen,
       Routes.eventDetailScreen,
       Routes.chatScreen,
-      Routes.hostClubDetailScreen,
-      Routes.hostAppEventDetailScreen,
-      Routes.hostChatScreen,
     ]) {
       expect(
         _routeBlock(source, route),

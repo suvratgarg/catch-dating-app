@@ -375,12 +375,422 @@ final lookupProvider =
       );
     },
   );
+
+  test(
+    'ownership graph follows imported ancestry without name collisions',
+    () async {
+      final root = await _fixtureRoot(r'''
+import '../data/base.dart' as legacy show LegacyBase;
+import '../data/collision.dart' as other;
+class Actual extends legacy.LegacyBase {}
+class WidgetInControllerFile extends ConsumerWidget {
+  void build() { ref.read(itemsRepositoryProvider); }
+}
+''', path: 'lib/sample/presentation/owners_controller.dart');
+      addTearDown(() => root.delete(recursive: true));
+      await File(
+        '${root.path}/lib/sample/data/base.dart',
+      ).parent.create(recursive: true);
+      await File(
+        '${root.path}/lib/sample/data/base.dart',
+      ).writeAsString('abstract class LegacyBase extends ChangeNotifier {}');
+      await File(
+        '${root.path}/lib/sample/data/collision.dart',
+      ).writeAsString('class ConsumerWidget {} class LegacyBase {}');
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates
+            .where((c) => c.kind == 'ownership-listenable')
+            .map((c) => c.symbol),
+        unorderedEquals(['Actual', 'LegacyBase']),
+      );
+      expect(
+        graph.candidates
+            .where((c) => c.kind == 'ownership-widget-repository')
+            .single
+            .symbol,
+        'WidgetInControllerFile.build',
+      );
+    },
+  );
+
+  test(
+    'ownership graph recognizes named construction and generated wrappers',
+    () async {
+      final root = await _fixtureRoot(r'''
+class Legacy extends ChangeNotifier { Legacy.named(); }
+class ItemsRepository { ItemsRepository.named(); static String format() => ''; }
+@riverpod
+Legacy wrapped(Ref ref) { Legacy.named(); return Legacy.named(); }
+@riverpod
+class GeneratedOwner extends _$GeneratedOwner {
+  void build() {}
+  void execute() { ItemsRepository.named(); ItemsRepository.format(); formatRepository(); }
+}
+''', path: 'lib/sample/presentation/owners_controller.dart');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      final wrapper = graph.candidates.singleWhere(
+        (c) => c.kind == 'ownership-listenable-wrapper',
+      );
+      expect(wrapper.symbol, 'wrappedProvider');
+      expect(wrapper.metric, 2);
+      final construction = graph.candidates.singleWhere(
+        (c) => c.kind == 'ownership-repository-construction',
+      );
+      expect(construction.operation, 'construct:ItemsRepository');
+      expect(construction.metric, 1);
+    },
+  );
+
+  test(
+    'ownership graph separates factories and mechanics from business edges',
+    () async {
+      final root = await _fixtureRoot(r'''
+class ItemsRepository {}
+@riverpod
+ItemsRepository itemsRepository(Ref ref) => ItemsRepository();
+@riverpod
+class Rows extends _$Rows {
+  Future<List<String>> build() async => ref.watch(itemsRepositoryProvider).rows();
+}
+class EffectsService { void run() { ItemsRepository(); } }
+class PureView extends StatelessWidget { void build() {} }
+class LocalState extends State<PureView> {
+  final text = TextEditingController();
+  Future<void> animate() async { await Future<void>.delayed(Duration.zero); setState(() {}); }
+}
+class FencedView extends ConsumerWidget {
+  bool build() => ref.read(firebaseAuthProvider).currentUser != null;
+}
+// class Fake extends ChangeNotifier { void run() { ItemsRepository(); } }
+const example = 'class Fake extends ChangeNotifier {}';
+''', path: 'lib/sample/presentation/owners_controller.dart');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates.where((c) => c.kind.startsWith('ownership-')),
+        isEmpty,
+      );
+      expect(providerGraphCheckFailures(graph), isEmpty);
+    },
+  );
+
+  test(
+    'ownership graph detects aliases SDK access and delegated async callbacks',
+    () async {
+      final root = await _fixtureRoot(r'''
+class Screen extends ConsumerStatefulWidget {
+  final Future<void> Function() onSave;
+}
+class BusinessState extends ConsumerState<Screen> {
+  Future<void> save() async {
+    final controller = ref.read(itemsControllerProvider.notifier);
+    await controller.submit();
+    setState(() => _pending = false);
+  }
+  Future<void> callback() async { await widget.onSave.call(); setState(() {}); }
+  Future<void> nullableCallback() async { await widget.onSave!(); setState(() {}); }
+  Future<void> run(Future<void> Function() action) async { await action(); setState(() {}); }
+  void backend() { ref.read(firebaseFunctionsProvider); }
+}
+''', path: 'lib/sample/presentation/owners_controller.dart');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates
+            .where((c) => c.kind == 'ownership-widget-async')
+            .single
+            .operation,
+        'await:itemsControllerProvider.submit',
+      );
+      expect(
+        graph.candidates
+            .where((c) => c.kind == 'ownership-widget-async-callback')
+            .map((c) => c.operation),
+        unorderedEquals([
+          'await:widget.onSave',
+          'await:widget.onSave',
+          'await:action',
+        ]),
+      );
+      expect(
+        graph.candidates
+            .where((c) => c.kind == 'ownership-widget-backend')
+            .single
+            .symbol,
+        'BusinessState.backend',
+      );
+    },
+  );
+
+  test(
+    'ownership reviews reject new symbols same-count swaps and added callsites',
+    () async {
+      const path = 'lib/sample/presentation/owners_controller.dart';
+      final root = await _fixtureRoot(
+        'class Existing extends ChangeNotifier {}',
+        path: path,
+      );
+      addTearDown(() => root.delete(recursive: true));
+      var graph = await buildProviderGraph(root);
+      await _reviewOwnership(root, graph, status: 'planned');
+      expect(
+        providerGraphCheckFailures(await buildProviderGraph(root)),
+        isEmpty,
+      );
+      await File(
+        '${root.path}/$path',
+      ).writeAsString('class Replacement extends ChangeNotifier {}');
+      graph = await buildProviderGraph(root);
+      expect(graph.unreviewedCandidateIds, hasLength(1));
+      expect(graph.staleReviewIds, hasLength(1));
+      await File('${root.path}/$path').writeAsString(
+        'class Existing extends ChangeNotifier {} class Additional extends ChangeNotifier {}',
+      );
+      graph = await buildProviderGraph(root);
+      expect(graph.unreviewedCandidateIds.single, contains('#Additional:'));
+
+      await File('${root.path}/$path').writeAsString(
+        r'@riverpod class Owner extends _$Owner { void build() {} void save() { ItemsRepository(); } }',
+      );
+      graph = await buildProviderGraph(root);
+      await _reviewOwnership(root, graph, status: 'planned');
+      await File('${root.path}/$path').writeAsString(
+        r'@riverpod class Owner extends _$Owner { void build() {} void save() { ItemsRepository(); ItemsRepository(); } }',
+      );
+      graph = await buildProviderGraph(root);
+      expect(
+        graph.unreviewedCandidateIds.single,
+        contains('#Owner.save:construct:ItemsRepository'),
+      );
+      expect(graph.candidates.single.metric, 2);
+    },
+  );
+
+  test(
+    'framework Listenable exceptions are exact reviewed decisions',
+    () async {
+      final root = await _fixtureRoot(
+        'class RouterBridge extends ChangeNotifier {}',
+      );
+      addTearDown(() => root.delete(recursive: true));
+      var graph = await buildProviderGraph(root);
+      expect(graph.unreviewedCandidateIds, isNotEmpty);
+      await _reviewOwnership(root, graph, status: 'accepted-exception');
+      graph = await buildProviderGraph(root);
+      expect(graph.isHealthy, isTrue);
+      final file = File('${root.path}/$providerGraphReviewPath');
+      final reviews =
+          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      final decision = Map<String, Object?>.from(
+        (reviews['decisions'] as List).single as Map,
+      );
+      decision['path'] = 'lib/sample/other.dart';
+      reviews['decisions'] = [decision];
+      await file.writeAsString(jsonEncode(reviews));
+      expect(
+        (await buildProviderGraph(root)).unreviewedCandidateIds,
+        isNotEmpty,
+      );
+    },
+  );
+
+  test(
+    'prefixed manual families retain declaration and wrapper identity',
+    () async {
+      final root = await _fixtureRoot(r'''
+import 'package:flutter_riverpod/flutter_riverpod.dart' as rp;
+class Legacy extends ChangeNotifier {}
+final legacyProvider = rp.Provider.autoDispose.family<Legacy, String>((ref, key) => Legacy());
+''');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(graph.providers.single.kind, 'manual');
+      expect(graph.providers.single.isFamily, isTrue);
+      expect(
+        graph.candidates.map((c) => c.kind),
+        containsAll([
+          'manual-provider',
+          'ownership-listenable',
+          'ownership-listenable-wrapper',
+        ]),
+      );
+    },
+  );
+
+  test(
+    'wrapped future operations cannot swap commands behind an unchanged count',
+    () async {
+      const path = 'lib/sample/presentation/owners_controller.dart';
+      String source(String command) =>
+          '''
+class BusinessState extends ConsumerState<Screen> {
+  Future<void> save() async {
+    await Future.wait([ref.read(itemsControllerProvider.notifier).$command()]);
+    setState(() {});
+  }
+}
+''';
+      final root = await _fixtureRoot(source('submit'), path: path);
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates.single.operation,
+        'await:itemsControllerProvider.submit',
+      );
+      await _reviewOwnership(root, graph, status: 'watch');
+      await File('${root.path}/$path').writeAsString(source('delete'));
+      final swapped = await buildProviderGraph(root);
+      expect(swapped.unreviewedCandidateIds.single, contains('.delete'));
+      expect(swapped.staleReviewIds.single, contains('.submit'));
+    },
+  );
+
+  test(
+    'generated function result types expose factory-returned Listenables',
+    () async {
+      final root = await _fixtureRoot(r'''
+class Legacy extends ChangeNotifier { static Legacy create() => Legacy(); }
+@riverpod
+Legacy wrapped(Ref ref) => Legacy.create();
+''');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      final wrapper = graph.candidates.singleWhere(
+        (c) => c.kind == 'ownership-listenable-wrapper',
+      );
+      expect(wrapper.operation, 'return-type:Legacy');
+    },
+  );
+
+  test(
+    'widget provider futures preserve direct and aliased read identity',
+    () async {
+      final root = await _fixtureRoot(r'''
+class ViewState extends ConsumerState<Screen> {
+  Future<void> direct() async { final rows = await ref.read(rowsProvider.future); setState(() {}); }
+  Future<void> alias() async { final request = ref.read(rowsProvider.future); final rows = await request; setState(() {}); }
+}
+''', path: 'lib/sample/presentation/owners_controller.dart');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates.map((c) => c.operation),
+        unorderedEquals([
+          'await:rowsProvider.future',
+          'await:rowsProvider.future',
+        ]),
+      );
+    },
+  );
+
+  test(
+    'URI part extensions keep widget responsibility and exact operation',
+    () async {
+      final root = await _fixtureRoot(r'''
+part 'body.dart';
+class PageState extends ConsumerState<Screen> {}
+''', path: 'lib/sample/presentation/page.dart');
+      addTearDown(() => root.delete(recursive: true));
+      await File(
+        '${root.path}/lib/sample/presentation/body.dart',
+      ).writeAsString(r'''
+part of 'page.dart';
+extension PageBody on PageState {
+  void open() { ItemsRepository.named(); ref.read(firebaseFunctionsProvider); }
+}
+''');
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates.map((c) => c.kind),
+        containsAll([
+          'ownership-repository-construction',
+          'ownership-widget-backend',
+        ]),
+      );
+      expect(graph.candidates.map((c) => c.path).toSet(), {
+        'lib/sample/presentation/body.dart',
+      });
+      expect(graph.candidates.map((c) => c.symbol).toSet(), {'PageBody.open'});
+    },
+  );
+
+  test(
+    'class and local manual providers cannot inherit top-level shadow names',
+    () async {
+      final root = await _fixtureRoot(r'''
+final legacyProvider = Provider<int>((ref) => 1);
+class AnotherOwner {
+  static final legacyProvider = Provider<int>((ref) => 2);
+  void build() { final legacyProvider = Provider<int>((ref) => 3); }
+}
+''');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      expect(
+        graph.candidates
+            .where((c) => c.kind == 'ownership-manual-provider')
+            .map((c) => c.symbol),
+        unorderedEquals([
+          'AnotherOwner.legacyProvider',
+          'AnotherOwner.build.legacyProvider',
+        ]),
+      );
+      expect(
+        graph.unreviewedCandidateIds.where(
+          (id) => id.startsWith('ownership-manual-provider:'),
+        ),
+        hasLength(2),
+      );
+    },
+  );
+
+  test(
+    'provider graph fails closed on empty handwritten source roots',
+    () async {
+      final root = await Directory.systemTemp.createTemp('empty_graph_');
+      addTearDown(() => root.delete(recursive: true));
+      await Directory('${root.path}/lib').create();
+      await File('${root.path}/lib/only.g.dart').writeAsString('generated');
+      await expectLater(buildProviderGraph(root), throwsStateError);
+    },
+  );
 }
 
-Future<Directory> _fixtureRoot(String source) async {
+Future<Directory> _fixtureRoot(
+  String source, {
+  String path = 'lib/sample/data/fixture.dart',
+}) async {
   final root = await Directory.systemTemp.createTemp('provider_graph_test_');
-  final lib = Directory('${root.path}/lib/sample/data');
-  await lib.create(recursive: true);
-  await File('${lib.path}/fixture.dart').writeAsString(source);
+  final file = File('${root.path}/$path');
+  await file.parent.create(recursive: true);
+  await file.writeAsString(source);
   return root;
+}
+
+Future<void> _reviewOwnership(
+  Directory root,
+  ProviderGraph graph, {
+  required String status,
+}) async {
+  final file = File('${root.path}/$providerGraphReviewPath');
+  await file.parent.create(recursive: true);
+  await file.writeAsString(
+    jsonEncode({
+      'decisions': [
+        for (final candidate in graph.candidates)
+          {
+            'id': candidate.id,
+            'status': status,
+            'rationale': 'Exact fixture responsibility reviewed.',
+            if (status == 'planned') 'debtId': 'CAT156',
+            'path': candidate.path,
+            'symbol': candidate.symbol,
+            'operation': candidate.operation,
+            'maxCallsites': candidate.metric,
+          },
+      ],
+    }),
+  );
 }

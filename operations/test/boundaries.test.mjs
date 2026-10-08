@@ -4,6 +4,17 @@ import path from "node:path";
 import test from "node:test";
 import {checkBoundaries} from "../scripts/check-boundaries.mjs";
 import {temporaryDirectory} from "./helpers.mjs";
+import {SALES_SOURCE_GUARDED_PATHS} from "../../tool/ci/selective_backend_release.mjs";
+
+test("Sales source guard retains every reviewed path and remains immutable", () => {
+  assert.deepEqual(SALES_SOURCE_GUARDED_PATHS, [
+    "functions/src", "functions/package.json", "functions/package-lock.json",
+    "functions/scripts/set-callable-invokers-public.cjs", "operations/src/platform",
+    "operations/src/workflows/outreach-drafting", "contracts/operations",
+    "firestore.rules", "firebase.json", ".firebaserc",
+  ]);
+  assert.equal(Object.isFrozen(SALES_SOURCE_GUARDED_PATHS), true);
+});
 
 const baseline = {
   schemaVersion: 2,
@@ -60,6 +71,25 @@ test("boundary checker rejects operations imports in any new tool root",
       finding.id === "tool-imports-operations-runtime" &&
         finding.path === "tool/safety_ops/run.mjs"));
   });
+
+test("boundary checker allows static path policy data but still rejects executable runtime imports", async () => {
+  const repoRoot = await temporaryDirectory("catch-ops-boundary-policy-");
+  const root = path.join(repoRoot, "tool/ci");
+  await fs.mkdir(root, {recursive: true});
+  await fs.writeFile(path.join(root, "source_guard.json"),
+    JSON.stringify(["operations/src/platform", "operations/src/workflows/outreach-drafting"]));
+  await fs.writeFile(path.join(root, "proof.mjs"),
+    'import paths from "./source_guard.json" with {type: "json"};\n' +
+    'export const guardedPaths = Object.freeze(paths);\n');
+  assert.equal((await checkBoundaries({repoRoot, baseline})).ok, true);
+  await fs.writeFile(path.join(root, "runtime.mjs"),
+    'import {OperationsEngine} from "../../operations/src/index.mjs";\n');
+  const result = await checkBoundaries({repoRoot, baseline});
+  assert.equal(result.ok, false);
+  assert.ok(result.findings.some((finding) =>
+    finding.id === "tool-imports-operations-runtime" &&
+    finding.path === "tool/ci/runtime.mjs"));
+});
 
 test("boundary checker rejects reimplemented workflow markers in tool code",
   async () => {

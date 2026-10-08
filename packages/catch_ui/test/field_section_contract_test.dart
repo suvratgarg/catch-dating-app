@@ -1,3 +1,4 @@
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -612,21 +613,31 @@ void main() {
   testWidgets(
     'master and detail rows fill their own pane, including hit gutters',
     (tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       var leftTaps = 0;
       var rightTaps = 0;
       await tester.pumpWidget(
         MaterialApp(
           theme: CatchTheme.dark,
           home: CatchScaffold.standalone(
-            body: CatchMasterDetailViewport(
-              expanded: true,
-              indexPaneWidth: 320,
-              leading: CatchSection.rows(
-                children: [record('left', () => leftTaps++)],
-              ),
-              body: CatchSection.rows(
-                children: [record('right', () => rightTaps++)],
-              ),
+            body: CatchNavigationViewport(
+              panes: [
+                CatchWorkspacePane(
+                  id: 'left',
+                  child: CatchSection.rows(
+                    children: [record('left', () => leftTaps++)],
+                  ),
+                ),
+                CatchWorkspacePane(
+                  id: 'right',
+                  child: CatchSection.rows(
+                    children: [record('right', () => rightTaps++)],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -634,7 +645,7 @@ void main() {
       final left = tester.getRect(find.byKey(const ValueKey('left')));
       final right = tester.getRect(find.byKey(const ValueKey('right')));
       expect(left.left, 0);
-      expect(left.right, 320);
+      expect(left.right, CatchLayout.workspaceDirectoryWidth);
       expect(
         right.right,
         tester.view.physicalSize.width / tester.view.devicePixelRatio,

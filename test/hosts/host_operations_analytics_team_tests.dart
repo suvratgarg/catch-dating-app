@@ -106,8 +106,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     void expectSharedChrome({bool? constrainToContentWidth}) {
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
-      expect(find.byType(NestedScrollView), findsOneWidget);
-      expect(find.byType(SliverOverlapAbsorber), findsOneWidget);
+      expect(find.byType(NestedScrollView), findsNothing);
+      expect(find.byType(CatchWorkspacePaneScaffold), findsOneWidget);
+      expect(find.byType(SliverOverlapAbsorber), findsNothing);
       expect(find.byType(TabBarView), findsOneWidget);
       expect(tabRail, findsOneWidget);
       expect(tab('Organizer'), findsNothing);

@@ -8,6 +8,8 @@
  * This command is metadata-only. It never reads secret payloads.
  *
  *   node tool/firebase/check_deploy_parity.mjs --env prod
+ *   node tool/firebase/check_deploy_parity.mjs --env prod \
+ *     --targets functions:firstCallable,functions:secondCallable
  *   node tool/firebase/check_deploy_parity.mjs --env staging --json
  */
 
@@ -59,6 +61,7 @@ export function parseArgs(argv) {
     help: false,
     json: false,
     repoRoot: defaultRepoRoot,
+    selectedFunctionTargets: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -66,6 +69,10 @@ export function parseArgs(argv) {
       parsed.environment = requireValue(argv, ++index, arg);
     } else if (arg === "--repo-root") {
       parsed.repoRoot = path.resolve(requireValue(argv, ++index, arg));
+    } else if (arg === "--targets") {
+      parsed.selectedFunctionTargets = parseSelectedFunctionTargets(
+        requireValue(argv, ++index, arg),
+      );
     } else if (arg === "--json") {
       parsed.json = true;
     } else if (arg === "--help" || arg === "-h") {
@@ -78,6 +85,28 @@ export function parseArgs(argv) {
     throw new DeployParityUsageError("--env <environment> is required.");
   }
   return parsed;
+}
+
+export function parseSelectedFunctionTargets(value) {
+  const rawTargets = String(value).split(",");
+  if (rawTargets.length === 0 || rawTargets.some((target) => !target)) {
+    throw new DeployParityUsageError(
+      "--targets requires exact comma-separated Function targets.",
+    );
+  }
+  const targets = rawTargets.map((target) => target.trim());
+  if (targets.some((target) =>
+    !/^functions:[A-Za-z][A-Za-z0-9_-]*$/u.test(target))) {
+    throw new DeployParityUsageError(
+      "--targets accepts only exact functions:<name> selectors.",
+    );
+  }
+  if (new Set(targets).size !== targets.length) {
+    throw new DeployParityUsageError(
+      "--targets requires unique Function selectors.",
+    );
+  }
+  return targets;
 }
 
 function readUtf8(filePath, label) {
@@ -229,8 +258,26 @@ export function compareDeployParity({
   deployedFunctionNames,
   liveSecretNames,
   repoFunctionNames,
+  selectedFunctionNames = null,
 }) {
-  const missingFunctions = [...repoFunctionNames]
+  if (selectedFunctionNames !== null &&
+      (!(selectedFunctionNames instanceof Set) ||
+       selectedFunctionNames.size === 0)) {
+    throw new DeployParityUsageError(
+      "Selected parity requires a non-empty Set of Function names.",
+    );
+  }
+  const expectedFunctionNames = selectedFunctionNames ?? repoFunctionNames;
+  const unknownSelectedFunctions = [...expectedFunctionNames]
+    .filter((name) => !repoFunctionNames.has(name))
+    .sort();
+  if (unknownSelectedFunctions.length > 0) {
+    throw new DeployParityUsageError(
+      "Selected Functions are not deployment-eligible source exports: " +
+      `${unknownSelectedFunctions.join(", ")}.`,
+    );
+  }
+  const missingFunctions = [...expectedFunctionNames]
     .filter((name) => !deployedFunctionNames.has(name))
     .sort();
   const missingSecrets = [...declaredSecretNames]
@@ -242,6 +289,8 @@ export function compareDeployParity({
     ok: missingFunctions.length === 0 && missingSecrets.length === 0,
     missingFunctions,
     missingSecrets,
+    parityScope: selectedFunctionNames === null ? "full" : "selected",
+    checkedFunctionCount: expectedFunctionNames.size,
     repoFunctionCount: repoFunctionNames.size,
     deployedFunctionCount: deployedFunctionNames.size,
     declaredSecretCount: declaredSecretNames.size,
@@ -254,6 +303,7 @@ export function runDeployParity({
   environment,
   repoRoot = defaultRepoRoot,
   runCommand = defaultRunCommand,
+  selectedFunctionTargets = null,
 }) {
   const aliases = parseFirebaseProjectAliases(
     readUtf8(path.join(repoRoot, ".firebaserc"), ".firebaserc"),
@@ -272,6 +322,11 @@ export function runDeployParity({
       "Secret Manager inventory",
     ),
   );
+  const validatedSelectedTargets = selectedFunctionTargets === null ? null :
+    parseSelectedFunctionTargets(selectedFunctionTargets.join(","));
+  const selectedFunctionNames = validatedSelectedTargets === null ? null :
+    new Set(validatedSelectedTargets.map((target) =>
+      target.slice("functions:".length)));
   return {
     environment,
     projectId,
@@ -280,6 +335,7 @@ export function runDeployParity({
       deployedFunctionNames,
       liveSecretNames,
       repoFunctionNames: repository.functionNames,
+      selectedFunctionNames,
     }),
   };
 }
@@ -288,7 +344,9 @@ export function formatReport(report) {
   const lines = [
     `${report.ok ? "PASS" : "FAIL"} deploy parity for ` +
       `${report.environment}: ${report.projectId}`,
-    `  Functions: ${report.repoFunctionCount} deployable source export(s), ` +
+    `  Functions: ${report.checkedFunctionCount} ` +
+      `${report.parityScope === "selected" ? "selected " : ""}` +
+      "deployable source export(s), " +
       `${report.deployedFunctionCount} deployed, ` +
       `${report.environmentOnlyFunctionCount} environment-only ignored`,
     `  Secrets: ${report.declaredSecretCount} defineSecret name(s), ` +
@@ -310,6 +368,7 @@ function usage() {
     "",
     "Options:",
     "  --repo-root <path>  Read exports and defineSecret declarations here.",
+    "  --targets <csv>      Check exact selected functions:<name> targets.",
     "  --json              Emit a machine-readable report.",
     "  --help              Show this help.",
   ].join("\n");

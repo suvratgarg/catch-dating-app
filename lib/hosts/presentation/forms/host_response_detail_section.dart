@@ -601,6 +601,7 @@ class _HostResponseReviewNoteFieldState
       ).copyWith(doneLabel: context.l10n.hostResponseSaveReviewNote),
       title: context.l10n.hostApplicationReviewNote,
       controller: widget.controller,
+      emptyValueText: context.l10n.hostResponseAddReviewNote,
       inputHint: context.l10n.hostApplicationReviewNoteHint,
       contract: CatchContractConstraints
           .reviewOrganizerApplicationCallablePayloadReviewNote,

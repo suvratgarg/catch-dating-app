@@ -63,8 +63,10 @@ import {
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
   resetPhoneSignIn,
+  signInWithGoogleAdmin,
   signOutAdmin,
 } from "../shared/api/firebase";
+import {firebaseApp} from "../shared/api/firebaseCore";
 import {useAdminSession} from "./useAdminSession";
 import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
@@ -79,6 +81,7 @@ import type {OverviewQueueDestination} from
   "../features/overview/ui/OverviewScreen";
 
 const PartnerRouteApp = lazy(() => import("./PartnerRouteApp").then((m) => ({default: m.PartnerRouteApp})));
+const OperatorSessionRoute = lazy(() => import("../features/operator-session/ui/OperatorSessionScreen").then((m) => ({default: m.OperatorSessionScreen})));
 
 type AdminNavId =
   | "overview"
@@ -248,13 +251,13 @@ const navigationGroups: Array<{
 const navigation = navigationGroups.flatMap((group) => group.items);
 
 const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
-  overview: adminRoleClaimKeys,
+  overview: adminRoleClaimKeys.filter((role) => role !== "salesStaff"),
   safety: ["admin", "adminOwner", "safetyReviewer", "support"],
   access: ["admin", "adminOwner", "support"],
   "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
   growth: ["adminOwner", "analyticsViewer"],
   "marketing-ops": ["admin", "adminOwner", "support"],
-  sales: ["admin", "adminOwner"],
+  sales: ["admin", "adminOwner", "salesStaff"],
   "organizer-intake": ["admin", "adminOwner", "support"],
   organizers: ["admin", "adminOwner", "support"],
   events: ["admin", "adminOwner", "support"],
@@ -311,7 +314,7 @@ const adminSectionTitles: Record<AdminNavId, string> = {
 };
 
 export function App() {
-  const [router] = useState(() => createBrowserRouter([{path: "/partners/*", element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}><PartnerRouteApp /></Suspense>}, {
+  const [router] = useState(() => createBrowserRouter([{path: "/operator-session", element: <Suspense fallback={<AdminFeatureLoadingState label="Loading session handoff" />}><OperatorSessionRoute /></Suspense>}, {path: "/partners/*", element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}><PartnerRouteApp /></Suspense>}, {
     path: "*",
     element: <AdminRouteApp />,
   }]));
@@ -451,6 +454,18 @@ function AdminRouteApp() {
     }
   }, [phoneNumber]);
 
+  const handleGoogleSignIn = useCallback(async () => {
+    setAuthError(null);
+    setIsAuthActionPending(true);
+    try {
+      await signInWithGoogleAdmin();
+    } catch {
+      setAuthError("Unable to sign in with Google. Try again.");
+    } finally {
+      setIsAuthActionPending(false);
+    }
+  }, []);
+
   const handleVerifyPhoneCode = useCallback(async () => {
     const normalizedCode = phoneCode.replace(/\s+/gu, "");
     if (!/^\d{6}$/u.test(normalizedCode)) {
@@ -567,6 +582,7 @@ function AdminRouteApp() {
         onRequestPhoneCode={() => void handleRequestPhoneCode()}
         onResetPhoneSignIn={handleResetPhoneSignIn}
         onVerifyPhoneCode={() => void handleVerifyPhoneCode()}
+        onGoogleSignIn={() => void handleGoogleSignIn()}
       />
     );
   }
@@ -694,7 +710,7 @@ function AdminRouteApp() {
             (adminRoles.includes("support") || adminRoles.includes("adminOwner")) ? (
             <Suspense fallback={<AdminFeatureLoadingState label="Loading support trial" />}>
               <CatchWhatsappTrialWorkspace
-                scope={{actorUid: user?.uid ?? "", projectId: "catchdates-dev",
+                scope={{actorUid: user?.uid ?? "", projectId: firebaseApp.options.projectId ?? "",
                   sessionKey, isCurrent: session.isCurrent}}
               />
             </Suspense>
@@ -705,6 +721,8 @@ function AdminRouteApp() {
             <SalesWorkspaceScreen
               area={salesAreaForPath(location.pathname)}
               isAdminOwner={adminRoles.includes("adminOwner")}
+              assignedStaffOnly={adminRoles.includes("salesStaff") &&
+                !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
               currentUserUid={user?.uid ?? (mode === "sample" ? "sample-owner" : "")}
               selectedOrganizerId={salesOrganizerIdForPath(location.pathname)}
               onAreaChange={(area) => navigate(`/sales/${area}`)}
@@ -1189,6 +1207,7 @@ function SignInScreen({
   onRequestPhoneCode,
   onResetPhoneSignIn,
   onVerifyPhoneCode,
+  onGoogleSignIn,
   phoneCode,
   phoneNumber,
   phoneSignInStage,
@@ -1200,6 +1219,7 @@ function SignInScreen({
   onRequestPhoneCode: () => void;
   onResetPhoneSignIn: () => void;
   onVerifyPhoneCode: () => void;
+  onGoogleSignIn: () => void;
   phoneCode: string;
   phoneNumber: string;
   phoneSignInStage: PhoneSignInStage;
@@ -1227,6 +1247,9 @@ function SignInScreen({
             {error}
           </StatusBanner>
         )}
+        <AdminButton disabled={isSigningIn} onClick={onGoogleSignIn}>
+          Sign in with Google
+        </AdminButton>
         <AdminForm onSubmit={handlePhoneSubmit}>
           {phoneSignInStage === "phone" ? (
             <TextField

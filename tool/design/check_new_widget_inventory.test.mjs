@@ -34,13 +34,63 @@ test("owned renderers require exact source, library, owner, method and return ty
     assert.equal(isOwnedCompositionRenderer({...entry, [key]: "unowned"}), false, key);
   }
   assert.equal(isOwnedCompositionRenderer({...entry, name: "status"}), false);
-  const factory = {
-    file: "lib/hosts/presentation/customers/host_customer_timeline.dart",
-    library: "lib/hosts/presentation/customers/host_customer_timeline.dart",
-    owner: null, name: "hostCustomerTimelineField", returnType: "CatchField",
-  };
-  assert.equal(isOwnedCompositionRenderer(factory), true);
-  assert.equal(isOwnedCompositionRenderer({...factory, returnType: "Widget"}), false);
+  for (const [file, name] of [
+    ["lib/hosts/presentation/customers/host_customer_timeline.dart", "hostCustomerTimelineField"],
+    ["lib/programs/presentation/program_events_row.dart", "programEventsField"],
+  ]) {
+    const factory = {
+      file, library: file, owner: null, name, returnType: "CatchField",
+    };
+    assert.equal(isOwnedCompositionRenderer(factory), true);
+    assert.equal(isOwnedCompositionRenderer({...factory, returnType: "Widget"}), false);
+  }
+});
+
+test("typed factories require their exact real source identities", () => {
+  const entries = [
+    {
+      file: "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      library: "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      owner: null, name: "hostCustomerTimelineField", returnType: "CatchField",
+    },
+    {
+      file: "lib/programs/presentation/program_events_row.dart",
+      library: "lib/programs/presentation/program_events_row.dart",
+      owner: null, name: "programEventsField", returnType: "CatchField",
+    },
+    {
+      file: "lib/routing/host_inbox_route.dart",
+      library: "lib/routing/go_router.dart",
+      owner: null, name: "hostInboxScreenForUri", returnType: "HostInboxScreen",
+    },
+  ];
+  const typeSources = [
+    "packages/catch_ui/lib/src/components/catch_field.dart",
+    "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+  ];
+  const typeDeclarations = typeSources.flatMap((file) => {
+    const source = fs.readFileSync(path.join(repoRoot, file), "utf8");
+    return collectClassDeclarations(source, buildLineStarts(source));
+  });
+  for (const entry of entries) {
+    const source = fs.readFileSync(path.join(repoRoot, entry.file), "utf8");
+    const starts = buildLineStarts(source);
+    const helpers = collectWidgetHelpers(source, starts,
+      collectClassRanges(source, starts),
+      resolveWidgetTypeNames([
+        ...collectClassDeclarations(source, starts), ...typeDeclarations,
+      ]));
+    assert.equal(helpers.filter(({owner, name, returnType}) =>
+      owner === entry.owner && name === entry.name && returnType === entry.returnType).length,
+    1, `${entry.file}:${entry.name} must still exist`);
+    assert.equal(isOwnedCompositionRenderer(entry), true, entry.name);
+    for (const key of Object.keys(entry)) {
+      assert.equal(isOwnedCompositionRenderer({...entry, [key]: "unowned"}),
+        false, `${entry.name}: ${key} cannot inherit recognition`);
+    }
+    assert.equal(isOwnedCompositionRenderer({...entry, name: `${entry.name}Sibling`}), false);
+    assert.equal(isOwnedCompositionRenderer({...entry, returnType: "Widget"}), false);
+  }
 });
 
 
@@ -49,6 +99,10 @@ test("composition renderer recognition stays bound to real owner methods", () =>
   const entries = [
     {file: `${ui}catch_action_module.dart`, library: `${ui}catch_section.dart`,
       owner: null, name: "_buildActionModule", returnType: "Widget"},
+    {file: `${ui}catch_action_module.dart`, library: `${ui}catch_section.dart`,
+      owner: null, name: "_buildSectionModule", returnType: "Widget"},
+    {file: `${ui}catch_collection_section.dart`, library: `${ui}catch_section.dart`,
+      owner: null, name: "_buildCollectionModule", returnType: "Widget"},
     {file: `${ui}catch_banner.dart`, library: `${ui}catch_banner.dart`,
       owner: "CatchBanner", name: "_buildBodyFeedback", returnType: "Widget"},
     ...["_buildBar", "_searchField", "_selectorControls"].map((name) => ({

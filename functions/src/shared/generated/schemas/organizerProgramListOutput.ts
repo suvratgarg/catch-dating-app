@@ -24,6 +24,7 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
           "kind",
           "title",
           "status",
+          "timezone",
           "startsAtMillis",
           "endsAtMillis",
           "capabilities",
@@ -58,6 +59,12 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
               "archived"
             ]
           },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "IANA timezone used to recover the Program's civil calendar dates from its stored instants."
+          },
           "startsAtMillis": {
             "type": "integer",
             "minimum": 0
@@ -77,6 +84,11 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
                 "messaging"
               ]
             }
+          },
+          "functionCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero."
           },
           "revision": {
             "type": "integer",
@@ -108,6 +120,15 @@ export const organizerProgramListCallableResponseSchema: Record<string, unknown>
           }
         }
       }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Opaque stable cursor for the last returned startsAt/program-ID tuple when another page exists, otherwise null. Optional for legacy readers."
     }
   }
 } as const;

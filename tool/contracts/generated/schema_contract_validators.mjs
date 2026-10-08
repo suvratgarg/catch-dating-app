@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  catchWhatsappOperatorSetupOperationDocumentSchema,
+  catchWhatsappOperatorSetupAuditDocumentSchema,
   manageHostRosterIntakeCallablePayloadSchema,
   hostRosterIntakeSessionDocumentSchema,
   hostRosterIntakeReceiptDocumentSchema,
@@ -781,6 +783,7 @@ import {
   hostAnalyticsEventSchema,
   userProfileExposureEventSchema,
   paymentDocumentSchema,
+  nativeRefundRecoveryCursorDocumentSchema,
   hostPaymentAccountDocumentSchema,
   razorpayPendingOrderDocumentSchema,
   swipeDocumentSchema,
@@ -1241,6 +1244,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateCatchWhatsappOperatorSetupOperationDocument = ajv.compile(catchWhatsappOperatorSetupOperationDocumentSchema);
+export const validateCatchWhatsappOperatorSetupAuditDocument = ajv.compile(catchWhatsappOperatorSetupAuditDocumentSchema);
 export const validateManageHostRosterIntakeCallablePayload = ajv.compile(manageHostRosterIntakeCallablePayloadSchema);
 export const validateHostRosterIntakeSessionDocument = ajv.compile(hostRosterIntakeSessionDocumentSchema);
 export const validateHostRosterIntakeReceiptDocument = ajv.compile(hostRosterIntakeReceiptDocumentSchema);
@@ -2019,6 +2024,7 @@ export const validateSavedEventDocument = ajv.compile(savedEventDocumentSchema);
 export const validateHostAnalyticsEvent = ajv.compile(hostAnalyticsEventSchema);
 export const validateUserProfileExposureEvent = ajv.compile(userProfileExposureEventSchema);
 export const validatePaymentDocument = ajv.compile(paymentDocumentSchema);
+export const validateNativeRefundRecoveryCursorDocument = ajv.compile(nativeRefundRecoveryCursorDocumentSchema);
 export const validateHostPaymentAccountDocument = ajv.compile(hostPaymentAccountDocumentSchema);
 export const validateRazorpayPendingOrderDocument = ajv.compile(razorpayPendingOrderDocumentSchema);
 export const validateSwipeDocument = ajv.compile(swipeDocumentSchema);

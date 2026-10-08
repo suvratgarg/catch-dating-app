@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_events_row.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -213,27 +214,27 @@ void main() {
   testWidgets('restore menu is disabled after grace expires before sweep', (
     tester,
   ) async {
-    final program = OrganizerProgramSummary(
+    final now = DateTime(2026, 10, 5);
+    final program = OrganizerProgramListRow(
       programId: 'program',
       title: 'Program',
-      kind: ProgramKind.wedding,
-      status: ProgramStatus.archived,
+      kind: 'wedding',
+      status: 'archived',
+      timezone: 'Asia/Kolkata',
       revision: 7,
-      anonymizeAt: DateTime.now().subtract(const Duration(days: 1)),
+      anonymizeAt: now.subtract(const Duration(days: 1)),
     );
     await tester.pumpWidget(
-      ProviderScope(
-        // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
-        overrides: [
-          organizerProgramListProvider(
-            'organizer',
-          ).overrideWith((ref) async => [program]),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const ProgramListPageBody(
-            organizerId: 'organizer',
-            organizerName: 'Organizer',
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: ProgramEventsRow(
+            program: program,
+            now: now,
+            onOpen: () {},
+            onLifecycle: (_) {},
           ),
         ),
       ),

@@ -1005,12 +1005,6 @@
           "status": "aligned"
         },
         {
-          "path": "lib/event_success/presentation/host_report/event_success_report_empty_state.dart",
-          "role": "provider-free report empty-state placement over the shared CatchEmptyState contract with explicit title, message and icon",
-          "providerFree": true,
-          "status": "aligned"
-        },
-        {
           "path": "lib/hosts/presentation/host_invite_link_state.dart",
           "role": "provider-free private access and invitation-link status, sharing availability, mutation mode and row statistics; URL construction stays at the route edge",
           "providerFree": true,
@@ -1031,6 +1025,12 @@
         {
           "path": "lib/hosts/presentation/forms/host_forms_directory_state.dart",
           "role": "provider-free forms directory page and pagination display state extracted from the account-scoped controller; no provider reads or mutations",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/programs/presentation/program_create_state.dart",
+          "role": "provider-free Program creation draft values and validation adapter; route controllers retain provider reads and mutations",
           "providerFree": true,
           "status": "aligned"
         }

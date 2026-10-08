@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:593a5bff84e825931e059000d9f7ed28b7e881adaaf9bcdd6b4ceb018bec7a59",
-  "resolvedDigest": "sha256:1cbe3f654b8cc46d943cd810a4214209ab3b434ceb23c7e55dc02feb9d06a3f5",
+  "resolvedDigest": "sha256:19013ac0b878b12f360b96ad76e0562df242f99ea2260b97e2b1ec397932e04b",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -978,7 +978,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

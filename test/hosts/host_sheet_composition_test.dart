@@ -15,6 +15,55 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('Event and Program tabs return the selected creation intent', (
+    tester,
+  ) async {
+    HostEventEntrySelection? selection;
+    await tester.pumpWidget(
+      _app(
+        false,
+        1,
+        Builder(
+          builder: (context) => TextButton(
+            child: const Text('Open'),
+            onPressed: () async {
+              selection = await showCatchBottomSheet<HostEventEntrySelection>(
+                context: context,
+                builder: (_) => HostEventEntrySheet(
+                  state: HostEventEntryState.resolve(organizerId: 'club'),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await pumpFeatureUi(tester);
+    expect(
+      find.byKey(const ValueKey('host-event-entry-createEvent')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('host-event-entry-createProgram')),
+      findsNothing,
+    );
+    await tester.tap(find.text('Program'));
+    await tester.pump();
+    expect(
+      find.byKey(const ValueKey('host-event-entry-createEvent')),
+      findsNothing,
+    );
+    final program = find.byKey(
+      const ValueKey('host-event-entry-createProgram'),
+    );
+    expect(program, findsOneWidget);
+    await tester.tap(program);
+    await pumpFeatureUi(tester);
+    expect(selection?.intent, HostEventEntryIntent.createProgram);
+    expect(selection?.draft, isNull);
+  });
+
   testWidgets(
     'combined entry returns the exact older draft without another picker',
     (tester) async {

@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {catchWhatsappOperatorSetupOperationDocumentSchema} from "./schemas/catchWhatsappOperatorSetupOperationDocument";
+export {catchWhatsappOperatorSetupAuditDocumentSchema} from "./schemas/catchWhatsappOperatorSetupAuditDocument";
 export {manageHostRosterIntakeCallablePayloadSchema} from "./schemas/manageHostRosterIntakeInput";
 export {hostRosterIntakeSessionDocumentSchema} from "./schemas/hostRosterIntakeSessionDocument";
 export {hostRosterIntakeReceiptDocumentSchema} from "./schemas/hostRosterIntakeReceiptDocument";
@@ -783,6 +785,7 @@ export {savedEventDocumentSchema} from "./schemas/savedEventDocument";
 export {hostAnalyticsEventSchema} from "./schemas/hostAnalyticsEvent";
 export {userProfileExposureEventSchema} from "./schemas/userProfileExposureEvent";
 export {paymentDocumentSchema} from "./schemas/paymentDocument";
+export {nativeRefundRecoveryCursorDocumentSchema} from "./schemas/nativeRefundRecoveryCursorDocument";
 export {hostPaymentAccountDocumentSchema} from "./schemas/hostPaymentAccountDocument";
 export {razorpayPendingOrderDocumentSchema} from "./schemas/razorpayPendingOrderDocument";
 export {swipeDocumentSchema} from "./schemas/swipeDocument";

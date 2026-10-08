@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupOperationDocument.ts` |
+| CatchWhatsappOperatorSetupAuditDocument | `firestore/catch_whatsapp_operator_setup_audits.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupAuditDocument.ts` |
 | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts` |
 | HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `functions/src/shared/generated/hostRosterIntakeSessionDocument.ts` |
 | HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `functions/src/shared/generated/hostRosterIntakeReceiptDocument.ts` |
@@ -790,6 +792,7 @@ Do not edit it by hand.
 | HostAnalyticsEvent | `bigquery/host_analytics_event.schema.json` | `functions/src/shared/generated/hostAnalyticsEvent.ts` |
 | UserProfileExposureEvent | `bigquery/user_profile_exposure_event.schema.json` | `functions/src/shared/generated/userProfileExposureEvent.ts` |
 | PaymentDocument | `firestore/payments.schema.json` | `functions/src/shared/generated/paymentDocument.ts` |
+| NativeRefundRecoveryCursorDocument | `firestore/native_refund_recovery_cursor.schema.json` | `functions/src/shared/generated/nativeRefundRecoveryCursorDocument.ts` |
 | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `functions/src/shared/generated/hostPaymentAccountDocument.ts` |
 | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `functions/src/shared/generated/razorpayPendingOrderDocument.ts` |
 | SwipeDocument | `firestore/swipes.schema.json` | `functions/src/shared/generated/swipeDocument.ts` |
@@ -1231,6 +1234,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaCatchWhatsappOperatorSetupOperationDocumentSchema` | CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_operation_document.g.dart` |
+| `schemaCatchWhatsappOperatorSetupAuditDocumentSchema` | CatchWhatsappOperatorSetupAuditDocument | `firestore/catch_whatsapp_operator_setup_audits.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_audit_document.g.dart` |
 | `schemaManageHostRosterIntakeCallablePayloadSchema` | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_roster_intake_callable_payload.g.dart` |
 | `schemaHostRosterIntakeSessionDocumentSchema` | HostRosterIntakeSessionDocument | `firestore/host_roster_intake_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_session_document.g.dart` |
 | `schemaHostRosterIntakeReceiptDocumentSchema` | HostRosterIntakeReceiptDocument | `firestore/host_roster_intake_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_roster_intake_receipt_document.g.dart` |
@@ -2009,6 +2014,7 @@ Do not edit it by hand.
 | `schemaHostAnalyticsEventSchema` | HostAnalyticsEvent | `bigquery/host_analytics_event.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_event.g.dart` |
 | `schemaUserProfileExposureEventSchema` | UserProfileExposureEvent | `bigquery/user_profile_exposure_event.schema.json` | `lib/core/schema_contracts/generated/schemas/user_profile_exposure_event.g.dart` |
 | `schemaPaymentDocumentSchema` | PaymentDocument | `firestore/payments.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_document.g.dart` |
+| `schemaNativeRefundRecoveryCursorDocumentSchema` | NativeRefundRecoveryCursorDocument | `firestore/native_refund_recovery_cursor.schema.json` | `lib/core/schema_contracts/generated/schemas/native_refund_recovery_cursor_document.g.dart` |
 | `schemaHostPaymentAccountDocumentSchema` | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_payment_account_document.g.dart` |
 | `schemaRazorpayPendingOrderDocumentSchema` | RazorpayPendingOrderDocument | `firestore/razorpay_pending_orders.schema.json` | `lib/core/schema_contracts/generated/schemas/razorpay_pending_order_document.g.dart` |
 | `schemaSwipeDocumentSchema` | SwipeDocument | `firestore/swipes.schema.json` | `lib/core/schema_contracts/generated/schemas/swipe_document.g.dart` |

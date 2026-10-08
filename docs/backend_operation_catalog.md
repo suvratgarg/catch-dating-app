@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.95.0
-updated: 2026-10-06
+version: 1.99.0
+updated: 2026-10-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -718,19 +718,21 @@ in one Firestore transaction. It validates the actual project and default
 database, complete scope, pinned `catchWhatsappReadinessIngress/{ingressId}`
 evidence and current STOP, withdrawal, deletion and readiness records. These
 three collections deny all client reads/writes, have no TTL, and contain no
-message body, raw endpoint or credential. No approval or ingress writer is
-provided. An existing readiness cannot be renewed or reactivated; revocation
+message body, raw endpoint or credential. The internal protected publisher writes
+review approvals; the operator adapter also admits exact revoke approvals. No
+live approval producer or ingress writer is provided. An existing readiness cannot be renewed or reactivated; revocation
 requires the approved digest of its exact current record. Ingress state is checked
 during provisioning; the existing send path reads readiness, not this ingress
 record. Later ingress revocation must also revoke readiness or disable outbound
 gates: changing the ingress record alone is not a sending kill switch.
 
-The required external authority fence remains unimplemented. It must cover
-reviewer roles, enabled/session state and recipient identity through the actual
-Firestore commit; Firebase Auth reads or role-assignment documents alone cannot
-provide that guarantee. All relevant Auth mutations, including administrative
-changes, must participate in an independently audited protocol before a live
-caller can be wired. The adapter itself invokes the bounded offline
+The source uses bounded current Auth observations and Firestore transaction
+read sets for authority, consent and readiness. Auth observations do not make
+Firebase Auth and Firestore atomic: an out-of-band role, identity or session
+mutation can race the commit. Observed drift fails closed. Before live apply,
+the operator must review that concrete residual race and any unresolved partial
+outcome; this source does not require a new global Auth serialization platform.
+The adapter itself invokes the bounded offline
 `catch.whatsapp-history-archive/v1` verifier; this is a Catch normalization,
 not a native Meta export parser. The trusted immutable source loader must pin
 exact bytes and an independent authenticity/completeness audit. Empty history,
@@ -756,25 +758,151 @@ requires independent authenticated-review, actual atomic-ingress audit and
 immutable archive/pin sources. It validates existing contracts, exact decision
 binding and historical session observations; unexpected fields and private
 backend errors are rejected without exposing their values. Dependency arguments,
-results and archive bytes are copied across awaits. Its create-only publisher is
-an interface only: there is no implementation, new collection, live producer,
-publication call or enabled readiness output. Hashes and synthetic tests prove
-neither source authenticity nor historical completeness.
+results and archive bytes are copied across awaits. The internal create-only
+Firestore publisher and protected archive loader are implemented in
+`whatsappReadinessFirestore.ts`. The operator setup adapter binds them to the
+reviewed fixed scope and journals their effects in the same transaction. There
+is no live authenticated producer or enabled readiness output. Hashes and
+synthetic tests prove neither source authenticity nor historical completeness.
 
 The review observation binds the verified token UID/project/auth_time and token
 expiry to the observed tokens-valid-after cutoff, enabled owner role, review
 time, exact decision digest and authenticated source provenance. Token expiry
-bounds the proposed approval expiry. This records authentication at that review;
-it is not `sessionCurrent`, an authority epoch, protection against revoke/regrant
-or delete/recreate races, or the mandatory full-span Auth fence. The protected
-archive loader revalidates the exact approval and existing history verifier but
-cannot authenticate arbitrary caller-supplied bytes or pins. Actual immutable
-storage, authorized publication and independently audited sources remain absent.
+bounds the proposed approval expiry. The current-session check also observes
+the reviewer's revocation cutoff through the existing authority store. Neither
+historical nor current observation prevents an out-of-band revoke/regrant or
+delete/recreate race. The protected archive loader revalidates the exact approval
+and existing history verifier; the operator loader additionally pins an immutable
+storage generation, bytes and an independently authenticated completeness audit.
+Caller-supplied hashes or pins cannot establish those facts. Live authorized
+source configuration and independently audited history remain separate work.
 
 The scoped Auth mutation inventory and remaining external-administration gap are
 recorded in [Readiness authority mutation boundary](data_contracts.md#readiness-authority-mutation-boundary).
-Role projections, token observations and application deletion tombstones are not
-a substitute for the mandatory full-span authority fence.
+Role projections, token observations and application deletion tombstones do not
+make Auth observations atomic with Firestore commits.
+
+### First Catch WhatsApp operator source boundary
+
+`whatsappOperatorSetup.ts`, `whatsappOperatorSetupFirestore.ts` and
+`whatsappOperatorSetupSources.ts` implement an internal protected first
+operator engine. The private CLI composes these merged helpers; none is exported
+from the Functions index or exposed by a callable or UI. The protected source binds one project, Google actor, recipient,
+sender, credential-version digest and reviewed source SHA. Request input contains
+only `planId`, `planSha256` and `replayKey`; identities, role claims, credential
+metadata and history evidence never become caller facts. Configuration and tests
+use synthetic identities. Planning is read-only and expires within 15 minutes.
+
+The permanent project slot in `catchWhatsappOperatorSetupOperations` and
+create-only phase receipts in `catchWhatsappOperatorSetupAudits` have no TTL or
+reset path. The runner preserves unrelated custom claims, rejects pre-existing
+owner/authority or actor assignment state, and journals Auth intent before the
+single claim replacement. The concrete writer also consumes a create-only Auth
+dispatch-intent receipt before calling Auth, so direct adapter replay cannot
+redispatch even when the first call throws before applying. Unknown effects
+require exact receipt reconciliation;
+there is no blind second claim dispatch. The Firestore seed writes the canonical
+denied authorities, admin assignment, admin audit and setup phase atomically.
+The seed's next-second cutoff requires a new sign-in before root activation;
+token refresh alone is insufficient. Root revision 2 has only reply/review;
+recipient receive activation reuses the existing prepare/finalize store.
+
+Recipient planning also admits the exact existing single-key claim shape
+`{admin: true}` for preservation. The reviewed plan binds that decision through
+the exact recipient UID, full `recipientClaimsSha256`, source SHA and plan digest;
+bootstrap apply rechecks the full fingerprint at each mutation admission. No recipient
+Auth claim is written or removed. Its pre-existing general Admin access remains;
+legacy `admin` supplies no Catch capability. Only separately approved
+endpoint-bound `receive` is granted. Recipient `adminOwner`, `support`, other
+privileged combinations or extra claims alongside `admin: true` remain rejected.
+Actor admission, no-existing-owner/authority/assignment checks and permanent
+receipts are unchanged.
+
+Read-only reconciliation checks the current full recipient fingerprint alongside
+account incarnation and endpoint. Observed claim drift requires reconciliation;
+the status read neither changes claims nor redispatches an effect.
+
+The concrete adapters include exact setup intent and pinned authority in the
+actual transaction read set. Receive, publication and readiness effects share a
+transaction with their setup phase receipt. Publication uses independent protected
+review, ingress and immutable archive evidence; the archive loader pins generation
+and byte digest and reuses the epoch-complete verifier. Revoke admits an exact
+protected review and works after STOP or recipient deletion without loading
+history or the recipient. Replays retain exact plan, scope, nonce and replay-key
+binding and cannot renew or broaden a grant.
+
+The CLI supplies a concrete, default-denied approval loader from an explicitly
+delegated OS-owner policy directory. Planning creates a private pending plan and
+stable replay request; it never creates reviewed authorization. Apply requires a
+separately written reviewed plan and exact `bootstrap-apply` approval binding the
+plan, full scope, source SHA, compiled execution digest, replay digest and expiry.
+Missing approval fails before SDK initialization. The policy is reread before
+mutation admission and after OAuth header waits immediately before Auth dispatch;
+the runtime retains one exact plan/request binding. Remote enablement is not
+approval. The execution digest pins
+the bounded complete `functions/lib` tree, package/lock metadata, CLI, runtime
+and readiness loader files. It catches changed approved bytes; it is not independent proof of
+compilation or protection against a hostile process with the same OS UID.
+
+The lazy runtime uses current project/default-tenant Admin Auth and default
+Firestore, existing protected Google lookup, a private signature/revocation-
+verified Google ID token, and exact Secret Manager version/IAM metadata. It never
+accesses a secret payload, changes IAM or contacts Meta. Emulator redirection is
+rejected in the default runtime. SDK reads/token verification are retained, but
+the guarded claim setter uses public authenticated project-bound REST with one
+HTTP attempt, redirect rejection and an abort deadline. The Admin SDK's default
+mutation retries are deliberately bypassed after unknown outcomes. Only an
+unambiguous unconditional direct accessor binding for the pinned runtime
+principal is established by this metadata adapter;
+unsupported inherited/group/conditional access remains unproven and is not a
+request for another grant. Auth claim replacement and Firestore commit remain
+separate services with the bounded observation race described above.
+
+The command `setup-catch-whatsapp-reply.cjs` supports offline `inspect-plan` and
+`fingerprint`, read-only `plan`/`reconcile`, and separately approved bootstrap
+`apply`. Its concrete readiness loader accepts fixed private files from separately
+authorized audit custody: actual deployed atomic-ingress audit, pinned epoch-to-
+cutover archive and independent source/retention/normalization/late-arrival audits.
+A delegated custodian admits their exact hashes and full operator scope. File
+permissions, structured audit bodies and digests do not authenticate an auditor;
+the custody delegation is an explicit live authorization prerequisite with no
+default. Source publication grants none of that authority.
+
+`readiness-plan` derives the review session from verified current Google Auth and
+current root/recipient authority, validates existing strict history evidence, and
+creates only private pending review and authentication receipts. Separate private
+`readiness-ingress`, `readiness-publish` and `readiness-apply` action approvals bind
+source, executable, original plan/scope/replay, review and audit hashes. The first
+successful binding is immutable for each invocation; a coherently changed policy
+or evidence bundle during an Auth wait cannot approve captured older effects.
+Stage approval cannot outlive the review, token or admitted evidence; it never
+renews the expired bootstrap plan or permanent project slot.
+
+Approved ingress admission is create-only and uses the actual audited cutover;
+conflicts and revocation are never overwritten. Publication reuses the merged
+transactional publisher and records the exact publication digest, including its
+actual authority-observation digest, as a private pre-write witness. That witness
+is not approval. `readiness-review` reads the committed publication and returns
+integrity evidence; an independent custodian must separately admit the exact
+publication before `readiness-apply` reuses existing provisioning. No command
+manufactures history, self-approves a review, renews readiness or sends a reply.
+
+Reconcile checks the permanent slot, complete canonical phase audit chain, Auth
+dispatch intent and authority effect hashes in a read-only transaction. At the
+ready phase it additionally proves the publication, independent audit, consumed
+approval and exact readiness record against current authority, ingress, STOP,
+preferences, deletion and expiry. `readinessVerified=true` reports only a current,
+unsuppressed, unexpired record. Expired plans and historical publication evidence
+remain inspectable without any effect retry. Bootstrap completion alone does not
+establish readiness, and readiness observation is not manual send approval.
+
+The preserved `inspect-plan --plan-file <receipt>` path remains offline and prints
+`liveApplyAvailable=false`: inspecting caller JSON never authorizes it. Runtime
+configuration, commands, global admin-role consequences and the existing
+production callable route are documented in
+[release operations](release_operations.md#protected-catch-whatsapp-operator-cli).
+Source tests and publication do not authorize live execution, grants, flags,
+provider calls, deployment or sending.
 
 ### Program Lodging Planner
 
