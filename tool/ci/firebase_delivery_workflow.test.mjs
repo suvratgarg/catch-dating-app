@@ -1757,3 +1757,27 @@ test("Intake PR596 input predicate rejects mixed flags, another environment, pro
     assert.equal(accepted({...inputs, ...patch}), false);
   }
 });
+
+test("Intake PR596 caller accepts GitHub-omitted empty recovery and rejects any recovery value", () => {
+  const job = ciJob(workflow("selective-backend-release.yml"), "authorize-intake-pr596");
+  const body = extractSteps(job).find((step) => step.name === "Bind the fixed Intake source, producer and operator confirmation").run;
+  const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+  const inputs = {release_kind: "intake-pr596", confirm_intake_pr596: true,
+    confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
+    resume_delivery_attempt: "1", source_sha: "ceab9d8abf5de7ad383260739032e0e1603d45ff",
+    reason: "Release approved immutable PR596 Intake read Function only"};
+  const accepted = (value) => spawnSync("jq", ["-e", filter],
+    {input: JSON.stringify(value), encoding: "utf8"}).status === 0;
+  assert.equal(accepted(inputs), true);
+  assert.equal(accepted({...inputs, resume_delivery_run_id: ""}), true);
+  assert.equal(accepted({...inputs, resume_delivery_run_id: null}), true);
+  for (const value of ["123", " ", false, true, 0, 123, [], {}]) {
+    assert.equal(accepted({...inputs, resume_delivery_run_id: value}), false);
+  }
+  for (const patch of [{release_kind: "sales-pr543"}, {confirm_intake_pr596: false},
+    {confirm_four_functions_five_indexes: true}, {confirm_whatsapp_five: true},
+    {confirm_sales_pr543: true}, {resume_delivery_attempt: "2"}, {source_sha: "b".repeat(40)},
+    {reason: "bad"}, {reason: "line\nbreak reason"}]) {
+    assert.equal(accepted({...inputs, ...patch}), false);
+  }
+});
