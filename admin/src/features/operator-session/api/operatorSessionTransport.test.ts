@@ -1,6 +1,6 @@
 import {webcrypto, generateKeyPairSync, createHash, privateDecrypt, sign, constants} from "node:crypto";
 import {beforeEach, expect, it, vi} from "vitest";
-import {createSessionTransport, sessionLaunch, takeSessionLaunch, type SessionLaunch} from "./operatorSessionTransport";
+import {createSessionTransport, sessionLaunch, sessionRequest, takeSessionLaunch, type SessionLaunch} from "./operatorSessionTransport";
 const encryption = generateKeyPairSync("rsa", {modulusLength: 2048});
 const signing = generateKeyPairSync("rsa", {modulusLength: 2048});
 const replacement = generateKeyPairSync("rsa", {modulusLength: 2048});
@@ -73,4 +73,19 @@ it("dispatches an unload cancellation immediately without trusting its response"
   createSessionTransport(anchor(), dispatch).cancelOnUnload("d".repeat(64));
   expect(dispatch).toHaveBeenCalledOnce();
   expect(dispatch.mock.calls[0]![1]).toMatchObject({method: "POST", body: "{}", keepalive: true, credentials: "omit", redirect: "error"});
+});
+
+it.each([300001, 899000, 900000])("accepts a private launch and request with %i milliseconds remaining", remaining => {
+  const now = Date.now(), launch = {...anchor(), expiresAtMillis: now + remaining};
+  expect(sessionLaunch(fragment(launch), now)).toEqual(launch);
+  const request = {kind: "catch-operator-session-request", schemaVersion: 1,
+    challenge: launch.challenge, projectId: "demo-catch-setup", actorUid: "actor",
+    actorEmailSha256: "d".repeat(64), scopeSha256: "e".repeat(64), sourceSha: launch.sourceSha,
+    expiresAtMillis: launch.expiresAtMillis, serverEncryptionKey: launch.serverEncryptionKey,
+    serverSigningKey: launch.serverSigningKey};
+  expect(sessionRequest(request, now)).toEqual(request);
+  for (const invalid of [now, now - 1, now + 900001]) {
+    expect(() => sessionLaunch(fragment({...launch, expiresAtMillis: invalid}), now)).toThrow();
+    expect(() => sessionRequest({...request, expiresAtMillis: invalid}, now)).toThrow();
+  }
 });
