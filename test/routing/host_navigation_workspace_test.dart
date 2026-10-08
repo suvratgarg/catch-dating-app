@@ -13,6 +13,94 @@ import 'package:go_router/go_router.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  for (final (destination, view) in [
+    (Routes.hostFormResponseDetailScreen, HostAudienceView.responses),
+    (Routes.hostApplicationDetailScreen, HostAudienceView.responses),
+    (Routes.hostFormTemplatesScreen, HostAudienceView.forms),
+    (Routes.hostCreateSavedAudienceScreen, HostAudienceView.audiences),
+    (Routes.hostAddCustomerScreen, HostAudienceView.people),
+  ]) {
+    for (final width in [390.0, 1400.0]) {
+      testWidgets(
+        '${destination.name} preserves ${view.name} through the real shell at $width',
+        (tester) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = Size(width, 900);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          addTearDown(tester.view.resetPhysicalSize);
+          final productionShell =
+              hostWorkspaceRouteGraph(
+                    AppAnalytics(),
+                  ).branches[HostWorkspaceRoot.audience.index].routes.single
+                  as ShellRoute;
+          final route = productionShell.routes
+              .whereType<HostWorkspaceDestination>()
+              .singleWhere((route) => route.name == destination.name);
+          final router = GoRouter(
+            initialLocation:
+                '/host/audience?view=${view.name}&organizerId=organizer',
+            routes: [
+              ShellRoute(
+                builder: productionShell.builder,
+                routes: [
+                  productionShell.routes.first,
+                  // Keep the production shell and route identity; isolate data loading.
+                  HostWorkspaceDestination(
+                    root: route.root,
+                    audienceView: route.audienceView,
+                    path: route.path,
+                    name: route.name,
+                    builder: (_, _) =>
+                        const Material(child: Text('Response detail')),
+                  ),
+                ],
+              ),
+            ],
+          );
+          addTearDown(router.dispose);
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                uidProvider.overrideWith((ref) => Stream.value(null)),
+              ],
+              child: MaterialApp.router(
+                theme: AppTheme.light,
+                routerConfig: router,
+              ),
+            ),
+          );
+          await pumpFeatureUi(tester);
+          final parameters = {
+            for (final match in RegExp(r':(\w+)').allMatches(route.path))
+              match.group(1)!: 'record',
+          };
+          router.pushNamed<void>(
+            destination.name,
+            pathParameters: parameters,
+            queryParameters: const {
+              'organizerId': 'organizer',
+              '_responseFormId': 'form',
+            },
+          );
+          await pumpFeatureUi(tester);
+          final index = tester.widget<HostWorkspaceIndexScreen>(
+            find.byType(HostWorkspaceIndexScreen).first,
+          );
+          expect(index.uri.queryParameters['view'], view.name);
+          expect(index.uri.queryParameters['_responseFormId'], 'form');
+          expect(find.text('Response detail'), findsOneWidget);
+          router.pop();
+          await pumpFeatureUi(tester);
+          expect(
+            router.routeInformationProvider.value.uri.queryParameters['view'],
+            view.name,
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('navigator anchor does not mount a second production index', (
     tester,
   ) async {

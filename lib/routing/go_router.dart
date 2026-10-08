@@ -1308,7 +1308,9 @@ Uri _hostWorkspaceUri(Routes root, GoRouterState state) {
             : state.uri.queryParameters.containsKey('_parentContactId')
             ? HostAudienceView.people.name
             : (_hostWorkspaceDestinationRoutes()
-                          .where((route) => route.name == state.name)
+                          // ShellRoute states have no leaf name. Resolve the
+                          // same matched path used by workspace ancestry.
+                          .where((route) => route.path == state.fullPath)
                           .firstOrNull
                           ?.audienceView ??
                       HostAudienceView.people)
