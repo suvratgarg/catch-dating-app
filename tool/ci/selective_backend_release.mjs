@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {compareFunctionFingerprints, FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
-import {validateProvenanceManifest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
+import {validateProvenanceManifest, provenanceDigest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
 import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBaselineArchive,
   readMaterializedParamsSha256, liveFunctions, captureFunctionIdentities,
   FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
@@ -1019,8 +1019,303 @@ export async function runSalesPr543ReleaseCli(argv, {readLive = liveFunctions, r
   } catch { return salesFail(); }
 }
 
+// Fixed PR596 release profile. This is not a generic target or recovery API.
+export const INTAKE_PR596_RELEASE = Object.freeze({
+  sourceSha: "ceab9d8abf5de7ad383260739032e0e1603d45ff",
+  baseSha: "6f3532cdff471f8025a03d38516aeada7c207cfc",
+  sourceCiRunId: "37777899024", sourceCiRunAttempt: "1",
+  artifactId: 11551444925,
+  artifactSha256: "434c0ba77ad5260a90e9edd2008fd8842f4d307c7389e19d12e0a55b6dcad2b9",
+  provenanceSha256: "439e80f9469f34935e188d49503b2803cde137a4e3c7f9ceb7a0c11f7fb25bfe",
+  checkpointSha: "61a5b1e497acae1b9819c2123815d703e2142172",
+  projectId: "catch-dating-app-64e51", scope: "firebase:prod:catch-dating-app-64e51",
+  target: "functions:adminListIntakeOperations",
+});
+export const INTAKE_SOURCE_GUARDED_PATHS = Object.freeze([
+  "functions", "firebase.json", ".firebaserc", "firestore.rules", "firestore.indexes.json", "storage.rules",
+]);
+export const INTAKE_SOURCE_DELTA = Object.freeze([
+  {
+    "path": "functions/scripts/operations/catch-whatsapp-session-handoff.cjs",
+    "candidateMode": "100644",
+    "candidateGitBlob": "888ca2f061c4caf81d49a37d563b97e7367b97ad",
+    "checkpointMode": "100644",
+    "checkpointGitBlob": "db1ffe83d0660a331b31b0921354d84ffbe00a4a"
+  },
+  {
+    "path": "functions/scripts/operations/catch-whatsapp-session-handoff.md",
+    "candidateMode": "100644",
+    "candidateGitBlob": "fc5af68b041dedb5884356d54935cadf634bd91d",
+    "checkpointMode": "100644",
+    "checkpointGitBlob": "7098e22c9c0da31176ae9e8d1ffa4d2a9b454807"
+  },
+  {
+    "path": "functions/src/catchMessaging/whatsappOperatorSetup.test.ts",
+    "candidateMode": "100644",
+    "candidateGitBlob": "de98ec81ac63692a73040b639da582e4f6e7ebcc",
+    "checkpointMode": "100644",
+    "checkpointGitBlob": "324f1187bc75f20586efe8e39f9da88ee0a71f3f"
+  },
+  {
+    "path": "functions/src/catchMessaging/whatsappOperatorSetup.ts",
+    "candidateMode": "100644",
+    "candidateGitBlob": "2a2b8b3bf9e5b95f8ca33f7f5bb49cea6a9ffc98",
+    "checkpointMode": "100644",
+    "checkpointGitBlob": "a6db6cf3cf83987649cbdaff08636c26d636ce30"
+  },
+  {
+    "path": "functions/test/operations-catch-whatsapp-session-handoff.test.cjs",
+    "candidateMode": "100644",
+    "candidateGitBlob": "a071a0c9c4af5facb93d9c2874bf5f7cf5f83f8e",
+    "checkpointMode": "100644",
+    "checkpointGitBlob": "a71e889b9cad812c29882828a4199763a461e3a3"
+  }
+]);
+
+export function verifyIntakeSourceCompatibility(evidence) {
+  const r = INTAKE_PR596_RELEASE;
+  assert.equal(evidence.sourceSha, r.sourceSha);
+  assert.match(evidence.currentSha, shaPattern);
+  assert.equal(evidence.sourceAncestor, true);
+  assert.equal(evidence.checkpointAncestor, true);
+  assert.deepEqual(evidence.changedPaths.slice().sort(), INTAKE_SOURCE_DELTA.map((row) => row.path).sort());
+  assert.deepEqual(evidence.currentDifference, []);
+  assert.deepEqual(evidence.rows.slice().sort((a, b) => a.path.localeCompare(b.path)),
+    INTAKE_SOURCE_DELTA.slice().sort((a, b) => a.path.localeCompare(b.path)));
+  return {sourceSha: r.sourceSha, compatibilityCheckpoint: r.checkpointSha};
+}
+export function checkIntakeGitCompatibility(currentSha, cwd = process.cwd()) {
+  const r = INTAKE_PR596_RELEASE;
+  assert.match(currentSha, shaPattern);
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd, encoding: "utf8", timeout: 10000, maxBuffer: 1024 * 1024});
+    assert.ifError(result.error); assert.equal(result.status, 0, "Intake source compatibility is unproven.");
+    return result.stdout;
+  };
+  for (const sha of [r.sourceSha, r.checkpointSha, currentSha]) {
+    assert.equal(git(["rev-parse", "--verify", `${sha}^{commit}`]).trim(), sha);
+    git(["merge-base", "--is-ancestor", sha, currentSha]);
+  }
+  const difference = (a, b) => git(["diff", "--name-only", "--no-renames", "-z", a, b,
+    "--", ...INTAKE_SOURCE_GUARDED_PATHS]).split("\0").filter(Boolean);
+  const entry = (sha, file) => {
+    const match = /^(\d{6}) blob ([0-9a-f]{40})\t/.exec(git(["ls-tree", sha, "--", `:(literal)${file}`]));
+    assert.ok(match); return {mode: match[1], blob: match[2]};
+  };
+  const rows = INTAKE_SOURCE_DELTA.map(({path}) => {
+    const candidate = entry(r.sourceSha, path), checkpoint = entry(r.checkpointSha, path);
+    return {path, candidateMode: candidate.mode, candidateGitBlob: candidate.blob,
+      checkpointMode: checkpoint.mode, checkpointGitBlob: checkpoint.blob};
+  });
+  return verifyIntakeSourceCompatibility({sourceSha: r.sourceSha, currentSha, sourceAncestor: true,
+    checkpointAncestor: true, changedPaths: difference(r.sourceSha, r.checkpointSha), rows,
+    currentDifference: difference(r.checkpointSha, currentSha)});
+}
+export function verifyIntakeArtifactMetadata(artifact) {
+  const r = INTAKE_PR596_RELEASE;
+  assert.equal(artifact.id, r.artifactId); assert.equal(artifact.expired, false);
+  assert.equal(artifact.name, `firebase-delivery-${r.sourceSha}-1`);
+  assert.equal(artifact.digest, `sha256:${r.artifactSha256}`);
+  assert.equal(artifact.workflow_run?.id, Number(r.sourceCiRunId));
+  assert.equal(artifact.workflow_run?.head_sha, r.sourceSha);
+  return {artifactId: r.artifactId, artifactSha256: r.artifactSha256};
+}
+export function verifyIntakeProvenance(raw) {
+  assert.equal(provenanceDigest(raw), INTAKE_PR596_RELEASE.provenanceSha256);
+  return validateProvenanceManifest(raw);
+}
+export function prepareIntakePr596Release({packagePlan, manifest: raw}) {
+  const r = INTAKE_PR596_RELEASE, manifest = validateProvenanceManifest(raw);
+  for (const value of [manifest, packagePlan]) {
+    assert.equal(value.sourceSha, r.sourceSha); assert.equal(value.sourceCiRunId, r.sourceCiRunId);
+    assert.equal(value.sourceCiRunAttempt, r.sourceCiRunAttempt); assert.deepEqual(value.stages, ["functions"]);
+  }
+  assert.equal(packagePlan.schema, "catch.firebase-delivery-plan/v2");
+  assert.equal(packagePlan.baseSha, r.baseSha); assert.deepEqual(packagePlan.deployGroups, ["functions"]);
+  assert.equal(manifest.artifact.name, "firebase-backend.tar.gz");
+  assert.equal(packagePlan.targets?.length, 1);
+  const targets = packagePlan.targets[0].split(",");
+  targetList(targets); assert.ok(targets.includes(r.target));
+  return {...structuredClone(packagePlan), targets: [r.target]};
+}
+const intakeSelectedName = `projects/${INTAKE_PR596_RELEASE.projectId}/locations/asia-south1/functions/adminListIntakeOperations`;
+function intakeSnapshot(value) {
+  exactKeys(value, ["schema", "projectId", "functions", "protectedResources", "selected"]);
+  assert.equal(value.schema, "catch.intake-pr596-metadata/v1");
+  assert.equal(value.projectId, INTAKE_PR596_RELEASE.projectId);
+  assert.ok(Array.isArray(value.functions) && value.functions.length > 0 && value.functions.length <= 3000);
+  const names = value.functions.map((row) => {
+    exactKeys(row, ["name", "sha256"]); assert.match(row.sha256, hashPattern);
+    assert.match(row.name, /^projects\/catch-dating-app-64e51\/locations\/[a-z0-9-]+\/functions\/[A-Za-z0-9_-]+$/);
+    return row.name;
+  });
+  assert.equal(new Set(names).size, names.length); assert.deepEqual(names, names.slice().sort((a, b) => a.localeCompare(b)));
+  exactKeys(value.protectedResources, ["extensions", "indexes", "fields", "rules", "remoteConfig", "projectIam"]);
+  for (const hash of Object.values(value.protectedResources)) assert.match(hash, hashPattern);
+  if (value.selected !== null) {
+    exactKeys(value.selected, ["identity", "runtime", "iamSha256", "publicInvoker"]);
+    validateFunctionIdentity(value.selected.identity, {scope: INTAKE_PR596_RELEASE.scope, target: INTAKE_PR596_RELEASE.target});
+    assert.ok(names.includes(intakeSelectedName)); assert.match(value.selected.iamSha256, hashPattern);
+  } else assert.ok(!names.includes(intakeSelectedName));
+  return value;
+}
+export function verifyIntakePreservation(before, after, {completed = false, paramsSha256} = {}) {
+  intakeSnapshot(before); intakeSnapshot(after);
+  const retained = (snapshot) => snapshot.functions.filter((row) => row.name !== intakeSelectedName);
+  assert.deepEqual(retained(after), retained(before), "An unselected Function/Extension identity or configuration changed.");
+  assert.deepEqual(after.protectedResources, before.protectedResources, "An unselected cloud resource changed.");
+  if (!completed) assert.deepEqual(after, before, "Metadata changed before the one permitted invocation.");
+  else {
+    assert.ok(after.selected); assert.equal(after.selected.publicInvoker, true);
+    const runtime = after.selected.runtime;
+    exactKeys(runtime, ["runtime", "entryPoint", "serviceAccount", "memory", "maxInstances", "secretBindings", "paramsSha256"]);
+    assert.equal(runtime.runtime, "nodejs24"); assert.equal(runtime.entryPoint, "adminListIntakeOperations");
+    assert.equal(runtime.serviceAccount, "574779808785-compute@developer.gserviceaccount.com");
+    assert.equal(runtime.memory, "512Mi"); assert.equal(runtime.maxInstances, 50); assert.equal(runtime.secretBindings, 0);
+    assert.match(paramsSha256, hashPattern); assert.equal(runtime.paramsSha256, paramsSha256);
+    if (before.selected) {
+      assert.equal(after.selected.iamSha256, before.selected.iamSha256, "Selected IAM policy changed.");
+      assert.notEqual(after.selected.identity.build, before.selected.identity.build, "Existing Function build did not change.");
+      assert.notEqual(after.selected.identity.revision, before.selected.identity.revision, "Existing serving revision did not change.");
+      assert.notDeepEqual(after.selected.identity.source, before.selected.identity.source, "Existing uploaded source did not change.");
+    }
+  }
+  return {selectedTarget: INTAKE_PR596_RELEASE.target, retainedFunctions: retained(before).length,
+    protectedResourcesUnchanged: true, completed, coverage: "one-selected-function-only"};
+}
+export function verifyIntakeParams(file, provenance, expectedBinding) {
+  const r = INTAKE_PR596_RELEASE;
+  assert.equal(provenance.version, 1); assert.equal(provenance.projectId, r.projectId);
+  assert.equal(provenance.sourceSha, r.sourceSha); assert.match(provenance.paramsSha256, hashPattern);
+  const materializedSha256 = readMaterializedParamsSha256(file, r.projectId);
+  const bytes = fs.readFileSync(file);
+  const marker = Buffer.from(`CATCH_DEPLOY_CONFIG_SHA256=${JSON.stringify(provenance.paramsSha256)}\n`);
+  assert.ok(bytes.length > marker.length && bytes.subarray(-marker.length).equals(marker), "Verified configuration marker missing.");
+  const contents = bytes.subarray(0, bytes.length - marker.length);
+  assert.ok(!contents.includes(Buffer.from("CATCH_DEPLOY_CONFIG_SHA256=")), "Duplicate configuration marker.");
+  assert.equal(bytesDigest(contents), provenance.paramsSha256, "Materialized parameters differ from approved provenance.");
+  const result = {materializedSha256, configurationSha256: provenance.paramsSha256};
+  if (expectedBinding) assert.deepEqual(result, expectedBinding, "Parameter bytes changed at the mutation boundary.");
+  return result;
+}
+export function completeIntakePr596Release({manifest, packagePlan, before, after, deployment, paramsBinding}) {
+  verifyIntakeProvenance(manifest); prepareIntakePr596Release({manifest, packagePlan});
+  const r = INTAKE_PR596_RELEASE;
+  const result = verifyIntakePreservation(before, after, {completed: true, paramsSha256: paramsBinding.configurationSha256});
+  validateFunctionsDeployment(deployment, {manifest, scope: r.scope, baseSha: r.baseSha,
+    selectedTargets: [r.target], paramsSha256: paramsBinding.materializedSha256});
+  assert.deepEqual(deployment.functions, [after.selected.identity], "Live serving identity differs from bound deployment proof.");
+  return {...r, ...result, paramsBinding, deployment, snapshot: after};
+}
+export async function readIntakeSnapshot({run = spawnSync, request = fetch, listIndexes = gcloudIndexList} = {}) {
+  const project = INTAKE_PR596_RELEASE.projectId;
+  const tokenResult = run("gcloud", ["auth", "print-access-token"], {encoding: "utf8", timeout: 30000, maxBuffer: 1024 * 1024});
+  assert.ifError(tokenResult.error); assert.equal(tokenResult.status, 0, "Metadata authentication unavailable.");
+  const token = String(tokenResult.stdout ?? "").trim(); assert.ok(token && !/[\r\n]/.test(token));
+  const get = async (url, init = {}) => {
+    const response = await request(url, {...init, headers: {Authorization: `Bearer ${token}`, "Content-Type": "application/json"},
+      signal: AbortSignal.timeout(30000)});
+    assert.ok(response.ok, `Read-only metadata failed: HTTP ${response.status}.`); return response.json();
+  };
+  const pages = async (url, field, extra = {}) => {
+    const rows = [], seen = new Set(); let cursor = "";
+    do {
+      assert.ok(seen.size < 30 && !seen.has(cursor)); seen.add(cursor);
+      const response = await get(`${url}?${new URLSearchParams({...extra, pageSize: "100", ...(cursor ? {pageToken: cursor} : {})})}`);
+      assert.deepEqual(response.unreachable ?? [], []); assert.ok(Array.isArray(response[field] ?? []));
+      rows.push(...(response[field] ?? [])); cursor = response.nextPageToken ?? ""; assert.equal(typeof cursor, "string");
+    } while (cursor);
+    return rows.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  };
+  // Hash complete metadata in memory; parameter values and tokens never enter receipts or logs.
+  const functions = await pages(`https://cloudfunctions.googleapis.com/v2/projects/${project}/locations/-/functions`, "functions");
+  assert.ok(functions.length > 0 && new Set(functions.map((fn) => fn.name)).size === functions.length);
+  let selected = null, cursor = 0;
+  await Promise.all(Array.from({length: 5}, async () => {
+    while (cursor < functions.length) {
+      const fn = functions[cursor++];
+      assert.match(fn.name, /^projects\/catch-dating-app-64e51\/locations\/[a-z0-9-]+\/functions\/[A-Za-z0-9_-]+$/);
+      if (fn.environment === "GEN_2") {
+        const service = fn.serviceConfig?.service;
+        assert.match(service, /^projects\/catch-dating-app-64e51\/locations\/[a-z0-9-]+\/services\/[a-z0-9-]+$/);
+        fn.runService = await get(`https://run.googleapis.com/v2/${service}`);
+        fn.iam = await get(`https://run.googleapis.com/v2/${service}:getIamPolicy?options.requestedPolicyVersion=3`);
+      } else {
+        assert.equal(fn.environment, "GEN_1");
+        fn.iam = await get(`https://cloudfunctions.googleapis.com/v1/${fn.name}:getIamPolicy?options.requestedPolicyVersion=3`);
+      }
+      if (fn.name === intakeSelectedName) {
+        const config = fn.serviceConfig;
+        selected = {identity: captureFunctionIdentities([fn], INTAKE_PR596_RELEASE.scope, [INTAKE_PR596_RELEASE.target])[0],
+          runtime: {runtime: fn.buildConfig.runtime, entryPoint: fn.buildConfig.entryPoint,
+            serviceAccount: config.serviceAccountEmail, memory: config.availableMemory,
+            maxInstances: config.maxInstanceCount, secretBindings: (config.secretEnvironmentVariables ?? []).length + (config.secretVolumes ?? []).length,
+            paramsSha256: config.environmentVariables?.CATCH_DEPLOY_CONFIG_SHA256 ?? null},
+          iamSha256: digest(fn.iam), publicInvoker: (fn.iam.bindings ?? []).some((binding) =>
+            binding.role === "roles/run.invoker" && !binding.condition && binding.members?.includes("allUsers"))};
+      }
+    }
+  }));
+  const fields = new Map();
+  for (const filter of ["indexConfig.usesAncestorConfig:false", "ttlConfig:*"]) {
+    for (const field of await pages(`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/collectionGroups/-/fields`, "fields", {filter})) {
+      assert.equal(typeof field.name, "string");
+      if (fields.has(field.name)) assert.deepEqual(field, fields.get(field.name));
+      fields.set(field.name, field);
+    }
+  }
+  const protectedResources = {
+    extensions: digest(await pages(`https://firebaseextensions.googleapis.com/v1beta/projects/${project}/instances`, "instances")),
+    indexes: digest(listIndexes({projectId: project}).sort((a, b) => String(a.name).localeCompare(String(b.name)))),
+    fields: digest([...fields.values()].sort((a, b) => a.name.localeCompare(b.name))),
+    rules: digest(await pages(`https://firebaserules.googleapis.com/v1/projects/${project}/releases`, "releases")),
+    remoteConfig: digest(await get(`https://firebaseremoteconfig.googleapis.com/v1/projects/${project}/remoteConfig`)),
+    projectIam: digest(await get(`https://cloudresourcemanager.googleapis.com/v1/projects/${project}:getIamPolicy`,
+      {method: "POST", body: JSON.stringify({options: {requestedPolicyVersion: 3}})})),
+  };
+  return intakeSnapshot({schema: "catch.intake-pr596-metadata/v1", projectId: project,
+    functions: functions.map((fn) => ({name: fn.name, sha256: digest(fn)})), protectedResources, selected});
+}
+export async function runIntakePr596ReleaseCli(argv, {readSnapshot = readIntakeSnapshot} = {}) {
+  const [command, ...rest] = argv, args = salesOptions(rest), r = INTAKE_PR596_RELEASE;
+  const commandKeys = {"intake-source": ["current-main", "source-root"], "intake-artifact": ["metadata"],
+    "intake-provenance": ["manifest"], "intake-archive": ["archive"],
+    "intake-prepare": ["manifest", "package-plan", "output"], "intake-before": ["output"],
+    "intake-params": ["params-file", "provenance", "output"],
+    "intake-verify-params": ["params-file", "provenance", "binding"],
+    "intake-verify-before": ["before"],
+    "intake-complete": ["before", "params-file", "params-provenance", "params-binding", "manifest", "package-plan", "deployment", "output"]};
+  assert.ok(Object.hasOwn(commandKeys, command)); exactKeys(args, commandKeys[command]);
+  if (command === "intake-source") return checkIntakeGitCompatibility(args["current-main"], args["source-root"]);
+  if (command === "intake-artifact") return verifyIntakeArtifactMetadata(salesRead(args.metadata));
+  if (command === "intake-provenance") {verifyIntakeProvenance(salesRead(args.manifest)); return {provenanceVerified: true};}
+  if (command === "intake-archive") {
+    assert.equal(bytesDigest(fs.readFileSync(args.archive)), r.artifactSha256); return {archiveVerified: true};
+  }
+  if (command === "intake-prepare") {
+    const manifest = salesRead(args.manifest); verifyIntakeProvenance(manifest);
+    salesWrite(args.output, prepareIntakePr596Release({manifest, packagePlan: salesRead(args["package-plan"])}));
+    return {selectedTarget: r.target};
+  }
+  if (command === "intake-params" || command === "intake-verify-params") {
+    const binding = verifyIntakeParams(args["params-file"], salesRead(args.provenance),
+      command === "intake-verify-params" ? salesRead(args.binding) : undefined);
+    if (command === "intake-params") salesWrite(args.output, binding);
+    return {paramsBound: true};
+  }
+  const snapshot = await readSnapshot();
+  if (command === "intake-before") {salesWrite(args.output, intakeSnapshot(snapshot)); return {captured: true};}
+  const before = salesRead(args.before);
+  const result = command === "intake-complete" ? completeIntakePr596Release({before, after: snapshot,
+    manifest: salesRead(args.manifest), packagePlan: salesRead(args["package-plan"]), deployment: salesRead(args.deployment),
+    paramsBinding: verifyIntakeParams(args["params-file"], salesRead(args["params-provenance"]), salesRead(args["params-binding"]))}) :
+    verifyIntakePreservation(before, snapshot);
+  if (command === "intake-complete") salesWrite(args.output, result);
+  return result;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  runSalesPr543ReleaseCli(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
+  (process.argv[2]?.startsWith("intake-") ? runIntakePr596ReleaseCli : runSalesPr543ReleaseCli)(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
   });
