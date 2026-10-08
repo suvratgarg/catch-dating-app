@@ -229,7 +229,7 @@ export function assertSetupSnapshot(scope: OperatorSetupScope,
       a.session.uid !== scope.actorUid ||
       ![a.session.authTimeSeconds, a.session.expiresAtSeconds].every(millis) ||
       a.session.authTimeSeconds * 1000 > now ||
-      now - a.session.authTimeSeconds * 1000 > 5 * 60 * 1000 ||
+      now - a.session.authTimeSeconds * 1000 > 15 * 60 * 1000 ||
       a.session.expiresAtSeconds * 1000 <= now ||
       a.session.authTimeSeconds * 1000 < a.auth.tokensValidAfterMillis ||
       a.session.authTimeSeconds < Math.floor(

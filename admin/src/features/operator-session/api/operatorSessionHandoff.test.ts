@@ -10,7 +10,7 @@ const signingKeys = generateKeyPairSync("rsa", {modulusLength: 2048});
 const request: SessionRequest = {kind: "catch-operator-session-request", schemaVersion: 1,
   challenge: "a".repeat(64), projectId: "demo-catch-setup", actorUid: "fake-google-actor",
   actorEmailSha256: createHash("sha256").update(JSON.stringify("actor@example.invalid")).digest("hex"),
-  scopeSha256: "b".repeat(64), sourceSha: "c".repeat(40), expiresAtMillis: now + 300000,
+  scopeSha256: "b".repeat(64), sourceSha: "c".repeat(40), expiresAtMillis: now + 900000,
   serverEncryptionKey: encryptionKeys.publicKey.export({type: "spki", format: "der"}).toString("base64url"),
   serverSigningKey: signingKeys.publicKey.export({type: "spki", format: "der"}).toString("base64url")};
 const user = {uid: request.actorUid, email: "Actor@example.invalid", emailVerified: true,
@@ -27,7 +27,7 @@ describe("protected session protocol", () => {
     for (const origin of ["https://127.0.0.1:12345", "http://localhost:12345", "http://127.0.0.1:80", "http://127.0.0.1:12345/path", "http://user@127.0.0.1:12345", "http://127.0.0.1:12345#fragment"]) expect(loopbackOrigin(origin)).toBe(false);
     expect(sessionRequest(request, now)).toEqual(request);
     for (const invalid of [{...request, extra: true}, {...request, expiresAtMillis: now},
-      {...request, expiresAtMillis: now + 300001}, {...request, sourceSha: "bad"},
+      {...request, expiresAtMillis: now + 900001}, {...request, sourceSha: "bad"},
       {...request, challenge: "bad"}, {...request, challenge: [request.challenge]},
       {...request, actorUid: 12345}]) expect(() => sessionRequest(invalid, now)).toThrow("Protected session handoff unavailable.");
   });
@@ -53,7 +53,7 @@ describe("protected session protocol", () => {
     expect(mocks.getIdTokenResult).not.toHaveBeenCalled();
   });
   it("rejects stale auth_time even with a freshly issued token and rejects incorrect signed metadata", async () => {
-    for (const mutation of [{auth_time: now / 1000 - 301}, {sub: "other"}, {aud: "other-project"},
+    for (const mutation of [{auth_time: now / 1000 - 901}, {sub: "other"}, {aud: "other-project"},
       {iss: "bad"}, {firebase: {sign_in_provider: "phone"}}, {firebase: {sign_in_provider: "google.com", tenant: "tenant"}},
       {tenant_id: "tenant"}, {exp: now / 1000}, {auth_time: -1}, {iat: now / 1000 + 1}, {exp: now / 1000 + 3601}]) {
       mocks.getIdTokenResult.mockResolvedValue({...result(), claims: {...result().claims, ...mutation}});
@@ -76,4 +76,10 @@ describe("protected session protocol", () => {
     mocks.getIdTokenResult.mockRejectedValue(new Error("synthetic.private.signature"));
     await expect(transferSession(auth(), request, () => true, () => now)).rejects.toThrow();
   });
+});
+
+it.each([301, 899, 900])("accepts a setup sign-in aged %i seconds without relaxing signed metadata", async age => {
+  mocks.getIdTokenResult.mockResolvedValue({...result(),
+    claims: {...result().claims, auth_time: now / 1000 - age}});
+  await expect(transferSession(auth(), request, () => true, () => now)).resolves.toHaveProperty("challenge", request.challenge);
 });

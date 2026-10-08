@@ -31,7 +31,7 @@ After the reviewed source and matching Admin route are available:
    sign-in UI for the selected Firebase project, using the same browser profile.
    The actor must already exist. This helper adds no sign-in, account creation,
    linking, custom token, OAuth scope or persistence migration. A refresh cannot
-   replace a fresh sign-in; `auth_time` must be less than five minutes old at save.
+   replace a fresh sign-in; `auth_time` must be at most fifteen minutes old at save.
 4. Start the helper with non-secret directory and existing HTTPS Admin origin:
 
    ```sh
@@ -58,7 +58,7 @@ After the reviewed source and matching Admin route are available:
    every binding it saves `profile.json` only if absent and atomically replaces
    `actor-id-token.txt`, each mode `0600`. The verified receipt contains no token.
 
-The launch expires after five minutes and is one-use. Explicit Cancel remains
+The launch expires after fifteen minutes and is one-use. Explicit Cancel remains
 available during verification. Closing the view attempts cancellation and
 prevents further exports; an already committed save cannot be undone by closing
 or losing a receipt. Unconfirmed save/cancellation outcomes require checking the
@@ -79,3 +79,14 @@ against a hostile process running as that same owner or prove human approval.
 Configuration/session/home/source drift, account mismatch, expiry, revocation
 and confirmed cancellation stop the save without granting authority. Unrelated
 operator files and retained source/recovery evidence remain preserved.
+
+Keep this bounded setup in your own foreground Terminal rather than relying on
+an agent tool session as a persistent worker. After the personal Save succeeds,
+run the existing `setup-catch-whatsapp-reply.cjs plan` command immediately from
+the exact reviewed runtime with the same protected operator home. Use the exact
+reviewed plan and separately supplied approval for `apply --plan-id <id>`.
+The plan and pending recipient grant remain limited to fifteen minutes.
+Bootstrap still pauses after seeding for a new sign-in before root activation;
+use the protected helper again and continue only the same approved plan. A lost
+or uncertain outcome requires supported read-only `reconcile --plan-id <id>`
+before any continuation. Never automatically retry an unknown mutation.
