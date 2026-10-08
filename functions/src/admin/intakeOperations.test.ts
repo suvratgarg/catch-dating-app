@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
-import {InMemoryOperationsRepository} from
-  "../operations/inMemoryRepository";
-import {operationRun, operationWorkItem} from
+import {FirestoreOperationsRepository} from
+  "../operations/firestoreRepository";
+import {FakeFirestore} from "../operations/testFirestore";
+import {operationCollections} from "../operations/collections";
+import {OperationWorkItem} from "../operations/models";
+import {operationRun, operationWorkItem,
+  organizerPublicationPacketWorkItem} from
   "../operations/testFixtures";
 import {
   adminListIntakeOperationsHandler,
@@ -13,7 +17,10 @@ import {
 const now = "2026-07-14T09:00:00.000Z";
 
 async function harness() {
-  const repository = new InMemoryOperationsRepository();
+  const firestore = new FakeFirestore();
+  const repository = new FirestoreOperationsRepository(
+    firestore as unknown as FirebaseFirestore.Firestore
+  );
   const rateLimitCalls: string[] = [];
   await repository.createRun(operationRun({
     runId: "run:mumbai:2026-07-07",
@@ -64,9 +71,10 @@ async function harness() {
   }));
   return {
     repository,
+    firestore,
     rateLimitCalls,
     deps: {
-      firestore: () => ({}) as FirebaseFirestore.Firestore,
+      firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
       repository,
       now: () => new Date(now),
       checkRateLimit: async (
@@ -256,31 +264,26 @@ test("fails closed without authoritative full-run projection aggregates",
     );
   });
 
-test("fails closed on a non-Supply stage in the persisted projection",
+test("reports a non-Supply stage as unavailable in the read projection",
   async () => {
     const h = await harness();
     const item = await h.repository.getWorkItem("work:event:new");
     assert.ok(item);
     await h.repository.saveWorkItem({
-      ...item,
-      revision: item.revision + 1,
-      primaryStage: "approve",
+      ...item, revision: item.revision + 1, primaryStage: "approve",
       updatedAt: now,
     }, item.revision);
-
-    await assert.rejects(
-      adminListIntakeOperationsHandler(
-        callableRequest("admin-1", {}, {admin: true}),
-        h.deps
-      ),
-      (error: unknown) => {
-        assert.equal(
-          (error as {code?: string}).code,
-          "failed-precondition"
-        );
-        return true;
-      }
+    const result = await adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {}, {admin: true}), h.deps
     );
+    assert.deepEqual(result.workItems, []);
+    assert.equal(result.workItemPage.scannedCount, 1);
+    assert.deepEqual(result.workItemPage.unavailableRecords, [{
+      documentId: item.workItemId, reason: "unsupported_stage",
+      issues: [{path: "primaryStage", code: "unsupported_stage"}],
+      issuesTruncated: false,
+    }]);
+    assert.equal(result.summary.workItemCount, 1);
   });
 
 test("adminListIntakeOperations rejects non-operator admin roles", async () => {
@@ -398,3 +401,245 @@ function callableRequest(
     rawRequest: {headers: {}} as CallableRequest["rawRequest"],
   } as CallableRequest<unknown>;
 }
+
+function packet(item: OperationWorkItem) {
+  return (item.normalizedPayload.intake as {packet: {
+    publicPresence: Record<string, unknown>;
+    adminDecision: Record<string, unknown>;
+  }}).packet;
+}
+
+function legacyPacket(id: string, variant: "presence" | "decision") {
+  const item = organizerPublicationPacketWorkItem({workItemId: id});
+  if (variant === "presence") {
+    delete packet(item).publicPresence.publishStatus;
+  } else {
+    packet(item).adminDecision.currentDecision = {
+      decision: "hold", decidedAt: now, appVisibility: "hidden",
+    };
+  }
+  return item;
+}
+
+test("mixed malformed packets retain healthy rows and full-run summaries",
+  async () => {
+    const h = await harness();
+    const records = [legacyPacket("work:a", "presence"),
+      legacyPacket("work:b", "decision")];
+    for (const item of records) {
+      h.firestore.write(`${operationCollections.workItems}/${item.workItemId}`,
+        {...item});
+    }
+    const run = (await h.repository.getRun("run:mumbai:2026-07-14"))!;
+    await h.repository.saveRun({...run, revision: 1, metadata: {projection: {
+      workItemCount: 3, activeItems: 3, terminalItems: 0, humanReviewCount: 1,
+      stageCounts: {incoming: 2, verify: 0, resolve: 1, ready: 0},
+    }}}, 0);
+    const before = h.firestore.entries();
+    const read = (workItemCursor?: string | null) =>
+      adminListIntakeOperationsHandler(callableRequest("admin-1", {
+        workItemLimit: 2, workItemCursor,
+      }, {admin: true}), h.deps);
+    const first = await read();
+    assert.deepEqual(first.workItems, []);
+    assert.equal(first.workItemPage.scannedCount, 2);
+    assert.equal(first.nextWorkItemCursor, "work:b");
+    assert.deepEqual(first.workItemPage.unavailableRecords.map((row) =>
+      [row.documentId, row.reason]), [
+      ["work:a", "invalid_record"], ["work:b", "invalid_record"],
+    ]);
+    assert.ok(first.workItemPage.unavailableRecords[0].issues.some((issue) =>
+      issue.path.endsWith("/publicPresence/publishStatus") &&
+      issue.code === "schema_required"));
+    for (const field of ["publishStatus", "indexStatus"]) {
+      assert.ok(first.workItemPage.unavailableRecords[1].issues.some((issue) =>
+        issue.path.endsWith(`/currentDecision/${field}`) &&
+        issue.code === "schema_required"));
+    }
+    const second = await read(first.nextWorkItemCursor);
+    assert.deepEqual(second.workItems.map((item) => item.workItemId),
+      ["work:event:new"]);
+    assert.equal(second.workItemPage.scannedCount, 1);
+    assert.deepEqual(second.workItemPage.unavailableRecords, []);
+    assert.equal(second.nextWorkItemCursor, null);
+    for (const page of [first, second]) {
+      assert.equal(page.summary.workItemCount, 3);
+      assert.equal(page.summary.humanReviewCount, 1);
+      assert.deepEqual(page.summary.stages,
+        {incoming: 2, verify: 0, resolve: 1, ready: 0});
+      assert.deepEqual(page.organizerDraftLinks, []);
+    }
+    assert.deepEqual(h.firestore.entries(), before);
+  });
+
+test("human-review filtering reports invalid exceptions without ordinary rows",
+  async () => {
+    const h = await harness();
+    const item = legacyPacket("work:a", "decision");
+    item.taskFlags = ["human_review_required"];
+    h.firestore.write(`${operationCollections.workItems}/${item.workItemId}`,
+      {...item});
+    const ordinary = legacyPacket("work:b", "presence");
+    h.firestore.write(
+      `${operationCollections.workItems}/${ordinary.workItemId}`,
+      {...ordinary});
+    const result = await adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {humanReviewRequired: true}, {support: true}),
+      h.deps
+    );
+    assert.deepEqual(result.workItems.map((row) => row.workItemId),
+      ["work:event:new"]);
+    assert.equal(result.workItemPage.scannedCount, 2);
+    assert.deepEqual(result.workItemPage.unavailableRecords.map((row) =>
+      row.documentId), ["work:a"]);
+  });
+
+test("explicit nulls remain valid and missing nullable fields are unavailable",
+  async () => {
+    const h = await harness();
+    const healthy = organizerPublicationPacketWorkItem({workItemId: "work:a"});
+    await h.repository.createWorkItem(healthy);
+    const nullableFields = ["canonicalPath", "claimTargetPath",
+      "currentDecision"] as const;
+    for (const field of nullableFields) {
+      const invalid = organizerPublicationPacketWorkItem({
+        workItemId: `work:missing:${field}`,
+      });
+      const value = packet(invalid);
+      delete (field === "currentDecision" ? value.adminDecision :
+        value.publicPresence)[field];
+      h.firestore.write(
+        `${operationCollections.workItems}/${invalid.workItemId}`,
+        {...invalid});
+    }
+    const linkedItems: string[] = [];
+    const result = await adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {}, {admin: true}), {
+        ...h.deps, loadOrganizerDraftLinks: async (_db, items) => {
+          linkedItems.push(...items.map((row) => row.workItemId));
+          return [];
+        },
+      }
+    );
+    assert.deepEqual(result.workItems.map((row) => row.workItemId),
+      ["work:a", "work:event:new"]);
+    assert.deepEqual(linkedItems, ["work:a", "work:event:new"]);
+    assert.equal(result.workItemPage.scannedCount, 5);
+    assert.equal(result.workItemPage.unavailableRecords.length, 3);
+    assert.deepEqual(result.workItems[0], healthy);
+  });
+
+test("callable auth, input, rate-limit and query failures still propagate",
+  async () => {
+    const h = await harness();
+    await assert.rejects(adminListIntakeOperationsHandler(
+      callableRequest(null, {}, {}), h.deps
+    ), {code: "unauthenticated"});
+    await assert.rejects(adminListIntakeOperationsHandler(
+      callableRequest("viewer", {}, {analyticsViewer: true}), h.deps
+    ), {code: "permission-denied"});
+    await assert.rejects(adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {workItemLimit: 201}, {admin: true}), h.deps
+    ), {code: "invalid-argument"});
+    const failure = new Error("synthetic transport failure");
+    await assert.rejects(adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {}, {admin: true}), {
+        ...h.deps, checkRateLimit: async () => {
+          throw failure;
+        },
+      }
+    ), (error) => error === failure);
+    h.repository.listWorkItemsForAdmin = async () => {
+      throw failure;
+    };
+    await assert.rejects(adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {}, {admin: true}), h.deps
+    ), (error) => error === failure);
+  });
+
+
+test("callable preserves healthy rows beside identity and scope mismatches",
+  async () => {
+    for (const [field, value, reason] of [
+      ["workItemId", "work:alias", "document_id_mismatch"],
+      ["workflowId", "another-workflow", "scope_mismatch"],
+      ["runId", "run:other", "scope_mismatch"],
+    ]) {
+      const h = await harness();
+      const healthy = (await h.repository.getWorkItem("work:event:new"))!;
+      const query = {
+        where: () => query, orderBy: () => query, limit: () => query,
+        get: async () => ({docs: [
+          {id: "work:a", data: () => ({...healthy, workItemId: "work:a",
+            [field]: value})},
+          {id: healthy.workItemId, data: () => healthy},
+        ]}),
+      };
+      const db = {collection: (path: string) =>
+        path === operationCollections.workItems ? query :
+          h.firestore.collection(path)} as unknown as
+            FirebaseFirestore.Firestore;
+      const result = await adminListIntakeOperationsHandler(
+        callableRequest("admin-1", {}, {admin: true}), {
+          ...h.deps, firestore: () => db,
+          repository: new FirestoreOperationsRepository(db),
+        }
+      );
+      assert.deepEqual(result.workItems, [healthy]);
+      assert.equal(result.workItemPage.scannedCount, 2);
+      assert.deepEqual(result.workItemPage.unavailableRecords, [{
+        documentId: "work:a", reason,
+        issues: [{path: field, code: reason}], issuesTruncated: false,
+      }]);
+    }
+  });
+
+test("missing runs produce an empty scanned page without invented totals",
+  async () => {
+    const h = await harness();
+    const result = await adminListIntakeOperationsHandler(
+      callableRequest("admin-1", {runId: "run:missing"}, {admin: true}), h.deps
+    );
+    assert.deepEqual(result.workItemPage,
+      {scannedCount: 0, unavailableRecords: []});
+    assert.deepEqual(result.workItems, []);
+    assert.equal(result.summary.workItemCount, 0);
+    assert.equal(result.nextWorkItemCursor, null);
+  });
+
+test("missing packet fields remain rejected by strict repository writes",
+  async () => {
+    for (const variant of ["presence", "decision"] as const) {
+      const h = await harness();
+      const item = legacyPacket("work:malformed", variant);
+      const before = h.firestore.entries();
+      await assert.rejects(h.repository.createWorkItem(item),
+        {code: "invalid_entity"});
+      await assert.rejects(h.repository.saveWorkItem({...item, revision: 1}, 0),
+        {code: "invalid_entity"});
+      assert.deepEqual(h.firestore.entries(), before);
+    }
+  });
+
+
+test("raw document cursors preserve leading, trailing and standalone spaces",
+  async () => {
+    for (const id of [" work:a", "work:a ", " "]) {
+      const h = await harness();
+      h.firestore.write(`${operationCollections.workItems}/${id}`,
+        {...operationWorkItem({workItemId: "work:a"})});
+      const read = (workItemCursor?: string | null) =>
+        adminListIntakeOperationsHandler(callableRequest("admin-1", {
+          workItemLimit: 1, workItemCursor,
+        }, {admin: true}), h.deps);
+      const first = await read();
+      assert.equal(first.nextWorkItemCursor, id);
+      assert.deepEqual(first.workItems, []);
+      assert.equal(first.workItemPage.unavailableRecords[0].documentId, id);
+      const second = await read(first.nextWorkItemCursor);
+      assert.deepEqual(second.workItems.map((row) => row.workItemId),
+        ["work:event:new"]);
+      assert.equal(second.workItemPage.scannedCount, 1);
+      assert.equal(second.nextWorkItemCursor, null);
+    }
+  });
