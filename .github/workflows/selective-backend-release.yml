@@ -295,7 +295,8 @@ jobs:
           jq -e '
             .release_kind == "intake-pr596" and .confirm_intake_pr596 == true and
             .confirm_four_functions_five_indexes == false and .confirm_whatsapp_five == false and
-            .confirm_sales_pr543 == false and .resume_delivery_run_id == "" and .resume_delivery_attempt == "1" and
+            .confirm_sales_pr543 == false and
+            (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and
             .source_sha == "ceab9d8abf5de7ad383260739032e0e1603d45ff" and
             (.reason | length) >= 12 and (.reason | length) <= 240 and
             (.reason | test("[\\r\\n]") | not) and (.reason | test("[^\\s]"))
