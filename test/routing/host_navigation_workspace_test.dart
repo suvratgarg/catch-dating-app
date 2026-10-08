@@ -74,7 +74,7 @@ void main() {
             for (final match in RegExp(r':(\w+)').allMatches(route.path))
               match.group(1)!: 'record',
           };
-          router.pushNamed<void>(
+          final detailResult = router.pushNamed<void>(
             destination.name,
             pathParameters: parameters,
             queryParameters: const {
@@ -84,12 +84,13 @@ void main() {
           );
           await pumpFeatureUi(tester);
           final index = tester.widget<HostWorkspaceIndexScreen>(
-            find.byType(HostWorkspaceIndexScreen).first,
+            find.byType(HostWorkspaceIndexScreen),
           );
           expect(index.uri.queryParameters['view'], view.name);
           expect(index.uri.queryParameters['_responseFormId'], 'form');
           expect(find.text('Response detail'), findsOneWidget);
           router.pop();
+          await detailResult;
           await pumpFeatureUi(tester);
           expect(
             router.routeInformationProvider.value.uri.queryParameters['view'],
