@@ -22,9 +22,7 @@ class CatchWorkspaceHeader extends SingleChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) =>
       _RenderWorkspaceHeader(
         context.findAncestorRenderObjectOfType<_RenderWorkspaceHeaderLayout>(),
-        participates: CatchWorkspacePaneScope.participatesInHeaderAlignmentOf(
-          context,
-        ),
+        CatchWorkspacePaneScope.participatesInHeaderAlignmentOf(context),
       );
 
   @override
@@ -104,8 +102,7 @@ class _RenderWorkspaceHeaderLayout extends RenderProxyBox {
 }
 
 class _RenderWorkspaceHeader extends RenderProxyBox {
-  _RenderWorkspaceHeader(this._group, {required bool participates})
-    : _participates = participates;
+  _RenderWorkspaceHeader(this._group, this._participates);
   bool _participates;
   set participates(bool value) {
     if (_participates == value) return;

@@ -99,10 +99,32 @@ export function checkRootScreenCompositionContracts({
     }
   }
 
+  for (const owner of manifest.workspaceOwners ?? []) {
+    checkOwner({root, owner, findings, ownerKind: 'Host workspace contract'});
+  }
+  checkHostWorkspaceOwnership({root, findings});
   checkLegacyRootSymbols({root, findings});
   checkStateViewportOwnership({root, findings});
 
   return summarize(manifest, findings);
+}
+
+function checkHostWorkspaceOwnership({root, findings}) {
+  const hosts = path.join(root, "lib/hosts");
+  if (!fs.existsSync(hosts)) return;
+  for (const absolutePath of dartFiles(hosts)) {
+    const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
+    const source = fs.readFileSync(absolutePath, "utf8");
+    for (const symbol of ["CatchNavigationViewport", "CatchWorkspacePane", "HostTaskWorkspace"]) {
+      if (!new RegExp(`\\b${symbol}\\s*(?:<[^>]+>)?\\s*\\(`, "u").test(source)) continue;
+      findings.push({code: "host-workspace-bypass", path: relativePath,
+        message: `${symbol} bypasses the Host directory/editor contract. Pane geometry belongs to HostNavigationWorkspace; Host directories require detail and unselected content.`});
+    }
+    if (/HostNavigationWorkspace\.(?:panes|single|event)\s*\(/u.test(source)) {
+      findings.push({code: "retired-host-workspace-api", path: relativePath,
+        message: "Use a required semantic spec rather than assembling panes in feature code."});
+    }
+  }
 }
 
 function checkLegacyRootSymbols({root, findings}) {

@@ -7517,7 +7517,7 @@
               "id": "lifecycle_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests opens HostEventRosterDrawer and cannot override the lifecycle phase.",
+              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests routes to HostEventRosterPanel and cannot override the lifecycle phase.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7569,7 +7569,7 @@
               "id": "attendance_setup_roster",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventRosterDrawer overlays setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
+              "notes": "HostEventRosterPanel renders setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7701,7 +7701,7 @@
               "id": "live_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through HostEventRosterDrawer, and the top bar carries only event title plus lifecycle subtitle.",
+              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through the routed HostEventRosterPanel, and the top bar carries only event title plus lifecycle subtitle.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],

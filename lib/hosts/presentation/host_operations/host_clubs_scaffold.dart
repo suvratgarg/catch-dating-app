@@ -37,35 +37,34 @@ class HostOrganizerStateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostNavigationWorkspace.panes(
-      panes: [
-        CatchWorkspacePane(
-          id: 'index',
-          mode: CatchWorkspacePaneMode.editor,
-          child: CatchRootScreenScaffold.withPrimaryRail(
-            header: CatchRootScreenHeader.title(
-              title: context.l10n.hostNavigationOrganizer,
-              actions: actions,
-            ),
-            actions: CatchPageTabBar<HostClubTab>(
-              groupKey: _hostClubTabRailKey,
-              selected: selectedTab,
-              selectionPosition: selectedTab.index.toDouble(),
-              options: _hostClubTabOptions(context),
-            ),
-            semanticsLabel:
-                context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
-            body: CatchRootScreenBody.single(
-              page: CatchRootScreenPageSpec.scroll(
-                page: CatchRootScreenPageScrollView.standard(
-                  scrollKey: scrollKey,
-                  children: slivers,
-                ),
+    return HostNavigationWorkspace(
+      spec: HostEditorWorkspace(
+        preview: CatchEmptyState(
+          title: context.l10n.coreCatchFieldVisiblecopySelect,
+        ),
+        editor: CatchRootScreenScaffold.withPrimaryRail(
+          header: CatchRootScreenHeader.title(
+            title: context.l10n.hostNavigationOrganizer,
+            actions: actions,
+          ),
+          actions: CatchPageTabBar<HostClubTab>(
+            groupKey: _hostClubTabRailKey,
+            selected: selectedTab,
+            selectionPosition: selectedTab.index.toDouble(),
+            options: _hostClubTabOptions(context),
+          ),
+          semanticsLabel:
+              context.l10n.hostsHostClubsScaffoldLabelClubWorkspaceTabs,
+          body: CatchRootScreenBody.single(
+            page: CatchRootScreenPageSpec.scroll(
+              page: CatchRootScreenPageScrollView.standard(
+                scrollKey: scrollKey,
+                children: slivers,
               ),
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -78,7 +77,6 @@ class HostClubsScaffold extends ConsumerStatefulWidget {
     required this.initialTab,
     this.initialClubId,
     this.initialExpandedEditField,
-    this.settingsRoute,
   });
 
   final List<Club> clubs;
@@ -86,7 +84,6 @@ class HostClubsScaffold extends ConsumerStatefulWidget {
   final String? initialClubId;
   final HostClubTab initialTab;
   final String? initialExpandedEditField;
-  final Routes? settingsRoute;
 
   @override
   ConsumerState<HostClubsScaffold> createState() => _HostClubsScaffoldState();
@@ -126,6 +123,9 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     if (oldWidget.initialExpandedEditField != widget.initialExpandedEditField ||
         oldWidget.initialClubId != widget.initialClubId) {
       _didRevealInitialEditor = false;
+    }
+    if (oldWidget.initialTab != widget.initialTab) {
+      _selectedTab = _effectiveInitialTab;
     }
     final selectedIndex = HostClubTab.values.indexOf(_selectedTab);
     if (_tabController.index != selectedIndex) {
@@ -280,45 +280,27 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         ],
       ),
     );
-    final uri =
-        GoRouter.maybeOf(context)?.routeInformationProvider.value.uri ??
-        Uri(path: Routes.hostOrganizerScreen.path);
-    final detail = switch (widget.settingsRoute) {
-      Routes.hostClubEventDefaultsScreen => HostClubEventDefaultsScreen(
-        clubId: selectedClub.id,
-      ),
-      Routes.hostClubLiveGuideScreen => HostClubLiveGuideScreen(
-        clubId: selectedClub.id,
-      ),
-      Routes.hostClubPaymentsScreen => HostClubPaymentsScreen(
-        clubId: selectedClub.id,
-      ),
-      Routes.hostClubTeamScreen => HostClubTeamScreen(clubId: selectedClub.id),
-      _ => null,
-    };
     return HostNavigationWorkspace(
-      uri: uri,
-      index: indexPane,
-      indexMode: CatchWorkspacePaneMode.editor,
-      detail: detail,
-      preview: _selectedTab == HostClubTab.preview
-          ? null
-          : CatchWorkspacePaneScaffold(
-              title: CatchTopBar.primaryRail(
-                title: context.l10n.hostsHostClubsScaffoldLabelPreview,
-              ),
-              body: CustomScrollView(
-                key: PageStorageKey(
-                  'host-club-${selectedClub.id}-persistent-preview',
-                ),
-                slivers: [
-                  ClubDetailReadOnlyPreviewSliver(
-                    initialClub: selectedClub,
-                    currentUid: state.currentUid,
-                  ),
-                ],
-              ),
+      spec: HostEditorWorkspace(
+        editor: indexPane,
+        showPreview: _selectedTab != HostClubTab.preview,
+        preview: CatchWorkspacePaneScaffold(
+          title: CatchTopBar.primaryRail(
+            title: context.l10n.hostsHostClubsScaffoldLabelPreview,
+          ),
+          body: CustomScrollView(
+            key: PageStorageKey(
+              'host-club-${selectedClub.id}-persistent-preview',
             ),
+            slivers: [
+              ClubDetailReadOnlyPreviewSliver(
+                initialClub: selectedClub,
+                currentUid: state.currentUid,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -353,6 +335,19 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         _pageScrollOffsets[previousTab] = previousOffset;
       }
       setState(() => _selectedTab = tab);
+      final router = GoRouter.maybeOf(context);
+      if (router != null) {
+        final uri = router.routeInformationProvider.value.uri;
+        if (uri.queryParameters['tab'] != tab.name) {
+          context.go(
+            uri
+                .replace(
+                  queryParameters: {...uri.queryParameters, 'tab': tab.name},
+                )
+                .toString(),
+          );
+        }
+      }
     }
     if (!_tabController.indexIsChanging && _tabController.offset == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

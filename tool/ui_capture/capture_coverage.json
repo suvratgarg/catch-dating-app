@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-28",
+  "updated": "2026-10-08",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -160,6 +160,30 @@
       "priority": "P1",
       "canonicalRouteId": "eventDetailScreen",
       "reason": "Same event detail surface reached from the dashboard."
+    },
+    {
+      "routeId": "eventChatScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Event conversation has production-widget light/dark, keyboard, reply, reaction and large-text review tests; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "eventProfileSharingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventChatParticipantsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Participant directory has light/dark and large-text production-widget review captures and authority tests; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "eventParticipantProfileScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
     },
     {
       "routeId": "eventLocationMapScreen",
@@ -495,6 +519,18 @@
       "reason": "Self-profile captures now cover flagship profile surface plus deterministic full-route loading, error, offline, unavailable, Edit, Preview, and Insights tabs, upload-pending, upload-failure snackbar, inline save pending/error drawers, text scale, reduced motion, and paired light/dark variants."
     },
     {
+      "routeId": "formProfilesScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Private organizer-card directory has synthetic grouped-card light/dark and large-text review captures; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "formProfileReviewScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Profile claim has synthetic production-widget review and protected-photo captures; canonical marketing capture registration remains planned."
+    },
+    {
       "routeId": "reviewsHistoryScreen",
       "status": "captured",
       "priority": "P3",
@@ -567,6 +603,12 @@
         "settings_reduced_motion"
       ],
       "reason": "Settings Account captures cover profile-backed account rows, profile loading/error/offline/missing, blocked-account empty/loading/error/offline/list footer states, preference/delete/sign-out/unblock mutation pending, error, and offline states, external-link pending/failure outcomes, text scale, reduced motion, and paired light/dark outputs."
+    },
+    {
+      "routeId": "messagingPermissionsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Own-account WhatsApp consent and withdrawal have focused controller/widget coverage; canonical marketing capture registration remains planned."
     },
     {
       "routeId": "launchAccessScreen",
@@ -679,6 +721,54 @@
         "host_responses_populated"
       ],
       "reason": "The Audience destination has deterministic full-shell captures for People, Groups, Forms and Responses; large-text/theme captures use these same production entries."
+    },
+    {
+      "routeId": "hostNewMessageScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostEventRosterScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostEventPublicationScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostResponseOfferScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostResponseOfferReviewScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostResponseOfferPreferencesScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostResponseQueryOfferPreferencesScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
+    },
+    {
+      "routeId": "hostResponseQueryOfferScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Named continuation reuses existing feature content. Add deterministic route capture for the new pane ancestry and compact navigation."
     },
     {
       "routeId": "hostAddCustomerScreen",
@@ -844,6 +934,12 @@
       "reason": "Legacy operator links redirect to the canonical event work route while preserving event scope and deep-link state."
     },
     {
+      "routeId": "hostWorkScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The unified staff assignment picker is implemented with loading/error/empty/picker states; captures remain planned until an authenticated staff fixture is admitted to the canonical capture catalog."
+    },
+    {
       "routeId": "hostWorkEventScreen",
       "status": "alias",
       "priority": "P1",
@@ -923,16 +1019,16 @@
       "reason": "Synthetic phone flow tests render ready, retry and completion in both themes at normal and 200% text. Shared route-capture catalog registration remains part of the canonical program capture pass after dependency application."
     },
     {
-      "routeId": "hostWorkCountsScreen",
-      "status": "planned",
-      "priority": "P1",
-      "reason": "Stakeholder counts overview lands with this slice; route captures are scheduled with the program golden pass."
-    },
-    {
       "routeId": "hostWorkAttendanceReportScreen",
       "status": "planned",
       "priority": "P1",
       "reason": "Attendance report lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkCountsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Stakeholder counts overview lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
       "routeId": "hostProgramsScreen",
@@ -942,10 +1038,22 @@
       "reason": "Legacy Programs links redirect to Events and preserve organizer query parameters."
     },
     {
+      "routeId": "hostCreateProgramScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Full program creation form replaces the modal; genuine form-state captures are pending verification."
+    },
+    {
       "routeId": "hostProgramWorkspaceScreen",
       "status": "planned",
       "priority": "P1",
       "reason": "Organizer program workspace route lands with the W1 slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostProgramLodgingScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Private lodging route has focused routed controller/screen/setup editor and board tests covering configuration, membership, manual proposals, publication, stale revisions and session fences. Deterministic loaded, no-configuration, scoped hotel desk and uncertain-write retry route captures remain planned; the twelve existing marketing captures do not cover this route."
     },
     {
       "routeId": "hostProgramGuestsScreen",
@@ -1348,66 +1456,6 @@
         "host_chat_safety_pending_menu"
       ],
       "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, composer ready/send-pending/image-pending/disabled states, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and pending safety menu rows. Remaining work is provider-specific offline policy, dedicated references, and pixel comparison."
-    },
-    {
-      "routeId": "eventProfileSharingScreen",
-      "status": "excluded",
-      "priority": "P3",
-      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
-    },
-    {
-      "routeId": "eventParticipantProfileScreen",
-      "status": "excluded",
-      "priority": "P3",
-      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
-    },
-    {
-      "routeId": "eventChatScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Event conversation has production-widget light/dark, keyboard, reply, reaction and large-text review tests; canonical marketing capture registration remains planned."
-    },
-    {
-      "routeId": "eventChatParticipantsScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Participant directory has light/dark and large-text production-widget review captures and authority tests; canonical marketing capture registration remains planned."
-    },
-    {
-      "routeId": "formProfilesScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Private organizer-card directory has synthetic grouped-card light/dark and large-text review captures; canonical marketing capture registration remains planned."
-    },
-    {
-      "routeId": "formProfileReviewScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Profile claim has synthetic production-widget review and protected-photo captures; canonical marketing capture registration remains planned."
-    },
-    {
-      "routeId": "messagingPermissionsScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Own-account WhatsApp consent and withdrawal have focused controller/widget coverage; canonical marketing capture registration remains planned."
-    },
-    {
-      "routeId": "hostWorkScreen",
-      "status": "planned",
-      "priority": "P1",
-      "reason": "The unified staff assignment picker is implemented with loading/error/empty/picker states; captures remain planned until an authenticated staff fixture is admitted to the canonical capture catalog."
-    },
-    {
-      "routeId": "hostProgramLodgingScreen",
-      "status": "planned",
-      "priority": "P1",
-      "reason": "Private lodging route has focused routed controller/screen/setup editor and board tests covering configuration, membership, manual proposals, publication, stale revisions and session fences. Deterministic loaded, no-configuration, scoped hotel desk and uncertain-write retry route captures remain planned; the twelve existing marketing captures do not cover this route."
-    },
-    {
-      "routeId": "hostCreateProgramScreen",
-      "status": "planned",
-      "priority": "P1",
-      "reason": "Full program creation form replaces the modal; genuine form-state captures are pending verification."
     }
   ]
 }

@@ -581,7 +581,14 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   tabs do not span its selected detail. Navigation columns represent successive
   levels, while a desktop Organizer preview occupies the next level until a
   setting is selected. Width changes presentation only, preserving route
-  identity and visited pane state. Root and detail rails share the header
+  identity and visited pane state. Expanded paths keep all ancestors in a
+  horizontally scrollable strip. Dividers support drag, keyboard resizing and
+  a double-click reset; widths are local presentation preferences, not business
+  state. Compact screens use the same content and Back path. Every Host
+  directory reserves its adjacent detail or selection state, including empty
+  Groups and Sends. Feature screens supply semantic directory/editor contracts
+  to the Host adapter instead of building panes themselves. Root and detail
+  rails share the header
   boundary; Today uses the same header rhythm even without peer tabs.
 - Every full-screen composition terminates in
   `CatchScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level

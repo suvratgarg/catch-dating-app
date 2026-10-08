@@ -509,43 +509,47 @@ class _HostCustomerDetailScreenState
   }
 
   void _openFormResponse(String responseId) {
-    if (widget.embedded) {
-      context.goNamed(
-        Routes.hostAudienceScreen.name,
-        queryParameters: {
-          'organizerId': widget.organizerId,
-          'contactId': widget.contactId,
-          'responseId': responseId,
-        },
-      );
-      return;
-    }
     unawaited(
       context.pushNamed(
         Routes.hostFormResponseDetailScreen.name,
         pathParameters: {'responseId': responseId},
-        queryParameters: {'organizerId': widget.organizerId},
+        queryParameters: {
+          'organizerId': widget.organizerId,
+          '_parentContactId': widget.contactId,
+          ...?GoRouterState.of(
+                    context,
+                  ).uri.queryParameters['_parentAudienceId'] ==
+                  null
+              ? null
+              : {
+                  '_parentAudienceId': GoRouterState.of(
+                    context,
+                  ).uri.queryParameters['_parentAudienceId']!,
+                },
+        },
       ),
     );
   }
 
   void _openApplication(String applicationId) {
-    if (widget.embedded) {
-      context.goNamed(
-        Routes.hostAudienceScreen.name,
-        queryParameters: {
-          'organizerId': widget.organizerId,
-          'contactId': widget.contactId,
-          'applicationId': applicationId,
-        },
-      );
-      return;
-    }
     unawaited(
       context.pushNamed(
         Routes.hostApplicationDetailScreen.name,
         pathParameters: {'applicationId': applicationId},
-        queryParameters: {'organizerId': widget.organizerId},
+        queryParameters: {
+          'organizerId': widget.organizerId,
+          '_parentContactId': widget.contactId,
+          ...?GoRouterState.of(
+                    context,
+                  ).uri.queryParameters['_parentAudienceId'] ==
+                  null
+              ? null
+              : {
+                  '_parentAudienceId': GoRouterState.of(
+                    context,
+                  ).uri.queryParameters['_parentAudienceId']!,
+                },
+        },
       ),
     );
   }

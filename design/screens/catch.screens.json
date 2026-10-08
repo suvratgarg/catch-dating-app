@@ -499,6 +499,19 @@
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+          "symbol": "HostEventRosterPanel",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "route-chrome"
         }
       ],
       "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
@@ -1711,6 +1724,222 @@
         }
       ],
       "reason": "Participant-controlled event profile sharing and protected mini-profile viewing use canonical route chrome and full-width sections, with focused privacy and rendered accessibility coverage."
+    },
+    "hostNewMessageScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/inbox/host_new_message_screen.dart",
+          "symbol": "_HostNewMessageScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "route-chrome",
+          "routes": [
+            "hostNewMessageScreen"
+          ]
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostResponseOfferScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+          "symbol": "_HostResponseOfferScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome",
+          "routes": [
+            "hostResponseOfferScreen"
+          ]
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostResponseQueryOfferScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+          "symbol": "_HostResponseOfferScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome",
+          "routes": [
+            "hostResponseQueryOfferScreen"
+          ]
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostResponseOfferReviewScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+          "symbol": "_HostFormResponseDetailScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome",
+          "routes": [
+            "hostResponseOfferReviewScreen"
+          ]
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostResponseOfferPreferencesScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
+          "symbol": "_HostEventOfferPreferencesScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostResponseOfferPreferencesScreen"
+          ]
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostResponseQueryOfferPreferencesScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
+          "symbol": "_HostEventOfferPreferencesScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostResponseQueryOfferPreferencesScreen"
+          ]
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostEventPublicationScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_create_screen.dart",
+          "symbol": "_PrivateEventCreateScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostEventPublicationScreen"
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_setup_screen.dart",
+          "symbol": "PrivateEventSetupScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostEventPublicationScreen"
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
+          "symbol": "PrivateEventDetailsScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostEventPublicationScreen"
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart",
+          "symbol": "PrivateEventPreferencesScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostEventPublicationScreen"
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/event_publication_screen.dart",
+          "symbol": "EventPublicationScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostEventPublicationScreen"
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
+          "symbol": "HostCreateEventRouteLoadingScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area",
+          "routes": [
+            "hostEventPublicationScreen"
+          ]
+        },
+        {
+          "routes": [
+            "hostEventPublicationScreen"
+          ],
+          "file": "lib/hosts/presentation/host_event_publication_route_screen.dart",
+          "symbol": "HostEventPublicationStateScaffold",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Named Host workspace continuation reuses the existing content owner; route metadata supplies its ancestors and preserves push results."
+    },
+    "hostEventRosterScreen": {
+      "owners": [
+        {
+          "routes": [
+            "hostEventRosterScreen"
+          ],
+          "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
+          "symbol": "HostEventManageRouteScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostEventRosterScreen"
+          ],
+          "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+          "symbol": "_HostEventManageScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "mixed",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostEventRosterScreen"
+          ],
+          "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+          "symbol": "HostEventRosterPanel",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
     }
   },
   "imperativePageContracts": {
@@ -1804,111 +2033,6 @@
         }
       ],
       "reason": "The route-path map editor is a pushed route with canonical compact chrome and a full-bleed map body."
-    },
-    "HostNewMessageScreen": {
-      "owners": [
-        {
-          "file": "lib/hosts/presentation/inbox/host_new_message_screen.dart",
-          "symbol": "_HostNewMessageScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "full-bleed",
-          "topEdge": "route-chrome"
-        }
-      ],
-      "reason": "New message is a pushed person directory with a full-width Section/Field collection and explicit communication route selection."
-    },
-    "HostEventOfferPreferencesScreen": {
-      "owners": [
-        {
-          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-          "symbol": "_HostEventOfferPreferencesScreenState",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        }
-      ],
-      "reason": "The response offer workspace opens manager event payment settings as an imperative step-flow page, with the shared private preferences editor using the same layout family."
-    },
-    "HostResponseOfferScreen": {
-      "owners": [
-        {
-          "file": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-          "symbol": "_HostResponseOfferScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        }
-      ],
-      "reason": "Single and bulk responses share one pushed event-offer continuation, preserving the originating review context."
-    },
-    "HostFormResponseDetailScreen": {
-      "owners": [
-        {
-          "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
-          "symbol": "_HostFormResponseDetailScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        }
-      ],
-      "reason": "The offer continuation opens the existing response owner to complete review and People linkage, then returns to the retained selection."
-    },
-    "PrivateEventCreateScreen": {
-      "owners": [
-        {
-          "file": "lib/hosts/presentation/event_management/create/private_event_create_screen.dart",
-          "symbol": "_PrivateEventCreateScreenState",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        },
-        {
-          "file": "lib/hosts/presentation/event_management/create/private_event_setup_screen.dart",
-          "symbol": "PrivateEventSetupScreen",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        },
-        {
-          "file": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
-          "symbol": "PrivateEventDetailsScreen",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        },
-        {
-          "file": "lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart",
-          "symbol": "PrivateEventPreferencesScreen",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        },
-        {
-          "file": "lib/hosts/presentation/event_management/create/event_publication_screen.dart",
-          "symbol": "EventPublicationScreen",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        },
-        {
-          "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
-          "symbol": "HostCreateEventRouteLoadingScreen",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "safe-area"
-        }
-      ],
-      "reason": "Host visibility management reopens the progressive event workspace; its loading, basics, details, preferences and publication branches share the governed step-flow layout."
     }
   },
   "screens": [
@@ -14796,7 +14920,7 @@
           },
           {
             "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-            "symbol": "HostEventRosterDrawer"
+            "symbol": "HostEventRosterPanel"
           },
           {
             "file": "lib/hosts/presentation/host_invite_link_state.dart",
@@ -14869,7 +14993,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests opens HostEventRosterDrawer while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterDrawer is a lazy viewport-edge overlay that preserves the underlying workspace element, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterPanel while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterPanel is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
       },
       "designRefs": [
         {
@@ -15209,7 +15333,7 @@
           "id": "attendance_setup_roster",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventRosterDrawer opens over the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
+          "source": "HostEventRosterPanel opens beside the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -16075,7 +16199,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterDrawer overlays an operational roster from the real viewport edge without replacing the bounded workspace; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterPanel renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
         "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, deep-link inputs, and event-scoped navigation effects. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker, inventing event-scoped Forms, or duplicating the lifecycle resolver.",
         "sections": [
           {
@@ -16180,9 +16304,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-              "symbol": "HostEventRosterDrawer"
+              "symbol": "HostEventRosterPanel"
             },
-            "currentOwner": "HostEventRosterDrawer + HostOperationalRosterPanel + HostEventParticipantsPanel",
+            "currentOwner": "HostEventRosterPanel + HostOperationalRosterPanel + HostEventParticipantsPanel",
             "targetOwner": "stable overlay drawer fed by provider-free roster adapters",
             "dependencies": [
               "catch.badge",
@@ -16206,7 +16330,7 @@
               "profile_error",
               "mutation_error"
             ],
-            "migration": "HostEventRosterDrawer owns lazy overlay presentation and preserves the underlying workspace element. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The drawer keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
+            "migration": "HostEventRosterPanel contains roster content while the Host workspace owns pane presentation and retains the event ancestor. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The roster keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
@@ -17608,7 +17732,7 @@
           },
           {
             "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-            "symbol": "HostSendsWorkspaceSliver"
+            "symbol": "HostSendsWorkspace"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
@@ -18037,7 +18161,7 @@
           "id": "communication_intent_picker",
           "kind": "populated",
           "status": "tested",
-          "source": "HostSendsWorkspaceSliver + _HostSendsIntentPicker resolve conversation, saved-audience, event-announcement, and follower-update intents while provider policy remains in setup.",
+          "source": "HostSendsWorkspace + _HostSendsIntentPicker resolve conversation, saved-audience, event-announcement, and follower-update intents while provider policy remains in setup.",
           "tests": [
             "test/hosts/host_inbox_screen_test.dart"
           ],
@@ -18081,7 +18205,7 @@
           "id": "follower_update_composer",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostSendsWorkspaceSliver + showHostFollowerUpdateComposer + HostClubPostController",
+          "source": "HostSendsWorkspace + showHostFollowerUpdateComposer + HostClubPostController",
           "tests": [
             "test/hosts/host_follower_update_composer_test.dart",
             "test/hosts/host_inbox_screen_test.dart",
@@ -28187,48 +28311,48 @@
         }
       ],
       "composition": {
-      "currentLayout": "Labeled fields in CatchSection on the established scrollable form lane, with CatchStepHeader and SafeArea submit footer.",
-      "targetLayout": "Programs share Events discovery; this route only creates a program and returns to its exact scoped inventory row.",
-      "sections": [
-        {
-          "id": "section.programs.create_form",
-          "name": "Create program form",
-          "status": "implemented_local",
-          "layer": "screen-adapter",
-          "claudeComponents": [
-            "ProgramCreateScreen",
-            "ProgramCreatePageBody"
-          ],
-          "flutter": {
-            "file": "lib/programs/presentation/program_create_screen.dart",
-            "symbol": "ProgramCreateScreen"
-          },
-          "currentOwner": "ProgramCreateScreen + ProgramCreateController",
-          "targetOwner": "organizer-scoped route adapter plus provider-free form body",
-          "dependencies": [
-            "catch.button",
-            "catch.field",
-            "catch.section",
-            "catch.surface",
-            "catch.top_bar"
-          ],
-          "states": [
-            "account_loading",
-            "organizer_loading",
-            "permission_error",
-            "draft",
-            "validation_error",
-            "submit_pending",
-            "submit_error",
-            "confirmed"
-          ],
-          "migration": "Keep authentication and organizer authority at the route boundary while the form body renders retained draft, validation, idempotent mutation, exact saved-program confirmation and retry state from ProgramCreateController.",
-          "previewIds": [
-            "programCreateScreenStates",
-            "programCreateFormStates"
-          ]
-        }
-      ]
+        "currentLayout": "Labeled fields in CatchSection on the established scrollable form lane, with CatchStepHeader and SafeArea submit footer.",
+        "targetLayout": "Programs share Events discovery; this route only creates a program and returns to its exact scoped inventory row.",
+        "sections": [
+          {
+            "id": "section.programs.create_form",
+            "name": "Create program form",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramCreateScreen",
+              "ProgramCreatePageBody"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_create_screen.dart",
+              "symbol": "ProgramCreateScreen"
+            },
+            "currentOwner": "ProgramCreateScreen + ProgramCreateController",
+            "targetOwner": "organizer-scoped route adapter plus provider-free form body",
+            "dependencies": [
+              "catch.button",
+              "catch.field",
+              "catch.section",
+              "catch.surface",
+              "catch.top_bar"
+            ],
+            "states": [
+              "account_loading",
+              "organizer_loading",
+              "permission_error",
+              "draft",
+              "validation_error",
+              "submit_pending",
+              "submit_error",
+              "confirmed"
+            ],
+            "migration": "Keep authentication and organizer authority at the route boundary while the form body renders retained draft, validation, idempotent mutation, exact saved-program confirmation and retry state from ProgramCreateController.",
+            "previewIds": [
+              "programCreateScreenStates",
+              "programCreateFormStates"
+            ]
+          }
+        ]
       },
       "openGaps": [
         {

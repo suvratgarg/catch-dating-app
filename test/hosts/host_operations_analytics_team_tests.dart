@@ -104,10 +104,16 @@ void _registerHostOperationsAnalyticsTeamTests() {
     Finder tab(String label) =>
         find.descendant(of: tabRail, matching: find.text(label));
 
-    void expectSharedChrome({bool? constrainToContentWidth}) {
+    void expectSharedChrome({
+      bool? constrainToContentWidth,
+      bool persistentPreview = true,
+    }) {
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.byType(NestedScrollView), findsNothing);
-      expect(find.byType(CatchWorkspacePaneScaffold), findsOneWidget);
+      expect(
+        find.byType(CatchWorkspacePaneScaffold),
+        findsNWidgets(persistentPreview ? 2 : 1),
+      );
       expect(find.byType(SliverOverlapAbsorber), findsNothing);
       expect(find.byType(TabBarView), findsOneWidget);
       expect(tabRail, findsOneWidget);
@@ -182,7 +188,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
     expectSharedChrome();
     expect(find.text('IDENTITY'), findsOneWidget);
-    expect(find.text('SAKET · INDORE'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(CatchRootScreenScaffold),
+        matching: find.text('SAKET · INDORE'),
+      ),
+      findsNothing,
+    );
     final editScroll = tester
         .state<ScrollableState>(editWorkspaceScrollable)
         .position;
@@ -208,7 +220,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
         );
     expect(insightsBodyPadding, isEmpty);
     expect(find.byType(HostAnalyticsTrendPanel), findsOneWidget);
-    expect(find.text('SAKET · INDORE'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(CatchRootScreenScaffold),
+        matching: find.text('SAKET · INDORE'),
+      ),
+      findsNothing,
+    );
     expect(find.byTooltip('Back to Organizer'), findsNothing);
     final rangeOptions = find.byType(
       CatchChoiceInput<HostClubInsightsRangePreset>,
@@ -236,7 +254,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(tab('Preview'));
     await pumpFeatureUi(tester);
 
-    expectSharedChrome(constrainToContentWidth: false);
+    expectSharedChrome(
+      constrainToContentWidth: false,
+      persistentPreview: false,
+    );
     expect(
       find.byKey(const ValueKey('club-detail-hero-module')),
       findsOneWidget,
@@ -291,7 +312,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
   registerHostWorkspacePagingTest();
 
   testWidgets(
-    'Host edit content is centered, capped, and reveals stable keys',
+    'Host edit content fills its editor column and reveals stable keys',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(900, 1000);
@@ -319,11 +340,20 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
       final editTab = find.byType(HostClubEditTab);
       expect(editTab, findsOneWidget);
-      expect(tester.getSize(editTab).width, closeTo(900, 0.1));
-      expect(tester.getCenter(editTab).dx, closeTo(450, 0.1));
+      expect(
+        tester.getSize(editTab).width,
+        closeTo(CatchLayout.workspaceEditorWidth, 0.1),
+      );
+      expect(
+        tester.getCenter(editTab).dx,
+        closeTo(CatchLayout.workspaceEditorWidth / 2, 0.1),
+      );
       expect(
         tester.getSize(find.byType(HostClubMediaSummary)).width,
-        closeTo(CatchLayout.maxContentWidth, 0.1),
+        closeTo(
+          CatchLayout.workspaceEditorWidth - CatchInsets.pageBody.horizontal,
+          0.1,
+        ),
       );
       expect(find.text('0 photos'), findsOneWidget);
 

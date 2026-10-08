@@ -31904,5 +31904,7 @@
   "hostsOperationalRosterIntakeKindNeedsReview": "Needs review",
   "@hostsOperationalRosterIntakeKindNeedsReview": {"description": "Roster preview outcome.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet"},
   "hostsOperationalRosterIntakeKindIdentityConflict": "Identity conflict",
-  "@hostsOperationalRosterIntakeKindIdentityConflict": {"description": "Roster preview outcome.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet"}
+  "@hostsOperationalRosterIntakeKindIdentityConflict": {"description": "Roster preview outcome.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_roster_intake_review_sheet"},
+  "hostWorkspaceResizeColumn": "Resize column",
+  "@hostWorkspaceResizeColumn": {"description": "Accessible label for a workspace column divider that can be dragged or adjusted with arrow keys.", "x-audience": "host", "x-owner": "product", "x-surface": "routing.host_navigation_workspace"}
 }

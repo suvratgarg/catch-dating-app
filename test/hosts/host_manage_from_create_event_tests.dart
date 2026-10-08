@@ -51,9 +51,7 @@ void _registerHostManageFromCreateEventTests() {
       300,
       scrollable: find
           .descendant(
-            of: find.byKey(
-              const ValueKey<String>('host_event_roster_drawer.scroll'),
-            ),
+            of: find.byKey(const ValueKey<String>('host-event-roster-scroll')),
             matching: find.byType(Scrollable),
           )
           .first,
@@ -112,14 +110,18 @@ void _registerHostManageFromCreateEventTests() {
         now: now,
       );
 
+      var section = HostEventManageSection.live;
       await pumpEventsTestApp(
         tester,
-        HostEventManageScreen(
-          club: buildClub(),
-          event: event,
-          onBackToSuccess: () {},
-          initialSection: HostEventManageSection.live,
-          referenceNow: now,
+        StatefulBuilder(
+          builder: (context, setState) => HostEventManageScreen(
+            club: buildClub(),
+            event: event,
+            onBackToSuccess: () {},
+            initialSection: section,
+            onSectionChanged: (next) => setState(() => section = next),
+            referenceNow: now,
+          ),
         ),
         overrides: [
           watchEventProvider(
@@ -198,7 +200,7 @@ void _registerHostManageFromCreateEventTests() {
       await tester.tap(find.text('Check-in QR'));
       await _pumpTestAnimation(tester);
       await tester.drag(
-        find.byKey(const ValueKey<String>('host_event_roster_drawer.scroll')),
+        find.byKey(const ValueKey<String>('host-event-roster-scroll')),
         const Offset(0, -800),
       );
       await _pumpTestAnimation(tester);

@@ -66,16 +66,16 @@ class HostFormsScreen extends ConsumerStatefulWidget {
   ConsumerState<HostFormsScreen> createState() => _HostFormsScreenState();
 }
 
-class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
-    with SingleTickerProviderStateMixin {
+class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
   Timer? _searchDebounce;
   String? _query;
   String? _responseQuery;
   bool _searchExpanded = false;
   Set<HostFormLifecycleStatus> _statuses = const {};
   Set<HostFormPurpose> _purposes = const {};
-  late HostAudienceView _view;
-  late final TabController _tabController;
+  HostAudienceView get _view => widget.initialResponses
+      ? HostAudienceView.responses
+      : HostAudienceView.forms;
   String? _responseFormId;
   String? _responseContactId;
   bool _importing = false;
@@ -99,14 +99,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   @override
   void initState() {
     super.initState();
-    _view = widget.initialResponses
-        ? HostAudienceView.responses
-        : HostAudienceView.forms;
-    _tabController = TabController(
-      length: 2,
-      initialIndex: _view == HostAudienceView.forms ? 0 : 1,
-      vsync: this,
-    )..addListener(_handleTabChanged);
     _responseFormId = widget.initialFormId;
     _responseContactId = widget.initialContactId;
   }
@@ -122,23 +114,22 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         oldWidget.initialOrganizerId != widget.initialOrganizerId) {
       _responseContactId = widget.initialContactId;
     }
+    if (oldWidget.initialResponses != widget.initialResponses) {
+      _searchDebounce?.cancel();
+      _searchExpanded = false;
+    }
     if (oldWidget.initialOrganizerId != widget.initialOrganizerId) {
       _searchDebounce?.cancel();
       _query = null;
       _responseQuery = null;
       _searchExpanded = false;
     }
-    if (oldWidget.initialResponses != widget.initialResponses) {
-      _tabController.animateTo(widget.initialResponses ? 1 : 0);
-    }
   }
 
   @override
   void dispose() {
     _searchDebounce?.cancel();
-    _tabController
-      ..removeListener(_handleTabChanged)
-      ..dispose();
+
     super.dispose();
   }
 
@@ -334,69 +325,70 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       ),
       actions: HostAudienceTabRail(
         selected: _view,
-        selectionAnimation: _tabController.animation!,
-        animationOffset: 2,
+        selectionPosition: _view.index.toDouble(),
         onChanged: (view) => _selectAudienceView(view, selectedClub.id),
       ),
-      body: CatchRootScreenBody.paged(
-        controller: _tabController,
-        pages: [
-          CatchRootScreenPageSpec.scroll(
-            page: _HostFormsLibraryPage(
-              request: request,
-              directory: directory,
-              onRetry: () => ref.invalidate(
-                hostFormsAccountDirectoryProvider(directoryScope),
-              ),
-              query: _query,
-              statuses: _statuses,
-              purposes: _purposes,
-              onPurposesChanged: (values) => setState(() => _purposes = values),
-              onStatusesChanged: (values) => setState(() => _statuses = values),
-              onCreate: () => _openTemplates(selectedClub.id),
-              onOpenForm: _openForm,
-              onRowAction: (action, form) =>
-                  _handleRowAction(action, form, request),
-            ),
-          ),
-          CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.sections(
-              scrollKey: const PageStorageKey<String>('host-forms-responses'),
-              children: [
-                HostFormResponsesPanel(
-                  key: ValueKey('responses-$uid-import-$_importRevision'),
-                  organizerId: selectedClub.id,
-                  accountId: uid,
-                  requireAccount: true,
-                  queryCapability: responseVersionId == null
-                      ? null
-                      : hostResponseQueryCapability(
-                          context.l10n,
-                          versionId: responseVersionId,
-                          offersEnabled: ref.watch(
-                            privateEventSetupAvailableProvider,
-                          ),
-                        ),
-                  query: _responseQuery,
-                  contactId: _responseContactId,
-                  onClearContactFilter: () {
-                    setState(() => _responseContactId = null);
-                    _syncRoute();
-                  },
-                  formId: _responseFormId,
-                  onFormChanged: (formId) {
-                    setState(() => _responseFormId = formId);
-                    _syncRoute();
-                  },
-                  onClearFormFilter: () {
-                    setState(() => _responseFormId = null);
-                    _syncRoute();
-                  },
+      body: CatchRootScreenBody.single(
+        page: activeSearchIsForms
+            ? CatchRootScreenPageSpec.scroll(
+                page: _HostFormsLibraryPage(
+                  request: request,
+                  directory: directory,
+                  onRetry: () => ref.invalidate(
+                    hostFormsAccountDirectoryProvider(directoryScope),
+                  ),
+                  query: _query,
+                  statuses: _statuses,
+                  purposes: _purposes,
+                  onPurposesChanged: (values) =>
+                      setState(() => _purposes = values),
+                  onStatusesChanged: (values) =>
+                      setState(() => _statuses = values),
+                  onCreate: () => _openTemplates(selectedClub.id),
+                  onOpenForm: _openForm,
+                  onRowAction: (action, form) =>
+                      _handleRowAction(action, form, request),
                 ),
-              ],
-            ),
-          ),
-        ],
+              )
+            : CatchRootScreenPageSpec.scroll(
+                page: CatchRootScreenPageScrollView.sections(
+                  scrollKey: const PageStorageKey<String>(
+                    'host-forms-responses',
+                  ),
+                  children: [
+                    HostFormResponsesPanel(
+                      key: ValueKey('responses-$uid-import-$_importRevision'),
+                      organizerId: selectedClub.id,
+                      accountId: uid,
+                      requireAccount: true,
+                      queryCapability: responseVersionId == null
+                          ? null
+                          : hostResponseQueryCapability(
+                              context.l10n,
+                              versionId: responseVersionId,
+                              offersEnabled: ref.watch(
+                                privateEventSetupAvailableProvider,
+                              ),
+                            ),
+                      query: _responseQuery,
+                      contactId: _responseContactId,
+                      onClearContactFilter: () {
+                        setState(() => _responseContactId = null);
+                        _syncRoute();
+                      },
+                      formId: _responseFormId,
+                      onFormChanged: (formId) {
+                        setState(() => _responseFormId = formId);
+                        _syncRoute();
+                      },
+                      onClearFormFilter: () {
+                        setState(() => _responseFormId = null);
+                        _syncRoute();
+                      },
+                    ),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -426,19 +418,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     });
   }
 
-  void _handleTabChanged() {
-    final nextView = _tabController.index == 0
-        ? HostAudienceView.forms
-        : HostAudienceView.responses;
-    if (nextView == _view) return;
-    _searchDebounce?.cancel();
-    setState(() {
-      _view = nextView;
-      _searchExpanded = false;
-    });
-    _syncRoute();
-  }
-
   void _syncRoute() {
     final router = GoRouter.maybeOf(context);
     if (router == null) return;
@@ -460,13 +439,17 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   }
 
   void _selectAudienceView(HostAudienceView view, String organizerId) {
-    if (view == HostAudienceView.forms || view == HostAudienceView.responses) {
-      _tabController.animateTo(view == HostAudienceView.forms ? 0 : 1);
-      return;
-    }
     context.goNamed(
       Routes.hostAudienceScreen.name,
-      queryParameters: {'view': view.name, 'organizerId': organizerId},
+      queryParameters: {
+        'view': view.name,
+        'organizerId': organizerId,
+        if (view == HostAudienceView.forms ||
+            view == HostAudienceView.responses) ...{
+          'formId': ?_responseFormId,
+          'contactId': ?_responseContactId,
+        },
+      },
     );
   }
 

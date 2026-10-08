@@ -62,7 +62,7 @@
             "id": "sends_workspace",
             "language": "dart",
             "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-            "symbol": "HostSendsWorkspaceSliver"
+            "symbol": "HostSendsWorkspace"
           },
           {
             "id": "send_intent_menu",

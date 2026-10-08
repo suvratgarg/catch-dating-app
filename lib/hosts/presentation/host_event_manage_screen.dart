@@ -40,7 +40,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_sec
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -50,6 +49,7 @@ import 'package:go_router/go_router.dart';
 export 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart'
     show HostEventManageSection;
 part 'host_event_manage_route_screen.dart';
+part 'host_event_publication_route_screen.dart';
 
 CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) =>
     value == null ? null : catchAsyncStateFromAsyncValue(value);
@@ -85,17 +85,6 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
 }
 
 class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
-  late bool _rosterOpen =
-      widget.initialSection == HostEventManageSection.guests;
-
-  @override
-  void didUpdateWidget(covariant HostEventManageScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialSection != widget.initialSection) {
-      _rosterOpen = widget.initialSection == HostEventManageSection.guests;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final club = widget.club;
@@ -191,20 +180,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       onManagePublication:
           event.setupRevision != null &&
               ref.watch(privateEventSetupAvailableProvider)
-          ? () {
-              unawaited(
-                Navigator.of(context).push<void>(
-                  MaterialPageRoute(
-                    builder: (_) => PrivateEventCreateScreen(
-                      club: club,
-                      initialSavedEventId: event.id,
-                      initialPublicationReview: true,
-                      promptForDraftsOnStart: false,
-                    ),
-                  ),
-                ),
-              );
-            }
+          ? () => context.pushNamed(
+              Routes.hostEventPublicationScreen.name,
+              pathParameters: {'clubId': club.id, 'eventId': event.id},
+              extra: club,
+            )
           : null,
       onEditEvent: () {
         unawaited(
@@ -349,7 +329,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           showTabs: false,
           compactLiveControls: true,
           operationalRosterSummary: operationalRosterSummary,
-          onOpenGuests: () => _setRosterOpen(true, screenState.phase),
+          onOpenGuests: () => _openRoster(),
           guestsWorkspaceSemanticLabel: context.l10n
               .hostsHostEventRosterDrawerOpen(count: bookedCount),
           fixtureActions: widget.eventSuccessFixtureActions,
@@ -455,6 +435,18 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       mutations: [HostEventManageController.sharePrivateLinkMutation],
       errorContext: AppErrorContext.event,
     );
+    if (widget.initialSection == HostEventManageSection.guests) {
+      return HostEventRosterPanel(
+        bookedCount: bookedCount,
+        onClose: onBackToSuccess,
+        onMessageGuests: () => _openEventMessages(club, event),
+        child: ListView(
+          key: const ValueKey('host-event-roster-scroll'),
+          padding: CatchInsets.pageBody,
+          children: rosterChildren,
+        ),
+      );
+    }
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: topBarTitle,
@@ -471,52 +463,32 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onPressed: () => context.pushNamed(
               Routes.eventChatScreen.name,
               pathParameters: {'eventId': event.id},
+              queryParameters: {'organizerId': club.id},
             ),
           ),
           CatchTopBarPrimaryButton(
             label: context.l10n.hostsHostEventRosterDrawerTitle,
             icon: CatchIcons.groupsRounded,
-            onPressed: () => _setRosterOpen(true, screenState.phase),
+            onPressed: () => _openRoster(),
           ),
         ],
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      body: CatchRouteBody.fullBleed(
-        child: HostEventRosterDrawer(
-          open: _rosterOpen,
-          bookedCount: bookedCount,
-          showHandle: false,
-          onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
-          onMessageGuests: () => _openEventMessages(club, event),
-          bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
-              ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
-              : CatchLayout.maxContentWidth,
-          body: workspaceBody,
-          roster: ListView(
-            key: const ValueKey<String>('host_event_roster_drawer.scroll'),
-            padding: CatchInsets.pageBody,
-            children: rosterChildren,
-          ),
-        ),
-      ),
+      body: CatchRouteBody.fullBleed(child: workspaceBody),
     );
   }
 
-  void _setRosterOpen(bool open, HostEventWorkspacePhase phase) {
-    if (_rosterOpen == open) return;
-    setState(() => _rosterOpen = open);
-    widget.onSectionChanged?.call(
-      open
-          ? HostEventManageSection.guests
-          : switch (phase) {
-              HostEventWorkspacePhase.preparation =>
-                HostEventManageSection.setup,
-              HostEventWorkspacePhase.runtime => HostEventManageSection.live,
-              HostEventWorkspacePhase.recap => HostEventManageSection.report,
-            },
-    );
+  void _openRoster() {
+    widget.onSectionChanged?.call(HostEventManageSection.guests);
+    if (GoRouter.maybeOf(context) != null) {
+      context.pushNamed(
+        Routes.hostEventRosterScreen.name,
+        pathParameters: {'clubId': widget.club.id, 'eventId': widget.event.id},
+        extra: widget.event,
+      );
+    }
   }
 
   void _openEventMessages(Club club, Event event) {

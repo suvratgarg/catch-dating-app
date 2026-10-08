@@ -36,10 +36,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -345,7 +343,7 @@ void main() {
     expect(find.text('New broadcast'), findsOneWidget);
   });
 
-  testWidgets('wide Sends keeps its operational content in a bounded lane', (
+  testWidgets('wide Sends keeps history beside the selected operational pane', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -365,20 +363,12 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    final lane = find.byWidgetPredicate(
-      (widget) =>
-          widget is SliverConstrainedCrossAxis &&
-          widget.maxExtent == CatchLayout.hostMessagingSendsPageMaxExtent,
+    final viewport = tester.widget<CatchNavigationViewport>(
+      find.byType(CatchNavigationViewport),
     );
-    expect(lane, findsOneWidget);
-    expect(
-      tester
-          .renderObject<RenderSliverConstrainedCrossAxis>(lane)
-          .child!
-          .constraints
-          .crossAxisExtent,
-      CatchLayout.hostMessagingSendsPageMaxExtent,
-    );
+    expect(viewport.panes, hasLength(2));
+    expect(viewport.panes.first.id, 'index');
+    expect(find.byType(HostMessagingWorkspaceTabBar), findsOneWidget);
     expect(find.text('Outbound delivery and history.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -889,9 +879,12 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(HostMessagingWorkspaceTabBar), findsOneWidget);
+    expect(find.byType(HostMessagingWorkspaceTabBar), findsNothing);
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('Lapsed customers · 12 people at last preview'), findsOne);
+    await tester.tap(find.byTooltip('Back'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostMessagingWorkspaceTabBar), findsOneWidget);
   });
 }
 

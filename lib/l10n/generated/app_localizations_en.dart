@@ -25166,4 +25166,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsOperationalRosterIntakeKindIdentityConflict =>
       'Identity conflict';
+
+  @override
+  String get hostWorkspaceResizeColumn => 'Resize column';
 }

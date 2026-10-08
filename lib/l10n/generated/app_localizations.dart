@@ -40590,6 +40590,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Identity conflict'**
   String get hostsOperationalRosterIntakeKindIdentityConflict;
+
+  /// Accessible label for a workspace column divider that can be dragged or adjusted with arrow keys.
+  ///
+  /// In en, this message translates to:
+  /// **'Resize column'**
+  String get hostWorkspaceResizeColumn;
 }
 
 class _AppLocalizationsDelegate

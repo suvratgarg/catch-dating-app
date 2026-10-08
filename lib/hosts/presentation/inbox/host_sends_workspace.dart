@@ -21,24 +21,27 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
-  const HostSendsWorkspaceSliver({
+class HostSendsWorkspace extends ConsumerStatefulWidget {
+  const HostSendsWorkspace({
     super.key,
     required this.club,
     required this.initialSavedAudienceId,
     required this.onBusyChanged,
     required this.onOpenInbox,
+    required this.indexBuilder,
     this.preferredEventId,
     this.initialSegment = HostInboxAudienceSegment.booked,
     this.broadcastEnabled = true,
     this.now,
   });
 
+  final Widget Function(Widget historySliver) indexBuilder;
   final Club club;
   final String? initialSavedAudienceId;
   final ValueChanged<bool> onBusyChanged;
@@ -49,12 +52,11 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
   final DateTime? now;
 
   @override
-  ConsumerState<HostSendsWorkspaceSliver> createState() =>
+  ConsumerState<HostSendsWorkspace> createState() =>
       _HostSendsWorkspaceSliverState();
 }
 
-class _HostSendsWorkspaceSliverState
-    extends ConsumerState<HostSendsWorkspaceSliver> {
+class _HostSendsWorkspaceSliverState extends ConsumerState<HostSendsWorkspace> {
   late _HostSendFlow _flow;
   int _generation = 0;
   bool _sameScope(int generation) => mounted && generation == _generation;
@@ -73,7 +75,7 @@ class _HostSendsWorkspaceSliverState
   }
 
   @override
-  void didUpdateWidget(covariant HostSendsWorkspaceSliver oldWidget) {
+  void didUpdateWidget(covariant HostSendsWorkspace oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _generation++;
@@ -150,14 +152,42 @@ class _HostSendsWorkspaceSliverState
         onLoadMore: _loadMore,
       ),
     };
-    return SliverPadding(
-      padding: CatchInsets.fieldSectionChildTop,
-      sliver: SliverList.list(
-        children: [
-          content is _HostSendsHistory
-              ? content
-              : CatchSection.content(child: content),
-        ],
+    final history = _HostSendsHistory(
+      organizerId: widget.club.id,
+      busy: _busy,
+      loadingMore: _loadingMore,
+      paginationBaseKey: _paginationBaseKey,
+      additionalSends: _additionalSends,
+      nextCursor: _nextCursor,
+      onNew: () => setState(() => _flow = const _SendIntent()),
+      onOpen: _open,
+      onLoadMore: _loadMore,
+    );
+    return HostNavigationWorkspace(
+      spec: HostDirectoryWorkspace<_HostSendFlow>(
+        index: widget.indexBuilder(
+          SliverPadding(
+            padding: CatchInsets.fieldSectionChildTop,
+            sliver: SliverList.list(children: [history]),
+          ),
+        ),
+        selection: _flow is _SendHistory ? null : _flow,
+        detailBuilder: (_) => CatchWorkspacePaneScaffold(
+          title: CatchTopBar.route(
+            title: context.l10n.hostMessagingWorkspaceSends,
+            leading: CatchIconAction.toolbar(
+              icon: CatchIcons.arrowBackIosNewRounded,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              onPressed: _busy ? null : _showHistory,
+            ),
+          ),
+          body: ListView(padding: CatchInsets.pageBody, children: [content]),
+        ),
+        unselected: CatchEmptyState(
+          icon: CatchIcons.chevronRightRounded,
+          title: context.l10n.coreCatchFieldVisiblecopySelect,
+        ),
+        onBack: _busy ? null : _showHistory,
       ),
     );
   }

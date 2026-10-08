@@ -1,152 +1,150 @@
-// Public named factory inputs normalize to private shared storage.
-// ignore_for_file: prefer_initializing_formals
-
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-/// Host route adapter. Screens supply a path; the shared viewport owns width,
-/// pane chrome, dividers, and preservation across desktop/mobile transitions.
+/// Closed presentation contracts. Feature content cannot choose column counts.
+sealed class HostWorkspaceSpec {
+  const HostWorkspaceSpec();
+  List<CatchWorkspacePane> _panes();
+  String get _compactPaneId;
+  VoidCallback? get _onBack;
+}
+
+final class HostDirectoryWorkspace<T extends Object> extends HostWorkspaceSpec {
+  const HostDirectoryWorkspace({
+    required this.index,
+    required this.selection,
+    required this.detailBuilder,
+    required this.unselected,
+    this.onBack,
+    this.descendants = const [],
+    this.recordId,
+  });
+  final Widget index;
+  final T? selection;
+  final Widget Function(T) detailBuilder;
+  final Widget unselected;
+  final VoidCallback? onBack;
+  final List<HostWorkspaceRecord> descendants;
+  final String Function(T)? recordId;
+
+  @override
+  List<CatchWorkspacePane> _panes() => [
+    CatchWorkspacePane(id: 'index', child: index),
+    CatchWorkspacePane(
+      id: selection == null
+          ? 'placeholder'
+          : (recordId?.call(selection!) ?? 'record'),
+      child: selection == null ? unselected : detailBuilder(selection!),
+    ),
+    if (selection != null)
+      for (final record in descendants)
+        CatchWorkspacePane(id: record.id, child: record.content),
+  ];
+  @override
+  String get _compactPaneId => selection == null
+      ? 'index'
+      : descendants.isEmpty
+      ? (recordId?.call(selection!) ?? 'record')
+      : descendants.last.id;
+  @override
+  VoidCallback? get _onBack => selection == null ? null : onBack;
+}
+
+final class HostEditorWorkspace extends HostWorkspaceSpec {
+  const HostEditorWorkspace({
+    required this.editor,
+    required this.preview,
+    this.showPreview = true,
+  });
+  final Widget editor;
+  final Widget preview;
+  final bool showPreview;
+  @override
+  List<CatchWorkspacePane> _panes() => [
+    CatchWorkspacePane(
+      id: 'index',
+      mode: CatchWorkspacePaneMode.editor,
+      child: editor,
+    ),
+    if (showPreview) CatchWorkspacePane(id: 'placeholder', child: preview),
+  ];
+  @override
+  String get _compactPaneId => 'index';
+  @override
+  VoidCallback? get _onBack => null;
+}
+
+final class HostTaskWorkspace extends HostWorkspaceSpec {
+  const HostTaskWorkspace({required this.content});
+  final Widget content;
+  @override
+  List<CatchWorkspacePane> _panes() => [
+    CatchWorkspacePane(id: 'index', child: content),
+  ];
+  @override
+  String get _compactPaneId => 'index';
+  @override
+  VoidCallback? get _onBack => null;
+}
+
+/// A descendant record contains no geometry or device-specific presentation.
+final class HostWorkspaceRecord {
+  const HostWorkspaceRecord({required this.id, required this.content});
+  final String id;
+  final Widget content;
+}
+
+/// Sole adapter from semantic workspaces and router ancestry to physical panes.
 class HostNavigationWorkspace extends StatelessWidget {
-  const HostNavigationWorkspace({
-    super.key,
-    required Widget index,
-    required Uri uri,
-    Widget? detail,
-    Widget? preview,
-    CatchWorkspacePaneMode indexMode = CatchWorkspacePaneMode.directory,
-  }) : _index = index,
-       _uri = uri,
-       _detail = detail,
-       _preview = preview,
-       _indexMode = indexMode,
-       _eventSelection = false,
-       _initialEvent = null,
-       _panes = null,
-       _compactPaneId = null,
-       _onBack = null;
-
-  const HostNavigationWorkspace.event({
-    super.key,
-    required Widget index,
-    required Uri uri,
-    Event? initialEvent,
-  }) : _index = index,
-       _uri = uri,
-       _detail = null,
-       _preview = null,
-       _indexMode = CatchWorkspacePaneMode.directory,
-       _eventSelection = true,
-       _initialEvent = initialEvent,
-       _panes = null,
-       _compactPaneId = null,
-       _onBack = null;
-
-  factory HostNavigationWorkspace.single({
-    Key? key,
-    required String id,
-    required Widget child,
-  }) => HostNavigationWorkspace.panes(
-    key: key,
-    panes: [CatchWorkspacePane(id: id, child: child)],
-  );
-
-  const HostNavigationWorkspace.panes({
-    super.key,
-    required List<CatchWorkspacePane> panes,
-    String? compactPaneId,
-    VoidCallback? onBack,
-  }) : _panes = panes,
-       _compactPaneId = compactPaneId,
-       _onBack = onBack,
-       _index = null,
-       _uri = null,
-       _detail = null,
-       _preview = null,
-       _indexMode = CatchWorkspacePaneMode.directory,
-       _eventSelection = false,
-       _initialEvent = null;
-
-  final Widget? _index;
-  final Uri? _uri;
-  final Widget? _detail;
-  final Widget? _preview;
-  final CatchWorkspacePaneMode _indexMode;
-  final bool _eventSelection;
-  final Event? _initialEvent;
-  final List<CatchWorkspacePane>? _panes;
-  final String? _compactPaneId;
-  final VoidCallback? _onBack;
+  const HostNavigationWorkspace({super.key, required this.spec});
+  final HostWorkspaceSpec spec;
 
   @override
   Widget build(BuildContext context) {
     final route = context
         .dependOnInheritedWidgetOfExactType<HostWorkspaceRouteScope>();
-    final uri = _uri;
-    final eventId = uri?.queryParameters['eventId'];
-    final clubId = uri?.queryParameters['organizerId'];
-    final detail =
-        _detail ??
-        (_eventSelection && eventId != null && clubId != null
-            ? HostEventManageRouteScreen(
-                key: ValueKey('$clubId/$eventId'),
-                clubId: clubId,
-                eventId: eventId,
-                initialEvent: _initialEvent,
-                initialSection: switch (uri!.queryParameters['section']) {
-                  'live' => HostEventManageSection.live,
-                  'report' => HostEventManageSection.report,
-                  'guests' => HostEventManageSection.guests,
-                  _ => HostEventManageSection.setup,
-                },
-              )
-            : null);
-    final back =
-        _onBack ??
-        (detail == null || uri == null
-            ? null
-            : () => context.go(hostWorkspaceIndexUri(uri).toString()));
-    final routePanes = route?.panes ?? const <CatchWorkspacePane>[];
-    final panes =
-        _panes ??
-        [
-          CatchWorkspacePane(id: 'index', mode: _indexMode, child: _index!),
-          if (detail != null)
-            CatchWorkspacePane(
-              id: 'detail',
-              child: CatchWorkspaceBackScope(onBack: back!, child: detail),
-            )
-          else if (routePanes.isEmpty &&
-              (_preview != null ||
-                  _indexMode == CatchWorkspacePaneMode.directory))
-            CatchWorkspacePane(
-              id: 'preview',
-              child:
-                  _preview ??
-                  CatchEmptyState(
-                    icon: CatchIcons.chevronRightRounded,
-                    title: context.l10n.coreCatchFieldVisiblecopySelect,
-                  ),
+    final record = context
+        .dependOnInheritedWidgetOfExactType<_HostRouteRecordScope>();
+    final content = context
+        .dependOnInheritedWidgetOfExactType<_RouteContentKeys>();
+    if (spec case final HostEditorWorkspace editor
+        when record != null && content != null) {
+      return CatchNavigationViewport(
+        contributionOnly: true,
+        panes: [
+          CatchWorkspacePane(
+            id: record.id,
+            child: _HostRoutedEditor(
+              id: record.id,
+              spec: editor,
+              attachments: content.attachments,
+              onChanged: content.onAttachmentsChanged,
             ),
-        ];
-    // An unselected directory's placeholder is auxiliary. A routed selection
-    // takes its slot, rather than opening beside a meaningless empty column.
-    final basePanes =
-        routePanes.isNotEmpty &&
-            detail == null &&
-            (_compactPaneId == null || _compactPaneId == panes.first.id)
-        ? panes.take(1).toList()
-        : panes;
+          ),
+        ],
+      );
+    }
+    final ownPanes = spec._panes();
+    final routePanes = route?.panes ?? const <CatchWorkspacePane>[];
+    final base = routePanes.isEmpty
+        ? ownPanes
+        : ownPanes
+              .where(
+                (pane) =>
+                    pane.id != 'placeholder' &&
+                    !routePanes.any((routePane) => routePane.id == pane.id),
+              )
+              .toList();
     return CatchNavigationViewport(
-      onBack: routePanes.isEmpty ? back : route!.onBack,
-      compactPaneId: routePanes.isNotEmpty
-          ? routePanes.last.id
-          : _compactPaneId ?? (detail == null ? panes.first.id : 'detail'),
-      panes: [...basePanes, ...routePanes],
+      resizeLabel: context.l10n.hostWorkspaceResizeColumn,
+      onBack: routePanes.isEmpty ? spec._onBack : route!.onBack,
+      compactPaneId: routePanes.isEmpty
+          ? spec._compactPaneId
+          : route!.compactPaneId ?? routePanes.last.id,
+      panes: [...base, ...routePanes],
     );
   }
 }
@@ -159,44 +157,29 @@ class HostWorkspaceRouteScope extends InheritedWidget {
     required this.onBack,
     required super.child,
     this.navigatorRoot = false,
+    this.compactPaneId,
   });
 
   /// Attaches router content to the existing viewport without owning geometry.
-  factory HostWorkspaceRouteScope.route({
+  static Widget route({
     Key? key,
     required Widget index,
     required Widget navigator,
     required List<CatchWorkspacePane> ancestors,
     required String? selectedRoute,
+    String? selectedContentId,
     required VoidCallback onBack,
-  }) {
-    final anchor = HostWorkspaceRouteScope(
-      panes: const [],
-      onBack: onBack,
-      navigatorRoot: true,
-      child: navigator,
-    );
-    return HostWorkspaceRouteScope(
-      key: key,
-      panes: [
-        ...ancestors,
-        if (selectedRoute != null)
-          CatchWorkspacePane(
-            id: selectedRoute,
-            child: CatchWorkspaceBackScope(onBack: onBack, child: anchor),
-          ),
-      ],
-      onBack: onBack,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          index,
-          if (selectedRoute == null) Offstage(child: anchor),
-        ],
-      ),
-    );
-  }
+  }) => _HostWorkspaceRouteFrame(
+    key: key,
+    index: index,
+    navigator: navigator,
+    ancestors: ancestors,
+    selectedRoute: selectedRoute,
+    selectedContentId: selectedContentId ?? selectedRoute,
+    onBack: onBack,
+  );
 
+  final String? compactPaneId;
   final bool navigatorRoot;
   static bool isNavigatorRoot(BuildContext context) =>
       context
@@ -208,6 +191,197 @@ class HostWorkspaceRouteScope extends InheritedWidget {
   final VoidCallback onBack;
   @override
   bool updateShouldNotify(HostWorkspaceRouteScope oldWidget) => true;
+}
+
+/// One key per route record, shared by its Navigator page and visible ancestor.
+/// A pushed parent relinquishes its content; the ancestor pane adopts that same
+/// element in the same frame. Back returns it to the original Navigator page.
+class HostWorkspaceRouteContent extends StatelessWidget {
+  const HostWorkspaceRouteContent({
+    super.key,
+    required this.id,
+    required this.builder,
+  });
+  final String id;
+  final WidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = context
+        .dependOnInheritedWidgetOfExactType<_RouteContentKeys>();
+    if (content == null) return builder(context);
+    if (HostWorkspaceRouteScope.isNavigatorRoot(context) &&
+        content.activeId != id) {
+      return const SizedBox.shrink();
+    }
+    return KeyedSubtree(
+      key: content.keys.putIfAbsent(id, () => GlobalKey(debugLabel: id)),
+      child: _HostRouteRecordScope(id: id, child: builder(context)),
+    );
+  }
+}
+
+class _HostWorkspaceRouteFrame extends StatefulWidget {
+  const _HostWorkspaceRouteFrame({
+    super.key,
+    required this.index,
+    required this.navigator,
+    required this.ancestors,
+    required this.selectedRoute,
+    required this.selectedContentId,
+    required this.onBack,
+  });
+  final Widget index;
+  final Widget navigator;
+  final List<CatchWorkspacePane> ancestors;
+  final String? selectedRoute;
+  final String? selectedContentId;
+  final VoidCallback onBack;
+
+  @override
+  State<_HostWorkspaceRouteFrame> createState() =>
+      _HostWorkspaceRouteFrameState();
+}
+
+class _HostWorkspaceRouteFrameState extends State<_HostWorkspaceRouteFrame> {
+  final _keys = <String, GlobalKey>{};
+  final _attachments = <String, ValueNotifier<Widget?>>{};
+
+  void _attachmentsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    for (final preview in _attachments.values) {
+      preview.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final anchor = HostWorkspaceRouteScope(
+      panes: const [],
+      onBack: widget.onBack,
+      navigatorRoot: true,
+      child: widget.navigator,
+    );
+    return _RouteContentKeys(
+      keys: _keys,
+      activeId: widget.selectedContentId,
+      attachments: _attachments,
+      onAttachmentsChanged: _attachmentsChanged,
+      child: HostWorkspaceRouteScope(
+        panes: [
+          ...widget.ancestors,
+          if (widget.selectedRoute != null)
+            CatchWorkspacePane(
+              id: widget.selectedRoute!,
+              mode: _attachments.containsKey(widget.selectedContentId)
+                  ? CatchWorkspacePaneMode.editor
+                  : CatchWorkspacePaneMode.directory,
+              child: CatchWorkspaceBackScope(
+                onBack: widget.onBack,
+                child: anchor,
+              ),
+            ),
+          if (_attachments[widget.selectedContentId] case final preview?)
+            CatchWorkspacePane(
+              id: '${widget.selectedRoute}.preview',
+              child: ValueListenableBuilder<Widget?>(
+                valueListenable: preview,
+                builder: (context, child, _) =>
+                    child ?? const SizedBox.shrink(),
+              ),
+            ),
+        ],
+        compactPaneId: widget.selectedRoute,
+        onBack: widget.onBack,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            widget.index,
+            if (widget.selectedRoute == null) Offstage(child: anchor),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RouteContentKeys extends InheritedWidget {
+  const _RouteContentKeys({
+    required this.keys,
+    required this.activeId,
+    required this.attachments,
+    required this.onAttachmentsChanged,
+    required super.child,
+  });
+  final Map<String, GlobalKey> keys;
+  final String? activeId;
+  final Map<String, ValueNotifier<Widget?>> attachments;
+  final VoidCallback onAttachmentsChanged;
+
+  @override
+  bool updateShouldNotify(_RouteContentKeys oldWidget) =>
+      activeId != oldWidget.activeId;
+}
+
+class _HostRouteRecordScope extends InheritedWidget {
+  const _HostRouteRecordScope({required this.id, required super.child});
+  final String id;
+  @override
+  bool updateShouldNotify(_HostRouteRecordScope oldWidget) =>
+      id != oldWidget.id;
+}
+
+/// A routed editor contributes its preview to the enclosing strip. It never
+/// starts a second horizontal viewport inside an existing navigation pane.
+class _HostRoutedEditor extends StatefulWidget {
+  const _HostRoutedEditor({
+    required this.id,
+    required this.spec,
+    required this.attachments,
+    required this.onChanged,
+  });
+  final String id;
+  final HostEditorWorkspace spec;
+  final Map<String, ValueNotifier<Widget?>> attachments;
+  final VoidCallback onChanged;
+  @override
+  State<_HostRoutedEditor> createState() => _HostRoutedEditorState();
+}
+
+class _HostRoutedEditorState extends State<_HostRoutedEditor> {
+  @override
+  void initState() {
+    super.initState();
+    _publish();
+  }
+
+  @override
+  void didUpdateWidget(_HostRoutedEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _publish();
+  }
+
+  void _publish() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final preview = widget.spec.showPreview ? widget.spec.preview : null;
+      final existing = widget.attachments[widget.id];
+      if (existing == null && preview != null) {
+        widget.attachments[widget.id] = ValueNotifier(preview);
+        widget.onChanged();
+      } else if (existing != null) {
+        existing.value = preview;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.spec.editor;
 }
 
 Uri hostWorkspaceIndexUri(Uri uri) => uri.replace(
@@ -222,7 +396,4 @@ void openHostOrganizerSetting(
   BuildContext context,
   Routes setting,
   String clubId,
-) => context.goNamed(
-  Routes.hostOrganizerScreen.name,
-  queryParameters: {'clubId': clubId, 'setting': setting.name},
-);
+) => context.pushNamed(setting.name, queryParameters: {'clubId': clubId});
