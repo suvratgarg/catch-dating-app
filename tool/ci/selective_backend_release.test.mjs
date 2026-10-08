@@ -812,3 +812,140 @@ test("true no-op retains every physical deployment and does not accept stale dep
   assert.deepEqual(completion.plan.stages, []);
   assert.throws(() => completeSelectiveRelease({...completion, deployment: {}}), invalid);
 });
+
+import {INTAKE_PR596_RELEASE, INTAKE_SOURCE_DELTA, verifyIntakeSourceCompatibility,
+  checkIntakeGitCompatibility, verifyIntakeArtifactMetadata, verifyIntakeProvenance,
+  prepareIntakePr596Release, verifyIntakePreservation, readIntakeSnapshot,
+  runIntakePr596ReleaseCli, verifyIntakeParams} from "./selective_backend_release.mjs";
+import {functionsParamsProvenance, prepareFunctionsParamsForDeploy} from "../firebase/prepare_functions_params_for_deploy.mjs";
+
+const intakeEvidence = () => ({sourceSha: INTAKE_PR596_RELEASE.sourceSha,
+  currentSha: INTAKE_PR596_RELEASE.checkpointSha, sourceAncestor: true, checkpointAncestor: true,
+  changedPaths: INTAKE_SOURCE_DELTA.map((row) => row.path), currentDifference: [],
+  rows: structuredClone(INTAKE_SOURCE_DELTA)});
+test("Intake PR596 accepts exactly the reviewed WhatsApp delta and real Git objects", () => {
+  const expected = {sourceSha: INTAKE_PR596_RELEASE.sourceSha,
+    compatibilityCheckpoint: INTAKE_PR596_RELEASE.checkpointSha};
+  assert.deepEqual(verifyIntakeSourceCompatibility(intakeEvidence()), expected);
+  assert.deepEqual(checkIntakeGitCompatibility(INTAKE_PR596_RELEASE.checkpointSha,
+    path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..")), expected);
+});
+for (const [name, mutate] of [
+  ["another source", (v) => {v.sourceSha = "0".repeat(40);}],
+  ["unreviewed runtime", (v) => {v.rows[3].checkpointGitBlob = "0".repeat(40);}],
+  ["symlink", (v) => {v.rows[0].checkpointMode = "120000";}],
+  ["missing delta", (v) => {v.rows.pop();}],
+  ["new dependency or shared initializer", (v) => {v.currentDifference.push("functions/src/index.ts");}],
+  ["missing ancestry", (v) => {v.checkpointAncestor = false;}],
+]) test(`Intake PR596 source rejects ${name}`, () => {
+  const evidence = intakeEvidence(); mutate(evidence); assert.throws(() => verifyIntakeSourceCompatibility(evidence));
+});
+const intakeArtifact = () => ({id: INTAKE_PR596_RELEASE.artifactId, expired: false,
+  name: `firebase-delivery-${INTAKE_PR596_RELEASE.sourceSha}-1`,
+  digest: `sha256:${INTAKE_PR596_RELEASE.artifactSha256}`,
+  workflow_run: {id: Number(INTAKE_PR596_RELEASE.sourceCiRunId), head_sha: INTAKE_PR596_RELEASE.sourceSha}});
+test("Intake PR596 immutable artifact rejects another ID, archive, producer and expiry", () => {
+  assert.equal(verifyIntakeArtifactMetadata(intakeArtifact()).artifactId, 11551444925);
+  for (const change of [
+    (a) => {a.id++;}, (a) => {a.expired = true;}, (a) => {a.digest = `sha256:${"0".repeat(64)}`;},
+    (a) => {a.name += "-copy";}, (a) => {a.workflow_run.id++;}, (a) => {a.workflow_run.head_sha = "0".repeat(40);},
+  ]) {const value = intakeArtifact(); change(value); assert.throws(() => verifyIntakeArtifactMetadata(value));}
+});
+const intakePackage = () => ({manifest: {schema: PROVENANCE_SCHEMA,
+  sourceSha: INTAKE_PR596_RELEASE.sourceSha, sourceCiRunId: INTAKE_PR596_RELEASE.sourceCiRunId,
+  sourceCiRunAttempt: "1", stages: ["functions"],
+  artifact: {name: "firebase-backend.tar.gz", sizeBytes: 10, sha256: "a".repeat(64)}},
+packagePlan: {schema: "catch.firebase-delivery-plan/v2", sourceSha: INTAKE_PR596_RELEASE.sourceSha,
+  baseSha: INTAKE_PR596_RELEASE.baseSha, sourceCiRunId: INTAKE_PR596_RELEASE.sourceCiRunId,
+  sourceCiRunAttempt: "1", stages: ["functions"], deployGroups: ["functions"],
+  targets: ["functions:adminListIntakeOperations,functions:retained"]}});
+test("Intake PR596 narrows the independently verified package to one fixed target", () => {
+  const input = intakePackage();
+  assert.deepEqual(prepareIntakePr596Release(input).targets, [INTAKE_PR596_RELEASE.target]);
+  assert.deepEqual(input.packagePlan.targets, ["functions:adminListIntakeOperations,functions:retained"]);
+  // Plan selection cannot replace the separately mandatory immutable-manifest proof.
+  assert.throws(() => verifyIntakeProvenance(input.manifest));
+});
+test("Intake PR596 refuses extra stages, absent/duplicate targets, wrong source and base", () => {
+  for (const change of [
+    (v) => {v.packagePlan.stages.push("firestore-rules");},
+    (v) => {v.packagePlan.deployGroups.push("firestore-indexes");},
+    (v) => {v.packagePlan.targets = ["functions:retained"];},
+    (v) => {v.packagePlan.targets = [INTAKE_PR596_RELEASE.target + "," + INTAKE_PR596_RELEASE.target];},
+    (v) => {v.packagePlan.sourceSha = "0".repeat(40);}, (v) => {v.packagePlan.baseSha = "0".repeat(40);},
+    (v) => {v.manifest.sourceCiRunAttempt = "2";},
+  ]) {const input = intakePackage(); change(input); assert.throws(() => prepareIntakePr596Release(input));}
+});
+const intakeBefore = () => ({schema: "catch.intake-pr596-metadata/v1", projectId: INTAKE_PR596_RELEASE.projectId,
+  functions: [{name: "projects/catch-dating-app-64e51/locations/asia-south1/functions/retained", sha256: "b".repeat(64)}],
+  protectedResources: Object.fromEntries(["extensions", "indexes", "fields", "rules", "remoteConfig", "projectIam"]
+    .map((name) => [name, "c".repeat(64)])), selected: null});
+const intakeCompleted = () => {
+  const result = intakeBefore(), p = INTAKE_PR596_RELEASE.projectId;
+  const name = `projects/${p}/locations/asia-south1/functions/adminListIntakeOperations`;
+  result.functions.unshift({name, sha256: "d".repeat(64)});
+  result.selected = {identity: {name, updateTime: "2026-10-08T15:00:00Z",
+    build: `projects/${p}/locations/asia-south1/builds/build`,
+    source: {bucket: "synthetic", object: "function-source.zip", generation: "1"},
+    service: `projects/${p}/locations/asia-south1/services/adminlistintakeoperations`,
+    revision: "adminlistintakeoperations-00001-synthetic", serviceUid: "synthetic", serviceGeneration: "1"},
+  runtime: {runtime: "nodejs24", entryPoint: "adminListIntakeOperations",
+    serviceAccount: "574779808785-compute@developer.gserviceaccount.com", memory: "512Mi", maxInstances: 50,
+    secretBindings: 0, paramsSha256: "e".repeat(64)}, iamSha256: "f".repeat(64), publicInvoker: true};
+  return result;
+};
+test("Intake PR596 completion allows only the selected addition and retains all resources", () => {
+  const before = intakeBefore(); assert.equal(verifyIntakePreservation(before, structuredClone(before)).completed, false);
+  const result = verifyIntakePreservation(before, intakeCompleted(), {completed: true, paramsSha256: "e".repeat(64)});
+  assert.equal(result.retainedFunctions, 1); assert.equal(result.coverage, "one-selected-function-only");
+});
+test("Intake PR596 rejects retained metadata, Extensions, flags, rules, IAM and runtime drift", () => {
+  for (const change of [
+    (v) => {v.functions[1].sha256 = "0".repeat(64);},
+    ...["extensions", "indexes", "fields", "rules", "remoteConfig", "projectIam"].map((name) =>
+      (v) => {v.protectedResources[name] = "0".repeat(64);}),
+    (v) => {v.selected.runtime.serviceAccount = "foreign@example.invalid";},
+    (v) => {v.selected.runtime.paramsSha256 = "0".repeat(64);},
+    (v) => {v.selected.publicInvoker = false;}, (v) => {v.functions.push(v.functions[1]);},
+  ]) {
+    const after = intakeCompleted(); change(after);
+    assert.throws(() => verifyIntakePreservation(intakeBefore(), after, {completed: true, paramsSha256: "e".repeat(64)}));
+  }
+  assert.throws(() => verifyIntakePreservation(intakeBefore(), intakeCompleted()));
+});
+test("Intake PR596 CLI rejects target overrides before any metadata call", async () => {
+  let reads = 0;
+  await assert.rejects(runIntakePr596ReleaseCli(["intake-before", "--output", "unused", "--target", "functions:foreign"],
+    {readSnapshot: async () => {reads++; return intakeBefore();}}));
+  assert.equal(reads, 0);
+});
+test("Intake PR596 refuses an unchanged existing serving revision", () => {
+  const snapshot = intakeCompleted();
+  assert.throws(() => verifyIntakePreservation(snapshot, structuredClone(snapshot),
+    {completed: true, paramsSha256: "e".repeat(64)}), /build did not change/);
+});
+test("Intake PR596 binds real materialized bytes and the pre-marker configuration hash separately", (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "intake-params-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(directory, "package.json"), "{}");
+  const projectId = INTAKE_PR596_RELEASE.projectId, sourceSha = INTAKE_PR596_RELEASE.sourceSha;
+  const environment = {ALGOLIA_APPLICATION_ID: "CATCHDEV01", RAZORPAY_PUBLIC_KEY_ID: "rzp_test_example123"};
+  const provenance = functionsParamsProvenance({projectId, sourceSha, environment});
+  const {outputPath} = prepareFunctionsParamsForDeploy({functionsDir: directory, projectId, sourceSha,
+    environment, expectedProvenance: provenance});
+  const binding = verifyIntakeParams(outputPath, provenance);
+  assert.notEqual(binding.materializedSha256, binding.configurationSha256);
+  assert.equal(binding.configurationSha256, provenance.paramsSha256);
+  assert.deepEqual(verifyIntakeParams(outputPath, provenance, binding), binding);
+  const contents = fs.readFileSync(outputPath, "utf8");
+  fs.writeFileSync(outputPath, contents.replace('META_WHATSAPP_ENABLED="false"', 'META_WHATSAPP_ENABLED="true"'));
+  assert.throws(() => verifyIntakeParams(outputPath, provenance, binding));
+  fs.writeFileSync(outputPath, contents + 'CATCH_DEPLOY_CONFIG_SHA256="duplicate"\n');
+  assert.throws(() => verifyIntakeParams(outputPath, provenance, binding));
+});
+test("Intake PR596 inventory fails closed on unreachable regions and repeated pages", async () => {
+  const deps = (body) => ({run: () => ({status: 0, stdout: "synthetic-token"}),
+    request: async () => ({ok: true, json: async () => body}), listIndexes: () => []});
+  await assert.rejects(readIntakeSnapshot(deps({functions: [], unreachable: ["europe-west1"]})));
+  await assert.rejects(readIntakeSnapshot(deps({functions: [], nextPageToken: "repeat"})));
+});

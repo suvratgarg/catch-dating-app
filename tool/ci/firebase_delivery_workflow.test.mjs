@@ -17,7 +17,7 @@ function ciJob(source, name) {
   const start = source.indexOf(`\n  ${name}:\n`);
   assert.ok(start >= 0, `Missing CI job ${name}`);
   const remaining = source.slice(start + 1);
-  const end = remaining.search(/\n  [a-z][a-z-]*:\n/);
+  const end = remaining.search(/\n  [A-Za-z_][A-Za-z0-9_-]*:\n/);
   return end < 0 ? remaining : remaining.slice(0, end);
 }
 
@@ -181,7 +181,7 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(promotion, /name: Checkout the immutable Delivery control plane[\s\S]*ref: \$\{\{ inputs\.control_plane_sha \}\}/);
   assert.match(promotion, /name: Checkout the exact CI-approved source as verification input[\s\S]*path: build\/delivery\/source-checkout/);
   assert.match(promotion, /test "\$control_project_id" = "\$project_id"/);
-  assert.equal((promotion.match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 6);
+  assert.equal((ciJob(promotion, "promote").match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 6);
   assert.match(promotion, /CATCH_FIREBASE_SOURCE_ROOT="\$SOURCE_CHECKOUT"/);
   assert.match(promotion, /\.\/tool\/deploy_firebase_targets\.sh/);
   assert.doesNotMatch(promotion, /build\/delivery\/source-checkout\/tool\/deploy_firebase_targets\.sh/);
@@ -695,8 +695,8 @@ test("promotion is ordered dev to protected prod", () => {
 test("promotion executes the reverified subset and handles empty Functions as a checkpointed no-op", () => {
   const promotion = workflow("_firebase-promote.yml");
   assert.match(promotion, /npm ci --ignore-scripts --workspaces=false/);
-  assert.equal((promotion.match(/--affected-functions true/g) ?? []).length, 3);
-  assert.equal((promotion.match(/cmp build\/delivery\/package-plan.json build\/delivery\/reverified-plan.json/g) ?? []).length, 2);
+  assert.equal((ciJob(promotion, "promote").match(/--affected-functions true/g) ?? []).length, 3);
+  assert.equal((ciJob(promotion, "promote").match(/cmp build\/delivery\/package-plan.json build\/delivery\/reverified-plan.json/g) ?? []).length, 2);
   assert.match(promotion, /cmp build\/delivery\/execution-plan.json build\/delivery\/reverified-plan.json/);
   assert.match(promotion, /cmp build\/delivery\/execution-plan.json build\/delivery\/operator-reverified-execution.json/);
   assert.match(promotion, /' build\/delivery\/execution-plan.json\)"/);
@@ -1693,5 +1693,67 @@ test("Functions retries stop on missing params or secrets and retain transient r
     assert.equal(fs.existsSync(sleepCalls) ? fs.readFileSync(sleepCalls, "utf8").trim().split("\n").length : 0, sleeps);
     assert.match(result.stdout, new RegExp(message));
     assert.deepEqual(fs.readdirSync(directory).filter((name) => name.startsWith("catch-functions-deploy.")), []);
+  }
+});
+
+test("Intake PR596 uses the protected fixed-scope job and cannot enter generic mutation routes", () => {
+  const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-intake-pr596");
+  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release \}\}/);
+  assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
+  assert.match(workflow("selective-backend-release.yml"), /group: backend-delivery\n  cancel-in-progress: false/);
+  assert.ok(job.indexOf("Require recorded human") < job.indexOf("google-github-actions/auth@v3"));
+  assert.ok(job.indexOf("intake-provenance") < job.indexOf("google-github-actions/auth@v3"));
+  assert.match(job, /intake-archive --archive/); assert.match(job, /intake-artifact --metadata/);
+  assert.match(job, /package_firebase_delivery\.mjs verify/); assert.match(job, /--trusted-package-dir/);
+  assert.match(job, /intake-verify-before/); assert.match(job, /intake-complete/);
+  assert.doesNotMatch(job, /--force|--functions-postconditions-only|sync:callable-invokers|restore-decision|checkpoint restore|delivery_core\.mjs next|backend-delivery-cursor|wedding_receipt/);
+  assert.equal((job.match(/firebase_with_env\.sh prod deploy/g) ?? []).length, 1);
+});
+test("Intake PR596 copied approval predicate rejects a bypass or wrong reviewer", () => {
+  const job = ciJob(workflow("_firebase-promote.yml"), "promote-intake-pr596");
+  const step = extractSteps(job).find((entry) => entry.name === "Require recorded human PROD environment approval for operator release");
+  const filter = /--argjson history "\$history" '([\s\S]*?)' > \/dev\/null/.exec(step.run)[1];
+  const environment = {id: 5, protection_rules: [{type: "required_reviewers", reviewers: [{type: "User", reviewer: {id: 7}}]}]};
+  const approval = {state: "approved", user: {id: 7}, environments: [{id: 5, name: "prod"}]};
+  const accepted = (history, settings = environment) => spawnSync("jq", ["-en", "--argjson", "environment", JSON.stringify(settings),
+    "--argjson", "history", JSON.stringify(history), filter], {encoding: "utf8"}).status === 0;
+  assert.equal(accepted([approval]), true); assert.equal(accepted([]), false);
+  assert.equal(accepted([{...approval, user: {id: 99}}]), false);
+  assert.equal(accepted([approval, {...approval, state: "rejected"}]), false);
+  assert.equal(accepted([approval], {...environment, protection_rules: []}), false);
+});
+test("Intake PR596 invocation is first-attempt-only and cannot retry a failed CLI", (t) => {
+  const job = ciJob(workflow("_firebase-promote.yml"), "promote-intake-pr596");
+  const body = extractSteps(job).find((step) => step.name === "Deploy the fixed Intake Function once").run;
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "intake-one-invocation-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "build/delivery"), {recursive: true});
+  fs.mkdirSync(path.join(directory, "tool"));
+  fs.writeFileSync(path.join(directory, "build/delivery/execution-plan.json"), JSON.stringify({stages: ["functions"], targets: ["functions:adminListIntakeOperations"]}));
+  fs.writeFileSync(path.join(directory, "tool/firebase_with_env.sh"), '#!/bin/sh\nprintf "%s\\n" "$*" >> calls\nexit 9\n', {mode: 0o700});
+  const result = spawnSync("bash", ["-c", body], {cwd: directory, encoding: "utf8"});
+  assert.equal(result.status, 9);
+  assert.deepEqual(fs.readFileSync(path.join(directory, "calls"), "utf8").trim().split("\n"),
+    ["prod deploy --only functions:adminListIntakeOperations --non-interactive --config build/delivery/deploy-tree/firebase.json"]);
+  fs.writeFileSync(path.join(directory, "build/delivery/execution-plan.json"), JSON.stringify({stages: ["functions"], targets: ["functions:foreign"]}));
+  const blocked = spawnSync("bash", ["-c", body], {cwd: directory, encoding: "utf8"});
+  assert.notEqual(blocked.status, 0); assert.equal(fs.readFileSync(path.join(directory, "calls"), "utf8").trim().split("\n").length, 1);
+});
+test("Intake PR596 input predicate rejects mixed flags, another environment, producer and recovery", () => {
+  const job = ciJob(workflow("_firebase-promote.yml"), "promote-intake-pr596");
+  const body = extractSteps(job).find((step) => step.name === "Validate the fixed Intake caller and prohibit recovery or other modes").run;
+  const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+  const inputs = {intake_pr596_release: true, operator_release: false, whatsapp_five_release: false,
+    sales_pr543_release: false, wedding_phone_import_release: false, require_current_main: false,
+    environment: "prod", approval_environment: "prod", control_plane_sha: "a".repeat(40),
+    source_sha: "ceab9d8abf5de7ad383260739032e0e1603d45ff", base_sha: "6f3532cdff471f8025a03d38516aeada7c207cfc",
+    source_ci_run_id: "37777899024", source_ci_run_attempt: "1", resume_delivery_run_id: "", resume_delivery_attempt: "1",
+    dev_completion_artifact_id: "", dev_completion_artifact_digest: "", dev_completion_receipt_sha256: ""};
+  const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8",
+    env: {...process.env, GITHUB_SHA: "a".repeat(40)}}).status === 0;
+  assert.equal(accepted(inputs), true);
+  for (const patch of [{operator_release: true}, {environment: "dev"}, {source_ci_run_attempt: "2"},
+    {source_sha: "b".repeat(40)}, {resume_delivery_run_id: "123"}, {dev_completion_artifact_id: "123"}]) {
+    assert.equal(accepted({...inputs, ...patch}), false);
   }
 });
