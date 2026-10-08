@@ -1023,3 +1023,62 @@ test("Intake PR596 snapshot reads wildcard fields with page size zero and retain
   const after = await capture({...ttl, ttlConfig: {state: "DISABLED"}});
   assert.throws(() => verifyIntakePreservation(before, after), /unselected cloud resource changed/);
 });
+
+function intakeEventMetadataCapture(change = () => {}) {
+  const project = INTAKE_PR596_RELEASE.projectId;
+  const service = `projects/${project}/locations/asia-south1/services/retained-event`;
+  const fn = {name: `projects/${project}/locations/asia-south1/functions/retainedEvent`, environment: "GEN_2",
+    buildConfig: {runtime: "nodejs24", entryPoint: "retainedEvent", source: {generation: "1"}},
+    serviceConfig: {service, serviceAccountEmail: "retained@example.test", availableMemory: "512Mi"},
+    eventTrigger: {eventType: "google.cloud.firestore.document.v1.written", eventFilters: [
+      {attribute: "database", value: "(default)"},
+      {attribute: "document", value: "retained/{id}", operator: "match-path-pattern"},
+      {attribute: "namespace", value: "(default)"},
+    ]}};
+  const runService = {name: service, generation: "1", latestReadyRevision: "retained-event-00001-a",
+    template: {containers: [{image: "retained-image", args: ["first", "second"],
+      env: [{name: "RETAINED_CONFIG", value: "synthetic"}]}]}};
+  const iam = {etag: "retained-etag", version: 3, bindings: [{role: "roles/run.invoker", members: ["allUsers"]}]};
+  change(fn, runService, iam);
+  return readIntakeSnapshot({run: () => ({status: 0, stdout: "synthetic-token"}), listIndexes: () => [],
+    request: async (raw) => {
+      const url = new URL(raw); let body;
+      if (url.hostname === "cloudfunctions.googleapis.com") body = {functions: [fn]};
+      else if (url.hostname === "run.googleapis.com") body = url.pathname.endsWith(":getIamPolicy") ? iam : runService;
+      else if (url.hostname === "firestore.googleapis.com") body = {fields: []};
+      else if (url.hostname === "firebaseextensions.googleapis.com") body = {instances: []};
+      else if (url.hostname === "firebaserules.googleapis.com") body = {releases: []};
+      else if (url.hostname === "firebaseremoteconfig.googleapis.com") body = {};
+      else {assert.equal(url.hostname, "cloudresourcemanager.googleapis.com"); body = {version: 3, bindings: []};}
+      return {ok: true, status: 200, json: async () => structuredClone(body)};
+    }});
+}
+
+test("Intake PR596 snapshot accepts reordered Eventarc filters with all metadata retained", async () => {
+  const before = await intakeEventMetadataCapture();
+  const after = await intakeEventMetadataCapture((fn) => {fn.eventTrigger.eventFilters.reverse();});
+  assert.deepEqual(after, before);
+  assert.equal(verifyIntakePreservation(before, after).completed, false);
+});
+
+test("Intake PR596 snapshot rejects filter, runtime, IAM and ordered-array changes", async () => {
+  const before = await intakeEventMetadataCapture();
+  for (const change of [
+    (fn) => {fn.eventTrigger.eventFilters[1].value = "foreign/{id}";},
+    (fn) => {fn.eventTrigger.eventFilters[1].attribute = "foreign";},
+    (fn) => {delete fn.eventTrigger.eventFilters[1].operator;},
+    (fn) => {fn.eventTrigger.eventFilters[1].additionalMetadata = "changed";},
+    (fn) => {fn.eventTrigger.eventFilters.pop();},
+    (fn) => {fn.eventTrigger.eventFilters.push({...fn.eventTrigger.eventFilters[0]});},
+    (fn) => {fn.eventTrigger.eventType = "foreign.event";},
+    (fn) => {fn.buildConfig.source.generation = "2";},
+    (fn) => {fn.serviceConfig.serviceAccountEmail = "foreign@example.test";},
+    (_, runService) => {runService.latestReadyRevision = "retained-event-00002-b";},
+    (_, runService) => {runService.template.containers[0].env[0].value = "changed";},
+    (_, runService) => {runService.template.containers[0].args.reverse();},
+    (_, __, iam) => {iam.bindings[0].members = ["user:foreign@example.test"];},
+  ]) {
+    const after = await intakeEventMetadataCapture(change);
+    assert.throws(() => verifyIntakePreservation(before, after), /unselected Function\/Extension identity or configuration changed/);
+  }
+});
