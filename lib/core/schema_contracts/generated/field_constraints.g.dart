@@ -7873,7 +7873,7 @@ abstract final class CatchContractConstraints {
 
   static const adminListIntakeOperationsCallablePayloadWorkItemCursor = CatchContractFieldConstraints(
     path: 'adminListIntakeOperationsCallablePayload.workItemCursor',
-    maxLength: 1000,
+    maxLength: 1500,
     valueTypes: <String>['string'],
   );
 
