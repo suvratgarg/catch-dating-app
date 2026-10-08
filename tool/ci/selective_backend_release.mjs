@@ -1217,11 +1217,11 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
       signal: AbortSignal.timeout(30000)});
     assert.ok(response.ok, `Read-only metadata failed: HTTP ${response.status}.`); return response.json();
   };
-  const pages = async (url, field, extra = {}) => {
+  const pages = async (url, field, extra = {}, pageSize = "100") => {
     const rows = [], seen = new Set(); let cursor = "";
     do {
       assert.ok(seen.size < 30 && !seen.has(cursor)); seen.add(cursor);
-      const response = await get(`${url}?${new URLSearchParams({...extra, pageSize: "100", ...(cursor ? {pageToken: cursor} : {})})}`);
+      const response = await get(`${url}?${new URLSearchParams({...extra, pageSize, ...(cursor ? {pageToken: cursor} : {})})}`);
       assert.deepEqual(response.unreachable ?? [], []); assert.ok(Array.isArray(response[field] ?? []));
       rows.push(...(response[field] ?? [])); cursor = response.nextPageToken ?? ""; assert.equal(typeof cursor, "string");
     } while (cursor);
@@ -1258,7 +1258,7 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
   }));
   const fields = new Map();
   for (const filter of ["indexConfig.usesAncestorConfig:false", "ttlConfig:*"]) {
-    for (const field of await pages(`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/collectionGroups/-/fields`, "fields", {filter})) {
+    for (const field of await pages(`https://firestore.googleapis.com/v1/projects/${project}/databases/(default)/collectionGroups/-/fields`, "fields", {filter}, "0")) {
       assert.equal(typeof field.name, "string");
       if (fields.has(field.name)) assert.deepEqual(field, fields.get(field.name));
       fields.set(field.name, field);

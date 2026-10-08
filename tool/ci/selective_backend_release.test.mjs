@@ -949,3 +949,77 @@ test("Intake PR596 inventory fails closed on unreachable regions and repeated pa
   await assert.rejects(readIntakeSnapshot(deps({functions: [], unreachable: ["europe-west1"]})));
   await assert.rejects(readIntakeSnapshot(deps({functions: [], nextPageToken: "repeat"})));
 });
+
+test("Intake PR596 snapshot reads wildcard fields with page size zero and retains every protected resource", async () => {
+  const project = INTAKE_PR596_RELEASE.projectId;
+  const root = `projects/${project}`;
+  const fieldRoot = `${root}/databases/(default)/collectionGroups`;
+  const shared = {name: `${fieldRoot}/retained/fields/expiry`,
+    indexConfig: {usesAncestorConfig: false}, ttlConfig: {state: "ACTIVE"}};
+  const override = {name: `${fieldRoot}/retained/fields/override`, indexConfig: {usesAncestorConfig: false}};
+  const ttl = {name: `${fieldRoot}/retained/fields/ttl`, ttlConfig: {state: "ACTIVE"}};
+  const retained = ["retainedA", "retainedB"].map((name) => ({
+    name: `${root}/locations/asia-south1/functions/${name}`, environment: "GEN_1",
+  }));
+  const extensions = [{name: `${root}/instances/retained`}];
+  const rules = [{name: `${root}/releases/cloud.firestore`}];
+  const remoteConfig = {parameters: {protected: {defaultValue: {value: "synthetic"}}}};
+  const iam = {version: 3, bindings: []};
+  const indexes = [{name: `${fieldRoot}/retained/indexes/retained`, state: "READY"}];
+  const requests = [];
+  const capture = (ttlField = ttl) => readIntakeSnapshot({
+    run: () => ({status: 0, stdout: "synthetic-token"}),
+    listIndexes: ({projectId}) => {assert.equal(projectId, project); return indexes;},
+    request: async (raw, init) => {
+      const url = new URL(raw);
+      requests.push({path: url.pathname, query: Object.fromEntries(url.searchParams)});
+      assert.equal(init.headers.Authorization, "Bearer synthetic-token");
+      const query = url.searchParams;
+      let body;
+      if (url.hostname === "cloudfunctions.googleapis.com" && url.pathname.endsWith("/functions")) {
+        assert.equal(query.get("pageSize"), "100");
+        body = query.has("pageToken") ? {functions: [retained[1]]} :
+          {functions: [retained[0]], nextPageToken: "functions-second"};
+        if (query.has("pageToken")) assert.equal(query.get("pageToken"), "functions-second");
+      } else if (url.hostname === "cloudfunctions.googleapis.com" && url.pathname.endsWith(":getIamPolicy")) {
+        assert.equal(query.get("options.requestedPolicyVersion"), "3"); body = iam;
+      } else if (url.hostname === "firestore.googleapis.com") {
+        assert.equal(url.pathname, `/v1/${fieldRoot}/-/fields`);
+        // This is the live endpoint's failure, rather than a source-text assertion.
+        if (query.get("pageSize") !== "0") return {ok: false, status: 400};
+        if (query.get("filter") === "indexConfig.usesAncestorConfig:false") {
+          body = query.has("pageToken") ? {fields: [override]} :
+            {fields: [shared], nextPageToken: "fields-second"};
+          if (query.has("pageToken")) assert.equal(query.get("pageToken"), "fields-second");
+        } else {
+          assert.equal(query.get("filter"), "ttlConfig:*"); body = {fields: [shared, ttlField]};
+        }
+      } else if (url.hostname === "firebaseextensions.googleapis.com") {
+        assert.equal(query.get("pageSize"), "100"); body = {instances: extensions};
+      } else if (url.hostname === "firebaserules.googleapis.com") {
+        assert.equal(query.get("pageSize"), "100"); body = {releases: rules};
+      } else if (url.hostname === "firebaseremoteconfig.googleapis.com") body = remoteConfig;
+      else {
+        assert.equal(url.hostname, "cloudresourcemanager.googleapis.com");
+        assert.equal(init.method, "POST");
+        assert.deepEqual(JSON.parse(init.body), {options: {requestedPolicyVersion: 3}}); body = iam;
+      }
+      return {ok: true, status: 200, json: async () => structuredClone(body)};
+    },
+  });
+  const before = await capture();
+  assert.equal(before.functions.length, 2);
+  assert.equal(before.selected, null);
+  // Independently calculated digests bind the complete synthetic metadata.
+  assert.deepEqual(before.protectedResources, {
+    "extensions": "e3d12be2679a4d960e544d53e3d937f3d21ff1b8faf6c21fd9dd7e5b2aaeeca8",
+    "indexes": "ccc0bce4addc5bdd741c4ff805c645aa62071cde5178b08b1d2d91731f603bda",
+    "fields": "7604b2446ca3323dcb3eb20a395e7086fef2311a5ebde76040480ea2f7ba1479",
+    "rules": "9091cffa2b80074dbe0d8a01e86aad4e10fd3793df1650c8b7a88ab5dc9b5920",
+    "remoteConfig": "125fd00530df75259c43357664959903c211b9a9feaa1df1b9299ee87d5b086b",
+    "projectIam": "79e5d5b416ed277ad64b3f3f3c61ebba7b1dfaae5c1bf4a0e4bfa5fab9a57ab6"
+  });
+  assert.equal(requests.filter((entry) => entry.path.endsWith("/fields")).length, 3);
+  const after = await capture({...ttl, ttlConfig: {state: "DISABLED"}});
+  assert.throws(() => verifyIntakePreservation(before, after), /unselected cloud resource changed/);
+});
