@@ -92,6 +92,52 @@ export function operationWorkItem(
   };
 }
 
+/** Synthetic publication packet with explicit required nullable fields. */
+export function organizerPublicationPacketWorkItem(
+  overrides: Partial<OperationWorkItem> = {}
+): OperationWorkItem {
+  return operationWorkItem({
+    entityKind: "organizer",
+    normalizedPayload: {intake: {
+      recordType: "organizer_publication_packet",
+      packet: {
+        packetId: "packet:synthetic",
+        entityId: "synthetic-organizer",
+        canonicalHostId: "synthetic-host",
+        displayName: "Synthetic organizer",
+        status: "review_required",
+        priority: "normal",
+        markets: [],
+        blockers: [],
+        dataBlockers: [],
+        evidenceBlockers: [],
+        approvalChecklist: {
+          crawlDisabledReviewed: false, identityReviewed: false,
+          marketScopeReviewed: false, mediaRightsReviewed: false,
+          ownerSafeCopyReviewed: false, surfaceInventoryReviewed: false,
+        },
+        evidenceSummary: {
+          records: 0, manualReportsWithoutArtifacts: 0,
+          unresolvedLocalRefs: 0, missingSurfaceEvidence: 0,
+          rawProviderArtifactRefs: 0, firestoreForbiddenArtifactRefs: 0,
+          riskFlags: [],
+        },
+        publicPresence: {
+          canonicalPath: null, claimTargetPath: null,
+          publishStatus: "draft", indexStatus: "noindex",
+          appVisibility: "hidden", projectionStatus: "unavailable",
+        },
+        adminDecision: {
+          allowedDecisions: [], defaultAppVisibility: "hidden",
+          currentDecision: null,
+        },
+        nextActions: [],
+      },
+    }},
+    ...overrides,
+  });
+}
+
 export function operationActionReceipt(
   overrides: Partial<OperationActionReceipt> = {}
 ): OperationActionReceipt {

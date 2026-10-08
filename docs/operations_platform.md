@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.33.0
-updated: 2026-09-28
+version: 1.33.1
+updated: 2026-10-08
 owner: operations_platform
 status: active
 ---
@@ -374,6 +374,27 @@ does not appear in active stage queues, and terminal records cannot retain a
 human-review owner, flag, or blocker. Run pagination remains explicit
 loaded-page state. Both item lanes order by document id; runs order by
 `updatedAt` and document id rather than treating lexical ids as time.
+
+The Admin read projection isolates individual unavailable work-item records
+without changing canonical worker or write validation. It scans at most 200
+ordered documents, with one overflow witness, and returns healthy rows plus
+bounded document-id/reason/path/code diagnostics. Raw records, field values and
+validation messages are excluded. A malformed record, document-id mismatch,
+query-scope mismatch or unsupported stage is read-only unavailable evidence;
+query/transport errors, malformed runs and non-authoritative run summaries
+still fail the request. Strict worker reads, actions and persisted writes keep
+the canonical contract, including every required nullable packet field.
+
+`workItemPage` is optional for existing/sample responses. When present, its
+`scannedCount` equals healthy plus unavailable records in that raw page. The
+ordinary and filtered exception lanes retain separate accounting; unavailable
+exception documents remain visible without becoming healthy or actionable.
+Both lanes advance by the last scanned document id, including on all-invalid
+pages. Work-item cursors accept up to 1,500 characters and remain opaque;
+run-cursor semantics and bounds are unchanged. The Operations and Organizer
+Intake workspaces preserve authoritative full-run summaries, expose unavailable
+rows for review, and retain explicit ordinary-page continuation. An unavailable
+publication packet cannot grant readiness, approval or a write capability.
 
 ## Execution And Authority Lanes
 

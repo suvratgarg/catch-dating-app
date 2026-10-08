@@ -5,9 +5,16 @@ import {launchMarketSlugs} from
 import type {
   AdminListIntakeOperationsResponse,
   OperationRun,
+  OperationUnavailableRecord,
   OperationWorkItem,
   OrganizerDraftLink,
 } from "../../../../shared/operations/operationsTypes";
+import {
+  assertOperationReadPage,
+  mergeUnavailableOperationRecords,
+  unavailableOperationRecords,
+  type OperationInventoryResponse,
+} from "../../../../shared/operations/operationReadDiagnostics";
 import type * as Intake from "../types/organizerIntakeTypes";
 
 type NullableLiveSummaryFields =
@@ -34,6 +41,7 @@ export type OrganizerIntakeWorkbenchBridge = Omit<
     NullableLiveSummaryFields
   > & Record<NullableLiveSummaryFields, number | null>;
   publicationReviewPackets: OrganizerWorkbenchPublicationReviewPackets;
+  unavailableRecords?: OperationUnavailableRecord[];
 };
 
 type NullablePublicationPacketSummaryFields =
@@ -90,7 +98,8 @@ Promise<OrganizerIntakeLoadResult> {
   const workbench = organizerWorkbenchFromOperations(
     inventory,
     workItems,
-    draftLinks
+    draftLinks,
+    pages.flatMap(unavailableOperationRecords)
   );
   const diagnosticsBridge = null;
   return {
@@ -108,7 +117,8 @@ Promise<OrganizerIntakeLoadResult> {
 export function organizerWorkbenchFromOperations(
   inventory: AdminListIntakeOperationsResponse,
   workItems: OperationWorkItem[],
-  organizerDraftLinks: OrganizerDraftLink[] = organizerDraftLinksOf(inventory)
+  organizerDraftLinks: OrganizerDraftLink[] = organizerDraftLinksOf(inventory),
+  unavailableRecords: OperationUnavailableRecord[] = []
 ): OrganizerIntakeWorkbenchBridge {
   const draftLinkByWorkItem = new Map(organizerDraftLinks.map((link) => [
     link.workItemId,
@@ -126,38 +136,39 @@ export function organizerWorkbenchFromOperations(
   const items = Array.from(packetByEntity.values()).map(({item, packet}) =>
     workbenchItemFromPacket(item, packet));
   const hasPackets = packets.length > 0;
+  const hasCompletePackets = hasPackets && unavailableRecords.length === 0;
   const duplicateKeys = duplicateCandidateKeys(candidates);
   return {
     schemaVersion: 1,
     summary: {
-      reviewItems: hasPackets ? items.length : null,
-      evidenceReview: hasPackets ?
+      reviewItems: hasCompletePackets ? items.length : null,
+      evidenceReview: hasCompletePackets ?
         packets.reduce((sum, packet) =>
           sum + packet.evidenceSummary.records, 0) :
         null,
-      promotionReview: hasPackets ?
+      promotionReview: hasCompletePackets ?
         packets.filter((packet) =>
           packet.status === "ready_for_manual_publication_review").length :
         null,
-      blocked: hasPackets ?
+      blocked: hasCompletePackets ?
         items.filter((item) => item.blockers.length > 0).length :
         null,
-      approvedPublic: hasPackets ?
+      approvedPublic: hasCompletePackets ?
         packets.filter((packet) =>
           packet.status === "published" ||
           packet.adminDecision.currentDecision?.decision ===
             "approve_public").length :
         null,
-      appDiscoverable: hasPackets ?
+      appDiscoverable: hasCompletePackets ?
         packets.filter((packet) =>
           packet.publicPresence.appVisibility !== "hidden").length :
         null,
-      publicationReviewPackets: hasPackets ? packets.length : undefined,
-      publicationReviewReady: hasPackets ?
+      publicationReviewPackets: hasCompletePackets ? packets.length : undefined,
+      publicationReviewReady: hasCompletePackets ?
         packets.filter((packet) =>
           packet.status === "ready_for_manual_publication_review").length :
         undefined,
-      publicationReviewBlockedByData: hasPackets ?
+      publicationReviewBlockedByData: hasCompletePackets ?
         packets.filter((packet) => packet.dataBlockers.length > 0).length :
         undefined,
       searchResultCandidates: candidates.length,
@@ -166,7 +177,7 @@ export function organizerWorkbenchFromOperations(
         candidate.existingEntityMatches.length > 0).length,
     },
     publicationReviewPackets: hasPackets ?
-      publicationPacketsWorkbench(packets) :
+      publicationPacketsWorkbench(packets, unavailableRecords.length === 0) :
       emptyPublicationPackets(),
     searchCandidates: {
       summary: {
@@ -196,6 +207,7 @@ export function organizerWorkbenchFromOperations(
       },
     },
     items,
+    unavailableRecords,
   };
 }
 
@@ -242,49 +254,77 @@ function latestRunPerLaunchMarket(runs: OperationRun[]): OperationRun[] {
 
 async function loadOrganizerRun(
   run: OperationRun
-): Promise<AdminListIntakeOperationsResponse> {
-  let page = await listIntakeOperations({
-    workflowId: "supply-intake",
+): Promise<OperationInventoryResponse> {
+  const payload = {
+    workflowId: "supply-intake" as const,
     runId: run.runId,
-    runStatus: "completed",
-    entityKind: "organizer",
+    runStatus: "completed" as const,
+    entityKind: "organizer" as const,
     workItemLimit: 200,
-  });
+  };
+  let page = await listIntakeOperations(payload);
+  const first = page;
+  assertOrganizerRunPage(page, first, run.runId);
+  let unavailableRecords = mergeUnavailableOperationRecords([], page);
   const workItems = new Map(page.workItems.map((item) => [
-    item.workItemId,
-    item,
+    item.workItemId, item,
   ]));
   const organizerDraftLinks = new Map(
     organizerDraftLinksOf(page).map((link) => [link.workItemId, link])
   );
   const cursors = new Set<string>();
+  const pageLimit = Math.ceil(run.budgets.maxWorkItems / 200) + 2;
+  let pageCount = 1;
   while (page.nextWorkItemCursor) {
-    if (cursors.has(page.nextWorkItemCursor)) {
+    if (cursors.has(page.nextWorkItemCursor) || pageCount >= pageLimit) {
       throw new Error(
         `Organizer Intake pagination stalled for run ${run.runId}.`
       );
     }
     cursors.add(page.nextWorkItemCursor);
     page = await listIntakeOperations({
-      workflowId: "supply-intake",
-      runId: run.runId,
-      runStatus: "completed",
-      entityKind: "organizer",
+      ...payload,
       workItemCursor: page.nextWorkItemCursor,
-      workItemLimit: 200,
     });
-    for (const item of page.workItems) {
-      workItems.set(item.workItemId, item);
+    assertOrganizerRunPage(page, first, run.runId);
+    unavailableRecords = mergeUnavailableOperationRecords(
+      unavailableRecords, page
+    );
+    for (const record of page.workItemPage?.unavailableRecords ?? []) {
+      if (workItems.has(record.documentId)) {
+        throw new Error("Organizer Intake document availability changed between pages.");
+      }
     }
+    for (const item of page.workItems) workItems.set(item.workItemId, item);
     for (const link of organizerDraftLinksOf(page)) {
       organizerDraftLinks.set(link.workItemId, link);
     }
+    pageCount += 1;
   }
   return {
     ...page,
-    workItems: Array.from(workItems.values()),
-    organizerDraftLinks: Array.from(organizerDraftLinks.values()),
+    workItems: [...workItems.values()],
+    organizerDraftLinks: [...organizerDraftLinks.values()],
+    readInventory: {
+      unavailableRecords,
+      humanReviewUnavailableDocumentIds: [],
+    },
   };
+}
+
+function assertOrganizerRunPage(
+  page: AdminListIntakeOperationsResponse,
+  first: AdminListIntakeOperationsResponse,
+  runId: string
+): void {
+  assertOperationReadPage(page);
+  if (page.runs[0]?.runId !== runId || page.workItems.some((item) =>
+    item.runId !== runId || item.entityKind !== "organizer")) {
+    throw new Error("Organizer Intake pagination crossed run boundaries.");
+  }
+  if (JSON.stringify(page.summary) !== JSON.stringify(first.summary)) {
+    throw new Error("Organizer Intake pagination summary changed between pages.");
+  }
 }
 
 function organizerDraftLinksOf(
@@ -778,30 +818,31 @@ OrganizerWorkbenchPublicationReviewPackets {
 }
 
 function publicationPacketsWorkbench(
-  packets: Intake.OrganizerPublicationReviewPacket[]
+  packets: Intake.OrganizerPublicationReviewPacket[],
+  complete: boolean
 ): OrganizerWorkbenchPublicationReviewPackets {
   return {
     schemaVersion: 1,
     summary: {
-      packets: packets.length,
-      readyForManualPublicationReview: packets.filter((packet) =>
-        packet.status === "ready_for_manual_publication_review").length,
-      blockedByData: packets.filter((packet) =>
-        packet.dataBlockers.length > 0).length,
-      published: packets.filter((packet) =>
-        packet.status === "published").length,
-      suppressed: packets.filter((packet) =>
-        packet.status === "suppressed").length,
-      held: packets.filter((packet) =>
-        packet.status === "held").length,
-      evidenceRecords: packets.reduce((sum, packet) =>
-        sum + packet.evidenceSummary.records, 0),
-      manualReportsWithoutArtifacts: packets.reduce((sum, packet) =>
-        sum + packet.evidenceSummary.manualReportsWithoutArtifacts, 0),
-      unresolvedEvidenceRefs: packets.reduce((sum, packet) =>
-        sum + packet.evidenceSummary.unresolvedLocalRefs, 0),
-      missingSurfaceEvidence: packets.reduce((sum, packet) =>
-        sum + packet.evidenceSummary.missingSurfaceEvidence, 0),
+      packets: complete ? packets.length : null,
+      readyForManualPublicationReview: complete ? packets.filter((packet) =>
+        packet.status === "ready_for_manual_publication_review").length : null,
+      blockedByData: complete ? packets.filter((packet) =>
+        packet.dataBlockers.length > 0).length : null,
+      published: complete ? packets.filter((packet) =>
+        packet.status === "published").length : null,
+      suppressed: complete ? packets.filter((packet) =>
+        packet.status === "suppressed").length : null,
+      held: complete ? packets.filter((packet) =>
+        packet.status === "held").length : null,
+      evidenceRecords: complete ? packets.reduce((sum, packet) =>
+        sum + packet.evidenceSummary.records, 0) : null,
+      manualReportsWithoutArtifacts: complete ? packets.reduce((sum, packet) =>
+        sum + packet.evidenceSummary.manualReportsWithoutArtifacts, 0) : null,
+      unresolvedEvidenceRefs: complete ? packets.reduce((sum, packet) =>
+        sum + packet.evidenceSummary.unresolvedLocalRefs, 0) : null,
+      missingSurfaceEvidence: complete ? packets.reduce((sum, packet) =>
+        sum + packet.evidenceSummary.missingSurfaceEvidence, 0) : null,
       packetsByStatus: countBy(packets, (packet) => packet.status),
       packetsByTaskType: countBy(packets, (packet) => packet.taskType),
     },
