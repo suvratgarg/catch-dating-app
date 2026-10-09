@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| SalesProviderAttemptDocument | `firestore/sales_provider_attempts.schema.json` | `functions/src/shared/generated/salesProviderAttemptDocument.ts` |
+| SalesProviderBudgetDocument | `firestore/sales_provider_budgets.schema.json` | `functions/src/shared/generated/salesProviderBudgetDocument.ts` |
 | CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupOperationDocument.ts` |
 | CatchWhatsappOperatorSetupAuditDocument | `firestore/catch_whatsapp_operator_setup_audits.schema.json` | `functions/src/shared/generated/catchWhatsappOperatorSetupAuditDocument.ts` |
 | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts` |
@@ -1234,6 +1236,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaSalesProviderAttemptDocumentSchema` | SalesProviderAttemptDocument | `firestore/sales_provider_attempts.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_provider_attempt_document.g.dart` |
+| `schemaSalesProviderBudgetDocumentSchema` | SalesProviderBudgetDocument | `firestore/sales_provider_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_provider_budget_document.g.dart` |
 | `schemaCatchWhatsappOperatorSetupOperationDocumentSchema` | CatchWhatsappOperatorSetupOperationDocument | `firestore/catch_whatsapp_operator_setup_operations.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_operation_document.g.dart` |
 | `schemaCatchWhatsappOperatorSetupAuditDocumentSchema` | CatchWhatsappOperatorSetupAuditDocument | `firestore/catch_whatsapp_operator_setup_audits.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_operator_setup_audit_document.g.dart` |
 | `schemaManageHostRosterIntakeCallablePayloadSchema` | ManageHostRosterIntakeCallablePayload | `callables/manage_host_roster_intake_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_host_roster_intake_callable_payload.g.dart` |

@@ -15,6 +15,8 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "SalesProviderAttemptDocument", "source": "firestore/sales_provider_attempts.schema.json", "typeOutput": "functions/src/shared/generated/salesProviderAttemptDocument.ts"},
+  {"name": "SalesProviderBudgetDocument", "source": "firestore/sales_provider_budgets.schema.json", "typeOutput": "functions/src/shared/generated/salesProviderBudgetDocument.ts"},
   {"name": "CatchWhatsappOperatorSetupOperationDocument", "source": "firestore/catch_whatsapp_operator_setup_operations.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappOperatorSetupOperationDocument.ts"},
   {"name": "CatchWhatsappOperatorSetupAuditDocument", "source": "firestore/catch_whatsapp_operator_setup_audits.schema.json", "typeOutput": "functions/src/shared/generated/catchWhatsappOperatorSetupAuditDocument.ts"},
   {"name": "ManageHostRosterIntakeCallablePayload", "source": "callables/manage_host_roster_intake_payload.schema.json", "typeOutput": "functions/src/shared/generated/manageHostRosterIntakeCallablePayload.ts"},

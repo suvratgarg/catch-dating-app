@@ -326,7 +326,7 @@ function allowedPlanPath(path: string): boolean {
     "salesImportRows", "salesImportCompensations",
     "salesImportHistoryRows", "salesImportHistoryRecords",
     "salesIntelligenceAssessments", "salesIntelligenceClauses",
-    "salesIntelligenceScoreSnapshots", "salesOutreachDrafts", "salesPilotPlans",
+    "salesIntelligenceScoreSnapshots", "salesOutreachDrafts", "salesProviderAttempts", "salesPilotPlans",
     "salesQuotes", "salesQuoteVersions", "salesCommercialDecisions",
     "salesOpportunityStageHistory", "salesDemoBlueprints", "salesDemoSetups",
     "salesFitQueueEntries", "salesHostSettlementAttestations",

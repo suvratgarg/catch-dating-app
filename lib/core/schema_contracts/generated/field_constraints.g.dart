@@ -148351,6 +148351,785 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['restricted', 'processing', 'internal_processed_with_unresolved'],
   );
 
+  static const salesProviderAttemptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingAuthorizationId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.authorizationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingInputTokenCeiling = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.inputTokenCeiling',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const salesProviderAttemptDocumentBindingMaterialHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.materialHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingModelId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.modelId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentBindingMonthlyLimitsHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.monthlyLimitsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingOwnerUid = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.ownerUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingParticipantScopeAssignmentRevision = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.participantScope.assignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesProviderAttemptDocumentBindingParticipantScopePartnerUid = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.participantScope.partnerUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingPolicyHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingPromptVersion = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.promptVersion',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentBindingProviderId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.providerId',
+    required: true,
+    enumValues: <String>['deepseek', 'openai', 'anthropic'],
+  );
+
+  static const salesProviderAttemptDocumentBindingPublicMaterialHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.publicMaterialHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingPublicReviewId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.publicReviewId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingRunLimitsHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.runLimitsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingSourceHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingStageHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.binding.stageHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentBindingHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.bindingHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputCapabilityAlias = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.capabilityAlias',
+    maxLength: 32,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^option_[0-9]+\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputCtaAlias = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.ctaAlias',
+    maxLength: 32,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^option_[0-9]+\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputObservationAlias = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.observationAlias',
+    maxLength: 32,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^option_[0-9]+\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputOmittedAliases = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.omittedAliases',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputOmittedAliasesItems = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.omittedAliases.items',
+    maxLength: 32,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^option_[0-9]+\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputReasonToBlock = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.reasonToBlock',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentCacheOutputReferenceAlias = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.output.referenceAlias',
+    maxLength: 32,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^option_[0-9]+\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceCacheHit = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.cacheHit',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceCacheKey = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.cacheKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataAttemptCount = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.attemptCount',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataCostBasis = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.costBasis',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataDurationMs = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.durationMs',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 600000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataFinishReason = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.finishReason',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataModelId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.modelId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataProviderId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.providerId',
+    required: true,
+    enumValues: <String>['deepseek', 'openai', 'anthropic'],
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataRequestId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.requestId',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataTokensCacheRead = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.tokens.cacheRead',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataTokensCacheWrite = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.tokens.cacheWrite',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataTokensInputTotal = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.tokens.inputTotal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataTokensOrdinaryInput = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.tokens.ordinaryInput',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataTokensOutputTotal = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.tokens.outputTotal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMetadataTokensReasoningOutput = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.metadata.tokens.reasoningOutput',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceModelId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.modelId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceMonthlyWindow = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.monthlyWindow',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}\$',
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenancePromptVersion = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.promptVersion',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceProviderId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.providerId',
+    required: true,
+    enumValues: <String>['deepseek', 'openai', 'anthropic'],
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceRequestEstimatedInputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.request.estimatedInputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceRequestMaxCostMicros = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.request.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceRequestMaxInputBytes = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.request.maxInputBytes',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceRequestMaxNetworkRequests = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.request.maxNetworkRequests',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceRequestMaxOutputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.request.maxOutputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 8192,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceTask = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.task',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceUsageCostMicros = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.usage.costMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceUsageInputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.usage.inputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheProvenanceUsageOutputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.provenance.usage.outputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentCacheSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.cache.schemaVersion',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.classification',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesProviderAttemptDocumentJobId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.jobId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentLeaseOwner = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.leaseOwner',
+    maxLength: 64,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentMonth = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.month',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}\$',
+  );
+
+  static const salesProviderAttemptDocumentMonthlyBucketId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.monthlyBucketId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentReservationModelCalls = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.reservation.modelCalls',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentReservationModelCostMicros = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.reservation.modelCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentReservationModelInputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.reservation.modelInputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentReservationModelOutputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.reservation.modelOutputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentReservationNetworkRequests = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.reservation.networkRequests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderAttemptDocumentResultAuthorizationId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.authorizationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentResultPolicyHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionCapabilityId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.capabilityId',
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionContactId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.contactId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionCtaId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.ctaId',
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionLanguage = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.language',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionObservationId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.observationId',
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionOmittedIds = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.omittedIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionOmittedIdsItems = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.omittedIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionOpportunityId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.opportunityId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionOrganizerId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.organizerId',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionReasonToBlock = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.reasonToBlock',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionReferenceId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selection.referenceId',
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentResultSelectionHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.selectionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentResultSendAuthority = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.sendAuthority',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentResultStage = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.stage',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentResultStageHash = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.result.stageHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderAttemptDocumentRunBucketId = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.runBucketId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderAttemptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentStage = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.stage',
+    required: true,
+  );
+
+  static const salesProviderAttemptDocumentStatus = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.status',
+    required: true,
+    enumValues: <String>['intent', 'completed'],
+  );
+
+  static const salesProviderAttemptDocumentSubmissionNonce = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.submissionNonce',
+    maxLength: 64,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const salesProviderAttemptDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'salesProviderAttemptDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const salesProviderBudgetDocumentBucketId = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.bucketId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const salesProviderBudgetDocumentClassification = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.classification',
+    required: true,
+  );
+
+  static const salesProviderBudgetDocumentConsumedModelCalls = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.consumed.modelCalls',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentConsumedModelCostMicros = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.consumed.modelCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentConsumedModelInputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.consumed.modelInputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentConsumedModelOutputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.consumed.modelOutputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentConsumedNetworkRequests = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.consumed.networkRequests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentKind = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.kind',
+    required: true,
+    enumValues: <String>['run', 'month'],
+  );
+
+  static const salesProviderBudgetDocumentLimitsModelCalls = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.limits.modelCalls',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentLimitsModelCostMicros = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.limits.modelCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentLimitsModelInputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.limits.modelInputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentLimitsModelOutputTokens = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.limits.modelOutputTokens',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentLimitsNetworkRequests = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.limits.networkRequests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000000,
+  );
+
+  static const salesProviderBudgetDocumentLimitsHash = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.limitsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderBudgetDocumentMonth = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.month',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}\$',
+  );
+
+  static const salesProviderBudgetDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.schemaVersion',
+    required: true,
+  );
+
+  static const salesProviderBudgetDocumentScopeHash = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.scopeHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesProviderBudgetDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'salesProviderBudgetDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
   static const salesQuotesDocumentAcceptedDecisionId = CatchContractFieldConstraints(
     path: 'salesQuotesDocument.acceptedDecisionId',
     maxLength: 96,
@@ -184698,6 +185477,114 @@ abstract final class CatchContractConstraints {
     'salesPrivacyRestriction.revision': salesPrivacyRestrictionRevision,
     'salesPrivacyRestriction.schemaVersion': salesPrivacyRestrictionSchemaVersion,
     'salesPrivacyRestriction.status': salesPrivacyRestrictionStatus,
+    'salesProviderAttemptDocument.actorUid': salesProviderAttemptDocumentActorUid,
+    'salesProviderAttemptDocument.attemptId': salesProviderAttemptDocumentAttemptId,
+    'salesProviderAttemptDocument.binding.authorizationId': salesProviderAttemptDocumentBindingAuthorizationId,
+    'salesProviderAttemptDocument.binding.inputTokenCeiling': salesProviderAttemptDocumentBindingInputTokenCeiling,
+    'salesProviderAttemptDocument.binding.materialHash': salesProviderAttemptDocumentBindingMaterialHash,
+    'salesProviderAttemptDocument.binding.modelId': salesProviderAttemptDocumentBindingModelId,
+    'salesProviderAttemptDocument.binding.monthlyLimitsHash': salesProviderAttemptDocumentBindingMonthlyLimitsHash,
+    'salesProviderAttemptDocument.binding.ownerUid': salesProviderAttemptDocumentBindingOwnerUid,
+    'salesProviderAttemptDocument.binding.participantScope.assignmentRevision': salesProviderAttemptDocumentBindingParticipantScopeAssignmentRevision,
+    'salesProviderAttemptDocument.binding.participantScope.partnerUid': salesProviderAttemptDocumentBindingParticipantScopePartnerUid,
+    'salesProviderAttemptDocument.binding.policyHash': salesProviderAttemptDocumentBindingPolicyHash,
+    'salesProviderAttemptDocument.binding.promptVersion': salesProviderAttemptDocumentBindingPromptVersion,
+    'salesProviderAttemptDocument.binding.providerId': salesProviderAttemptDocumentBindingProviderId,
+    'salesProviderAttemptDocument.binding.publicMaterialHash': salesProviderAttemptDocumentBindingPublicMaterialHash,
+    'salesProviderAttemptDocument.binding.publicReviewId': salesProviderAttemptDocumentBindingPublicReviewId,
+    'salesProviderAttemptDocument.binding.runLimitsHash': salesProviderAttemptDocumentBindingRunLimitsHash,
+    'salesProviderAttemptDocument.binding.sourceHash': salesProviderAttemptDocumentBindingSourceHash,
+    'salesProviderAttemptDocument.binding.stageHash': salesProviderAttemptDocumentBindingStageHash,
+    'salesProviderAttemptDocument.bindingHash': salesProviderAttemptDocumentBindingHash,
+    'salesProviderAttemptDocument.cache.output.capabilityAlias': salesProviderAttemptDocumentCacheOutputCapabilityAlias,
+    'salesProviderAttemptDocument.cache.output.ctaAlias': salesProviderAttemptDocumentCacheOutputCtaAlias,
+    'salesProviderAttemptDocument.cache.output.observationAlias': salesProviderAttemptDocumentCacheOutputObservationAlias,
+    'salesProviderAttemptDocument.cache.output.omittedAliases': salesProviderAttemptDocumentCacheOutputOmittedAliases,
+    'salesProviderAttemptDocument.cache.output.omittedAliases.items': salesProviderAttemptDocumentCacheOutputOmittedAliasesItems,
+    'salesProviderAttemptDocument.cache.output.reasonToBlock': salesProviderAttemptDocumentCacheOutputReasonToBlock,
+    'salesProviderAttemptDocument.cache.output.referenceAlias': salesProviderAttemptDocumentCacheOutputReferenceAlias,
+    'salesProviderAttemptDocument.cache.provenance.cacheHit': salesProviderAttemptDocumentCacheProvenanceCacheHit,
+    'salesProviderAttemptDocument.cache.provenance.cacheKey': salesProviderAttemptDocumentCacheProvenanceCacheKey,
+    'salesProviderAttemptDocument.cache.provenance.metadata.attemptCount': salesProviderAttemptDocumentCacheProvenanceMetadataAttemptCount,
+    'salesProviderAttemptDocument.cache.provenance.metadata.costBasis': salesProviderAttemptDocumentCacheProvenanceMetadataCostBasis,
+    'salesProviderAttemptDocument.cache.provenance.metadata.durationMs': salesProviderAttemptDocumentCacheProvenanceMetadataDurationMs,
+    'salesProviderAttemptDocument.cache.provenance.metadata.finishReason': salesProviderAttemptDocumentCacheProvenanceMetadataFinishReason,
+    'salesProviderAttemptDocument.cache.provenance.metadata.modelId': salesProviderAttemptDocumentCacheProvenanceMetadataModelId,
+    'salesProviderAttemptDocument.cache.provenance.metadata.providerId': salesProviderAttemptDocumentCacheProvenanceMetadataProviderId,
+    'salesProviderAttemptDocument.cache.provenance.metadata.requestId': salesProviderAttemptDocumentCacheProvenanceMetadataRequestId,
+    'salesProviderAttemptDocument.cache.provenance.metadata.tokens.cacheRead': salesProviderAttemptDocumentCacheProvenanceMetadataTokensCacheRead,
+    'salesProviderAttemptDocument.cache.provenance.metadata.tokens.cacheWrite': salesProviderAttemptDocumentCacheProvenanceMetadataTokensCacheWrite,
+    'salesProviderAttemptDocument.cache.provenance.metadata.tokens.inputTotal': salesProviderAttemptDocumentCacheProvenanceMetadataTokensInputTotal,
+    'salesProviderAttemptDocument.cache.provenance.metadata.tokens.ordinaryInput': salesProviderAttemptDocumentCacheProvenanceMetadataTokensOrdinaryInput,
+    'salesProviderAttemptDocument.cache.provenance.metadata.tokens.outputTotal': salesProviderAttemptDocumentCacheProvenanceMetadataTokensOutputTotal,
+    'salesProviderAttemptDocument.cache.provenance.metadata.tokens.reasoningOutput': salesProviderAttemptDocumentCacheProvenanceMetadataTokensReasoningOutput,
+    'salesProviderAttemptDocument.cache.provenance.modelId': salesProviderAttemptDocumentCacheProvenanceModelId,
+    'salesProviderAttemptDocument.cache.provenance.monthlyWindow': salesProviderAttemptDocumentCacheProvenanceMonthlyWindow,
+    'salesProviderAttemptDocument.cache.provenance.promptVersion': salesProviderAttemptDocumentCacheProvenancePromptVersion,
+    'salesProviderAttemptDocument.cache.provenance.providerId': salesProviderAttemptDocumentCacheProvenanceProviderId,
+    'salesProviderAttemptDocument.cache.provenance.request.estimatedInputTokens': salesProviderAttemptDocumentCacheProvenanceRequestEstimatedInputTokens,
+    'salesProviderAttemptDocument.cache.provenance.request.maxCostMicros': salesProviderAttemptDocumentCacheProvenanceRequestMaxCostMicros,
+    'salesProviderAttemptDocument.cache.provenance.request.maxInputBytes': salesProviderAttemptDocumentCacheProvenanceRequestMaxInputBytes,
+    'salesProviderAttemptDocument.cache.provenance.request.maxNetworkRequests': salesProviderAttemptDocumentCacheProvenanceRequestMaxNetworkRequests,
+    'salesProviderAttemptDocument.cache.provenance.request.maxOutputTokens': salesProviderAttemptDocumentCacheProvenanceRequestMaxOutputTokens,
+    'salesProviderAttemptDocument.cache.provenance.task': salesProviderAttemptDocumentCacheProvenanceTask,
+    'salesProviderAttemptDocument.cache.provenance.usage.costMicros': salesProviderAttemptDocumentCacheProvenanceUsageCostMicros,
+    'salesProviderAttemptDocument.cache.provenance.usage.inputTokens': salesProviderAttemptDocumentCacheProvenanceUsageInputTokens,
+    'salesProviderAttemptDocument.cache.provenance.usage.outputTokens': salesProviderAttemptDocumentCacheProvenanceUsageOutputTokens,
+    'salesProviderAttemptDocument.cache.schemaVersion': salesProviderAttemptDocumentCacheSchemaVersion,
+    'salesProviderAttemptDocument.classification': salesProviderAttemptDocumentClassification,
+    'salesProviderAttemptDocument.createdAt': salesProviderAttemptDocumentCreatedAt,
+    'salesProviderAttemptDocument.jobId': salesProviderAttemptDocumentJobId,
+    'salesProviderAttemptDocument.leaseOwner': salesProviderAttemptDocumentLeaseOwner,
+    'salesProviderAttemptDocument.month': salesProviderAttemptDocumentMonth,
+    'salesProviderAttemptDocument.monthlyBucketId': salesProviderAttemptDocumentMonthlyBucketId,
+    'salesProviderAttemptDocument.organizerId': salesProviderAttemptDocumentOrganizerId,
+    'salesProviderAttemptDocument.reservation.modelCalls': salesProviderAttemptDocumentReservationModelCalls,
+    'salesProviderAttemptDocument.reservation.modelCostMicros': salesProviderAttemptDocumentReservationModelCostMicros,
+    'salesProviderAttemptDocument.reservation.modelInputTokens': salesProviderAttemptDocumentReservationModelInputTokens,
+    'salesProviderAttemptDocument.reservation.modelOutputTokens': salesProviderAttemptDocumentReservationModelOutputTokens,
+    'salesProviderAttemptDocument.reservation.networkRequests': salesProviderAttemptDocumentReservationNetworkRequests,
+    'salesProviderAttemptDocument.result.authorizationId': salesProviderAttemptDocumentResultAuthorizationId,
+    'salesProviderAttemptDocument.result.policyHash': salesProviderAttemptDocumentResultPolicyHash,
+    'salesProviderAttemptDocument.result.selection.capabilityId': salesProviderAttemptDocumentResultSelectionCapabilityId,
+    'salesProviderAttemptDocument.result.selection.contactId': salesProviderAttemptDocumentResultSelectionContactId,
+    'salesProviderAttemptDocument.result.selection.ctaId': salesProviderAttemptDocumentResultSelectionCtaId,
+    'salesProviderAttemptDocument.result.selection.language': salesProviderAttemptDocumentResultSelectionLanguage,
+    'salesProviderAttemptDocument.result.selection.observationId': salesProviderAttemptDocumentResultSelectionObservationId,
+    'salesProviderAttemptDocument.result.selection.omittedIds': salesProviderAttemptDocumentResultSelectionOmittedIds,
+    'salesProviderAttemptDocument.result.selection.omittedIds.items': salesProviderAttemptDocumentResultSelectionOmittedIdsItems,
+    'salesProviderAttemptDocument.result.selection.opportunityId': salesProviderAttemptDocumentResultSelectionOpportunityId,
+    'salesProviderAttemptDocument.result.selection.organizerId': salesProviderAttemptDocumentResultSelectionOrganizerId,
+    'salesProviderAttemptDocument.result.selection.reasonToBlock': salesProviderAttemptDocumentResultSelectionReasonToBlock,
+    'salesProviderAttemptDocument.result.selection.referenceId': salesProviderAttemptDocumentResultSelectionReferenceId,
+    'salesProviderAttemptDocument.result.selectionHash': salesProviderAttemptDocumentResultSelectionHash,
+    'salesProviderAttemptDocument.result.sendAuthority': salesProviderAttemptDocumentResultSendAuthority,
+    'salesProviderAttemptDocument.result.stage': salesProviderAttemptDocumentResultStage,
+    'salesProviderAttemptDocument.result.stageHash': salesProviderAttemptDocumentResultStageHash,
+    'salesProviderAttemptDocument.runBucketId': salesProviderAttemptDocumentRunBucketId,
+    'salesProviderAttemptDocument.schemaVersion': salesProviderAttemptDocumentSchemaVersion,
+    'salesProviderAttemptDocument.stage': salesProviderAttemptDocumentStage,
+    'salesProviderAttemptDocument.status': salesProviderAttemptDocumentStatus,
+    'salesProviderAttemptDocument.submissionNonce': salesProviderAttemptDocumentSubmissionNonce,
+    'salesProviderAttemptDocument.updatedAt': salesProviderAttemptDocumentUpdatedAt,
+    'salesProviderBudgetDocument.bucketId': salesProviderBudgetDocumentBucketId,
+    'salesProviderBudgetDocument.classification': salesProviderBudgetDocumentClassification,
+    'salesProviderBudgetDocument.consumed.modelCalls': salesProviderBudgetDocumentConsumedModelCalls,
+    'salesProviderBudgetDocument.consumed.modelCostMicros': salesProviderBudgetDocumentConsumedModelCostMicros,
+    'salesProviderBudgetDocument.consumed.modelInputTokens': salesProviderBudgetDocumentConsumedModelInputTokens,
+    'salesProviderBudgetDocument.consumed.modelOutputTokens': salesProviderBudgetDocumentConsumedModelOutputTokens,
+    'salesProviderBudgetDocument.consumed.networkRequests': salesProviderBudgetDocumentConsumedNetworkRequests,
+    'salesProviderBudgetDocument.kind': salesProviderBudgetDocumentKind,
+    'salesProviderBudgetDocument.limits.modelCalls': salesProviderBudgetDocumentLimitsModelCalls,
+    'salesProviderBudgetDocument.limits.modelCostMicros': salesProviderBudgetDocumentLimitsModelCostMicros,
+    'salesProviderBudgetDocument.limits.modelInputTokens': salesProviderBudgetDocumentLimitsModelInputTokens,
+    'salesProviderBudgetDocument.limits.modelOutputTokens': salesProviderBudgetDocumentLimitsModelOutputTokens,
+    'salesProviderBudgetDocument.limits.networkRequests': salesProviderBudgetDocumentLimitsNetworkRequests,
+    'salesProviderBudgetDocument.limitsHash': salesProviderBudgetDocumentLimitsHash,
+    'salesProviderBudgetDocument.month': salesProviderBudgetDocumentMonth,
+    'salesProviderBudgetDocument.schemaVersion': salesProviderBudgetDocumentSchemaVersion,
+    'salesProviderBudgetDocument.scopeHash': salesProviderBudgetDocumentScopeHash,
+    'salesProviderBudgetDocument.updatedAt': salesProviderBudgetDocumentUpdatedAt,
     'salesQuotesDocument.acceptedDecisionId': salesQuotesDocumentAcceptedDecisionId,
     'salesQuotesDocument.approvedDecisionId': salesQuotesDocumentApprovedDecisionId,
     'salesQuotesDocument.classification': salesQuotesDocumentClassification,

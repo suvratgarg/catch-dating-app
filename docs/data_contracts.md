@@ -4861,6 +4861,21 @@ an organizer document private. Strategy, prospect research, scores, contact
 endpoints and commercial terms must never be written into public organizer
 projections.
 
+`salesProviderAttempts` holds private internal writing-preparation intent and
+validated canonical selection/cache receipts. Its immutable job/stage identity
+excludes lease renewal; source, scope, public review, policy, provider/model and
+request ceilings must still match on dispatch and replay. `salesProviderBudgets`
+holds separate run and UTC-month buckets. Their limits are immutable and the
+attempt intent plus both ceilings reserve in one transaction before I/O.
+Unknown outcomes retain reservations; validated completion reconciles tokens
+idempotently while cost remains explicitly `reserved_ceiling`, not an actual
+bill. Both collections deny all direct client access, including Admin.
+Attempt content enters the reviewed Sales privacy inventory and allowed batch
+paths. Deletion requires the permanent organizer processing fence, which
+prevents missing intent state from reopening paid I/O. Aggregate budget hashes
+and counters contain no prompt, output or canonical person/organizer identifier
+and remain retained accounting, explicitly reported in privacy inventory.
+
 The Sales service checks current employee or explicitly delegated authority,
 organizer scope, exact request material and record revision. Its transaction
 writes the effect and immutable receipt together. Assistant fact proposals
