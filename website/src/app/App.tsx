@@ -1,7 +1,7 @@
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
 import {captureOfferCredential} from "../features/eventOffers/offerCredential";
-import {lazy, Suspense, useMemo} from "react";
+import {Suspense, useMemo, type ComponentType} from "react";
 import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
 import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
 import {BrowserRouter, Route, Routes, useLocation, useParams} from "react-router";
@@ -39,71 +39,106 @@ import {PageShell} from "../shared/site";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 import {CustomFormDomainGate} from "./CustomFormDomainGate";
+import {recoverableLazy, RouteChunkRecovery} from "./RouteChunkRecovery";
+
+// Distinct compiled entries let a deliberate, bounded retry bypass a browser's
+// cached failed import. Only these route modules are included, all still lazy.
+const recoveryModules = import.meta.glob<Record<string, unknown>>([
+  "../features/salesDemo/SalesDemoPage.tsx",
+  "../features/claims/ClaimPage.tsx",
+  "../features/home/HomePage.tsx",
+  "../features/events/EventDetailPage.tsx",
+  "../features/eventRuntime/EventRuntimePage.tsx",
+  "../features/events/PublicBookingPage.tsx",
+  "../features/eventOffers/EventOfferPage.tsx",
+  "../features/eventAssistance/EventAssistancePage.tsx",
+  "../features/eventRehearsal/EventRehearsalPage.tsx",
+  "../features/events/EventInvitePage.tsx",
+  "../features/householdRsvp/HouseholdRsvpPage.tsx",
+  "../features/forms/PublicFormPage.tsx",
+  "../features/organizers/HostListingPage.tsx",
+  "../features/host/concepts/HostConceptPage.tsx",
+  "../features/host/HostContentReview.tsx",
+  "../features/host/HostPage.tsx",
+  "../features/notFound/NotFoundPage.tsx",
+  "../features/organizers/OrganizerSearchPage.tsx",
+  "../features/legal/LegalPage.tsx",
+], {query: "?route-recovery"});
+
+function route<P extends object>(
+  load: () => Promise<{default: ComponentType<P>}>, path: string, name: string,
+) {
+  return recoverableLazy(load, async () => {
+    // Each entry selects the same named export as its typed primary loader.
+    const module = await recoveryModules[`${path}.tsx`]();
+    return {default: module[name] as ComponentType<P>};
+  });
+}
 
 const salesDemoApi = salesDemoApiFromCallable(invokeSalesDemoCallable);
-const SalesDemoPage = lazy(async () => ({
+const SalesDemoPage = route(async () => ({
   default: (await import("../features/salesDemo/SalesDemoPage")).SalesDemoPage,
-}));
+}), "../features/salesDemo/SalesDemoPage", "SalesDemoPage");
 
-const ClaimPage = lazy(async () => ({
+const ClaimPage = route(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
-}));
-const VisitorDiscoveryPage = lazy(async () => ({
+}), "../features/claims/ClaimPage", "ClaimPage");
+const VisitorDiscoveryPage = route(async () => ({
   default: (await import("../features/home/HomePage")).VisitorDiscoveryPage,
-}));
-const HomePage = lazy(async () => ({
+}), "../features/home/HomePage", "VisitorDiscoveryPage");
+const HomePage = route(async () => ({
   default: (await import("../features/home/HomePage")).HomePage,
-}));
-const EventDetailPage = lazy(async () => ({
+}), "../features/home/HomePage", "HomePage");
+const EventDetailPage = route(async () => ({
   default: (await import("../features/events/EventDetailPage")).EventDetailPage,
-}));
-const EventRuntimePage = lazy(async () => ({
+}), "../features/events/EventDetailPage", "EventDetailPage");
+const EventRuntimePage = route(async () => ({
   default: (await import("../features/eventRuntime/EventRuntimePage")).EventRuntimePage,
-}));
-const PublicBookingPage = lazy(async () => ({
+}), "../features/eventRuntime/EventRuntimePage", "EventRuntimePage");
+const PublicBookingPage = route(async () => ({
   default: (await import("../features/events/PublicBookingPage")).PublicBookingPage,
-}));
-const EventOfferPage = lazy(async () => ({
+}), "../features/events/PublicBookingPage", "PublicBookingPage");
+const EventOfferPage = route(async () => ({
   default: (await import("../features/eventOffers/EventOfferPage")).EventOfferPage,
-}));
-const EventAssistancePage = lazy(async () => ({
+}), "../features/eventOffers/EventOfferPage", "EventOfferPage");
+const EventAssistancePage = route(async () => ({
   default: (await import("../features/eventAssistance/EventAssistancePage")).EventAssistancePage,
-}));
-const EventRehearsalPage = lazy(async () => ({
+}), "../features/eventAssistance/EventAssistancePage", "EventAssistancePage");
+const EventRehearsalPage = route(async () => ({
   default: (await import("../features/eventRehearsal/EventRehearsalPage"))
     .EventRehearsalPage,
-}));
-const EventInvitePage = lazy(async () => ({
+}), "../features/eventRehearsal/EventRehearsalPage", "EventRehearsalPage");
+const EventInvitePage = route(async () => ({
   default: (await import("../features/events/EventInvitePage")).EventInvitePage,
-}));
-const HouseholdRsvpPage = lazy(async () => ({
+}), "../features/events/EventInvitePage", "EventInvitePage");
+const HouseholdRsvpPage = route(async () => ({
   default: (await import("../features/householdRsvp/HouseholdRsvpPage"))
     .HouseholdRsvpPage,
-}));
-const PublicFormPage = lazy(async () => ({
+}), "../features/householdRsvp/HouseholdRsvpPage", "HouseholdRsvpPage");
+const PublicFormPage = route(async () => ({
   default: (await import("../features/forms/PublicFormPage")).PublicFormPage,
-}));
-const HostListingPage = lazy(async () => ({
+}), "../features/forms/PublicFormPage", "PublicFormPage");
+const HostListingPage = route(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
-}));
-const HostConceptPage = lazy(async () => ({
+}), "../features/organizers/HostListingPage", "HostListingPage");
+const HostConceptPage = route(async () => ({
   default: (await import("../features/host/concepts/HostConceptPage")).HostConceptPage,
-}));
-const HostContentReview = lazy(async () => ({
+}), "../features/host/concepts/HostConceptPage", "HostConceptPage");
+const HostContentReview = route(async () => ({
   default: (await import("../features/host/HostContentReview")).HostContentReview,
-}));
-const HostPage = lazy(async () => ({
+}), "../features/host/HostContentReview", "HostContentReview");
+const HostPage = route(async () => ({
   default: (await import("../features/host/HostPage")).HostPage,
-}));
-const NotFoundPage = lazy(async () => ({
+}), "../features/host/HostPage", "HostPage");
+const NotFoundPage = route(async () => ({
   default: (await import("../features/notFound/NotFoundPage")).NotFoundPage,
-}));
-const OrganizerSearchPage = lazy(async () => ({
+}), "../features/notFound/NotFoundPage", "NotFoundPage");
+const OrganizerSearchPage = route(async () => ({
   default: (await import("../features/organizers/OrganizerSearchPage")).OrganizerSearchPage,
-}));
-const LegalPage = lazy(async () => ({
+}), "../features/organizers/OrganizerSearchPage", "OrganizerSearchPage");
+const LegalPage = route(async () => ({
   default: (await import("../features/legal/LegalPage")).LegalPage,
-}));
+}), "../features/legal/LegalPage", "LegalPage");
 
 function App() {
   return (
@@ -153,6 +188,7 @@ function MarketingRouteShell() {
 
   return (
     <PageShell pageClassName={`${pageClassFor(page)}${pageMetaForHostPath(location.pathname) ? " host-content-review" : ""}`}>
+      <RouteChunkRecovery>
       <Suspense fallback={<RouteLoadingState />}>
         <RouteLifecycleEffects
           page={page}
@@ -272,6 +308,7 @@ function MarketingRouteShell() {
           />
         </Routes>
       </Suspense>
+      </RouteChunkRecovery>
       {page === "event_runtime" || page === "event_rehearsal" ||
        page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
