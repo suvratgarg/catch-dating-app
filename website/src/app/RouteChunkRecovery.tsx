@@ -47,7 +47,7 @@ type BoundaryProps = {
   children: ReactNode;
   resetKey: string;
 };
-type BoundaryState = {error: unknown; resetKey: string};
+type BoundaryState = {error: RouteChunkLoadError | null; resetKey: string};
 
 class RouteErrorBoundary extends Component<BoundaryProps, BoundaryState> {
   state: BoundaryState = {error: null, resetKey: this.props.resetKey};
@@ -57,17 +57,20 @@ class RouteErrorBoundary extends Component<BoundaryProps, BoundaryState> {
       {error: null, resetKey: props.resetKey};
   }
 
-  static getDerivedStateFromError(error: unknown) { return {error}; }
+  static getDerivedStateFromError(error: unknown) {
+    // Mounted controller/render errors retain their existing policy. Replacing
+    // them with navigation actions could release an in-flight request's lease.
+    if (!(error instanceof RouteChunkLoadError)) throw error;
+    return {error};
+  }
 
   recover = () => {
-    if (this.state.error instanceof RouteChunkLoadError &&
-        this.state.error.recover?.()) this.setState({error: null});
+    if (this.state.error?.recover?.()) this.setState({error: null});
   };
 
   render() {
     if (this.state.error === null) return this.props.children;
-    const canRecover = this.state.error instanceof RouteChunkLoadError &&
-      this.state.error.recover !== null;
+    const canRecover = this.state.error.recover !== null;
     return <RouteFailure canRecover={canRecover} onRecover={this.recover} />;
   }
 }
@@ -82,7 +85,7 @@ function RouteFailure({canRecover, onRecover}: {
   useEffect(() => { heading.current?.focus(); }, []);
   return <WebsitePageMain>
     <section role="alert" aria-labelledby={titleId}>
-    <EmptyState>
+    <EmptyState variant="public-event">
       <h1 id={titleId} ref={heading} tabIndex={-1}>{copy.title}</h1>
       <p>{canRecover ? copy.body : copy.unavailable}</p>
       {canRecover ? <Button type="button" disabled={blocked}

@@ -1,5 +1,5 @@
 import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
-import {Suspense, useEffect, useState, type ReactNode} from "react";
+import {Component, Suspense, useEffect, useState, type ReactNode} from "react";
 import {MemoryRouter, useNavigate} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {PendingRequestProvider, usePendingRequestRegistration} from "../shared/pendingRequest";
@@ -8,13 +8,19 @@ import {recoverableLazy, RouteChunkRecovery} from "./RouteChunkRecovery";
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
+class ExistingRuntimeErrorPolicy extends Component<{children: ReactNode}, {failed: boolean}> {
+  state = {failed: false};
+  static getDerivedStateFromError() { return {failed: true}; }
+  render() { return this.state.failed ? <p>Existing runtime error policy</p> : this.props.children; }
+}
+
 function harness(children: ReactNode, pending = false) {
   function Pending() { usePendingRequestRegistration(pending); return null; }
   vi.spyOn(console, "error").mockImplementation(() => undefined);
   return render(<MemoryRouter><PendingRequestProvider>
-    <Pending /><RouteChunkRecovery><Suspense fallback={<p>Loading route</p>}>
+    <Pending /><ExistingRuntimeErrorPolicy><RouteChunkRecovery><Suspense fallback={<p>Loading route</p>}>
       {children}
-    </Suspense></RouteChunkRecovery>
+    </Suspense></RouteChunkRecovery></ExistingRuntimeErrorPolicy>
   </PendingRequestProvider></MemoryRouter>);
 }
 
@@ -86,7 +92,7 @@ describe("route chunk recovery", () => {
     expect(recover).not.toHaveBeenCalled();
   });
 
-  it("never retries a mounted page's render error or repeats its side effects", async () => {
+  it("propagates mounted render errors without new recovery, navigation or repeated side effects", async () => {
     const recover = vi.fn();
     const mounted = vi.fn();
     const Page = recoverableLazy(async () => ({default: function BrokenForm() {
@@ -95,10 +101,12 @@ describe("route chunk recovery", () => {
       if (broken) throw new Error("render error containing private form data");
       return <Button onClick={() => setBroken(true)}>Break mounted form</Button>;
     }}), recover);
-    harness(<Page />);
+    harness(<Page />, true);
     fireEvent.click(await screen.findByRole("button", {name: "Break mounted form"}));
-    await screen.findByRole("alert");
+    await screen.findByText("Existing runtime error policy");
+    expect(screen.queryByRole("alert")).toBeNull();
     expect(screen.queryByRole("button", {name: "Try again"})).toBeNull();
+    expect(screen.queryByRole("button", {name: "Return to Catch"})).toBeNull();
     await act(async () => undefined);
     expect(recover).not.toHaveBeenCalled();
     expect(mounted).toHaveBeenCalledTimes(1);
