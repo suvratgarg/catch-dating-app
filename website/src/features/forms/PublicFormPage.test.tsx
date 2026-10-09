@@ -462,7 +462,7 @@ const interests = {...pace, questionId: "interests", label: "Activities",
     {optionId: "cycle-option", value: "cycle_id", label: "Cycling"},
   ]} as PublicFormQuestion;
 const organizerCity = {...pace, questionId: "destination", label: "Event city",
-  canonicalFieldId: "city", options: [
+  canonicalFieldId: null, options: [
     {optionId: "pune-option", value: "destination_pune", label: "Pune"},
     {optionId: "delhi-option", value: "destination_delhi", label: "New Delhi"},
   ]} as PublicFormQuestion;
