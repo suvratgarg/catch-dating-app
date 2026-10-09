@@ -8,7 +8,9 @@ import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart'
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +20,292 @@ import '../../test_pump_helpers.dart';
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  // Investigation-only safety probes for CAT-80. These assert the proposed
+  // safety boundary and intentionally fail on the unchanged investigated main.
+  // No production repair is included. Fake callbacks may outlive registration
+  // and codeSent; fake-clock timeout is the controller's 60-second deadline,
+  // not Firebase's codeAutoRetrievalTimeout (ignored by AuthRepository).
+  group('CAT-80 retained callback investigation', () {
+    for (final boundary in _OtpBoundary.values) {
+      testWidgets('${boundary.name} ignores late A codeSent', (tester) async {
+        final repository = _RetainedAuthRepository();
+        final container = _authControllerContainer(repository);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        final notifier = container.read(authControllerProvider.notifier);
+
+        await _reachOtpBoundary(tester, notifier, repository, boundary);
+        final before = container.read(authControllerProvider);
+        repository.attempts.first.codeSent('late-A', 41);
+
+        expect(container.read(authControllerProvider), before);
+      });
+
+      testWidgets('${boundary.name} ignores late A auto verification', (
+        tester,
+      ) async {
+        final repository = _RetainedAuthRepository();
+        final container = _authControllerContainer(repository);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        final notifier = container.read(authControllerProvider.notifier);
+
+        await _reachOtpBoundary(tester, notifier, repository, boundary);
+        repository.attempts.first.verificationCompleted(_otpCredential('A'));
+        await tester.pump();
+
+        expect(repository.credentials, isEmpty);
+      });
+    }
+
+    testWidgets('reset ignores all retained A callbacks after B codeSent', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final requestA = notifier.sendOtp('9999999999', '+91');
+      final attemptA = repository.attempts.single;
+      attemptA.codeSent('A', 41);
+      await requestA;
+
+      notifier.reset();
+      final requestB = notifier.sendOtp('8888888888', '+91');
+      repository.attempts.last.codeSent('B', 51);
+      await requestB;
+      final before = container.read(authControllerProvider);
+      attemptA.codeSent('late-A', 41);
+      attemptA.verificationFailed(_otpFailure);
+      attemptA.verificationCompleted(_otpCredential('A'));
+      // Mutation.reset schedules Riverpod's zero-duration disposal timer.
+      await tester.pump(Duration.zero);
+
+      expect(container.read(authControllerProvider), before);
+      expect(repository.credentials, isEmpty);
+      expect(repository.attempts.last.forceResendingToken, isNull);
+    });
+
+    testWidgets('reset settles an abandoned pending send on a stale callback', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final request = notifier.sendOtp('9999999999', '+91');
+      notifier.reset();
+      repository.attempts.single.verificationFailed(_otpFailure);
+      await request;
+      await tester.pump(Duration.zero);
+
+      expect(container.read(authControllerProvider), const AuthScreenState());
+      expect(repository.credentials, isEmpty);
+    });
+
+    testWidgets('disposal makes retained codeSent a harmless no-op', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      await _reachOtpBoundary(
+        tester,
+        notifier,
+        repository,
+        _OtpBoundary.timeoutWithoutReplacement,
+      );
+      container.dispose();
+
+      expect(
+        () => repository.attempts.single.codeSent('late-A', 41),
+        returnsNormally,
+      );
+      expect(repository.credentials, isEmpty);
+    });
+
+    testWidgets('disposal blocks the repository call for retained auto auth', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      await _reachOtpBoundary(
+        tester,
+        notifier,
+        repository,
+        _OtpBoundary.timeoutWithoutReplacement,
+      );
+      container.dispose();
+      repository.attempts.single.verificationCompleted(_otpCredential('A'));
+      await tester.pump();
+
+      expect(repository.credentials, isEmpty);
+    });
+
+    testWidgets('current attempt may auto verify after its codeSent', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final request = notifier.sendOtp('9999999999', '+91');
+      final attempt = repository.attempts.single;
+      attempt.codeSent('A', 41);
+      await request;
+      final credential = _otpCredential('A');
+      attempt.verificationCompleted(credential);
+      await tester.pump();
+
+      expect(repository.credentials, [same(credential)]);
+      expect(container.read(authControllerProvider).verificationId, 'A');
+    });
+
+    testWidgets('deduplication retains one attempt and the exact future', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final first = notifier.sendOtp('9999999999', '+91');
+      final duplicate = notifier.sendOtp('8888888888', '+1');
+      notifier.setCountryCode('+1');
+      notifier.clearSendOtpErrorIfIdle();
+
+      expect(duplicate, same(first));
+      expect(repository.attempts, hasLength(1));
+      expect(repository.attempts.single.phoneNumber, '+919999999999');
+      expect(container.read(authControllerProvider).countryCode, '+91');
+      repository.attempts.single.codeSent('A', 41);
+      await Future.wait([first, duplicate]);
+    });
+
+    testWidgets('invalid input preserves an eligible current attempt', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final request = notifier.sendOtp('9999999999', '+91');
+      repository.attempts.single.codeSent('A', 41);
+      await request;
+      final before = container.read(authControllerProvider);
+
+      await expectLater(
+        notifier.sendOtp('123', '+91'),
+        throwsA(isA<AuthInputException>()),
+      );
+      await expectLater(
+        notifier.sendOtp('9999999999', '91'),
+        throwsA(isA<AuthInputException>()),
+      );
+      expect(repository.attempts, hasLength(1));
+      expect(container.read(authControllerProvider), before);
+      final credential = _otpCredential('A');
+      repository.attempts.single.verificationCompleted(credential);
+      await tester.pump();
+      expect(repository.credentials, [same(credential)]);
+    });
+
+    testWidgets('same normalized phone reuses only its own resend token', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final requestA = notifier.sendOtp('9999999999', '+91');
+      repository.attempts.last.codeSent('A', 41);
+      await requestA;
+      final requestB = notifier.sendOtp('+91 9999999999', ' +91 ');
+      expect(repository.attempts.last.phoneNumber, '+919999999999');
+      expect(repository.attempts.last.forceResendingToken, 41);
+      repository.attempts.last.codeSent('B', 51);
+      await requestB;
+      final requestC = notifier.sendOtp('9999999999', '+1');
+      expect(repository.attempts.last.forceResendingToken, isNull);
+      repository.attempts.last.codeSent('C', 61);
+      await requestC;
+    });
+
+    testWidgets('late A cannot contaminate a resend token for B phone', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      await _reachOtpBoundary(
+        tester,
+        notifier,
+        repository,
+        _OtpBoundary.newSendAfterTimeout,
+      );
+      repository.attempts.first.codeSent('late-A', 41);
+      final resend = notifier.sendOtp('8888888888', '+91');
+      repository.attempts.last.codeSent('B-resend', 61);
+      await resend;
+
+      expect(repository.attempts.last.phoneNumber, '+918888888888');
+      expect(repository.attempts.last.forceResendingToken, 51);
+    });
+
+    testWidgets('current verification failure reaches its own request', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final request = notifier.sendOtp('9999999999', '+91');
+      final failure = expectLater(request, throwsA(same(_otpFailure)));
+      repository.attempts.single.verificationFailed(_otpFailure);
+      await failure;
+
+      expect(container.read(authControllerProvider).verificationId, isNull);
+      expect(repository.credentials, isEmpty);
+    });
+
+    testWidgets('late A failure does not settle or corrupt pending B', (
+      tester,
+    ) async {
+      final repository = _RetainedAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+      final requestA = notifier.sendOtp('9999999999', '+91');
+      repository.attempts.first.codeSent('A', 41);
+      await requestA;
+      var bSettled = false;
+      final requestB = notifier.sendOtp('8888888888', '+91');
+      final observedB = requestB.then((_) => bSettled = true);
+      final before = container.read(authControllerProvider);
+      repository.attempts.first.verificationFailed(_otpFailure);
+      await tester.pump();
+
+      expect(bSettled, isFalse);
+      expect(container.read(authControllerProvider), before);
+      repository.attempts.last.codeSent('B', 51);
+      await observedB;
+      expect(bSettled, isTrue);
+      expect(repository.credentials, isEmpty);
+    });
+  });
 
   group('AuthController.sendOtp', () {
     test(
@@ -587,4 +875,102 @@ class _SignOutAuthRepository extends FakeAuthRepository {
     signOutCallCount += 1;
     await signOutCompleter?.future;
   }
+}
+
+enum _OtpBoundary {
+  newSendAfterCodeSent,
+  newSendAfterTimeout,
+  timeoutWithoutReplacement,
+  changeNumber,
+}
+
+const _otpFailure = NetworkException('fake-only', 'Synthetic OTP failure');
+
+PhoneAuthCredential _otpCredential(String id) =>
+    PhoneAuthProvider.credential(verificationId: id, smsCode: '123456');
+
+Future<void> _reachOtpBoundary(
+  WidgetTester tester,
+  AuthController notifier,
+  _RetainedAuthRepository repository,
+  _OtpBoundary boundary,
+) async {
+  final requestA = notifier.sendOtp('9999999999', '+91');
+  if (boundary == _OtpBoundary.newSendAfterTimeout ||
+      boundary == _OtpBoundary.timeoutWithoutReplacement) {
+    final timeout = expectLater(
+      requestA,
+      throwsA(
+        isA<NetworkException>().having(
+          (error) => error.code,
+          'code',
+          'timeout',
+        ),
+      ),
+    );
+    await tester.pump(CatchMotion.authOtpResendCooldown);
+    await timeout;
+  } else {
+    repository.attempts.first.codeSent('A', 41);
+    await requestA;
+  }
+
+  if (boundary == _OtpBoundary.changeNumber) {
+    // Both current OTP page Change number callbacks call this exact command.
+    notifier.goToStep(AuthStep.phone);
+  } else if (boundary != _OtpBoundary.timeoutWithoutReplacement) {
+    final requestB = notifier.sendOtp('8888888888', '+91');
+    repository.attempts.last.codeSent('B', 51);
+    await requestB;
+  }
+}
+
+class _RetainedAuthRepository extends FakeAuthRepository {
+  final attempts = <_RetainedOtpCallbacks>[];
+  final credentials = <AuthCredential>[];
+
+  @override
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    int? forceResendingToken,
+    required void Function(String verificationId, int? resendToken) codeSent,
+    required void Function(AppException error) verificationFailed,
+    required void Function(PhoneAuthCredential credential)
+    verificationCompleted,
+  }) async {
+    verifyPhoneNumberCallCount += 1;
+    attempts.add(
+      _RetainedOtpCallbacks(
+        phoneNumber: phoneNumber,
+        forceResendingToken: forceResendingToken,
+        codeSent: codeSent,
+        verificationFailed: verificationFailed,
+        verificationCompleted: verificationCompleted,
+      ),
+    );
+    // Registration completion does not imply callback/session completion.
+    // No Firebase instance, backend query, real sign-in or native call occurs.
+  }
+
+  @override
+  Future<void> signInWithCredential(AuthCredential credential) async {
+    credentials.add(credential);
+    await super.signInWithCredential(credential);
+  }
+}
+
+class _RetainedOtpCallbacks {
+  const _RetainedOtpCallbacks({
+    required this.phoneNumber,
+    required this.forceResendingToken,
+    required this.codeSent,
+    required this.verificationFailed,
+    required this.verificationCompleted,
+  });
+
+  final String phoneNumber;
+  final int? forceResendingToken;
+  final void Function(String verificationId, int? resendToken) codeSent;
+  final void Function(AppException error) verificationFailed;
+  final void Function(PhoneAuthCredential credential) verificationCompleted;
 }
