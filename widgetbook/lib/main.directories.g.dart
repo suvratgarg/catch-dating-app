@@ -543,6 +543,8 @@ import 'package:widgetbook_workspace/programs/program_create_use_cases.dart'
     as _widgetbook_workspace_programs_program_create_use_cases;
 import 'package:widgetbook_workspace/programs/program_lodging_use_cases.dart'
     as _widgetbook_workspace_programs_program_lodging_use_cases;
+import 'package:widgetbook_workspace/programs/program_timezone_use_cases.dart'
+    as _widgetbook_workspace_programs_program_timezone_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases_attendance.dart'
@@ -13278,6 +13280,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_programs_workspace_use_cases_logistics
                         .programPickupPointEditDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTimezoneField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Searchable timezone selection',
+                builder:
+                    _widgetbook_workspace_programs_program_timezone_use_cases
+                        .programTimezoneSelection,
               ),
             ],
           ),

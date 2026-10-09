@@ -103,14 +103,29 @@ void main() {
             of: find.byKey(const ValueKey('program-create-title')),
             matching: find.byType(TextField),
           );
-          final timezone = find.descendant(
-            of: find.byKey(const ValueKey('program-create-timezone')),
-            matching: find.byType(TextField),
+          final timezone = find.byKey(
+            const ValueKey('program-create-timezone'),
           );
           await tester.ensureVisible(title);
           await tester.enterText(title, 'Wedding weekend');
           await tester.ensureVisible(timezone);
-          await tester.enterText(timezone, 'Asia/Kolkata');
+          await tester.tap(
+            find.descendant(of: timezone, matching: find.text('Timezone')),
+          );
+          await tester.pumpAndSettle();
+          final timezoneSearch = find.descendant(
+            of: find.byKey(const ValueKey('program-timezone-search')),
+            matching: find.byType(TextField),
+          );
+          await tester.enterText(timezoneSearch, 'New Delhi');
+          await tester.pumpAndSettle();
+          final timezoneChoice = find.byKey(
+            const ValueKey('program-timezone-option-Asia/Kolkata'),
+          );
+          await tester.ensureVisible(timezoneChoice);
+          await tester.pumpAndSettle();
+          await tester.tap(timezoneChoice);
+          await tester.pumpAndSettle();
           controller.edit(
             controller.values.copyWith(
               kind: ProgramKind.wedding,
@@ -160,8 +175,11 @@ void main() {
           );
           await tester.ensureVisible(timezone);
           expect(
-            tester.widget<TextField>(timezone).controller!.text,
-            'Asia/Kolkata',
+            find.descendant(
+              of: timezone,
+              matching: find.text('India Standard Time · UTC+05:30'),
+            ),
+            findsOneWidget,
           );
           expect(controller.values.kind, ProgramKind.wedding);
           expect(controller.values.startsAt, start);

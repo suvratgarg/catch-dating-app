@@ -38263,7 +38263,7 @@ abstract class AppLocalizations {
   /// Program workspace copy: programsCreateTimezoneHint.
   ///
   /// In en, this message translates to:
-  /// **'America/Los_Angeles'**
+  /// **'Choose a timezone'**
   String get programsCreateTimezoneHint;
 
   /// Program workspace copy: programsCreateStartLabel.
@@ -40590,6 +40590,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Identity conflict'**
   String get hostsOperationalRosterIntakeKindIdentityConflict;
+
+  /// Program creation timezone picker: programsTimezoneSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search city or timezone'**
+  String get programsTimezoneSearchHint;
+
+  /// Program creation timezone picker: programsTimezoneNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching timezones. Try a city such as Kolkata or London.'**
+  String get programsTimezoneNoMatches;
+
+  /// Program creation timezone picker: programsTimezoneIndia.
+  ///
+  /// In en, this message translates to:
+  /// **'India Standard Time'**
+  String get programsTimezoneIndia;
+
+  /// Program creation timezone picker: programsTimezoneFromOrganizer.
+  ///
+  /// In en, this message translates to:
+  /// **'From organizer settings. Program dates use this timezone; you can change it.'**
+  String get programsTimezoneFromOrganizer;
+
+  /// Program creation timezone picker: programsTimezoneFromCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested from the organizer city. Program dates use this timezone; you can change it.'**
+  String get programsTimezoneFromCity;
+
+  /// Program creation timezone picker: programsTimezoneFromDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested from your device. Choose the timezone where the program takes place.'**
+  String get programsTimezoneFromDevice;
+
+  /// Program creation timezone picker: programsTimezoneDatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the timezone where the program takes place. All program dates use it.'**
+  String get programsTimezoneDatesHint;
+
+  /// Program creation timezone picker: programsTimezoneDefaultsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer timezone settings could not be loaded.'**
+  String get programsTimezoneDefaultsUnavailable;
+
+  /// Program creation timezone picker: programsTimezoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a valid timezone from the list.'**
+  String get programsTimezoneInvalid;
 }
 
 class _AppLocalizationsDelegate

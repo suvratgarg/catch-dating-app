@@ -23770,7 +23770,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsCreateTimezoneLabel => 'Timezone';
 
   @override
-  String get programsCreateTimezoneHint => 'America/Los_Angeles';
+  String get programsCreateTimezoneHint => 'Choose a timezone';
 
   @override
   String get programsCreateStartLabel => 'Start date';
@@ -25166,4 +25166,38 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsOperationalRosterIntakeKindIdentityConflict =>
       'Identity conflict';
+
+  @override
+  String get programsTimezoneSearchHint => 'Search city or timezone';
+
+  @override
+  String get programsTimezoneNoMatches =>
+      'No matching timezones. Try a city such as Kolkata or London.';
+
+  @override
+  String get programsTimezoneIndia => 'India Standard Time';
+
+  @override
+  String get programsTimezoneFromOrganizer =>
+      'From organizer settings. Program dates use this timezone; you can change it.';
+
+  @override
+  String get programsTimezoneFromCity =>
+      'Suggested from the organizer city. Program dates use this timezone; you can change it.';
+
+  @override
+  String get programsTimezoneFromDevice =>
+      'Suggested from your device. Choose the timezone where the program takes place.';
+
+  @override
+  String get programsTimezoneDatesHint =>
+      'Choose the timezone where the program takes place. All program dates use it.';
+
+  @override
+  String get programsTimezoneDefaultsUnavailable =>
+      'Organizer timezone settings could not be loaded.';
+
+  @override
+  String get programsTimezoneInvalid =>
+      'Choose a valid timezone from the list.';
 }
