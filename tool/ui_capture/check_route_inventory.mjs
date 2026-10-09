@@ -107,7 +107,7 @@ export function buildInventory({
       path: "lib/routing/route_contract.dart",
       runtimePath: "lib/routing/go_router.dart",
       routeContractSha256: sha256(routeContract),
-      goRouteCount: countMatches(routeGraph.text, /\bGoRoute\s*\(/g),
+      goRouteCount: countMatches(routeGraph.text, /\b(?:GoRoute|HostWorkspaceDestination)\s*\(/g),
       shellBranchCount: countMatches(routeGraph.text, /\bStatefulShellBranch\s*\(/g),
       enumRouteCount: routes.length,
       referencedRouteCount: routeReferences.length,
@@ -359,7 +359,7 @@ export function extractRouterSemanticClosure(source, configuration = extractGoRo
 }
 
 function containsRouteConstructor(source) {
-  return /\b(?:GoRoute|ShellRoute|StatefulShellRoute|StatefulShellBranch)\s*(?:\.\s*[A-Za-z_$][A-Za-z0-9_$]*)?\s*(?:<[^>(){}]+>)?\s*\(/u.test(
+  return /\b(?:GoRoute|HostWorkspaceDestination|ShellRoute|StatefulShellRoute|StatefulShellBranch)\s*(?:\.\s*[A-Za-z_$][A-Za-z0-9_$]*)?\s*(?:<[^>(){}]+>)?\s*\(/u.test(
     source,
   );
 }
@@ -607,14 +607,14 @@ function findFunctionDefinition(source, functionName) {
 }
 
 function isRouteFactoryReturnType(returnType) {
-  return /\b(?:GoRoute|ShellRoute|StatefulShellRoute|StatefulShellBranch|RouteBase)\b/u.test(
+  return /\b(?:GoRoute|HostWorkspaceDestination|ShellRoute|StatefulShellRoute|StatefulShellBranch|RouteBase)\b/u.test(
     returnType
   );
 }
 
 export function extractRuntimeRouteEntries(routeGraphText, enumRoutes) {
   const enumRoutesById = new Map(enumRoutes.map((route) => [route.id, route]));
-  const blocks = extractCallBlocks(routeGraphText, "GoRoute");
+  const blocks = [...extractCallBlocks(routeGraphText, "GoRoute"), ...extractCallBlocks(routeGraphText, "HostWorkspaceDestination")];
   const nodes = blocks.map((block) => {
     const pathExpression = extractTopLevelNamedArgumentExpression(
       block.body,

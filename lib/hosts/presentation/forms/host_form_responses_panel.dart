@@ -21,7 +21,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_c
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -285,15 +284,14 @@ class _HostFormResponsesPanelState
                           : CatchSection.content(
                               child: CatchButton(
                                 label: context.l10n.hostResponseOfferEvent,
-                                onPressed: () =>
-                                    Navigator.of(context).push<void>(
-                                      MaterialPageRoute(
-                                        builder: (_) => HostResponseOfferScreen(
-                                          organizerId: widget.organizerId,
-                                          queryController: queryController,
-                                        ),
-                                      ),
-                                    ),
+                                onPressed: () => context.pushNamed<void>(
+                                  Routes.hostResponseQueryOfferScreen.name,
+                                  pathParameters: {'formId': widget.formId!},
+                                  queryParameters: {
+                                    'organizerId': widget.organizerId,
+                                  },
+                                  extra: queryController,
+                                ),
                               ),
                             ),
                     ),

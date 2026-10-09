@@ -4,21 +4,22 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "c833be3be45ab3eead8e058943bbefc7003963821f99457fe06fe9734eac1af8",
-    "goRouteCount": 119,
+    "routeContractSha256": "742022986eecdd16c927804135ed873f22715cdf4783877d63c31c0bd072d51d",
+    "goRouteCount": 127,
     "shellBranchCount": 9,
-    "enumRouteCount": 104,
-    "referencedRouteCount": 104,
-    "runtimeRouteCount": 104,
-    "routeHelperCount": 4,
+    "enumRouteCount": 112,
+    "referencedRouteCount": 112,
+    "runtimeRouteCount": 112,
+    "routeHelperCount": 5,
     "routeHelpers": [
+      "_sharedEventWorkspaceRoutes",
       "_hostShellRoute",
       "_hostWorkspaceRootRecipes",
       "_hostWorkspaceDestinationRoutes",
       "workspaceRoute"
     ],
-    "imperativePageRouteCount": 18,
-    "imperativePageTargetCount": 12
+    "imperativePageRouteCount": 12,
+    "imperativePageTargetCount": 7
   },
   "routes": [
     {
@@ -703,6 +704,144 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>HostWorkspaceIndexScreen.route(root:Routes.hostAudienceScreen,state:state)",
       "presentationTarget": "HostWorkspaceIndexScreen.route",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostNewMessageScreen",
+      "path": "/host/inbox/new",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/inbox/new",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostNewMessageScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostNewMessageScreen(organizerId:state.uri.queryParameters['organizerId']!)",
+      "presentationTarget": "HostNewMessageScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostEventRosterScreen",
+      "path": "/host/organizers/:clubId/events/:eventId/guests",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/guests",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostEventRosterScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.guests)",
+      "presentationTarget": "HostEventManageRouteScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostEventPublicationScreen",
+      "path": "/host/organizers/:clubId/events/:eventId/publication",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/publication",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostEventPublicationScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostEventPublicationRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "HostEventPublicationRouteScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostResponseOfferScreen",
+      "path": "/host/audience/responses/:responseId/offer",
+      "pathParameters": [
+        "responseId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/audience/responses/:responseId/offer",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostResponseOfferScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostResponseOfferScreen(organizerId:_routeOrganizerQueryId(state)!,responseId:state.pathParameters['responseId']!,recipientLabel:state.uri.queryParameters['recipientLabel'])",
+      "presentationTarget": "HostResponseOfferScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostResponseOfferReviewScreen",
+      "path": "/host/audience/responses/:responseId/offer/review",
+      "pathParameters": [
+        "responseId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/audience/responses/:responseId/offer/review",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostResponseOfferReviewScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostFormResponseDetailScreen(organizerId:_routeOrganizerQueryId(state)!,responseId:state.pathParameters['responseId']!,returnToOffer:true)",
+      "presentationTarget": "HostFormResponseDetailScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostResponseOfferPreferencesScreen",
+      "path": "/host/audience/responses/:responseId/offers/:eventId/preferences",
+      "pathParameters": [
+        "responseId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/audience/responses/:responseId/offers/:eventId/preferences",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostResponseOfferPreferencesScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>context.pop())",
+      "presentationTarget": "HostResponseOfferPreferencesRouteScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostResponseQueryOfferPreferencesScreen",
+      "path": "/host/audience/forms/:formId/query-offer/events/:eventId/preferences",
+      "pathParameters": [
+        "formId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/audience/forms/:formId/query-offer/events/:eventId/preferences",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostResponseQueryOfferPreferencesScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>context.pop())",
+      "presentationTarget": "HostResponseOfferPreferencesRouteScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostResponseQueryOfferScreen",
+      "path": "/host/audience/forms/:formId/query-offer",
+      "pathParameters": [
+        "formId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/audience/forms/:formId/query-offer",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostResponseQueryOfferScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostResponseOfferScreen.query(organizerId:_routeOrganizerQueryId(state)!,queryController:state.extra is HostResponseQueryController?state.extra!as HostResponseQueryController:null)",
+      "presentationTarget": "HostResponseOfferScreen.query",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1805,51 +1944,6 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_form_response_detail_screen.dart:2a8c495af2e0d3d1eca11347324cdcb2d3b8b42784ade821e7a96d137160036b:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId,recipientLabel:detail.response!.response.identity.primaryLabel))",
-      "sourcePath": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId,recipientLabel:detail.response!.response.identity.primaryLabel)",
-      "presentationTarget": "HostResponseOfferScreen",
-      "fullscreenDialogExpression": null
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_panel.dart:506e46208e55f63ab68c823fb7c59c24cbd846969fd741d87fff6e306ad1c662:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,queryController:queryController))",
-      "sourcePath": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,queryController:queryController)",
-      "presentationTarget": "HostResponseOfferScreen",
-      "fullscreenDialogExpression": null
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:96b2de0d8340a14370e297eb7bdd93edc0d54763d2e9cb687decc11b4bb710b3:1",
-      "routeExpression": "MaterialPageRoute(builder:(routeContext)=>HostEventOfferPreferencesScreen(organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop()))",
-      "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "ordinal": 1,
-      "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
-      "presentationTarget": "HostEventOfferPreferencesScreen",
-      "fullscreenDialogExpression": null
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:c6e59cf1b8480bc6c87c37f6927589d192d4a9cb6f4899a9da2ec7a399f44102:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true))",
-      "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true)",
-      "presentationTarget": "HostFormResponseDetailScreen",
-      "fullscreenDialogExpression": null
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/host_event_manage_screen.dart:37e7d1f5b49978ff63d235ec823792bd3db79c3daacbcfba0ee2b5a24b2da7e9:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>PrivateEventCreateScreen(club:club,initialSavedEventId:event.id,initialPublicationReview:true,promptForDraftsOnStart:false))",
-      "sourcePath": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>PrivateEventCreateScreen(club:club,initialSavedEventId:event.id,initialPublicationReview:true,promptForDraftsOnStart:false)",
-      "presentationTarget": "PrivateEventCreateScreen",
-      "fullscreenDialogExpression": null
-    },
-    {
       "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_tab.dart:28a1de16f30d0a2b439e9852a73ba9c3dd57c0f593e6a3d3ff2b177d3a0d35cb:1",
       "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
       "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
@@ -1857,15 +1951,6 @@
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
       "presentationTarget": "OrderedPhotoManagerScreen",
       "fullscreenDialogExpression": "true"
-    },
-    {
-      "siteId": "material-page:lib/hosts/presentation/inbox/host_inbox_screen.dart:e67ae59ec93f0046be3be01fbe8e38ee6eaecb520120984731a43cb57efe818e:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>HostNewMessageScreen(organizerId:organizerId))",
-      "sourcePath": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>HostNewMessageScreen(organizerId:organizerId)",
-      "presentationTarget": "HostNewMessageScreen",
-      "fullscreenDialogExpression": null
     },
     {
       "siteId": "material-page:lib/image_uploads/shared/profile_photo_editor_screen.dart:c9af1131e06fb222d31ea1071dd8f7fca487a4fd075653523c6c44b0b534b94d:1",
@@ -1932,8 +2017,10 @@
     "hostCreateSavedAudienceScreen",
     "hostCustomerDetailScreen",
     "hostCustomersLegacyScreen",
+    "hostEventPublicationScreen",
     "hostEventRehearsalScreen",
     "hostEventRehearsalStartScreen",
+    "hostEventRosterScreen",
     "hostEventsScreen",
     "hostFormAnalyticsScreen",
     "hostFormAutomationsScreen",
@@ -1945,6 +2032,7 @@
     "hostFormTemplatesScreen",
     "hostHomeScreen",
     "hostInboxScreen",
+    "hostNewMessageScreen",
     "hostOperatorEventScreen",
     "hostOrganizerMessagingScreen",
     "hostOrganizerScreen",
@@ -1955,6 +2043,11 @@
     "hostProgramsScreen",
     "hostProgramTeamScreen",
     "hostProgramWorkspaceScreen",
+    "hostResponseOfferPreferencesScreen",
+    "hostResponseOfferReviewScreen",
+    "hostResponseOfferScreen",
+    "hostResponseQueryOfferPreferencesScreen",
+    "hostResponseQueryOfferScreen",
     "hostSavedAudienceDetailScreen",
     "hostTodayFocusScreen",
     "hostTodayScreen",

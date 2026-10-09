@@ -689,9 +689,14 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
   `CatchSectionList.page`. Navigation depth uses `CatchNavigationViewport`
-  with ordered `CatchWorkspacePane` levels; local available width selects
-  concurrent columns or the active compact level. Feature pages never choose
-  different navigation destinations by device width.
+  with route-owned ordered levels; expanded layouts retain the entire path in
+  a horizontally scrollable strip with pointer/keyboard resizing. Compact
+  layouts show the active pane without changing the navigation destination.
+  Host feature screens supply `HostDirectoryWorkspace` (required index,
+  selection, detail builder and unselected state) or `HostEditorWorkspace`
+  (editor and preview) to `HostNavigationWorkspace`; they cannot construct
+  physical panes or select column counts. The root-composition check rejects
+  those bypasses, including single-pane directory substitutions.
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
 
@@ -710,14 +715,24 @@ provides parent navigation to existing top bars; viewport back handling uses the
 same path on mobile. Events and Today encode event selection in root query
 parameters; Organizer settings replace the adjacent preview; Audience can add a
 response/application level after a person. Every Host destination is registered
-inside one of the five workspace branches. `HostNavigationWorkspace` attaches
+inside one of the five workspace branches. `HostWorkspaceDestination` requires
+an explicit closed `HostWorkspaceRoot` plus its parent next to the route builder;
+recursive ancestry is checked for cycles and cross-root parents.
+`HostNavigationWorkspace` attaches
 the selected route navigator and its declared ancestors to the existing index;
 Program subpages, Audience editors, setup flows and live work use this same
 adapter. Named push/pop results remain intact. No Host content route escapes
 to the root navigator based on width. Every named route keeps one explicit,
 canonical absolute-path declaration. The shell uses its root recipe to build
 the visible index; a routing anchor retains the navigator root for Back and
-push results without mounting a duplicate index. The composition scanner checks
+push results without mounting a duplicate index. `HostWorkspaceRouteContent`
+uses one content key per route record: inactive Navigator pages relinquish their
+content to ancestor panes, and Back moves the same element back. This preserves
+local editor drafts rather than mounting a second parent editor. Routed editor
+previews contribute to the enclosing strip; the adapter does not create a
+second horizontal workspace inside a route pane. Peer tabs are
+URI-owned; Customers and Forms do not keep competing tab controllers.
+The composition scanner checks
 all declarations and the canonical navigation viewport. The adaptive app shell
 remains the separate owner of bottom navigation and its obstruction.
 

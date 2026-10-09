@@ -2,6 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_page_owner.dart';
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/primitives/catch_pager_focus_viewport.dart';
 import 'package:flutter/material.dart';
@@ -237,7 +238,9 @@ class _CatchRootScreenPageScrollViewState
                   onRefresh: onRefresh,
                   child: scrollView,
                 );
-          return refreshed;
+          // A retained pager child can keep its previous constraints while the
+          // outer pane resizes. Its rows belong to this measured page viewport.
+          return CatchRowViewport(child: refreshed);
         },
       ),
     );

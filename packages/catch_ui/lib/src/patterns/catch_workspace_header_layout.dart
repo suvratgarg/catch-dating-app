@@ -22,12 +22,17 @@ class CatchWorkspaceHeader extends SingleChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) =>
       _RenderWorkspaceHeader(
         context.findAncestorRenderObjectOfType<_RenderWorkspaceHeaderLayout>(),
+        CatchWorkspacePaneScope.participatesInHeaderAlignmentOf(context),
       );
 
   @override
   void updateRenderObject(BuildContext context, RenderObject renderObject) {
-    (renderObject as _RenderWorkspaceHeader).group = context
-        .findAncestorRenderObjectOfType<_RenderWorkspaceHeaderLayout>();
+    (renderObject as _RenderWorkspaceHeader)
+      ..group = context
+          .findAncestorRenderObjectOfType<_RenderWorkspaceHeaderLayout>()
+      ..participates = CatchWorkspacePaneScope.participatesInHeaderAlignmentOf(
+        context,
+      );
   }
 }
 
@@ -97,7 +102,14 @@ class _RenderWorkspaceHeaderLayout extends RenderProxyBox {
 }
 
 class _RenderWorkspaceHeader extends RenderProxyBox {
-  _RenderWorkspaceHeader(this._group);
+  _RenderWorkspaceHeader(this._group, this._participates);
+  bool _participates;
+  set participates(bool value) {
+    if (_participates == value) return;
+    _participates = value;
+    markNeedsLayout();
+  }
+
   _RenderWorkspaceHeaderLayout? _group;
   double naturalHeight = 0;
   double allocatedHeight = 0;
@@ -143,6 +155,7 @@ class _RenderWorkspaceHeader extends RenderProxyBox {
   }
 
   bool visibleIn(_RenderWorkspaceHeaderLayout group) {
+    if (!_participates) return false;
     RenderObject? ancestor = parent;
     while (ancestor != null && !identical(ancestor, group)) {
       if (ancestor is RenderOffstage && ancestor.offstage) return false;

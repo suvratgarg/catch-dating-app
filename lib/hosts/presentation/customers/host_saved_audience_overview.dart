@@ -202,6 +202,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                             pathParameters: {'contactId': member.contactId},
                             queryParameters: {
                               'organizerId': audience.organizerId,
+                              '_parentAudienceId': audience.audienceId,
                             },
                           ),
                           content: CatchPersonLayout(name: member.displayName),

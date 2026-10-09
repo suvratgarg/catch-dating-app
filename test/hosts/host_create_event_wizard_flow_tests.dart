@@ -151,79 +151,83 @@ void _registerCreateEventWizardFlowTests() {
     );
   });
 
-  testWidgets('wide create flow adds rail, capped form, and consequence pane', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(1440, 1000);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'wide create flow uses the shared editor and preview across widths',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1440, 1000);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
 
-    await _pumpCreateEventFlow(tester);
-    await _openCreateEventFlow(tester);
+      await _pumpCreateEventFlow(tester);
+      await _openCreateEventFlow(tester);
 
-    final rail = find.byKey(const ValueKey('host-create-event-step-rail'));
-    final lane = find.byKey(const ValueKey('host-create-event-form-lane'));
-    final consequence = find.byKey(
-      const ValueKey('host-create-event-consequence-pane'),
-    );
-    expect(rail, findsOneWidget);
-    expect(lane, findsOneWidget);
-    expect(consequence, findsOneWidget);
-    expect(
-      tester.getSize(lane).width,
-      lessThanOrEqualTo(CatchLayout.hostCreateEventFormLaneMaxWidth),
-    );
-    expect(tester.getRect(rail).right, lessThan(tester.getRect(lane).left));
-    expect(
-      tester.getRect(lane).right,
-      lessThan(tester.getRect(consequence).left),
-    );
+      final rail = find.byKey(const ValueKey('host-create-event-step-rail'));
+      final lane = find.byKey(const ValueKey('host-create-event-form-lane'));
+      final consequence = find.byKey(
+        const ValueKey('host-create-event-consequence-pane'),
+      );
+      expect(rail, findsOneWidget);
+      expect(lane, findsOneWidget);
+      expect(consequence, findsOneWidget);
+      expect(tester.getSize(lane).width, CatchLayout.workspaceEditorWidth);
+      expect(
+        tester.getRect(lane).right,
+        lessThanOrEqualTo(tester.getRect(rail).left),
+      );
+      expect(
+        tester.getRect(lane).right,
+        lessThan(tester.getRect(consequence).left),
+      );
 
-    await tester.tap(find.byKey(const ValueKey('catch-form-step-overview-1')));
-    await _pumpTestAnimation(tester);
-    expect(find.text('When & where'), findsWidgets);
-
-    tester.view.physicalSize = const Size(1024, 1000);
-    await tester.pump();
-    expect(rail, findsOneWidget);
-    expect(lane, findsOneWidget);
-    expect(consequence, findsNothing);
-    expect(find.text('When & where'), findsWidgets);
-
-    tester.view.physicalSize = const Size(430, 1000);
-    await tester.pump();
-    expect(rail, findsNothing);
-    expect(consequence, findsNothing);
-    expect(find.text('When & where'), findsWidgets);
-  });
-
-  testWidgets('demand pricing allows at least four lines for consequence copy', (
-    tester,
-  ) async {
-    await _pumpCreateEventFlow(tester);
-    await _openCreateEventFlow(tester);
-
-    for (var step = 0; step < 2; step += 1) {
-      await _tapPrimaryButton(tester, 'Next');
+      await tester.tap(
+        find.byKey(const ValueKey('catch-form-step-overview-1')),
+      );
       await _pumpTestAnimation(tester);
-    }
+      expect(find.text('When & where'), findsWidgets);
 
-    expect(find.text('Booking & live guide'), findsOneWidget);
-    await _openCatchField(tester, 'Admission format');
-    await tester.tap(
-      find.byKey(const ValueKey('catch-field-option-card-Balanced singles')),
-    );
-    await _pumpTestAnimation(tester);
-    expect(
-      tester
-          .widget<CatchField>(
-            find.byKey(CreateEventFormKeys.dynamicPricingToggle),
-          )
-          .bodyMaxLines,
-      greaterThanOrEqualTo(4),
-    );
-  });
+      tester.view.physicalSize = const Size(1024, 1000);
+      await tester.pump();
+      expect(rail, findsOneWidget);
+      expect(lane, findsOneWidget);
+      expect(consequence, findsOneWidget);
+      expect(find.text('When & where'), findsWidgets);
+
+      tester.view.physicalSize = const Size(430, 1000);
+      await tester.pump();
+      expect(rail, findsNothing);
+      expect(consequence, findsNothing);
+      expect(find.text('When & where'), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'demand pricing allows at least four lines for consequence copy',
+    (tester) async {
+      await _pumpCreateEventFlow(tester);
+      await _openCreateEventFlow(tester);
+
+      for (var step = 0; step < 2; step += 1) {
+        await _tapPrimaryButton(tester, 'Next');
+        await _pumpTestAnimation(tester);
+      }
+
+      expect(find.text('Booking & live guide'), findsOneWidget);
+      await _openCatchField(tester, 'Admission format');
+      await tester.tap(
+        find.byKey(const ValueKey('catch-field-option-card-Balanced singles')),
+      );
+      await _pumpTestAnimation(tester);
+      expect(
+        tester
+            .widget<CatchField>(
+              find.byKey(CreateEventFormKeys.dynamicPricingToggle),
+            )
+            .bodyMaxLines,
+        greaterThanOrEqualTo(4),
+      );
+    },
+  );
 
   testWidgets(
     'external guest-list creation preserves the mapped source and removes Catch payment policy',

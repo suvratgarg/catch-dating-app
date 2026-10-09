@@ -145,41 +145,43 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     final showSearch = isInbox;
     final selectedThreadId = _selectedThreadId;
 
-    Widget buildMaster(BuildContext context) {
-      final workspaceSliver = isInbox
-          ? HostInboxWorkspaceSection(
-              uidState: uidState,
-              uid: uid,
-              clubsState: clubsState,
-              selectedClub: selectedClub,
-              query: query,
-              now: now,
-              requestedScope: _requestedScope,
-              selectedSegment: _segment,
-              selectedThreadId: selectedThreadId,
-              onRetry: _retry,
-              onScopeChanged: _selectScope,
-              onSegmentChanged: _selectSegment,
-              onPersonSelected: (person) => _openPerson(person),
-            )
-          : CatchViewport.sliverLane(
-              maxExtent: CatchLayout.hostMessagingSendsPageMaxExtent,
-              child: _HostCampaignWorkspaceSliver(
-                uidState: uidState,
-                uid: uid,
-                clubsState: clubsState,
-                selectedClub: selectedClub,
-                initialSavedAudienceId: widget.initialSavedAudienceId,
-                preferredEventId: _requestedScope?.eventId,
-                initialSegment: _segment,
-                broadcastEnabled: _broadcastEnabled,
-                now: now,
-                onRetry: _retry,
-                onBusyChanged: _setCampaignBusy,
-                onOpenInbox: () =>
-                    _selectWorkspace(HostMessagingWorkspace.inbox),
-              ),
-            );
+    Widget buildMaster(BuildContext context, {Widget? historySliver}) {
+      final workspaceSliver =
+          historySliver ??
+          (isInbox
+              ? HostInboxWorkspaceSection(
+                  uidState: uidState,
+                  uid: uid,
+                  clubsState: clubsState,
+                  selectedClub: selectedClub,
+                  query: query,
+                  now: now,
+                  requestedScope: _requestedScope,
+                  selectedSegment: _segment,
+                  selectedThreadId: selectedThreadId,
+                  onRetry: _retry,
+                  onScopeChanged: _selectScope,
+                  onSegmentChanged: _selectSegment,
+                  onPersonSelected: (person) => _openPerson(person),
+                )
+              : CatchViewport.sliverLane(
+                  maxExtent: CatchLayout.hostMessagingSendsPageMaxExtent,
+                  child: _HostCampaignWorkspaceSliver(
+                    uidState: uidState,
+                    uid: uid,
+                    clubsState: clubsState,
+                    selectedClub: selectedClub,
+                    initialSavedAudienceId: widget.initialSavedAudienceId,
+                    preferredEventId: _requestedScope?.eventId,
+                    initialSegment: _segment,
+                    broadcastEnabled: _broadcastEnabled,
+                    now: now,
+                    onRetry: _retry,
+                    onBusyChanged: _setCampaignBusy,
+                    onOpenInbox: () =>
+                        _selectWorkspace(HostMessagingWorkspace.inbox),
+                  ),
+                ));
       return CatchRootScreenScrollView.withPrimaryRail(
         header: CatchRootScreenHeader.custom(
           ChatsBrowseHeader(
@@ -224,6 +226,27 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       );
     }
 
+    if (!isInbox &&
+        selectedClub != null &&
+        !uidState.isLoading &&
+        !clubsState.isLoading &&
+        !uidState.hasError &&
+        !clubsState.hasError) {
+      return CatchScaffold.workspace(
+        backgroundColor: t.bg,
+        body: HostSendsWorkspace(
+          club: selectedClub,
+          initialSavedAudienceId: widget.initialSavedAudienceId,
+          preferredEventId: _requestedScope?.eventId,
+          initialSegment: _segment,
+          broadcastEnabled: _broadcastEnabled,
+          now: now,
+          onBusyChanged: _setCampaignBusy,
+          onOpenInbox: () => _selectWorkspace(HostMessagingWorkspace.inbox),
+          indexBuilder: (sliver) => buildMaster(context, historySliver: sliver),
+        ),
+      );
+    }
     final detail = selectedThreadId == null || selectedClub == null
         ? CatchEmptyState(
             icon: CatchIcons.chatBubbleOutlineRounded,
@@ -242,15 +265,21 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
 
     return CatchScaffold.workspace(
       backgroundColor: t.bg,
-      body: HostNavigationWorkspace.panes(
-        onBack: isInbox && selectedThreadId != null ? _closePerson : null,
-        compactPaneId: isInbox && selectedThreadId != null
-            ? 'conversation'
-            : 'inbox',
-        panes: [
-          CatchWorkspacePane(id: 'inbox', child: buildMaster(context)),
-          if (isInbox) CatchWorkspacePane(id: 'conversation', child: detail),
-        ],
+      body: HostNavigationWorkspace(
+        spec: isInbox
+            ? HostDirectoryWorkspace<String>(
+                index: buildMaster(context),
+                selection: selectedClub == null ? null : selectedThreadId,
+                detailBuilder: (_) => detail,
+                unselected: detail,
+                onBack: _closePerson,
+              )
+            : HostDirectoryWorkspace<String>(
+                index: buildMaster(context),
+                selection: null,
+                detailBuilder: (_) => const SizedBox.shrink(),
+                unselected: detail,
+              ),
       ),
     );
   }
@@ -355,10 +384,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
 
   Future<void> _newMessage(String organizerId) async {
     final accountId = _accountId;
-    final selection = await Navigator.of(context).push<HostNewMessageSelection>(
-      MaterialPageRoute(
-        builder: (_) => HostNewMessageScreen(organizerId: organizerId),
-      ),
+    final selection = await context.pushNamed<HostNewMessageSelection>(
+      Routes.hostNewMessageScreen.name,
+      queryParameters: {'organizerId': organizerId},
     );
     if (!mounted || selection == null || accountId != _accountId) return;
     ref.invalidate(chatsListViewModelProvider);
@@ -445,16 +473,9 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
     if (clubsState.isLoading) return const ChatsListSkeleton();
     final club = selectedClub;
     if (club == null) return const _HostNoOrganizerSliver();
-    return HostSendsWorkspaceSliver(
-      club: club,
-      initialSavedAudienceId: initialSavedAudienceId,
-      preferredEventId: preferredEventId,
-      initialSegment: initialSegment,
-      broadcastEnabled: broadcastEnabled,
-      now: now,
-      onBusyChanged: onBusyChanged,
-      onOpenInbox: onOpenInbox,
-    );
+    // The loaded sends workspace is composed above the scroll owner so it can
+    // retain history alongside its selected report. This branch is state-only.
+    return const SliverToBoxAdapter(child: SizedBox.shrink());
   }
 }
 

@@ -16,15 +16,15 @@ Widget hostNavigationWorkspace(BuildContext context) =>
     WidgetbookViewportFrame.device(
       size: const Size(1280, 800),
       child: HostNavigationWorkspace(
-        uri: Uri(path: '/host/organizer'),
-        indexMode: CatchWorkspacePaneMode.editor,
-        index: const CatchWorkspacePaneScaffold(
-          title: CatchTopBar.primaryRail(title: 'Organizer'),
-          body: CatchEmptyState(title: 'Organizer editor'),
-        ),
-        preview: const CatchWorkspacePaneScaffold(
-          title: CatchTopBar.primaryRail(title: 'Preview'),
-          body: CatchEmptyState(title: 'Public organizer preview'),
+        spec: HostEditorWorkspace(
+          editor: const CatchWorkspacePaneScaffold(
+            title: CatchTopBar.primaryRail(title: 'Organizer'),
+            body: CatchEmptyState(title: 'Organizer editor'),
+          ),
+          preview: const CatchWorkspacePaneScaffold(
+            title: CatchTopBar.primaryRail(title: 'Preview'),
+            body: CatchEmptyState(title: 'Public organizer preview'),
+          ),
         ),
       ),
     );
@@ -151,17 +151,13 @@ Widget hostWorkspaceRouteScope(BuildContext context) =>
             ),
           ),
         ],
-        child: HostNavigationWorkspace.panes(
-          compactPaneId: 'index',
-          panes: const [
-            CatchWorkspacePane(
-              id: 'index',
-              child: CatchWorkspacePaneScaffold(
-                title: CatchTopBar.primaryRail(title: 'Events'),
-                body: CatchEmptyState(title: 'Existing index'),
-              ),
+        child: const HostNavigationWorkspace(
+          spec: HostTaskWorkspace(
+            content: CatchWorkspacePaneScaffold(
+              title: CatchTopBar.primaryRail(title: 'Events'),
+              body: CatchEmptyState(title: 'Existing index'),
             ),
-          ],
+          ),
         ),
       ),
     );

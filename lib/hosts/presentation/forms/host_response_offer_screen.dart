@@ -13,14 +13,12 @@ import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -40,6 +38,12 @@ class HostResponseOfferScreen extends ConsumerStatefulWidget {
     this.recipientLabel,
     this.queryController,
   }) : assert((responseId == null) != (queryController == null));
+  const HostResponseOfferScreen.query({
+    super.key,
+    required this.organizerId,
+    this.queryController,
+  }) : responseId = null,
+       recipientLabel = null;
   final String organizerId;
   final String? responseId;
 
@@ -148,14 +152,23 @@ class _HostResponseOfferScreenState
   Future<void> _settings(String eventId) async {
     final account = _accountId;
     if (account == null || !_current(account)) return;
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (routeContext) => HostEventOfferPreferencesScreen(
-          organizerId: widget.organizerId,
-          eventId: eventId,
-          onBack: () => Navigator.of(routeContext).pop(),
-        ),
-      ),
+    final queryFormId = GoRouterState.of(context).pathParameters['formId'];
+    await context.pushNamed<void>(
+      widget.responseId == null
+          ? Routes.hostResponseQueryOfferPreferencesScreen.name
+          : Routes.hostResponseOfferPreferencesScreen.name,
+      pathParameters: {
+        'eventId': eventId,
+        if (widget.responseId != null)
+          'responseId': widget.responseId!
+        else
+          'formId': queryFormId!,
+      },
+      queryParameters: {
+        ...GoRouterState.of(context).uri.queryParameters,
+        'organizerId': widget.organizerId,
+      },
+      extra: widget.queryController,
     );
   }
 
@@ -182,6 +195,17 @@ class _HostResponseOfferScreenState
 
   @override
   Widget build(BuildContext context) {
+    if (widget.responseId == null && widget.queryController == null) {
+      return CatchRouteScaffold(
+        topBarBuilder: (_, _) =>
+            CatchTopBar.route(title: context.l10n.hostResponseOfferEvent),
+        body: CatchRouteBody.standardViewport(
+          child: CatchEmptyState(
+            title: context.l10n.coreCatchFieldVisiblecopySelect,
+          ),
+        ),
+      );
+    }
     final enabled = ref.watch(privateEventSetupAvailableProvider);
     final account = enabled
         ? catchAsyncStateFromAsyncValue(ref.watch(uidProvider))
@@ -273,14 +297,18 @@ class _HostResponseOfferScreenState
                               'revokedParticipantGrant';
                     },
                     openResponseForConversion: (id) async {
-                      await Navigator.of(context).push<void>(
-                        MaterialPageRoute(
-                          builder: (_) => HostFormResponseDetailScreen(
-                            organizerId: widget.organizerId,
-                            responseId: id,
-                            returnToOffer: true,
-                          ),
-                        ),
+                      await context.pushNamed<void>(
+                        Routes.hostResponseOfferReviewScreen.name,
+                        pathParameters: {'responseId': id},
+                        queryParameters: {
+                          ...GoRouterState.of(context).uri.queryParameters,
+                          'organizerId': widget.organizerId,
+                          if (widget.queryController != null)
+                            '_parentQueryFormId': GoRouterState.of(
+                              context,
+                            ).pathParameters['formId']!,
+                        },
+                        extra: widget.queryController,
                       );
                     },
                     openEventSettings: _settings,

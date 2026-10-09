@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:0811f129d3e9eded41b81933de8bdcbf3f9d539a33e76c673287653e500ae6ff",
+  "sourceDigest": "sha256:d8f1ce8e57e7cd09d1ea4522fe8598aff53dd1caaab1b8c3c4c0060e4bde0f7b",
   "resolvedDigest": "sha256:97df774714cee814a05ac3aa16751aa4472a14bab0f37646b142c41daa232838",
   "feature": {
     "id": "feature.host_inbox",
@@ -78,7 +78,7 @@
             "id": "sends_workspace",
             "language": "dart",
             "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-            "symbol": "HostSendsWorkspaceSliver"
+            "symbol": "HostSendsWorkspace"
           },
           {
             "id": "send_intent_menu",
