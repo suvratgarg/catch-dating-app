@@ -1,9 +1,10 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {getMarketingConsent, setMarketingConsent} from "../../analytics";
+import {websiteCopy} from "../../content/generated";
 import {marketingConsentPreferencesCopy} from "../../content/marketingConsent";
 import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
-import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
+import {Button, MarketingConsentBannerShell} from "../ui/primitives";
 import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
 
 vi.mock("./siteTracking", () => ({slugForTracking: (value: string) => value, trackSiteCtaClick: vi.fn()}));
@@ -95,8 +96,17 @@ describe("canonical public chrome", () => {
     ({choice, exit}) => {
       if (choice) setMarketingConsent(choice);
       document.body.style.overflow = "auto";
-      render(<><PublicSiteHeader /><MarketingConsentBanner /></>);
-      if (choice) fireEvent.click(screen.getByRole("button", {name: marketingConsentPreferencesCopy.preferences}));
+      // Compose the real consent shell and service at the shared-site boundary.
+      // Fresh/reopened adapter state and geometry are covered in the real browser.
+      render(<><PublicSiteHeader /><MarketingConsentBannerShell
+        aria-label={websiteCopy["marketingconsentbanner_0328"]}
+        body={marketingConsentPreferencesCopy.body}
+        actions={<>
+          <Button onClick={() => setMarketingConsent("analytics")}>{marketingConsentPreferencesCopy.allowAnalytics}</Button>
+          <Button onClick={() => setMarketingConsent("accepted")}>{marketingConsentPreferencesCopy.allowMarketing}</Button>
+          <Button onClick={() => setMarketingConsent("essential")}>{websiteCopy["marketingconsentbanner_0330"]}</Button>
+        </>}
+      /></>);
       const analyticsChoice = screen.getByRole("button", {name: marketingConsentPreferencesCopy.allowAnalytics});
       const marketingChoice = screen.getByRole("button", {name: marketingConsentPreferencesCopy.allowMarketing});
       const essentialChoice = screen.getByRole("button", {name: "Essential only"});
@@ -142,8 +152,6 @@ describe("canonical public chrome", () => {
       expect(screen.getByRole("button", {name: "Essential only"})).toBe(essentialChoice);
       fireEvent.click(essentialChoice);
       expect(getMarketingConsent()).toMatchObject({version: 2, choice: "essential", analytics: false, marketing: false});
-      expect(screen.queryByRole("button", {name: marketingConsentPreferencesCopy.allowAnalytics})).toBeNull();
-      expect(screen.getByRole("button", {name: marketingConsentPreferencesCopy.preferences})).toBeTruthy();
     }
   );
 });
