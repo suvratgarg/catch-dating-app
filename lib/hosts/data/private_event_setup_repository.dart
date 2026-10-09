@@ -2,12 +2,17 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_models.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_event_summary_reads.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 export 'private_event_setup_models.dart';
 
+// firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:DESCENDING, __name__:DESCENDING)
 class PrivateEventSetupRepository {
-  const PrivateEventSetupRepository(this._functions);
+  const PrivateEventSetupRepository(this._functions, {this.summaries});
+
+  final HostEventSummaryReads? summaries;
 
   final FirebaseFunctions _functions;
 
@@ -106,6 +111,13 @@ class PrivateEventSetupRepository {
     }
     return withBackendErrorContext(
       () async {
+        final page = await summaries?.list(
+          organizerId: organizerId,
+          scope: scope ?? PrivateEventSetupScope.upcoming,
+          limit: limit,
+          cursor: cursor,
+        );
+        if (page != null) return page;
         final response = await _functions
             .httpsCallable('listPrivateEventSetups')
             .call<Object?>({

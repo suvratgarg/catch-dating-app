@@ -2403,6 +2403,86 @@ live source binding without granting Host authority or activating a deployment.
 
 ### Organizer Communication Preferences And CRM
 
+`hostContactSummaries/{contactId}` is the server-owned list read model. It
+contains the existing host-visible contact row plus its indexed sort/filter
+keys; linked account IDs, merge candidate IDs, identity evidence, raw answers,
+and permission receipts are excluded. Current organizer managers can read only
+summaries belonging to their organizer through the SDK. All client writes and
+reads of the internal CRM documents remain denied. View fields never authorize
+mutations, identity linking, messaging, or delivery.
+
+`hostDirectorySummaries/{organizerId}` stores visible-contact and segment counts,
+manual tag labels, projection coverage, and the per-organizer migration marker.
+Contact, trait, channel-state and vocabulary changes reconcile current source
+records. The view and its count delta commit atomically; replayed or delayed
+trigger payloads cannot increment counts twice or restore removed rows.
+
+The scoped `functions/scripts/backfill-host-read-models.cjs` command defaults to
+dry run and requires explicit `--project` and `--organizer`. `--apply` rebuilds
+views. `--activate` additionally verifies current source/view parity in one
+transaction before setting `contactSummaryVersion: 1`. Deploy rules, indexes
+and writers before a client using SDK reads, then backfill and activate each
+organizer. Missing/unverified markers retain callable reads; authorization
+failures never trigger a fallback. Activation has not been applied to a live
+environment by this source change.
+
+The normal SDK contact page reads at most `limit + 1` small summaries and one
+counts document. Single segment and single filter-family queries use indexes;
+intersecting filter groups and text search retain server evaluation. Detail
+history, permission evidence and financial facts remain callable reads until
+an independently verified detail read contract is available.
+
+The same read boundary applies to `hostFormSummaries/{formId}` and
+`hostEventSummaries/{eventId}`. Forms contain the existing list DTO, not the
+editable draft definition. Event summaries cover only unpublished inventory;
+published Events already use SDK reads. Unpublished Event rules additionally
+require a currently active, unarchived organizer.
+
+`hostGroupSummaries/{audienceId}` contains name, lifecycle, revision, group kind
+and preview metadata. Predicates and up to 2500 selected contact IDs are kept in
+`hostGroupDetails/{audienceId}`, a manager-readable **get-only** projection for
+one selected group. After verified SDK cutover, the paginated Groups controller
+publishes the first 30-row page, applies name/recent-preview sorting and group-type filters in indexed
+queries, and loads further pages only on request. Contains-name search preserves
+the existing bounded exhaustive behavior. Before cutover, legacy Groups reads
+still exhaust callable pages. The Audience workspace switches to compact metadata through
+a coordinated UI patch; mutation and membership-preview authority stay callable.
+
+`hostResponseSummaries/{summaryId}` stores one unified inbox entry per submitted
+response or standalone application. The key hashes the source kind and ID. A
+converted native response includes its application summary in that same entry;
+it never appears twice. Raw answers, list answer highlights, participant UIDs,
+review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
+read these summaries through the SDK. Form-scoped/filter-choice queries, answer
+filters, contact joins, review filters and text search keep the existing callable
+behavior until their own equivalent indexed read contracts are implemented.
+
+Participant grant revocation and generic response withdrawal redact their
+verified summary (or delete an invalid view) in the **same transaction** as the authority change, including
+idempotent replays. Asynchronous projectors reread current authority and may
+recreate only redacted withdrawal metadata. They cannot restore withdrawn names,
+contact IDs or response contact details from stale event payloads. Imported
+application operational metadata retains its existing organizer-owned boundary.
+
+Each model has an independent directory marker (`formSummaryVersion`,
+`eventSummaryVersion`, `groupSummaryVersion`, `responseSummaryVersion`). The
+backfill command selects `--model contacts|forms|events|groups|responses` and
+sets that model's marker only after consistent transactional parity. Oversized
+activation transactions fail without setting a marker. List summaries are
+server-maintained views with eventual updates; client refresh alone is not a
+source reconciliation. Monitor trigger retries/failures and compare parity
+before cutover. A callable mutation remains canonical and must never be
+re-authorized from a view's revision, count, grant status or eligibility field.
+
+SDK requests use fresh server reads, current organizer rules, stable indexed
+sort keys and document-ID tie breakers. Cursors bind account, organizer, model
+and filter scope. Account changes invalidate repository providers and reject
+in-flight results. There is no persistent PII cache in the repositories. Rules
+checks use the canonical organizer and deleted-account state, shared across
+rows, rather than one private authority document per row. All client summary
+writes and raw CRM/response reads remain denied. No live rollout, backfill or
+latency improvement is asserted by this source change.
+
 `organizerCommunicationPreferences/{organizerId_uid}` is a server-only,
 organizer-scoped permission ledger. WhatsApp and SMS each have independent
 `unknown`, `optedIn`, or `optedOut` state, terms version, source event, source,

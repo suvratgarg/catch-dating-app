@@ -86,7 +86,8 @@ function millis(value: unknown): number | null {
   return Number.isSafeInteger(result) ? result : null;
 }
 
-function project(doc: FirebaseFirestore.QueryDocumentSnapshot,
+export function projectPrivateEventSetupSummary(
+  doc: FirebaseFirestore.QueryDocumentSnapshot,
   organizerId: string, asOfMillis: number,
   scope: PrivateEventSetupScope): PrivateEventSetupSummary {
   const event: Record<string, unknown> = doc.data();
@@ -181,8 +182,9 @@ export async function listPrivateEventSetups(params: {
         cursor.lastStartTimeMillis), cursor.lastEventId);
     }
     const page = await tx.get(query.limit(limit + 1));
-    const projected = page.docs.map((doc) => project(doc,
-      command.organizerId, asOfMillis, scope));
+    const projected = page.docs.map((doc) =>
+      projectPrivateEventSetupSummary(doc,
+        command.organizerId, asOfMillis, scope));
     const events = projected.slice(0, limit);
     const last = events.at(-1);
     const nextCursor = projected.length > limit && last ?

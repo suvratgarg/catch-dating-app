@@ -1,8 +1,11 @@
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_event_summary_reads.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -11,8 +14,18 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'host_events_timeline_controller.g.dart';
 
 @riverpod
-PrivateEventSetupRepository privateEventSetupTimelineRepository(Ref ref) =>
-    PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider));
+PrivateEventSetupRepository privateEventSetupTimelineRepository(Ref ref) {
+  ref.watch(authenticatedSessionProvider);
+  return PrivateEventSetupRepository(
+    ref.read(firebaseFunctionsProvider),
+    summaries: HostEventSummaryReads(
+      HostSummaryReader(
+        ref.watch(firebaseFirestoreProvider),
+        actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      ),
+    ),
+  );
+}
 
 @immutable
 class HostEventsTimelineRequest {
@@ -163,7 +176,10 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
   ) async {
     ++_generation;
     ref.onDispose(() => ++_generation);
-    final repository = ref.read(eventRepositoryProvider);
+    if (ref.watch(privateEventSetupAvailableProvider)) {
+      ref.watch(privateEventSetupTimelineRepositoryProvider);
+    }
+    final repository = ref.watch(eventRepositoryProvider);
     final activePage = await repository.fetchActiveEventsPage(
       organizerId: request.organizerId,
       sessionBoundary: request.sessionBoundary,

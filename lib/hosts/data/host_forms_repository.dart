@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -7,6 +7,9 @@ import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
 import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_form_summary_reads.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_response_summary_reads.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
@@ -25,6 +28,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_forms_repository.g.dart';
 
+// firestore-index: hostFormSummaries (organizerId:ASCENDING, status:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostFormSummaries (organizerId:ASCENDING, status:ASCENDING, purpose:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, submittedAtMillis:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, kind:ASCENDING, submittedAtMillis:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, kind:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
 class HostFormValidationResult {
   const HostFormValidationResult({required this.valid, required this.issues});
 
@@ -48,7 +57,11 @@ class HostFormValidationResult {
 }
 
 class HostFormsRepository {
-  const HostFormsRepository(this._functions);
+  const HostFormsRepository(this._functions, {this.summaries, this.responses});
+
+  final HostResponseSummaryReads? responses;
+
+  final HostFormSummaryReads? summaries;
 
   final FirebaseFunctions _functions;
 
@@ -85,21 +98,25 @@ class HostFormsRepository {
     parse: HostFormPaymentPage.fromCallableData,
   );
 
-  Future<HostFormPage> listForms(HostFormListRequest request) => _call(
-    name: 'listOrganizerForms',
-    payload: ListOrganizerFormsCallableRequest(
-      organizerId: request.organizerId,
-      statuses: request.statuses.map((value) => value.name).toList(),
-      purposes: request.purposes.map((value) => value.name).toList(),
-      query: request.query?.trim().isEmpty ?? true
-          ? null
-          : request.query?.trim(),
-      cursor: request.cursor,
-      limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
-    ).toJson(),
-    action: 'load organizer forms',
-    parse: HostFormPage.fromCallableData,
-  );
+  Future<HostFormPage> listForms(HostFormListRequest request) async {
+    final page = await summaries?.list(request);
+    if (page != null) return page;
+    return _call(
+      name: 'listOrganizerForms',
+      payload: ListOrganizerFormsCallableRequest(
+        organizerId: request.organizerId,
+        statuses: request.statuses.map((value) => value.name).toList(),
+        purposes: request.purposes.map((value) => value.name).toList(),
+        query: request.query?.trim().isEmpty ?? true
+            ? null
+            : request.query?.trim(),
+        cursor: request.cursor,
+        limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
+      ).toJson(),
+      action: 'load organizer forms',
+      parse: HostFormPage.fromCallableData,
+    );
+  }
 
   Future<List<HostFormTemplateSummary>> listTemplates(String organizerId) =>
       _call(
@@ -286,42 +303,48 @@ class HostFormsRepository {
 
   Future<HostFormResponsePage> listResponses(
     HostFormResponseListRequest request,
-  ) => _call(
-    name: 'listOrganizerFormResponses',
-    payload: ListOrganizerFormResponsesCallableRequest(
-      organizerId: request.organizerId,
-      formId: request.formId,
-      contactId: request.contactId,
-      includeApplications: request.includeApplications ? true : null,
-      reviewStatus: request.reviewStatus?.name,
-      versionId: request.versionId,
-      statuses: request.statuses.map((value) => value.name).toList(),
-      sortDirection: request.oldestFirst ? 'asc' : null,
-      answerFilters: request.answerFilters.isEmpty
-          ? null
-          : [
-              for (final entry in request.answerFilters.entries)
-                {
-                  'questionId': entry.key,
-                  'values': entry.value.toList()..sort(),
-                },
-            ],
-      identityKinds: request.identityKinds.map((value) => value.name).toList(),
-      sourceLinkId: request.sourceLinkId,
-      query: request.query?.trim().isEmpty ?? true
-          ? null
-          : request.query?.trim(),
-      fromMillis: request.from?.millisecondsSinceEpoch,
-      toMillis: request.to?.millisecondsSinceEpoch,
-      cursor: request.cursor,
-      limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
-    ).toJson(),
-    action: 'load organizer form responses',
-    parse: (data) => HostFormResponsePage.fromCallableData(
-      data,
-      requireUnifiedEntries: request.includeApplications,
-    ),
-  );
+  ) async {
+    final page = await responses?.list(request);
+    if (page != null) return page;
+    return _call(
+      name: 'listOrganizerFormResponses',
+      payload: ListOrganizerFormResponsesCallableRequest(
+        organizerId: request.organizerId,
+        formId: request.formId,
+        contactId: request.contactId,
+        includeApplications: request.includeApplications ? true : null,
+        reviewStatus: request.reviewStatus?.name,
+        versionId: request.versionId,
+        statuses: request.statuses.map((value) => value.name).toList(),
+        sortDirection: request.oldestFirst ? 'asc' : null,
+        answerFilters: request.answerFilters.isEmpty
+            ? null
+            : [
+                for (final entry in request.answerFilters.entries)
+                  {
+                    'questionId': entry.key,
+                    'values': entry.value.toList()..sort(),
+                  },
+              ],
+        identityKinds: request.identityKinds
+            .map((value) => value.name)
+            .toList(),
+        sourceLinkId: request.sourceLinkId,
+        query: request.query?.trim().isEmpty ?? true
+            ? null
+            : request.query?.trim(),
+        fromMillis: request.from?.millisecondsSinceEpoch,
+        toMillis: request.to?.millisecondsSinceEpoch,
+        cursor: request.cursor,
+        limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
+      ).toJson(),
+      action: 'load organizer form responses',
+      parse: (data) => HostFormResponsePage.fromCallableData(
+        data,
+        requireUnifiedEntries: request.includeApplications,
+      ),
+    );
+  }
 
   Future<HostFormResponseDetail> getResponseDetail({
     required String organizerId,
@@ -542,9 +565,15 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
   final LocalCommandJournal<HostResponseExportCommand> _journal;
 
   @override
-  Future<HostResponseExportCommand?> pending({required String accountId,
-    required String organizerId, required String formId}) async {
-    final entries = await _journal.load(accountId, scope: '$organizerId|$formId');
+  Future<HostResponseExportCommand?> pending({
+    required String accountId,
+    required String organizerId,
+    required String formId,
+  }) async {
+    final entries = await _journal.load(
+      accountId,
+      scope: '$organizerId|$formId',
+    );
     if (entries.length > 1) {
       throw StateError('Resolve the saved response exports in order.');
     }
@@ -553,9 +582,13 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
 
   @override
   Future<HostFormExportReceipt> execute(
-    HostResponseExportCommand command) async {
-    final saved = await pending(accountId: command.accountId,
-      organizerId: command.organizerId, formId: command.formId);
+    HostResponseExportCommand command,
+  ) async {
+    final saved = await pending(
+      accountId: command.accountId,
+      organizerId: command.organizerId,
+      formId: command.formId,
+    );
     if (saved != null) {
       if (jsonEncode(saved.toJson()) != jsonEncode(command.toJson())) {
         throw StateError('Resolve the saved response export first.');
@@ -574,16 +607,26 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
           formId: entry.formId,
           requestId: entry.requestId,
           format: entry.format,
-          statuses: entry.statuses.map(HostFormResponseStatus.values.byName)
+          statuses: entry.statuses
+              .map(HostFormResponseStatus.values.byName)
               .toSet(),
           versionId: entry.versionId,
           responseQuery: entry.responseQuery,
           expectedQueryHash: entry.expectedQueryHash,
           expectedResultHash: entry.expectedResultHash,
         );
-        final digest = sha256.convert(utf8.encode([
-          entry.organizerId, entry.formId, entry.requestId,
-        ].join('\u001f'))).toString().substring(0, 32);
+        final digest = sha256
+            .convert(
+              utf8.encode(
+                [
+                  entry.organizerId,
+                  entry.formId,
+                  entry.requestId,
+                ].join('\u001f'),
+              ),
+            )
+            .toString()
+            .substring(0, 32);
         if (receipt.exportId != 'formexport_$digest' ||
             receipt.format != entry.format) {
           throw const FormatException('Response export receipt is invalid.');
@@ -606,14 +649,30 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
 
 // keepalive: one stateless callable facade is shared by every Forms route.
 @Riverpod(keepAlive: true)
-HostFormsRepository hostFormsRepository(Ref ref) =>
-    HostFormsRepository(ref.watch(firebaseFunctionsProvider));
+HostFormsRepository hostFormsRepository(Ref ref) {
+  ref.watch(authenticatedSessionProvider);
+  return HostFormsRepository(
+    ref.watch(firebaseFunctionsProvider),
+    responses: HostResponseSummaryReads(
+      HostSummaryReader(
+        ref.watch(firebaseFirestoreProvider),
+        actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      ),
+    ),
+    summaries: HostFormSummaryReads(
+      HostSummaryReader(
+        ref.watch(firebaseFirestoreProvider),
+        actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      ),
+    ),
+  );
+}
 
 @riverpod
 Future<List<HostFormTemplateSummary>> hostFormTemplates(
   Ref ref,
   String organizerId,
-) => ref.read(hostFormsRepositoryProvider).listTemplates(organizerId);
+) => ref.watch(hostFormsRepositoryProvider).listTemplates(organizerId);
 
 @riverpod
 Future<HostFormShareAssets> hostFormShareAssets(
@@ -621,7 +680,7 @@ Future<HostFormShareAssets> hostFormShareAssets(
   required String organizerId,
   required String formId,
 }) => ref
-    .read(hostFormsRepositoryProvider)
+    .watch(hostFormsRepositoryProvider)
     .getShareAssets(organizerId: organizerId, formId: formId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {

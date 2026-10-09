@@ -1,0 +1,31 @@
+{
+  "organizerId": "org",
+  "contactId": "person",
+  "searchName": "asha",
+  "lastSeenAtMillis": 123,
+  "manualTagIds": [],
+  "linkedAccount": false,
+  "importedContact": false,
+  "row": {
+    "contactId": "person",
+    "displayName": "Asha",
+    "phoneE164": null,
+    "email": null,
+    "identityState": "unlinked",
+    "identityConfidence": "eventOnly",
+    "ambiguousCandidateCount": 0,
+    "attendedEventCount": 0,
+    "expectedEventCount": 0,
+    "lastAttendedAtMillis": null,
+    "segmentIds": [
+      "new_to_organizer"
+    ],
+    "manualTags": [],
+    "whatsappStatus": "unknown",
+    "whatsappAdminSuppressed": false,
+    "smsStatus": "unknown",
+    "sourceCoverage": "exact",
+    "revision": 1
+  },
+  "version": 1
+}
