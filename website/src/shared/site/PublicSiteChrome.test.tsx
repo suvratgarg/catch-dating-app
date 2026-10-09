@@ -1,10 +1,14 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {getMarketingConsent, setMarketingConsent} from "../../analytics";
+import {marketingConsentPreferencesCopy} from "../../content/marketingConsent";
 import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
+import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
 import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
 
 vi.mock("./siteTracking", () => ({slugForTracking: (value: string) => value, trackSiteCtaClick: vi.fn()}));
-afterEach(cleanup);
+beforeEach(() => {localStorage.clear(); window.dataLayer = [];});
+afterEach(() => {cleanup(); document.body.style.overflow = "";});
 const globalLabels = ["Product", "Solutions", "Explore", "Resources"];
 
 describe("canonical public chrome", () => {
@@ -83,4 +87,63 @@ describe("canonical public chrome", () => {
     expect(document.activeElement).toBe(menu);
     document.body.style.overflow = "";
   });
+
+  const consentStates = [null, "essential", "analytics", "accepted"] as const;
+  const exits = ["Escape", "Close", "Sign in for a claim", "Get started free"] as const;
+  it.each(consentStates.flatMap((choice) => exits.map((exit) => ({choice, exit}))))(
+    "preserves $choice consent through menu focus ownership and $exit, then returns access to choices",
+    ({choice, exit}) => {
+      if (choice) setMarketingConsent(choice);
+      document.body.style.overflow = "auto";
+      render(<><PublicSiteHeader /><MarketingConsentBanner /></>);
+      if (choice) fireEvent.click(screen.getByRole("button", {name: marketingConsentPreferencesCopy.preferences}));
+      const analyticsChoice = screen.getByRole("button", {name: marketingConsentPreferencesCopy.allowAnalytics});
+      const marketingChoice = screen.getByRole("button", {name: marketingConsentPreferencesCopy.allowMarketing});
+      const essentialChoice = screen.getByRole("button", {name: "Essential only"});
+      const storedConsent = localStorage.getItem("catch_marketing_consent_v2");
+      const consent = getMarketingConsent();
+      const consentMode = [...(window.dataLayer ?? [])];
+      const menu = screen.getByRole("button", {name: "Menu"});
+      fireEvent.click(menu);
+      const dialog = screen.getByRole("dialog");
+      const mobile = within(dialog);
+      const close = mobile.getByRole("button", {name: "Close"});
+      const last = mobile.getByRole("link", {name: "Get started free"});
+      expect(document.activeElement).toBe(close);
+      expect(document.body.style.overflow).toBe("hidden");
+      fireEvent.keyDown(document, {key: "Tab", shiftKey: true});
+      expect(document.activeElement).toBe(last);
+      fireEvent.keyDown(document, {key: "Tab"});
+      expect(document.activeElement).toBe(close);
+      // An outside focus target must rejoin the active menu's keyboard cycle.
+      analyticsChoice.focus();
+      fireEvent.keyDown(document, {key: "Tab"});
+      expect(document.activeElement).toBe(close);
+      marketingChoice.focus();
+      fireEvent.keyDown(document, {key: "Tab", shiftKey: true});
+      expect(document.activeElement).toBe(last);
+      if (exit === "Escape") fireEvent.keyDown(document, {key: "Escape"});
+      else if (exit === "Close") fireEvent.click(close);
+      else {
+        const action = mobile.getByRole("link", {name: exit});
+        // jsdom covers close ownership; real navigation is checked in the browser.
+        action.addEventListener("click", (event) => event.preventDefault(), {once: true});
+        fireEvent.click(action);
+      }
+      expect(menu.getAttribute("aria-expanded")).toBe("false");
+      expect(dialog.hasAttribute("inert")).toBe(true);
+      expect(document.activeElement).toBe(menu);
+      expect(document.body.style.overflow).toBe("auto");
+      expect(localStorage.getItem("catch_marketing_consent_v2")).toBe(storedConsent);
+      expect(getMarketingConsent()).toEqual(consent);
+      expect(window.dataLayer).toEqual(consentMode);
+      expect(screen.getByRole("button", {name: marketingConsentPreferencesCopy.allowAnalytics})).toBe(analyticsChoice);
+      expect(screen.getByRole("button", {name: marketingConsentPreferencesCopy.allowMarketing})).toBe(marketingChoice);
+      expect(screen.getByRole("button", {name: "Essential only"})).toBe(essentialChoice);
+      fireEvent.click(essentialChoice);
+      expect(getMarketingConsent()).toMatchObject({version: 2, choice: "essential", analytics: false, marketing: false});
+      expect(screen.queryByRole("button", {name: marketingConsentPreferencesCopy.allowAnalytics})).toBeNull();
+      expect(screen.getByRole("button", {name: marketingConsentPreferencesCopy.preferences})).toBeTruthy();
+    }
+  );
 });
