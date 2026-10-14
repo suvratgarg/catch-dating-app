@@ -105,6 +105,8 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
 }
 
 export const PublicSiteHeaderDarkStory: Story = {
+  parameters: {catchComponent: {id: "shared_public_site_header", routeIds: publicRouteIds,
+    states: ["global-navigation"]}},
   render: () => <div style={{background: "var(--catch-color-dark-bg)", minHeight: "100vh"}}>
     <PublicSiteHeader tone="dark" />
   </div>,
