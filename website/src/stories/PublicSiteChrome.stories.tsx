@@ -60,6 +60,7 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
   const dialog = canvasElement.querySelector<HTMLElement>(".site-menu")!;
   const consent = localStorage.getItem("catch_marketing_consent_v2");
   const overflow = document.body.style.overflow;
+  const scroll = {left: window.scrollX, top: window.scrollY};
   for (const exit of ["Escape", "Close", "Escape"]) {
     // Open the same modal fixture even in a desktop Storybook canvas where its
     // responsive trigger is hidden; real mobile pointer entry is browser-tested.
@@ -102,6 +103,8 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     if (getComputedStyle(trigger).display !== "none") await expect(trigger).toHaveFocus();
     await expect(localStorage.getItem("catch_marketing_consent_v2")).toBe(consent);
   }
+  trigger.blur();
+  window.scrollTo({...scroll, behavior: "instant"});
 }
 
 export const PublicSiteHeaderDarkStory: Story = {

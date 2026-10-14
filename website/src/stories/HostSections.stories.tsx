@@ -282,6 +282,8 @@ function contrastRatio(element: HTMLElement, foreground = getComputedStyle(eleme
 
 async function exerciseRailContrast(canvasElement: HTMLElement, selector: string) {
   const rail = canvasElement.querySelector<HTMLElement>(selector)!;
+  const pageScroll = {left: window.scrollX, top: window.scrollY};
+  const railScroll = {left: rail.scrollLeft, top: rail.scrollTop};
   const buttons = within(rail).getAllByRole("button");
   const initial = buttons.find((button) => button.getAttribute("aria-current") === "step")!;
   for (const button of buttons) {
@@ -311,4 +313,6 @@ async function exerciseRailContrast(canvasElement: HTMLElement, selector: string
   await expect(initial).toHaveAttribute("aria-current", "step");
   await userEvent.unhover(initial);
   initial.blur();
+  rail.scrollTo({...railScroll, behavior: "instant"});
+  window.scrollTo({...pageScroll, behavior: "instant"});
 }
