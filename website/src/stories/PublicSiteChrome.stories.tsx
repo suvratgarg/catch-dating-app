@@ -73,12 +73,13 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     const actions = [menu.getByRole("link", {name: "Sign in for a claim"}),
       menu.getByRole("link", {name: "Get started free"})];
     for (const action of actions) {
-      await userEvent.unhover(action);
+      await hoverAction(action, false);
       await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
-      await userEvent.hover(action);
-      await waitFor(() => expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5));
+      await hoverAction(action);
+      await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
       await userEvent.tab();
       action.focus();
+      await Promise.all(action.getAnimations().map((animation) => animation.finished));
       await expect(action).toHaveFocus();
       await expect(action.matches(":focus-visible")).toBe(true);
       const style = getComputedStyle(action);
@@ -118,18 +119,32 @@ export const PublicSiteHeaderDarkStory: Story = {
     const signIn = within(header).getByRole("link", {name: "Sign in for a claim"});
     if (getComputedStyle(signIn).display !== "none") {
       await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
-      await userEvent.hover(signIn);
-      await waitFor(() => expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5));
+      await hoverAction(signIn);
+      await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
       await userEvent.tab();
       signIn.focus();
+      await Promise.all(signIn.getAnimations().map((animation) => animation.finished));
       const style = getComputedStyle(signIn);
       await expect(signIn.matches(":focus-visible")).toBe(true);
       await expect(style.outlineStyle).toBe("solid");
       await expect(contrastRatio(header, style.outlineColor)).toBeGreaterThanOrEqual(3);
       await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
-      await userEvent.unhover(signIn);
+      await hoverAction(signIn, false);
       signIn.blur();
     }
     await exerciseHeaderContrast(context);
   },
 };
+
+async function hoverAction(action: HTMLElement, hover = true) {
+  // Chromium tests use the provider's real pointer so CSS :hover is exercised.
+  // Interactive Storybook keeps its portable event API outside Browser Mode.
+  const events = import.meta.env.MODE === "test"
+    // Resolve context types from this surface's provider, not hoisted Vitest's optional peers.
+    ? (await import("vitest/browser") as typeof import("@vitest/browser-playwright/context")).userEvent
+    : userEvent;
+  if (hover) await events.hover(action);
+  else await events.unhover(action);
+  await Promise.all(action.getAnimations().map((animation) => animation.finished));
+  if (import.meta.env.MODE === "test") await expect(action.matches(":hover")).toBe(hover);
+}
