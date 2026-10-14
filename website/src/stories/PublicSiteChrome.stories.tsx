@@ -1,3 +1,4 @@
+import {expect, userEvent, waitFor, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MarketingSection} from "../shared/ui/primitives";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../shared/site";
@@ -10,6 +11,7 @@ type Story = StoryObj<typeof meta>;
 export const PublicSiteHeaderStory: Story = {
   parameters: {catchComponent: {id: "shared_public_site_header", routeIds: publicRouteIds,
     states: ["global-navigation", "secondary-navigation"]}},
+  play: exerciseHeaderContrast,
   render: () => <>
     <PublicSiteHeader localNav={[{href: "#events", label: "Events"},
       {href: "#about", label: "About"}, {href: "#reviews", label: "Reviews"}]}
@@ -27,4 +29,102 @@ export const PublicSiteFooterStory: Story = {
     states: ["global-links", "context-links"]}},
   render: () => <PublicSiteFooter body="Explore this organiser's public sources and events."
     links={[{href: "/organizers/", label: "Search organisers"}, {href: "/host/", label: "For hosts"}]} />,
+};
+
+// WCAG contrast from rendered colors, including transparent ancestor surfaces.
+function contrastRatio(element: HTMLElement, foreground = getComputedStyle(element).color) {
+  const context = document.createElement("canvas").getContext("2d")!;
+  const rgba = (color: string) => {
+    context.clearRect(0, 0, 1, 1);
+    context.fillStyle = color;
+    context.fillRect(0, 0, 1, 1);
+    return Array.from(context.getImageData(0, 0, 1, 1).data);
+  };
+  const blend = (front: number[], back: number[]) =>
+    back.map((value, index) => front[index] * front[3] / 255 + value * (1 - front[3] / 255));
+  const ancestors: HTMLElement[] = [];
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) ancestors.push(node);
+  let background = [255, 255, 255];
+  for (const node of ancestors.reverse()) background = blend(rgba(getComputedStyle(node).backgroundColor), background);
+  const luminance = (rgb: number[]) => rgb.map((value) => {
+    const channel = value / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+  const ink = luminance(blend(rgba(foreground), background));
+  const surface = luminance(background);
+  return (Math.max(ink, surface) + 0.05) / (Math.min(ink, surface) + 0.05);
+}
+
+async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLElement}) {
+  const trigger = canvasElement.querySelector<HTMLButtonElement>(".site-menu-button")!;
+  const dialog = canvasElement.querySelector<HTMLElement>(".site-menu")!;
+  const consent = localStorage.getItem("catch_marketing_consent_v2");
+  const overflow = document.body.style.overflow;
+  for (const exit of ["Escape", "Close", "Escape"]) {
+    // Open the same modal fixture even in a desktop Storybook canvas where its
+    // responsive trigger is hidden; real mobile pointer entry is browser-tested.
+    trigger.click();
+    await waitFor(() => expect(dialog).toBeVisible());
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    const menu = within(dialog);
+    const close = menu.getByRole("button", {name: "Close"});
+    await expect(close).toHaveFocus();
+    const actions = [menu.getByRole("link", {name: "Sign in for a claim"}),
+      menu.getByRole("link", {name: "Get started free"})];
+    for (const action of actions) {
+      await userEvent.unhover(action);
+      await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
+      await userEvent.hover(action);
+      await waitFor(() => expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5));
+      await userEvent.tab();
+      action.focus();
+      await expect(action).toHaveFocus();
+      await expect(action.matches(":focus-visible")).toBe(true);
+      const style = getComputedStyle(action);
+      await expect(style.outlineStyle).toBe("solid");
+      await expect(parseFloat(style.outlineWidth)).toBeGreaterThanOrEqual(2);
+      await expect(contrastRatio(dialog, style.outlineColor)).toBeGreaterThanOrEqual(3);
+      await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
+    }
+    for (const hint of dialog.querySelectorAll<HTMLElement>(".site-menu__hint")) {
+      await expect(contrastRatio(hint)).toBeGreaterThanOrEqual(4.5);
+    }
+    close.focus();
+    await userEvent.tab({shift: true});
+    await expect(actions[1]).toHaveFocus();
+    await userEvent.tab();
+    await expect(close).toHaveFocus();
+    if (exit === "Escape") await userEvent.keyboard("{Escape}");
+    else await userEvent.click(close);
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(dialog).toHaveAttribute("inert");
+    await expect(document.body.style.overflow).toBe(overflow);
+    if (getComputedStyle(trigger).display !== "none") await expect(trigger).toHaveFocus();
+    await expect(localStorage.getItem("catch_marketing_consent_v2")).toBe(consent);
+  }
+}
+
+export const PublicSiteHeaderDarkStory: Story = {
+  render: () => <div style={{background: "var(--catch-color-dark-bg)", minHeight: "100vh"}}>
+    <PublicSiteHeader tone="dark" />
+  </div>,
+  play: async (context) => {
+    const header = context.canvasElement.querySelector<HTMLElement>(".site-header")!;
+    const signIn = within(header).getByRole("link", {name: "Sign in for a claim"});
+    if (getComputedStyle(signIn).display !== "none") {
+      await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
+      await userEvent.hover(signIn);
+      await waitFor(() => expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5));
+      await userEvent.tab();
+      signIn.focus();
+      const style = getComputedStyle(signIn);
+      await expect(signIn.matches(":focus-visible")).toBe(true);
+      await expect(style.outlineStyle).toBe("solid");
+      await expect(contrastRatio(header, style.outlineColor)).toBeGreaterThanOrEqual(3);
+      await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
+      await userEvent.unhover(signIn);
+      signIn.blur();
+    }
+    await exerciseHeaderContrast(context);
+  },
 };
