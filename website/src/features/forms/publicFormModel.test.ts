@@ -1,10 +1,12 @@
 import {describe, expect, it} from "vitest";
 import {publicFormsCopy} from "../../content/forms";
+import {activeMarket} from "../../content/markets";
 import {
   answerSummary,
   validatePublicFormAnswers,
   visiblePublicFormSections,
   type PublicFormDefinition,
+  type PublicFormAnswers,
   type PublicFormQuestion,
 } from "./publicFormModel";
 
@@ -59,11 +61,67 @@ describe("public form model", () => {
   });
 
   it("renders stable human-readable answer summaries", () => {
-    expect(answerSummary(["Walks", "Quiz nights"])).toBe(
+    const text = question("note", "Note", "shortText", false);
+    expect(answerSummary(text, ["Walks", "Quiz nights"])).toBe(
       "Walks, Quiz nights"
     );
-    expect(answerSummary(true)).toBe("Yes");
-    expect(answerSummary(null)).toBe("");
+    expect(answerSummary(text, true)).toBe("Yes");
+    expect(answerSummary(text, false)).toBe("No");
+    expect(answerSummary(text, 0)).toBe("0");
+    expect(answerSummary(text, 12)).toBe("12");
+    for (const empty of [undefined, null, "", []]) {
+      expect(answerSummary(text, empty)).toBe("");
+    }
+  });
+
+  it("uses canonical city metadata only for the corresponding profile field", () => {
+    const city = {...question("city", "Home city", "shortText", false),
+      canonicalFieldId: "city" as const, answerDestination: "catchProfile" as const};
+    const cities = [{marketId: "in-mh-mumbai", cityId: "city-mumbai",
+      label: activeMarket.cities.find((city) => city.id === "in-mumbai")!.label,
+      regionName: "Maharashtra", countryIsoCode: "IN"}];
+    expect(answerSummary(city, "in-mh-mumbai", cities)).toBe("Mumbai, Maharashtra");
+    expect(answerSummary(city, "city-mumbai", cities)).toBe("city-mumbai");
+    expect(answerSummary(city, "retired-city", cities)).toBe("retired-city");
+    expect(answerSummary(city, "in-mh-mumbai")).toBe("in-mh-mumbai");
+    expect(answerSummary(city, "Pune (manual)", cities)).toBe("Pune (manual)");
+    for (const answerDestination of [undefined, "organizerOnly", "organizerCard"] as const) {
+      expect(answerSummary({...city, answerDestination}, "in-mh-mumbai", cities))
+        .toBe("in-mh-mumbai");
+    }
+    expect(answerSummary({...city, canonicalFieldId: null}, "in-mh-mumbai", cities))
+      .toBe("in-mh-mumbai");
+  });
+
+  it("maps choice values to this question's labels and preserves missing options", () => {
+    const single = question("pace", "Pace", "singleChoice", false);
+    single.options = [
+      {optionId: "option-relaxed", value: "pace_easy", label: publicFormsCopy.yes},
+      {optionId: "option-brisk", value: "pace_fast", label: publicFormsCopy.no},
+    ];
+    const multi = {...single, kind: "multiChoice" as const};
+    expect(answerSummary(single, "pace_easy")).toBe("Yes");
+    expect(answerSummary(single, "option-relaxed")).toBe("option-relaxed");
+    expect(answerSummary(single, "removed_value")).toBe("removed_value");
+    expect(answerSummary({...single, options: []}, "pace_easy")).toBe("pace_easy");
+    expect(answerSummary({...single, options: [{...single.options[0],
+      label: publicFormsCopy.review}]}, "pace_easy")).toBe(publicFormsCopy.review);
+    expect(answerSummary(multi, ["pace_fast", "removed_value", "pace_easy"]))
+      .toBe("No, removed_value, Yes");
+    expect(answerSummary({...multi, options: []}, ["pace_easy", "pace_fast"]))
+      .toBe("pace_easy, pace_fast");
+    expect(answerSummary({...single, kind: "longText"}, "pace_easy")).toBe("pace_easy");
+    expect(answerSummary({...multi, kind: "file"}, ["pace_easy"]))
+      .toBe("pace_easy");
+  });
+
+  it("formats without changing serialized answer values", () => {
+    const choices = question("choices", "Choices", "multiChoice", false);
+    choices.options = [{optionId: "walk", label: publicFormsCopy.yes, value: "walk_id"}];
+    const answers: PublicFormAnswers = {choices: ["walk_id", "retired_id"]};
+    const serialized = JSON.stringify(answers);
+    expect(answerSummary(choices, answers.choices)).toBe("Yes, retired_id");
+    expect(JSON.stringify(answers)).toBe(serialized);
   });
 
   it("routes and finishes with the same forward-only semantics as submission", () => {

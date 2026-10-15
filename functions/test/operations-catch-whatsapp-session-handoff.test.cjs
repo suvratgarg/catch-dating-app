@@ -186,7 +186,7 @@ for (const drift of ["cancel", "expiry", "source", "helper", "profile", "session
     const beforeProfile = fs.readFileSync(path.join(f.home, "profile.json"));
     const first = f.save(); await ready;
     if (drift === "cancel") assert.equal((await f.request("/cancel")).status, 200);
-    if (drift === "expiry") f.setNow(1800000300000);
+    if (drift === "expiry") f.setNow(1800000900000);
     if (drift === "source") f.binding.runtime.sourceSha = "e".repeat(40);
     if (drift === "helper") f.binding.helperSha256 = "e".repeat(64);
     if (drift === "profile") f.file("profile.json", JSON.stringify({...f.profile, runtimePrincipal: "serviceAccount:other@demo-catch-setup.iam.gserviceaccount.com"}) + "\n");
@@ -206,7 +206,7 @@ test("signed session must match exact account, project, Google provider and fres
   for (const mutation of [{uid: "other"}, {sub: "other"}, {aud: "other-project"}, {iss: "wrong"},
     {firebase: {sign_in_provider: "phone"}}, {firebase: {sign_in_provider: "google.com", tenant: "tenant"}},
     {tenant_id: "tenant"}, {email: "other@example.invalid"}, {email_verified: false},
-    {auth_time: valid.auth_time - 301}, {auth_time: valid.iat + 1}, {iat: valid.iat + 1},
+    {auth_time: valid.auth_time - 901}, {auth_time: valid.iat + 1}, {iat: valid.iat + 1},
     {exp: valid.iat}, {exp: valid.exp + 1}, {auth_time: -1}, {iat: Number.MAX_SAFE_INTEGER}, {exp: NaN}]) {
     assert.throws(() => assertSession({...valid, ...mutation}, f.scope, 1800000000000), /Protected session handoff unavailable/u);
   }
@@ -273,7 +273,6 @@ test("CLI rejects unapproved argument forms without exposing credential-shaped i
   }
 });
 
-
 test("raw tokens and tampered or differently bound ciphertext never reach SDK verification", async t => {
   for (const mode of ["raw", "ciphertext", "scope", "source", "expiry", "challenge"]) {
     const f = fixture(t); await f.start(); await f.bootstrap(); await f.configure();
@@ -292,4 +291,28 @@ test("raw tokens and tampered or differently bound ciphertext never reach SDK ve
     assert.equal(result.status, 400); assert.equal(f.calls(), 0); assert.ok(!result.text.includes(privateToken));
     assert.equal(fs.existsSync(path.join(f.home, "actor-id-token.txt")), false);
   }
+});
+
+test("handoff remains usable after five minutes and expires at fifteen", async t => {
+  const f = fixture(t);
+  const launch = await f.start();
+  assert.equal(launch.expiresAtMillis, 1800000900000);
+  f.setNow(1800000301000);
+  await f.bootstrap();
+  f.setNow(1800000899000);
+  assert.equal((await f.configure()).status, 200);
+  f.setNow(1800000900000);
+  assert.equal((await f.save()).status, 400);
+  assert.equal(f.calls(), 0);
+  assert.equal(fs.existsSync(path.join(f.home, "actor-id-token.txt")), false);
+});
+
+test("signed setup session accepts through exactly fifteen minutes and rejects older authentication", t => {
+  const f = fixture(t), valid = f.decoded();
+  for (const age of [301, 899, 900]) {
+    assert.doesNotThrow(() => assertSession({...valid, auth_time: valid.iat - age},
+      f.scope, 1800000000000));
+  }
+  assert.throws(() => assertSession({...valid, auth_time: valid.iat - 901},
+    f.scope, 1800000000000), /Protected session handoff unavailable/u);
 });

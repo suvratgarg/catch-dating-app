@@ -15,7 +15,8 @@ const unavailable = () => {throw new Error("Protected session handoff unavailabl
 const hash = value => createHash("sha256").update(value).digest("hex");
 const equal = (a, b) => typeof a === "string" && typeof b === "string" &&
   a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
-const maxAge = 5 * 60 * 1000;
+// Bounded setup policy; signed-token expiry and revocation stay authoritative.
+const maxAge = 15 * 60 * 1000;
 const present = file => {try {fs.lstatSync(file); return true;} catch (error) {
   if (error.code === "ENOENT") return false; throw error;
 }};

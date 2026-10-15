@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.30
-updated: 2026-10-07
+version: 2.7.31
+updated: 2026-10-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -3125,3 +3125,25 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
+
+## Immutable PR596 Intake release
+
+The existing selective backend caller supports `intake-pr596` with explicit
+`confirm_intake_pr596` and a single-line reason. It binds accepted source
+`ceab9d8abf5de7ad383260739032e0e1603d45ff`, successful main CI37777899024
+attempt1, artifact11551444925 and its fixed ZIP/provenance digests. The reusable
+promoter's separate Intake job retains the `backend-delivery` caller lock,
+non-cancelling `firebase-prod` lock, protected `prod` environment and recorded
+approval by a configured human reviewer before cloud authentication.
+
+The job verifies the complete immutable package, exact reviewed backend source
+compatibility, parameter coverage and target readiness. It invokes the checked
+Firebase wrapper once for `functions:adminListIntakeOperations`. It has no force,
+retry, IAM-repair, restore, DEV-eligibility, cursor or full-baseline route.
+Read-only snapshots bind every retained Function and Extension, indexes, field
+overrides, rules, flags and project IAM. Completion requires selected runtime,
+configuration and public invocation proof plus an empty unauthenticated401
+probe. Existing-authority authenticated Admin pagination remains a separate
+acceptance check; this route grants no new user, import, send or data-repair
+authority. Any failed metadata or postcondition stops the job and retains its
+isolated selected-only evidence. Source drift requires a new reviewed profile.

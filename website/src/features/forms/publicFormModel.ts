@@ -111,8 +111,24 @@ export function validatePublicFormAnswers(
   return errors;
 }
 
-export function answerSummary(answer: PublicFormAnswer | undefined): string {
+export function answerSummary(
+  question: PublicFormQuestion,
+  answer: PublicFormAnswer | undefined,
+  cityOptions: PublicOrganizerForm["cityOptions"] = []
+): string {
   if (answer === undefined || answer === null || answer === "") return "";
+  if (typeof answer === "string" && question.canonicalFieldId === "city" &&
+      question.answerDestination === "catchProfile") {
+    const city = cityOptions.find((option) => option.marketId === answer);
+    if (city) return `${city.label}, ${city.regionName}`;
+  }
+  if (question.kind === "singleChoice" && typeof answer === "string") {
+    return question.options.find((option) => option.value === answer)?.label ?? answer;
+  }
+  if (question.kind === "multiChoice" && Array.isArray(answer)) {
+    return answer.map((value) => question.options.find((option) =>
+      option.value === value)?.label ?? value).join(", ");
+  }
   if (Array.isArray(answer)) return answer.join(", ");
   if (typeof answer === "boolean") return answer ? "Yes" : "No";
   return String(answer);
