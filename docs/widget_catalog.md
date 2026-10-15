@@ -292,7 +292,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostAuthHeader</code> | <code>lib/auth/presentation/host_auth_widgets.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostAuthProgressButton</code> | <code>lib/auth/presentation/host_auth_widgets.dart:52</code> | — | — | A non-interactive primary action surface that preserves the button's geometry while an authentication request is in flight. |
 | <code>CountryCodeSelector</code> | <code>lib/auth/presentation/phone_page.dart:305</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:183</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:190</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatPageBody</code> | <code>lib/chats/presentation/event_chat_screen.dart:499</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:46</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
 | <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:13</code> | — | — | No class documentation or registry summary. |
