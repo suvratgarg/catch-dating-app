@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_group_details.schema.json",
+  "title": "HostGroupDetailDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostGroupDetails",
+  "x-firestore-path": "hostGroupDetails/{audienceId}",
+  "x-document-id-field": "audienceId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "audienceId",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "audienceId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "$ref": "../callable_responses/organizer_saved_audience_response.schema.json",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
