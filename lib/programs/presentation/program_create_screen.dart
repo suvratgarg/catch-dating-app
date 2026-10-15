@@ -10,9 +10,12 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/program_timezone.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_timezone_field.dart';
+import 'package:catch_dating_app/programs/presentation/program_timezone_providers.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -182,6 +185,22 @@ class ProgramCreateScreen extends ConsumerWidget {
               key: ValueKey('program-create-$uid-$organizerId'),
               organizerName: organizer.name,
               controller: controller,
+              timezoneSuggestion:
+                  ref.exists(
+                    programTimezoneSuggestionProvider((
+                      accountId: uid,
+                      organizerId: organizerId,
+                    )),
+                  )
+                  ? ref
+                        .read(
+                          programTimezoneSuggestionProvider((
+                            accountId: uid,
+                            organizerId: organizerId,
+                          )),
+                        )
+                        .value
+                  : null,
               onSaved: (programId) => context.goNamed(
                 Routes.hostEventsScreen.name,
                 queryParameters: {
@@ -210,11 +229,13 @@ class ProgramCreatePageBody extends StatefulWidget {
     required this.organizerName,
     required this.controller,
     required this.onSaved,
+    this.timezoneSuggestion,
   });
 
   final String organizerName;
   final ProgramCreateController controller;
   final ValueChanged<String> onSaved;
+  final ProgramTimezoneSuggestion? timezoneSuggestion;
 
   @override
   State<ProgramCreatePageBody> createState() => _ProgramCreatePageBodyState();
@@ -224,15 +245,13 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
   late final _title = TextEditingController(
     text: widget.controller.values.title,
   );
-  late final _timezone = TextEditingController(
-    text: widget.controller.values.timezone,
-  );
+  bool _timezoneOpen = false;
+  String _timezoneQuery = '';
   bool _allowPop = false;
 
   @override
   void dispose() {
     _title.dispose();
-    _timezone.dispose();
     super.dispose();
   }
 
@@ -311,12 +330,30 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
                   .maxLength!,
       ),
       ProgramCreateValidation.invalidTimezone =>
-        context.l10n.sharedValidationInvalid,
+        context.l10n.programsTimezoneInvalid,
       ProgramCreateValidation.invalidDate =>
         context.l10n.programsCreateInvalidDate,
       ProgramCreateValidation.endAfterStart =>
         context.l10n.programsCreateEndAfterStart,
     };
+  }
+
+  String _timezoneHelper(BuildContext context) {
+    final suggestion = widget.timezoneSuggestion;
+    final l10n = context.l10n;
+    if (suggestion == null ||
+        suggestion.value.identifier != widget.controller.values.timezone) {
+      return l10n.programsTimezoneDatesHint;
+    }
+    final source = switch (suggestion.value.source) {
+      ProgramTimezoneSource.organizer => l10n.programsTimezoneFromOrganizer,
+      ProgramTimezoneSource.city => l10n.programsTimezoneFromCity,
+      ProgramTimezoneSource.device => l10n.programsTimezoneFromDevice,
+      ProgramTimezoneSource.manual => l10n.programsTimezoneDatesHint,
+    };
+    return suggestion.defaultsError == null
+        ? source
+        : '${l10n.programsTimezoneDefaultsUnavailable} $source';
   }
 
   @override
@@ -410,19 +447,42 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
                                     ProgramCreateField.kind,
                                   ),
                                 ),
-                                CatchField.input(
-                                  copy: copy,
-                                  key: const ValueKey(
-                                    'program-create-timezone',
-                                  ),
+                                ProgramTimezoneField(
+                                  fieldCopy: copy,
+                                  searchCopy: catchSearchFieldCopy(l10n),
                                   title: l10n.programsCreateTimezoneLabel,
-                                  controller: _timezone,
-                                  contract: CatchContractConstraints
-                                      .createOrganizerProgramCallablePayloadTimezone,
-                                  inputHint: l10n.programsCreateTimezoneHint,
-                                  onChanged: (value) => controller.edit(
-                                    values.copyWith(timezone: value),
-                                  ),
+                                  placeholder: l10n.programsCreateTimezoneHint,
+                                  searchPlaceholder:
+                                      l10n.programsTimezoneSearchHint,
+                                  emptyMessage: l10n.programsTimezoneNoMatches,
+                                  indiaLabel: l10n.programsTimezoneIndia,
+                                  helperText: _timezoneHelper(context),
+                                  selected: values.timezone,
+                                  query: _timezoneQuery,
+                                  date: values.startsAt ?? DateTime.now(),
+                                  open: _timezoneOpen,
+                                  enabled: !controller.fieldsLocked,
+                                  onOpenChanged: (open) {
+                                    if (controller.fieldsLocked) return;
+                                    setState(() {
+                                      _timezoneOpen = open;
+                                      _timezoneQuery = '';
+                                    });
+                                  },
+                                  onQueryChanged: (query) {
+                                    if (!controller.fieldsLocked) {
+                                      setState(() => _timezoneQuery = query);
+                                    }
+                                  },
+                                  onSelected: (timezone) {
+                                    if (controller.fieldsLocked) return;
+                                    controller.edit(
+                                      controller.values.copyWith(
+                                        timezone: timezone,
+                                      ),
+                                    );
+                                    setState(() => _timezoneOpen = false);
+                                  },
                                   error: _fieldError(
                                     context,
                                     ProgramCreateField.timezone,

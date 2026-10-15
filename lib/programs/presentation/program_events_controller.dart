@@ -11,6 +11,7 @@ import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
+import 'package:catch_dating_app/programs/presentation/program_timezone_providers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,10 +59,36 @@ final programCreateControllerProvider = FutureProvider.autoDispose
         throw const ProgramActorChangedException();
       }
 
+      var initialValues = _createValues(recovered?.values);
+      if (recovered == null) {
+        // Capture the first resolved suggestion. Later preference refreshes
+        // must never rebuild the controller or overwrite an in-progress draft.
+        final ready = Completer<ProgramTimezoneSuggestion>();
+        ref.listen(programTimezoneSuggestionProvider(scope), (_, next) {
+          if (ready.isCompleted) return;
+          next.when(
+            data: ready.complete,
+            error: ready.completeError,
+            loading: () {},
+          );
+        }, fireImmediately: true);
+        ref.onDispose(() {
+          if (!ready.isCompleted) {
+            ready.completeError(const ProgramActorChangedException());
+          }
+        });
+        final suggestion = await ready.future;
+        if (!ref.mounted || !isCurrent()) {
+          throw const ProgramActorChangedException();
+        }
+        initialValues = initialValues.copyWith(
+          timezone: suggestion.value.identifier,
+        );
+      }
       final controller = ProgramCreateController(
         organizerId: scope.organizerId,
         requestId: recovered?.requestId ?? _newProgramRequestId(),
-        initialValues: _createValues(recovered?.values),
+        initialValues: initialValues,
         initialSubmittedValues: _submittedCreateValues(recovered),
         initialProgramId: recovered?.programId,
         newRequestId: _newProgramRequestId,
