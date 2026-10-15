@@ -183,15 +183,20 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
     ref.onDispose(() => ++_generation);
     // Account changes must invalidate published reads even when private setup
     // is disabled. Capture every dependency before starting asynchronous work.
-    final session = ref.watch(authenticatedSessionProvider);
-    if (session.isLoading ||
-        !identical(request.session, session.asData?.value)) {
+    final identity = switch (ref.watch(authenticatedSessionProvider)) {
+      AsyncValue(isLoading: true) => null,
+      AsyncData(:final value) => value,
+      AsyncError(:final error, :final stackTrace)
+          when request.session == null =>
+        Error.throwWithStackTrace(error, stackTrace),
+      AsyncLoading() || AsyncError() => null,
+    };
+    if (identity == null || !identical(request.session, identity)) {
       // A caller switches families when its opaque session changes. The old
       // family may briefly retain a listener, but must start no new reads.
       return Completer<HostEventsTimelineData>().future;
     }
     final previous = state.value;
-    _valueOrThrow(session);
     final repository = ref.watch(eventRepositoryProvider);
     final setups = ref.watch(privateEventSetupAvailableProvider)
         ? ref.watch(privateEventSetupTimelineRepositoryProvider)

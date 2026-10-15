@@ -24,6 +24,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:riverpod/misc.dart' show Override;
 
 import '../clubs/clubs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 typedef _Page = CursorPage<Event, DocumentSnapshot<Event>>;
 final _now = DateTime(2026, 9, 4, 12);
@@ -52,7 +53,9 @@ void main() {
     expect(section.state.status, HostEventsWorkspaceStatus.populated);
     await tester.tap(find.text('Past').hitTestable());
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+    // Advance the tab transition without waiting for the continuously animated
+    // history skeleton to settle.
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
     expect(find.text('No past events yet'), findsNothing);
     expect(find.byType(CatchLocalizedSliverErrorState), findsNothing);
     reads.completeHistory();

@@ -107,7 +107,7 @@ final class HostEventsTimelineControllerProvider
 }
 
 String _$hostEventsTimelineControllerHash() =>
-    r'1f1c80d479febf7086256763603835b21d576073';
+    r'52a6132dc5e9c139949e3cfabca08eb87c45613a';
 
 final class HostEventsTimelineControllerFamily extends $Family
     with

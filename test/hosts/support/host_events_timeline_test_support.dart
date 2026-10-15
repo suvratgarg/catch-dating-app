@@ -16,6 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 
 typedef TimelinePage = CursorPage<Event, DocumentSnapshot<Event>>;
 typedef TimelinePageStep = Future<TimelinePage> Function();
@@ -171,8 +172,8 @@ HostEventsTimelineControllerProvider timelineProvider(
   ),
 );
 
-// One event-loop turn drains async provider publications without wall-clock sleeps.
-Future<void> flushTimeline() => Future<void>.delayed(Duration.zero);
+// Drain queued provider publications through the shared deterministic helper.
+Future<void> flushTimeline() => flushTestEventQueue();
 
 enum TimelineSource {
   active,

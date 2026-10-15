@@ -67,9 +67,10 @@ class HostEventsClubCard extends ConsumerWidget {
     // A required private-history failure is terminal even after Upcoming has
     // rendered. Riverpod retains the pending value on AsyncError; remove that
     // value for this boundary so it cannot masquerade as usable inventory.
-    final retained = catchAsyncStateFromAsyncValue(timelineResult).value;
+    final timelineState = catchAsyncStateFromAsyncValue(timelineResult);
+    final retained = timelineState.value;
     final timelineAsync =
-        timelineResult.hasError &&
+        timelineState.error != null &&
             retained != null &&
             !retained.historyInitialized &&
             retained.loadingMorePast
