@@ -20,7 +20,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_c
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -555,14 +554,14 @@ class _HostFormResponseDetailScreenState
       Navigator.of(context).pop();
       return;
     }
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (_) => HostResponseOfferScreen(
-          organizerId: widget.organizerId,
-          responseId: detail.response!.response.responseId,
-          recipientLabel: detail.response!.response.identity.primaryLabel,
-        ),
-      ),
+    await context.pushNamed<void>(
+      Routes.hostResponseOfferScreen.name,
+      pathParameters: {'responseId': detail.response!.response.responseId},
+      queryParameters: {
+        ...GoRouterState.of(context).uri.queryParameters,
+        'organizerId': widget.organizerId,
+        'recipientLabel': detail.response!.response.identity.primaryLabel,
+      },
     );
     if (mounted) _reload();
   }

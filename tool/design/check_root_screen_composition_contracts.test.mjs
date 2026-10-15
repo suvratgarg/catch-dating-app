@@ -125,6 +125,28 @@ test("Host shell requires both aligned headers and the adaptive scaffold", () =>
   }
 });
 
+for (const symbol of ["CatchNavigationViewport", "CatchWorkspacePane", "HostTaskWorkspace"]) {
+  test(`rejects ${symbol} in Host feature code`, () => {
+    const root = fixtureRoot({ownerSource: ""});
+    write(root, "lib/hosts/presentation/example.dart", `${symbol}(child: Text('Bypass'));`);
+    assert.ok(checkRootScreenCompositionContracts({root}).findings.some((finding) =>
+      finding.code === "host-workspace-bypass"));
+  });
+}
+
+test("accepts the directory contract and rejects a removed required owner", () => {
+  const root = fixtureRoot({ownerSource: ""});
+  const file = "lib/hosts/presentation/example.dart";
+  write(root, file, "HostNavigationWorkspace(spec: HostDirectoryWorkspace(index: list, selection: null, detailBuilder: detail, unselected: empty));");
+  const manifestPath = path.join(root, "tool/design/root_screen_composition_contracts.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  manifest.workspaceOwners = [{path: file, requires: [{text: "HostDirectoryWorkspace("}]}];
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest));
+  assert.deepEqual(checkRootScreenCompositionContracts({root}).findings, []);
+  write(root, file, "LegacyDirectory()");
+  assert.ok(checkRootScreenCompositionContracts({root}).findings.some((finding) => finding.code === "missing-required-text"));
+});
+
 function fixtureRoot({
   ownerSource,
   shellSource = "return CatchAdaptiveTabScaffold(body: navigationShell);",
