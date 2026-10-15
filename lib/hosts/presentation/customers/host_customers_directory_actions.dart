@@ -27,13 +27,18 @@ extension _HostCustomersDirectoryActions on _HostCustomersScreenState {
       extra: audience,
     );
     if (!mounted || saved == null) return;
-    _invalidateHostAudienceDirectories(ref, club.id);
+    ref.invalidate(hostSavedAudiencesProvider(club.id));
+    ref.invalidate(hostAllSavedAudiencesProvider(club.id));
+    ref.invalidate(hostAllSavedAudienceSummariesProvider(club.id));
+    ref.invalidate(hostGroupDirectoryControllerProvider);
   }
 }
 
-void _invalidateHostAudienceDirectories(WidgetRef ref, String organizerId) {
-  ref.invalidate(hostSavedAudiencesProvider(organizerId));
-  ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
-  ref.invalidate(hostAllSavedAudienceSummariesProvider(organizerId));
-  ref.invalidate(hostGroupDirectoryControllerProvider);
+extension _HostSavedAudienceEditorActions on _HostSavedAudienceEditorFormState {
+  void _invalidateAudienceDirectories() {
+    ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
+    ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
+    ref.invalidate(hostAllSavedAudienceSummariesProvider(widget.organizerId));
+    ref.invalidate(hostGroupDirectoryControllerProvider);
+  }
 }
