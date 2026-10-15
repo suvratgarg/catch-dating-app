@@ -4307,6 +4307,42 @@
       "role": "generator"
     },
     {
+      "id": "platform:upload-crashlytics-symbols",
+      "category": "platform",
+      "path": "tool/platform/upload_crashlytics_symbols.py",
+      "impactPaths": [
+        "tool/platform/test_upload_crashlytics_symbols.py",
+        "apps/consumer/ios/Runner.xcodeproj/project.pbxproj"
+      ],
+      "command": "python3 tool/platform/upload_crashlytics_symbols.py --help",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Runs required Consumer Crashlytics validation and dSYM uploads with fail-closed stage deadlines and owned-process cancellation; checks use only fake uploaders.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "checks": [
+        "python3 tool/platform/test_upload_crashlytics_symbols.py"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "platform:upload-crashlytics-symbols-test",
+      "category": "platform",
+      "path": "tool/platform/test_upload_crashlytics_symbols.py",
+      "command": "python3 tool/platform/test_upload_crashlytics_symbols.py",
+      "safety": "local",
+      "status": "support",
+      "description": "Portable stdlib tests for symbol upload bounds, required dSYM coverage, SDK failures and cancellation; never invokes the real SDK or remote services.",
+      "checks": [
+        "python3 tool/platform/test_upload_crashlytics_symbols.py"
+      ]
+    },
+    {
       "id": "platform:apple-flavors",
       "category": "platform",
       "path": "tool/platform/configure_apple_flavors.rb",
