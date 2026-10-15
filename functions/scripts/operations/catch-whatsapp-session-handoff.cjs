@@ -69,7 +69,14 @@ function assertSession(token, scope, now) {
 }
 
 function createSessionHandoff({home, clientOrigin, now = Date.now,
-  identity = handoffIdentity, verifierFactory = verifyFactory} = {}) {
+  identity = handoffIdentity, verifierFactory = verifyFactory,
+  diagnostics = value => process.stderr.write(JSON.stringify(value) + "\n")} = {}) {
+  const failureCodes = Object.freeze({admission: "helper_admission_failed",
+    verification: "helper_verification_failed", commit: "helper_commit_unconfirmed"});
+  const record = (stage, outcome) => {
+    // Only fixed stage/outcome values cross this observer boundary; never errors or inputs.
+    try {diagnostics({kind: "catch-operator-session-diagnostic", stage, outcome});} catch { /* Diagnostics cannot change save authority. */ }
+  };
   const client = new URL(clientOrigin);
   if (client.protocol !== "https:" || client.origin !== clientOrigin ||
       client.username || client.password || client.pathname !== "/" || client.search || client.hash) unavailable();
@@ -183,6 +190,8 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
     return JSON.parse(new TextDecoder("utf-8", {fatal: true}).decode(bytes));
   };
   const server = http.createServer(async (request, response) => {
+    let diagnosticStage;
+    let ownsAttempt = false;
     try {
       if (request.headers.host !== new URL(origin).host || request.socket.remoteAddress !== "127.0.0.1") unavailable();
       if (request.headers.origin !== clientOrigin) unavailable();
@@ -216,6 +225,7 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
         phase = "cancelled"; cleanup();
         reply(response, 200, {state: "cancelled"}, request); server.close(); return;
       }
+      if (request.url === "/session") {diagnosticStage = "admission"; record(diagnosticStage, "started");}
       current(); unchangedProfile();
       if (request.url === "/configure") {
         if (phase !== "configuration") unavailable();
@@ -236,7 +246,7 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
         return;
       }
       if (request.url !== "/session" || phase !== "transfer" || consumed) unavailable();
-      consumed = true; phase = "verifying";
+      consumed = true; ownsAttempt = true; phase = "verifying";
       const input = await body(request);
       if (!input || Object.keys(input).sort().join(",") !== "challenge,sealedSession" ||
           !equal(input.challenge, challenge)) unavailable();
@@ -244,6 +254,8 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       if (idToken.length > 16384 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/u.test(idToken)) unavailable();
       current(); unchangedProfile();
       const priorToken = oldToken();
+      record(diagnosticStage, "passed");
+      diagnosticStage = "verification"; record(diagnosticStage, "started");
       verifier ??= verifierFactory(profile.scope.projectId);
       let deadline;
       const verified = await Promise.race([verifier(idToken), new Promise((_, reject) => {
@@ -252,6 +264,8 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       current(); unchangedProfile();
       if (oldToken() !== priorToken) unavailable();
       assertSession(verified, profile.scope, now());
+      record(diagnosticStage, "passed");
+      diagnosticStage = "commit"; record(diagnosticStage, "started");
       const tokenStage = path.join(temporary, "actor-id-token.txt");
       const fd = fs.openSync(tokenStage, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | fs.constants.O_NOFOLLOW, 0o600);
       try {fs.writeFileSync(fd, idToken + "\n"); fs.fsyncSync(fd);} finally {fs.closeSync(fd);}
@@ -272,11 +286,15 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
         if (fs.existsSync(tokenStage)) fs.unlinkSync(tokenStage);
         throw error;
       }
-      phase = "saved"; cleanup();
+      phase = "saved"; record(diagnosticStage, "passed"); cleanup();
       reply(response, 200, {kind: "catch-operator-session", state: "saved", sourceSha: profile.sourceSha,
         expiresAtMillis: verified.exp * 1000}, request); server.close();
     } catch {
-      reply(response, 400, {state: "unavailable"}, request);
+      if (diagnosticStage) record(diagnosticStage, "failed");
+      // Rejecting a replay cannot establish the outcome of the original attempt.
+      const code = diagnosticStage === "admission" && consumed && !ownsAttempt ?
+        "helper_commit_unconfirmed" : failureCodes[diagnosticStage];
+      reply(response, 400, {state: "unavailable", ...(diagnosticStage ? {code} : {})}, request);
     }
   });
   return {

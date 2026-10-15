@@ -24,9 +24,10 @@ function fixtureHelper(options) {
   };
   try {return createSessionHandoff(options);} finally {fs.lstatSync = original;}
 }
-function fixture(t, {existing = false, verify, nowMillis = 1800000000000} = {}) {
+function fixture(t, {existing = false, verify, observer, nowMillis = 1800000000000} = {}) {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "catch-session-test-"));
   let now = nowMillis, calls = 0;
+  const diagnostics = [];
   const binding = {runtime: {sourceSha: "a".repeat(40), executionSha256: "b".repeat(64)}, helperSha256: "c".repeat(64)};
   const credentialVersionName = "projects/demo-catch-setup/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/7";
   const scope = {projectId: "demo-catch-setup", actorUid: "fake-google-actor",
@@ -42,6 +43,7 @@ function fixture(t, {existing = false, verify, nowMillis = 1800000000000} = {}) 
   const file = (name, value) => fs.writeFileSync(path.join(home, name), value, {mode: 0o600});
   if (existing) {file("profile.json", JSON.stringify(profile) + "\n"); file("actor-id-token.txt", "old.synthetic.session\n");}
   const helper = fixtureHelper({home, clientOrigin, now: () => now, identity: () => binding,
+    diagnostics: value => {diagnostics.push(value); observer?.(value);},
     verifierFactory: projectId => {
       calls++; assert.equal(projectId, scope.projectId);
       return async token => {assert.equal(token, privateToken); return verify ? verify(decoded()) : decoded();};
@@ -97,7 +99,7 @@ function fixture(t, {existing = false, verify, nowMillis = 1800000000000} = {}) 
     return {wrappedKey: wrappedKey.toString("base64url"), iv: iv.toString("base64url"), ciphertext: ciphertext.toString("base64url")};
   };
   const save = () => request("/session", {challenge: transfer.challenge, sealedSession: seal()});
-  return {home, helper, binding, profile, scope, decoded, file, start, request, bootstrap, configure, save, seal,
+  return {home, helper, binding, profile, scope, decoded, file, start, request, bootstrap, configure, save, seal, diagnostics,
     calls: () => calls, setNow: value => now = value, get transfer() {return transfer;}, get anchor() {return anchor;}};
 }
 
@@ -173,7 +175,9 @@ test("replay is consumed before verification and cannot start another verificati
   const f = fixture(t, {verify: async decoded => {entered(); await waiting; return decoded;}});
   await f.start(); await f.bootstrap(); await f.configure();
   const first = f.save(); await ready;
-  assert.equal((await f.save()).status, 400); assert.equal(f.calls(), 1);
+  const replay = await f.save();
+  assert.equal(replay.status, 400); assert.equal(f.calls(), 1);
+  assert.deepEqual(replay.value, {state: "unavailable", code: "helper_commit_unconfirmed"});
   resolve(); assert.equal((await first).status, 200);
 });
 
@@ -217,7 +221,8 @@ test("verification rejection and malformed token are redacted, one-shot and writ
     const f = fixture(t, {verify: async () => {throw new Error(privateToken + " revoked or invalid");}});
     await f.start(); await f.bootstrap(); await f.configure();
     const response = malformed ? await f.request("/session", {challenge: f.transfer.challenge, sealedSession: f.seal("sensitive-invalid-token")}) : await f.save();
-    assert.equal(response.status, 400); assert.deepEqual(response.value, {state: "unavailable"});
+    assert.equal(response.status, 400); assert.deepEqual(response.value, {state: "unavailable",
+      code: malformed ? "helper_admission_failed" : "helper_verification_failed"});
     assert.equal((await f.save()).status, 400); assert.equal(f.calls(), malformed ? 0 : 1);
     assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
     assert.equal(fs.existsSync(path.join(f.home, "actor-id-token.txt")), false);
@@ -315,4 +320,97 @@ test("signed setup session accepts through exactly fifteen minutes and rejects o
   }
   assert.throws(() => assertSession({...valid, auth_time: valid.iat - 901},
     f.scope, 1800000000000), /Protected session handoff unavailable/u);
+});
+
+test("helper records only fixed admission, verification and commit outcomes", async t => {
+  const f = fixture(t, {observer: () => {throw new Error(privateToken);}});
+  await f.start();
+  await f.request("/session", {}, {"X-Catch-CSRF": "not-authorized"});
+  assert.deepEqual(f.diagnostics, []);
+  await f.bootstrap(); await f.configure();
+  assert.equal((await f.save()).status, 200);
+  assert.deepEqual(f.diagnostics, ["admission", "verification", "commit"].flatMap(stage =>
+    ["started", "passed"].map(outcome => ({kind: "catch-operator-session-diagnostic", stage, outcome}))));
+  const records = JSON.stringify(f.diagnostics);
+  for (const value of [privateToken, f.home, f.scope.actorUid, f.scope.projectId,
+    f.scope.actorEmailSha256, f.binding.runtime.sourceSha, f.anchor.bootstrapCapability]) {
+    assert.ok(!records.includes(value));
+  }
+});
+
+for (const mutation of ["expiry", "source", "profile"]) {
+  test(`${mutation} drift is an admission failure with no verifier or commit`, async t => {
+    const f = fixture(t, {existing: true}); await f.start(); await f.bootstrap(); await f.configure();
+    if (mutation === "expiry") f.setNow(1800000900000);
+    if (mutation === "source") f.binding.runtime.sourceSha = "e".repeat(40);
+    if (mutation === "profile") f.file("profile.json", JSON.stringify({...f.profile, sourceSha: "e".repeat(40)}));
+    const result = await f.save();
+    assert.deepEqual(result.value, {state: "unavailable", code: "helper_admission_failed"});
+    assert.equal(f.calls(), 0);
+    assert.deepEqual(f.diagnostics.map(({stage, outcome}) => [stage, outcome]), [["admission", "started"], ["admission", "failed"]]);
+    assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), "old.synthetic.session\n");
+  });
+}
+
+for (const mutation of [{auth_time: 1799999099}, {uid: "other"}, {aud: "other-project"}]) {
+  test(`signed metadata rejection stays in verification and remains one-use: ${Object.keys(mutation)[0]}`, async t => {
+    const f = fixture(t, {verify: decoded => ({...decoded, ...mutation})});
+    await f.start(); await f.bootstrap(); await f.configure();
+    const result = await f.save();
+    assert.deepEqual(result.value, {state: "unavailable", code: "helper_verification_failed"});
+    assert.equal(f.calls(), 1);
+    assert.deepEqual(f.diagnostics.map(({stage, outcome}) => [stage, outcome]), [
+      ["admission", "started"], ["admission", "passed"], ["verification", "started"], ["verification", "failed"]]);
+    assert.equal(fs.existsSync(path.join(f.home, "actor-id-token.txt")), false);
+    assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
+    assert.equal((await f.save()).status, 400); assert.equal(f.calls(), 1);
+  });
+}
+
+test("commit errors remain unconfirmed, redacted and one-use while preserving prior bytes", async t => {
+  for (const existing of [false, true]) {
+    const f = fixture(t, {existing}); await f.start(); await f.bootstrap(); await f.configure();
+    const original = fs.renameSync;
+    let result;
+    fs.renameSync = function(from, to) {
+      if (to === path.join(f.home, "actor-id-token.txt")) throw new Error(privateToken + f.home + f.scope.actorUid);
+      return original.call(this, from, to);
+    };
+    try {result = await f.save();} finally {fs.renameSync = original;}
+    assert.deepEqual(result.value, {state: "unavailable", code: "helper_commit_unconfirmed"});
+    assert.deepEqual(f.diagnostics.at(-1), {kind: "catch-operator-session-diagnostic", stage: "commit", outcome: "failed"});
+    assert.ok(!JSON.stringify([result.value, f.diagnostics]).includes(privateToken));
+    if (existing) {
+      assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), "old.synthetic.session\n");
+      assert.deepEqual(JSON.parse(fs.readFileSync(path.join(f.home, "profile.json"))), f.profile);
+    } else {
+      assert.equal(fs.existsSync(path.join(f.home, "actor-id-token.txt")), false);
+      assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
+    }
+    assert.equal((await f.save()).status, 400); assert.equal(f.calls(), 1);
+  }
+});
+
+test("a lost authenticated receipt does not undo a synthetic commit or trigger another request", async t => {
+  const {createSessionTransport, sessionFailureCode} = require("../../admin/src/features/operator-session/api/operatorSessionTransport.ts");
+  const f = fixture(t, {nowMillis: Math.floor(Date.now() / 1000) * 1000});
+  await f.start(); let submissions = 0;
+  const dispatch = async (url, init) => {
+    const response = await fetch(url, {...init, headers: {...init.headers, Origin: clientOrigin, "Sec-Fetch-Site": "cross-site"}});
+    if (new URL(url).pathname === "/session") {
+      submissions++; await response.text(); throw new Error(privateToken);
+    }
+    return response;
+  };
+  const transport = createSessionTransport(f.anchor, dispatch);
+  const boot = await transport.bootstrap();
+  const configured = await transport.post("/configure", f.profile, boot.csrf);
+  const {sealSession} = require("../../admin/src/features/operator-session/api/operatorSessionTransport.ts");
+  const sealedSession = await sealSession(configured.request, privateToken);
+  const error = await transport.post("/session", {challenge: f.anchor.challenge, sealedSession}, boot.csrf).catch(error => error);
+  assert.equal(sessionFailureCode(error), "local_connection_failed");
+  assert.equal(error.message, "Protected session handoff unavailable.");
+  assert.equal(submissions, 1); assert.equal(f.calls(), 1);
+  assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), privateToken + "\n");
+  assert.deepEqual(f.diagnostics.at(-1), {kind: "catch-operator-session-diagnostic", stage: "commit", outcome: "passed"});
 });
