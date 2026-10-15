@@ -73,6 +73,12 @@ Future<GoRouter> _pumpShell(WidgetTester tester, _Repository repository) async {
             _stub('program ${state.pathParameters['programId']}'),
       ),
       GoRoute(
+        path: Routes.hostProgramTeamScreen.path,
+        name: Routes.hostProgramTeamScreen.name,
+        builder: (_, state) =>
+            _stub('team ${state.pathParameters['programId']}'),
+      ),
+      GoRoute(
         path: Routes.hostWorkEventScreen.path,
         name: Routes.hostWorkEventScreen.name,
         builder: (_, state) =>
@@ -102,6 +108,60 @@ Future<GoRouter> _pumpShell(WidgetTester tester, _Repository repository) async {
 }
 
 void main() {
+  for (final operationalDuty in [
+    null,
+    'airportGreeter',
+    'programCoordinator',
+  ]) {
+    final mixed = operationalDuty != null;
+    testWidgets(
+      'admin assignment keeps a Work back target: operational=$operationalDuty',
+      (tester) async {
+        final assignment = {
+          ..._programAssignment(),
+          'duties': [
+            {'duty': 'programAdmin'},
+            if (mixed) {'duty': operationalDuty},
+          ],
+          'destinations': [
+            if (operationalDuty == 'airportGreeter') 'arrivals',
+            'team',
+          ],
+          'shellMode': operationalDuty == 'programCoordinator'
+              ? 'programWorkspace'
+              : mixed
+              ? 'tabs'
+              : 'task',
+        };
+        final router = await _pumpShell(
+          tester,
+          _Repository({
+            'assignments': [assignment],
+            'shellEntry': 'workShell',
+          }),
+        );
+        expect(
+          router.routeInformationProvider.value.uri.path,
+          Routes.hostWorkScreen.path,
+        );
+        if (mixed) {
+          await tester.tap(find.byTooltip('Team & duties'));
+        } else {
+          await tester.tap(find.text('Kapoor–Mehta wedding'));
+        }
+        await pumpUntilFound(tester, find.text('team program-1'));
+        expect(router.canPop(), isTrue);
+        router.pop();
+        await pumpFeatureUi(tester);
+        expect(find.text('Kapoor–Mehta wedding'), findsOneWidget);
+        if (mixed) {
+          await tester.tap(find.text('Kapoor–Mehta wedding'));
+          await pumpUntilFound(tester, find.text('program program-1'));
+        }
+      },
+    );
+  }
+
   testWidgets('renders the picker grouped by organizer', (tester) async {
     await _pumpShell(
       tester,

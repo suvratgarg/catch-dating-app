@@ -338,7 +338,7 @@ void main() {
     },
   );
   testWidgets(
-    'client uses current scoped grant and canonical planner; explicit preview then share',
+    'client uses current program access; explicit preview then share',
     (tester) async {
       final f = _Fixture();
       addTearDown(() => f.close(tester));
@@ -347,7 +347,10 @@ void main() {
         find.text('Phone import demo · sharing unavailable'),
         findsNothing,
       );
-      expect(find.text('Selected planner: Synthetic planner'), findsOneWidget);
+      expect(
+        find.text('Visible to authorized program collaborators'),
+        findsOneWidget,
+      );
       expect(
         tester
             .widget<CatchButton>(
@@ -420,7 +423,7 @@ void main() {
       await f.mount(tester);
       expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
       expect(find.byKey(const ValueKey('phone-import-pick')), findsOneWidget);
-      expect(f.assignments.calls, 1);
+      expect(f.assignments.calls, 0);
       expect(f.functions.calls.map((call) => call.name), [
         'getProgramWorkAccess',
         'getProgramWorkAccess',
@@ -612,13 +615,17 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
-  testWidgets('mismatched planner or restricted guest scope fails closed', (
+  testWidgets('changed organizer or restricted guest scope fails closed', (
     tester,
   ) async {
     for (final mismatch in [true, false]) {
       final f = _Fixture();
       if (mismatch) {
-        f.assignments.planner = 'other-planner';
+        var reads = 0;
+        f.functions.respond = (_, _) async => {
+          ..._liveAccess(),
+          if (++reads > 1) 'organizerId': 'other-planner',
+        };
       } else {
         f.functions.respond = (name, payload) async =>
             _liveAccess(functionIds: ['one-function']);
@@ -798,7 +805,6 @@ void main() {
               controller: review,
               submission: submission,
               weddingName: 'Asha & Ravi · sample wedding',
-              plannerName: 'Sample wedding planner',
             ),
             drive: phase == 'ready'
                 ? (tester) async {

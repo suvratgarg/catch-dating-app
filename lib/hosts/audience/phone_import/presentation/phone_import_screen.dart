@@ -33,7 +33,6 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
   PhoneImportSubmissionController? _submission;
   ProgramWorkAccess? _access;
   String? _accountId;
-  String? _plannerName;
   Object? _error;
   bool _loading = true;
   bool _refreshing = false;
@@ -86,7 +85,6 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
     _submission = null;
     _review = null;
     _access = null;
-    _plannerName = null;
   }
 
   void _reload() {
@@ -123,7 +121,6 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
       _submission = session.submission;
       setState(() {
         _access = session.access;
-        _plannerName = session.plannerName;
         _loading = false;
         _error = null;
       });
@@ -201,7 +198,6 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
         controller: _review!,
         submission: _submission!,
         weddingName: _access!.title,
-        plannerName: _plannerName!,
         onReloadSaved: _reload,
       );
     }

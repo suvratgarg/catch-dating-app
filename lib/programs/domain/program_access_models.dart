@@ -7,6 +7,7 @@ enum ProgramStatus { draft, active, completed, archived }
 enum ProgramActorRole { manager, staff }
 
 enum ProgramStaffDuty {
+  programAdmin,
   programCoordinator,
   guestRelations,
   communications,
@@ -84,7 +85,8 @@ class ProgramDutyAssignment {
   bool isActiveAt(DateTime now) =>
       expiresAt != null &&
       expiresAt!.isAfter(now) &&
-      (duty != ProgramStaffDuty.programCoordinator ||
+      ((duty != ProgramStaffDuty.programCoordinator &&
+              duty != ProgramStaffDuty.programAdmin) ||
           (pickupPointIds.isEmpty &&
               hotelIds.isEmpty &&
               functionIds.isEmpty)) &&
@@ -289,20 +291,26 @@ class ProgramWorkAccess {
   Iterable<ProgramDutyAssignment> activeDutiesAt(DateTime now) =>
       grantExpiresAt == null || !grantExpiresAt!.isAfter(now)
       ? const []
-      : duties.where((assignment) => assignment.isActiveAt(now));
+      : duties.where(
+          (assignment) =>
+              assignment.isActiveAt(now) &&
+              !assignment.expiresAt!.isAfter(grantExpiresAt!),
+        );
+
+  bool _matchesDuty(ProgramDutyAssignment assignment, ProgramStaffDuty duty) =>
+      assignment.duty == duty ||
+      (duty != ProgramStaffDuty.programAdmin &&
+          assignment.duty == ProgramStaffDuty.programCoordinator);
 
   bool hasDuty(ProgramStaffDuty duty, {required DateTime now}) =>
-      isManager ||
-      activeDutiesAt(now).any(
-        (a) => a.duty == duty || a.duty == ProgramStaffDuty.programCoordinator,
-      );
+      isManager || activeDutiesAt(now).any((a) => _matchesDuty(a, duty));
 
   /// Stations this actor may open; empty scope on a duty means all.
   Set<String>? stationScope(ProgramStaffDuty duty, {required DateTime now}) {
     if (isManager) return null;
     final scoped = <String>{};
     for (final a in activeDutiesAt(now)) {
-      if (a.duty != duty && a.duty != ProgramStaffDuty.programCoordinator) {
+      if (!_matchesDuty(a, duty)) {
         continue;
       }
       if (a.pickupPointIds.isEmpty) return null;
@@ -315,7 +323,7 @@ class ProgramWorkAccess {
     if (isManager) return null;
     final scoped = <String>{};
     for (final a in activeDutiesAt(now)) {
-      if (a.duty != duty && a.duty != ProgramStaffDuty.programCoordinator) {
+      if (!_matchesDuty(a, duty)) {
         continue;
       }
       if (a.hotelIds.isEmpty) return null;
@@ -329,7 +337,7 @@ class ProgramWorkAccess {
     if (isManager) return null;
     final scoped = <String>{};
     for (final a in activeDutiesAt(now)) {
-      if (a.duty != duty && a.duty != ProgramStaffDuty.programCoordinator) {
+      if (!_matchesDuty(a, duty)) {
         continue;
       }
       if (a.functionIds.isEmpty) return null;
@@ -339,7 +347,7 @@ class ProgramWorkAccess {
   }
 }
 
-enum ProgramStaffStatus { active, expired, revoked }
+enum ProgramStaffStatus { active, expired, revoked, approvalRequired }
 
 class ProgramStaffMember {
   const ProgramStaffMember({

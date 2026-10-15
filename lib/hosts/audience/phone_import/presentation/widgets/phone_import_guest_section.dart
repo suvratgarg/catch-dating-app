@@ -191,11 +191,13 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
           key: ValueKey('phone-import-household-${entry.id}'),
           copy: copy,
           title: context.l10n.phoneImportHousehold,
+          inputHint: context.l10n.phoneImportHousehold,
           controller: _household,
           contractExemption:
               'Review input for canonical importProgramManifest.householdLabel; no direct household write.',
-          labelMode: CatchFieldLabelTextMode.optional,
-          helperText: context.l10n.phoneImportHouseholdHelp,
+          labelMode: CatchFieldLabelTextMode.hiddenOptional,
+          helperText:
+              '${copy.label.optionalLabel} · ${context.l10n.phoneImportHouseholdHelp}',
           states: states,
           onChanged: widget.onHouseholdChanged,
         ),

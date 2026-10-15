@@ -18,7 +18,6 @@ import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
 
 const _wedding = 'Asha & Ravi · sample wedding';
-const _planner = 'Sample wedding planner';
 const _mobile = '+1 202 555 0106';
 const _home = '+1 202 555 0107';
 
@@ -70,7 +69,9 @@ void main() {
       await _tap(tester, const ValueKey('phone-import-sharing'));
       expect(controller.canReview, isTrue);
       expect(
-        find.textContaining('with $_wedding and $_planner'),
+        find.textContaining(
+          'with $_wedding and its authorized program collaborators',
+        ),
         findsOneWidget,
       );
       expect(
@@ -358,7 +359,6 @@ void main() {
             builder: (_) => PhoneImportReviewScreen(
               controller: controller,
               weddingName: _wedding,
-              plannerName: _planner,
             ),
             drive: state == 'selection'
                 ? null
@@ -400,7 +400,6 @@ Future<void> _mount(
       home: PhoneImportReviewScreen(
         controller: controller,
         weddingName: _wedding,
-        plannerName: _planner,
       ),
     ),
   );

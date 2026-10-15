@@ -87,6 +87,9 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
   bool _pending = false;
 
   String _dutyLabel(ProgramStaffDuty duty) {
+    if (duty == ProgramStaffDuty.programAdmin) {
+      return context.l10n.programsTeamProgramAdmin;
+    }
     // camelCase enum names → sentence-case labels for the roster.
     final words = duty.name.replaceAllMapped(
       RegExp('([a-z])([A-Z])'),
@@ -240,11 +243,17 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                             runSpacing: CatchSpacing.s1,
                             children: [
                               CatchBadge(
-                                label: member.status.name,
+                                label:
+                                    member.status ==
+                                        ProgramStaffStatus.approvalRequired
+                                    ? context.l10n.programsTeamApprovalRequired
+                                    : member.status.name,
                                 tone: switch (member.status) {
                                   ProgramStaffStatus.active =>
                                     CatchBadgeTone.success,
                                   ProgramStaffStatus.expired =>
+                                    CatchBadgeTone.warning,
+                                  ProgramStaffStatus.approvalRequired =>
                                     CatchBadgeTone.warning,
                                   ProgramStaffStatus.revoked =>
                                     CatchBadgeTone.danger,
@@ -329,9 +338,9 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
     final picked = await showCatchDatePicker(
       copy: catchDatePickerCopy(context.l10n),
       context: context,
-      initialDate: _expiresAt ?? now.add(const Duration(days: 30)),
+      initialDate: _expiresAt ?? now.add(const Duration(days: 14)),
       firstDate: now,
-      lastDate: now.add(const Duration(days: 365 * 2)),
+      lastDate: now.add(const Duration(days: 14)),
     );
     if (picked != null && mounted) {
       setState(() => _expiresAt = picked);
@@ -418,10 +427,12 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
         for (final duty in ProgramStaffDuty.values)
           CatchFieldRow.standard(
             body: Text(
-              duty.name.replaceAllMapped(
-                RegExp('([a-z])([A-Z])'),
-                (m) => '${m[1]} ${m[2]}'.toLowerCase(),
-              ),
+              duty == ProgramStaffDuty.programAdmin
+                  ? context.l10n.programsTeamProgramAdmin
+                  : duty.name.replaceAllMapped(
+                      RegExp('([a-z])([A-Z])'),
+                      (m) => '${m[1]} ${m[2]}'.toLowerCase(),
+                    ),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             trailing: _duties.contains(duty)

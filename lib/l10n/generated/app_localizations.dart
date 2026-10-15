@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// Native phone guest import review and explicit workspace sharing.
   ///
   /// In en, this message translates to:
-  /// **'This review stays on this device. Nothing is saved or shared with a wedding or planner in this demo.'**
+  /// **'This review stays on this device. Nothing is saved or shared with a wedding or its program collaborators in this demo.'**
   String get phoneImportDemoMessage;
 
   /// Native phone guest import review and explicit workspace sharing.
@@ -187,7 +187,7 @@ abstract class AppLocalizations {
   /// Native phone guest import review and explicit workspace sharing.
   ///
   /// In en, this message translates to:
-  /// **'Selecting contacts does not share them. Check the review, confirm the wedding and planner, then share explicitly.'**
+  /// **'Selecting contacts does not share them. Review the guests, confirm the selected wedding, then share explicitly.'**
   String get phoneImportPrivacyMessage;
 
   /// Native phone guest import review and explicit workspace sharing.
@@ -385,7 +385,7 @@ abstract class AppLocalizations {
   /// Native phone guest import review and explicit workspace sharing.
   ///
   /// In en, this message translates to:
-  /// **'Choose one phone number'**
+  /// **'Choose number'**
   String get phoneImportChooseNumber;
 
   /// Native phone guest import review and explicit workspace sharing.
@@ -523,17 +523,8 @@ abstract class AppLocalizations {
   /// Native phone guest import review and explicit workspace sharing.
   ///
   /// In en, this message translates to:
-  /// **'These reviewed guests were shared with {wedding} and {planner}.'**
-  String phoneImportCompletedMessage({
-    required String wedding,
-    required String planner,
-  });
-
-  /// Native phone guest import review and explicit workspace sharing.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected planner: {planner}'**
-  String phoneImportSelectedPlanner({required String planner});
+  /// **'These reviewed guests were shared with {wedding} and its authorized program collaborators.'**
+  String phoneImportCompletedMessage({required String wedding});
 
   /// Native phone guest import review and explicit workspace sharing.
   ///
@@ -550,8 +541,8 @@ abstract class AppLocalizations {
   /// Native phone guest import review and explicit workspace sharing.
   ///
   /// In en, this message translates to:
-  /// **'I want to share only these reviewed guests with {wedding} and {planner}.'**
-  String phoneImportConsent({required String wedding, required String planner});
+  /// **'I want to share only these reviewed guests with {wedding} and its authorized program collaborators.'**
+  String phoneImportConsent({required String wedding});
 
   /// Native phone guest import review and explicit workspace sharing.
   ///
@@ -40650,6 +40641,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a valid timezone from the list.'**
   String get programsTimezoneInvalid;
+
+  /// Explains who can view reviewed guests shared with the selected wedding.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to authorized program collaborators'**
+  String get phoneImportProgramCollaborators;
+
+  /// Explicit expiring staff duty that permits delegating program access.
+  ///
+  /// In en, this message translates to:
+  /// **'Program administrator'**
+  String get programsTeamProgramAdmin;
+
+  /// Legacy organizer-issued access is unavailable until the program creator reissues it.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner approval required'**
+  String get programsTeamApprovalRequired;
 }
 
 class _AppLocalizationsDelegate

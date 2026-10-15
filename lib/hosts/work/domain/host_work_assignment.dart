@@ -17,6 +17,7 @@ enum HostWorkScopeKind { event, program }
 /// Event grants carry role names server-side (`checkInOperator`,
 /// `eventOperator`); the callable already maps them onto this union.
 enum HostWorkDuty {
+  programAdmin,
   programCoordinator,
   guestRelations,
   communications,
@@ -49,6 +50,7 @@ enum HostWorkDestination {
   exceptions,
   export,
   overview,
+  team,
 }
 
 /// How the per-assignment shell renders: a single focused task, a bottom

@@ -313,43 +313,41 @@ void main() {
         );
   });
 
-  testWidgets(
-    'manager navigation opens real review without a staff assignment',
-    (tester) async {
-      final f = _Fixture();
-      addTearDown(() => f.close(tester));
-      await f.mount(tester);
-      await tester.tap(
-        find.byKey(const ValueKey('program-guests-phone-import')),
-      );
-      await pumpFeatureUi(tester);
-      expect(f.router!.state.uri.path, '/host/work/wedding/phone-import');
-      expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
-      expect(find.text('Selected planner: Canonical planner'), findsOneWidget);
-      expect(find.text('Action unavailable'), findsNothing);
-      expect(f.assignments.calls, 0);
-      expect(f.organizers.requestedIds, [_organizerId]);
-      expect(f.functions.calls.length, 3);
-      expect(
-        f.functions.calls.every(
-          (c) =>
-              c.name == 'getProgramWorkAccess' &&
-              c.payload['programId'] == _programId,
-        ),
-        isTrue,
-      );
-      expect(
-        tester
-            .widget<PhoneImportReviewScreen>(
-              find.byType(PhoneImportReviewScreen),
-            )
-            .controller
-            .entries,
-        isEmpty,
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('creator opens real review using canonical program authority', (
+    tester,
+  ) async {
+    final f = _Fixture();
+    addTearDown(() => f.close(tester));
+    await f.mount(tester);
+    await tester.tap(find.byKey(const ValueKey('program-guests-phone-import')));
+    await pumpFeatureUi(tester);
+    expect(f.router!.state.uri.path, '/host/work/wedding/phone-import');
+    expect(find.byType(PhoneImportReviewScreen), findsOneWidget);
+    expect(
+      find.text('Visible to authorized program collaborators'),
+      findsOneWidget,
+    );
+    expect(find.text('Action unavailable'), findsNothing);
+    expect(f.assignments.calls, 0);
+    expect(f.organizers.requestedIds, isEmpty);
+    expect(f.functions.calls.length, 3);
+    expect(
+      f.functions.calls.every(
+        (c) =>
+            c.name == 'getProgramWorkAccess' &&
+            c.payload['programId'] == _programId,
+      ),
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<PhoneImportReviewScreen>(find.byType(PhoneImportReviewScreen))
+          .controller
+          .entries,
+      isEmpty,
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('entry does not bypass a fresh destination denial', (
     tester,
@@ -372,27 +370,34 @@ void main() {
   });
 
   for (final kind in ['missing', 'wrong id', 'blank name']) {
-    test('manager requires canonical organizer metadata: $kind', () async {
-      final f = _Fixture();
-      addTearDown(f.close);
-      f.organizers.read = (_) async => switch (kind) {
-        'missing' => null,
-        'wrong id' => _organizer(id: 'another-planner'),
-        _ => _organizer(name: '  '),
-      };
-      await expectLater(f.open(), throwsA(isA<PermissionException>()));
-      expect(f.assignments.calls, 0);
-    });
+    test(
+      'creator access has no organizer metadata dependency: $kind',
+      () async {
+        final f = _Fixture();
+        addTearDown(f.close);
+        f.organizers.read = (_) async => switch (kind) {
+          'missing' => null,
+          'wrong id' => _organizer(id: 'another-planner'),
+          _ => _organizer(name: '  '),
+        };
+        final session = await f.open();
+        addTearDown(session.dispose);
+        expect(f.organizers.requestedIds, isEmpty);
+        expect(f.assignments.calls, 0);
+      },
+    );
   }
 
   test(
-    'manager downgrade during name lookup requires a new route review',
+    'changed role during canonical refresh requires a new route review',
     () async {
       final f = _Fixture();
       addTearDown(f.close);
-      f.organizers.read = (_) async {
-        f.access = _access(role: 'staff');
-        return _organizer();
+      var reads = 0;
+      f.functions.respond = (_, _) async {
+        final response = f.access;
+        if (++reads == 1) f.access = _access(role: 'staff');
+        return response;
       };
       await expectLater(f.open(), throwsA(isA<PermissionException>()));
       expect(f.functions.calls.length, 2);
@@ -401,11 +406,14 @@ void main() {
   );
 
   for (final kind in ['account', 'route', 'flag', 'organizer']) {
-    test('manager lookup cannot cross a changed $kind', () async {
+    test('canonical refresh cannot cross a changed $kind', () async {
       final f = _Fixture();
       addTearDown(f.close);
       bool current = true;
-      f.organizers.read = (_) async {
+      var reads = 0;
+      f.functions.respond = (_, _) async {
+        final response = f.access;
+        if (++reads > 1) return response;
         switch (kind) {
           case 'account':
             f.auth.account = 'other-account';
@@ -419,28 +427,35 @@ void main() {
           case 'organizer':
             f.access = _access(organizer: 'other-planner');
         }
-        return _organizer();
+        return response;
       };
       await expectLater(
         f.open(isCurrent: () => current),
-        throwsA(isA<PermissionException>()),
+        throwsA(
+          kind == 'account'
+              ? isA<SignInRequiredException>()
+              : isA<PermissionException>(),
+        ),
       );
       expect(f.assignments.calls, 0);
     });
   }
 
-  test('valid staff still require their matching assignment', () async {
-    final f = _Fixture()..access = _access(role: 'staff');
-    addTearDown(f.close);
-    f.assignments.rows = [_assignment()];
-    final session = await f.open();
-    addTearDown(session.dispose);
-    expect(session.plannerName, 'Staff planner');
-    expect(session.access.isManager, isFalse);
-    expect(f.organizers.requestedIds, isEmpty);
-    expect(f.assignments.calls, 1);
-    expect(f.functions.calls.length, 2);
-  });
+  test(
+    'approved staff use fresh program access without assignment discovery',
+    () async {
+      final f = _Fixture()..access = _access(role: 'staff');
+      addTearDown(f.close);
+      f.assignments.rows = [_assignment()];
+      final session = await f.open();
+      addTearDown(session.dispose);
+      expect(session.access.title, 'Synthetic wedding');
+      expect(session.access.isManager, isFalse);
+      expect(f.organizers.requestedIds, isEmpty);
+      expect(f.assignments.calls, 0);
+      expect(f.functions.calls.length, 2);
+    },
+  );
 
   for (final kind in [
     'revoked',
@@ -449,11 +464,14 @@ void main() {
     'organizer',
     'role',
   ]) {
-    test('staff lookup cannot retain changed $kind authority', () async {
+    test('staff refresh cannot retain changed $kind authority', () async {
       final f = _Fixture()..access = _access(role: 'staff');
       addTearDown(f.close);
       f.assignments.rows = [_assignment()];
-      f.assignments.beforeReturn = () async {
+      var reads = 0;
+      f.functions.respond = (_, _) async {
+        final response = f.access;
+        if (++reads > 1) return response;
         if (kind == 'revoked') {
           f.functions.respond = (_, _) async =>
               throw FirebaseFunctionsException(
@@ -468,6 +486,7 @@ void main() {
             organizer: kind == 'organizer' ? 'other-planner' : _organizerId,
           );
         }
+        return response;
       };
       await expectLater(f.open(), throwsA(isA<PermissionException>()));
       expect(f.functions.calls.length, 2);
@@ -476,17 +495,22 @@ void main() {
   }
 
   for (final kind in ['missing', 'wrong program', 'wrong organizer']) {
-    test('staff assignment remains scoped: $kind', () async {
-      final f = _Fixture()..access = _access(role: 'staff');
-      addTearDown(f.close);
-      f.assignments.rows = switch (kind) {
-        'missing' => [],
-        'wrong program' => [_assignment(program: 'other-wedding')],
-        _ => [_assignment(organizer: 'other-planner')],
-      };
-      await expectLater(f.open(), throwsA(isA<PermissionException>()));
-      expect(f.organizers.requestedIds, isEmpty);
-    });
+    test(
+      'approved access does not depend on assignment metadata: $kind',
+      () async {
+        final f = _Fixture()..access = _access(role: 'staff');
+        addTearDown(f.close);
+        f.assignments.rows = switch (kind) {
+          'missing' => [],
+          'wrong program' => [_assignment(program: 'other-wedding')],
+          _ => [_assignment(organizer: 'other-planner')],
+        };
+        final session = await f.open();
+        addTearDown(session.dispose);
+        expect(f.assignments.calls, 0);
+        expect(f.organizers.requestedIds, isEmpty);
+      },
+    );
   }
 
   for (final kind in ['restricted', 'expired']) {
