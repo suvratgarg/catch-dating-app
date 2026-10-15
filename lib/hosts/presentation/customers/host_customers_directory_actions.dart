@@ -27,7 +27,13 @@ extension _HostCustomersDirectoryActions on _HostCustomersScreenState {
       extra: audience,
     );
     if (!mounted || saved == null) return;
-    ref.invalidate(hostSavedAudiencesProvider(club.id));
-    ref.invalidate(hostAllSavedAudiencesProvider(club.id));
+    _invalidateHostAudienceDirectories(ref, club.id);
   }
+}
+
+void _invalidateHostAudienceDirectories(WidgetRef ref, String organizerId) {
+  ref.invalidate(hostSavedAudiencesProvider(organizerId));
+  ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
+  ref.invalidate(hostAllSavedAudienceSummariesProvider(organizerId));
+  ref.invalidate(hostGroupDirectoryControllerProvider);
 }

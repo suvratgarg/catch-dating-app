@@ -210,10 +210,13 @@ void _registerHostOperationsCustomersTests() {
           ),
         ),
       ),
+      resetProviderScope: true,
       overrides: [
-        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
-          AsyncData(
-            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+        hostGroupDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostGroupDirectoryController(
+            AsyncData(
+              HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+            ),
           ),
         ),
       ],
@@ -239,10 +242,13 @@ void _registerHostOperationsCustomersTests() {
           ),
         ),
       ),
+      resetProviderScope: true,
       overrides: [
-        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
-          const AsyncData(
-            HostSavedAudiencePage(audiences: [], nextCursor: null),
+        hostGroupDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostGroupDirectoryController(
+            const AsyncData(
+              HostSavedAudiencePage(audiences: [], nextCursor: null),
+            ),
           ),
         ),
       ],
@@ -265,9 +271,12 @@ void _registerHostOperationsCustomersTests() {
           ),
         ),
       ),
+      resetProviderScope: true,
       overrides: [
-        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
-          AsyncError(StateError('unavailable'), StackTrace.empty),
+        hostGroupDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostGroupDirectoryController(
+            AsyncError(StateError('unavailable'), StackTrace.empty),
+          ),
         ),
       ],
     );
@@ -800,9 +809,11 @@ void _registerHostOperationsCustomersTests() {
         ),
       ),
       overrides: [
-        hostAllSavedAudiencesProvider(organizerId).overrideWithValue(
-          AsyncData(
-            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+        hostGroupDirectoryControllerProvider.overrideWith2(
+          (_) => _FixedHostGroupDirectoryController(
+            AsyncData(
+              HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+            ),
           ),
         ),
       ],

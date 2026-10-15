@@ -24,6 +24,30 @@ void _registerHostOperationsSavedAudienceFailureTests() {
       ],
     );
 
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(HostSavedAudienceEditorScreen)),
+    );
+    var directoryChanges = 0;
+    var searchChanges = 0;
+    final directorySubscription = container.listen(
+      hostGroupDirectoryControllerProvider(organizerId),
+      (_, _) => directoryChanges++,
+    );
+    final searchSubscription = container.listen(
+      hostAllSavedAudienceSummariesProvider(organizerId),
+      (_, _) => searchChanges++,
+    );
+    addTearDown(directorySubscription.close);
+    addTearDown(searchSubscription.close);
+    await container.read(
+      hostGroupDirectoryControllerProvider(organizerId).future,
+    );
+    await container.read(
+      hostAllSavedAudienceSummariesProvider(organizerId).future,
+    );
+    directoryChanges = 0;
+    searchChanges = 0;
+
     await tester.enterText(
       find.descendant(
         of: find.byKey(const ValueKey('host-saved-audience-name')),
@@ -36,6 +60,8 @@ void _registerHostOperationsSavedAudienceFailureTests() {
 
     expect(functions.upsertCalls, hasLength(1));
     expect(functions.previewCalls, hasLength(1));
+    expect(directoryChanges, greaterThan(0));
+    expect(searchChanges, greaterThan(0));
     expect(find.text('Save and check membership'), findsOneWidget);
     expect(find.text('Friday regulars'), findsWidgets);
     expect(
