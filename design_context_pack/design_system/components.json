@@ -9805,12 +9805,15 @@
             "id": "catch.screen_body.navigation_viewport",
             "symbol": "CatchNavigationViewport",
             "file": "packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart",
-            "summary": "One navigation path presented as full-height concurrent panes or one active compact pane, based on local available width.",
+            "summary": "One route path presented as a horizontally scrollable strip of resizable full-height panes, or one active compact pane, from local available width.",
             "states": [
               "compact",
               "two-panes",
-              "three-panes",
+              "deep-path",
               "preview-fallback",
+              "drag-resize",
+              "keyboard-resize",
+              "rtl",
               "resize-state-preserved",
               "independent-scroll",
               "mobile-back"
@@ -9830,7 +9833,7 @@
                 "catch.screen_body",
                 "catch.viewport"
               ],
-              "reason": "The screen-body family owns pane geometry. Routes supply ordered levels and parent navigation; this viewport alone selects the visible suffix by local width, retaining mounted ancestor state. Desktop and mobile use the same children and navigation path."
+              "reason": "Routes supply ordered ancestry. The shared viewport owns pane sizing, horizontal overflow, resize handles and compact active-pane presentation. Ancestor content and business state stay mounted across width changes."
             }
           },
           {

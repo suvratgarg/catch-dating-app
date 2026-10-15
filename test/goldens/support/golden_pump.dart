@@ -79,9 +79,8 @@ Future<void> matchCatchGolden(
           'found $contentCount.',
         );
       }
-      final scrollables = find.descendant(
-        of: find.byKey(_catchGoldenRootKey),
-        matching: find.byType(Scrollable),
+      final scrollables = goldenVerticalScrollables(
+        find.byKey(_catchGoldenRootKey),
       );
       if (contentCount > 0 ||
           (fitFirstScrollable && scrollables.evaluate().isNotEmpty)) {
@@ -134,6 +133,16 @@ Future<void> matchCatchGolden(
     );
   }
 }
+
+/// Catalog fitting follows vertical page ownership, never a nested pane strip.
+Finder goldenVerticalScrollables(Finder root) => find.descendant(
+  of: root,
+  matching: find.byWidgetPredicate(
+    (widget) =>
+        widget is Scrollable &&
+        axisDirectionToAxis(widget.axisDirection) == Axis.vertical,
+  ),
+);
 
 double _scrollableContentBottom(WidgetTester tester, Finder scrollable) {
   final position = tester.state<ScrollableState>(scrollable).position;

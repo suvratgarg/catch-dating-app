@@ -860,6 +860,20 @@ void _registerHostOperationsClubWorkspaceTests() {
       const HostCustomersScreen(),
       overrides: [
         ..._hostClubOverrides(owned: [ownedClub], hosted: [cohostClub]),
+        for (final organizer in [ownedClub, cohostClub])
+          hostCustomerSegmentCountProvider(
+            HostCustomerSegmentCountRequest(
+              organizerId: organizer.id,
+              filter: HostCustomerFilter.newToOrganizer,
+            ),
+          ).overrideWithValue(
+            const AsyncData(
+              HostCustomerSegmentCount(
+                count: 0,
+                coverage: HostCustomerMatchCountCoverage.exact,
+              ),
+            ),
+          ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _EmptyHostCustomersDirectoryController(directoryRequests),
         ),

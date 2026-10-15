@@ -3408,8 +3408,22 @@ final class _GoRoutePresentationVisitor extends RecursiveAstVisitor<void> {
           routeType: routeType,
           kind: _RouteConstructionKind.constructor,
           inventorySafeConstructor:
-              _isGoRouteInterface(element) &&
-              _isCanonicalGoRouteSpelling(routeType),
+              (_isGoRouteInterface(element) &&
+                  _isCanonicalGoRouteSpelling(routeType)) ||
+              (element.displayName == 'HostWorkspaceDestination' &&
+                  element.library.uri.toString() ==
+                      'package:catch_dating_app/routing/go_router.dart' &&
+                  node.argumentList.arguments.whereType<NamedExpression>().any(
+                    (argument) =>
+                        argument.name.label.name == 'root' &&
+                        const {
+                          'HostWorkspaceRoot.today',
+                          'HostWorkspaceRoot.events',
+                          'HostWorkspaceRoot.audience',
+                          'HostWorkspaceRoot.inbox',
+                          'HostWorkspaceRoot.organizer',
+                        }.contains(argument.expression.toSource()),
+                  )),
           argumentList: node.argumentList,
         );
       }
