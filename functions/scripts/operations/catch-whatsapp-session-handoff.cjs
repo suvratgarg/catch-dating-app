@@ -177,7 +177,9 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
     response.writeHead(status, {"Content-Type": "application/json", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"});
     response.end(JSON.stringify({payload, signature}));
   };
+  const bodyReads = new WeakSet();
   const body = async request => {
+    bodyReads.add(request);
     if (request.headers["content-type"] !== "application/json") unavailable();
     const chunks = [];
     let size = 0;
@@ -290,6 +292,11 @@ function createSessionHandoff({home, clientOrigin, now = Date.now,
       reply(response, 200, {kind: "catch-operator-session", state: "saved", sourceSha: profile.sourceSha,
         expiresAtMillis: verified.exp * 1000}, request); server.close();
     } catch {
+      if (diagnosticStage === "admission" && !bodyReads.has(request)) {
+        // Guards have already denied this request. Read only for the signed
+        // receipt's digest; never resume admission or consume another attempt.
+        try {await body(request);} catch { /* Preserve rejection; never fabricate a digest. */ }
+      }
       if (diagnosticStage) record(diagnosticStage, "failed");
       // Rejecting a replay cannot establish the outcome of the original attempt.
       const code = diagnosticStage === "admission" && consumed && !ownsAttempt ?

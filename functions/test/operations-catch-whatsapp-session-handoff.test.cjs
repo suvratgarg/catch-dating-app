@@ -414,3 +414,29 @@ test("a lost authenticated receipt does not undo a synthetic commit or trigger a
   assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), privateToken + "\n");
   assert.deepEqual(f.diagnostics.at(-1), {kind: "catch-operator-session-diagnostic", stage: "commit", outcome: "passed"});
 });
+
+for (const drift of ["source", "profile"]) {
+  test(`early ${drift} rejection is authenticated by the real transport`, async t => {
+    const {createSessionTransport, sealSession, sessionFailureCode} =
+      require("../../admin/src/features/operator-session/api/operatorSessionTransport.ts");
+    const f = fixture(t, {existing: true, nowMillis: Math.floor(Date.now() / 1000) * 1000});
+    await f.start(); let submissions = 0;
+    const dispatch = (url, init) => {
+      if (new URL(url).pathname === "/session") submissions++;
+      return fetch(url, {...init, headers: {...init.headers, Origin: clientOrigin, "Sec-Fetch-Site": "cross-site"}});
+    };
+    const transport = createSessionTransport(f.anchor, dispatch);
+    const boot = await transport.bootstrap();
+    const configured = await transport.post("/configure", f.profile, boot.csrf);
+    const sealedSession = await sealSession(configured.request, privateToken);
+    if (drift === "source") f.binding.runtime.sourceSha = "e".repeat(40);
+    else f.file("profile.json", JSON.stringify({...f.profile, sourceSha: "e".repeat(40)}));
+    const error = await transport.post("/session", {challenge: f.anchor.challenge, sealedSession}, boot.csrf).catch(error => error);
+    assert.equal(sessionFailureCode(error), "helper_admission_failed");
+    assert.equal(error.message, "Protected session handoff unavailable.");
+    assert.equal(submissions, 1); assert.equal(f.calls(), 0);
+    assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), "old.synthetic.session\n");
+    assert.ok(!JSON.stringify(error).includes(privateToken));
+    assert.deepEqual(f.diagnostics.map(({stage, outcome}) => [stage, outcome]), [["admission", "started"], ["admission", "failed"]]);
+  });
+}
