@@ -10,6 +10,8 @@ import {
   hostFormSummaryDocumentSchema,
   hostContactSummaryDocumentSchema,
   hostDirectorySummaryDocumentSchema,
+  salesProviderAttemptDocumentSchema,
+  salesProviderBudgetDocumentSchema,
   catchWhatsappOperatorSetupOperationDocumentSchema,
   catchWhatsappOperatorSetupAuditDocumentSchema,
   manageHostRosterIntakeCallablePayloadSchema,
@@ -1258,6 +1260,8 @@ export const validateHostEventSummaryDocument = ajv.compile(hostEventSummaryDocu
 export const validateHostFormSummaryDocument = ajv.compile(hostFormSummaryDocumentSchema);
 export const validateHostContactSummaryDocument = ajv.compile(hostContactSummaryDocumentSchema);
 export const validateHostDirectorySummaryDocument = ajv.compile(hostDirectorySummaryDocumentSchema);
+export const validateSalesProviderAttemptDocument = ajv.compile(salesProviderAttemptDocumentSchema);
+export const validateSalesProviderBudgetDocument = ajv.compile(salesProviderBudgetDocumentSchema);
 export const validateCatchWhatsappOperatorSetupOperationDocument = ajv.compile(catchWhatsappOperatorSetupOperationDocumentSchema);
 export const validateCatchWhatsappOperatorSetupAuditDocument = ajv.compile(catchWhatsappOperatorSetupAuditDocumentSchema);
 export const validateManageHostRosterIntakeCallablePayload = ajv.compile(manageHostRosterIntakeCallablePayloadSchema);
