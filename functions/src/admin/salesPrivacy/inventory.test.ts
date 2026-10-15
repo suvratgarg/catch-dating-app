@@ -20,6 +20,21 @@ function memory(rows: InventoryRow[]): InventoryPort {
 const privateRow = (path: string, data: Record<string, unknown>): InventoryRow =>
   ({path, data: {schemaVersion: 1, classification: "sales_private", ...data}});
 
+test("provider preparation content is scoped for deletion and shared accounting remains retained", async () => {
+  const result = await inventorySalesOrganizer(memory([
+    privateRow("salesProviderAttempts/attempt-a", {organizerId: "org-a",
+      status: "intent", cache: null}),
+    privateRow("salesProviderAttempts/attempt-b", {organizerId: "org-b",
+      status: "completed", result: {selectionHash: "b".repeat(64)}}),
+    privateRow("salesProviderBudgets/month-a", {scopeHash: "c".repeat(64),
+      consumed: {modelCalls: 1}}),
+  ]), "org-a");
+  assert.deepEqual(result.items.map((item) => [item.path, item.disposition]),
+    [["salesProviderAttempts/attempt-a", "delete"]]);
+  assert.ok(result.blockers.some((item) =>
+    item.code === "provider_budget_accounting_retained"));
+});
+
 test("inventory deletes only the target relationship and preserves a shared contact", async () => {
   const port = memory([
     privateRow("organizerSalesAccounts/org-a", {organizerId: "org-a"}),

@@ -12,6 +12,8 @@ export {hostEventSummaryDocumentSchema} from "./schemas/hostEventSummaryDocument
 export {hostFormSummaryDocumentSchema} from "./schemas/hostFormSummaryDocument";
 export {hostContactSummaryDocumentSchema} from "./schemas/hostContactSummaryDocument";
 export {hostDirectorySummaryDocumentSchema} from "./schemas/hostDirectorySummaryDocument";
+export {salesProviderAttemptDocumentSchema} from "./schemas/salesProviderAttemptDocument";
+export {salesProviderBudgetDocumentSchema} from "./schemas/salesProviderBudgetDocument";
 export {catchWhatsappOperatorSetupOperationDocumentSchema} from "./schemas/catchWhatsappOperatorSetupOperationDocument";
 export {catchWhatsappOperatorSetupAuditDocumentSchema} from "./schemas/catchWhatsappOperatorSetupAuditDocument";
 export {manageHostRosterIntakeCallablePayloadSchema} from "./schemas/manageHostRosterIntakeInput";
