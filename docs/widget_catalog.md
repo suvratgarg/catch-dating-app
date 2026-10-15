@@ -1004,7 +1004,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayEventSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:151</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayOverview</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:16</code> | — | — | No class documentation or registry summary. |
-| <code>HostWorkPageBody</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:115</code> | — | — | The resolved assignment picker, grouped by organizer. |
+| <code>HostWorkPageBody</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:121</code> | — | — | The resolved assignment picker, grouped by organizer. |
 | <code>PhotoGrid</code> | <code>lib/image_uploads/shared/photo_grid.dart:31</code> | — | — | A 3×2 grid of photo slots for displaying and editing a user's profile photos. |
 | <code>PhotoSlot</code> | <code>lib/image_uploads/shared/photo_slot.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>StripedPhotoPlaceholder</code> | <code>lib/image_uploads/shared/photo_slot.dart:252</code> | — | — | No class documentation or registry summary. |
@@ -1082,7 +1082,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramOperationsNotice</code> | <code>lib/programs/presentation/program_operations_notice.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionCountsRow</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:165</code> | — | — | Per-function RSVP and door-count card for the stakeholder counts view. |
 | <code>ProgramHotelOccupancyRow</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:237</code> | — | — | Per-hotel occupancy row for the stakeholder counts view. |
-| <code>ProgramStaffAccessDialog</code> | <code>lib/programs/presentation/program_team_screen.dart:304</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramStaffAccessDialog</code> | <code>lib/programs/presentation/program_team_screen.dart:313</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTeamPageBody</code> | <code>lib/programs/presentation/program_team_screen.dart:70</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTimezoneField</code> | <code>lib/programs/presentation/program_timezone_field.dart:9</code> | — | — | A searchable disclosure using Catch's existing field and choice rows. The form owns selection, search and expansion; search text is never saved. |
 | <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:254</code> | — | — | No class documentation or registry summary. |
