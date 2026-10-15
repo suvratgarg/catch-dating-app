@@ -107,6 +107,10 @@
 /* Pages that open on a dark wow surface render the header over it until
    scroll flips the header to the paper treatment above. */
 .site-header--over-dark:not(.is-scrolled) {
+  --website-text: var(--catch-color-dark-ink);
+  --website-accent: var(--catch-color-dark-primary);
+  --website-ghost-hover-bg: color-mix(in srgb, var(--catch-color-dark-ink) 8%, transparent);
+  --catch-focus-ring-color: var(--catch-color-dark-ink);
   color: var(--catch-color-dark-ink);
 }
 
@@ -124,8 +128,8 @@
   color: var(--catch-color-dark-primary-ink);
 }
 
-.site-header--over-dark:not(.is-scrolled) .site-header__actions .button:hover,
-.site-header--over-dark:not(.is-scrolled) .site-header__actions .button:focus-visible {
+.site-header--over-dark:not(.is-scrolled) .site-header__actions .button:not(.button--ghost):hover,
+.site-header--over-dark:not(.is-scrolled) .site-header__actions .button:not(.button--ghost):focus-visible {
   background: var(--catch-color-dark-ink2);
 }
 
@@ -206,6 +210,14 @@
 
 /* Full-screen mobile menu: a dark wow surface with staggered Archivo links. */
 .site-menu {
+  /* The modal always owns a dark surface, independent of the page/header tone. */
+  --website-bg: var(--catch-color-dark-bg);
+  --website-text: var(--catch-color-dark-ink);
+  --website-accent: var(--catch-color-dark-primary);
+  --website-accent-muted: var(--catch-color-dark-ink2);
+  --website-ghost-border: color-mix(in srgb, var(--catch-color-dark-ink) 42%, transparent);
+  --website-ghost-hover-bg: color-mix(in srgb, var(--catch-color-dark-ink) 8%, transparent);
+  --catch-focus-ring-color: var(--catch-color-dark-ink);
   position: fixed;
   inset: 0;
   /* Match the menu's modal focus ownership above the independent consent banner. */
@@ -299,7 +311,7 @@
 }
 
 .site-menu__hint {
-  color: var(--catch-color-dark-ink3);
+  color: var(--catch-color-dark-ink2);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.16em;
