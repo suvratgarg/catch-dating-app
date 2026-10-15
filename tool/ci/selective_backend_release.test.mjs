@@ -1083,7 +1083,7 @@ test("Intake PR596 snapshot rejects filter, runtime, IAM and ordered-array chang
   }
 });
 
-import {CAT165_RELEASE, CAT165_INDEX, prepareCat165Release, verifyCat165ArtifactMetadata,
+import {CAT165_RELEASE, CAT165_INDEX, CAT165_PREDECESSORS, verifyCat165Predecessors, readCat165Snapshot, prepareCat165Release, verifyCat165ArtifactMetadata,
   verifyCat165Provenance, verifyCat165Preservation, verifyCat165ParameterPreservation, prepareCat165Deployment,
   verifyCat165BindingPreservation, runCat165ReleaseCli, checkCat165GitCompatibility} from "./selective_backend_release.mjs";
 import {materializedNonSecretParams} from "../firebase/prepare_functions_params_for_deploy.mjs";
@@ -1109,11 +1109,12 @@ const cat165Candidate = () => {
 };
 const cat165Before = () => {
   const p = CAT165_RELEASE.projectId, candidate = cat165Candidate();
+  const reviewed = CAT165_PREDECESSORS.rows.map((row) => ({...structuredClone(intakeCompleted().selected.identity),
+    ...structuredClone(row.identity), service: `projects/${p}/locations/asia-south1/services/${row.function.toLowerCase()}`}))
+    .sort((a, b) => a.name.localeCompare(b.name));
   const selected = CAT165_RELEASE.targets.map((target) => {
     const name = target.slice(10), record = structuredClone(intakeCompleted().selected);
-    record.identity.name = `projects/${p}/locations/asia-south1/functions/${name}`;
-    record.identity.service = `projects/${p}/locations/asia-south1/services/${name.toLowerCase()}`;
-    record.identity.revision = `${name.toLowerCase()}-00001-synthetic`;
+    record.identity = reviewed.find((identity) => identity.name.endsWith(`/${name}`));
     record.runtime.entryPoint = name;
     record.configurationSha256 = "a".repeat(64); record.parameterValuesSha256 = "b".repeat(64);
     record.secretReferences = candidate.bindings.filter((binding) => binding.consumer === name && binding.active)
@@ -1121,7 +1122,7 @@ const cat165Before = () => {
     record.runtime.secretBindings = record.secretReferences.length;
     return record;
   });
-  return {schema: "catch.cat165-metadata/v1", projectId: p, selected, index: null,
+  return {schema: "catch.cat165-metadata/v2", projectId: p, selected, reviewed, index: null,
     functions: [...selected.map((record) => ({name: record.identity.name, sha256: "d".repeat(64)})),
       {name: `projects/${p}/locations/us-central1/functions/ext-retained`, sha256: "c".repeat(64)},
       ...CAT165_RELEASE.deferredTargets.map((target) => ({name: `projects/${p}/locations/asia-south1/functions/${target.slice(10)}`, sha256: "c".repeat(64)}))]
@@ -1131,7 +1132,7 @@ const cat165After = () => {
   const result = cat165Before();
   result.index = {...structuredClone(CAT165_INDEX), fields: [...structuredClone(CAT165_INDEX.fields), {fieldPath: "__name__", order: "DESCENDING"}], name: `projects/${CAT165_RELEASE.projectId}/databases/(default)/collectionGroups/organizerPrograms/indexes/synthetic`, state: "READY"};
   for (const record of result.selected) {
-    record.identity.build += "-new"; record.identity.revision = record.identity.revision.replace("00001", "00002");
+    record.identity.build += "-new"; record.identity.revision += "-new";
     record.identity.source.generation = "2";
   }
   return result;
@@ -1235,4 +1236,92 @@ test("CAT165 records the selected two-stage package without a generic checkpoint
   assert.deepEqual(deployment.provenance, createCheckpointState(manifest, CAT165_RELEASE.scope).provenance);
   assert.equal(deployment.paramsSha256, paramsBinding.materializedSha256);
   assert.equal(Object.hasOwn(deployment, "stageCheckpoints"), false);
+});
+
+test("CAT165 reviewed predecessor evidence preserves all 73 targets and the receipt/observation distinction", () => {
+  assert.equal(CAT165_PREDECESSORS.rows.length, 73);
+  // SHA-256 of the exact JSON projection published in the independent owner handoff.
+  assert.equal(createHash("sha256").update(JSON.stringify(CAT165_PREDECESSORS)).digest("hex"),
+    "842b8a1c74502132c023a823fe69462c60433009426fa1c812feceb0c4bfd29a");
+  assert.deepEqual(CAT165_PREDECESSORS.counts, {baseline647: {selected: 56, deferred: 10},
+    programs6f08: {selected: 5, deferred: 1}, contacts137: {selected: 1, deferred: 0}});
+  assert.deepEqual(CAT165_PREDECESSORS.cohorts.programs6f08.receiptFieldCoverage, ["revision", "source.generation"]);
+  assert.deepEqual(CAT165_PREDECESSORS.cohorts.programs6f08.observationOnlyFields, ["build", "source.bucket", "source.object"]);
+  assert.equal(verifyCat165Predecessors(cat165Before()).reviewedPredecessors, 73);
+  assert.throws(() => {CAT165_PREDECESSORS.rows[0].identity.source.generation = "1";}, TypeError);
+});
+test("CAT165 capture rejects prior code-only drift for every selected and deferred predecessor", async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-predecessors-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const output = path.join(directory, "before.json");
+  const accepted = await runCat165ReleaseCli(["cat165-before", "--output", output], {readSnapshot: async () => cat165Before()});
+  assert.equal(accepted.reviewedPredecessors, 73); assert.ok(fs.existsSync(output)); fs.unlinkSync(output);
+  for (let i = 0; i < 73; i++) for (const field of ["build", "revision", "bucket", "object", "generation"]) {
+    const changed = cat165Before(), identity = changed.reviewed[i];
+    if (field === "build" || field === "revision") identity[field] += "-unreviewed";
+    else identity.source[field] = field === "generation" ? "999" : `${identity.source[field]}-unreviewed`;
+    // Config/IAM/params/secret metadata and inventory hashes are deliberately unchanged.
+    await assert.rejects(runCat165ReleaseCli(["cat165-before", "--output", output], {readSnapshot: async () => changed}),
+      /reviewed predecessor changed/);
+    assert.equal(fs.existsSync(output), false);
+    assert.throws(() => verifyCat165Preservation(changed, structuredClone(changed)), /reviewed predecessor changed/);
+  }
+});
+for (const [name, mutate] of [
+  ["missing selected identity", (v) => {v.reviewed.splice(0, 1);}],
+  ["missing deferred identity", (v) => {v.reviewed = v.reviewed.filter((row) => !row.name.endsWith("/createOrganizerProgram"));}],
+  ["duplicate identity", (v) => {v.reviewed[1] = structuredClone(v.reviewed[0]);}],
+  ["misassigned build and storage", (v) => {v.reviewed[0].build = v.reviewed[1].build; v.reviewed[0].source = structuredClone(v.reviewed[1].source);}],
+  ["swapped target names", (v) => {[v.reviewed[0].name, v.reviewed[1].name] = [v.reviewed[1].name, v.reviewed[0].name];}],
+  ["missing deferred inventory row", (v) => {v.functions = v.functions.filter((row) => !row.name.endsWith("/createOrganizerProgram"));}],
+  ["selected projection mismatch", (v) => {v.selected[0].identity = {...v.selected[0].identity, build: v.selected[0].identity.build + "-unreviewed"};}],
+  ["legacy unbound snapshot", (v) => {delete v.reviewed; v.schema = "catch.cat165-metadata/v1";}],
+  ["dormant function exists", (v) => {v.functions.push({name: `projects/${CAT165_RELEASE.projectId}/locations/asia-south1/functions/anonymizeDueProgramsSweep`, sha256: "a".repeat(64)}); v.functions.sort((a,b) => a.name.localeCompare(b.name));}],
+]) test(`CAT165 initial receipt rejects ${name} before writing evidence`, async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-invalid-predecessors-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const output = path.join(directory, "before.json"), snapshot = cat165Before(); mutate(snapshot);
+  await assert.rejects(runCat165ReleaseCli(["cat165-before", "--output", output], {readSnapshot: async () => snapshot}));
+  assert.equal(fs.existsSync(output), false);
+});
+async function cat165MetadataCapture(change = () => {}) {
+  const before = cat165Before(), project = CAT165_RELEASE.projectId;
+  const functions = before.reviewed.map((identity) => ({name: identity.name, state: "ACTIVE", environment: "GEN_2",
+    updateTime: identity.updateTime,
+    buildConfig: {runtime: "nodejs24", entryPoint: identity.name.split("/").at(-1), build: identity.build,
+      sourceProvenance: {resolvedStorageSource: structuredClone(identity.source)}},
+    serviceConfig: {service: identity.service, revision: identity.revision, serviceAccountEmail: "574779808785-compute@developer.gserviceaccount.com",
+      availableMemory: "512Mi", maxInstanceCount: 50, environmentVariables: {}},
+  }));
+  change(functions);
+  const runServices = new Map(functions.map((fn) => {
+    const service = fn.serviceConfig.service, revision = `${service}/revisions/${fn.serviceConfig.revision}`;
+    return [service, {name: service, uid: "synthetic", generation: "1", observedGeneration: "1",
+      terminalCondition: {state: "CONDITION_SUCCEEDED"}, latestReadyRevision: revision, latestCreatedRevision: revision,
+      trafficStatuses: [{percent: 100, type: "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION", revision}]}];
+  }));
+  return readCat165Snapshot({run: () => ({status: 0, stdout: "synthetic-token"}), listIndexes: () => [],
+    request: async (raw) => {
+      const url = new URL(raw); let body;
+      if (url.hostname === "cloudfunctions.googleapis.com") body = {functions};
+      else if (url.hostname === "run.googleapis.com") body = url.pathname.endsWith(":getIamPolicy") ?
+        {version: 3, bindings: [{role: "roles/run.invoker", members: ["allUsers"]}]} : runServices.get(url.pathname.replace(/^\/v2\//, ""));
+      else if (url.hostname === "firestore.googleapis.com") body = {fields: []};
+      else if (url.hostname === "firebaseextensions.googleapis.com") body = {instances: []};
+      else if (url.hostname === "firebaserules.googleapis.com") body = {releases: []};
+      else if (url.hostname === "firebaseremoteconfig.googleapis.com") body = {};
+      else {assert.equal(url.hostname, "cloudresourcemanager.googleapis.com"); body = {version: 3, bindings: []};}
+      assert.ok(body); return {ok: true, status: 200, json: async () => structuredClone(body)};
+    }});
+}
+test("CAT165 actual metadata reader captures 73 independently validated serving identities", async () => {
+  const before = await cat165MetadataCapture();
+  assert.equal(before.reviewed.length, 73); verifyCat165Predecessors(before);
+  const drift = await cat165MetadataCapture((functions) => {
+    functions.find((fn) => fn.name.endsWith("/createOrganizerProgram")).buildConfig.sourceProvenance.resolvedStorageSource.generation = "999";
+  });
+  assert.throws(() => verifyCat165Predecessors(drift), /reviewed predecessor changed/);
+  await assert.rejects(cat165MetadataCapture((functions) => {
+    functions.splice(functions.findIndex((fn) => fn.name.endsWith("/createOrganizerProgram")), 1);
+  }), /Exactly one live Function required/);
 });

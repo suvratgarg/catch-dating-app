@@ -3212,3 +3212,17 @@ boundary and rejects any difference from serving bindings; it never approves an
 implicit `latest` rotation. Every selected callable must already have the public
 invoker policy declared by the candidate. Event and scheduled Functions retain
 their existing IAM. Both preflights preserve the original provider parameters.
+
+The initial snapshot must match the 73 historical serving identities published
+in [the independent predecessor review](https://github.com/suvratgarg/catch-dating-app/pull/617#issuecomment-6203197509).
+The fixed in-code evidence pins every selected/deferred Function's name, revision,
+build and complete resolved storage source (bucket, object and generation).
+The 647/137 cohorts are receipt-backed for all these fields; the 6f08 Programs
+receipt covers revision/generation, with build/bucket/object separately pinned to
+the reviewed 15 October metadata observation. This historical expectation is not
+a fresh live observation. Fresh metadata must match before the initial snapshot
+can be persisted, and the original subsequent drift checks remain required.
+Missing, duplicate, misassigned or changed predecessors and the appearance of
+the dormant anonymization Function fail closed; investigate rather than rebase
+the expectation automatically. Snapshot schema v2 includes all 73 independently
+validated Cloud Run serving identities so deferred identities are explicit.

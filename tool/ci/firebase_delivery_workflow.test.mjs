@@ -1795,6 +1795,9 @@ test("CAT165 uses protected approval, fixed artifact proofs and isolated selecte
   assert.doesNotMatch(job, /--force|--functions-postconditions-only|sync:callable-invokers|restore-decision|checkpoint restore|delivery_core\.mjs next|backend-delivery-cursor|adminListCAT165Operations/);
   assert.equal((job.match(/firebase_with_env\.sh prod deploy/g) ?? []).length, 1);
   assert.equal((job.match(/gcloud firestore indexes composite create/g) ?? []).length, 1);
+  const capture = extractSteps(job).find((step) => step.name === "Bind all 73 reviewed predecessors and capture retained resources");
+  assert.equal(capture.run.trim(), "node tool/ci/selective_backend_release.mjs cat165-before --output build/delivery/cat165-before.json");
+  assert.ok(job.indexOf("cat165-before --output") < job.indexOf("gcloud firestore indexes composite create"));
   assert.match(job, /--collection-group=organizerPrograms --query-scope=COLLECTION/);
   assert.match(job, /field-path=organizerId,order=ascending[\s\S]*field-path=createdBy,order=ascending[\s\S]*field-path=startsAt,order=descending/);
   assert.ok(job.indexOf("wait_firestore_indexes_ready.mjs") < job.indexOf("firebase_with_env.sh prod deploy"));

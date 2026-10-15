@@ -2000,7 +2000,7 @@ jobs:
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
       - name: Install authenticated Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v3
-      - name: Capture all retained Functions, Extensions and protected configuration
+      - name: Bind all 73 reviewed predecessors and capture retained resources
         run: node tool/ci/selective_backend_release.mjs cat165-before --output build/delivery/cat165-before.json
       - name: Retain the immutable predeployment proof
         uses: actions/upload-artifact@v6
