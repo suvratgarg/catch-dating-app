@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {auth} from "../../../shared/api/firebase";
 import {AdminButton, AdminSignInPanel, AdminSignInScreen, TextareaField} from "../../../shared/ui/AdminPrimitives";
 import {transferSession} from "../api/operatorSessionHandoff";
-import {createSessionTransport, takeSessionLaunch, sessionRequest, type SessionRequest} from "../api/operatorSessionTransport";
+import {createSessionTransport, takeSessionLaunch, sessionRequest, sessionFailureCode, type SessionRequest} from "../api/operatorSessionTransport";
 
 type Bootstrap = {csrf: string; profile: unknown; runtime: {sourceSha: string; executionSha256: string}; home: string};
 // No workspace roles, Admin data, sign-in or authority-changing APIs.
@@ -62,15 +62,28 @@ export function OperatorSessionScreen() {
     if (!alive.current || spent.current || !transport || !initial || !request) return;
     spent.current = true;
     setConsumed(true); setPending(true);
+    let submitted = false;
     try {
       const sealed = await transferSession(auth, request, () => alive.current);
       if (!alive.current) return;
+      submitted = true;
       const receipt = await transport.post("/session", sealed, initial.csrf) as {state: unknown; expiresAtMillis: unknown};
       if (!alive.current) return;
       if (receipt.state !== "saved" || typeof receipt.expiresAtMillis !== "number" || !Number.isSafeInteger(receipt.expiresAtMillis)) throw new Error("unavailable");
       alive.current = false;
       setStatus("Session saved. It expires at " + new Date(receipt.expiresAtMillis).toLocaleString() + ".");
-    } catch {if (alive.current) setStatus("Session or save status unconfirmed. Use normal Google sign-in if needed; check the helper/session file before restarting. A refresh does not replace a fresh sign-in.");}
+    } catch (error) {
+      if (alive.current) {
+        const code = sessionFailureCode(error);
+        const message = !submitted ? (code === "client_sign_in_required" ?
+          "Session was not sent. Use Catch’s normal Google sign-in before restarting; refreshing does not replace a fresh sign-in." :
+          "Session was not sent. Review the selected account and local setup before restarting.") :
+          code === "helper_admission_failed" || code === "helper_verification_failed" ?
+            "The helper rejected the save before commit. Check its local diagnostic record before restarting." :
+            "Session or save status unconfirmed. Check the helper/session file before restarting. Do not retry this view.";
+        setStatus(message + " Diagnostic code: " + code + ".");
+      }
+    }
     finally {setPending(false);}
   };
   const cancel = async () => {
