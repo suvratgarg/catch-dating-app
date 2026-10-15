@@ -164,6 +164,33 @@ async function preparedCase() {
   return {h, preview, reviewed};
 }
 
+test("provider intent cleanup requires reviewed permanent restriction and preserves aggregate budgets", async () => {
+  const h = deps();
+  const attemptPath = "salesProviderAttempts/synthetic-attempt";
+  h.db.docs.set(attemptPath, {schemaVersion: 1, classification: "sales_private",
+    organizerId: "org-a", status: "intent", cache: null, result: null});
+  h.db.docs.set("salesProviderBudgets/synthetic-month", {schemaVersion: 1,
+    classification: "sales_private", scopeHash: "b".repeat(64), consumed: {modelCalls: 1}});
+  h.value.inventory = (_port, organizerId) => liveInventory(h.db, organizerId);
+  await reviewSalesPrivacyPolicy(h.value, principal, {requestId: "provider-policy-0001",
+    expectedRevision: 0, sourceReference: "Synthetic reviewed accounting retention",
+    sourceHash: "c".repeat(64), financeReason: "Retain aggregate counters",
+    auditReason: "Retain aggregate hashes"});
+  await restrictSalesOrganizer(h.value, principal, {organizerId: "org-a",
+    requestId: "provider-restrict-0001", reason: "Synthetic permanent processing fence"});
+  const preview = await previewSalesPrivacyPlan(h.value, principal, {organizerId: "org-a"});
+  const reviewed = await reviewSalesPrivacyPlan(h.value, principal, {organizerId: "org-a",
+    requestId: "provider-plan-0001", restrictionRevision: preview.restrictionRevision,
+    expectedActivePlanId: preview.activePlanId, policyHash: preview.policyHash,
+    inventoryHash: preview.inventoryHash});
+  const applied = await applySalesPrivacyBatch(h.value, principal, {organizerId: "org-a",
+    planId: reviewed.plan.planId, requestId: "provider-batch-0001", expectedCursor: 0});
+  assert.equal(applied.batch.deletedCount, 1);
+  assert.equal(h.db.docs.has(attemptPath), false);
+  assert.equal(h.db.docs.has("salesProviderBudgets/synthetic-month"), true);
+  await assert.rejects(assertSalesPrivacyOpenRead(h.value.db, "org-a"), /restricted/u);
+});
+
 test("restriction is permanent, idempotent only for exact request, and invalidates fit queue", async () => {
   const h = deps();
   const tx = new FakeTx(h.db);
