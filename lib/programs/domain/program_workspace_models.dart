@@ -17,6 +17,8 @@ class OrganizerProgramListRow {
     this.startsAt,
     this.endsAt,
     this.functionCount,
+    this.canArchive = false,
+    this.canUnarchive = false,
     this.archivedAt,
     this.anonymizeAt,
     this.anonymizedAt,
@@ -31,6 +33,8 @@ class OrganizerProgramListRow {
       status: requiredString(map, 'status'),
       timezone: timezone,
       revision: requiredInt(map, 'revision'),
+      canArchive: map['canArchive'] == true,
+      canUnarchive: map['canUnarchive'] == true,
       startsAt: programCalendarDateAtInstant(
         requiredDateTime(map, 'startsAtMillis'),
         timezone,
@@ -69,6 +73,11 @@ class OrganizerProgramListRow {
   final DateTime? startsAt;
   final DateTime? endsAt;
   final int? functionCount;
+
+  /// Actor-specific authority from the inventory response. Legacy responses
+  /// fail closed; organizer membership and a grace deadline grant no authority.
+  final bool canArchive;
+  final bool canUnarchive;
   final DateTime? archivedAt;
   final DateTime? anonymizeAt;
   final DateTime? anonymizedAt;
@@ -76,6 +85,7 @@ class OrganizerProgramListRow {
   bool get isArchived => status == 'archived';
 
   bool canUnarchiveAt(DateTime now) =>
+      canUnarchive &&
       isArchived &&
       anonymizedAt == null &&
       (anonymizeAt == null || anonymizeAt!.isAfter(now));

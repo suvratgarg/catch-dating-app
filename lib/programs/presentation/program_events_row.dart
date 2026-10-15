@@ -50,6 +50,9 @@ CatchField programEventsField(
   final l10n = context.l10n;
   final startsAt = program.startsAt;
   final endsAt = program.endsAt;
+  final canManageLifecycle = program.isArchived
+      ? program.canUnarchive
+      : program.canArchive;
   return CatchField.navigate(
     key: ValueKey('host-program-row-${program.programId}'),
     onActivate: onOpen,
@@ -76,30 +79,35 @@ CatchField programEventsField(
             )
           : null,
     ),
-    secondaryAction: CatchFieldSecondaryAction.menu<ProgramLifecycleAction>(
-      label: l10n.programsListRowActions,
-      items: [
-        if (program.isArchived)
-          CatchActionMenuItem(
-            value: ProgramLifecycleAction.unarchive,
-            label: l10n.programsListUnarchiveAction,
-            icon: CatchIcons.undoRounded,
-            enabled: !pending && program.canUnarchiveAt(now),
-            sublabel: program.anonymizedAt != null
-                ? l10n.programsListAnonymized
-                : program.canUnarchiveAt(now)
-                ? null
-                : l10n.programsListRestoreWindowExpiredReason,
+    secondaryAction: canManageLifecycle
+        ? CatchFieldSecondaryAction.menu<ProgramLifecycleAction>(
+            label: l10n.programsListRowActions,
+            items: [
+              if (program.isArchived)
+                CatchActionMenuItem(
+                  value: ProgramLifecycleAction.unarchive,
+                  label: l10n.programsListUnarchiveAction,
+                  icon: CatchIcons.undoRounded,
+                  enabled: !pending && program.canUnarchiveAt(now),
+                  sublabel: program.anonymizedAt != null
+                      ? l10n.programsListAnonymized
+                      : program.canUnarchiveAt(now)
+                      ? pending
+                            ? l10n.coreCatchFieldLabelSaving
+                            : null
+                      : l10n.programsListRestoreWindowExpiredReason,
+                )
+              else
+                CatchActionMenuItem(
+                  value: ProgramLifecycleAction.archive,
+                  label: l10n.programsListArchiveAction,
+                  icon: CatchIcons.archiveOutlined,
+                  enabled: !pending,
+                  sublabel: pending ? l10n.coreCatchFieldLabelSaving : null,
+                ),
+            ],
+            onSelected: onLifecycle,
           )
-        else
-          CatchActionMenuItem(
-            value: ProgramLifecycleAction.archive,
-            label: l10n.programsListArchiveAction,
-            icon: CatchIcons.archiveOutlined,
-            enabled: !pending,
-          ),
-      ],
-      onSelected: onLifecycle,
-    ),
+        : null,
   );
 }
