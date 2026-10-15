@@ -1,60 +1,6 @@
-import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_ui/catch_ui.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+part of 'host_sends_page_body.dart';
 
-class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
-  const HostSendsWorkspaceSliver({
-    super.key,
-    required this.club,
-    required this.initialSavedAudienceId,
-    required this.onBusyChanged,
-    required this.onOpenInbox,
-    this.preferredEventId,
-    this.initialSegment = HostInboxAudienceSegment.booked,
-    this.broadcastEnabled = true,
-    this.now,
-  });
-
-  final Club club;
-  final String? initialSavedAudienceId;
-  final ValueChanged<bool> onBusyChanged;
-  final VoidCallback onOpenInbox;
-  final String? preferredEventId;
-  final HostInboxAudienceSegment initialSegment;
-  final bool broadcastEnabled;
-  final DateTime? now;
-
-  @override
-  ConsumerState<HostSendsWorkspaceSliver> createState() =>
-      _HostSendsWorkspaceSliverState();
-}
-
-class _HostSendsWorkspaceSliverState
-    extends ConsumerState<HostSendsWorkspaceSliver> {
+class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
   late _HostSendFlow _flow;
   int _generation = 0;
   bool _sameScope(int generation) => mounted && generation == _generation;
@@ -73,7 +19,7 @@ class _HostSendsWorkspaceSliverState
   }
 
   @override
-  void didUpdateWidget(covariant HostSendsWorkspaceSliver oldWidget) {
+  void didUpdateWidget(covariant HostSendsPageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _generation++;
@@ -150,14 +96,42 @@ class _HostSendsWorkspaceSliverState
         onLoadMore: _loadMore,
       ),
     };
-    return SliverPadding(
-      padding: CatchInsets.fieldSectionChildTop,
-      sliver: SliverList.list(
-        children: [
-          content is _HostSendsHistory
-              ? content
-              : CatchSection.content(child: content),
-        ],
+    final history = _HostSendsHistory(
+      organizerId: widget.club.id,
+      busy: _busy,
+      loadingMore: _loadingMore,
+      paginationBaseKey: _paginationBaseKey,
+      additionalSends: _additionalSends,
+      nextCursor: _nextCursor,
+      onNew: () => setState(() => _flow = const _SendIntent()),
+      onOpen: _open,
+      onLoadMore: _loadMore,
+    );
+    return HostNavigationWorkspace(
+      spec: HostDirectoryWorkspace<_HostSendFlow>(
+        index: widget.indexBuilder(
+          SliverPadding(
+            padding: CatchInsets.fieldSectionChildTop,
+            sliver: SliverList.list(children: [history]),
+          ),
+        ),
+        selection: _flow is _SendHistory ? null : _flow,
+        detailBuilder: (_) => CatchWorkspacePaneScaffold(
+          title: CatchTopBar.route(
+            title: context.l10n.hostMessagingWorkspaceSends,
+            leading: CatchIconAction.toolbar(
+              icon: CatchIcons.arrowBackIosNewRounded,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              onPressed: _busy ? null : _showHistory,
+            ),
+          ),
+          body: ListView(padding: CatchInsets.pageBody, children: [content]),
+        ),
+        unselected: CatchEmptyState(
+          icon: CatchIcons.chevronRightRounded,
+          title: context.l10n.coreCatchFieldVisiblecopySelect,
+        ),
+        onBack: _busy ? null : _showHistory,
       ),
     );
   }

@@ -316,3 +316,12 @@ test("a return invocation before the declaration cannot hide a reachable helper 
     "Widget fixtureScreen() {\n  return nestedScreen();\n}\nWidget nestedScreen() => const FixtureScreen();");
   assert.notDeepEqual(inventory(source), inventory(source.replace("FixtureScreen()", "OtherScreen()")));
 });
+
+test("typed Host destinations retain canonical wiring and ancestor metadata in inventory", () => {
+  const typed = router.replace("GoRoute(path:", "HostWorkspaceDestination(root: HostWorkspaceRoot.audience, parent: Routes.parent, path:");
+  assert.equal(inventory(typed).routes[0].id, "fixture");
+  assert.notDeepEqual(inventory(typed), inventory(typed.replace("HostWorkspaceRoot.audience", "HostWorkspaceRoot.events")));
+  assert.notDeepEqual(inventory(typed), inventory(typed.replace("Routes.parent", "Routes.other")));
+  assert.throws(() => inventory(typed.replace("Routes.fixture.path", "'/wrong'")), /composed runtime path/);
+  assert.throws(() => inventory(typed.replace("HostWorkspaceDestination(root:", "OtherDestination(root:")), /declared but not wired/);
+});

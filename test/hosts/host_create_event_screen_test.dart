@@ -853,6 +853,14 @@ Future<void> _pumpCreateEventFlow(
   List<OrganizerEventVenue> savedVenues = const [],
   int initialStep = 0,
 }) async {
+  // Interaction fixtures exercise the compact editor. Wide geometry has its
+  // own explicit viewport test and must not duplicate summary-label finders.
+  if (tester.view.physicalSize.width / tester.view.devicePixelRatio == 800) {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+  }
   final club = clubOverride ?? buildClub();
   final router = GoRouter(
     initialLocation: '/',

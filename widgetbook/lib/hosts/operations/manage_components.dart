@@ -18,7 +18,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendanc
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -151,18 +150,6 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       mode: HostEventParticipantsMode.setup,
     ),
     'HostEventCheckInQrSection' => HostEventCheckInQrSection(event: event),
-    'HostEventRosterHandle' => Center(
-      child: SizedBox(
-        width: CatchLayout.hostRosterDrawerHandleWidth,
-        height: CatchLayout.hostRosterDrawerHandleHeight,
-        child: HostEventRosterHandle(
-          open: false,
-          bookedCount: roster.bookedCount,
-          onTap: () {},
-          onHorizontalDragEnd: (_) {},
-        ),
-      ),
-    ),
     'HostEventRosterPanel' => SizedBox(
       width: 360,
       height: 520,
@@ -170,16 +157,6 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
         bookedCount: roster.bookedCount,
         onClose: () {},
         child: const Center(child: Text('Guest roster content')),
-      ),
-    ),
-    'HostEventRosterDrawer' => SizedBox(
-      height: 620,
-      child: HostEventRosterDrawer(
-        open: true,
-        bookedCount: roster.bookedCount,
-        onOpenChanged: (_) {},
-        body: const Center(child: Text('Live operations stay mounted')),
-        roster: const Center(child: Text('Guest roster content')),
       ),
     ),
     'HostEventSummarySection' => HostEventSummarySection(
@@ -403,22 +380,6 @@ Map<String, (String, String?)> _hostAttendeeProfiles() {
 )
 Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
     _hostEventManageExactCatalog(context, 'HostActionRow');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventRosterDrawer,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventRosterDrawerCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventRosterDrawer');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventRosterHandle,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventRosterHandleCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventRosterHandle');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

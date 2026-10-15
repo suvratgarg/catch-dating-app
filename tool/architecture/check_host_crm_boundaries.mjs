@@ -306,12 +306,18 @@ export function applicationRouteOwnershipFindings({
   const applicationDetailRoute =
     "name: Routes.hostApplicationDetailScreen.name";
   const audienceBranch = /StatefulShellBranch\(\s*navigatorKey:\s*keys\.hostAudience,\s*observers:\s*\[AnalyticsRouteObserver\(analytics\)\],\s*routes:\s*\[workspaceRoute\(Routes\.hostAudienceScreen,\s*roots\[2\]\)\],\s*\)/u;
-  const ownedDestinationMount = /routes:\s*\[\s*rootRoute,\s*\.\.\.routes\.where\(\(route\)\s*=>\s*_hostWorkspaceOwner\(route\.path\)\s*==\s*root\),\s*\]/u;
-  const audiencePathOwner = /if\s*\(path\.startsWith\('\/host\/audience'\)[\s\S]{0,180}?\)\s*\{\s*return Routes\.hostAudienceScreen;/u;
+  const ownedDestinationMount = /routes:\s*\[rootRoute,\s*\.\.\.routes\.where\(\(route\)\s*=>\s*route\.root\.route\s*==\s*root\)\]/u;
+  // Ownership is now declared on the destination, not inferred from its path.
+  // Verify both the closed root mount and each application's typed metadata.
+  const audienceDestination = (name) => new RegExp(
+    `HostWorkspaceDestination\\(\\s*root:\\s*HostWorkspaceRoot\\.audience,` +
+    `(?:(?!HostWorkspaceDestination\\()[\\s\\S])*?name:\\s*Routes\\.${name}\\.name,`, "u",
+  ).test(routerSource);
   const audienceOwnsBothRoutes =
     audienceBranch.test(routerSource) &&
     ownedDestinationMount.test(routerSource) &&
-    audiencePathOwner.test(routerSource) &&
+    audienceDestination("hostApplicationsScreen") &&
+    audienceDestination("hostApplicationDetailScreen") &&
     routerSource.includes(applicationsRoute) &&
     routerSource.includes(applicationDetailRoute) &&
     !routerSource.includes("navigatorKey: keys.hostForms");

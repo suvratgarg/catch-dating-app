@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
@@ -625,3 +626,12 @@ class _HostRoleBoundaryState extends State<_HostRoleBoundary> {
     return widget.child;
   }
 }
+
+@widgetbook.UseCase(
+  name: 'History and outbound intent',
+  type: HostSendsPageBody,
+  path: '[Host]/Inbox',
+)
+Widget hostSendsPanel(BuildContext context) => const _HostRoleBoundary(
+  child: _HostInboxFrame(initialWorkspace: HostMessagingWorkspace.campaigns),
+);

@@ -1,5 +1,5 @@
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
@@ -124,7 +124,15 @@ Widget adaptiveMasterDetailStates(BuildContext context) =>
       title: 'Adaptive master and detail',
       catalogId: 'catch.screen_body.navigation_workspace',
       children: [
-        for (final width in [959.0, 961.0, 1400.0]) ...[
+        for (final width in [
+          CatchLayout.workspaceDirectoryWidth +
+              CatchLayout.workspaceDetailMinWidth -
+              1,
+          CatchLayout.workspaceDirectoryWidth +
+              CatchLayout.workspaceDetailMinWidth +
+              1,
+          1400.0,
+        ]) ...[
           CatchMetadataText(
             'Route body ${width.toInt()}',
             color: CatchTokens.of(context).ink2,
