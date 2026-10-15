@@ -10,6 +10,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   for (final dark in [false, true]) {
     for (final scale in [1.0, 2.0]) {
@@ -112,20 +114,20 @@ void main() {
           await tester.tap(
             find.descendant(of: timezone, matching: find.text('Timezone')),
           );
-          await tester.pumpAndSettle();
+          await pumpFeatureUi(tester);
           final timezoneSearch = find.descendant(
             of: find.byKey(const ValueKey('program-timezone-search')),
             matching: find.byType(TextField),
           );
           await tester.enterText(timezoneSearch, 'New Delhi');
-          await tester.pumpAndSettle();
+          await pumpFeatureUi(tester);
           final timezoneChoice = find.byKey(
             const ValueKey('program-timezone-option-Asia/Kolkata'),
           );
           await tester.ensureVisible(timezoneChoice);
-          await tester.pumpAndSettle();
+          await pumpFeatureUi(tester);
           await tester.tap(timezoneChoice);
-          await tester.pumpAndSettle();
+          await pumpFeatureUi(tester);
           controller.edit(
             controller.values.copyWith(
               kind: ProgramKind.wedding,

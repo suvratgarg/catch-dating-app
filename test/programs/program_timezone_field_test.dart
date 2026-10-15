@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/catch_test_fonts.dart';
+import '../test_pump_helpers.dart';
 import '../ui_captures/support/capture_device.dart';
 import '../ui_captures/support/capture_pump.dart';
 
@@ -82,7 +83,7 @@ void main() {
           ),
         );
         await tester.tap(find.text('Timezone'));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         final search = find.descendant(
           of: find.byKey(const ValueKey('program-timezone-search')),
           matching: find.byType(TextField),
@@ -95,14 +96,14 @@ void main() {
         );
         await tester.ensureVisible(choice);
         await tester.tap(choice);
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         expect(selected, 'Asia/Kolkata');
         expect(open, isFalse);
         expect(find.text('India Standard Time · UTC+05:30'), findsOneWidget);
         rebuild(() {
           selected = 'india/new_delhi';
         });
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         expect(find.text('Choose a timezone'), findsOneWidget);
         expect(selected, 'india/new_delhi');
         rebuild(() {
@@ -163,14 +164,14 @@ void main() {
         drive: expanded
             ? (tester) async {
                 await tester.tap(find.text('Timezone'));
-                await tester.pumpAndSettle();
+                await pumpFeatureUi(tester);
                 final search = find.descendant(
                   of: find.byKey(const ValueKey('program-timezone-search')),
                   matching: find.byType(TextField),
                 );
                 await tester.ensureVisible(search);
                 await tester.enterText(search, 'New Delhi');
-                await tester.pumpAndSettle();
+                await pumpFeatureUi(tester);
               }
             : null,
       );

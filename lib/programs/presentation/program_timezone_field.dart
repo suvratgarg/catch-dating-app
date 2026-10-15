@@ -56,67 +56,69 @@ class ProgramTimezoneField extends StatelessWidget {
     final validSelection = ianaTimeZoneOptions(
       selected: selected,
     ).contains(selected);
-    return CatchField.control(
-      copy: fieldCopy,
-      key: const ValueKey('program-create-timezone'),
-      title: title,
-      body: validSelection ? label(selected) : placeholder,
-      contract: CatchContractConstraints
-          .createOrganizerProgramCallablePayloadTimezone,
-      disclosureMode: open
-          ? CatchFieldMode.controlledExpanded
-          : CatchFieldMode.controlledCollapsed,
-      states: {if (!enabled) WidgetState.disabled},
-      onOpenChanged: onOpenChanged,
-      helperText: helperText,
-      error: error,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchSearchField.expanded(
-            key: const ValueKey('program-timezone-search'),
-            copy: searchCopy,
-            contractExemption:
-                'Local filtering of the bundled timezone catalog',
-            placeholder: searchPlaceholder,
-            value: query,
-            enabled: enabled,
-            onChanged: onQueryChanged,
-          ),
-          const SizedBox(height: CatchSpacing.s2),
-          if (options.isEmpty)
-            Text(emptyMessage)
-          else
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: CatchLayout.menuMaxHeightFor(
-                  MediaQuery.sizeOf(context).height,
+    return CatchFieldLanes.single(
+      child: CatchField.control(
+        copy: fieldCopy,
+        key: const ValueKey('program-create-timezone'),
+        title: title,
+        body: validSelection ? label(selected) : placeholder,
+        contract: CatchContractConstraints
+            .createOrganizerProgramCallablePayloadTimezone,
+        disclosureMode: open
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
+        states: {if (!enabled) WidgetState.disabled},
+        onOpenChanged: onOpenChanged,
+        helperText: helperText,
+        error: error,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSearchField.expanded(
+              key: const ValueKey('program-timezone-search'),
+              copy: searchCopy,
+              contractExemption:
+                  'Local filtering of the bundled timezone catalog',
+              placeholder: searchPlaceholder,
+              value: query,
+              enabled: enabled,
+              onChanged: onQueryChanged,
+            ),
+            const SizedBox(height: CatchSpacing.s2),
+            if (options.isEmpty)
+              Text(emptyMessage, style: CatchTextStyles.supporting(context))
+            else
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: CatchLayout.menuMaxHeightFor(
+                    MediaQuery.sizeOf(context).height,
+                  ),
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  primary: false,
+                  itemCount: options.length,
+                  itemBuilder: (context, index) {
+                    final identifier = options[index];
+                    return CatchMenuRow<String>.sheet(
+                      key: ValueKey('program-timezone-option-$identifier'),
+                      item: CatchMenuItem(
+                        value: identifier,
+                        label: label(identifier),
+                        sublabel: identifier,
+                        enabled: enabled,
+                        selected: identifier == selected,
+                        variant: CatchMenuItemVariant.choice,
+                      ),
+                      onSelected: enabled
+                          ? (identifier, _) => onSelected(identifier)
+                          : null,
+                    );
+                  },
                 ),
               ),
-              child: ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: options.length,
-                itemBuilder: (context, index) {
-                  final identifier = options[index];
-                  return CatchMenuRow<String>.sheet(
-                    key: ValueKey('program-timezone-option-$identifier'),
-                    item: CatchMenuItem(
-                      value: identifier,
-                      label: label(identifier),
-                      sublabel: identifier,
-                      enabled: enabled,
-                      selected: identifier == selected,
-                      variant: CatchMenuItemVariant.choice,
-                    ),
-                    onSelected: enabled
-                        ? (identifier, _) => onSelected(identifier)
-                        : null,
-                  );
-                },
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
