@@ -1,6 +1,6 @@
 import {webcrypto, generateKeyPairSync, createHash, privateDecrypt, sign, constants} from "node:crypto";
 import {beforeEach, expect, it, vi} from "vitest";
-import {createSessionTransport, sessionLaunch, sessionRequest, takeSessionLaunch, type SessionLaunch} from "./operatorSessionTransport";
+import {createSessionTransport, sessionLaunch, sessionRequest, takeSessionLaunch, SessionHandoffError, sessionFailureCode, type SessionLaunch} from "./operatorSessionTransport";
 const encryption = generateKeyPairSync("rsa", {modulusLength: 2048});
 const signing = generateKeyPairSync("rsa", {modulusLength: 2048});
 const replacement = generateKeyPairSync("rsa", {modulusLength: 2048});
@@ -10,13 +10,13 @@ const anchor = (): SessionLaunch => ({kind: "catch-operator-session-launch", sch
   serverSigningKey: signing.publicKey.export({type: "spki", format: "der"}).toString("base64url"), sourceSha: "c".repeat(40), expiresAtMillis: Date.now() + 300000});
 const fragment = (launch: SessionLaunch) => "#" + Buffer.from(JSON.stringify(launch)).toString("base64url");
 beforeEach(() => {vi.stubGlobal("crypto", webcrypto);});
-function response(launch: SessionLaunch, url: string, init: RequestInit, payload: unknown, privateKey = signing.privateKey) {
+function response(launch: SessionLaunch, url: string, init: RequestInit, payload: unknown, privateKey = signing.privateKey, status = 200) {
   const headers = init.headers as Record<string, string>, body = init.body as string;
   const value = JSON.stringify(payload), route = new URL(url).pathname;
   const context = JSON.stringify([launch.challenge, launch.sourceSha, launch.expiresAtMillis, "POST", route,
-    headers["X-Catch-Request"], createHash("sha256").update(body).digest("hex"), 200, value]);
+    headers["X-Catch-Request"], createHash("sha256").update(body).digest("hex"), status, value]);
   const signature = sign("sha256", Buffer.from(context), {key: privateKey, padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: 32}).toString("base64url");
-  return new Response(JSON.stringify({payload: value, signature}), {status: 200});
+  return new Response(JSON.stringify({payload: value, signature}), {status});
 }
 it("pins private-file material once, scrubs the fragment and severs opener authority", () => {
   const launch = anchor(); let hash = fragment(launch);
@@ -67,6 +67,31 @@ it("rejects a previously signed response when another request has a fresh ID", a
 it("does not retry a lost response or local-network denial", async () => {
   const launch = anchor(); const dispatch = vi.fn().mockRejectedValue(new Error("network unavailable"));
   await expect(createSessionTransport(launch, dispatch).bootstrap()).rejects.toThrow(); expect(dispatch).toHaveBeenCalledOnce();
+});
+it.each(["helper_admission_failed", "helper_verification_failed", "helper_commit_unconfirmed"])("accepts %s only from an exact authenticated rejection", async code => {
+  const launch = anchor();
+  const dispatch = vi.fn(async (url, init) => response(launch, String(url), init!,
+    {state: "unavailable", code}, signing.privateKey, 400)) as typeof fetch;
+  const error = await createSessionTransport(launch, dispatch).post("/session", {}, "d".repeat(64)).catch(error => error);
+  expect(sessionFailureCode(error)).toBe(code);
+  expect(error).toMatchObject({message: "Protected session handoff unavailable."});
+  expect(dispatch).toHaveBeenCalledOnce();
+});
+it.each(["unsigned", "replacement-key", "unknown-code", "extra-details", "wrong-route", "thrown-code"])("does not trust %s diagnostic claims", async mutation => {
+  const launch = anchor();
+  const dispatch = vi.fn(async (url, init) => {
+    if (mutation === "thrown-code") throw new SessionHandoffError("helper_verification_failed");
+    if (mutation === "unsigned") return new Response(JSON.stringify({state: "unavailable", code: "helper_verification_failed"}), {status: 400});
+    return response(launch, String(url), init!, {state: "unavailable",
+      code: mutation === "unknown-code" ? "synthetic.private.signature" : "helper_verification_failed",
+      ...(mutation === "extra-details" ? {details: "synthetic.private.signature"} : {})},
+    mutation === "replacement-key" ? replacement.privateKey : signing.privateKey, 400);
+  }) as typeof fetch;
+  const error = await createSessionTransport(launch, dispatch).post(mutation === "wrong-route" ? "/configure" : "/session", {}, "d".repeat(64)).catch(error => error);
+  expect(sessionFailureCode(error)).toBe(mutation === "thrown-code" ? "local_connection_failed" : "local_receipt_unverified");
+  expect(error).toMatchObject({message: "Protected session handoff unavailable."});
+  expect(JSON.stringify(error)).not.toContain("synthetic.private.signature");
+  expect(dispatch).toHaveBeenCalledOnce();
 });
 it("dispatches an unload cancellation immediately without trusting its response", () => {
   const dispatch = vi.fn().mockResolvedValue(new Response("forged response"));

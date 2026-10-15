@@ -3,10 +3,11 @@ import {StrictMode} from "react";
 import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 import {OperatorSessionScreen} from "./OperatorSessionScreen";
+import {SessionHandoffError} from "../api/operatorSessionTransport";
 const mocks = vi.hoisted(() => ({transfer: vi.fn(), take: vi.fn(), bootstrap: vi.fn(), post: vi.fn(), request: vi.fn(), unload: vi.fn()}));
 vi.mock("../../../shared/api/firebase", () => ({auth: {app: {options: {projectId: "demo-catch-setup"}}}}));
 vi.mock("../api/operatorSessionHandoff", () => ({transferSession: mocks.transfer}));
-vi.mock("../api/operatorSessionTransport", () => ({takeSessionLaunch: mocks.take,
+vi.mock("../api/operatorSessionTransport", async importOriginal => ({...await importOriginal<typeof import("../api/operatorSessionTransport")>(), takeSessionLaunch: mocks.take,
   createSessionTransport: () => ({bootstrap: mocks.bootstrap, post: mocks.post, cancelOnUnload: mocks.unload}), sessionRequest: mocks.request}));
 const launch = {serverEncryptionKey: "fake-original-encryption-key", serverSigningKey: "fake-original-signing-key", challenge: "a".repeat(64), sourceSha: "b".repeat(40), expiresAtMillis: Date.now() + 300000};
 const initial = {csrf: "c".repeat(64), profile: {synthetic: true}, runtime: {sourceSha: launch.sourceSha, executionSha256: "d".repeat(64)}, home: "/fake/owner-only/home"};
@@ -62,6 +63,27 @@ it("a lost save receipt reports an unknown outcome and never retries", async () 
   await screen.findByText(/Session or save status unconfirmed/u);
   expect(document.body.textContent).not.toContain("synthetic.private.signature");
   fireEvent.click(screen.getByRole("button", {name: "Save my current Google session"})); expect(mocks.transfer).toHaveBeenCalledOnce();
+});
+it.each(["client_sign_in_required", "client_account_rejected", "client_refresh_failed"] as const)("distinguishes %s before sending without allowing another attempt", async code => {
+  mocks.transfer.mockRejectedValue(new SessionHandoffError(code));
+  render(<OperatorSessionScreen />); await configure();
+  fireEvent.click(screen.getByRole("button", {name: "Save my current Google session"}));
+  await screen.findByText(new RegExp("Session was not sent.*" + code, "u"));
+  expect(mocks.post.mock.calls.some(call => call[0] === "/session")).toBe(false);
+  const button = screen.getByRole("button", {name: "Save my current Google session"}) as HTMLButtonElement;
+  expect(button.disabled).toBe(true); fireEvent.click(button); expect(mocks.transfer).toHaveBeenCalledOnce();
+});
+it.each(["helper_admission_failed", "helper_verification_failed", "helper_commit_unconfirmed", "local_receipt_unverified"] as const)("shows %s without asserting an unknown save failed", async code => {
+  mocks.post.mockImplementation(async route => {
+    if (route === "/session") throw new SessionHandoffError(code);
+    return {request};
+  });
+  render(<OperatorSessionScreen />); await configure();
+  fireEvent.click(screen.getByRole("button", {name: "Save my current Google session"}));
+  const uncertain = code === "helper_commit_unconfirmed" || code === "local_receipt_unverified";
+  await screen.findByText(new RegExp((uncertain ? "Session or save status unconfirmed" : "The helper rejected the save before commit") + ".*" + code, "u"));
+  expect((screen.getByRole("button", {name: "Save my current Google session"}) as HTMLButtonElement).disabled).toBe(true);
+  expect(mocks.transfer).toHaveBeenCalledOnce();
 });
 it("allows cancellation while save verification is pending and reports an already committed save accurately", async () => {
   let resolve!: (value: unknown) => void;
