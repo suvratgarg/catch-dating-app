@@ -12,6 +12,8 @@ export {validateHostEventSummaryDocument} from "./validators/hostEventSummaryDoc
 export {validateHostFormSummaryDocument} from "./validators/hostFormSummaryDocument";
 export {validateHostContactSummaryDocument} from "./validators/hostContactSummaryDocument";
 export {validateHostDirectorySummaryDocument} from "./validators/hostDirectorySummaryDocument";
+export {validateSalesProviderAttemptDocument} from "./validators/salesProviderAttemptDocument";
+export {validateSalesProviderBudgetDocument} from "./validators/salesProviderBudgetDocument";
 export {validateCatchWhatsappOperatorSetupOperationDocument} from "./validators/catchWhatsappOperatorSetupOperationDocument";
 export {validateCatchWhatsappOperatorSetupAuditDocument} from "./validators/catchWhatsappOperatorSetupAuditDocument";
 export {validateManageHostRosterIntakeCallablePayload} from "./validators/manageHostRosterIntakeInput";
