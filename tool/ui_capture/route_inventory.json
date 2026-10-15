@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "742022986eecdd16c927804135ed873f22715cdf4783877d63c31c0bd072d51d",
+    "routeContractSha256": "6813808e4bc1fe0052258ed6395b1f5776d0ad69c9293cb63cc2b148fb98f662",
     "goRouteCount": 127,
     "shellBranchCount": 9,
     "enumRouteCount": 112,
@@ -805,7 +805,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostResponseOfferPreferencesScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>context.pop())",
+      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>hostWorkspaceBack(context,fallback:state.uri.replace(path:Routes.hostResponseOfferScreen.path.replaceAll(':responseId',Uri.encodeComponent(state.pathParameters['responseId']!))).toString()))",
       "presentationTarget": "HostResponseOfferPreferencesRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -823,7 +823,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostResponseQueryOfferPreferencesScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>context.pop())",
+      "presentationExpression": "(context,state)=>HostResponseOfferPreferencesRouteScreen(organizerId:_routeOrganizerQueryId(state)!,eventId:state.pathParameters['eventId']!,onBack:()=>hostWorkspaceBack(context,fallback:state.uri.replace(path:Routes.hostResponseQueryOfferScreen.path.replaceAll(':formId',Uri.encodeComponent(state.pathParameters['formId']!))).toString()))",
       "presentationTarget": "HostResponseOfferPreferencesRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true

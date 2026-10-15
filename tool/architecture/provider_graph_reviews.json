@@ -673,14 +673,14 @@
       "rationale": "Existing bounded review signal at _HostFollowerUpdateComposerSheetState._submit (await:widget.onSubmitPost). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsWorkspaceSliverState._runCampaignAction:await:action",
+      "id": "ownership-widget-async-callback:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsPageBodySliverState._runCampaignAction:await:action",
       "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsWorkspaceSliverState._runCampaignAction",
+      "symbol": "_HostSendsPageBodySliverState._runCampaignAction",
       "operation": "await:action",
       "maxCallsites": 1,
       "status": "watch",
       "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostSendsWorkspaceSliverState._runCampaignAction (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
+      "rationale": "Existing bounded review signal at _HostSendsPageBodySliverState._runCampaignAction (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
       "id": "ownership-widget-async-callback:lib/hosts/presentation/payments/host_payment_account_card.dart#_RazorpaySetupSheetState._submit:await:widget.onSubmit",
@@ -1383,34 +1383,34 @@
       "rationale": "Existing bounded review signal at _HostPersonConversationPageBodyState._sendImage (await:chatControllerProvider.sendImage). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsWorkspaceSliverState._composeFollowerUpdate:await:hostClubPostControllerProvider.createPost",
+      "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsPageBodySliverState._composeFollowerUpdate:await:hostClubPostControllerProvider.createPost",
       "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsWorkspaceSliverState._composeFollowerUpdate",
+      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
       "operation": "await:hostClubPostControllerProvider.createPost",
       "maxCallsites": 2,
       "status": "watch",
       "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostSendsWorkspaceSliverState._composeFollowerUpdate (await:hostClubPostControllerProvider.createPost). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
+      "rationale": "Existing bounded review signal at _HostSendsPageBodySliverState._composeFollowerUpdate (await:hostClubPostControllerProvider.createPost). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsWorkspaceSliverState._loadMore:await:hostAudienceControllerProvider.listSends",
+      "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsPageBodySliverState._loadMore:await:hostAudienceControllerProvider.listSends",
       "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsWorkspaceSliverState._loadMore",
+      "symbol": "_HostSendsPageBodySliverState._loadMore",
       "operation": "await:hostAudienceControllerProvider.listSends",
       "maxCallsites": 1,
       "status": "watch",
       "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostSendsWorkspaceSliverState._loadMore (await:hostAudienceControllerProvider.listSends). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
+      "rationale": "Existing bounded review signal at _HostSendsPageBodySliverState._loadMore (await:hostAudienceControllerProvider.listSends). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsWorkspaceSliverState._openCampaign:await:hostAudienceControllerProvider.getCampaignReport",
+      "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_sends_workspace.dart#_HostSendsPageBodySliverState._openCampaign:await:hostAudienceControllerProvider.getCampaignReport",
       "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsWorkspaceSliverState._openCampaign",
+      "symbol": "_HostSendsPageBodySliverState._openCampaign",
       "operation": "await:hostAudienceControllerProvider.getCampaignReport",
       "maxCallsites": 1,
       "status": "watch",
       "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostSendsWorkspaceSliverState._openCampaign (await:hostAudienceControllerProvider.getCampaignReport). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
+      "rationale": "Existing bounded review signal at _HostSendsPageBodySliverState._openCampaign (await:hostAudienceControllerProvider.getCampaignReport). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
       "id": "ownership-widget-async:lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart#_HostWhatsappThreadSheetState._send:await:hostAudienceControllerProvider.sendWhatsappReply",

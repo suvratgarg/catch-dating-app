@@ -675,7 +675,8 @@
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back"
+      "leading": "back",
+      "occurrences": 2
     },
     {
       "path": "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart",
@@ -692,6 +693,21 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_publication_route_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
     }
   ],
   "rawChromeExceptions": [

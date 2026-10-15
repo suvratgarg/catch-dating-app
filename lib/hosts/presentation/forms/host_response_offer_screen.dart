@@ -197,8 +197,12 @@ class _HostResponseOfferScreenState
   Widget build(BuildContext context) {
     if (widget.responseId == null && widget.queryController == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (_, _) =>
-            CatchTopBar.route(title: context.l10n.hostResponseOfferEvent),
+        topBarBuilder: (_, _) => CatchTopBar.route(
+          title: context.l10n.hostResponseOfferEvent,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
         body: CatchRouteBody.standardViewport(
           child: CatchEmptyState(
             title: context.l10n.coreCatchFieldVisiblecopySelect,
