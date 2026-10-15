@@ -5,11 +5,14 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {compareFunctionFingerprints, FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
-import {validateProvenanceManifest, provenanceDigest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
+import {createCheckpointState, validateProvenanceManifest, provenanceDigest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
 import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBaselineArchive,
   readMaterializedParamsSha256, liveFunctions, captureFunctionIdentities,
-  FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
-import {gcloudIndexList, inspectIndexReadiness} from "../firebase/wait_firestore_indexes_ready.mjs";
+  FUNCTIONS_DEPLOYMENT_SCHEMA, FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
+import {gcloudIndexList, inspectIndexReadiness, indexSignature} from "../firebase/wait_firestore_indexes_ready.mjs";
+import {materializedNonSecretParams} from "../firebase/prepare_functions_params_for_deploy.mjs";
+import {validateCandidateBindings, parseSecretReference, selectReadinessRequirements} from "../firebase/check_environment_readiness.mjs";
+import readinessManifest from "../firebase/environment_readiness.json" with {type: "json"};
 import salesSourceGuardedPaths from "./sales_pr543_source_guard.json" with {type: "json"};
 
 export const SELECTIVE_RELEASE_SCHEMA = "catch.selective-backend-release/v1";
@@ -1184,7 +1187,9 @@ export function verifyIntakePreservation(before, after, {completed = false, para
     protectedResourcesUnchanged: true, completed, coverage: "one-selected-function-only"};
 }
 export function verifyIntakeParams(file, provenance, expectedBinding) {
-  const r = INTAKE_PR596_RELEASE;
+  return verifyProtectedParams(file, provenance, expectedBinding, INTAKE_PR596_RELEASE);
+}
+function verifyProtectedParams(file, provenance, expectedBinding, r) {
   assert.equal(provenance.version, 1); assert.equal(provenance.projectId, r.projectId);
   assert.equal(provenance.sourceSha, r.sourceSha); assert.match(provenance.paramsSha256, hashPattern);
   const materializedSha256 = readMaterializedParamsSha256(file, r.projectId);
@@ -1207,7 +1212,13 @@ export function completeIntakePr596Release({manifest, packagePlan, before, after
   assert.deepEqual(deployment.functions, [after.selected.identity], "Live serving identity differs from bound deployment proof.");
   return {...r, ...result, paramsBinding, deployment, snapshot: after};
 }
-export async function readIntakeSnapshot({run = spawnSync, request = fetch, listIndexes = gcloudIndexList} = {}) {
+export async function readIntakeSnapshot(options = {}) {
+  return readProtectedSnapshot(options);
+}
+export async function readCat165Snapshot(options = {}) {
+  return readProtectedSnapshot(options, true);
+}
+async function readProtectedSnapshot({run = spawnSync, request = fetch, listIndexes = gcloudIndexList} = {}, cat165 = false) {
   const project = INTAKE_PR596_RELEASE.projectId;
   const tokenResult = run("gcloud", ["auth", "print-access-token"], {encoding: "utf8", timeout: 30000, maxBuffer: 1024 * 1024});
   assert.ifError(tokenResult.error); assert.equal(tokenResult.status, 0, "Metadata authentication unavailable.");
@@ -1230,7 +1241,8 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
   // Hash complete metadata in memory; parameter values and tokens never enter receipts or logs.
   const functions = await pages(`https://cloudfunctions.googleapis.com/v2/projects/${project}/locations/-/functions`, "functions");
   assert.ok(functions.length > 0 && new Set(functions.map((fn) => fn.name)).size === functions.length);
-  let selected = null, cursor = 0;
+  let selected = cat165 ? [] : null, cursor = 0;
+  const selectedTargets = cat165 ? CAT165_RELEASE.targets : [INTAKE_PR596_RELEASE.target];
   await Promise.all(Array.from({length: 5}, async () => {
     while (cursor < functions.length) {
       const fn = functions[cursor++];
@@ -1247,15 +1259,36 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
       // Eventarc criteria have no evaluation order; retain every complete filter.
       if (Array.isArray(fn.eventTrigger?.eventFilters)) fn.eventTrigger.eventFilters.sort((a, b) =>
         JSON.stringify(canonical(a)).localeCompare(JSON.stringify(canonical(b))));
-      if (fn.name === intakeSelectedName) {
+      const target = `functions:${fn.name.split("/").at(-1)}`;
+      if (selectedTargets.includes(target)) {
+        assert.equal(fn.name, `projects/${project}/locations/asia-south1/functions/${target.slice(10)}`);
         const config = fn.serviceConfig;
-        selected = {identity: captureFunctionIdentities([fn], INTAKE_PR596_RELEASE.scope, [INTAKE_PR596_RELEASE.target])[0],
+        const record = {identity: captureFunctionIdentities([fn], INTAKE_PR596_RELEASE.scope, [target])[0],
           runtime: {runtime: fn.buildConfig.runtime, entryPoint: fn.buildConfig.entryPoint,
             serviceAccount: config.serviceAccountEmail, memory: config.availableMemory,
             maxInstances: config.maxInstanceCount, secretBindings: (config.secretEnvironmentVariables ?? []).length + (config.secretVolumes ?? []).length,
             paramsSha256: config.environmentVariables?.CATCH_DEPLOY_CONFIG_SHA256 ?? null},
           iamSha256: digest(fn.iam), publicInvoker: (fn.iam.bindings ?? []).some((binding) =>
             binding.role === "roles/run.invoker" && !binding.condition && binding.members?.includes("allUsers"))};
+        if (cat165) {
+          // Preserve provider flags, secret versions, routing and resource limits;
+          // only the source-bound configuration marker may change.
+          const environment = {...config.environmentVariables};
+          delete environment.CATCH_DEPLOY_CONFIG_SHA256;
+          const stableConfig = {...config, environmentVariables: environment};
+          for (const key of ["service", "revision", "uri", "gcfUri"]) delete stableConfig[key];
+          record.configurationSha256 = digest({service: stableConfig,
+            buildEnvironment: fn.buildConfig.environmentVariables ?? {}, eventTrigger: fn.eventTrigger ?? null});
+          assert.equal((config.secretVolumes ?? []).length, 0, "CAT165 cannot change secret volume bindings.");
+          record.secretReferences = (config.secretEnvironmentVariables ?? []).map((binding) => {
+            const reference = parseSecretReference(`projects/${binding.projectId}/secrets/${binding.secret}/versions/${binding.version}`,
+              project, "574779808785");
+            assert.ok(reference); assert.equal(binding.key, reference.secret);
+            return {key: binding.key, reference: reference.reference};
+          }).sort((a, b) => a.key.localeCompare(b.key));
+          record.parameterValuesSha256 = digest(materializedNonSecretParams.map((key) => [key, environment[key] ?? null]));
+          selected.push(record);
+        } else selected = record;
       }
     }
   }));
@@ -1267,15 +1300,26 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
       fields.set(field.name, field);
     }
   }
+  const liveIndexes = listIndexes({projectId: project}).sort((a, b) => String(a.name).localeCompare(String(b.name)));
   const protectedResources = {
     extensions: digest(await pages(`https://firebaseextensions.googleapis.com/v1beta/projects/${project}/instances`, "instances")),
-    indexes: digest(listIndexes({projectId: project}).sort((a, b) => String(a.name).localeCompare(String(b.name)))),
+    indexes: digest(liveIndexes),
     fields: digest([...fields.values()].sort((a, b) => a.name.localeCompare(b.name))),
     rules: digest(await pages(`https://firebaserules.googleapis.com/v1/projects/${project}/releases`, "releases")),
     remoteConfig: digest(await get(`https://firebaseremoteconfig.googleapis.com/v1/projects/${project}/remoteConfig`)),
     projectIam: digest(await get(`https://cloudresourcemanager.googleapis.com/v1/projects/${project}:getIamPolicy`,
       {method: "POST", body: JSON.stringify({options: {requestedPolicyVersion: 3}})})),
   };
+  if (cat165) {
+    selected.sort((a, b) => a.identity.name.localeCompare(b.identity.name));
+    const wanted = indexSignature(CAT165_INDEX, {desired: true});
+    const added = liveIndexes.filter((index) => indexSignature(index) === wanted);
+    assert.ok(added.length <= 1, "Duplicate CAT165 index.");
+    protectedResources.indexes = digest(liveIndexes.filter((index) => indexSignature(index) !== wanted));
+    return cat165Snapshot({schema: "catch.cat165-metadata/v1", projectId: project,
+      functions: functions.map((fn) => ({name: fn.name, sha256: digest(fn)})), protectedResources, selected,
+      index: added[0] ?? null});
+  }
   return intakeSnapshot({schema: "catch.intake-pr596-metadata/v1", projectId: project,
     functions: functions.map((fn) => ({name: fn.name, sha256: digest(fn)})), protectedResources, selected});
 }
@@ -1317,8 +1361,327 @@ export async function runIntakePr596ReleaseCli(argv, {readSnapshot = readIntakeS
   return result;
 }
 
+// Reviewed CAT165 projection, not an impact analyzer or full-source baseline.
+export const CAT165_RELEASE = Object.freeze({
+  sourceSha: "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a",
+  baseSha: "08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2",
+  sourceCiRunId: "38778849364", sourceCiRunAttempt: "1", artifactId: 11995458204,
+  artifactSha256: "543bf0e766acf2979a9c852daf7009fc8e4ad016f8b0eecab2dada770e484766",
+  packageSha256: "e33226c7df14645d174a38cbe794b07468822bc7cabacc3ea7ff86bd3a4023fb",
+  provenanceSha256: "42e260ac3103b398c0dfcdfd1859735faac7861a005d2a1214d1f7364cf6a377",
+  projectId: "catch-dating-app-64e51", scope: "firebase:prod:catch-dating-app-64e51",
+  targetsSha256: "e3504acd685e899c82a55ee0fc3126340c87ffaf31588d411ef6fab0ac7acecb",
+  targets: Object.freeze([
+    "functions:applyProgramFunctionInvitations",
+    "functions:archiveProgram",
+    "functions:armOrganizerMoment",
+    "functions:claimProgramStaffInvite",
+    "functions:createProgramWalkIn",
+    "functions:deleteProgramGuestGroup",
+    "functions:dispatchProgramTrip",
+    "functions:getOrganizerProgram",
+    "functions:getProgramArrivalsRoster",
+    "functions:getProgramAttendanceReport",
+    "functions:getProgramFunctionDoorView",
+    "functions:getProgramHotelInbound",
+    "functions:getProgramHotelRooms",
+    "functions:getProgramStakeholderCounts",
+    "functions:getProgramTransportPlan",
+    "functions:getProgramWorkAccess",
+    "functions:grantProgramStaff",
+    "functions:importProgramManifest",
+    "functions:importWeddingPhoneContacts",
+    "functions:inviteProgramStaff",
+    "functions:issueProgramHouseholdRsvpLink",
+    "functions:listMyHostAssignments",
+    "functions:listOrganizerMoments",
+    "functions:listOrganizerPrograms",
+    "functions:listProgramGuestGroups",
+    "functions:listProgramGuests",
+    "functions:listProgramHouseholds",
+    "functions:listProgramStaff",
+    "functions:listProgramStaffAttention",
+    "functions:listProgramTrips",
+    "functions:listTransportVendors",
+    "functions:manageProgramLodging",
+    "functions:markProgramTripArrived",
+    "functions:onOrganizerApplicationAutomated",
+    "functions:onOrganizerAttendanceAutomated",
+    "functions:onOrganizerFormResponseAutomated",
+    "functions:organizerMomentSweep",
+    "functions:pauseOrganizerMoment",
+    "functions:programTravelLegMoments",
+    "functions:recordProgramDoorJournal",
+    "functions:recordProgramFunctionRsvp",
+    "functions:refreshProgramTravelLeg",
+    "functions:resumeOrganizerMoment",
+    "functions:retryOrganizerAutomations",
+    "functions:revokeProgramStaff",
+    "functions:revokeProgramStaffInvite",
+    "functions:runOrganizerMoment",
+    "functions:setProgramTravelReadiness",
+    "functions:unarchiveProgram",
+    "functions:updateOrganizerProgram",
+    "functions:upsertOrganizerMoment",
+    "functions:upsertProgramFunction",
+    "functions:upsertProgramGuest",
+    "functions:upsertProgramGuestGroup",
+    "functions:upsertProgramHotel",
+    "functions:upsertProgramHousehold",
+    "functions:upsertProgramPickupPoint",
+    "functions:upsertProgramRoomBlock",
+    "functions:upsertProgramStay",
+    "functions:upsertProgramTravelLeg",
+    "functions:upsertProgramTravelParty",
+    "functions:voidProgramTrip"
+]),
+  deferredTargets: Object.freeze([
+    "functions:createOrganizerFormAutomation",
+    "functions:createOrganizerProgram",
+    "functions:flightAlertWebhook",
+    "functions:getProgramHouseholdRsvpView",
+    "functions:listOrganizerFormAutomationRuns",
+    "functions:onEventAssistanceWhatsappEventCreated",
+    "functions:programHouseholdItineraryIcs",
+    "functions:refreshProgramFlightStatuses",
+    "functions:setOrganizerFormAutomationState",
+    "functions:submitProgramHouseholdRsvp",
+    "functions:upsertTransportVendor"
+]),
+});
+export const CAT165_INDEX = Object.freeze({collectionGroup: "organizerPrograms", queryScope: "COLLECTION",
+  fields: Object.freeze([{fieldPath: "organizerId", order: "ASCENDING"},
+    {fieldPath: "createdBy", order: "ASCENDING"}, {fieldPath: "startsAt", order: "DESCENDING"}].map(Object.freeze))});
+export const CAT165_SOURCE_GUARDED_PATHS = Object.freeze([
+  ...INTAKE_SOURCE_GUARDED_PATHS, "operations", "contracts", "tool/ci/package_firebase_delivery.mjs",
+  "tool/firebase", "tool/deploy_firebase_targets.sh", "tool/firebase_with_env.sh", "tool/ci/toolchain.env",
+  "tool/ci/delivery_core.mjs", "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/backend_source_review.mjs",
+  "package.json", "package-lock.json",
+]);
+export function checkCat165GitCompatibility(currentSha, cwd = process.cwd()) {
+  assert.match(currentSha, shaPattern);
+  const git = (args) => {
+    const r = spawnSync("git", args, {cwd, encoding: "utf8", timeout: 10000, maxBuffer: 1024 * 1024});
+    assert.ifError(r.error); assert.equal(r.status, 0, "CAT165 source compatibility is unproven."); return r.stdout;
+  };
+  for (const sha of [CAT165_RELEASE.sourceSha, currentSha]) assert.equal(git(["rev-parse", "--verify", `${sha}^{commit}`]).trim(), sha);
+  git(["merge-base", "--is-ancestor", CAT165_RELEASE.sourceSha, currentSha]);
+  assert.equal(git(["diff", "--name-only", "--no-renames", CAT165_RELEASE.sourceSha, currentSha,
+    "--", ...CAT165_SOURCE_GUARDED_PATHS]), "", "CAT165 runtime, asset, lock or protected executor drift.");
+  return {sourceSha: CAT165_RELEASE.sourceSha, currentSha};
+}
+export function verifyCat165ArtifactMetadata(artifact) {
+  const r = CAT165_RELEASE;
+  assert.equal(artifact.id, r.artifactId); assert.equal(artifact.expired, false);
+  assert.equal(artifact.name, `firebase-delivery-${r.sourceSha}-1`);
+  assert.equal(artifact.digest, `sha256:${r.artifactSha256}`);
+  assert.equal(artifact.workflow_run?.id, Number(r.sourceCiRunId)); assert.equal(artifact.workflow_run?.head_sha, r.sourceSha);
+  return {artifactId: r.artifactId, artifactSha256: r.artifactSha256};
+}
+export function verifyCat165Provenance(raw) {
+  assert.equal(provenanceDigest(raw), CAT165_RELEASE.provenanceSha256);
+  return validateProvenanceManifest(raw);
+}
+export function prepareCat165Release({manifest: raw, packagePlan, indexes}) {
+  const r = CAT165_RELEASE, manifest = validateProvenanceManifest(raw);
+  assert.equal(bytesDigest(Buffer.from(r.targets.join("\n") + "\n")), r.targetsSha256);
+  assert.equal(r.targets.length, 62); targetList(r.targets);
+  assert.ok(!r.targets.some((t) => r.deferredTargets.includes(t) || t === "functions:anonymizeDueProgramsSweep"));
+  for (const value of [manifest, packagePlan]) {
+    assert.equal(value.sourceSha, r.sourceSha); assert.equal(value.sourceCiRunId, r.sourceCiRunId);
+    assert.equal(value.sourceCiRunAttempt, "1"); assert.deepEqual(value.stages, ["firestore-indexes", "functions"]);
+  }
+  assert.equal(manifest.artifact.name, "firebase-backend.tar.gz"); assert.equal(manifest.artifact.sha256, r.packageSha256);
+  assert.equal(packagePlan.schema, "catch.firebase-delivery-plan/v2"); assert.equal(packagePlan.baseSha, r.baseSha);
+  assert.deepEqual(packagePlan.deployGroups, ["firestore-indexes", "functions"]);
+  assert.equal(packagePlan.targets.length, 2); assert.equal(packagePlan.targets[0], "firestore:indexes");
+  const available = packagePlan.targets[1].split(","); targetList(available);
+  assert.ok(r.targets.every((target) => available.includes(target)), "Selected target absent from immutable package authority.");
+  assert.ok(Array.isArray(indexes?.indexes));
+  assert.equal(indexes.indexes.filter((index) => digest(index) === digest(CAT165_INDEX)).length, 1);
+  return {...structuredClone(packagePlan), targets: ["firestore:indexes", r.targets.join(",")],
+    selectedIndexes: {indexes: [structuredClone(CAT165_INDEX)], fieldOverrides: []},
+    impactedDeferredTargets: [...r.deferredTargets], coverage: "cat165-selected-only", privacyAcceptanceComplete: false};
+}
+function cat165Names() {
+  return CAT165_RELEASE.targets.map((target) => `projects/${CAT165_RELEASE.projectId}/locations/asia-south1/functions/${target.slice(10)}`);
+}
+function cat165Snapshot(value) {
+  exactKeys(value, ["schema", "projectId", "functions", "protectedResources", "selected", "index"]);
+  assert.equal(value.schema, "catch.cat165-metadata/v1"); assert.equal(value.projectId, CAT165_RELEASE.projectId);
+  assert.ok(Array.isArray(value.functions) && value.functions.length >= 62 && value.functions.length <= 3000);
+  const names = value.functions.map((row) => {
+    exactKeys(row, ["name", "sha256"]); assert.match(row.sha256, hashPattern);
+    assert.match(row.name, /^projects\/catch-dating-app-64e51\/locations\/[a-z0-9-]+\/functions\/[A-Za-z0-9_-]+$/); return row.name;
+  });
+  assert.equal(new Set(names).size, names.length); assert.deepEqual(names, [...names].sort((a,b) => a.localeCompare(b)));
+  exactKeys(value.protectedResources, ["extensions", "indexes", "fields", "rules", "remoteConfig", "projectIam"]);
+  for (const hash of Object.values(value.protectedResources)) assert.match(hash, hashPattern);
+  assert.equal(value.selected.length, 62);
+  value.selected.forEach((record, i) => {
+    exactKeys(record, ["identity", "runtime", "iamSha256", "publicInvoker", "configurationSha256", "parameterValuesSha256", "secretReferences"]);
+    validateFunctionIdentity(record.identity, {scope: CAT165_RELEASE.scope, target: CAT165_RELEASE.targets[i]});
+    assert.ok(names.includes(record.identity.name)); assert.match(record.iamSha256, hashPattern);
+    assert.ok(Array.isArray(record.secretReferences));
+    assert.equal(record.secretReferences.length, record.runtime.secretBindings);
+    for (const binding of record.secretReferences) {
+      exactKeys(binding, ["key", "reference"]);
+      assert.equal(parseSecretReference(binding.reference, CAT165_RELEASE.projectId)?.secret, binding.key);
+    }
+    assert.equal(new Set(record.secretReferences.map((binding) => binding.key)).size, record.secretReferences.length);
+    assert.match(record.configurationSha256, hashPattern); assert.match(record.parameterValuesSha256, hashPattern); assert.equal(typeof record.publicInvoker, "boolean");
+    exactKeys(record.runtime, ["runtime", "entryPoint", "serviceAccount", "memory", "maxInstances", "secretBindings", "paramsSha256"]);
+    const eventOrSchedule = ["onOrganizerApplicationAutomated", "onOrganizerAttendanceAutomated",
+      "onOrganizerFormResponseAutomated", "organizerMomentSweep", "programTravelLegMoments", "retryOrganizerAutomations"];
+    if (!eventOrSchedule.includes(CAT165_RELEASE.targets[i].slice(10))) {
+      assert.equal(record.publicInvoker, true, "CAT165 callable IAM must already match the source public invoker policy.");
+    }
+  });
+  if (value.index !== null) {
+    assert.match(value.index.name ?? "", /^projects\/catch-dating-app-64e51\/databases\/\(default\)\/collectionGroups\/organizerPrograms\/indexes\/[A-Za-z0-9_-]+$/);
+    assert.equal(indexSignature(value.index), indexSignature(CAT165_INDEX, {desired: true}));
+  }
+  return value;
+}
+export function verifyCat165Preservation(before, after, {phase = "before", paramsSha256} = {}) {
+  cat165Snapshot(before); cat165Snapshot(after); assert.ok(["before", "indexed", "completed"].includes(phase));
+  assert.equal(before.index, null, "One-time CAT165 profile requires the reviewed index to be absent before invocation.");
+  const selected = new Set(cat165Names());
+  const retained = (s) => s.functions.filter((f) => !selected.has(f.name));
+  assert.deepEqual(retained(after), retained(before), "An unselected Function or Extension changed.");
+  assert.deepEqual(after.protectedResources, before.protectedResources, "A retained index, field, rule, flag or IAM resource changed.");
+  if (phase === "before") assert.deepEqual(after, before, "Predeployment metadata drift.");
+  else {
+    assert.ok(after.index); assert.equal(after.index.state, "READY", "The exact additive index must be READY.");
+    if (phase === "indexed") {
+      assert.deepEqual(after.functions, before.functions); assert.deepEqual(after.selected, before.selected);
+    } else {
+      assert.match(paramsSha256, hashPattern);
+      after.selected.forEach((record, i) => {
+        const prior = before.selected[i];
+        assert.equal(record.iamSha256, prior.iamSha256, "Selected IAM policy changed.");
+        assert.equal(record.configurationSha256, prior.configurationSha256, "Provider flags, secret versions or selected configuration changed.");
+        assert.equal(record.runtime.runtime, "nodejs24"); assert.equal(record.runtime.entryPoint, CAT165_RELEASE.targets[i].slice(10));
+        assert.equal(record.runtime.paramsSha256, paramsSha256);
+        assert.notEqual(record.identity.build, prior.identity.build, "Selected build did not change.");
+        assert.notEqual(record.identity.revision, prior.identity.revision, "Selected serving revision did not change.");
+        assert.notDeepEqual(record.identity.source, prior.identity.source, "Selected uploaded source did not change.");
+      });
+    }
+  }
+  return {coverage: "cat165-selected-only", selectedTargets: [...CAT165_RELEASE.targets],
+    impactedDeferredTargets: [...CAT165_RELEASE.deferredTargets], retainedFunctions: retained(before).length,
+    protectedResourcesUnchanged: true, phase, privacyAcceptanceComplete: false,
+    legacyHouseholdBearerLimitation: "Previously minted household tokens retain access and consent submission until expiry."};
+}
+export function verifyCat165Params(file, provenance, expectedBinding) {
+  return verifyProtectedParams(file, provenance, expectedBinding, CAT165_RELEASE);
+}
+export function verifyCat165ParameterPreservation(before, contents) {
+  return safe(() => {
+    cat165Snapshot(before);
+    const values = new Map();
+    for (const line of contents.trimEnd().split("\n")) {
+      const match = /^([A-Z][A-Z0-9_]*)=(.*)$/.exec(line); assert.ok(match); assert.ok(!values.has(match[1]));
+      const value = JSON.parse(match[2]); assert.equal(typeof value, "string"); values.set(match[1], value);
+    }
+    assert.deepEqual([...values.keys()].sort(), [...materializedNonSecretParams, "CATCH_DEPLOY_CONFIG_SHA256"].sort());
+    const expected = digest(materializedNonSecretParams.map((key) => [key, values.get(key)]));
+    assert.ok(before.selected.every((record) => record.parameterValuesSha256 === expected));
+    return {selectedParametersUnchanged: true};
+  });
+}
+export function verifyCat165BindingPreservation(before, candidate) {
+  return safe(() => {
+    cat165Snapshot(before);
+    validateCandidateBindings(candidate, {environment: "prod", projectId: CAT165_RELEASE.projectId,
+      sourceSha: CAT165_RELEASE.sourceSha, manifest: readinessManifest});
+    assert.deepEqual(candidate.functions.map((fn) => `functions:${fn.consumer}`).sort(), CAT165_RELEASE.targets);
+    const requirements = selectReadinessRequirements({manifest: readinessManifest, environment: "prod", targets: CAT165_RELEASE.targets});
+    const expected = requirements.filter((requirement) => ["secret-version", "secret-reference"].includes(requirement.kind))
+      .flatMap((requirement) => requirement.requiredWhen.anyDeployTarget.filter((target) => CAT165_RELEASE.targets.includes(target))
+        .map((target) => `${requirement.id}:${target.slice(10)}`)).sort();
+    assert.deepEqual(candidate.bindings.map((binding) => `${binding.requirementId}:${binding.consumer}`).sort(), expected);
+    before.selected.forEach((record, i) => {
+      const consumer = CAT165_RELEASE.targets[i].slice(10);
+      assert.equal(candidate.functions.find((fn) => fn.consumer === consumer).serviceAccount, record.runtime.serviceAccount);
+      const proposed = candidate.bindings.filter((binding) => binding.consumer === consumer &&
+        requirements.some((requirement) => requirement.id === binding.requirementId && requirement.kind === "secret-version"))
+        .map((binding) => ({key: parseSecretReference(binding.reference, CAT165_RELEASE.projectId).secret, reference: binding.reference}))
+        .sort((a, b) => a.key.localeCompare(b.key));
+      assert.deepEqual(proposed, record.secretReferences, "CAT165 must not rebind any SecretParam version.");
+    });
+    return {selectedSecretVersionsUnchanged: true};
+  });
+}
+export function prepareCat165Deployment({manifest, snapshot, paramsBinding}) {
+  cat165Snapshot(snapshot);
+  const r = CAT165_RELEASE;
+  const deployment = {schema: FUNCTIONS_DEPLOYMENT_SCHEMA, scope: r.scope,
+    provenance: createCheckpointState(manifest, r.scope).provenance, baseSha: r.baseSha,
+    targets: [...r.targets], paramsSha256: paramsBinding.materializedSha256,
+    functions: snapshot.selected.map((record) => record.identity)};
+  return validateFunctionsDeployment(deployment, {manifest, scope: r.scope, baseSha: r.baseSha,
+    selectedTargets: r.targets, paramsSha256: paramsBinding.materializedSha256});
+}
+export function completeCat165Release({manifest, packagePlan, indexes, before, after, deployment, paramsBinding}) {
+  verifyCat165Provenance(manifest); prepareCat165Release({manifest, packagePlan, indexes});
+  const r = CAT165_RELEASE;
+  const result = verifyCat165Preservation(before, after, {phase: "completed", paramsSha256: paramsBinding.configurationSha256});
+  validateFunctionsDeployment(deployment, {manifest, scope: r.scope, baseSha: r.baseSha,
+    selectedTargets: r.targets, paramsSha256: paramsBinding.materializedSha256});
+  assert.deepEqual(deployment.functions, after.selected.map((record) => record.identity));
+  return {...r, ...result, paramsBinding, deployment, snapshot: after};
+}
+export async function runCat165ReleaseCli(argv, {readSnapshot = readCat165Snapshot} = {}) {
+  const [command, ...rest] = argv, args = salesOptions(rest), r = CAT165_RELEASE;
+  const commandKeys = {"cat165-source": ["current-main", "source-root"], "cat165-artifact": ["metadata"],
+    "cat165-provenance": ["manifest"], "cat165-archive": ["archive"],
+    "cat165-prepare": ["manifest", "package-plan", "indexes", "output", "selected-indexes"],
+    "cat165-before": ["output"], "cat165-verify-before": ["before"], "cat165-verify-indexed": ["before"],
+    "cat165-params": ["params-file", "provenance", "output"], "cat165-verify-params": ["params-file", "provenance", "binding"],
+    "cat165-targets": [], "cat165-verify-config": ["before", "params-file", "provenance", "binding", "candidate"],
+    "cat165-complete": ["before", "params-file", "params-provenance", "params-binding", "manifest", "package-plan", "indexes", "deployment-output", "output"]};
+  assert.ok(Object.hasOwn(commandKeys, command)); exactKeys(args, commandKeys[command]);
+  if (command === "cat165-targets") return {targets: r.targets, targetsSha256: r.targetsSha256};
+  if (command === "cat165-source") return checkCat165GitCompatibility(args["current-main"], args["source-root"]);
+  if (command === "cat165-artifact") return verifyCat165ArtifactMetadata(salesRead(args.metadata));
+  if (command === "cat165-provenance") {verifyCat165Provenance(salesRead(args.manifest)); return {provenanceVerified: true};}
+  if (command === "cat165-archive") {assert.equal(bytesDigest(fs.readFileSync(args.archive)), r.artifactSha256); return {archiveVerified: true};}
+  if (command === "cat165-prepare") {
+    const manifest = salesRead(args.manifest); verifyCat165Provenance(manifest);
+    const plan = prepareCat165Release({manifest, packagePlan: salesRead(args["package-plan"]), indexes: salesRead(args.indexes)});
+    salesWrite(args.output, plan); salesWrite(args["selected-indexes"], plan.selectedIndexes); return {targets: r.targets};
+  }
+  if (["cat165-params", "cat165-verify-params"].includes(command)) {
+    const binding = verifyCat165Params(args["params-file"], salesRead(args.provenance),
+      command === "cat165-verify-params" ? salesRead(args.binding) : undefined);
+    if (command === "cat165-params") salesWrite(args.output, binding); return {paramsBound: true};
+  }
+  if (command === "cat165-verify-config") {
+    const binding = verifyCat165Params(args["params-file"], salesRead(args.provenance), salesRead(args.binding));
+    const before = salesRead(args.before), candidate = salesRead(args.candidate);
+    assert.equal(candidate.paramsSha256, binding.configurationSha256);
+    verifyCat165BindingPreservation(before, candidate);
+    return verifyCat165ParameterPreservation(before, fs.readFileSync(args["params-file"], "utf8"));
+  }
+  const snapshot = await readSnapshot();
+  if (command === "cat165-before") {
+    cat165Snapshot(snapshot); assert.equal(snapshot.index, null); salesWrite(args.output, snapshot); return {captured: true};
+  }
+  const before = salesRead(args.before);
+  if (command !== "cat165-complete") return verifyCat165Preservation(before, snapshot,
+    {phase: command === "cat165-verify-indexed" ? "indexed" : "before"});
+  const manifest = salesRead(args.manifest);
+  const paramsBinding = verifyCat165Params(args["params-file"], salesRead(args["params-provenance"]), salesRead(args["params-binding"]));
+  const deployment = prepareCat165Deployment({manifest, snapshot, paramsBinding});
+  const result = completeCat165Release({before, after: snapshot, manifest,
+    packagePlan: salesRead(args["package-plan"]), indexes: salesRead(args.indexes), deployment, paramsBinding});
+  salesWrite(args["deployment-output"], deployment); salesWrite(args.output, result); return result;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  (process.argv[2]?.startsWith("intake-") ? runIntakePr596ReleaseCli : runSalesPr543ReleaseCli)(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
+  (process.argv[2]?.startsWith("cat165-") ? runCat165ReleaseCli : process.argv[2]?.startsWith("intake-") ? runIntakePr596ReleaseCli : runSalesPr543ReleaseCli)(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
   });

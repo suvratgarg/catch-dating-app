@@ -1000,7 +1000,7 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
     /indexes=build\/delivery\/deploy-tree\/firestore\.indexes\.json[\s\S]*if \[\[ -f "\$indexes" \]\][\s\S]*--indexes "\$indexes"[\s\S]*--current-indexes firestore\.indexes\.json/,
   );
   assert.doesNotMatch(
-    promotion,
+    ciJob(promotion, "promote"),
     /--indexes build\/delivery\/package\/firestore\.indexes\.json/,
   );
   const promoteStep = promotion.slice(
@@ -1698,7 +1698,7 @@ test("Functions retries stop on missing params or secrets and retain transient r
 
 test("Intake PR596 uses the protected fixed-scope job and cannot enter generic mutation routes", () => {
   const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-intake-pr596");
-  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release \}\}/);
+  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release && !inputs\.cat165_release \}\}/);
   assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
   assert.match(workflow("selective-backend-release.yml"), /group: backend-delivery\n  cancel-in-progress: false/);
   assert.ok(job.indexOf("Require recorded human") < job.indexOf("google-github-actions/auth@v3"));
@@ -1780,4 +1780,105 @@ test("Intake PR596 caller accepts GitHub-omitted empty recovery and rejects any 
     {reason: "bad"}, {reason: "line\nbreak reason"}]) {
     assert.equal(accepted({...inputs, ...patch}), false);
   }
+});
+
+import {CAT165_RELEASE} from "./selective_backend_release.mjs";
+test("CAT165 uses protected approval, fixed artifact proofs and isolated selected-only completion", () => {
+  const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-cat165");
+  assert.match(ciJob(source, "promote"), /!inputs\.cat165_release/);
+  assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
+  for (const proof of ["Require recorded human", "cat165-archive", "cat165-artifact", "cat165-provenance", "package_firebase_delivery.mjs verify"]) {
+    assert.ok(job.indexOf(proof) > 0 && job.indexOf(proof) < job.indexOf("google-github-actions/auth@v3"), proof);
+  }
+  assert.doesNotMatch(job, /firebase_functions_checkpoint\.mjs record|delivery_core\.mjs checkpoint/);
+  assert.match(job, /cat165-complete/); assert.match(job, /cat165-selected\/functions-deployment\.json/);
+  assert.doesNotMatch(job, /--force|--functions-postconditions-only|sync:callable-invokers|restore-decision|checkpoint restore|delivery_core\.mjs next|backend-delivery-cursor|adminListCAT165Operations/);
+  assert.equal((job.match(/firebase_with_env\.sh prod deploy/g) ?? []).length, 1);
+  assert.equal((job.match(/gcloud firestore indexes composite create/g) ?? []).length, 1);
+  assert.match(job, /--collection-group=organizerPrograms --query-scope=COLLECTION/);
+  assert.match(job, /field-path=organizerId,order=ascending[\s\S]*field-path=createdBy,order=ascending[\s\S]*field-path=startsAt,order=descending/);
+  assert.ok(job.indexOf("wait_firestore_indexes_ready.mjs") < job.indexOf("firebase_with_env.sh prod deploy"));
+  assert.equal((job.match(/cat165-verify-config/g) ?? []).length, 2);
+  assert.equal((job.match(/--write-candidate build\/delivery\/cat165-(?:index|functions)-bindings.json/g) ?? []).length, 2);
+  assert.match(job, /--phase deployed --candidate build\/delivery\/cat165-functions-bindings\.json/);
+});
+test("CAT165 reusable input predicate rejects every other mode, authority drift and recovery", () => {
+  const job = ciJob(workflow("_firebase-promote.yml"), "promote-cat165");
+  const body = extractSteps(job).find((step) => step.name === "Validate the fixed CAT165 caller and prohibit recovery or other modes").run;
+  assert.match(body, /test "\$GITHUB_RUN_ATTEMPT" = 1/);
+  assert.match(body, /selective-backend-release\.yml@refs\/heads\/main/);
+  const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+  const inputs = {cat165_release: true, intake_pr596_release: false, operator_release: false, whatsapp_five_release: false,
+    sales_pr543_release: false, wedding_phone_import_release: false, require_current_main: false,
+    environment: "prod", approval_environment: "prod", control_plane_sha: "a".repeat(40),
+    source_sha: CAT165_RELEASE.sourceSha, base_sha: CAT165_RELEASE.baseSha,
+    source_ci_run_id: CAT165_RELEASE.sourceCiRunId, source_ci_run_attempt: "1", resume_delivery_run_id: "", resume_delivery_attempt: "1",
+    dev_completion_artifact_id: "", dev_completion_artifact_digest: "", dev_completion_receipt_sha256: ""};
+  const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8",
+    env: {...process.env, GITHUB_SHA: "a".repeat(40)}}).status === 0;
+  assert.equal(accepted(inputs), true);
+  for (const key of ["intake_pr596_release", "operator_release", "whatsapp_five_release", "sales_pr543_release", "wedding_phone_import_release", "require_current_main"]) {
+    assert.equal(accepted({...inputs, [key]: true}), false, key);
+  }
+  for (const patch of [{environment: "dev"}, {approval_environment: "prod-backend"}, {source_ci_run_attempt: "2"},
+    {source_sha: "b".repeat(40)}, {base_sha: "b".repeat(40)}, {source_ci_run_id: "123"}, {control_plane_sha: "b".repeat(40)},
+    {resume_delivery_run_id: "123"}, {dev_completion_artifact_id: "123"}, {cat165_release: false}]) assert.equal(accepted({...inputs, ...patch}), false);
+});
+test("CAT165 caller rejects missing consent, mixed release confirmations and malformed recovery", () => {
+  const job = ciJob(workflow("selective-backend-release.yml"), "authorize-cat165");
+  const body = extractSteps(job).find((step) => step.name === "Bind the fixed CAT165 source, producer and operator confirmation").run;
+  const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+  const inputs = {release_kind: "cat165", confirm_cat165: true, confirm_intake_pr596: false,
+    confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
+    resume_delivery_attempt: "1", source_sha: CAT165_RELEASE.sourceSha, reason: "Reviewed protected CAT165 release"};
+  const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8"}).status === 0;
+  assert.equal(accepted(inputs), true);
+  for (const key of ["confirm_intake_pr596", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543"]) {
+    assert.equal(accepted({...inputs, [key]: true}), false);
+  }
+  for (const patch of [{confirm_cat165: false}, {release_kind: "intake-pr596"}, {resume_delivery_attempt: "2"},
+    {source_sha: "b".repeat(40)}, {reason: "short"}, {reason: "line\nbreak reason"}, {resume_delivery_run_id: false},
+    {resume_delivery_run_id: "123"}]) assert.equal(accepted({...inputs, ...patch}), false);
+});
+test("CAT165 rejects bypass approval and requires an explicitly configured human reviewer", () => {
+  const step = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat165"))
+    .find((entry) => entry.name === "Require recorded human PROD environment approval for operator release");
+  const filter = /--argjson history "\$history" '([\s\S]*?)' > \/dev\/null/.exec(step.run)[1];
+  const environment = {id: 5, protection_rules: [{type: "required_reviewers", reviewers: [{type: "User", reviewer: {id: 7}}]}]};
+  const approval = {state: "approved", user: {id: 7}, environments: [{id: 5, name: "prod"}]};
+  const accepted = (history, settings = environment) => spawnSync("jq", ["-en", "--argjson", "environment", JSON.stringify(settings),
+    "--argjson", "history", JSON.stringify(history), filter], {encoding: "utf8"}).status === 0;
+  assert.equal(accepted([approval]), true); assert.equal(accepted([]), false);
+  assert.equal(accepted([{...approval, user: {id: 99}}]), false);
+  assert.equal(accepted([approval, {...approval, state: "rejected"}]), false);
+  assert.equal(accepted([approval], {...environment, protection_rules: []}), false);
+});
+test("CAT165 executes one Functions invocation and no mutation after a preflight failure", (t) => {
+  const body = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat165"))
+    .find((step) => step.name === "Recheck the indexed boundary and deploy exactly 62 Functions once").run
+    .replaceAll("${{ inputs.control_plane_sha }}", "a".repeat(40)).replaceAll("${{ steps.verify.outputs.targets }}", CAT165_RELEASE.targets.join(","));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-once-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "build/delivery"), {recursive: true}); fs.mkdirSync(path.join(directory, "tool"));
+  fs.mkdirSync(path.join(directory, "bin"));
+  const targets = CAT165_RELEASE.targets.join(",");
+  fs.writeFileSync(path.join(directory, "build/delivery/execution-plan.json"), JSON.stringify({stages: ["firestore-indexes", "functions"], targets: ["firestore:indexes", targets]}));
+  fs.writeFileSync(path.join(directory, "bin/git"), '#!/bin/sh\nexit 0\n', {mode: 0o700});
+  fs.writeFileSync(path.join(directory, "bin/node"), `#!/bin/sh
+case "$*" in
+  *cat165-targets*) printf '%s\\n' '${JSON.stringify({targets: CAT165_RELEASE.targets})}' ;;
+  *cat165-verify-config*) exit "\${CONFIG_STATUS:-0}" ;;
+  *cat165-verify-indexed*) exit "\${INDEX_STATUS:-0}" ;;
+esac
+exit 0
+`, {mode: 0o700});
+  fs.writeFileSync(path.join(directory, "tool/deploy_firebase_targets.sh"), '#!/bin/sh\nexit 0\n', {mode: 0o700});
+  fs.writeFileSync(path.join(directory, "tool/firebase_with_env.sh"), '#!/bin/sh\nprintf "%s\\n" "$*" >> calls\nexit 9\n', {mode: 0o700});
+  const run = (extra) => spawnSync("bash", ["-c", body], {cwd: directory, encoding: "utf8", env: {...process.env, PATH: `${directory}/bin:${process.env.PATH}`, ...extra}});
+  for (const extra of [{CONFIG_STATUS: "7"}, {INDEX_STATUS: "8"}]) {
+    assert.notEqual(run(extra).status, 0); assert.equal(fs.existsSync(path.join(directory, "calls")), false);
+  }
+  const result = run({}); assert.equal(result.status, 9, result.stderr);
+  assert.deepEqual(fs.readFileSync(path.join(directory, "calls"), "utf8").trim().split("\n"),
+    [`prod deploy --only ${targets} --non-interactive --config build/delivery/deploy-tree/firebase.json`]);
 });

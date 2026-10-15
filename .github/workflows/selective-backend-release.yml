@@ -8,6 +8,7 @@ on:
         required: true
         type: choice
         options:
+          - cat165
           - intake-pr596
           - sales-pr543
           - whatsapp-five
@@ -33,6 +34,11 @@ on:
         type: boolean
       confirm_sales_pr543:
         description: Confirm only the 44 reviewed Sales Functions and exact Firestore rules from PR543.
+        required: true
+        default: false
+        type: boolean
+      confirm_cat165:
+        description: Confirm only the reviewed 62 Functions and one additive program index; privacy acceptance remains incomplete.
         required: true
         default: false
         type: boolean
@@ -79,6 +85,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_SHA: ${{ inputs.source_sha }}
           REASON: ${{ inputs.reason }}
+          CAT165_CONFIRM: ${{ inputs.confirm_cat165 }}
           INTAKE_CONFIRM: ${{ inputs.confirm_intake_pr596 }}
           CONFIRM: ${{ inputs.confirm_four_functions_five_indexes }}
           SALES_CONFIRM: ${{ inputs.confirm_sales_pr543 }}
@@ -89,6 +96,7 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$CONFIRM" = true
           test "$INTAKE_CONFIRM" = false
+          test "$CAT165_CONFIRM" = false
           test "$SALES_CONFIRM" = false
           test "$REQUESTED_SHA" = 656f093d1910afdbe4d93d31565d1782c39aab63
           (( ${#REASON} >= 12 && ${#REASON} <= 240 ))
@@ -141,6 +149,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_SHA: ${{ inputs.source_sha }}
           REASON: ${{ inputs.reason }}
+          CAT165_CONFIRM: ${{ inputs.confirm_cat165 }}
           INTAKE_CONFIRM: ${{ inputs.confirm_intake_pr596 }}
           CONFIRM: ${{ inputs.confirm_whatsapp_five }}
           LEGACY_CONFIRM: ${{ inputs.confirm_four_functions_five_indexes }}
@@ -152,6 +161,7 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$CONFIRM" = true
           test "$INTAKE_CONFIRM" = false
+          test "$CAT165_CONFIRM" = false
           test "$LEGACY_CONFIRM" = false
           test "$SALES_CONFIRM" = false
           test "$REQUESTED_SHA" = 4dcd759a261f096bcf37d5f69e19eb625b0199b2
@@ -207,6 +217,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_SHA: ${{ inputs.source_sha }}
           REASON: ${{ inputs.reason }}
+          CAT165_CONFIRM: ${{ inputs.confirm_cat165 }}
           INTAKE_CONFIRM: ${{ inputs.confirm_intake_pr596 }}
           CONFIRM: ${{ inputs.confirm_sales_pr543 }}
           LEGACY_CONFIRM: ${{ inputs.confirm_four_functions_five_indexes }}
@@ -220,6 +231,7 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$CONFIRM" = true
           test "$INTAKE_CONFIRM" = false
+          test "$CAT165_CONFIRM" = false
           test "$LEGACY_CONFIRM" = false
           test "$WHATSAPP_CONFIRM" = false
           if [[ -n "$RESUME_RUN_ID" ]]; then
@@ -294,6 +306,7 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           jq -e '
             .release_kind == "intake-pr596" and .confirm_intake_pr596 == true and
+            (.confirm_cat165 // false) == false and
             .confirm_four_functions_five_indexes == false and .confirm_whatsapp_five == false and
             .confirm_sales_pr543 == false and
             (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and
@@ -327,4 +340,59 @@ jobs:
       source_ci_run_id: '37777899024'
       source_ci_run_attempt: '1'
       intake_pr596_release: true
+    secrets: inherit
+
+  authorize-cat165:
+    name: Verify immutable CAT165 candidate and exact 62-Function / one-index scope
+    if: ${{ inputs.release_kind == 'cat165' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Bind the fixed CAT165 source, producer and operator confirmation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          jq -e '
+            .release_kind == "cat165" and .confirm_cat165 == true and
+            .confirm_four_functions_five_indexes == false and .confirm_whatsapp_five == false and
+            .confirm_sales_pr543 == false and .confirm_intake_pr596 == false and
+            (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and
+            .source_sha == "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a" and
+            (.reason | length) >= 12 and (.reason | length) <= 240 and
+            (.reason | test("[\\r\\n]") | not) and (.reason | test("[^\\s]"))
+          ' <<< "$INPUTS" > /dev/null
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+          test "$(git rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
+          node tool/ci/selective_backend_release.mjs cat165-source --current-main "$GITHUB_SHA" --source-root .
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38778849364/attempts/1" | jq -e '
+            .status == "completed" and .conclusion == "success" and .event == "push" and .head_branch == "main" and
+            .head_sha == "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a" and .run_attempt == 1 and .workflow_id == 320377139
+          ' > /dev/null
+          mkdir -p build/cat165
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11995458204" > build/cat165/artifact.json
+          node tool/ci/selective_backend_release.mjs cat165-artifact --metadata build/cat165/artifact.json
+
+  prod-cat165:
+    name: Protected 62-Function / one-index CAT165 PROD promotion
+    needs: authorize-cat165
+    if: ${{ needs['authorize-cat165'].result == 'success' }}
+    uses: ./.github/workflows/_firebase-promote.yml
+    with:
+      environment: prod
+      approval_environment: prod
+      control_plane_sha: ${{ github.sha }}
+      source_sha: 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a
+      base_sha: 08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2
+      source_ci_run_id: '38778849364'
+      source_ci_run_attempt: '1'
+      cat165_release: true
     secrets: inherit
