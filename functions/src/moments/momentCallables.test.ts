@@ -308,10 +308,11 @@ test("default authority: manager, communications staff; others denied",
         hostProfiles: [],
       },
       "organizerPrograms/prog": {
-        organizerId: "org-1", status: "active",
+        organizerId: "org-1", status: "active", createdBy: "mgr",
       },
       "programStaffGrants/prog__comms": {
         programId: "prog", organizerId: "org-1", uid: "comms",
+        createdBy: "mgr",
         status: "active", expiresAt: ts(grantExpiry),
         duties: [{
           duty: "communications", expiresAtMillis: grantExpiry,

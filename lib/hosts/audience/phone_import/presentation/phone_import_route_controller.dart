@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/data/phone_contact_picker.dart';
@@ -12,8 +11,6 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
 import 'package:catch_dating_app/hosts/data/host_release_config.dart';
-import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
-import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
@@ -86,44 +83,6 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
       accountId: account,
       isCurrent: isCurrent,
     );
-    final String plannerName;
-    if (access.isManager) {
-      // The assignment catalog contains staff grants. Managers resolve only
-      // display metadata here; canonical work access remains the authority.
-      final organizer = await ref
-          .read(clubsRepositoryProvider)
-          .fetchClub(access.organizerId);
-      _assertCurrent(account, isCurrent);
-      if (organizer == null ||
-          organizer.id != access.organizerId ||
-          organizer.name.trim().isEmpty) {
-        throw const PermissionException(
-          'The current wedding and planner could not be confirmed.',
-        );
-      }
-      plannerName = organizer.name;
-    } else {
-      final assignments = await ref
-          .read(hostWorkRepositoryProvider)
-          .listAssignments();
-      _assertCurrent(account, isCurrent);
-      HostWorkAssignment? assignment;
-      for (final row in assignments.assignments) {
-        if (row.kind == HostWorkScopeKind.program &&
-            row.scopeId == programId &&
-            row.organizerId == access.organizerId &&
-            row.organizerName.trim().isNotEmpty) {
-          assignment = row;
-          break;
-        }
-      }
-      if (assignment == null) {
-        throw const PermissionException(
-          'The current wedding and planner could not be confirmed.',
-        );
-      }
-      plannerName = assignment.organizerName;
-    }
     final review = PhoneImportController(
       picker: const NativePhoneContactPicker(),
       contactReferenceId: (localId) => phoneContactReferenceId(
@@ -170,7 +129,6 @@ class PhoneImportRouteController extends _$PhoneImportRouteController {
       return PhoneImportRouteSession(
         accountId: account,
         access: currentAccess,
-        plannerName: plannerName,
         review: review,
         submission: submission,
       );

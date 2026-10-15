@@ -20,6 +20,7 @@ function seed(): Record<string, FakeData> {
   return {
     "organizerPrograms/program-1": {
       organizerId: "org-1", timezone: "Asia/Kolkata",
+      createdBy: "manager-1",
     },
     "organizers/org-1": {
       hostUserId: "manager-1",
@@ -219,6 +220,7 @@ for (const status of ["revoked", "expired"] as const) {
     const store = new FakeFirestore(seed());
     store.setDoc("programStaffGrants/program-1__greeter-1", {
       programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+      createdBy: "manager-1",
       status: status === "revoked" ? "revoked" : "active",
       duties: [{duty: "programCoordinator", pickupPointIds: [], hotelIds: []}],
       expiresAt: ts(status === "revoked" ? EXPIRES + 3600_000 : NOW - 1),
@@ -242,6 +244,7 @@ test("claim preserves only still-active existing authority", async () => {
   const store = new FakeFirestore(seed());
   store.setDoc("programStaffGrants/program-1__greeter-1", {
     programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    createdBy: "manager-1",
     status: "active", expiresAt: ts(EXPIRES + 3600_000), revision: 8,
     duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: [],
       expiresAtMillis: EXPIRES + 3600_000}],
@@ -282,6 +285,7 @@ test("later hotel invite preserves the airport deadline", async () => {
   const early = NOW + 60_000;
   store.setDoc("programStaffGrants/program-1__greeter-1", {
     programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    createdBy: "manager-1",
     status: "active", expiresAt: ts(early), revision: 8,
     duties: [{duty: "airportGreeter", pickupPointIds: ["pickup-1"],
       hotelIds: [], expiresAtMillis: early}],
@@ -307,6 +311,7 @@ test("claim cannot recover legacy duty deadlines from the grant maximum",
     const store = new FakeFirestore(seed());
     store.setDoc("programStaffGrants/program-1__greeter-1", {
       programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+      createdBy: "manager-1",
       status: "active", expiresAt: ts(EXPIRES + 3600_000), revision: 8,
       duties: [{duty: "programCoordinator", pickupPointIds: [], hotelIds: []}],
     });
@@ -327,6 +332,7 @@ test("an invite exceeding eight scope tuples remains unclaimed", async () => {
     pickupPointIds: [], hotelIds: [`h${i}`], expiresAtMillis: EXPIRES}));
   store.setDoc("programStaffGrants/program-1__greeter-1", {
     programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    createdBy: "manager-1",
     status: "active", expiresAt: ts(EXPIRES), revision: 8, duties: existing,
   });
   const invite = await inviteProgramStaffHandler(
@@ -406,13 +412,12 @@ test("conflicting legacy pending links require explicit reconciliation",
     assert.equal(pending(store).length, 2);
   });
 
-test("manager revocation during issuance prevents the invite commit",
+test("deleted creator during issuance prevents the invite commit",
   async () => {
     const store = new FakeFirestore(seed());
     store.beforeCommit = async () => {
       store.beforeCommit = undefined;
-      store.setDoc("organizers/org-1", {ownerUserId: "someone-else",
-        hostUserId: "someone-else", hostUserIds: [], hostProfiles: []});
+      store.setDoc("deletedUsers/manager-1", {deletedAt: ts(NOW)});
     };
     await assert.rejects(inviteProgramStaffHandler(
       request(invitePayload), deps(store)), code("permission-denied"));
@@ -539,3 +544,246 @@ for (const organizerId of ["org-1", "foreign"]) {
     }
   });
 }
+
+function withAdmin(store: FakeFirestore, deadline = EXPIRES) {
+  store.setDoc("programStaffGrants/program-1__admin-1", {
+    programId: "program-1", organizerId: "org-1", uid: "admin-1",
+    createdBy: "manager-1", status: "active", revision: 1,
+    expiresAt: ts(deadline),
+    duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: deadline}],
+    programAuthorization: {ownerUid: "manager-1", approvedByUid: "manager-1",
+      approvedAtMillis: NOW - 1, authorizedUntilMillis: deadline},
+  });
+  return store;
+}
+
+test("creator issues and claims invitations after losing organizer roles",
+  async () => {
+    const store = new FakeFirestore(seed());
+    store.setDoc("organizers/org-1", {ownerUserId: "other"});
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    await claimProgramStaffInviteHandler(request({inviteId: invite.entityId},
+      "greeter-1", "+919900001111"), deps(store));
+    assert.equal(store.getDoc("programStaffGrants/program-1__greeter-1")
+      ?.status, "active");
+  });
+
+test("organizer-only manager and coordinator cannot issue admin invitations",
+  async () => {
+    const store = withAdmin(new FakeFirestore(seed()));
+    store.setDoc("organizers/org-1", {ownerUserId: "organizer-only"});
+    store.setDoc("programStaffGrants/program-1__coordinator-1", {
+      ...store.getDoc("programStaffGrants/program-1__admin-1"),
+      uid: "coordinator-1", duties: [{duty: "programCoordinator",
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: EXPIRES}],
+    });
+    for (const uid of ["organizer-only", "coordinator-1"]) {
+      await assert.rejects(inviteProgramStaffHandler(request({...invitePayload,
+        duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: []}]},
+      uid), deps(store)), code("permission-denied"));
+    }
+    assert.equal(pending(store).length, 0);
+  });
+
+for (const patch of [
+  {status: "revoked"}, {expiresAt: ts(NOW)},
+  {duties: [{duty: "programCoordinator", pickupPointIds: [], hotelIds: [],
+    expiresAtMillis: EXPIRES}]},
+]) {
+  test("pending claim rejects changed issuer admin access", async () => {
+    const store = withAdmin(new FakeFirestore(seed()));
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload, "admin-1"), deps(store));
+    store.updateDoc("programStaffGrants/program-1__admin-1", patch);
+    await assert.rejects(claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store)), code("permission-denied"));
+    assert.equal(pending(store).length, 1);
+    assert.equal(store.getDoc("programStaffGrants/program-1__greeter-1"),
+      undefined);
+  });
+}
+
+test("admin cannot create or claim beyond its current inherited deadline",
+  async () => {
+    const store = withAdmin(new FakeFirestore(seed()));
+    await assert.rejects(inviteProgramStaffHandler(request({...invitePayload,
+      expiresAtMillis: EXPIRES + 1}, "admin-1"), deps(store)),
+    code("permission-denied"));
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload, "admin-1"), deps(store));
+    store.updateDoc("programStaffGrants/program-1__admin-1", {duties: [{
+      duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: EXPIRES - 1,
+    }]});
+    await assert.rejects(claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store)), code("permission-denied"));
+  });
+
+test("creator explicitly reapproves a legacy pending invite, preserving audit",
+  async () => {
+    const store = withAdmin(new FakeFirestore(seed()));
+    const original = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    const path = `programStaffInvites/${original.entityId}`;
+    const legacy: FakeData = {...store.getDoc(path),
+      createdBy: "organizer-only"};
+    delete legacy.programAuthorization;
+    store.setDoc(path, legacy);
+    await assert.rejects(inviteProgramStaffHandler(
+      request(invitePayload, "admin-1"), deps(store)),
+    code("permission-denied"));
+    await assert.rejects(claimProgramStaffInviteHandler(
+      request({inviteId: original.entityId}, "greeter-1", "+919900001111"),
+      deps(store)), code("permission-denied"));
+    const approved = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    assert.equal(approved.entityId, original.entityId);
+    assert.equal(approved.alreadyApplied, false);
+    assert.equal(store.getDoc(path)?.createdBy, "organizer-only");
+    await claimProgramStaffInviteHandler(
+      request({inviteId: original.entityId}, "greeter-1", "+919900001111"),
+      deps(store));
+  });
+
+test("owner-approved invitation never adopts unauthorized legacy duties",
+  async () => {
+    const store = new FakeFirestore(seed());
+    store.setDoc("programStaffGrants/program-1__greeter-1", {
+      uid: "greeter-1", programId: "program-1", organizerId: "org-1",
+      createdBy: "organizer-only", status: "active", revision: 1,
+      expiresAt: ts(EXPIRES + 1000), duties: [{duty: "programCoordinator",
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: EXPIRES + 1000}],
+    });
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    await claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store));
+    const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
+    assert.equal(grant.createdBy, "organizer-only");
+    assert.deepEqual(grant.duties, invitePayload.duties.map((duty) =>
+      ({...duty, expiresAtMillis: EXPIRES})));
+  });
+
+for (const patch of [{status: "revoked"}, {expiresAt: ts(NOW)}]) {
+  test("claimed replay does not promise revoked or expired recipient access",
+    async () => {
+      const store = new FakeFirestore(seed());
+      const invite = await inviteProgramStaffHandler(
+        request(invitePayload), deps(store));
+      const claim = () => claimProgramStaffInviteHandler(
+        request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+        deps(store));
+      await claim();
+      store.updateDoc("programStaffGrants/program-1__greeter-1", patch);
+      await assert.rejects(claim(), code("permission-denied"));
+    });
+}
+
+test("deleted recipient cannot consume a pending invitation", async () => {
+  const store = new FakeFirestore(seed());
+  const invite = await inviteProgramStaffHandler(
+    request(invitePayload), deps(store));
+  store.setDoc("deletedUsers/greeter-1", {deletedAt: ts(NOW)});
+  await assert.rejects(claimProgramStaffInviteHandler(
+    request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+    deps(store)), code("permission-denied"));
+  assert.equal(pending(store).length, 1);
+});
+
+for (const deadline of [NOW, EXPIRES - 1]) {
+  test("redemption deadline cannot exceed the invite's owner approval",
+    async () => {
+      const store = withAdmin(new FakeFirestore(seed()));
+      const invite = await inviteProgramStaffHandler(
+        request(invitePayload, "admin-1"), deps(store));
+      store.updateDoc(`programStaffInvites/${invite.entityId}`, {
+        programAuthorization: {ownerUid: "manager-1", approvedByUid: "admin-1",
+          approvedAtMillis: NOW - 1, authorizedUntilMillis: deadline},
+      });
+      await assert.rejects(claimProgramStaffInviteHandler(
+        request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+        deps(store)), code("permission-denied"));
+      assert.equal(pending(store).length, 1);
+    });
+}
+
+test("merging long operations with short admin never extends delegation",
+  async () => {
+    const short = NOW + 60_000;
+    const long = EXPIRES + 3600_000;
+    const store = withAdmin(new FakeFirestore(seed()), short);
+    store.setDoc("programStaffGrants/program-1__greeter-1", {
+      programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+      createdBy: "manager-1", status: "active", revision: 1,
+      expiresAt: ts(long), duties: [{duty: "hotelDesk", pickupPointIds: [],
+        hotelIds: [], expiresAtMillis: long}],
+    });
+    const adminDuties = [{duty: "programAdmin", pickupPointIds: [],
+      hotelIds: []}];
+    const invite = await inviteProgramStaffHandler(request({...invitePayload,
+      duties: adminDuties, expiresAtMillis: short}, "admin-1"), deps(store));
+    await claimProgramStaffInviteHandler(request({inviteId: invite.entityId},
+      "greeter-1", "+919900001111"), deps(store));
+    const merged = store.getDoc("programStaffGrants/program-1__greeter-1")!;
+    assert.equal(timestampMillis(merged.expiresAt), long);
+    assert.equal((merged.programAuthorization as
+      {authorizedUntilMillis: number}).authorizedUntilMillis, long);
+    assert.deepEqual(merged.duties, [
+      {duty: "hotelDesk", pickupPointIds: [], hotelIds: [],
+        expiresAtMillis: long},
+      {duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+        expiresAtMillis: short},
+    ]);
+    const child = {...invitePayload, phoneNumber: "+919900002222",
+      duties: adminDuties, expiresAtMillis: short};
+    await assert.rejects(inviteProgramStaffHandler(request({...child,
+      expiresAtMillis: short + 1}, "greeter-1"), deps(store)),
+    code("permission-denied"));
+    const peer = await inviteProgramStaffHandler(
+      request(child, "greeter-1"), deps(store));
+    await claimProgramStaffInviteHandler(request({inviteId: peer.entityId},
+      "peer-1", "+919900002222"), deps(store));
+    await assert.rejects(inviteProgramStaffHandler(request({...invitePayload,
+      duties: adminDuties, expiresAtMillis: short + 1}, "peer-1"), deps(store)),
+    code("permission-denied"));
+  });
+
+for (const marker of [{revokedAt: ts(NOW)}, {revokedBy: "manager-1"}]) {
+  test("pending status cannot revive an invite revocation marker", async () => {
+    const store = new FakeFirestore(seed());
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    store.updateDoc(`programStaffInvites/${invite.entityId}`, marker);
+    await assert.rejects(inviteProgramStaffHandler(
+      request(invitePayload), deps(store)), {code: "failed-precondition"});
+    await assert.rejects(claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store)), {code: "failed-precondition"});
+    assert.equal(store.docs.has("programStaffGrants/program-1__greeter-1"),
+      false);
+  });
+}
+
+test("invite claim discards previously revoked duties", async () => {
+  const store = new FakeFirestore(seed());
+  store.setDoc("programStaffGrants/program-1__greeter-1", {
+    programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    status: "active", createdBy: "manager-1", expiresAt: ts(EXPIRES),
+    revokedBy: "manager-1", revokedAt: ts(NOW - 1),
+    duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: EXPIRES}], revision: 1,
+  });
+  const invite = await inviteProgramStaffHandler(
+    request(invitePayload), deps(store));
+  await claimProgramStaffInviteHandler(
+    request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+    deps(store));
+  const grant = store.docs.get("programStaffGrants/program-1__greeter-1")!;
+  assert.deepEqual((grant.duties as Array<{duty: string}>).map((d) => d.duty),
+    ["airportGreeter"]);
+});

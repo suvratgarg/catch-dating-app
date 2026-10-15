@@ -160,6 +160,7 @@ test("revoking authority between transactions stops remaining parties",
     const store = new FakeFirestore({...seed(),
       "programStaffGrants/program-1__coordinator": {
         programId: "program-1", organizerId: "org-1", uid: "coordinator",
+        createdBy: "manager-1",
         status: "active", duties: [{duty: "programCoordinator",
           expiresAtMillis: NOW + 3600_000,
           pickupPointIds: [], hotelIds: []}],

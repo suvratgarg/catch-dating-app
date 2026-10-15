@@ -60,6 +60,12 @@ class _HostWorkScreenState extends ConsumerState<HostWorkScreen> {
         return;
       }
       final assignment = result.assignments.single;
+      if (assignment.isProgram &&
+          assignment.duties.any(
+            (duty) => duty.duty == HostWorkDuty.programAdmin,
+          )) {
+        return;
+      }
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
         _openAssignment(context, assignment, replace: true);
@@ -176,7 +182,27 @@ class HostWorkPageBody extends StatelessWidget {
                             ),
                           ],
                         ),
-                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        trailing:
+                            assignment.isProgram &&
+                                assignment.duties.any(
+                                  (duty) =>
+                                      duty.duty == HostWorkDuty.programAdmin,
+                                ) &&
+                                assignment.duties.any(
+                                  (duty) =>
+                                      duty.duty != HostWorkDuty.programAdmin,
+                                )
+                            ? CatchIconAction.icon(
+                                icon: CatchIcons.peopleOutline,
+                                tooltip: context.l10n.programsTeamTitle,
+                                onPressed: () => context.pushNamed(
+                                  Routes.hostProgramTeamScreen.name,
+                                  pathParameters: {
+                                    'programId': assignment.scopeId,
+                                  },
+                                ),
+                              )
+                            : Icon(CatchIcons.chevronRightRounded),
                         onTap: () => _openAssignment(context, assignment),
                       ),
                   ],
@@ -194,7 +220,13 @@ void _openAssignment(
   HostWorkAssignment assignment, {
   bool replace = false,
 }) {
-  final route = assignment.isProgram
+  final adminOnly =
+      assignment.isProgram &&
+      assignment.duties.isNotEmpty &&
+      assignment.duties.every((duty) => duty.duty == HostWorkDuty.programAdmin);
+  final route = adminOnly
+      ? Routes.hostProgramTeamScreen
+      : assignment.isProgram
       ? Routes.hostWorkProgramScreen
       : Routes.hostWorkEventScreen;
   final pathParameters = {
@@ -227,6 +259,7 @@ String _assignmentMeta(BuildContext context, HostWorkAssignment assignment) {
 
 String _dutyLabel(AppLocalizations l10n, HostWorkDuty duty) {
   return switch (duty) {
+    HostWorkDuty.programAdmin => l10n.programsTeamProgramAdmin,
     HostWorkDuty.programCoordinator => l10n.hostWorkDutyProgramCoordinator,
     HostWorkDuty.guestRelations => l10n.hostWorkDutyGuestRelations,
     HostWorkDuty.communications => l10n.hostWorkDutyCommunications,

@@ -18,6 +18,7 @@ export interface ProgramAccessCallableResponse {
    */
   duties: {
     duty:
+      | "programAdmin"
       | "programCoordinator"
       | "guestRelations"
       | "communications"

@@ -17,14 +17,12 @@ class PhoneImportReviewScreen extends StatelessWidget {
     super.key,
     required this.controller,
     required this.weddingName,
-    required this.plannerName,
     this.submission,
     this.onReloadSaved,
   });
 
   final PhoneImportController controller;
   final String weddingName;
-  final String plannerName;
   final PhoneImportSubmissionController? submission;
   final VoidCallback? onReloadSaved;
 
@@ -88,7 +86,6 @@ class PhoneImportReviewScreen extends StatelessWidget {
                     PhoneImportSubmissionPhase.completed =>
                       context.l10n.phoneImportCompletedMessage(
                         wedding: weddingName,
-                        planner: plannerName,
                       ),
                     PhoneImportSubmissionPhase.retry =>
                       context.l10n.phoneImportRetryMessage,
@@ -131,9 +128,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
               gapH24,
               CatchSection.contained(
                 title: weddingName,
-                subtitle: context.l10n.phoneImportSelectedPlanner(
-                  planner: plannerName,
-                ),
+                subtitle: context.l10n.phoneImportProgramCollaborators,
                 child: Text(
                   context.l10n.phoneImportChooseMessage,
                   style: CatchTextStyles.proseM(context),
@@ -283,7 +278,6 @@ class PhoneImportReviewScreen extends StatelessWidget {
                           title: Text(
                             context.l10n.phoneImportConsent(
                               wedding: weddingName,
-                              planner: plannerName,
                             ),
                             style: CatchTextStyles.proseM(context),
                           ),

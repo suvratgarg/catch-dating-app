@@ -187193,6 +187193,7 @@ export const programStaffGrantDocumentSchema = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",
@@ -187387,6 +187388,39 @@ export const programStaffGrantDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "programAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.",
+      "required": [
+        "ownerUid",
+        "approvedByUid",
+        "approvedAtMillis",
+        "authorizedUntilMillis"
+      ],
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "authorizedUntilMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   }
 };
@@ -187472,6 +187506,7 @@ export const programStaffInviteDocumentSchema = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",
@@ -187695,6 +187730,39 @@ export const programStaffInviteDocumentSchema = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "programAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.",
+      "required": [
+        "ownerUid",
+        "approvedByUid",
+        "approvedAtMillis",
+        "authorizedUntilMillis"
+      ],
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "authorizedUntilMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   }
 };
@@ -198449,6 +198517,7 @@ export const grantProgramStaffCallablePayloadSchema = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",
@@ -198585,6 +198654,7 @@ export const inviteProgramStaffCallablePayloadSchema = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",
@@ -201525,7 +201595,7 @@ export const organizerProgramListCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/organizer_program_list_response.schema.json",
   "title": "OrganizerProgramListCallableResponse",
-  "description": "Manager's program inventory: summaries only, no guest or logistics data.",
+  "description": "Organizer-manager or creator-scoped program inventory; exact-ID rediscovery also accepts approved program administrators. Summaries contain no guest or logistics data.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -201547,6 +201617,8 @@ export const organizerProgramListCallableResponseSchema = {
           "startsAtMillis",
           "endsAtMillis",
           "capabilities",
+          "canArchive",
+          "canUnarchive",
           "revision"
         ],
         "properties": {
@@ -201608,6 +201680,14 @@ export const organizerProgramListCallableResponseSchema = {
             "type": "integer",
             "minimum": 0,
             "description": "Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero."
+          },
+          "canArchive": {
+            "type": "boolean",
+            "description": "This actor is the immutable creator and the program is not archived. The archive callable still checks current account and revision."
+          },
+          "canUnarchive": {
+            "type": "boolean",
+            "description": "This actor is the immutable creator and the program is archived. Grace, anonymization, active retention lease and revision checks still determine whether restoration can execute."
           },
           "revision": {
             "type": "integer",
@@ -201736,6 +201816,7 @@ export const programAccessCallableResponseSchema = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",
@@ -202091,6 +202172,7 @@ export const listMyHostAssignmentsCallableResponseSchema = {
                 "duty": {
                   "type": "string",
                   "enum": [
+                    "programAdmin",
                     "programCoordinator",
                     "guestRelations",
                     "communications",
@@ -202159,7 +202241,8 @@ export const listMyHostAssignmentsCallableResponseSchema = {
                 "trips",
                 "exceptions",
                 "export",
-                "overview"
+                "overview",
+                "team"
               ],
               "description": "A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties."
             },
@@ -202186,7 +202269,8 @@ export const listMyHostAssignmentsCallableResponseSchema = {
                 "trips",
                 "exceptions",
                 "export",
-                "overview"
+                "overview",
+                "team"
               ],
               "description": "A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties."
             },
@@ -202795,7 +202879,7 @@ export const programStaffListCallableResponseSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/program_staff_list_response.schema.json",
   "title": "ProgramStaffListCallableResponse",
-  "description": "Manager's view of program staff grants.",
+  "description": "Program creator or explicitly authorized program administrator view of staff grants.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -202870,6 +202954,7 @@ export const programStaffListCallableResponseSchema = {
                 "duty": {
                   "type": "string",
                   "enum": [
+                    "programAdmin",
                     "programCoordinator",
                     "guestRelations",
                     "communications",
@@ -202929,7 +203014,8 @@ export const programStaffListCallableResponseSchema = {
             "enum": [
               "active",
               "expired",
-              "revoked"
+              "revoked",
+              "approvalRequired"
             ]
           },
           "expiresAtMillis": {
@@ -203896,7 +203982,7 @@ export const programArrivalsRosterCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     }
   }
 };
@@ -204069,7 +204155,7 @@ export const programTransportPlanCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     }
   }
 };
@@ -204279,7 +204365,7 @@ export const programHotelInboundCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     },
     "nextTripCursor": {
       "type": [
@@ -204717,7 +204803,7 @@ export const programFunctionDoorViewCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     },
     "function": {
       "type": "object",
@@ -205052,7 +205138,7 @@ export const programAttendanceReportCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     },
     "programGuests": {
       "type": "integer",
@@ -205354,7 +205440,7 @@ export const programStakeholderCountsCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     },
     "guestCount": {
       "type": "integer",
@@ -205832,7 +205918,7 @@ export const programTripListCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     },
     "nextCursor": {
       "type": [

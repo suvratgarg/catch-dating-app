@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {FakeFirestore} from "../shared/testing/programFirestore";
+import {FakeFirestore, type FakeData} from "../shared/testing/programFirestore";
 import {
   ingestTravelLegEvent,
   runManualMoment,
@@ -680,18 +680,21 @@ test("staffAttention sends journal the attention-projection fields",
   async () => {
     const db = new FakeFirestore({});
     seedProgram(db);
-    db.setDoc("programStaffGrants/gr1", {
+    db.setDoc("programStaffGrants/prog__staff-1", {
       programId: "prog", organizerId: "org-1", uid: "staff-1",
-      status: "active",
-      duties: [{duty: "door", functionIds: ["sangeet"]}],
+      status: "active", createdBy: "mgr",
+      expiresAt: ts(2_100_000),
+      duties: [{duty: "functionCheckIn", functionIds: ["sangeet"],
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: 2_100_000}],
       revision: 1,
     });
     writeMoment(db, {
       ...sangeetReminder,
       momentId: "m_attention",
-      audience: {kind: "staffDuty", duty: "door", scopeIds: ["sangeet"]},
+      audience: {kind: "staffDuty", duty: "functionCheckIn",
+        scopeIds: ["sangeet"]},
       action: {
-        kind: "staffAttention", duty: "door", severity: "urgent",
+        kind: "staffAttention", duty: "functionCheckIn", severity: "urgent",
         titleTemplate: "Door staffing gap",
       },
     });
@@ -715,10 +718,59 @@ test("staffAttention sends journal the attention-projection fields",
     assert.equal(rows[0].scopeKind, "program");
     assert.equal(rows[0].scopeId, "prog");
     assert.equal(rows[0].runId, "m_attention_7_1100000");
-    assert.equal(rows[0].duty, "door");
+    assert.equal(rows[0].duty, "functionCheckIn");
     assert.equal(rows[0].severity, "urgent");
     assert.equal(rows[0].title, "Door staffing gap");
   });
+
+for (const [label, patch, grantId, deleted] of [
+  ["revoked without timestamp", {status: "revoked", revokedAt: null}],
+  ["revoked with active status", {revokedAt: ts(1_099_999)}],
+  ["revoked actor marker", {revokedBy: "mgr"}],
+  ["expired grant", {expiresAt: ts(1_100_000)}],
+  ["expired duty", {duties: [{duty: "functionCheckIn",
+    functionIds: ["sangeet"], pickupPointIds: [], hotelIds: [],
+    expiresAtMillis: 1_100_000}]}],
+  ["organizer-issued legacy grant", {createdBy: "organizer-only"}],
+  ["foreign owner proof", {programAuthorization: {ownerUid: "foreign",
+    approvedByUid: "mgr", approvedAtMillis: 1_000_000,
+    authorizedUntilMillis: 2_100_000}}],
+  ["future owner proof", {programAuthorization: {ownerUid: "mgr",
+    approvedByUid: "mgr", approvedAtMillis: 1_100_001,
+    authorizedUntilMillis: 2_100_000}}],
+  ["foreign organizer", {organizerId: "foreign"}],
+  ["foreign user", {uid: "foreign"}],
+  ["foreign document identity", {}, "foreign-key"],
+  ["deleted account", {}, undefined, true],
+] as Array<[string, FakeData, string?, boolean?]>) {
+  test(`staff attention excludes ${label}`, async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    db.setDoc(`programStaffGrants/${grantId ?? "prog__staff-1"}`, {
+      programId: "prog", organizerId: "org-1", uid: "staff-1",
+      status: "active", createdBy: "mgr", expiresAt: ts(2_100_000),
+      duties: [{duty: "functionCheckIn", functionIds: ["sangeet"],
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: 2_100_000}],
+      revision: 1, ...patch,
+    });
+    if (deleted) db.setDoc("deletedUsers/staff-1", {deletedAt: ts(1)});
+    writeMoment(db, {...sangeetReminder,
+      audience: {kind: "staffDuty", duty: "functionCheckIn",
+        scopeIds: ["sangeet"]},
+      action: {kind: "staffAttention", duty: "functionCheckIn",
+        severity: "urgent", titleTemplate: "Door staffing gap"},
+    });
+    const {deps} = makeDeps(db, 1_100_000);
+    const notified: string[] = [];
+    await runMomentSweep({...deps,
+      writeStaffAttention: async ({uid}) => {
+        notified.push(uid);
+      },
+    });
+    assert.deepEqual(notified, []);
+    assert.equal((await db.collection(MOMENT_SENDS_COLLECTION).get()).size, 0);
+  });
+}
 
 // --- Long-horizon scheduling ------------------------------------------------
 

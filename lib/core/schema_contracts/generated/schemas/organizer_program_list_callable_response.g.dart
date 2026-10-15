@@ -8,7 +8,7 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/organizer_program_list_response.schema.json',
   'title': 'OrganizerProgramListCallableResponse',
-  'description': 'Manager\'s program inventory: summaries only, no guest or logistics data.',
+  'description': 'Organizer-manager or creator-scoped program inventory; exact-ID rediscovery also accepts approved program administrators. Summaries contain no guest or logistics data.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -30,6 +30,8 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
           'startsAtMillis',
           'endsAtMillis',
           'capabilities',
+          'canArchive',
+          'canUnarchive',
           'revision',
         ],
         'properties': <String, Object?>{
@@ -91,6 +93,14 @@ const schemaOrganizerProgramListCallableResponseSchema = <String, Object?>{
             'type': 'integer',
             'minimum': 0,
             'description': 'Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero.',
+          },
+          'canArchive': <String, Object?>{
+            'type': 'boolean',
+            'description': 'This actor is the immutable creator and the program is not archived. The archive callable still checks current account and revision.',
+          },
+          'canUnarchive': <String, Object?>{
+            'type': 'boolean',
+            'description': 'This actor is the immutable creator and the program is archived. Grace, anonymization, active retention lease and revision checks still determine whether restoration can execute.',
           },
           'revision': <String, Object?>{
             'type': 'integer',

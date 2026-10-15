@@ -100,9 +100,7 @@ for (const action of [save, editLeg]) {
       const db = new FakeFirestore(seedParty());
       db.beforeCommit = async () => {
         db.beforeCommit = undefined;
-        db.updateDoc("organizers/org-1", {hostUserId: "new-manager",
-          ownerUserId: "new-manager",
-          hostUserIds: ["new-manager"]});
+        db.setDoc("deletedUsers/manager-1", {deletedAt: now});
       };
       await assert.rejects(action(db), isCode("permission-denied"));
       assert.equal(db.getDoc("programTravelLegs/leg-1")!.revision, 1);

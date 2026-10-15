@@ -1,4 +1,4 @@
-import type {Query, Firestore} from "firebase-admin/firestore";
+import type {Query, Firestore, Transaction} from "firebase-admin/firestore";
 import {
   requireMillis,
   sameScope,
@@ -12,6 +12,10 @@ import {
   type TravelFacts,
 } from "./momentModel";
 import type {RecipientEndpoint} from "./momentPolicy";
+import {activeProgramDuties, programOwnerAuthorizationDeadline,
+  programStaffGrantId} from "../shared/programAuthority";
+import type {OrganizerProgramDocument, ProgramStaffGrantDocument} from
+  "../shared/generated/firestoreAdminTypes";
 import {
   guestTravelLeadMinutes,
   type TravelEstimateContext,
@@ -309,6 +313,7 @@ export async function resolveMomentRecipients(
   db: Firestore,
   moment: MomentDefinition,
   run: RunRecord,
+  nowMillis: number,
   travel?: TravelEstimateContext | null,
 ): Promise<RecipientResolution> {
   const {audience, scope} = moment;
@@ -408,35 +413,53 @@ export async function resolveMomentRecipients(
     return {recipients, suppressedNoEndpoint};
   }
   case "staffDuty": {
-    const grants = await staffGrantsFor(db, scope);
-    const recipients: ResolvedRecipient[] = [];
-    for (const doc of grants.docs) {
-      const data = doc.data() as Record<string, unknown>;
-      if (data.status !== "active" && data.revokedAt != null) continue;
-      const duties = Array.isArray(data.duties) ? data.duties : [];
-      const match = duties.some((duty: unknown) => {
-        if (typeof duty !== "object" || duty === null) return false;
-        const row = duty as Record<string, unknown>;
-        if (row.duty !== audience.duty) return false;
-        if (audience.scopeIds === null) return true;
-        const scoped = [
-          ...(Array.isArray(row.functionIds) ?
-            row.functionIds as string[] : []),
-          ...(Array.isArray(row.pickupPointIds) ?
-            row.pickupPointIds as string[] : []),
-          ...(Array.isArray(row.hotelIds) ? row.hotelIds as string[] : []),
-        ];
-        return audience.scopeIds!.some((id) => scoped.includes(id));
-      });
-      if (!match) continue;
-      const uid = typeof data.uid === "string" ? data.uid : null;
-      if (!uid) continue;
-      recipients.push({
-        recipientKey: `uid:${uid}`,
-        endpoint: {kind: "uid", uid, fcmToken: null},
-        householdId: null,
-      });
-    }
+    const recipients = await db.runTransaction(async (tx) => {
+      const grants = await staffGrantsFor(db, scope, tx);
+      const program = scope.kind === "program" ?
+        (await tx.get(db.collection("organizerPrograms").doc(scope.programId)))
+          .data() as OrganizerProgramDocument | undefined : undefined;
+      const recipients: ResolvedRecipient[] = [];
+      for (const doc of grants.docs) {
+        const data = doc.data() as Record<string, unknown>;
+        if (data.status !== "active" || data.revokedAt != null ||
+            data.revokedBy != null) continue;
+        let duties = Array.isArray(data.duties) ? data.duties : [];
+        if (scope.kind === "program") {
+          const grant = data as unknown as ProgramStaffGrantDocument;
+          if (!program || grant.programId !== scope.programId ||
+              grant.organizerId !== program.organizerId ||
+              typeof grant.uid !== "string" || !grant.uid ||
+              doc.id !== programStaffGrantId(scope.programId, grant.uid) ||
+              programOwnerAuthorizationDeadline(program, grant) === null ||
+              (await tx.get(db.collection("deletedUsers").doc(grant.uid)))
+                .exists) continue;
+          duties = activeProgramDuties(grant, nowMillis);
+        }
+        const match = duties.some((duty: unknown) => {
+          if (typeof duty !== "object" || duty === null) return false;
+          const row = duty as Record<string, unknown>;
+          if (row.duty !== audience.duty) return false;
+          if (audience.scopeIds === null) return true;
+          const scoped = [
+            ...(Array.isArray(row.functionIds) ?
+              row.functionIds as string[] : []),
+            ...(Array.isArray(row.pickupPointIds) ?
+              row.pickupPointIds as string[] : []),
+            ...(Array.isArray(row.hotelIds) ? row.hotelIds as string[] : []),
+          ];
+          return audience.scopeIds!.some((id) => scoped.includes(id));
+        });
+        if (!match) continue;
+        const uid = typeof data.uid === "string" ? data.uid : null;
+        if (!uid) continue;
+        recipients.push({
+          recipientKey: `uid:${uid}`,
+          endpoint: {kind: "uid", uid, fcmToken: null},
+          householdId: null,
+        });
+      }
+      return recipients;
+    });
     return hydrateFcmTokens(db, {recipients, suppressedNoEndpoint: 0});
   }
   case "eventParticipants": {
@@ -600,13 +623,14 @@ async function householdHasPendingMember(
 async function staffGrantsFor(
   db: Firestore,
   scope: MomentScope,
+  transaction: Transaction,
 ): Promise<FirebaseFirestore.QuerySnapshot> {
   // Organizer scope admits subject audiences only — a staffDuty audience
   // here is unreachable by model validation, so resolve to an empty
   // grant set rather than mis-scoping the staff query.
   if (scope.kind === "organizer") {
-    return db.collection("eventStaffGrants")
-      .where("eventId", "==", "").get();
+    return transaction.get(db.collection("eventStaffGrants")
+      .where("eventId", "==", ""));
   }
   const collection = scope.kind === "program" ?
     "programStaffGrants" : "eventStaffGrants";
@@ -616,7 +640,7 @@ async function staffGrantsFor(
   } else {
     query = query.where("eventId", "==", scope.eventId);
   }
-  return query.get();
+  return transaction.get(query);
 }
 
 // --- Readers -----------------------------------------------------------------

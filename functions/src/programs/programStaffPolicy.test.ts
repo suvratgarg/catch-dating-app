@@ -105,3 +105,77 @@ test("hotel desk rejects unenforceable pickup restrictions", () => {
   assert.throws(() => grantDuties([{duty: "hotelDesk", pickupPointIds: ["A"],
     hotelIds: ["H1"]}], expiry), code("invalid-argument"));
 });
+
+test("coordinator is operational authority, never program administration",
+  async () => {
+    const access = await accessWith([
+      {...assignment([], []), duty: "programCoordinator"},
+    ]);
+    assert.equal(requireProgramDuty(access, "guestRelations").length, 1);
+    assert.throws(() => requireProgramDuty(access, "programAdmin"),
+      code("permission-denied"));
+  });
+
+test("exact admin remains staff and confers no operational duty", async () => {
+  const access = await accessWith([
+    {...assignment([], []), duty: "programAdmin"},
+  ]);
+  assert.equal(access.role, "staff");
+  assert.equal(requireProgramDuty(access, "programAdmin").length, 1);
+  assert.throws(() => requireProgramDuty(access, "guestRelations"),
+    code("permission-denied"));
+});
+
+for (const scope of [
+  {pickupPointIds: ["A"], hotelIds: []},
+  {pickupPointIds: [], hotelIds: ["H1"]},
+  {pickupPointIds: [], hotelIds: [], functionIds: ["F1"]},
+]) {
+  test("admin scope cannot imply arbitrary resource access", () => {
+    assert.throws(() => grantDuties([{duty: "programAdmin", ...scope}],
+      expiry), code("invalid-argument"));
+  });
+}
+
+test("different function scopes never collapse during exact tuple renewal",
+  () => {
+    const duties = dedupeDuties([
+      {...assignment([], []), duty: "functionCheckIn" as const,
+        functionIds: ["F1"]},
+      {...assignment([], []), duty: "functionCheckIn" as const,
+        functionIds: ["F2"]},
+    ]);
+    assert.equal(duties.length, 2);
+    assert.deepEqual(duties.map((duty) => duty.functionIds), [["F1"], ["F2"]]);
+  });
+
+for (const patch of [
+  {ownerUid: "foreign"}, {approvedByUid: ""}, {approvedAtMillis: expiry},
+  {authorizedUntilMillis: 0}, {authorizedUntilMillis: expiry + 86_400_000},
+]) {
+  test("malformed owner approval never falls back to legacy creator audit",
+    async () => {
+      const seed = baseSeed();
+      const grant = seed["programStaffGrants/program-1__dispatcher-1"];
+      grant.programAuthorization = {
+        ownerUid: "manager-1", approvedByUid: "manager-1",
+        approvedAtMillis: now.toMillis() - 1,
+        authorizedUntilMillis: expiry, ...patch,
+      };
+      const db = new FakeFirestore(seed) as unknown as
+        FirebaseFirestore.Firestore;
+      await assert.rejects(requireProgramAccess({db, programId: "program-1",
+        actorUid: "dispatcher-1", now}), code("permission-denied"));
+    });
+}
+
+for (const marker of [{revokedAt: now}, {revokedBy: "manager-1"}]) {
+  test("active status cannot override a recorded revocation", async () => {
+    const seed = baseSeed();
+    Object.assign(seed["programStaffGrants/program-1__dispatcher-1"], marker);
+    const db = new FakeFirestore(seed) as unknown as
+      FirebaseFirestore.Firestore;
+    await assert.rejects(requireProgramAccess({db, programId: "program-1",
+      actorUid: "dispatcher-1", now}), code("permission-denied"));
+  });
+}

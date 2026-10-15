@@ -8,13 +8,11 @@ class PhoneImportRouteSession {
   const PhoneImportRouteSession({
     required this.accountId,
     required this.access,
-    required this.plannerName,
     required this.review,
     required this.submission,
   });
   final String accountId;
   final ProgramWorkAccess access;
-  final String plannerName;
   final PhoneImportController review;
   final PhoneImportSubmissionController submission;
 

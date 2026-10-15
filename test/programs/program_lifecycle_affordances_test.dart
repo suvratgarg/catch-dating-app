@@ -70,6 +70,148 @@ ProgramWorkAccess _access(
 }
 
 void main() {
+  test('legacy inventory needs explicit lifecycle authority', () {
+    final map = <Object?, Object?>{
+      'programId': 'program',
+      'title': 'Program',
+      'kind': 'wedding',
+      'status': 'active',
+      'timezone': 'Asia/Kolkata',
+      'revision': 3,
+      'startsAtMillis': DateTime.utc(2026, 10, 5).millisecondsSinceEpoch,
+      'endsAtMillis': DateTime.utc(2026, 10, 6).millisecondsSinceEpoch,
+    };
+    final legacy = OrganizerProgramListRow.fromMap(map);
+    expect(legacy.canArchive, isFalse);
+    expect(legacy.canUnarchive, isFalse);
+    final creator = OrganizerProgramListRow.fromMap({
+      ...map,
+      'canArchive': true,
+      'canUnarchive': false,
+    });
+    expect(creator.canArchive, isTrue);
+    expect(creator.canUnarchive, isFalse);
+    final malformed = OrganizerProgramListRow.fromMap({
+      ...map,
+      'canArchive': 'true',
+      'canUnarchive': 1,
+    });
+    expect(malformed.canArchive, isFalse);
+    expect(malformed.canUnarchive, isFalse);
+  });
+
+  test('inventory restore needs authority and an unexpired grace window', () {
+    final deadline = DateTime(2026, 10, 15);
+    OrganizerProgramListRow row({
+      bool canUnarchive = true,
+      DateTime? anonymizedAt,
+      DateTime? anonymizeAt,
+    }) => OrganizerProgramListRow(
+      programId: 'program',
+      title: 'Program',
+      kind: 'wedding',
+      status: 'archived',
+      timezone: 'Asia/Kolkata',
+      revision: 7,
+      canUnarchive: canUnarchive,
+      anonymizeAt: anonymizeAt,
+      anonymizedAt: anonymizedAt,
+    );
+    final beforeDeadline = deadline.subtract(const Duration(milliseconds: 1));
+    expect(row(canUnarchive: false).canUnarchiveAt(beforeDeadline), isFalse);
+    expect(row().canUnarchiveAt(beforeDeadline), isTrue);
+    expect(row(anonymizeAt: deadline).canUnarchiveAt(beforeDeadline), isTrue);
+    expect(row(anonymizeAt: deadline).canUnarchiveAt(deadline), isFalse);
+    expect(row(anonymizedAt: deadline).canUnarchiveAt(beforeDeadline), isFalse);
+  });
+
+  for (final status in ['active', 'archived']) {
+    testWidgets('$status setup-only row opens without lifecycle commands', (
+      tester,
+    ) async {
+      var opened = 0;
+      var mutated = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ProgramEventsRow(
+              program: OrganizerProgramListRow(
+                programId: 'program',
+                title: 'Wedding weekend',
+                kind: 'wedding',
+                status: status,
+                timezone: 'Asia/Kolkata',
+                revision: 3,
+              ),
+              now: DateTime(2026, 10, 5),
+              onOpen: () => opened++,
+              onLifecycle: (_) => mutated++,
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      expect(
+        find.byWidgetPredicate((widget) => widget is CatchActionMenu<dynamic>),
+        findsNothing,
+      );
+      await tester.tap(find.text('Wedding weekend'));
+      await tester.pump();
+      expect(opened, 1);
+      expect(mutated, 0);
+    });
+  }
+
+  for (final (status, pending) in [
+    ('active', false),
+    ('active', true),
+    ('archived', false),
+    ('archived', true),
+  ]) {
+    testWidgets('creator $status command honors pending=$pending', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ProgramEventsRow(
+              program: OrganizerProgramListRow(
+                programId: 'program',
+                title: 'Program',
+                kind: 'wedding',
+                status: status,
+                timezone: 'Asia/Kolkata',
+                revision: 3,
+                canArchive: true,
+                canUnarchive: true,
+              ),
+              now: DateTime(2026, 10, 5),
+              pending: pending,
+              onOpen: () {},
+              onLifecycle: (_) {},
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      final menu = tester.widget<CatchActionMenu<dynamic>>(
+        find.byWidgetPredicate((widget) => widget is CatchActionMenu<dynamic>),
+      );
+      expect(
+        menu.items.single.label,
+        status == 'active' ? 'Archive program' : 'Unarchive',
+      );
+      expect(menu.items.single.enabled, !pending);
+      expect(menu.items.single.sublabel, pending ? 'Saving…' : null);
+    });
+  }
+
   for (final duty in [
     ProgramStaffDuty.guestRelations,
     ProgramStaffDuty.programCoordinator,
@@ -222,6 +364,7 @@ void main() {
       status: 'archived',
       timezone: 'Asia/Kolkata',
       revision: 7,
+      canUnarchive: true,
       anonymizeAt: now.subtract(const Duration(days: 1)),
     );
     await tester.pumpWidget(

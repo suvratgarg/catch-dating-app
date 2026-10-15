@@ -83,6 +83,7 @@ export const programStaffInviteDocumentSchema: Record<string, unknown> = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",
@@ -306,6 +307,39 @@ export const programStaffInviteDocumentSchema: Record<string, unknown> = {
         }
       ],
       "description": "Identity/free-text scrub marker set by the archive retention sweep; null until anonymized."
+    },
+    "programAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.",
+      "required": [
+        "ownerUid",
+        "approvedByUid",
+        "approvedAtMillis",
+        "authorizedUntilMillis"
+      ],
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "authorizedUntilMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   }
 } as const;

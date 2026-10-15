@@ -26,7 +26,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneImportDemoMessage =>
-      'This review stays on this device. Nothing is saved or shared with a wedding or planner in this demo.';
+      'This review stays on this device. Nothing is saved or shared with a wedding or its program collaborators in this demo.';
 
   @override
   String get phoneImportCompletedTitle => 'Reviewed guests shared';
@@ -60,7 +60,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneImportPrivacyMessage =>
-      'Selecting contacts does not share them. Check the review, confirm the wedding and planner, then share explicitly.';
+      'Selecting contacts does not share them. Review the guests, confirm the selected wedding, then share explicitly.';
 
   @override
   String get phoneImportChooseMessage =>
@@ -170,7 +170,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneImportChosenNumber => 'Chosen phone number';
 
   @override
-  String get phoneImportChooseNumber => 'Choose one phone number';
+  String get phoneImportChooseNumber => 'Choose number';
 
   @override
   String get phoneImportSharedGuest =>
@@ -252,16 +252,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose guests to review and share with this wedding.';
 
   @override
-  String phoneImportCompletedMessage({
-    required String wedding,
-    required String planner,
-  }) {
-    return 'These reviewed guests were shared with $wedding and $planner.';
-  }
-
-  @override
-  String phoneImportSelectedPlanner({required String planner}) {
-    return 'Selected planner: $planner';
+  String phoneImportCompletedMessage({required String wedding}) {
+    return 'These reviewed guests were shared with $wedding and its authorized program collaborators.';
   }
 
   @override
@@ -281,11 +273,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String phoneImportConsent({
-    required String wedding,
-    required String planner,
-  }) {
-    return 'I want to share only these reviewed guests with $wedding and $planner.';
+  String phoneImportConsent({required String wedding}) {
+    return 'I want to share only these reviewed guests with $wedding and its authorized program collaborators.';
   }
 
   @override
@@ -25203,4 +25192,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsTimezoneInvalid =>
       'Choose a valid timezone from the list.';
+
+  @override
+  String get phoneImportProgramCollaborators =>
+      'Visible to authorized program collaborators';
+
+  @override
+  String get programsTeamProgramAdmin => 'Program administrator';
+
+  @override
+  String get programsTeamApprovalRequired => 'Owner approval required';
 }

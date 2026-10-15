@@ -4,10 +4,9 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {dutyAssignments, programProjectionExpiresAt, requireProgramAccess,
-  requireProgramDuty, requireProgramMutable} from
+import {assertProgramGuestDirectoryCurrent, requireProgramAccess,
+  requireProgramGuestDirectoryAccess, requireProgramMutable} from
   "../shared/programAuthority";
-import type {ProgramAccess} from "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
 import {hashRequest} from "../shared/programOperationHash";
 import {readWeddingPhoneImportReady} from
@@ -53,32 +52,6 @@ const defaultDeps: ImportDeps = {
 
 const receiptRetentionMillis = 30 * 24 * 60 * 60 * 1000;
 const importCallableLimits = {timeoutSeconds: 120, maxInstances: 5};
-
-/** A manifest spans the whole program, so one assignment must cover it. */
-function requireManifestImportAccess(access: ProgramAccess): void {
-  const assignments = requireProgramDuty(access, "guestRelations");
-  if (access.role === "staff" && !assignments.some((assignment) =>
-    assignment.pickupPointIds.length === 0 &&
-    assignment.hotelIds.length === 0 &&
-    (assignment.functionIds ?? []).length === 0)) {
-    throw new HttpsError("permission-denied",
-      "Program-wide guest relations access is required to import.");
-  }
-}
-
-function assertManifestImportCurrent(access: ProgramAccess,
-  nowMillis: number): void {
-  const active = dutyAssignments(access, "guestRelations")
-    .filter((assignment) =>
-      assignment.expiresAtMillis > nowMillis &&
-    assignment.pickupPointIds.length === 0 &&
-    assignment.hotelIds.length === 0 &&
-    (assignment.functionIds ?? []).length === 0);
-  const expiry = programProjectionExpiresAt(access, active);
-  if (expiry !== null && expiry <= nowMillis) {
-    throw new HttpsError("permission-denied", "Manifest duty expired.");
-  }
-}
 
 async function listByProgram<T>(
   db: FirebaseFirestore.Firestore,
@@ -190,32 +163,37 @@ export async function importProgramManifestHandler(
       .sort((a, b) => a.index - b.index),
   });
   if (data.mode === "preview") {
-    const access = await requireProgramAccess({
-      db, programId: data.programId, actorUid, now: deps.now(),
+    return db.runTransaction(async (tx) => {
+      const access = await requireProgramAccess({
+        db, programId: data.programId, actorUid,
+        now: deps.now(), transaction: tx,
+      });
+      requireProgramMutable(access.program);
+      if (weddingOnly && access.program.kind !== "wedding") {
+        throw new HttpsError("permission-denied", "A wedding is required.");
+      }
+      requireProgramGuestDirectoryAccess(access);
+      let state = await loadManifest(db, data.programId,
+        access.program.organizerId, tx);
+      const completed: number[] = [];
+      const importedGuestIds: string[] = [];
+      let result = emptyResult();
+      while (completed.length < data.rows.length) {
+        const chunk = buildManifestChunk({rows: data.rows, state,
+          completed, importedGuestIds, programId: data.programId,
+          organizerId: access.program.organizerId,
+          allocateId: (collection) => db.collection(collection).doc().id,
+          now: deps.now(), source: {operationId: data.clientOperationId,
+            actorUid}});
+        state = chunk.state;
+        completed.push(...chunk.resolvedIndices);
+        importedGuestIds.push(...chunk.planned.plans
+          .map((plan) => plan.guestId));
+        result = addResult(result, chunk.planned);
+      }
+      assertProgramGuestDirectoryCurrent(access, deps.now().toMillis());
+      return result;
     });
-    requireProgramMutable(access.program);
-    if (weddingOnly && access.program.kind !== "wedding") {
-      throw new HttpsError("permission-denied", "A wedding is required.");
-    }
-    requireManifestImportAccess(access);
-    let state = await loadManifest(db, data.programId,
-      access.program.organizerId);
-    const completed: number[] = [];
-    const importedGuestIds: string[] = [];
-    let result = emptyResult();
-    while (completed.length < data.rows.length) {
-      const chunk = buildManifestChunk({rows: data.rows, state,
-        completed, importedGuestIds, programId: data.programId,
-        organizerId: access.program.organizerId,
-        allocateId: (collection) => db.collection(collection).doc().id,
-        now: deps.now(), source: {operationId: data.clientOperationId,
-          actorUid}});
-      state = chunk.state;
-      completed.push(...chunk.resolvedIndices);
-      importedGuestIds.push(...chunk.planned.plans.map((plan) => plan.guestId));
-      result = addResult(result, chunk.planned);
-    }
-    return result;
   }
 
   // Each chunk publishes complete travel parties and exact input indices.
@@ -233,7 +211,7 @@ export async function importProgramManifestHandler(
       if (weddingOnly && access.program.kind !== "wedding") {
         throw new HttpsError("permission-denied", "A wedding is required.");
       }
-      requireManifestImportAccess(access);
+      requireProgramGuestDirectoryAccess(access);
       const receipt = (await tx.get(receiptRef)).data() as
         TransportOperationReceiptDocument | undefined;
       if (receipt && (receipt.requestHash !== requestHash ||
@@ -245,7 +223,7 @@ export async function importProgramManifestHandler(
         ProgramManifestImportCallableResponse : emptyResult();
       const completed = completedManifestRows(receipt, data.rows.length);
       if (completed.length === data.rows.length) {
-        assertManifestImportCurrent(access, deps.now().toMillis());
+        assertProgramGuestDirectoryCurrent(access, deps.now().toMillis());
         return {result: previous, done: true, applied: false};
       }
       const state = await loadManifest(db, data.programId,
@@ -261,7 +239,7 @@ export async function importProgramManifestHandler(
       const result = addResult(previous, planned);
       const completedRowIndices = [...completed, ...resolvedIndices]
         .sort((a, b) => a - b);
-      assertManifestImportCurrent(access, deps.now().toMillis());
+      assertProgramGuestDirectoryCurrent(access, deps.now().toMillis());
       for (const write of writes) {
         if (write.path.startsWith("workspaceFieldAssertions/") ||
             write.path.startsWith("workspaceMembershipAssertions/")) {

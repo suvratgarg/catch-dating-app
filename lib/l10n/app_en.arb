@@ -19,7 +19,7 @@
     "x-owner": "product",
     "x-surface": "hosts.audience.phone_import"
   },
-  "phoneImportDemoMessage": "This review stays on this device. Nothing is saved or shared with a wedding or planner in this demo.",
+  "phoneImportDemoMessage": "This review stays on this device. Nothing is saved or shared with a wedding or its program collaborators in this demo.",
   "@phoneImportDemoMessage": {
     "description": "Native phone guest import review and explicit workspace sharing.",
     "x-audience": "host",
@@ -89,7 +89,7 @@
     "x-owner": "product",
     "x-surface": "hosts.audience.phone_import"
   },
-  "phoneImportPrivacyMessage": "Selecting contacts does not share them. Check the review, confirm the wedding and planner, then share explicitly.",
+  "phoneImportPrivacyMessage": "Selecting contacts does not share them. Review the guests, confirm the selected wedding, then share explicitly.",
   "@phoneImportPrivacyMessage": {
     "description": "Native phone guest import review and explicit workspace sharing.",
     "x-audience": "host",
@@ -320,7 +320,7 @@
     "x-owner": "product",
     "x-surface": "hosts.audience.phone_import"
   },
-  "phoneImportChooseNumber": "Choose one phone number",
+  "phoneImportChooseNumber": "Choose number",
   "@phoneImportChooseNumber": {
     "description": "Native phone guest import review and explicit workspace sharing.",
     "x-audience": "host",
@@ -481,26 +481,11 @@
     "x-owner": "product",
     "x-surface": "hosts.audience.phone_import"
   },
-  "phoneImportCompletedMessage": "These reviewed guests were shared with {wedding} and {planner}.",
+  "phoneImportCompletedMessage": "These reviewed guests were shared with {wedding} and its authorized program collaborators.",
   "@phoneImportCompletedMessage": {
     "description": "Native phone guest import review and explicit workspace sharing.",
     "placeholders": {
       "wedding": {
-        "type": "String"
-      },
-      "planner": {
-        "type": "String"
-      }
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.audience.phone_import"
-  },
-  "phoneImportSelectedPlanner": "Selected planner: {planner}",
-  "@phoneImportSelectedPlanner": {
-    "description": "Native phone guest import review and explicit workspace sharing.",
-    "placeholders": {
-      "planner": {
         "type": "String"
       }
     },
@@ -535,14 +520,11 @@
     "x-owner": "product",
     "x-surface": "hosts.audience.phone_import"
   },
-  "phoneImportConsent": "I want to share only these reviewed guests with {wedding} and {planner}.",
+  "phoneImportConsent": "I want to share only these reviewed guests with {wedding} and its authorized program collaborators.",
   "@phoneImportConsent": {
     "description": "Native phone guest import review and explicit workspace sharing.",
     "placeholders": {
       "wedding": {
-        "type": "String"
-      },
-      "planner": {
         "type": "String"
       }
     },
@@ -31924,5 +31906,26 @@
   "programsTimezoneDefaultsUnavailable": "Organizer timezone settings could not be loaded.",
   "@programsTimezoneDefaultsUnavailable": {"description": "Program creation timezone picker: programsTimezoneDefaultsUnavailable.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_create"},
   "programsTimezoneInvalid": "Choose a valid timezone from the list.",
-  "@programsTimezoneInvalid": {"description": "Program creation timezone picker: programsTimezoneInvalid.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_create"}
+  "@programsTimezoneInvalid": {"description": "Program creation timezone picker: programsTimezoneInvalid.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_create"},
+  "phoneImportProgramCollaborators": "Visible to authorized program collaborators",
+  "@phoneImportProgramCollaborators": {
+    "description": "Explains who can view reviewed guests shared with the selected wedding.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.audience.phone_import"
+  },
+  "programsTeamProgramAdmin": "Program administrator",
+  "@programsTeamProgramAdmin": {
+    "description": "Explicit expiring staff duty that permits delegating program access.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_workspace"
+  },
+  "programsTeamApprovalRequired": "Owner approval required",
+  "@programsTeamApprovalRequired": {
+    "description": "Legacy organizer-issued access is unavailable until the program creator reissues it.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "programs.presentation.program_workspace"
+  }
 }

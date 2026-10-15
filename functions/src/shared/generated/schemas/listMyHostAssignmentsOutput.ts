@@ -81,6 +81,7 @@ export const listMyHostAssignmentsCallableResponseSchema: Record<string, unknown
                 "duty": {
                   "type": "string",
                   "enum": [
+                    "programAdmin",
                     "programCoordinator",
                     "guestRelations",
                     "communications",
@@ -149,7 +150,8 @@ export const listMyHostAssignmentsCallableResponseSchema: Record<string, unknown
                 "trips",
                 "exceptions",
                 "export",
-                "overview"
+                "overview",
+                "team"
               ],
               "description": "A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties."
             },
@@ -176,7 +178,8 @@ export const listMyHostAssignmentsCallableResponseSchema: Record<string, unknown
                 "trips",
                 "exceptions",
                 "export",
-                "overview"
+                "overview",
+                "team"
               ],
               "description": "A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties."
             },

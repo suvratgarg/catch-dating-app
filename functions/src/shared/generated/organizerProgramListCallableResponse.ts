@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Manager's program inventory: summaries only, no guest or logistics data.
+ * Organizer-manager or creator-scoped program inventory; exact-ID rediscovery also accepts approved program administrators. Summaries contain no guest or logistics data.
  */
 export interface OrganizerProgramListCallableResponse {
   /**
@@ -30,6 +30,14 @@ export interface OrganizerProgramListCallableResponse {
      * Exact count of constituent program events for a completely read authorized batch. Omitted when unavailable or the bounded batch is incomplete; absence never means zero.
      */
     functionCount?: number;
+    /**
+     * This actor is the immutable creator and the program is not archived. The archive callable still checks current account and revision.
+     */
+    canArchive: boolean;
+    /**
+     * This actor is the immutable creator and the program is archived. Grace, anonymization, active retention lease and revision checks still determine whether restoration can execute.
+     */
+    canUnarchive: boolean;
     revision: number;
     /**
      * Set when the program is archived; null otherwise.

@@ -102,7 +102,6 @@ class _PhoneImportDemoState extends State<_PhoneImportDemo> {
   Widget build(BuildContext context) => PhoneImportReviewScreen(
     controller: _controller,
     weddingName: 'Asha & Ravi · sample wedding',
-    plannerName: 'Sample wedding planner',
   );
 }
 

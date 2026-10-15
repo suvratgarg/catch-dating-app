@@ -33,6 +33,22 @@ Map<Object?, Object?> assignmentMap({
 
 void main() {
   group('HostWorkAssignment', () {
+    test('parses exact expiring administration as a Team task', () {
+      final assignment = HostWorkAssignment.fromMap(
+        assignmentMap(
+          duties: const [
+            {'duty': 'programAdmin'},
+          ],
+          destinations: const ['team'],
+          shellMode: 'task',
+          grantExpiresAtMillis: 1771882200000,
+        ),
+      );
+      expect(assignment.duties.single.duty, HostWorkDuty.programAdmin);
+      expect(assignment.destinations, [HostWorkDestination.team]);
+      expect(assignment.grantExpiresAt, isNotNull);
+    });
+
     test('parses a scoped program assignment', () {
       final assignment = HostWorkAssignment.fromMap(
         assignmentMap(grantExpiresAtMillis: 1771882200000),
@@ -102,9 +118,10 @@ void main() {
     });
 
     test('parses the manager shell entry with no assignments', () {
-      final result = HostWorkAssignments.fromCallableData(
-        const {'assignments': [], 'shellEntry': 'managerShell'},
-      );
+      final result = HostWorkAssignments.fromCallableData(const {
+        'assignments': [],
+        'shellEntry': 'managerShell',
+      });
       expect(result.shellEntry, HostWorkShellEntry.managerShell);
       expect(result.isEmpty, isTrue);
     });

@@ -13443,6 +13443,7 @@ export interface ProgramStaffGrantDocument {
    */
   duties: {
     duty:
+      | "programAdmin"
       | "programCoordinator"
       | "guestRelations"
       | "communications"
@@ -13488,6 +13489,15 @@ export interface ProgramStaffGrantDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.
+   */
+  programAuthorization?: {
+    ownerUid: string;
+    approvedByUid: string;
+    approvedAtMillis: number;
+    authorizedUntilMillis: number;
+  };
 }
 
 /**
@@ -13504,6 +13514,7 @@ export interface ProgramStaffInviteDocument {
    */
   duties: {
     duty:
+      | "programAdmin"
       | "programCoordinator"
       | "guestRelations"
       | "communications"
@@ -13547,6 +13558,15 @@ export interface ProgramStaffInviteDocument {
    * Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.
    */
   anonymizedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.
+   */
+  programAuthorization?: {
+    ownerUid: string;
+    approvedByUid: string;
+    approvedAtMillis: number;
+    authorizedUntilMillis: number;
+  };
 }
 
 /**

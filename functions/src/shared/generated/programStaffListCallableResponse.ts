@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Manager's view of program staff grants.
+ * Program creator or explicitly authorized program administrator view of staff grants.
  */
 export interface ProgramStaffListCallableResponse {
   programId: string;
@@ -22,6 +22,7 @@ export interface ProgramStaffListCallableResponse {
     phoneLastFour: string | null;
     duties: {
       duty:
+        | "programAdmin"
         | "programCoordinator"
         | "guestRelations"
         | "communications"
@@ -55,7 +56,7 @@ export interface ProgramStaffListCallableResponse {
        */
       expiresAtMillis: number;
     }[];
-    status: "active" | "expired" | "revoked";
+    status: "active" | "expired" | "revoked" | "approvalRequired";
     expiresAtMillis: number;
     revision: number;
   }[];

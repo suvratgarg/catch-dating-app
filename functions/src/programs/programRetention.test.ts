@@ -332,7 +332,7 @@ test("archiveProgram sets the lifecycle markers and grace deadline",
     assert.ok(validateOrganizerProgramDocument(program));
   });
 
-test("archiveProgram requires organizer manager authority",
+test("archiveProgram requires the program creator",
   async () => {
     const db = new FakeFirestore(retentionSeed());
     const deps = retentionDeps(db);
@@ -342,6 +342,41 @@ test("archiveProgram requires organizer manager authority",
         deps),
       (error: unknown) =>
         (error as {code?: string}).code === "permission-denied");
+  });
+
+for (const actor of ["organizer-only", "program-admin"]) {
+  test(`lifecycle ownership is not delegated to ${actor}`, async () => {
+    const db = new FakeFirestore(retentionSeed());
+    db.updateDoc("organizers/org-1", {ownerUserId: "organizer-only"});
+    db.setDoc("programStaffGrants/program-1__program-admin", {
+      ...db.getDoc("programStaffGrants/program-1__greeter-1"),
+      uid: "program-admin", duties: [{duty: "programAdmin",
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: T0 + 60_000}],
+    });
+    for (const restore of [false, true]) {
+      if (restore) archived(db);
+      const before = db.getDoc("organizerPrograms/program-1");
+      const handler = restore ? unarchiveProgramHandler : archiveProgramHandler;
+      await assert.rejects(handler(request({programId: "program-1",
+        expectedRevision: 3}, actor), retentionDeps(db)), (error: unknown) =>
+        (error as {code?: string}).code === "permission-denied");
+      assert.deepEqual(db.getDoc("organizerPrograms/program-1"), before);
+    }
+  });
+}
+
+test("creator can archive and restore after losing organizer membership",
+  async () => {
+    const db = new FakeFirestore(retentionSeed());
+    db.updateDoc("organizers/org-1", {ownerUserId: "other", hostUserId: "other",
+      hostUserIds: [], hostProfiles: []});
+    const archived = await archiveProgramHandler(request({
+      programId: "program-1", expectedRevision: 3,
+    }, "manager-1"), retentionDeps(db));
+    const restored = await unarchiveProgramHandler(request({
+      programId: "program-1", expectedRevision: archived.revision,
+    }, "manager-1"), retentionDeps(db));
+    assert.equal(restored.restoredStatus, "active");
   });
 
 test("deleted accounts cannot archive or unarchive programs", async () => {
