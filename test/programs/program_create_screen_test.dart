@@ -10,6 +10,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   for (final dark in [false, true]) {
     for (final scale in [1.0, 2.0]) {
@@ -103,14 +105,29 @@ void main() {
             of: find.byKey(const ValueKey('program-create-title')),
             matching: find.byType(TextField),
           );
-          final timezone = find.descendant(
-            of: find.byKey(const ValueKey('program-create-timezone')),
-            matching: find.byType(TextField),
+          final timezone = find.byKey(
+            const ValueKey('program-create-timezone'),
           );
           await tester.ensureVisible(title);
           await tester.enterText(title, 'Wedding weekend');
           await tester.ensureVisible(timezone);
-          await tester.enterText(timezone, 'Asia/Kolkata');
+          await tester.tap(
+            find.descendant(of: timezone, matching: find.text('Timezone')),
+          );
+          await pumpFeatureUi(tester);
+          final timezoneSearch = find.descendant(
+            of: find.byKey(const ValueKey('program-timezone-search')),
+            matching: find.byType(TextField),
+          );
+          await tester.enterText(timezoneSearch, 'New Delhi');
+          await pumpFeatureUi(tester);
+          final timezoneChoice = find.byKey(
+            const ValueKey('program-timezone-option-Asia/Kolkata'),
+          );
+          await tester.ensureVisible(timezoneChoice);
+          await pumpFeatureUi(tester);
+          await tester.tap(timezoneChoice);
+          await pumpFeatureUi(tester);
           controller.edit(
             controller.values.copyWith(
               kind: ProgramKind.wedding,
@@ -160,8 +177,11 @@ void main() {
           );
           await tester.ensureVisible(timezone);
           expect(
-            tester.widget<TextField>(timezone).controller!.text,
-            'Asia/Kolkata',
+            find.descendant(
+              of: timezone,
+              matching: find.text('India Standard Time · UTC+05:30'),
+            ),
+            findsOneWidget,
           );
           expect(controller.values.kind, ProgramKind.wedding);
           expect(controller.values.startsAt, start);
