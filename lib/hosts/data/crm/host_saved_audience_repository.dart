@@ -1,20 +1,30 @@
 import 'dart:convert';
-
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_crm_callable.dart';
+import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
 import 'package:catch_dating_app/hosts/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_summary.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_summary.dart';
+
 part 'host_saved_audience_repository.g.dart';
 
+// firestore-index: hostGroupSummaries (organizerId:ASCENDING, status:ASCENDING, searchName:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostGroupSummaries (organizerId:ASCENDING, status:ASCENDING, isStatic:ASCENDING, searchName:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostGroupSummaries (organizerId:ASCENDING, status:ASCENDING, lastPreviewAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostGroupSummaries (organizerId:ASCENDING, status:ASCENDING, isStatic:ASCENDING, lastPreviewAtMillis:DESCENDING, __name__:DESCENDING)
 class HostSavedAudienceRepository {
-  const HostSavedAudienceRepository(this._functions);
+  const HostSavedAudienceRepository(this._functions, {this.summaries});
+
+  final HostSummaryReader? summaries;
 
   final FirebaseFunctions _functions;
 
@@ -67,13 +77,92 @@ class HostSavedAudienceRepository {
     parse: HostSavedAudiencePage.fromCallableData,
   );
 
-  /// Reload one active definition through the existing bounded directory API.
+  Future<HostSavedAudienceSummaryPage> listGroupSummaries(
+    String organizerId, {
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+    bool byName = true,
+    bool? isStatic,
+  }) async {
+    final directory = await summaries?.directory(organizerId);
+    if (directory?['groupSummaryVersion'] == 1) {
+      final page = await summaries!.page(
+        collection: 'hostGroupSummaries',
+        organizerId: organizerId,
+        orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
+        descending: !byName,
+        queryKey: jsonEncode(['active', byName, isStatic]),
+        limit: limit,
+        equalities: {'status': 'active', 'isStatic': ?isStatic},
+        cursor: cursor,
+      );
+      return HostSavedAudienceSummaryPage(
+        audiences: page.documents
+            .map((doc) => HostSavedAudienceSummary.fromMap(doc['row'] as Map))
+            .toList(),
+        nextCursor: page.nextCursor,
+      );
+    }
+    if (cursor?.startsWith(HostSummaryCursor.prefix) ?? false) {
+      throw StateError('The group directory changed; refresh this list.');
+    }
+    // Preserve exhaustive contains search and global local sort before cutover.
+    final rows = <HostSavedAudienceSummary>[];
+    final cursors = <String>{};
+    String? legacyCursor;
+    do {
+      final page = await listSavedAudiences(
+        organizerId,
+        cursor: legacyCursor,
+        limit: ReadLimitPolicy.historyPage,
+      );
+      rows.addAll(page.audiences.map(HostSavedAudienceSummary.fromAudience));
+      legacyCursor = page.nextCursor;
+      if (legacyCursor != null &&
+          (rows.length >= 2500 || !cursors.add(legacyCursor))) {
+        throw StateError('Group directory could not be exhausted safely.');
+      }
+    } while (legacyCursor != null);
+    final visible =
+        rows
+            .where((row) => isStatic == null || row.isStatic == isStatic)
+            .toList()
+          ..sort(
+            (a, b) => byName
+                ? a.name.toLowerCase().compareTo(b.name.toLowerCase())
+                : (b.lastPreviewAt ?? DateTime(0)).compareTo(
+                    a.lastPreviewAt ?? DateTime(0),
+                  ),
+          );
+    return HostSavedAudienceSummaryPage(audiences: visible, nextCursor: null);
+  }
+
+  /// Load one active definition after the user selects its summary.
   /// Never fall back to the supplied revision when it is missing or unavailable.
   Future<HostSavedAudience> reloadSavedAudience({
     required String organizerId,
     required String audienceId,
     required bool Function() isCurrent,
   }) async {
+    if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+    final directory = await summaries?.directory(organizerId);
+    if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+    if (directory?['groupSummaryVersion'] == 1) {
+      final data = await summaries!.document(
+        collection: 'hostGroupDetails',
+        organizerId: organizerId,
+        id: audienceId,
+      );
+      if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+      if (data == null) throw StateError('Saved group is no longer available.');
+      final audience = HostSavedAudience.fromMap(data['row'] as Map);
+      if (audience.organizerId != organizerId ||
+          audience.audienceId != audienceId ||
+          audience.status != 'active') {
+        throw StateError('Saved group is no longer available.');
+      }
+      return audience;
+    }
     String? cursor;
     final seenCursors = <String>{};
     var count = 0;
@@ -163,13 +252,21 @@ class HostSavedAudienceRepository {
 
 // keepalive: Reuse the callable client for the saved audience subdomain.
 @Riverpod(keepAlive: true)
-HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) =>
-    HostSavedAudienceRepository(ref.watch(firebaseFunctionsProvider));
+HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
+  ref.watch(authenticatedSessionProvider);
+  return HostSavedAudienceRepository(
+    ref.watch(firebaseFunctionsProvider),
+    summaries: HostSummaryReader(
+      ref.watch(firebaseFirestoreProvider),
+      actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+    ),
+  );
+}
 
 @riverpod
 Future<HostSavedAudiencePage> hostSavedAudiences(Ref ref, String organizerId) =>
     ref
-        .read(hostSavedAudienceRepositoryProvider)
+        .watch(hostSavedAudienceRepositoryProvider)
         .listSavedAudiences(organizerId);
 
 /// Exhaustive saved-audience directory used by the Customers-owned workspace.
@@ -182,7 +279,7 @@ Future<HostSavedAudiencePage> hostAllSavedAudiences(
   String organizerId,
 ) async {
   const maximumDefinitions = 2500;
-  final repository = ref.read(hostSavedAudienceRepositoryProvider);
+  final repository = ref.watch(hostSavedAudienceRepositoryProvider);
   final audiences = <HostSavedAudience>[];
   String? cursor;
   do {
@@ -213,7 +310,7 @@ Future<List<HostStaticAudienceMember>> hostStaticAudienceMembers(
   String organizerId,
   String selectionKey,
 ) => ref
-    .read(hostSavedAudienceRepositoryProvider)
+    .watch(hostSavedAudienceRepositoryProvider)
     .resolveAudienceMembers(
       organizerId,
       crmStringList(jsonDecode(selectionKey)),
@@ -224,5 +321,98 @@ Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
   Ref ref,
   String organizerId,
 ) => ref
-    .read(hostSavedAudienceRepositoryProvider)
+    .watch(hostSavedAudienceRepositoryProvider)
     .savedAudienceFilterOptions(organizerId);
+
+/// Preserves the workspace's exhaustive local name search using small metadata
+/// documents; full selected-member lists are loaded only when a group opens.
+@riverpod
+Future<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
+  Ref ref,
+  String organizerId,
+) async {
+  final repository = ref.watch(hostSavedAudienceRepositoryProvider);
+  final audiences = <HostSavedAudienceSummary>[];
+  final cursors = <String>{};
+  String? cursor;
+  do {
+    final page = await repository.listGroupSummaries(
+      organizerId,
+      cursor: cursor,
+    );
+    if (!ref.mounted) throw StateError('Group directory was disposed.');
+    audiences.addAll(page.audiences);
+    cursor = page.nextCursor;
+    if (cursor != null && (audiences.length >= 2500 || !cursors.add(cursor))) {
+      throw StateError('Group directory could not be exhausted safely.');
+    }
+  } while (cursor != null);
+  return HostSavedAudienceSummaryPage(audiences: audiences, nextCursor: null);
+}
+
+/// First-page publication and continuation belong to one authenticated scope.
+@riverpod
+class HostGroupDirectoryController extends _$HostGroupDirectoryController {
+  int _generation = 0;
+
+  @override
+  Future<HostGroupDirectoryState> build(
+    String organizerId, {
+    bool byName = true,
+    bool? isStatic,
+  }) async {
+    ++_generation;
+    ref.onDispose(() => ++_generation);
+    final page = await ref
+        .watch(hostSavedAudienceRepositoryProvider)
+        .listGroupSummaries(
+          organizerId,
+          byName: byName,
+          isStatic: isStatic,
+          limit: ReadLimitPolicy.directoryPage,
+        );
+    return HostGroupDirectoryState(page: page);
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null ||
+        current.loadingMore ||
+        current.page.nextCursor == null) {
+      return;
+    }
+    final generation = _generation;
+    state = AsyncData(
+      HostGroupDirectoryState(page: current.page, loadingMore: true),
+    );
+    try {
+      final page = await ref
+          .read(hostSavedAudienceRepositoryProvider)
+          .listGroupSummaries(
+            organizerId,
+            byName: byName,
+            isStatic: isStatic,
+            cursor: current.page.nextCursor,
+            limit: ReadLimitPolicy.directoryPage,
+          );
+      if (!ref.mounted || generation != _generation) return;
+      final rows = {
+        for (final row in current.page.audiences) row.audienceId: row,
+        for (final row in page.audiences) row.audienceId: row,
+      };
+      state = AsyncData(
+        HostGroupDirectoryState(
+          page: HostSavedAudienceSummaryPage(
+            audiences: List.unmodifiable(rows.values),
+            nextCursor: page.nextCursor,
+          ),
+        ),
+      );
+    } on Object catch (error) {
+      if (!ref.mounted || generation != _generation) return;
+      state = AsyncData(
+        HostGroupDirectoryState(page: current.page, loadMoreError: error),
+      );
+    }
+  }
+}

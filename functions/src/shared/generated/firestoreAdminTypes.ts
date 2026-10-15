@@ -18,7 +18,9 @@ import type {EventOfferPaymentSnapshot} from "./eventOfferPaymentSnapshot";
 import type {EventOfferManualPayment} from "./eventOfferManualPayment";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
 import type {QueryOrganizerFormResponsesCallablePayload} from "./queryOrganizerFormResponsesCallablePayload";
+import type {OrganizerSavedAudienceCallableResponse} from "./organizerSavedAudienceCallableResponse";
 import type {ImportEventAttendeesCallablePayload} from "./importEventAttendeesCallablePayload";
+import type {GetOrganizerCrmSummaryCallableResponse} from "./getOrganizerCrmSummaryCallableResponse";
 
 /**
  * Schema-derived Admin SDK Firestore document types.
@@ -548,6 +550,300 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+/**
+ * Server-maintained response inbox metadata. No answer snapshots or asset URLs. Withdrawal atomically redacts a verified view or deletes an invalid view.
+ */
+export interface HostResponseSummaryDocument {
+  organizerId: string;
+  summaryId: string;
+  kind: "response" | "application";
+  formId: string;
+  submittedAtMillis: number;
+  row: {
+    entryId: string;
+    submittedAtMillis: number;
+    response: {
+      responseId: string;
+      formId: string;
+      formTitle: string;
+      versionId: string;
+      version: number;
+      status: "submitted" | "withdrawn";
+      identityKind:
+        | "anonymous"
+        | "emailVerified"
+        | "phoneVerified"
+        | "catchAccount";
+      identity: {
+        displayName: string | null;
+        email: string | null;
+        phoneE164: string | null;
+        searchName: string | null;
+        origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+      };
+      sourceLinkId: string | null;
+      sourceLabel: string | null;
+      submittedAtMillis: number;
+      withdrawnAtMillis: number | null;
+      /**
+       * @maxItems 12
+       */
+      highlights: {
+        questionId: string;
+        label: string;
+        answer: string | number | boolean | null | string[];
+      }[];
+      /**
+       * @maxItems 4
+       */
+      conversionKinds: (
+        | "crmContact"
+        | "application"
+        | "eventAttendeeProposal"
+        | "followUp"
+      )[];
+    } | null;
+    application: {
+      applicationId: string;
+      formId: string;
+      formVersionId: string;
+      targetKind: "organizer" | "event" | "campaign";
+      targetId: string | null;
+      applicantDisplayName: string;
+      reviewStatus:
+        | "submitted"
+        | "inReview"
+        | "approved"
+        | "waitlisted"
+        | "declined"
+        | "withdrawn";
+      dataAccessState:
+        | "organizerImported"
+        | "activeParticipantGrant"
+        | "revokedParticipantGrant"
+        | "submittedFormResponse";
+      sourceKind: "native" | "tabularImport" | "connector";
+      providerId: string | null;
+      submittedAtMillis: number;
+      revision: number;
+      contactId?: string | null;
+      sourceResponseId?: string | null;
+    } | null;
+  };
+  version: 1;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostGroupDetailDocument {
+  organizerId: string;
+  audienceId: string;
+  row: OrganizerSavedAudienceCallableResponse;
+  version: 1;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostGroupSummaryDocument {
+  organizerId: string;
+  audienceId: string;
+  status: "active" | "archived";
+  updatedAtMillis: number;
+  row: {
+    organizerId: string;
+    audienceId: string;
+    name: string;
+    status: "active" | "archived";
+    isStatic: boolean;
+    revision: number;
+    lastPreviewMatchCount: number | null;
+    lastPreviewAtMillis: number | null;
+    updatedAtMillis: number;
+  };
+  version: 1;
+  searchName: string;
+  isStatic: boolean;
+  lastPreviewAtMillis: number;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostEventSummaryDocument {
+  organizerId: string;
+  eventId: string;
+  startTimeMillis: number;
+  status: "active" | "cancelled";
+  row: {
+    eventId: string;
+    name: string;
+    city: {
+      cityId: string;
+      marketId: string;
+    };
+    localDate: string;
+    localStartTime: string;
+    timezone: string;
+    startTimeMillis: number;
+    setupRevision: number;
+    status: "active" | "cancelled";
+    detailsConfigured: boolean;
+  };
+  version: 1;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostFormSummaryDocument {
+  organizerId: string;
+  formId: string;
+  updatedAtMillis: number;
+  status: "draft" | "published" | "paused" | "archived";
+  purpose:
+    | "application"
+    | "registration"
+    | "intake"
+    | "waiver"
+    | "feedback"
+    | "survey";
+  row: {
+    organizerId: string;
+    formId: string;
+    title: string;
+    description: string | null;
+    purpose:
+      | "application"
+      | "registration"
+      | "intake"
+      | "waiver"
+      | "feedback"
+      | "survey";
+    status: "draft" | "published" | "paused" | "archived";
+    templateId: string | null;
+    publicFormId: string;
+    defaultTargetKind: "organizer" | "event" | "campaign";
+    defaultTargetId: string | null;
+    activeVersionId: string | null;
+    draftRevision: number;
+    publishedVersion: number;
+    submittedResponseCount: number;
+    consequences: {
+      coverage: "exact" | "identityOnly" | "unavailable";
+      identityPolicy:
+        | (
+            | "anonymous"
+            | "emailVerified"
+            | "phoneVerified"
+            | "emailOrPhoneVerified"
+            | "catchAccount"
+          )
+        | null;
+      /**
+       * @maxItems 7
+       */
+      enabledAutomationActionKinds: (
+        | "notifyTeam"
+        | "addOrganizerTag"
+        | "createCrmContact"
+        | "addApplicationQueue"
+        | "proposeEventAttendee"
+        | "signedWebhook"
+        | "campaignHandoff"
+      )[];
+    };
+    updatedAtMillis: number;
+    publishedAtMillis: number | null;
+    lastResponseAtMillis: number | null;
+  };
+  version: 1;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostContactSummaryDocument {
+  organizerId: string;
+  contactId: string;
+  searchName: string;
+  lastSeenAtMillis: number;
+  /**
+   * @maxItems 5
+   */
+  manualTagIds: string[];
+  linkedAccount: boolean;
+  importedContact: boolean;
+  row: {
+    contactId: string;
+    displayName: string;
+    phoneE164: string | null;
+    email: string | null;
+    identityState: "unlinked" | "verified" | "ambiguous";
+    identityConfidence: "eventOnly" | "proposed" | "verified";
+    ambiguousCandidateCount: number;
+    attendedEventCount: number;
+    expectedEventCount: number;
+    lastAttendedAtMillis: number | null;
+    /**
+     * @maxItems 16
+     */
+    segmentIds: (
+      | "new_to_organizer"
+      | "past_attendee"
+      | "first_time_attendee"
+      | "repeat_attendee"
+      | "regular"
+      | "lapsed_regular"
+      | "reliable_attendee"
+      | "needs_confirmation"
+      | "advocate"
+      | "high_impact_advocate"
+      | "whatsapp_reachable"
+      | "sms_reachable"
+    )[];
+    /**
+     * @maxItems 5
+     */
+    manualTags?: {
+      tagId: string;
+      label: string;
+    }[];
+    whatsappStatus: "unknown" | "optedIn" | "optedOut";
+    whatsappAdminSuppressed: boolean;
+    smsStatus: "unknown" | "optedIn" | "optedOut";
+    sourceCoverage: "exact" | "partial" | "insufficientData";
+    revision: number;
+  };
+  version: 1;
+}
+
+/**
+ * Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.
+ */
+export interface HostDirectorySummaryDocument {
+  organizerId: string;
+  contactSummaryVersion: number;
+  segmentCounts: {
+    [k: string]: number;
+  };
+  summary: GetOrganizerCrmSummaryCallableResponse;
+  /**
+   * @maxItems 20
+   */
+  manualTagVocabulary: {
+    tagId: string;
+    label: string;
+  }[];
+  sourceCoverage: "exact" | "partial";
+  projectionVersion: number;
+  formSummaryVersion?: number;
+  eventSummaryVersion?: number;
+  groupSummaryVersion?: number;
+  responseSummaryVersion?: number;
 }
 
 /**

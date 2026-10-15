@@ -15,6 +15,8 @@ const Ajv = requireFromRepo("ajv");
 const addFormats = requireFromRepo("ajv-formats");
 
 export const fixtureSchemaCases = Object.freeze([
+  ["valid/host_contact_summary.json", "hostContactSummaryDocumentSchema"],
+  ["valid/host_directory_summary.json", "hostDirectorySummaryDocumentSchema"],
   ["valid/organizer_setup_preferences_sparse.json", "organizerEventSetupPreferencesSchema"],
   ["invalid/organizer_setup_preferences_null.json", "organizerEventSetupPreferencesSchema"],
   ["invalid/organizer_setup_preferences_secret.json", "organizerEventSetupPreferencesSchema"],

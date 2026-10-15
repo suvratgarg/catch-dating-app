@@ -56,7 +56,7 @@ final class HostSavedAudienceRepositoryProvider
 }
 
 String _$hostSavedAudienceRepositoryHash() =>
-    r'7ec326c7d207d299b41ac8df66457d2f79908fb4';
+    r'd69b37678b73001ef421171624f0db53088607e4';
 
 @ProviderFor(hostSavedAudiences)
 final hostSavedAudiencesProvider = HostSavedAudiencesFamily._();
@@ -116,7 +116,7 @@ final class HostSavedAudiencesProvider
 }
 
 String _$hostSavedAudiencesHash() =>
-    r'3fb518edb5a7787a0d64e22d5c147d6fa60b1920';
+    r'07898bedde319208db12e469d94be35f43da0a6a';
 
 final class HostSavedAudiencesFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostSavedAudiencePage>, String> {
@@ -208,7 +208,7 @@ final class HostAllSavedAudiencesProvider
 }
 
 String _$hostAllSavedAudiencesHash() =>
-    r'6f181dc0d33c37fe6bf82f0a45496c377a7bad78';
+    r'1e7fff9b1be05094cd989635ca9d822d6ced233f';
 
 /// Exhaustive saved-audience directory used by the Customers-owned workspace.
 ///
@@ -297,7 +297,7 @@ final class HostStaticAudienceMembersProvider
 }
 
 String _$hostStaticAudienceMembersHash() =>
-    r'31d7f3c6b3ad14fd6b9f5fb78d72f04e56a7deb2';
+    r'eeefe9a4b553116019b9dcb90e12128300f67972';
 
 final class HostStaticAudienceMembersFamily extends $Family
     with
@@ -386,7 +386,7 @@ final class HostSavedAudienceFilterOptionsProvider
 }
 
 String _$hostSavedAudienceFilterOptionsHash() =>
-    r'f26f821b8e1a5060110fba8c02999bd97480b317';
+    r'5e59d7d1d1b84c5bb3a99bd2fe1d21905fc01992';
 
 final class HostSavedAudienceFilterOptionsFamily extends $Family
     with
@@ -411,4 +411,235 @@ final class HostSavedAudienceFilterOptionsFamily extends $Family
 
   @override
   String toString() => r'hostSavedAudienceFilterOptionsProvider';
+}
+
+/// Preserves the workspace's exhaustive local name search using small metadata
+/// documents; full selected-member lists are loaded only when a group opens.
+
+@ProviderFor(hostAllSavedAudienceSummaries)
+final hostAllSavedAudienceSummariesProvider =
+    HostAllSavedAudienceSummariesFamily._();
+
+/// Preserves the workspace's exhaustive local name search using small metadata
+/// documents; full selected-member lists are loaded only when a group opens.
+
+final class HostAllSavedAudienceSummariesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSavedAudienceSummaryPage>,
+          HostSavedAudienceSummaryPage,
+          FutureOr<HostSavedAudienceSummaryPage>
+        >
+    with
+        $FutureModifier<HostSavedAudienceSummaryPage>,
+        $FutureProvider<HostSavedAudienceSummaryPage> {
+  /// Preserves the workspace's exhaustive local name search using small metadata
+  /// documents; full selected-member lists are loaded only when a group opens.
+  HostAllSavedAudienceSummariesProvider._({
+    required HostAllSavedAudienceSummariesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostAllSavedAudienceSummariesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostAllSavedAudienceSummariesHash();
+
+  @override
+  String toString() {
+    return r'hostAllSavedAudienceSummariesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostSavedAudienceSummaryPage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostSavedAudienceSummaryPage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostAllSavedAudienceSummaries(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostAllSavedAudienceSummariesProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostAllSavedAudienceSummariesHash() =>
+    r'5c400f23ddf558d044321ee3d51393f8f748e77e';
+
+/// Preserves the workspace's exhaustive local name search using small metadata
+/// documents; full selected-member lists are loaded only when a group opens.
+
+final class HostAllSavedAudienceSummariesFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostSavedAudienceSummaryPage>,
+          String
+        > {
+  HostAllSavedAudienceSummariesFamily._()
+    : super(
+        retry: null,
+        name: r'hostAllSavedAudienceSummariesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Preserves the workspace's exhaustive local name search using small metadata
+  /// documents; full selected-member lists are loaded only when a group opens.
+
+  HostAllSavedAudienceSummariesProvider call(String organizerId) =>
+      HostAllSavedAudienceSummariesProvider._(
+        argument: organizerId,
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostAllSavedAudienceSummariesProvider';
+}
+
+/// First-page publication and continuation belong to one authenticated scope.
+
+@ProviderFor(HostGroupDirectoryController)
+final hostGroupDirectoryControllerProvider =
+    HostGroupDirectoryControllerFamily._();
+
+/// First-page publication and continuation belong to one authenticated scope.
+final class HostGroupDirectoryControllerProvider
+    extends
+        $AsyncNotifierProvider<
+          HostGroupDirectoryController,
+          HostGroupDirectoryState
+        > {
+  /// First-page publication and continuation belong to one authenticated scope.
+  HostGroupDirectoryControllerProvider._({
+    required HostGroupDirectoryControllerFamily super.from,
+    required (String, {bool byName, bool? isStatic}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostGroupDirectoryControllerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostGroupDirectoryControllerHash();
+
+  @override
+  String toString() {
+    return r'hostGroupDirectoryControllerProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  HostGroupDirectoryController create() => HostGroupDirectoryController();
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostGroupDirectoryControllerProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostGroupDirectoryControllerHash() =>
+    r'ab49ab78999ad696155028b8770d4c9756090cd7';
+
+/// First-page publication and continuation belong to one authenticated scope.
+
+final class HostGroupDirectoryControllerFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          HostGroupDirectoryController,
+          AsyncValue<HostGroupDirectoryState>,
+          HostGroupDirectoryState,
+          FutureOr<HostGroupDirectoryState>,
+          (String, {bool byName, bool? isStatic})
+        > {
+  HostGroupDirectoryControllerFamily._()
+    : super(
+        retry: null,
+        name: r'hostGroupDirectoryControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// First-page publication and continuation belong to one authenticated scope.
+
+  HostGroupDirectoryControllerProvider call(
+    String organizerId, {
+    bool byName = true,
+    bool? isStatic,
+  }) => HostGroupDirectoryControllerProvider._(
+    argument: (organizerId, byName: byName, isStatic: isStatic),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostGroupDirectoryControllerProvider';
+}
+
+/// First-page publication and continuation belong to one authenticated scope.
+
+abstract class _$HostGroupDirectoryController
+    extends $AsyncNotifier<HostGroupDirectoryState> {
+  late final _$args = ref.$arg as (String, {bool byName, bool? isStatic});
+  String get organizerId => _$args.$1;
+  bool get byName => _$args.byName;
+  bool? get isStatic => _$args.isStatic;
+
+  FutureOr<HostGroupDirectoryState> build(
+    String organizerId, {
+    bool byName = true,
+    bool? isStatic,
+  });
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<HostGroupDirectoryState>,
+              HostGroupDirectoryState
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<HostGroupDirectoryState>,
+                HostGroupDirectoryState
+              >,
+              AsyncValue<HostGroupDirectoryState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(
+      ref,
+      () => build(_$args.$1, byName: _$args.byName, isStatic: _$args.isStatic),
+    );
+  }
 }
