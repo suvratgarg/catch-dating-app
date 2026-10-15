@@ -5052,10 +5052,12 @@ List<Object> _hostCustomersProviderOverrides() {
         ],
       ),
     ),
-    hostAllSavedAudiencesProvider(club.id).overrideWithValue(
-      AsyncData(
-        HostSavedAudiencePage(
-          audiences: [_hostSavedAudienceCapture()],
+    hostGroupDirectoryControllerProvider(club.id).overrideWithBuild(
+      (ref, notifier) async => HostGroupDirectoryState(
+        page: HostSavedAudienceSummaryPage(
+          audiences: [
+            HostSavedAudienceSummary.fromAudience(_hostSavedAudienceCapture()),
+          ],
           nextCursor: null,
         ),
       ),
