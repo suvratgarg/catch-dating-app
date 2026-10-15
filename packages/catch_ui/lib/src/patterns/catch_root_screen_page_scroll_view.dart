@@ -208,11 +208,13 @@ class _CatchRootScreenPageScrollViewState
                 ? widget.physics
                 : AlwaysScrollableScrollPhysics(parent: widget.physics),
             slivers: [
-              SliverOverlapInjector(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                  context,
+              if (context.findAncestorStateOfType<NestedScrollViewState>() !=
+                  null)
+                SliverOverlapInjector(
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context,
+                  ),
                 ),
-              ),
               if (widget._sectionRhythm)
                 const SliverToBoxAdapter(
                   child: SizedBox(height: CatchSpacing.screenPt),

@@ -1,6 +1,11 @@
 import {renderHook, waitFor} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 
+import {
+  validateAdminCallableRequest,
+  validateAdminCallableResponse,
+} from "../../../../generated/validators/adminCallableValidators";
+
 import {createQueryHarness} from
   "../../../../shared/test/queryHarness";
 import {sampleIntakeOperations} from
@@ -13,6 +18,27 @@ import {
   "./useIntakeOperationsController";
 
 describe("useIntakeOperationsController", () => {
+  it("accepts bounded unavailable diagnostics through the real generated callable boundary", () => {
+    const sample = sampleIntakeOperations();
+    const cursor = "x".repeat(1500);
+    const record = unavailable(cursor);
+    const response = {...sample, workItems: sample.workItems.slice(0, -1),
+      workItemPage: {scannedCount: sample.workItems.length,
+        unavailableRecords: [record]}, nextWorkItemCursor: cursor};
+    expect(() => validateAdminCallableRequest("adminListIntakeOperations",
+      {workItemCursor: cursor})).not.toThrow();
+    expect(() => validateAdminCallableResponse("adminListIntakeOperations",
+      response)).not.toThrow();
+    expect(() => validateAdminCallableResponse("adminListIntakeOperations", {
+      ...response, workItemPage: {...response.workItemPage,
+        unavailableRecords: [{...record, rawDocument: {privateValue: "hidden"}}]},
+    })).toThrow();
+    expect(() => validateAdminCallableRequest("adminListIntakeOperations",
+      {workItemCursor: cursor + "x"})).toThrow();
+    expect(() => validateAdminCallableRequest("adminListIntakeOperations",
+      {runCursor: "x".repeat(1001)})).toThrow();
+  });
+
   it("loads the persisted-stage projection with safe capabilities", async () => {
     const {wrapper} = createQueryHarness();
     const onError = vi.fn();
@@ -261,4 +287,177 @@ describe("useIntakeOperationsController", () => {
       loadNextIntakeOperationsPage(current, loader)
     ).rejects.toThrow("ended or stalled");
   });
+
+  it("accounts for a malformed first-page exception without losing healthy rows", async () => {
+    const sample = sampleIntakeOperations();
+    const ordinary = sample.workItems.find((item) =>
+      !item.taskFlags.includes("human_review_required"))!;
+    const summary = {...sample.summary, workItemCount: 2, humanReviewCount: 1};
+    const bad = unavailable("legacy-packet");
+    const loader = vi.fn()
+      .mockResolvedValueOnce({...sample, summary, workItems: [ordinary],
+        workItemPage: {scannedCount: 2, unavailableRecords: [bad]},
+        nextWorkItemCursor: null})
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [bad]},
+        nextWorkItemCursor: null});
+
+    const result = await loadCompleteIntakeOperations(loader);
+
+    expect(result.workItems).toEqual([ordinary]);
+    expect(result.summary).toEqual(summary);
+    expect(result.readInventory).toEqual({unavailableRecords: [bad],
+      humanReviewUnavailableDocumentIds: [bad.documentId]});
+    expect(loader.mock.calls[1]?.[0]).toMatchObject({
+      workItemCursor: null, humanReviewRequired: true,
+    });
+    expect(result.nextWorkItemCursor).toBeNull();
+  });
+
+  it("advances through all-invalid ordinary pages using raw page cursors", async () => {
+    const sample = sampleIntakeOperations();
+    const ordinary = sample.workItems.find((item) =>
+      !item.taskFlags.includes("human_review_required"))!;
+    const summary = {...sample.summary, workItemCount: 3, humanReviewCount: 0};
+    const firstBad = unavailable("bad-1");
+    const secondBad = unavailable("bad-2");
+    const loader = vi.fn()
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [firstBad]},
+        nextWorkItemCursor: " bad-1 "})
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [secondBad]},
+        nextWorkItemCursor: "bad-2"})
+      .mockResolvedValueOnce({...sample, summary, workItems: [ordinary],
+        workItemPage: {scannedCount: 1, unavailableRecords: []},
+        nextWorkItemCursor: null});
+
+    const first = await loadCompleteIntakeOperations(loader);
+    expect(first.nextWorkItemCursor).toBe(" bad-1 ");
+    const second = await loadNextIntakeOperationsPage(first, loader);
+    expect(second.workItems).toEqual([]);
+    expect(second.nextWorkItemCursor).toBe("bad-2");
+    const result = await loadNextIntakeOperationsPage(second, loader);
+    expect(result.workItems).toEqual([ordinary]);
+    expect(result.readInventory?.unavailableRecords).toEqual([firstBad, secondBad]);
+    expect(result.summary).toEqual(summary);
+    expect(result.nextWorkItemCursor).toBeNull();
+    expect(loader.mock.calls[1]?.[0].workItemCursor).toBe(" bad-1 ");
+  });
+
+  it("hydrates all-invalid exception pages and deduplicates ordinary diagnostics", async () => {
+    const sample = sampleIntakeOperations();
+    const summary = {...sample.summary, workItemCount: 2, humanReviewCount: 2};
+    const firstBad = unavailable("bad-1");
+    const secondBad = unavailable("bad-2");
+    const loader = vi.fn()
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [firstBad]},
+        nextWorkItemCursor: "bad-1"})
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [firstBad]},
+        nextWorkItemCursor: "bad-1"})
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [secondBad]},
+        nextWorkItemCursor: null});
+
+    const result = await loadCompleteIntakeOperations(loader);
+    expect(result.workItems).toEqual([]);
+    expect(result.readInventory?.unavailableRecords).toEqual([firstBad, secondBad]);
+    expect(result.readInventory?.humanReviewUnavailableDocumentIds)
+      .toEqual(["bad-1", "bad-2"]);
+    expect(result.nextWorkItemCursor).toBeNull();
+  });
+
+  it("keeps ordinary unavailable records out of the exception count", async () => {
+    const sample = sampleIntakeOperations();
+    const exception = sample.workItems.find((item) =>
+      item.taskFlags.includes("human_review_required"))!;
+    const summary = {...sample.summary, workItemCount: 3, humanReviewCount: 1};
+    const bad = unavailable("ordinary-invalid");
+    const loader = vi.fn()
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [bad]},
+        nextWorkItemCursor: "ordinary-invalid"})
+      .mockResolvedValueOnce({...sample, summary, workItems: [exception],
+        workItemPage: {scannedCount: 1, unavailableRecords: []},
+        nextWorkItemCursor: null})
+      .mockResolvedValueOnce({...sample, summary, workItems: [exception],
+        workItemPage: {scannedCount: 1, unavailableRecords: []},
+        nextWorkItemCursor: "exception-already-loaded"});
+
+    const first = await loadCompleteIntakeOperations(loader);
+    expect(first.readInventory?.humanReviewUnavailableDocumentIds).toEqual([]);
+    expect(first.nextWorkItemCursor).toBe("ordinary-invalid");
+    // The ordinary lane can scan a healthy exception already loaded by the
+    // filtered lane; the raw cursor proves progress even without a new row.
+    const next = await loadNextIntakeOperationsPage(first, loader);
+    expect(next.workItems).toEqual([exception]);
+    expect(next.nextWorkItemCursor).toBe("exception-already-loaded");
+  });
+
+  it("rejects unavailable inventory exceeding the persisted total", async () => {
+    const sample = sampleIntakeOperations();
+    const loader = vi.fn(async () => ({...sample, workItems: [],
+      summary: {...sample.summary, workItemCount: 1, humanReviewCount: 0},
+      workItemPage: {scannedCount: 2,
+        unavailableRecords: [unavailable("bad-1"), unavailable("bad-2")]},
+      nextWorkItemCursor: null}));
+    await expect(loadCompleteIntakeOperations(loader))
+      .rejects.toThrow("exceeds its persisted run summary");
+  });
+
+  it("rejects filtered unavailable exception counts exceeding the summary", async () => {
+    const sample = sampleIntakeOperations();
+    const summary = {...sample.summary, workItemCount: 3, humanReviewCount: 1};
+    const loader = vi.fn()
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [unavailable("ordinary")]},
+        nextWorkItemCursor: "ordinary"})
+      .mockResolvedValueOnce({...sample, summary, workItems: [],
+        workItemPage: {scannedCount: 2,
+          unavailableRecords: [unavailable("bad-1"), unavailable("bad-2")]},
+        nextWorkItemCursor: null});
+    await expect(loadCompleteIntakeOperations(loader))
+      .rejects.toThrow("exception inventory is incomplete");
+  });
+
+  it.each([
+    {label: "scan mismatch", scannedCount: 2, records: [unavailable("bad")]},
+    {label: "duplicate documents", scannedCount: 2,
+      records: [unavailable("bad"), unavailable("bad")]},
+    {label: "empty advancing page", scannedCount: 0, records: []},
+  ])("rejects $label rather than fabricating scan progress", async ({scannedCount, records}) => {
+    const sample = sampleIntakeOperations();
+    const loader = vi.fn(async () => ({...sample, workItems: [],
+      workItemPage: {scannedCount, unavailableRecords: records},
+      nextWorkItemCursor: "cursor"}));
+    await expect(loadCompleteIntakeOperations(loader)).rejects.toThrow();
+  });
+
+  it("retains run and summary drift fences when unavailable rows are present", async () => {
+    const sample = sampleIntakeOperations();
+    const summary = {...sample.summary, workItemCount: 2, humanReviewCount: 1};
+    for (const change of [
+      {runs: [{...sample.runs[0], runId: "other-run"}]},
+      {summary: {...summary, workItemCount: 3}},
+    ]) {
+      const loader = vi.fn()
+        .mockResolvedValueOnce({...sample, summary, workItems: [],
+          workItemPage: {scannedCount: 1, unavailableRecords: [unavailable("bad")]},
+          nextWorkItemCursor: "bad"})
+        .mockResolvedValueOnce({...sample, summary, workItems: [],
+          workItemPage: {scannedCount: 1, unavailableRecords: [unavailable("bad")]},
+          nextWorkItemCursor: null, ...change});
+      await expect(loadCompleteIntakeOperations(loader)).rejects.toThrow(/boundaries|summary changed/);
+    }
+  });
+
 });
+
+
+function unavailable(documentId: string) {
+  return {documentId, reason: "invalid_record" as const,
+    issues: [{path: "/normalizedPayload/intake/packet/publicPresence",
+      code: "required"}], issuesTruncated: false};
+}

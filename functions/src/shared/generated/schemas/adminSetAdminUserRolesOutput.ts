@@ -64,7 +64,8 @@ export const adminSetAdminUserRolesCallableResponseSchema: Record<string, unknow
               "safetyReviewer",
               "support",
               "finance",
-              "analyticsViewer"
+              "analyticsViewer",
+              "salesStaff"
             ]
           }
         },
@@ -85,7 +86,8 @@ export const adminSetAdminUserRolesCallableResponseSchema: Record<string, unknow
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -100,7 +102,8 @@ export const adminSetAdminUserRolesCallableResponseSchema: Record<string, unknow
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     }
@@ -114,7 +117,8 @@ export const adminSetAdminUserRolesCallableResponseSchema: Record<string, unknow
         "safetyReviewer",
         "support",
         "finance",
-        "analyticsViewer"
+        "analyticsViewer",
+        "salesStaff"
       ]
     },
     "roles": {
@@ -128,7 +132,8 @@ export const adminSetAdminUserRolesCallableResponseSchema: Record<string, unknow
           "safetyReviewer",
           "support",
           "finance",
-          "analyticsViewer"
+          "analyticsViewer",
+          "salesStaff"
         ]
       }
     },
@@ -192,7 +197,8 @@ export const adminSetAdminUserRolesCallableResponseSchema: Record<string, unknow
               "safetyReviewer",
               "support",
               "finance",
-              "analyticsViewer"
+              "analyticsViewer",
+              "salesStaff"
             ]
           }
         },

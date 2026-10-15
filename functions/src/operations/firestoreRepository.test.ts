@@ -374,3 +374,202 @@ test("Firestore repository can page the canonical human-review queue",
       "work:event:human",
     ]);
   });
+
+const adminQuery = {
+  workflowId: "supply-intake", runId: "run:mumbai:2026-07-14", limit: 2,
+  allowedPrimaryStages: ["incoming", "verify", "resolve", "ready"],
+};
+
+test("admin scan uses raw page boundaries and leaves lookahead unvalidated",
+  async () => {
+    for (const invalidIds of [["work:b"], ["work:a"], ["work:c"],
+      ["work:a", "work:b", "work:c"]]) {
+      const {repository, firestore} = harness();
+      for (const id of ["work:a", "work:b", "work:c"]) {
+        const item = operationWorkItem({workItemId: id});
+        firestore.write(`${operationCollections.workItems}/${id}`, {
+          ...item,
+          ...(invalidIds.includes(id) ? {candidateHash: "invalid"} : {}),
+        });
+      }
+      const first = await repository.listWorkItemsForAdmin(adminQuery);
+      assert.equal(first.scannedCount, 2);
+      assert.equal(first.nextCursor, "work:b");
+      assert.deepEqual(first.items.map((item) => item.workItemId),
+        ["work:a", "work:b"].filter((id) => !invalidIds.includes(id)));
+      assert.deepEqual(first.unavailableRecords.map((row) => row.documentId),
+        ["work:a", "work:b"].filter((id) => invalidIds.includes(id)));
+      const second = await repository.listWorkItemsForAdmin({
+        ...adminQuery, cursor: first.nextCursor,
+      });
+      assert.equal(second.scannedCount, 1);
+      assert.equal(second.nextCursor, null);
+      assert.deepEqual(second.items.map((item) => item.workItemId),
+        invalidIds.includes("work:c") ? [] : ["work:c"]);
+      assert.equal(second.unavailableRecords.length,
+        invalidIds.includes("work:c") ? 1 : 0);
+      const empty = await repository.listWorkItemsForAdmin({
+        ...adminQuery, cursor: "work:c",
+      });
+      assert.deepEqual(empty, {items: [], scannedCount: 0,
+        unavailableRecords: [], nextCursor: null});
+    }
+  });
+
+test("all-invalid maximum pages have bounded evidence and continuation",
+  async () => {
+    const {repository, firestore} = harness();
+    for (let index = 0; index < 201; index++) {
+      const id = `work:${String(index).padStart(3, "0")}`;
+      firestore.write(`${operationCollections.workItems}/${id}`, {
+        ...operationWorkItem({workItemId: id}),
+        warningCodes: Array(50).fill(42),
+        privatePayload: "synthetic-private-content",
+      });
+    }
+    const first = await repository.listWorkItemsForAdmin({
+      ...adminQuery, limit: 200,
+    });
+    assert.deepEqual(first.items, []);
+    assert.equal(first.scannedCount, 200);
+    assert.equal(first.unavailableRecords.length, 200);
+    assert.equal(first.nextCursor, "work:199");
+    assert.ok(first.unavailableRecords.every((row) =>
+      row.issues.length <= 10 && row.issuesTruncated &&
+      row.issues.every((issue) => issue.path.length <= 200 &&
+        issue.code.length <= 80 && !("message" in issue))));
+    assert.ok(!JSON.stringify(first).includes("synthetic-private-content"));
+    const last = await repository.listWorkItemsForAdmin({
+      ...adminQuery, limit: 200, cursor: first.nextCursor,
+    });
+    assert.equal(last.scannedCount, 1);
+    assert.equal(last.unavailableRecords.length, 1);
+    assert.equal(last.nextCursor, null);
+  });
+
+test("admin projection checks document identity and query scope independently",
+  async () => {
+    const variants = [
+      {field: "workItemId", value: "work:alias",
+        reason: "document_id_mismatch"},
+      {field: "workflowId", value: "other-workflow", reason: "scope_mismatch"},
+      {field: "runId", value: "run:other", reason: "scope_mismatch"},
+      {field: "primaryStage", value: "approve", reason: "unsupported_stage"},
+      {field: "entityKind", value: "organizer", reason: "scope_mismatch"},
+      {field: "lifecycleStatus", value: "ready", reason: "scope_mismatch"},
+      {field: "taskFlags", value: [], reason: "scope_mismatch"},
+    ];
+    for (const variant of variants) {
+      // Simulate a corrupt query result; validation and joins run in the real
+      // repository rather than being bypassed by a typed repository stub.
+      const item = {...operationWorkItem({workItemId: "work:a",
+        taskFlags: ["human_review_required"]}),
+      [variant.field]: variant.value};
+      const calls: Array<unknown[]> = [];
+      const query = {
+        where: (...args: unknown[]) => {
+          calls.push(args); return query;
+        },
+        orderBy: (...args: unknown[]) => {
+          calls.push(args); return query;
+        },
+        startAfter: (...args: unknown[]) => {
+          calls.push(args); return query;
+        },
+        limit: (...args: unknown[]) => {
+          calls.push(args); return query;
+        },
+        get: async () => ({docs: [{id: "work:a", data: () => item}]}),
+      };
+      const db = {collection: () => query} as unknown as Firestore;
+      const repository = new FirestoreOperationsRepository(db);
+      const page = await repository.listWorkItemsForAdmin({
+        ...adminQuery, entityKind: "event", lifecycleStatus: "queued",
+        humanReviewRequired: true, cursor: "work:0",
+      });
+      assert.deepEqual(page.items, []);
+      assert.equal(page.scannedCount, 1);
+      assert.deepEqual(page.unavailableRecords, [{documentId: "work:a",
+        reason: variant.reason, issues: [{path: variant.field,
+          code: variant.reason}], issuesTruncated: false}]);
+      assert.ok(calls.some((args) => args[0] === "taskFlags" &&
+        args[1] === "array-contains" && args[2] === "human_review_required"));
+      assert.ok(calls.some((args) => args.length === 1 && args[0] === 3));
+      assert.ok(calls.some((args) =>
+        args.length === 1 && args[0] === "work:0"));
+    }
+  });
+
+test("query and snapshot transport errors cannot become unavailable records",
+  async () => {
+    const failure = new Error("synthetic query error");
+    for (const boundary of ["query", "snapshot"] as const) {
+      const query = {
+        where: () => query, orderBy: () => query, limit: () => query,
+        get: async () => {
+          if (boundary === "query") throw failure;
+          return {docs: [{id: "work:a", data: () => {
+            throw failure;
+          }}]};
+        },
+      };
+      const repository = new FirestoreOperationsRepository({
+        collection: () => query,
+      } as unknown as Firestore);
+      await assert.rejects(repository.listWorkItemsForAdmin(adminQuery),
+        (error) => error === failure);
+    }
+    const {repository} = harness();
+    for (const limit of [0, 201, 1.5]) {
+      await assert.rejects(repository.listWorkItemsForAdmin({
+        ...adminQuery, limit,
+      }), {code: "invalid_page_limit"});
+    }
+  });
+
+test("unavailable records remain invalid for strict reads, writes and actions",
+  async () => {
+    const {repository, firestore, action} = await actionHarness();
+    const malformed = {...action.workItem, candidateHash: "malformed"};
+    const before = firestore.entries();
+    await assert.rejects(repository.createWorkItem({...malformed,
+      workItemId: "work:new", revision: 0}), {code: "invalid_entity"});
+    await assert.rejects(repository.saveWorkItem(malformed, 0),
+      {code: "invalid_entity"});
+    await assert.rejects(repository.commitWorkItemAction({
+      ...action, workItem: malformed,
+    }), {code: "invalid_entity"});
+    assert.deepEqual(firestore.entries(), before);
+    firestore.write(`${operationCollections.workItems}/${malformed.workItemId}`,
+      {...malformed, revision: 0});
+    const stored = firestore.entries();
+    const page = await repository.listWorkItemsForAdmin(adminQuery);
+    assert.equal(page.unavailableRecords.length, 1);
+    await assert.rejects(repository.getWorkItem(malformed.workItemId),
+      {code: "invalid_entity"});
+    await assert.rejects(repository.listWorkItems(adminQuery),
+      {code: "invalid_entity"});
+    await assert.rejects(repository.commitWorkItemAction(action),
+      {code: "invalid_entity"});
+    assert.deepEqual(firestore.entries(), stored);
+  });
+
+
+test("repository preserves long raw document cursors without truncation",
+  async () => {
+    const {repository, firestore} = harness();
+    const id = "a".repeat(1001);
+    firestore.write(`${operationCollections.workItems}/${id}`,
+      {...operationWorkItem()});
+    await repository.createWorkItem(operationWorkItem({workItemId: "work:z"}));
+    const first = await repository.listWorkItemsForAdmin({
+      ...adminQuery, limit: 1,
+    });
+    assert.equal(first.nextCursor, id);
+    assert.equal(first.unavailableRecords[0].documentId, id);
+    const second = await repository.listWorkItemsForAdmin({
+      ...adminQuery, limit: 1, cursor: first.nextCursor,
+    });
+    assert.deepEqual(second.items.map((row) => row.workItemId), ["work:z"]);
+    assert.equal(second.nextCursor, null);
+  });

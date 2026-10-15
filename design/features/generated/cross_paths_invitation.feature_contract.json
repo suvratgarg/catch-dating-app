@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
   "sourceDigest": "sha256:106f553d8883dd4f6bd406cdb0480cca09fe23b6f89a43b14bce7cb26a814e2d",
-  "resolvedDigest": "sha256:f5e3bd6c9273e35d7258a8449bc390af27e6c43a07653c821ff3eb4faa7ce3e5",
+  "resolvedDigest": "sha256:a2a78c7aad2ba9a074c98cfbd24a0188a3957f05757c66d30a3efb3ec7603dc4",
   "feature": {
     "id": "feature.cross_paths_invitation",
     "name": "Cross Paths Invitation",
@@ -624,7 +624,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

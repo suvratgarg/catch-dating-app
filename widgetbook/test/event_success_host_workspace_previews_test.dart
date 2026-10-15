@@ -3,13 +3,13 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_w
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_empty_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/event_success/host_workspace_components_use_cases.dart';
@@ -32,7 +32,7 @@ void main() {
       ),
       (eventSuccessStrictReadinessIssues, EventSuccessReadinessField, 1),
       (eventSuccessStrictReportTab, EventSuccessHostReportPageBody, 1),
-      (previewEventSuccessReportEmptyState, EventSuccessReportEmptyState, 1),
+      (previewEventSuccessReportStatus, CatchSection, 1),
       (
         eventSuccessStrictHostReportSignalGrid,
         EventSuccessReportQualitySection,

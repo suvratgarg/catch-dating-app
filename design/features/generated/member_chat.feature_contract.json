@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:d1ceb8f9ed770e130c766f08a698d78da6a7263cf711ab058abf83595240148b",
-  "resolvedDigest": "sha256:1468063470e12c9f9a4924e3cb706c5ba5fb0cdf7f0a8c9776df82d5faa4f387",
+  "resolvedDigest": "sha256:6f7eed20673c03928dc080d5077453db6861b181f8fe52084dae3aa2dc21f2fd",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1731,7 +1731,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }
@@ -4030,7 +4031,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

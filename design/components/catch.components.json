@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-23",
+  "updated": "2026-10-08",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -79,6 +79,8 @@
         "containedLoadingRows",
         "dependentFieldRows",
         "action",
+        "collection",
+        "status",
         "content",
         "sliverRows",
         "sliverLoadingRows"
@@ -2441,7 +2443,7 @@
               {
                 "name": "Optional Label",
                 "type": "TEXT",
-                "defaultValue": " \u00b7 Optional",
+                "defaultValue": " · Optional",
                 "sourceProps": [
                   "labelMode"
                 ]
@@ -4113,7 +4115,7 @@
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
-          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
@@ -4197,7 +4199,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Owns flat information sections, related row collections and bounded action modules. Action modules share a fixed quiet fill, typography, padding and full-width semantic action; contained collections use one semantic border without elevation.",
+      "summary": "Owns section anatomy. Action, collection and status modules share quiet token fill, natural content height, heading, copy and padding. Collections own compact empty content, sibling separators and an optional full-width primary command. Outlined field groups remain separate semantic recipes.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4364,6 +4366,25 @@
             "actionEmphasis",
             "actionStatus",
             "footer"
+          ],
+          "CatchSection.collection": [
+            "title",
+            "message",
+            "emptyTitle",
+            "emptyMessage",
+            "emptyIcon",
+            "children",
+            "controls",
+            "actionLabel",
+            "onAction",
+            "actionStatus",
+            "footer"
+          ],
+          "CatchSection.status": [
+            "title",
+            "message",
+            "icon",
+            "meta"
           ]
         },
         "props": [
@@ -4497,7 +4518,7 @@
             "type": "list",
             "required": false,
             "dartType": "List<Widget>?",
-            "notes": "rows and containedRows require List<CatchField>; legacy content recipes accept List<Widget>."
+            "notes": "rows/containedRows require List<CatchField>; collection requires List<Widget>, with successful-empty anatomy owned by Section."
           },
           {
             "name": "groups",
@@ -4545,7 +4566,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget",
-            "notes": "controls accepts a Widget; dependentFieldRows requires the controlling CatchField. The Section owns geometry for both recipes."
+            "notes": "controls accepts a Widget; collection accepts an optional leading filter; dependentFieldRows requires the controlling CatchField. The Section owns their geometry."
           },
           {
             "name": "navigable",
@@ -4624,13 +4645,13 @@
             "name": "message",
             "type": "string",
             "required": false,
-            "dartType": "String"
+            "dartType": "String?"
           },
           {
             "name": "actionLabel",
             "type": "string",
             "required": false,
-            "dartType": "String"
+            "dartType": "String?"
           },
           {
             "name": "onAction",
@@ -4678,6 +4699,24 @@
               "idle",
               "loading"
             ]
+          },
+          {
+            "name": "emptyTitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "emptyMessage",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "emptyIcon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
           }
         ],
         "states": [
@@ -4694,6 +4733,12 @@
           "action-loading",
           "action-disabled",
           "action-details",
+          "collection-empty",
+          "collection-populated",
+          "collection-controls",
+          "collection-loading-action",
+          "collection-disabled-action",
+          "status-module",
           "plain-section",
           "divided-field-rows",
           "divided-field-rows-full-bleed",
@@ -5127,7 +5172,8 @@
           "Divided field rows inherit a responsive interaction policy: compact single-column pages default to a rectangular full-bleed tint reaching the nearest page interaction plane, while split panes default to an inset rounded perimeter. A complete section may override this with interaction; an individual field may not. Both treatments replace adjacent divider visibility during the transition, and full-bleed keyboard focus uses one 2 px inset perimeter.",
           "Divided and contained field-row headers accept title, count, and trailing content. Field-section kickers always use the section-owned uppercase IBM Plex Mono treatment. Contained header placement is outside by default and may be inside; generic contained content-card titles remain inside by construction.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems.",
-          "Use horizontal for titled scrolling collections; footer is their last scrollable item. The collection viewport owns item sizing and laziness, while Section owns header and chrome."
+          "Use horizontal for titled scrolling collections; footer is their last scrollable item. The collection viewport owns item sizing and laziness, while Section owns header and chrome.",
+          "Host operational sections use action for one task, collection for empty/populated data with an optional command, status for passive feedback, and fieldRows for navigation. These modules share the action surface, own padding and full-width commands, and grow from content without a reserved height. Do not hand-build empty content or centered section commands. CatchAsyncBoundary retains loading, failure and retry ownership outside the shared section recipe."
         ]
       },
       "governance": {
@@ -5164,7 +5210,9 @@
           "CatchSection.content",
           "CatchSection.formRows",
           "CatchSection.dependentFieldRows",
-          "CatchSection.action"
+          "CatchSection.action",
+          "CatchSection.collection",
+          "CatchSection.status"
         ]
       },
       "surfaces": {
@@ -8662,7 +8710,7 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "One canonical app bar with closed route, identity, root and embedded-root recipes; platform typography, title-then-context hierarchy and scaled geometry.",
+      "summary": "One canonical app bar with route, identity, root, embedded-root and branded navigation recipes; workspace headers flow from their content and share an anchored title baseline, with subtitles below and width-aware parent navigation.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
@@ -8670,7 +8718,8 @@
           "CatchTopBar.route",
           "CatchTopBar.identity",
           "CatchTopBar.screen",
-          "CatchTopBar.primaryRail"
+          "CatchTopBar.primaryRail",
+          "CatchTopBar.brand"
         ]
       },
       "design": {
@@ -9753,18 +9802,18 @@
             }
           },
           {
-            "id": "catch.screen_body.master_detail_layout",
-            "symbol": "CatchMasterDetailViewport",
-            "file": "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
-            "summary": "One compact/split pane owner; adaptive construction shares the actual local-width decision with its leading builder.",
+            "id": "catch.screen_body.navigation_viewport",
+            "symbol": "CatchNavigationViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart",
+            "summary": "One navigation path presented as full-height concurrent panes or one active compact pane, based on local available width.",
             "states": [
               "compact",
-              "expanded",
-              "index-width",
-              "shared-divider",
-              "below-breakpoint",
-              "at-breakpoint",
-              "master-builder-state"
+              "two-panes",
+              "three-panes",
+              "preview-fallback",
+              "resize-state-preserved",
+              "independent-scroll",
+              "mobile-back"
             ],
             "governance": {
               "conceptRole": "member",
@@ -9776,12 +9825,12 @@
             "level": "L4",
             "roleNoun": "Viewport",
             "naming": {
-              "useCase": "MasterDetail",
+              "useCase": "Navigation",
               "comparedWith": [
                 "catch.screen_body",
                 "catch.viewport"
               ],
-              "reason": "The page-body parent owns scrolling and insets, and CatchViewport measures geometry for caller-owned content. This member arranges the index/detail panes, canonical index width and divider. Its adaptive constructor reports the same local-width split decision to the leading builder that drives pane placement, so route push versus adjacent selection cannot disagree with shell-reduced width. Explicit and adaptive selection share one pane renderer; selection and navigation stay with callers."
+              "reason": "The screen-body family owns pane geometry. Routes supply ordered levels and parent navigation; this viewport alone selects the visible suffix by local width, retaining mounted ancestor state. Desktop and mobile use the same children and navigation path."
             }
           },
           {
@@ -10057,6 +10106,144 @@
                 "catch.screen_body"
               ],
               "reason": "Internal inherited width value owned by CatchRowViewport; consumers cannot publish a fabricated row perimeter."
+            }
+          },
+          {
+            "id": "catch.screen_body.workspace_pane_scaffold",
+            "symbol": "CatchWorkspacePaneScaffold",
+            "file": "packages/catch_ui/lib/src/patterns/catch_workspace_pane_scaffold.dart",
+            "summary": "Full-height pane chrome with shared header rhythm, peer tabs and an independently scrolling body.",
+            "states": [
+              "header",
+              "peer-rail",
+              "status",
+              "text-scale-2"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Scaffold",
+            "naming": {
+              "useCase": "WorkspacePane",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Full-height pane chrome with shared header rhythm, peer tabs and an independently scrolling body. It remains a member of the canonical screen-body layout family."
+            }
+          },
+          {
+            "id": "catch.screen_body.workspace_header_group",
+            "symbol": "CatchWorkspaceHeaderLayout",
+            "file": "packages/catch_ui/lib/src/patterns/catch_workspace_header_layout.dart",
+            "summary": "Aligns visible pane headers using their measured content height, without a fixed header floor or body intrinsic sizing.",
+            "states": [
+              "content-growth",
+              "content-shrink",
+              "single-pane",
+              "hidden-ancestor",
+              "text-scale-2"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Layout",
+            "naming": {
+              "useCase": "WorkspaceHeader",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Aligns visible pane headers using their measured content height, without a fixed header floor or body intrinsic sizing."
+            }
+          },
+          {
+            "id": "catch.screen_body.workspace_header",
+            "symbol": "CatchWorkspaceHeader",
+            "file": "packages/catch_ui/lib/src/patterns/catch_workspace_header_layout.dart",
+            "summary": "Measures one pane header naturally and participates in the enclosing workspace header layout.",
+            "states": [
+              "content-growth",
+              "content-shrink",
+              "single-pane",
+              "hidden-ancestor",
+              "text-scale-2"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "Workspace",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Measures one pane header naturally and participates in the enclosing workspace header layout."
+            }
+          },
+          {
+            "id": "catch.screen_body.workspace_pane_scope",
+            "symbol": "CatchWorkspacePaneScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart",
+            "summary": "Reports local pane presentation to existing root and route scaffold recipes.",
+            "states": [
+              "single-pane",
+              "concurrent-panes"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "WorkspacePane",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Reports local pane presentation to existing root and route scaffold recipes. It remains a member of the canonical screen-body layout family."
+            }
+          },
+          {
+            "id": "catch.screen_body.workspace_back_scope",
+            "symbol": "CatchWorkspaceBackScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_workspace_back_scope.dart",
+            "summary": "Provides route-owned parent navigation to existing top bars without a second navigator.",
+            "states": [
+              "parent-back",
+              "root-fallback"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "WorkspaceBack",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Provides route-owned parent navigation to existing top bars without a second navigator. It remains a member of the canonical screen-body layout family."
             }
           }
         ],

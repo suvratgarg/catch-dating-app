@@ -1,10 +1,25 @@
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
-import {MemoryRouter} from "react-router";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {cleanup, fireEvent, render, screen, waitFor, within} from "@testing-library/react";
+import {MemoryRouter, Route, Routes} from "react-router";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import type {PublicFormQuestion} from "./publicFormModel";
+import {publicFormsCopy} from "../../content/forms";
 
 const usePublicFormController = vi.hoisted(() => vi.fn());
 vi.mock("./usePublicFormController", () => ({usePublicFormController}));
+const formApi = vi.hoisted(() => ({
+  getPublicOrganizerForm: vi.fn(), beginOrganizerFormResponse: vi.fn(),
+  saveOrganizerFormResponseDraft: vi.fn(), submitOrganizerFormResponse: vi.fn(),
+  listParticipantFormActivity: vi.fn(), watchPublicFormAuthState: vi.fn(),
+  findOrganizerFormPayment: vi.fn(),
+}));
+vi.mock("../../firebase", () => ({...formApi,
+  beginPublicEventPhoneVerification: vi.fn(), completePublicFormEmailSignIn: vi.fn(),
+  createOrganizerFormAssetIntent: vi.fn(), finalizeOrganizerFormAsset: vi.fn(),
+  promoteFormCommunicationIntent: vi.fn(), sendPublicFormEmailSignInLink: vi.fn(),
+  uploadOrganizerFormAsset: vi.fn(), withdrawOrganizerFormResponse: vi.fn(),
+  getOrganizerFormPayment: vi.fn(), prepareOrganizerFormPayment: vi.fn(),
+}));
 import {PublicFormPage} from "./PublicFormPage";
 
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
@@ -418,4 +433,229 @@ describe("previous-response chooser states", () => {
     expect(screen.queryByText("Review previous answers")).toBeNull();
     expect(screen.getByRole("button", {name: "Review answers"})).not.toBeNull();
   });
+});
+
+const displayQuestion = {...city, validation: {
+  minLength: null, maxLength: null, minNumber: null, maxNumber: null,
+  earliestDate: null, latestDate: null, minSelections: null, maxSelections: null,
+  maxFileCount: null, maxFileSizeBytes: null, allowedMimeTypes: [],
+  patternPreset: null, customError: null,
+}};
+const canonicalCity = {...displayQuestion, questionId: "home", label: "Home city",
+  kind: "shortText", options: [], canonicalFieldId: "city",
+  answerDestination: "catchProfile"} as PublicFormQuestion;
+const cityMetadata = [
+  {marketId: "in-mh-mumbai", cityId: "city-mumbai", label: "Mumbai",
+    regionName: "Maharashtra", countryIsoCode: "IN"},
+  {marketId: "in-ka-bengaluru", cityId: "city-bengaluru", label: "Bengaluru",
+    regionName: "Karnataka", countryIsoCode: "IN"},
+];
+const pace = {...displayQuestion, questionId: "pace", label: "Running pace", required: false,
+  prefillPolicy: "participantReviewRequired", options: [
+    {optionId: "easy-option", value: "pace_easy", label: "Relaxed"},
+    {optionId: "fast-option", value: "pace_fast", label: "Brisk"},
+  ]} as PublicFormQuestion;
+const interests = {...pace, questionId: "interests", label: "Activities",
+  kind: "multiChoice", options: [
+    {optionId: "walk-option", value: "walk_id", label: "Walks"},
+    {optionId: "quiz-option", value: "quiz_id", label: "Quiz nights"},
+    {optionId: "cycle-option", value: "cycle_id", label: "Cycling"},
+  ]} as PublicFormQuestion;
+const organizerCity = {...pace, questionId: "destination", label: "Event city",
+  canonicalFieldId: null, options: [
+    {optionId: "pune-option", value: "destination_pune", label: "Pune"},
+    {optionId: "delhi-option", value: "destination_delhi", label: "New Delhi"},
+  ]} as PublicFormQuestion;
+const note = {...pace, questionId: "note", label: "Your note", kind: "longText",
+  options: []} as PublicFormQuestion;
+const displaySection = {sectionId: "details", title: "Your details",
+  questions: [canonicalCity, organizerCity, pace, interests, note]};
+const displayForm = {
+  publicFormId: "display-form", formId: "form-1", versionId: "version-1",
+  availabilityStatus: "active", cityOptions: cityMetadata,
+  organizer: {organizerId: "organizer-1", name: "Demo organizer"},
+  definition: {title: "Application", identityPolicy: "emailVerified",
+    appearance: {preset: "minimal"}, sections: [displaySection], logicRules: [],
+    consent: {consentCopy: "Share my answers", retentionCopy: "Keep until withdrawal"}},
+  messagingOffer: {termsVersion: "form-whatsapp-v1",
+    organizerWhatsapp: "Organizer WhatsApp (optional)", catchWhatsapp: "Catch WhatsApp (optional)"},
+};
+const previousResponse = {sourceKind: "formResponse", sourceId: "previous-1",
+  organizerId: "organizer-1", formId: "form-1", versionId: "previous-version",
+  submittedAtMillis: 1000};
+
+function reviewAnswer(label: string) {
+  const term = screen.getByText(label, {selector: "dt"});
+  return term.nextElementSibling?.textContent;
+}
+
+function expectUncheckedMessaging() {
+  for (const name of ["Organizer WhatsApp (optional)", "Catch WhatsApp (optional)"]) {
+    const checkbox = screen.getByRole("checkbox", {name}) as HTMLInputElement;
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.required).toBe(false);
+  }
+}
+
+describe("question-aware review and reuse displays", () => {
+  beforeEach(async () => {
+    const actual = await vi.importActual<typeof import("./usePublicFormController")>(
+      "./usePublicFormController");
+    usePublicFormController.mockImplementation(actual.usePublicFormController);
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    formApi.getPublicOrganizerForm.mockResolvedValue(displayForm);
+    formApi.watchPublicFormAuthState.mockImplementation((listener) => {
+      listener({uid: "person-1"});
+      return vi.fn();
+    });
+    formApi.findOrganizerFormPayment.mockResolvedValue({payment: null});
+    formApi.beginOrganizerFormResponse.mockResolvedValue({
+      draftId: "draft-1", draftToken: null, revision: 1, form: displayForm,
+      answers: {}, consentAccepted: false, expiresAtMillis: 100000,
+    });
+    formApi.saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2,
+      expiresAtMillis: 200000});
+    formApi.submitOrganizerFormResponse.mockResolvedValue({responseId: "response-1",
+      formId: "form-1", versionId: "version-1", status: "submitted",
+      completion: {title: "Received", message: "Thank you"}});
+    formApi.listParticipantFormActivity.mockResolvedValue({items: [previousResponse],
+      nextCursor: null});
+  });
+
+  async function load() {
+    const client = new QueryClient({defaultOptions: {
+      queries: {retry: false}, mutations: {retry: false},
+    }});
+    render(<QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={["/f/display-form/"]}>
+        <Routes><Route path="/f/:publicFormId/" element={<PublicFormPage />} /></Routes>
+      </MemoryRouter>
+    </QueryClientProvider>);
+    await waitFor(() => expect(formApi.beginOrganizerFormResponse).toHaveBeenCalledOnce());
+    await screen.findByRole("button", {name: "Use answers from a previous response"});
+  }
+
+  async function review() {
+    fireEvent.click(screen.getByRole("button", {name: "Review answers"}));
+    await screen.findByRole("heading", {name: publicFormsCopy.reviewTitle});
+  }
+
+  it("keeps corrected edit/Review/Back values serialized as ids with fresh consent", async () => {
+    await load();
+    fireEvent.change(screen.getByRole("combobox", {name: "Home city"}),
+      {target: {value: "in-mh-mumbai"}});
+    fireEvent.click(screen.getByRole("button", {name: "Relaxed"}));
+    fireEvent.click(screen.getByRole("button", {name: "Walks"}));
+    fireEvent.click(screen.getByRole("button", {name: "Quiz nights"}));
+    fireEvent.change(screen.getByRole("textbox", {name: "Your note"}),
+      {target: {value: "My manual answer"}});
+    await review();
+    expect(reviewAnswer("Home city")).toBe("Mumbai, Maharashtra");
+    expect(reviewAnswer("Running pace")).toBe("Relaxed");
+    expect(reviewAnswer("Activities")).toBe("Walks, Quiz nights");
+    expect(reviewAnswer("Your note")).toBe("My manual answer");
+    expectUncheckedMessaging();
+    expect(formApi.saveOrganizerFormResponseDraft).toHaveBeenLastCalledWith(
+      expect.objectContaining({answers: {home: "in-mh-mumbai", pace: "pace_easy",
+        interests: ["walk_id", "quiz_id"], note: "My manual answer"},
+      consentAccepted: false}));
+
+    fireEvent.click(screen.getByRole("button", {name: "Back"}));
+    expect((screen.getByRole("combobox", {name: "Home city"}) as HTMLSelectElement).value)
+      .toBe("in-mh-mumbai");
+    fireEvent.change(screen.getByRole("combobox", {name: "Home city"}),
+      {target: {value: "in-ka-bengaluru"}});
+    fireEvent.click(screen.getByRole("button", {name: "Brisk"}));
+    fireEvent.click(screen.getByRole("button", {name: "Quiz nights"}));
+    fireEvent.click(screen.getByRole("button", {name: "Cycling"}));
+    await review();
+    expect(reviewAnswer("Home city")).toBe("Bengaluru, Karnataka");
+    expect(reviewAnswer("Running pace")).toBe("Brisk");
+    expect(reviewAnswer("Activities")).toBe("Walks, Cycling");
+    expectUncheckedMessaging();
+    fireEvent.click(screen.getByRole("checkbox", {name: "Share my answers"}));
+    fireEvent.click(screen.getByRole("button", {name: "Submit response"}));
+    await screen.findByRole("heading", {name: "Received"});
+    expect(formApi.saveOrganizerFormResponseDraft).toHaveBeenLastCalledWith(
+      expect.objectContaining({answers: {home: "in-ka-bengaluru", pace: "pace_fast",
+        interests: ["walk_id", "cycle_id"], note: "My manual answer"},
+      consentAccepted: true, messagingChoices: {termsVersion: "form-whatsapp-v1",
+        organizerWhatsapp: false, catchWhatsapp: false}}));
+    expect(formApi.submitOrganizerFormResponse).toHaveBeenCalledWith(
+      expect.objectContaining({draftId: "draft-1", expectedRevision: 2}));
+  });
+
+  it("previews current labels then applies stored ids without replacing manual text or consent", async () => {
+    await load();
+    fireEvent.change(screen.getByRole("combobox", {name: "Home city"}),
+      {target: {value: "in-mh-mumbai"}});
+    fireEvent.change(screen.getByRole("textbox", {name: "Your note"}),
+      {target: {value: "Keep my manual answer"}});
+    fireEvent.click(screen.getByRole("button", {name: "Use answers from a previous response"}));
+    fireEvent.change(await screen.findByRole("combobox", {name: "Previous response"}),
+      {target: {value: "previous-1"}});
+    formApi.beginOrganizerFormResponse.mockResolvedValueOnce({
+      draftId: "draft-1", draftToken: null, revision: 1, form: displayForm,
+      prefillSuggestions: {destination: "destination_pune", pace: "pace_easy",
+        interests: ["walk_id", "quiz_id"], note: "Old manual text"},
+      prefillSource: {responseId: "previous-1", versionId: "previous-version",
+        submittedAtMillis: 1000},
+    });
+    fireEvent.click(screen.getByRole("button", {name: "Review this response"}));
+    const previewCity = await screen.findByRole("checkbox", {name: "Event city"});
+    expect(screen.getByText("Pune", {selector: "dd"})).toBeTruthy();
+    expect(screen.getByText("Relaxed", {selector: "dd"})).toBeTruthy();
+    expect(screen.getByText("Walks, Quiz nights", {selector: "dd"})).toBeTruthy();
+    expect(screen.queryByRole("checkbox", {name: "Your note"})).toBeNull();
+    expect((previewCity as HTMLInputElement).checked).toBe(false);
+    expect((screen.getByRole("button", {name: "Use selected answers"}) as HTMLButtonElement)
+      .disabled).toBe(true);
+    for (const name of ["Event city", "Running pace", "Activities"]) {
+      fireEvent.click(screen.getByRole("checkbox", {name}));
+    }
+    fireEvent.click(screen.getByRole("button", {name: "Use selected answers"}));
+    expect(screen.getByRole("button", {name: "Pune"}).getAttribute("aria-pressed"))
+      .toBe("true");
+    expect(screen.getByRole("button", {name: "Relaxed"}).getAttribute("aria-pressed"))
+      .toBe("true");
+    await review();
+    expect(reviewAnswer("Event city")).toBe("Pune");
+    expect(reviewAnswer("Home city")).toBe("Mumbai, Maharashtra");
+    expect(reviewAnswer("Your note")).toBe("Keep my manual answer");
+    expectUncheckedMessaging();
+    expect((screen.getByRole("checkbox", {name: "Share my answers"}) as HTMLInputElement)
+      .checked).toBe(false);
+    expect(formApi.saveOrganizerFormResponseDraft).toHaveBeenLastCalledWith(
+      expect.objectContaining({answers: {home: "in-mh-mumbai", destination: "destination_pune",
+        pace: "pace_easy", interests: ["walk_id", "quiz_id"], note: "Keep my manual answer"},
+      consentAccepted: false, messagingChoices: {termsVersion: "form-whatsapp-v1",
+        organizerWhatsapp: false, catchWhatsapp: false}}));
+  });
+});
+
+it("renders honest review fallbacks for missing/deprecated metadata and scalar/empty answers", () => {
+  const questions = [canonicalCity, pace, interests, note,
+    {...pace, questionId: "count", label: "Count", kind: "number"},
+    {...pace, questionId: "flag", label: "Flag", kind: "boolean"},
+    {...pace, questionId: "empty", label: "Empty"},
+  ];
+  const section = {...displaySection, questions};
+  usePublicFormController.mockReturnValue({stage: "review",
+    form: {...displayForm, cityOptions: undefined,
+      definition: {...displayForm.definition, sections: [section]}},
+    visibleSections: [section], answers: {home: "in-mh-mumbai", pace: "retired_pace",
+      interests: ["walk_id", "deleted_id"], note: "pace_easy", count: 0, flag: false},
+    consentAccepted: false, messagingChoices: {organizerWhatsapp: false, catchWhatsapp: false},
+    status: {message: "", tone: ""}, pending: false,
+  });
+  const view = render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+  expect(reviewAnswer("Home city")).toBe("in-mh-mumbai");
+  expect(reviewAnswer("Running pace")).toBe("retired_pace");
+  expect(reviewAnswer("Activities")).toBe("Walks, deleted_id");
+  expect(reviewAnswer("Your note")).toBe("pace_easy");
+  expect(reviewAnswer("Count")).toBe("0");
+  expect(reviewAnswer("Flag")).toBe("No");
+  expect(reviewAnswer("Empty")).toBe("Not answered");
+  expect(within(view.container).queryByText("Relaxed", {selector: "dd"})).toBeNull();
 });

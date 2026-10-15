@@ -20,7 +20,8 @@ import {
 } from "../operations/models";
 import {
   OperationRunRepository,
-  OperationWorkItemRepository,
+  OperationWorkItemAdminReadRepository,
+  UnavailableWorkItem,
 } from "../operations/repositories";
 import {requireAdminRole} from "./adminAuth";
 import {organizerDraftOperationId} from "./organizerDraftIdentity";
@@ -35,7 +36,7 @@ const supplyIntakeStages = new Set([
 ]);
 
 type IntakeOperationsReadRepository =
-  OperationRunRepository & OperationWorkItemRepository;
+  OperationRunRepository & OperationWorkItemAdminReadRepository;
 
 interface IntakeOperationsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -79,6 +80,10 @@ export interface AdminListIntakeOperationsResponse {
   };
   runs: OperationRun[];
   workItems: OperationWorkItem[];
+  workItemPage: {
+    scannedCount: number;
+    unavailableRecords: UnavailableWorkItem[];
+  };
   organizerDraftLinks: OrganizerDraftLink[];
   nextRunCursor: string | null;
   nextWorkItemCursor: string | null;
@@ -129,7 +134,8 @@ export async function adminListIntakeOperationsHandler(
   const shadowRuns = runsPage.items.filter((run) => run.mode === "shadow");
   const selectedRunId = shadowRuns[0]?.runId ?? null;
   const workItemsPage = selectedRunId ?
-    await repository.listWorkItems({
+    await repository.listWorkItemsForAdmin({
+      allowedPrimaryStages: [...supplyIntakeStages],
       workflowId,
       runId: selectedRunId,
       primaryStage: data.primaryStage ?? undefined,
@@ -139,7 +145,7 @@ export async function adminListIntakeOperationsHandler(
       limit: data.workItemLimit ?? 200,
       cursor: data.workItemCursor ?? undefined,
     }) :
-    {items: [], nextCursor: null};
+    {items: [], nextCursor: null, scannedCount: 0, unavailableRecords: []};
   const workItems = workItemsPage.items;
   if (workItems.some((item) =>
     item.workflowId !== supplyIntakeWorkflowId ||
@@ -192,6 +198,10 @@ export async function adminListIntakeOperationsHandler(
     },
     runs: shadowRuns,
     workItems,
+    workItemPage: {
+      scannedCount: workItemsPage.scannedCount,
+      unavailableRecords: workItemsPage.unavailableRecords,
+    },
     organizerDraftLinks,
     nextRunCursor: runsPage.nextCursor,
     nextWorkItemCursor: workItemsPage.nextCursor,
@@ -350,7 +360,8 @@ function normalizePayload(value: unknown): unknown {
     lifecycleStatus: normalizeNullableString(data.lifecycleStatus),
     runStatus: normalizeNullableString(data.runStatus),
     runCursor: normalizeNullableString(data.runCursor),
-    workItemCursor: normalizeNullableString(data.workItemCursor),
+    // Document-ID cursors are opaque, including malformed IDs with spaces.
+    workItemCursor: data.workItemCursor ?? null,
   };
 }
 

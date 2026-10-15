@@ -174,6 +174,31 @@ test("list handler remains limited to action-monitor roles", async () => {
   );
 });
 
+test("Sales staff cannot use generic execution fallback", async () => {
+  const deps = {firestore: () => ({}) as FirebaseFirestore.Firestore,
+    now: () => startedAt, checkRateLimit: async () => undefined};
+  const denied = (error: unknown) =>
+    error instanceof HttpsError && error.code === "permission-denied";
+  await assert.rejects(adminRecordActionExecutionHandler(
+    request(startInput, {salesStaff: true}), deps), denied);
+  await assert.rejects(adminListActionExecutionsHandler(
+    request({}, {salesStaff: true}), deps), denied);
+});
+
+test("Owner execution retains a mixed Sales staff claim without new authority",
+  async () => {
+    const result = await adminRecordActionExecutionHandler(
+      request(startInput, {adminOwner: true, salesStaff: true}),
+      {firestore: () => ({}) as FirebaseFirestore.Firestore,
+        now: () => startedAt, checkRateLimit: async () => undefined,
+        repository: {
+          record: async (input, actor, now) =>
+            nextAdminActionExecution(null, input, actor, now),
+          list: async () => ({rows: [], nextCursor: null}),
+        }});
+    assert.deepEqual(result.execution.actorRoles, ["adminOwner", "salesStaff"]);
+  });
+
 void ({} as AdminActionExecutionRecord);
 
 function request(

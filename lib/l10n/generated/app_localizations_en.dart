@@ -23884,13 +23884,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsWorkspaceInboxTitle => 'Guest inbox';
 
   @override
-  String get programsWorkspaceLogisticsTitle => 'Logistics';
-
-  @override
-  String get programsWorkspaceLogisticsSubtitle =>
-      'Pickup points and hotels staff operate against';
-
-  @override
   String get programsWorkspacePickupTitle => 'Pickup points';
 
   @override

@@ -371,3 +371,28 @@ test("flags application queue ownership outside Audience", () => {
   assert.ok(findings.some((item) => /Audience shell branch/u.test(item.reason)));
   assert.ok(findings.some((item) => /Legacy Customers and Forms/u.test(item.reason)));
 });
+
+test("shared workspace keeps application routes in the Audience branch", () => {
+  const routeContractSource = fs.readFileSync(
+    new URL("../../lib/routing/route_contract.dart", import.meta.url), "utf8");
+  const routerSource = fs.readFileSync(
+    new URL("../../lib/routing/go_router.dart", import.meta.url), "utf8");
+  const scan = (source) => applicationRouteOwnershipFindings({
+    routeContractPath: "lib/routing/route_contract.dart", routeContractSource,
+    routerPath: "lib/routing/go_router.dart", routerSource: source,
+  });
+  assert.deepEqual(scan(routerSource), []);
+  for (const [before, after] of [
+    ["navigatorKey: keys.hostAudience", "navigatorKey: keys.hostInbox"],
+    ["workspaceRoute(Routes.hostAudienceScreen, roots[2])",
+      "workspaceRoute(Routes.hostInboxScreen, roots[2])"],
+    ["_hostWorkspaceOwner(route.path) == root", "true"],
+    ["path.startsWith('/host/audience')", "path.startsWith('/host/unowned')"],
+    ["name: Routes.hostApplicationsScreen.name", "name: Routes.hostInboxScreen.name"],
+    ["name: Routes.hostApplicationDetailScreen.name", "name: Routes.hostInboxScreen.name"],
+  ]) {
+    assert.ok(routerSource.includes(before), before);
+    assert.ok(scan(routerSource.replace(before, after)).some((item) =>
+      /Audience shell branch/u.test(item.reason)), before);
+  }
+});

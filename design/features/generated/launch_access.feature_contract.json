@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:bbde17fc7567753c7e9b89edf54292f19f4501c3da324c7722193d54f614b6a2",
-  "resolvedDigest": "sha256:cfe2555a973ed31edaf5d15c6e7221035cd611c11da4b5bdbe97ec268f986d90",
+  "resolvedDigest": "sha256:cca00f4044a5164219291131109cc10c0105f130a0ecb9743b713dc13b75979f",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -980,7 +980,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

@@ -311,6 +311,7 @@ export const adminRoleClaimKeys = [
   "support",
   "finance",
   "analyticsViewer",
+  "salesStaff",
 ] as const;
 
 export type AdminRoleClaim = typeof adminRoleClaimKeys[number];

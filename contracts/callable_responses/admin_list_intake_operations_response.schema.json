@@ -91,6 +91,76 @@
         ]
       }
     },
+    "workItemPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scannedCount",
+        "unavailableRecords"
+      ],
+      "properties": {
+        "scannedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "unavailableRecords": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "documentId",
+              "reason",
+              "issues",
+              "issuesTruncated"
+            ],
+            "properties": {
+              "documentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1500
+              },
+              "reason": {
+                "type": "string",
+                "enum": [
+                  "invalid_record",
+                  "document_id_mismatch",
+                  "scope_mismatch",
+                  "unsupported_stage"
+                ]
+              },
+              "issues": {
+                "type": "array",
+                "maxItems": 10,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "path",
+                    "code"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "code": {
+                      "type": "string",
+                      "maxLength": 80
+                    }
+                  }
+                }
+              },
+              "issuesTruncated": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
     "organizerDraftLinks": {
       "type": "array",
       "maxItems": 200,
@@ -121,6 +191,6 @@
       }
     },
     "nextRunCursor": {"type": ["string", "null"], "maxLength": 1000},
-    "nextWorkItemCursor": {"type": ["string", "null"], "maxLength": 1000}
+    "nextWorkItemCursor": {"type": ["string", "null"], "maxLength": 1500}
   }
 }

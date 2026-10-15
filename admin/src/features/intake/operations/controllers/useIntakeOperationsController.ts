@@ -15,6 +15,13 @@ import {operationNeedsHumanReview} from
 import {listIntakeOperations} from
   "../api/intakeOperationsRepository";
 
+import {
+  assertOperationReadPage,
+  mergeUnavailableOperationRecords,
+  unavailableOperationRecords,
+  type OperationInventoryResponse,
+} from "../../../../shared/operations/operationReadDiagnostics";
+
 const defaultPayload: AdminListIntakeOperationsPayload = {
   workflowId: "supply-intake",
   runLimit: 10,
@@ -29,36 +36,42 @@ type IntakeOperationsLoader = (
 export async function loadCompleteIntakeOperations(
   loader: IntakeOperationsLoader = listIntakeOperations,
   payload: AdminListIntakeOperationsPayload = defaultPayload
-): Promise<AdminListIntakeOperationsResponse> {
+): Promise<OperationInventoryResponse> {
   const first = withOrganizerDraftLinks(await loader(payload));
+  assertOperationReadPage(first);
   assertInventoryCardinality(first);
   const runId = first.runs[0]?.runId ?? null;
   if (!isWholeRunInventoryRequest(payload)) return first;
-  if (!runId || !first.nextWorkItemCursor) {
-    assertTerminalInventoryCardinality(first);
+  assertTerminalInventoryCardinality(first);
+  if (!runId) {
     assertCompleteExceptionInventory(first);
     return first;
   }
 
   const workItems = new Map(first.workItems.map((item) => [
-    item.workItemId,
-    item,
+    item.workItemId, item,
   ]));
   const organizerDraftLinks = new Map(
     organizerDraftLinksOf(first).map((link) => [link.workItemId, link])
   );
+  let unavailableRecords = unavailableOperationRecords(first);
+  const unavailableExceptions = new Set<string>();
   const seenCursors = new Set<string>();
-  let cursor: string | null = first.nextWorkItemCursor;
+  // Invalid first-page records might be exceptions. Restart the filtered
+  // query so they can be accounted for without guessing their task flags.
+  let cursor = unavailableRecords.length ? null : first.nextWorkItemCursor;
   const pageLimit = Math.ceil(
     first.summary.humanReviewCount / exceptionPageLimit
   ) + 2;
-  let pageCount = 1;
-  while (cursor && countHumanReviewItems(workItems.values()) <
-      first.summary.humanReviewCount) {
-    if (seenCursors.has(cursor) || pageCount >= pageLimit) {
+  let pageCount = 0;
+  while (countHumanReviewItems(workItems.values()) +
+      unavailableExceptions.size < first.summary.humanReviewCount) {
+    if ((!cursor && pageCount > 0) ||
+        (!cursor && unavailableRecords.length === 0)) break;
+    if ((cursor && seenCursors.has(cursor)) || pageCount >= pageLimit) {
       throw new Error("Supply Intake exception pagination did not converge.");
     }
-    seenCursors.add(cursor);
+    if (cursor) seenCursors.add(cursor);
     const page = await loader({
       ...payload,
       runId,
@@ -68,22 +81,36 @@ export async function loadCompleteIntakeOperations(
       workItemLimit: exceptionPageLimit,
     });
     assertPageForRun(page, first, runId, true);
-    for (const item of page.workItems) {
-      workItems.set(item.workItemId, item);
+    unavailableRecords = mergeUnavailableOperationRecords(
+      unavailableRecords, page
+    );
+    for (const record of page.workItemPage?.unavailableRecords ?? []) {
+      if (workItems.has(record.documentId)) {
+        throw new Error("Supply Intake document availability changed between pages.");
+      }
+      unavailableExceptions.add(record.documentId);
     }
+    for (const item of page.workItems) workItems.set(item.workItemId, item);
     for (const link of organizerDraftLinksOf(page)) {
       organizerDraftLinks.set(link.workItemId, link);
+    }
+    if (page.nextWorkItemCursor && page.nextWorkItemCursor === cursor) {
+      throw new Error("Supply Intake exception pagination did not converge.");
     }
     cursor = page.nextWorkItemCursor;
     pageCount += 1;
   }
 
-  const complete = {
+  const complete: OperationInventoryResponse = {
     ...first,
     workItems: [...workItems.values()],
     organizerDraftLinks: [...organizerDraftLinks.values()],
-    nextWorkItemCursor: workItems.size === first.summary.workItemCount ?
-      null : first.nextWorkItemCursor,
+    readInventory: {
+      unavailableRecords,
+      humanReviewUnavailableDocumentIds: [...unavailableExceptions],
+    },
+    nextWorkItemCursor: workItems.size + unavailableRecords.length ===
+      first.summary.workItemCount ? null : first.nextWorkItemCursor,
   };
   assertInventoryCardinality(complete);
   assertCompleteExceptionInventory(complete);
@@ -91,10 +118,10 @@ export async function loadCompleteIntakeOperations(
 }
 
 export async function loadNextIntakeOperationsPage(
-  current: AdminListIntakeOperationsResponse,
+  current: OperationInventoryResponse,
   loader: IntakeOperationsLoader = listIntakeOperations,
   payload: AdminListIntakeOperationsPayload = defaultPayload
-): Promise<AdminListIntakeOperationsResponse> {
+): Promise<OperationInventoryResponse> {
   const runId = current.runs[0]?.runId ?? null;
   if (!runId || !current.nextWorkItemCursor) {
     return withOrganizerDraftLinks(current);
@@ -107,10 +134,17 @@ export async function loadNextIntakeOperationsPage(
     humanReviewRequired: false,
   }));
   assertPageForRun(page, current, runId, false);
+  const unavailableRecords = mergeUnavailableOperationRecords(
+    unavailableOperationRecords(current), page
+  );
   const workItems = new Map(current.workItems.map((item) => [
-    item.workItemId,
-    item,
+    item.workItemId, item,
   ]));
+  for (const record of page.workItemPage?.unavailableRecords ?? []) {
+    if (workItems.has(record.documentId)) {
+      throw new Error("Supply Intake document availability changed between pages.");
+    }
+  }
   const organizerDraftLinks = new Map(
     organizerDraftLinksOf(current).map((link) => [link.workItemId, link])
   );
@@ -118,15 +152,18 @@ export async function loadNextIntakeOperationsPage(
   for (const link of organizerDraftLinksOf(page)) {
     organizerDraftLinks.set(link.workItemId, link);
   }
-  if (workItems.size > current.summary.workItemCount) {
+  const loadedCount = workItems.size + unavailableRecords.length;
+  if (loadedCount > current.summary.workItemCount) {
     throw new Error(
       "Supply Intake pagination exceeded its persisted run summary."
     );
   }
-  if (workItems.size < current.summary.workItemCount &&
-      (workItems.size === current.workItems.length ||
-        !page.nextWorkItemCursor ||
-        page.nextWorkItemCursor === current.nextWorkItemCursor)) {
+  if ((page.nextWorkItemCursor &&
+        page.nextWorkItemCursor === current.nextWorkItemCursor) ||
+      (!page.nextWorkItemCursor &&
+        loadedCount < current.summary.workItemCount) ||
+      (!page.workItemPage && loadedCount < current.summary.workItemCount &&
+        workItems.size === current.workItems.length)) {
     throw new Error(
       "Supply Intake pagination ended or stalled before the persisted inventory was complete."
     );
@@ -136,16 +173,22 @@ export async function loadNextIntakeOperationsPage(
     generatedAt: page.generatedAt,
     workItems: [...workItems.values()],
     organizerDraftLinks: [...organizerDraftLinks.values()],
-    nextWorkItemCursor: workItems.size === current.summary.workItemCount ?
+    readInventory: {
+      unavailableRecords,
+      humanReviewUnavailableDocumentIds:
+        current.readInventory?.humanReviewUnavailableDocumentIds ?? [],
+    },
+    nextWorkItemCursor: loadedCount === current.summary.workItemCount ?
       null : page.nextWorkItemCursor,
   };
 }
 
 function assertTerminalInventoryCardinality(
-  response: AdminListIntakeOperationsResponse
+  response: OperationInventoryResponse
 ): void {
   if (!response.nextWorkItemCursor &&
-      response.workItems.length !== response.summary.workItemCount) {
+      response.workItems.length + unavailableOperationRecords(response).length !==
+        response.summary.workItemCount) {
     throw new Error(
       "Supply Intake pagination ended before the persisted inventory was complete."
     );
@@ -153,9 +196,10 @@ function assertTerminalInventoryCardinality(
 }
 
 function assertInventoryCardinality(
-  response: AdminListIntakeOperationsResponse
+  response: OperationInventoryResponse
 ): void {
-  if (response.workItems.length > response.summary.workItemCount) {
+  if (response.workItems.length + unavailableOperationRecords(response).length >
+      response.summary.workItemCount) {
     throw new Error(
       "Supply Intake inventory exceeds its persisted run summary."
     );
@@ -163,10 +207,12 @@ function assertInventoryCardinality(
 }
 
 function assertCompleteExceptionInventory(
-  response: AdminListIntakeOperationsResponse
+  response: OperationInventoryResponse
 ): void {
   const humanReviewCount = countHumanReviewItems(response.workItems);
-  if (humanReviewCount !== response.summary.humanReviewCount) {
+  const unavailableCount =
+    response.readInventory?.humanReviewUnavailableDocumentIds.length ?? 0;
+  if (humanReviewCount + unavailableCount !== response.summary.humanReviewCount) {
     throw new Error(
       "Supply Intake exception inventory is incomplete relative to its persisted run summary."
     );
@@ -220,8 +266,8 @@ function organizerDraftLinksOf(
 }
 
 function withOrganizerDraftLinks(
-  response: AdminListIntakeOperationsResponse
-): AdminListIntakeOperationsResponse {
+  response: OperationInventoryResponse
+): OperationInventoryResponse {
   if (response.organizerDraftLinks) return response;
   return {...response, organizerDraftLinks: []};
 }
@@ -257,13 +303,13 @@ export function useIntakeOperationsController({
     mutationKey: [...queryKey, "load-more"],
     mutationFn: async () => {
       const current = queryClient.getQueryData<
-        AdminListIntakeOperationsResponse
+        OperationInventoryResponse
       >(queryKey);
       if (!current?.nextWorkItemCursor) return false;
       onError(null);
       const next = await loadNextIntakeOperationsPage(current);
       let applied = false;
-      queryClient.setQueryData<AdminListIntakeOperationsResponse>(
+      queryClient.setQueryData<OperationInventoryResponse>(
         queryKey,
         (latest) => {
           if (!latest ||

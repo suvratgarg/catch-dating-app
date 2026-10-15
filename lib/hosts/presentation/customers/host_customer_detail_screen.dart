@@ -18,7 +18,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
@@ -37,6 +37,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'host_customer_detail_body.dart';
+part 'host_customer_active_merges_section.dart';
 part 'host_customer_history_panel.dart';
 part 'host_customer_submissions_section.dart';
 
@@ -49,12 +50,14 @@ class HostCustomerDetailScreen extends ConsumerStatefulWidget {
     required this.contactId,
     this.initialDisplayName,
     this.embedded = false,
+    this.onBack,
   });
 
   final String organizerId;
   final String contactId;
   final String? initialDisplayName;
   final bool embedded;
+  final VoidCallback? onBack;
 
   @override
   ConsumerState<HostCustomerDetailScreen> createState() =>
@@ -63,6 +66,7 @@ class HostCustomerDetailScreen extends ConsumerStatefulWidget {
 
 class _HostCustomerDetailScreenState
     extends ConsumerState<HostCustomerDetailScreen> {
+  HostCustomerDetailView _selectedView = HostCustomerDetailView.overview;
   bool _openingConversation = false;
   bool _updatingCustomer = false;
 
@@ -93,9 +97,8 @@ class _HostCustomerDetailScreenState
         identityName: displayName,
         identitySemanticLabel: displayName,
         navigation: CatchTopBarNavigation(
-          mode: widget.embedded
-              ? CatchTopBarNavigationMode.none
-              : CatchTopBarNavigationMode.back,
+          mode: CatchTopBarNavigationMode.back,
+          onPressed: widget.onBack,
         ),
         actions: [
           if (detailState.value != null &&
@@ -161,111 +164,120 @@ class _HostCustomerDetailScreenState
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
+      actions: HostCustomerDetailTabBar(
+        selected: _selectedView,
+        onChanged: (view) => setState(() => _selectedView = view),
+      ),
       body: CatchRouteBody.fullBleed(
-        child: CatchSectionList.panes(
-          body: CatchPageBody.screen(
-            gutter: false,
-            child: CatchAsyncBoundary<HostAudienceContactDetail>(
-              value: detail,
-              onRetry: () => ref.invalidate(
-                hostAudienceContactDetailProvider(
-                  widget.organizerId,
-                  widget.contactId,
-                ),
+        child: CatchPageBody.screen(
+          gutter: false,
+          child: CatchAsyncBoundary<HostAudienceContactDetail>(
+            value: detail,
+            onRetry: () => ref.invalidate(
+              hostAudienceContactDetailProvider(
+                widget.organizerId,
+                widget.contactId,
               ),
-              initialLoadTimeout: null,
-              loadingBuilder: (_) => CatchSkeleton.content(
-                child: HostCustomerDetailBody(
-                  customer: hostCustomerSkeletonDetail(
-                    organizerId: widget.organizerId,
-                    contactId: widget.contactId,
-                    displayName: displayName,
-                    manualTagLabel: context.l10n.hostCustomersManualTags,
-                    noteBody: context.l10n.hostCustomersMemoryHelp,
-                  ),
-                  currentUid: currentUid,
-                  communicationPlan: null,
-                  communicationPlanLoading: true,
-                  communicationPlanFailed: false,
-                  openingConversation: false,
-                  updatingCustomer: false,
-                  onSaveDetails: _noopSaveCustomerDetails,
-                  onEditTags: _noop,
-                  onAddNote: _noop,
-                  onEditNote: (_) {},
-                  onReviewDuplicates: _noop,
-                  onMessage: _noop,
-                  onRetryCommunicationPlan: _noop,
-                  onMessagingEnabledChanged: (_) {},
-                  onOpenFormResponse: (_) {},
-                  onCall: null,
-                  onEmail: null,
-                  onOpenApplication: (_) {},
-                  onOpenContact: (_) {},
-                  onOpenRevenue: _noop,
-                  onOpenEvent: (_) {},
-                  onOpenCatchThread: (_) {},
-                  onOpenWhatsappThread: (_) {},
-                  onUndoMerge: (_) {},
+            ),
+            initialLoadTimeout: null,
+            loadingBuilder: (_) => CatchSkeleton.content(
+              child: HostCustomerDetailBody(
+                selectedView: _selectedView,
+                onOpenMemory: () => setState(
+                  () => _selectedView = HostCustomerDetailView.memory,
                 ),
-              ),
-              errorBuilder: (_, error, _, onBoundaryRetry) =>
-                  CatchLocalizedErrorState(
-                    error,
-                    context: AppErrorContext.customer,
-                    onRetry: onBoundaryRetry,
-                  ),
-              builder: (context, customer) => HostCustomerDetailBody(
-                customer: customer,
+                customer: hostCustomerSkeletonDetail(
+                  organizerId: widget.organizerId,
+                  contactId: widget.contactId,
+                  displayName: displayName,
+                  manualTagLabel: context.l10n.hostCustomersManualTags,
+                  noteBody: context.l10n.hostCustomersMemoryHelp,
+                ),
                 currentUid: currentUid,
-                communicationPlan: communicationPlanState?.value,
-                communicationPlanLoading:
-                    communicationPlanState?.isLoading ?? true,
-                communicationPlanFailed:
-                    communicationPlanState?.hasError ?? false,
-                messageActionInHeader:
-                    communicationPlanState
-                        ?.value
-                        ?.singleRecipient
-                        .recommendedRouteId !=
-                    null,
-                openingConversation: _openingConversation,
-                updatingCustomer: _updatingCustomer,
-                onSaveDetails: ({required displayName, phoneE164, email}) =>
-                    _saveCustomerDetails(
-                      customer,
-                      displayName: displayName,
-                      phoneE164: phoneE164,
-                      email: email,
-                    ),
-                onEditTags: () => _editTags(customer),
-                onAddNote: () => _editNote(customer),
-                onEditNote: (note) => _editNote(customer, note: note),
-                onReviewDuplicates: _reviewDuplicates,
-                onMessage: () =>
-                    _messageCustomer(customer, communicationPlanState?.value),
-                onRetryCommunicationPlan: _refreshCommunicationPlan,
-                onMessagingEnabledChanged: (enabled) =>
-                    _setMessagingEnabled(customer, enabled),
-                onOpenFormResponse: _openFormResponse,
-                onOpenApplication: _openApplication,
-                onOpenContact: _openCustomerContact,
-                onOpenRevenue: () => _openRevenue(customer),
-                onCall: customer.phoneE164 == null
-                    ? null
-                    : () => _openCustomerContact(
-                        Uri(scheme: 'tel', path: customer.phoneE164),
-                      ),
-                onEmail: customer.email == null
-                    ? null
-                    : () => _openCustomerContact(
-                        Uri(scheme: 'mailto', path: customer.email),
-                      ),
-                onOpenEvent: _openEvent,
-                onOpenCatchThread: _openCatchThread,
-                onOpenWhatsappThread: _openWhatsappThread,
-                onUndoMerge: _undoMerge,
+                communicationPlan: null,
+                communicationPlanLoading: true,
+                communicationPlanFailed: false,
+                openingConversation: false,
+                updatingCustomer: false,
+                onSaveDetails: _noopSaveCustomerDetails,
+                onEditTags: _noop,
+                onAddNote: _noop,
+                onEditNote: (_) {},
+                onReviewDuplicates: _noop,
+                onMessage: _noop,
+                onRetryCommunicationPlan: _noop,
+                onMessagingEnabledChanged: (_) {},
+                onOpenFormResponse: (_) {},
+                onCall: null,
+                onEmail: null,
+                onOpenApplication: (_) {},
+                onOpenContact: (_) {},
+                onOpenRevenue: _noop,
+                onOpenEvent: (_) {},
+                onOpenCatchThread: (_) {},
+                onOpenWhatsappThread: (_) {},
+                onUndoMerge: (_) {},
               ),
+            ),
+            errorBuilder: (_, error, _, onBoundaryRetry) =>
+                CatchLocalizedErrorState(
+                  error,
+                  context: AppErrorContext.customer,
+                  onRetry: onBoundaryRetry,
+                ),
+            builder: (context, customer) => HostCustomerDetailBody(
+              selectedView: _selectedView,
+              onOpenMemory: () =>
+                  setState(() => _selectedView = HostCustomerDetailView.memory),
+              customer: customer,
+              currentUid: currentUid,
+              communicationPlan: communicationPlanState?.value,
+              communicationPlanLoading:
+                  communicationPlanState?.isLoading ?? true,
+              communicationPlanFailed:
+                  communicationPlanState?.hasError ?? false,
+              messageActionInHeader:
+                  communicationPlanState
+                      ?.value
+                      ?.singleRecipient
+                      .recommendedRouteId !=
+                  null,
+              openingConversation: _openingConversation,
+              updatingCustomer: _updatingCustomer,
+              onSaveDetails: ({required displayName, phoneE164, email}) =>
+                  _saveCustomerDetails(
+                    customer,
+                    displayName: displayName,
+                    phoneE164: phoneE164,
+                    email: email,
+                  ),
+              onEditTags: () => _editTags(customer),
+              onAddNote: () => _editNote(customer),
+              onEditNote: (note) => _editNote(customer, note: note),
+              onReviewDuplicates: _reviewDuplicates,
+              onMessage: () =>
+                  _messageCustomer(customer, communicationPlanState?.value),
+              onRetryCommunicationPlan: _refreshCommunicationPlan,
+              onMessagingEnabledChanged: (enabled) =>
+                  _setMessagingEnabled(customer, enabled),
+              onOpenFormResponse: _openFormResponse,
+              onOpenApplication: _openApplication,
+              onOpenContact: _openCustomerContact,
+              onOpenRevenue: () => _openRevenue(customer),
+              onCall: customer.phoneE164 == null
+                  ? null
+                  : () => _openCustomerContact(
+                      Uri(scheme: 'tel', path: customer.phoneE164),
+                    ),
+              onEmail: customer.email == null
+                  ? null
+                  : () => _openCustomerContact(
+                      Uri(scheme: 'mailto', path: customer.email),
+                    ),
+              onOpenEvent: _openEvent,
+              onOpenCatchThread: _openCatchThread,
+              onOpenWhatsappThread: _openWhatsappThread,
+              onUndoMerge: _undoMerge,
             ),
           ),
         ),
@@ -457,7 +469,11 @@ class _HostCustomerDetailScreenState
       if (!mounted) return;
       ref.invalidate(hostCustomersDirectoryControllerProvider);
       ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
-      context.pop();
+      if (widget.onBack case final onBack?) {
+        onBack();
+      } else {
+        context.pop();
+      }
     } on Object catch (error) {
       if (mounted) {
         showCatchNoticeError(
@@ -493,6 +509,17 @@ class _HostCustomerDetailScreenState
   }
 
   void _openFormResponse(String responseId) {
+    if (widget.embedded) {
+      context.goNamed(
+        Routes.hostAudienceScreen.name,
+        queryParameters: {
+          'organizerId': widget.organizerId,
+          'contactId': widget.contactId,
+          'responseId': responseId,
+        },
+      );
+      return;
+    }
     unawaited(
       context.pushNamed(
         Routes.hostFormResponseDetailScreen.name,
@@ -503,6 +530,17 @@ class _HostCustomerDetailScreenState
   }
 
   void _openApplication(String applicationId) {
+    if (widget.embedded) {
+      context.goNamed(
+        Routes.hostAudienceScreen.name,
+        queryParameters: {
+          'organizerId': widget.organizerId,
+          'contactId': widget.contactId,
+          'applicationId': applicationId,
+        },
+      );
+      return;
+    }
     unawaited(
       context.pushNamed(
         Routes.hostApplicationDetailScreen.name,
@@ -745,42 +783,3 @@ Future<void> _noopSaveCustomerDetails({
   String? phoneE164,
   String? email,
 }) async {}
-
-class HostCustomerActiveMergesSection extends StatelessWidget {
-  const HostCustomerActiveMergesSection({
-    super.key,
-    required this.merges,
-    required this.onUndo,
-  });
-
-  final List<HostActiveContactMerge> merges;
-  final ValueChanged<HostActiveContactMerge> onUndo;
-
-  @override
-  Widget build(BuildContext context) => CatchSection.content(
-    key: const ValueKey('host-customer-active-merges'),
-    title: context.l10n.hostCustomersMergedHistory,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final (index, merge) in merges.indexed) ...[
-          Text(
-            context.l10n.hostCustomersMergedHistoryRow(
-              name: merge.sourceDisplayName,
-              count: merge.movedFactCount,
-            ),
-            style: CatchTextStyles.proseM(context),
-          ),
-          gapH8,
-          CatchButton(
-            label: context.l10n.hostCustomersUndoMerge,
-            variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
-            onPressed: () => onUndo(merge),
-          ),
-          if (index < merges.length - 1) gapH16,
-        ],
-      ],
-    ),
-  );
-}

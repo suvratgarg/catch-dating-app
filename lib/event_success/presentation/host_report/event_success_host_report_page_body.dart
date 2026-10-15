@@ -9,7 +9,6 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_empty_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -50,15 +49,21 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entries = helpSection == null && deliverySection == null
+        ? null
+        : CatchSectionList(
+            emptyStateOmitted: true,
+            mainAxisSize: MainAxisSize.min,
+            children: [?helpSection, ?deliverySection],
+          );
     if (!planIsPersisted) {
       return EventSuccessHostTabPageBody(
         embedded: embedded,
         children: [
-          ?helpSection,
-          ?deliverySection,
-          if (helpSection != null || deliverySection != null)
-            const SizedBox(height: CatchGaps.section),
-          EventSuccessReportEmptyState(
+          ?entries,
+          if (entries != null) const SizedBox(height: CatchGaps.section),
+          CatchSection.status(
+            key: const ValueKey('event-success-report-status'),
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
@@ -80,11 +85,10 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
       return EventSuccessHostTabPageBody(
         embedded: embedded,
         children: [
-          ?helpSection,
-          ?deliverySection,
-          if (helpSection != null || deliverySection != null)
-            const SizedBox(height: CatchGaps.section),
-          EventSuccessReportEmptyState(
+          ?entries,
+          if (entries != null) const SizedBox(height: CatchGaps.section),
+          CatchSection.status(
+            key: const ValueKey('event-success-report-status'),
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
@@ -123,16 +127,15 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
       return EventSuccessHostTabPageBody(
         embedded: embedded,
         children: [
-          ?helpSection,
-          ?deliverySection,
-          if (helpSection != null || deliverySection != null)
-            const SizedBox(height: CatchGaps.section),
+          ?entries,
+          if (entries != null) const SizedBox(height: CatchGaps.section),
           ...errorStates.expand((error) => [error, gapH16]),
           if (!reportFailures.any(
             (failure) =>
                 failure.retryIntent == EventSuccessHostRetryIntent.scorecard,
           ))
-            EventSuccessReportEmptyState(
+            CatchSection.status(
+              key: const ValueKey('event-success-report-status'),
               icon: CatchIcons.insightsOutlined,
               title: context
                   .l10n
@@ -158,8 +161,7 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
     return EventSuccessHostTabPageBody(
       embedded: embedded,
       children: [
-        ?helpSection,
-        ?deliverySection,
+        ?entries,
         if (helpSection != null || deliverySection != null)
           const SizedBox(height: CatchGaps.section),
         ...errorStates.expand((error) => [error, gapH16]),

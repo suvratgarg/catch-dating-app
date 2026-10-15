@@ -128,7 +128,9 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         return HostEventManageScreen(
           club: club,
           event: event,
-          onBackToSuccess: () => Navigator.of(context).maybePop(),
+          onBackToSuccess:
+              CatchWorkspaceBackScope.maybeOf(context) ??
+              () => Navigator.of(context).maybePop(),
           initialSection: initialSection,
           initialParticipantSearchQuery: initialParticipantSearchQuery,
           referenceNow: referenceNow,

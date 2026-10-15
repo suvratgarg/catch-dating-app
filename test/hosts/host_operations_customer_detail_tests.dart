@@ -392,6 +392,10 @@ void _registerHostOperationsCustomerDetailTests() {
   testWidgets('compact customer header preserves its title at large text', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(393, 852);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
     final club = buildClub(id: 'compact-header-club', ownerUserId: _hostUid);
     await _pumpHostScreen(
       tester,
@@ -624,9 +628,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ),
       'Try again after 6pm',
     );
-    await tester.tap(
-      find.byKey(const ValueKey('host-customer-save-outreach')),
-    );
+    await tester.tap(find.byKey(const ValueKey('host-customer-save-outreach')));
     await pumpFeatureUi(tester);
 
     final call = functions.calls['recordOrganizerContactOutreach']!.single;

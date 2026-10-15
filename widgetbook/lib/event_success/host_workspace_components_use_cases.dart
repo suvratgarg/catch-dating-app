@@ -6,7 +6,6 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_w
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_empty_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
@@ -134,15 +133,15 @@ Widget eventSuccessStrictReportTab(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Ready',
-  type: EventSuccessReportEmptyState,
+  type: CatchSection,
   path: '[P1 product surfaces]/Event Success/Host workspace components',
 )
-Widget previewEventSuccessReportEmptyState(BuildContext context) =>
+Widget previewEventSuccessReportStatus(BuildContext context) =>
     WidgetbookCatalogFrame(
-      title: 'EventSuccessReportEmptyState',
+      title: 'CatchSection',
       catalogId: 'Event Success Host workspace',
       children: [
-        EventSuccessReportEmptyState(
+        CatchSection.status(
           icon: CatchIcons.insightsOutlined,
           title: 'Waiting for attendee feedback',
           message: 'The report appears when attendee feedback is available.',

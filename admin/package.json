@@ -31,19 +31,19 @@
   },
   "dependencies": {
     "@catch/web-ui": "0.1.0",
-    "@tanstack/react-query": "^5.104.0",
+    "@tanstack/react-query": "^5.104.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "firebase": "^12.19.0",
-    "lucide-react": "^1.48.0",
+    "lucide-react": "^1.51.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router": "^8.4.0"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.6.0",
-    "@storybook/addon-vitest": "^10.6.0",
-    "@storybook/react-vite": "^10.6.0",
+    "@storybook/addon-a11y": "^10.6.1",
+    "@storybook/addon-vitest": "^10.6.1",
+    "@storybook/react-vite": "^10.6.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
     "@types/react": "^19.3.0",
@@ -54,7 +54,7 @@
     "playwright": "^1.63.0",
     "storybook": "^10.4.6",
     "typescript": "^6.0.3",
-    "vite": "^8.3.1",
+    "vite": "^8.3.2",
     "vitest": "^4.1.11"
   }
 }

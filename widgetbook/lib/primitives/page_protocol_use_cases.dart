@@ -189,9 +189,8 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
           page: records,
           backgroundColor: CatchTokens.of(context).bg,
         ),
-        CatchRootScreenPageSpec.masterDetail(
-          expanded: false,
-          master: CatchRootScreenPageScrollView.fullBleed(
+        CatchRootScreenPageSpec.scroll(
+          page: CatchRootScreenPageScrollView.fullBleed(
             scrollKey: const PageStorageKey<String>('protocol-detail'),
             children: [
               SliverToBoxAdapter(
@@ -202,7 +201,6 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
               ),
             ],
           ),
-          detail: const SizedBox.shrink(),
         ),
       ],
     );

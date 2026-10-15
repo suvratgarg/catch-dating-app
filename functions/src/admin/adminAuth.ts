@@ -7,6 +7,7 @@ export const ADMIN_ROLE_CLAIMS = [
   "support",
   "finance",
   "analyticsViewer",
+  "salesStaff",
 ] as const;
 
 export type AdminRoleClaim = typeof ADMIN_ROLE_CLAIMS[number];
@@ -31,10 +32,13 @@ export function adminRolesFromToken(
 /**
  * Requires an authenticated user with at least one admin role claim.
  * @param {CallableRequest<unknown>} request Callable request.
+ * @param {AdminRoleClaim[]} allowedRoles Explicitly admitted endpoint roles.
  * @return {AdminContext} Admin actor context.
  */
 export function requireAdmin(
-  request: CallableRequest<unknown>
+  request: CallableRequest<unknown>,
+  allowedRoles: readonly AdminRoleClaim[] =
+  ADMIN_ROLE_CLAIMS.filter((role) => role !== "salesStaff")
 ): AdminContext {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "You must be signed in.");
@@ -43,7 +47,7 @@ export function requireAdmin(
   const roles = adminRolesFromToken(
     request.auth.token as Record<string, unknown> | undefined
   );
-  if (roles.length === 0) {
+  if (!roles.some((role) => allowedRoles.includes(role))) {
     throw new HttpsError(
       "permission-denied",
       "This account is not authorized for Catch admin."
@@ -66,7 +70,7 @@ export function requireAdminRole(
   request: CallableRequest<unknown>,
   allowedRoles: readonly AdminRoleClaim[]
 ): AdminContext {
-  const context = requireAdmin(request);
+  const context = requireAdmin(request, allowedRoles);
   if (!context.roles.some((role) => allowedRoles.includes(role))) {
     throw new HttpsError(
       "permission-denied",

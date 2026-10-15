@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:e7180899058fc3543571b5501886d614a8c0741ef0630f2799f58958495420ea",
-  "resolvedDigest": "sha256:b931e337ee50b152e504ab2ec4ebfc88c9895d6ba7d97769d5be4b82130647d5",
+  "resolvedDigest": "sha256:c588ef9ab0433d40b93f59d2067e71fb38993d83dd93121487674fd25ca1b664",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2150,7 +2150,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

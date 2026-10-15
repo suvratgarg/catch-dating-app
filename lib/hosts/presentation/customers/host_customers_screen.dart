@@ -35,6 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -44,6 +45,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +58,7 @@ part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customer_filter_sheet.dart';
 part 'host_customers_directory.dart';
+part 'host_customers_directory_actions.dart';
 part 'host_saved_audience_editor.dart';
 part 'host_saved_audience_rule_draft.dart';
 part 'host_static_audience_members_editor.dart';
@@ -69,6 +72,8 @@ class HostCustomersScreen extends ConsumerStatefulWidget {
     this.initialOrganizerId,
     this.initialContactId,
     this.initialContactDisplayName,
+    this.responseId,
+    this.applicationId,
     this.initialView = HostAudienceView.people,
   }) : assert(
          initialView == HostAudienceView.people ||
@@ -78,6 +83,8 @@ class HostCustomersScreen extends ConsumerStatefulWidget {
   final String? initialOrganizerId;
   final String? initialContactId;
   final String? initialContactDisplayName;
+  final String? responseId;
+  final String? applicationId;
   final HostAudienceView initialView;
 
   @override
@@ -148,68 +155,58 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
-    if (uidState.hasError) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: [
-          CatchLocalizedSliverErrorState(
-            uidState.error!,
-            context: AppErrorContext.auth,
-            onRetry: () => ref.invalidate(uidProvider),
-          ),
-        ],
-      );
-    }
-    if (uidState.isLoading) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
-    }
-    if (uid == null) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: [
-          CatchSliverErrorState(
-            title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
-            message:
-                context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-            retryLabel:
-                context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
-            onRetry: () => context.go(Routes.authScreen.path),
-          ),
-        ],
-      );
-    }
-
-    final clubsAsync = ref.watch(hostOperableClubsProvider(uid));
+    final clubsAsync = uid != null && !uidState.hasError && !uidState.isLoading
+        ? ref.watch(hostOperableClubsProvider(uid))
+        : const AsyncLoading<List<Club>>();
     final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
-    if (clubsState.hasError) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: [
-          CatchLocalizedSliverErrorState(
-            clubsState.error!,
-            context: AppErrorContext.club,
-            onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
-          ),
-        ],
-      );
-    }
-    if (clubsState.isLoading) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
+    if (uidState.hasError ||
+        uidState.isLoading ||
+        uid == null ||
+        clubsState.hasError ||
+        clubsState.isLoading) {
+      return HostNavigationWorkspace.single(
+        id: 'audience',
+        child: HostAudienceStateScaffold(
+          selected: _view,
+          scrollKey: const PageStorageKey<String>('host-customers-route-state'),
+          slivers: [
+            if (uidState.hasError)
+              CatchLocalizedSliverErrorState(
+                uidState.error!,
+                context: AppErrorContext.auth,
+                onRetry: () => ref.invalidate(uidProvider),
+              )
+            else if (uidState.isLoading)
+              const CatchStateViewport.sliverLoading()
+            else if (uid == null)
+              CatchSliverErrorState(
+                title:
+                    context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+                message: context
+                    .l10n
+                    .hostsHostAuthRequiredScreenMessageSignInToManage,
+                retryLabel:
+                    context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+                onRetry: () => context.go(Routes.authScreen.path),
+              )
+            else if (clubsState.hasError)
+              CatchLocalizedSliverErrorState(
+                clubsState.error!,
+                context: AppErrorContext.club,
+                onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
+              )
+            else
+              const CatchStateViewport.sliverLoading(),
+          ],
+        ),
       );
     }
     final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
-      return HostAudienceNoOrganizerEmptyState(selected: _view);
+      return HostNavigationWorkspace.single(
+        id: 'audience',
+        child: HostAudienceNoOrganizerEmptyState(selected: _view),
+      );
     }
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final selectedClub = resolveSelectedHostOrganizer(
@@ -302,7 +299,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   summaryState.value?.smsReadiness,
                 ),
         );
-        return CatchRootScreenScaffold.withPrimaryRail(
+        final indexPane = CatchRootScreenScaffold.withPrimaryRail(
           header: CatchRootScreenHeader.custom(
             HostAudienceHeader(
               organizerId: selectedClub.id,
@@ -382,9 +379,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           body: CatchRootScreenBody.paged(
             controller: _tabController,
             pages: [
-              CatchRootScreenPageSpec.masterDetail(
-                expanded: screenSize.isExpanded,
-                master: CatchRootScreenPageScrollView.sections(
+              CatchRootScreenPageSpec.scroll(
+                page: CatchRootScreenPageScrollView.sections(
                   scrollKey: const PageStorageKey<String>(
                     'host-customers-people',
                   ),
@@ -503,9 +499,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                           ),
                       builder: (context, state) => HostCustomersDirectory(
                         state: state,
-                        selectedContactId: screenSize.isExpanded
-                            ? _selectedContactId
-                            : null,
+                        selectedContactId: _selectedContactId,
                         hasActiveQuery:
                             _search != null ||
                             effectiveFilters.isNotEmpty ||
@@ -533,18 +527,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                     ),
                   ],
                 ),
-                detail: _selectedContactId == null
-                    ? CatchEmptyState(
-                        icon: CatchIcons.personSearchOutlined,
-                        title: context.l10n.hostCustomersSelectCustomerTitle,
-                        message: context.l10n.hostCustomersSelectCustomerBody,
-                      )
-                    : HostCustomerDetailScreen(
-                        organizerId: selectedClub.id,
-                        contactId: _selectedContactId!,
-                        initialDisplayName: _selectedContactDisplayName,
-                        embedded: true,
-                      ),
               ),
               CatchRootScreenPageSpec.scroll(
                 page: HostSavedAudiencesWorkspace(
@@ -558,18 +540,76 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
             ],
           ),
         );
+        return HostNavigationWorkspace.panes(
+          onBack: _selectedContactId == null
+              ? null
+              : () => context.goNamed(
+                  Routes.hostAudienceScreen.name,
+                  queryParameters: {
+                    'organizerId': selectedClub.id,
+                    if (widget.responseId != null ||
+                        widget.applicationId != null)
+                      'contactId': _selectedContactId!,
+                  },
+                ),
+          compactPaneId: peopleView && _selectedContactId != null
+              ? widget.responseId != null || widget.applicationId != null
+                    ? 'submission'
+                    : 'person'
+              : 'audience',
+          panes: [
+            CatchWorkspacePane(id: 'audience', child: indexPane),
+            if (peopleView)
+              CatchWorkspacePane(
+                id: 'person',
+                child: _selectedContactId == null
+                    ? CatchEmptyState(
+                        icon: CatchIcons.personSearchOutlined,
+                        title: context.l10n.hostCustomersSelectCustomerTitle,
+                        message: context.l10n.hostCustomersSelectCustomerBody,
+                      )
+                    : HostCustomerDetailScreen(
+                        key: ValueKey(_selectedContactId),
+                        organizerId: selectedClub.id,
+                        contactId: _selectedContactId!,
+                        initialDisplayName: _selectedContactDisplayName,
+                        embedded: true,
+                        onBack: () => context.goNamed(
+                          Routes.hostAudienceScreen.name,
+                          queryParameters: {'organizerId': selectedClub.id},
+                        ),
+                      ),
+              ),
+            if (peopleView &&
+                _selectedContactId != null &&
+                (widget.responseId != null || widget.applicationId != null))
+              CatchWorkspacePane(
+                id: 'submission',
+                child: CatchWorkspaceBackScope(
+                  onBack: () => context.goNamed(
+                    Routes.hostAudienceScreen.name,
+                    queryParameters: {
+                      'organizerId': selectedClub.id,
+                      'contactId': _selectedContactId!,
+                    },
+                  ),
+                  child: widget.responseId != null
+                      ? HostFormResponseDetailScreen(
+                          key: ValueKey(widget.responseId),
+                          organizerId: selectedClub.id,
+                          responseId: widget.responseId!,
+                        )
+                      : HostFormResponseDetailScreen.application(
+                          key: ValueKey(widget.applicationId),
+                          organizerId: selectedClub.id,
+                          applicationId: widget.applicationId!,
+                        ),
+                ),
+              ),
+          ],
+        );
       },
     );
-  }
-
-  Future<void> _reviewDuplicates(String organizerId) async {
-    final changed = await showCatchBottomSheet<bool>(
-      context: context,
-      builder: (_) => HostContactMergeReviewSheet(organizerId: organizerId),
-    );
-    if (!mounted || changed != true) return;
-    ref.invalidate(hostCustomersDirectoryControllerProvider);
-    ref.invalidate(hostCrmSummaryProvider(organizerId));
   }
 
   void _scheduleSearch(HostAudienceView view, String value) {
@@ -607,25 +647,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
       Routes.hostAudienceScreen.name,
       queryParameters: {'view': view.name, 'organizerId': organizerId},
     );
-  }
-
-  Future<void> _openAudienceEditor(
-    Club club, {
-    HostSavedAudience? audience,
-  }) async {
-    final saved = await context.pushNamed<HostSavedAudience>(
-      audience == null
-          ? Routes.hostCreateSavedAudienceScreen.name
-          : Routes.hostSavedAudienceDetailScreen.name,
-      pathParameters: audience == null
-          ? const {}
-          : {'audienceId': audience.audienceId},
-      queryParameters: {'organizerId': club.id},
-      extra: audience,
-    );
-    if (!mounted || saved == null) return;
-    ref.invalidate(hostSavedAudiencesProvider(club.id));
-    ref.invalidate(hostAllSavedAudiencesProvider(club.id));
   }
 
   Future<void> _openFilters(
@@ -758,24 +779,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     String contactId, {
     required String displayName,
   }) {
-    if (CatchWindowSize.fromWidth(
-      (context.findRenderObject()! as RenderBox).size.width,
-    ).isExpanded) {
-      setState(() {
-        _selectedContactId = contactId;
-        _selectedContactDisplayName = displayName;
-      });
-      context.goNamed(
-        Routes.hostAudienceScreen.name,
-        queryParameters: {'organizerId': club.id, 'contactId': contactId},
-        extra: HostCustomerDetailRouteArguments(displayName: displayName),
-      );
-      return;
-    }
-    context.pushNamed(
-      Routes.hostCustomerDetailScreen.name,
-      pathParameters: {'contactId': contactId},
-      queryParameters: {'organizerId': club.id},
+    setState(() {
+      _selectedContactId = contactId;
+      _selectedContactDisplayName = displayName;
+    });
+    context.goNamed(
+      Routes.hostAudienceScreen.name,
+      queryParameters: {'organizerId': club.id, 'contactId': contactId},
       extra: HostCustomerDetailRouteArguments(displayName: displayName),
     );
   }

@@ -59,11 +59,13 @@ export function isSalesSearchWord(value: string): boolean {
 export function useSalesWorkspaceController({
   area,
   selectedOrganizerId,
+  assignedStaffOnly = false,
   onError,
   onNotice,
 }: {
   area: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
   selectedOrganizerId: string | null;
+  assignedStaffOnly?: boolean;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
@@ -132,18 +134,21 @@ export function useSalesWorkspaceController({
   const validAccountQuery = !debouncedQuery || isSalesSearchWord(debouncedQuery);
 
   const accounts = useQuery({
-    enabled: !selectedOrganizerId && (area === "hosts" || area === "research") &&
+    enabled: !selectedOrganizerId &&
+      (area === "hosts" || (!assignedStaffOnly && area === "research")) &&
       validAccountQuery,
     queryKey: ["sales", "accounts", listInput],
     queryFn: () => listSalesAccounts(listInput),
   });
   const identityMatches = useQuery({
-    enabled: area === "research" && isSalesSearchWord(debouncedIdentitySearch),
+    enabled: !assignedStaffOnly && area === "research" &&
+      isSalesSearchWord(debouncedIdentitySearch),
     queryKey: ["sales", "identity-matches", debouncedIdentitySearch],
     queryFn: () => listSalesAccounts({limit: 25, query: debouncedIdentitySearch}),
   });
   const canonicalMatches = useQuery({
-    enabled: area === "hosts" && debouncedCanonicalSearch.length >= 2,
+    enabled: !assignedStaffOnly && area === "hosts" &&
+      debouncedCanonicalSearch.length >= 2,
     queryKey: ["sales", "canonical-matches", debouncedCanonicalSearch],
     queryFn: () => searchCanonicalOrganizers(debouncedCanonicalSearch),
   });
@@ -153,7 +158,8 @@ export function useSalesWorkspaceController({
     queryFn: () => listSalesTasks({limit: 50, cursor: taskCursor, status: "open"}),
   });
   const opportunities = useQuery({
-    enabled: !selectedOrganizerId && (area === "pipeline" || area === "pilots"),
+    enabled: !selectedOrganizerId &&
+      (area === "pipeline" || (!assignedStaffOnly && area === "pilots")),
     queryKey: ["sales", "opportunities", opportunityStage, opportunityCursor],
     queryFn: () => listSalesOpportunities({
       limit: 25, cursor: opportunityCursor,
@@ -161,14 +167,15 @@ export function useSalesWorkspaceController({
     }),
   });
   const inboundIntents = useQuery({
-    enabled: area === "research" && !selectedOrganizerId,
+    enabled: !assignedStaffOnly && area === "research" && !selectedOrganizerId,
     queryKey: ["sales", "inbound", inboundCursor],
     queryFn: () => listSalesInboundIntents({
       limit: 25, cursor: inboundCursor, status: "needs_identity_review",
     }),
   });
   const customFields = useQuery({
-    enabled: area === "settings" || Boolean(selectedOrganizerId),
+    enabled: !assignedStaffOnly &&
+      (area === "settings" || Boolean(selectedOrganizerId)),
     queryKey: ["sales", "custom-fields"],
     queryFn: listSalesCustomFields,
   });

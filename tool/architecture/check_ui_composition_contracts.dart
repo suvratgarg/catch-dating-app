@@ -40,6 +40,8 @@ const _canonicalRootScreenPageScrollPath =
     'packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart';
 const _canonicalRootScreenPageOwnerPath =
     'packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart';
+const _canonicalNavigationViewportPath =
+    'packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart';
 
 const _rootScaffoldExpressions = <String>{
   'CatchRootScreenScaffold.standard',
@@ -76,7 +78,6 @@ const catchRootScreenBodyExpressions = <String>{
 const catchRootScreenPageSpecExpressions = <String>{
   'CatchRootScreenPageSpec.scroll',
   'CatchRootScreenPageSpec.surface',
-  'CatchRootScreenPageSpec.masterDetail',
 };
 
 /// Closed vocabulary shared with the screen-contract schema.
@@ -84,6 +85,7 @@ const catchRootScreenPageSpecExpressions = <String>{
 /// [test/tool/ui_composition_contracts_test.dart] rejects drift between this
 /// executable analyzer vocabulary and the JSON schema accepted by CI.
 const catchScreenLayoutOwnerExpressions = <String>{
+  'CatchNavigationViewport',
   ..._rootScaffoldExpressions,
   ..._rootScrollExpressions,
   'CatchRouteScaffold',
@@ -96,6 +98,9 @@ const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
   },
   _canonicalRootScaffoldPath: <String, Set<String>>{
     'CatchRootScreenScaffold': _rootScaffoldExpressions,
+  },
+  _canonicalNavigationViewportPath: <String, Set<String>>{
+    'CatchNavigationViewport': <String>{'CatchNavigationViewport'},
   },
   _canonicalRootScrollPath: <String, Set<String>>{
     'CatchRootScreenScrollView': _rootScrollExpressions,
@@ -132,7 +137,11 @@ const _rootScreenRoles = <String, String>{
 };
 
 const _familyExpressions = <String, Set<String>>{
-  'root': <String>{..._rootScaffoldExpressions, ..._rootScrollExpressions},
+  'root': <String>{
+    ..._rootScaffoldExpressions,
+    ..._rootScrollExpressions,
+    'CatchNavigationViewport',
+  },
   'pushed-route': <String>{'CatchRouteScaffold'},
   'media-hero': <String>{'CatchScaffold.workspace'},
   'immersive': <String>{'CatchScaffold.workspace'},
@@ -647,10 +656,7 @@ List<String> _evaluateBodyGeometryContract({
         )
         .toList();
     String? resolvePageOwnerRole(LayoutOwnerInstantiation spec) {
-      final pageArgument =
-          spec.signature == 'CatchRootScreenPageSpec.masterDetail'
-          ? spec.namedArguments['master']
-          : spec.namedArguments['page'];
+      final pageArgument = spec.namedArguments['page'];
       if (pageArgument == null) return null;
       final ownerSignature = _rootConstructorSignature(pageArgument);
       if (!_rootPageScrollRoles.containsKey(ownerSignature)) {
@@ -1464,10 +1470,7 @@ final class _StandardBodyGeometryTraversal {
     }
 
     if (catchRootScreenPageSpecExpressions.contains(signature)) {
-      final pageName = signature == 'CatchRootScreenPageSpec.masterDetail'
-          ? 'master'
-          : 'page';
-      final page = _namedArgumentExpression(arguments, pageName);
+      final page = _namedArgumentExpression(arguments, 'page');
       final pageArguments = page == null ? null : _rootArgumentList(page);
       final pageSignature = page == null
           ? null

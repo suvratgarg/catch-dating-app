@@ -31,7 +31,7 @@ export async function transferSession(auth: Auth, request: SessionRequest,
       firebase?.sign_in_provider !== "google.com" || firebase?.tenant !== undefined ||
       claims.tenant_id !== undefined || ![claims.auth_time, claims.iat, claims.exp].every(integerSeconds) ||
       Number(claims.auth_time) > Number(claims.iat) || Number(claims.iat) * 1000 > time ||
-      time - Number(claims.auth_time) * 1000 > 5 * 60 * 1000 ||
+      time - Number(claims.auth_time) * 1000 > 15 * 60 * 1000 ||
       Number(claims.exp) * 1000 <= time || Number(claims.exp) <= Number(claims.iat) ||
       Number(claims.exp) - Number(claims.iat) > 3600 || typeof result.token !== "string" ||
       result.token.length > 16384 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/u.test(result.token)) unavailable();

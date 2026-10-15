@@ -210,7 +210,7 @@
       "expression": "CatchTopBar.identity",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "backUnlessEmbedded"
+      "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_editor.dart",

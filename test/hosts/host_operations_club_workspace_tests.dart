@@ -7,7 +7,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       void expectStateChrome() {
         expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
         expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
-        expect(find.byType(NestedScrollView), findsOneWidget);
+        expect(find.byType(NestedScrollView), findsNothing);
         expect(
           find.byKey(const ValueKey('host-club-tab-rail')),
           findsOneWidget,
@@ -178,6 +178,8 @@ void _registerHostOperationsClubWorkspaceTests() {
       hero,
     );
 
+    await tester.ensureVisible(find.text('Review waitlist'));
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Review waitlist'));
     await pumpFeatureUi(tester);
     expect(find.text('Manage ${later.id}'), findsOneWidget);
@@ -353,7 +355,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(createAction, findsNothing);
     expect(find.byTooltip('Create event'), findsNothing);
     expect(
-      find.byKey(const ValueKey<String>('host-today-compact-layout')),
+      find.byKey(const ValueKey<String>('host-today-overview')),
       findsOneWidget,
     );
     expect(tester.takeException(), isNull);
@@ -390,60 +392,59 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(paragraph.didExceedMaxLines, isFalse);
   });
 
-  testWidgets(
-    'Host Today uses adjacent command and attention panes when wide',
-    (tester) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(1200, 900);
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final now = DateTime(2026, 6, 15, 12);
-      final club = buildClub(id: 'wide-today-club', ownerUserId: _hostUid);
-      final hero = buildEvent(
-        id: 'wide-hero-event',
-        clubId: club.id,
-        startTime: DateTime(2026, 6, 15, 17),
-      );
-      final later = buildEvent(
-        id: 'wide-later-event',
-        clubId: club.id,
-        startTime: DateTime(2026, 6, 16, 20),
-        waitlistedCount: 3,
-      );
+  testWidgets('Host Today retains one hierarchy on wide screens', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 900);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'wide-today-club', ownerUserId: _hostUid);
+    final hero = buildEvent(
+      id: 'wide-hero-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 15, 17),
+    );
+    final later = buildEvent(
+      id: 'wide-later-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 16, 20),
+      waitlistedCount: 3,
+    );
 
-      await _pumpHostScreen(
-        tester,
-        HostTodayScreen(now: now),
-        overrides: [
-          ..._hostClubOverrides(
-            owned: [club],
-            timelineEventsByOrganizer: {
-              club.id: [hero, later],
-            },
-          ),
-          watchEventsForClubProvider(
-            club.id,
-          ).overrideWithValue(AsyncData<List<Event>>([hero, later])),
-        ],
-      );
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: now),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          timelineEventsByOrganizer: {
+            club.id: [hero, later],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([hero, later])),
+      ],
+    );
 
-      expect(
-        find.byKey(const ValueKey<String>('host-today-wide-layout')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey<String>('host-today-primary-pane')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey<String>('host-today-attention-pane')),
-        findsOneWidget,
-      );
-      expect(find.text('Review waitlist'), findsOneWidget);
-      expect(find.text('NEXT 7 DAYS'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
+    expect(
+      find.byKey(const ValueKey<String>('host-today-wide-layout')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey<String>('host-today-primary-pane')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const ValueKey<String>('host-today-attention-pane')),
+      findsNothing,
+    );
+    expect(find.text('Review waitlist'), findsOneWidget);
+    expect(find.text('NEXT 7 DAYS'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   registerHostEventEntryTests();
 

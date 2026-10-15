@@ -423,6 +423,7 @@ void main() {
       expect(f.assignments.calls, 1);
       expect(f.functions.calls.map((call) => call.name), [
         'getProgramWorkAccess',
+        'getProgramWorkAccess',
       ]);
       expect(tester.takeException(), isNull);
     },

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_rehearsal.feature.json",
   "generatedFor": "2026-09-21",
   "sourceDigest": "sha256:3c9290b341209a7bf6d4095876550c166609a5ad2f3da3510ab69ca2c53f7efd",
-  "resolvedDigest": "sha256:2441f26ec1bfc19fdef203a8f7a935518be41dc2d69d38f417c6bcaab0532de8",
+  "resolvedDigest": "sha256:d0bdad7ef4bab2801bbd9f478231b90f74ea00aa70e77ff2211c2246156eae84",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
@@ -855,7 +855,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

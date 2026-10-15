@@ -15,11 +15,16 @@ import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
 import 'package:catch_ui/src/components/catch_top_bar_primary_button.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/components/catch_top_bar_tone.dart';
+import 'package:catch_ui/src/foundations/catch_fonts.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/patterns/catch_navigation_viewport.dart';
+import 'package:catch_ui/src/patterns/catch_workspace_back_scope.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
+
+part 'catch_top_bar_workspace_geometry.dart';
 
 /// Canonical app chrome. Recipes own typography, hierarchy and geometry.
 ///
@@ -85,6 +90,27 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
        onIdentityTap = null,
        _kind = _TopBarKind.primaryRail;
 
+  /// Branded navigation title; shares workspace geometry, retains Archivo voice.
+  const CatchTopBar.brand({
+    super.key,
+    required String this.title,
+    this.backgroundColor,
+  }) : subtitle = null,
+       leading = null,
+       navigation = const CatchTopBarNavigation(
+         mode: CatchTopBarNavigationMode.none,
+       ),
+       actions = const [],
+       tone = CatchTopBarTone.surface,
+       emphasis = CatchTopBarEmphasis.plain,
+       footer = null,
+       search = null,
+       identityName = null,
+       identitySemanticLabel = null,
+       identityPhotoUrl = null,
+       onIdentityTap = null,
+       _kind = _TopBarKind.brand;
+
   const CatchTopBar.identity({
     super.key,
     required String this.identityName,
@@ -120,7 +146,9 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   final CatchTopBarSearch? search;
 
   bool get _root =>
-      _kind == _TopBarKind.screen || _kind == _TopBarKind.primaryRail;
+      _kind == _TopBarKind.screen ||
+      _kind == _TopBarKind.primaryRail ||
+      _kind == _TopBarKind.brand;
   bool get _safeArea => _kind != _TopBarKind.primaryRail;
   EdgeInsets get _padding => _kind == _TopBarKind.primaryRail
       ? CatchInsets.primaryRailTitleBlock
@@ -157,28 +185,21 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
       _contentHeightFor(context, MediaQuery.sizeOf(context).width);
 
   double _contentHeightFor(BuildContext context, double width) {
+    final padding = _paddingFor(context);
     final target = CatchIconAction.targetExtentFor(CatchIconAction.navSize);
     final largeText = _lines(context) > 1;
     final selectorReflow = largeText && _root && leading is CatchToolbarLeading;
-    final hasLeading =
-        leading != null ||
-        switch (navigation.mode) {
-          CatchTopBarNavigationMode.none => false,
-          CatchTopBarNavigationMode.auto =>
-            Navigator.maybeOf(context)?.canPop() ?? false,
-          CatchTopBarNavigationMode.back ||
-          CatchTopBarNavigationMode.close => true,
-        };
+    final hasLeading = leading != null || _navigationVisible(context);
     final leadingSize = leading is CatchToolbarLeading
         ? (leading! as CatchToolbarLeading).toolbarSizeFor(context)
         : Size.square(target);
-    final contentWidth = math.max(1.0, width - _padding.horizontal);
+    final contentWidth = math.max(1.0, width - padding.horizontal);
     var laneWidth =
         contentWidth -
         (hasLeading && !selectorReflow
             ? leadingSize.width + CatchSpacing.s3
             : 0);
-    if (!selectorReflow && (search?.enabled ?? false)) {
+    if (!selectorReflow && !largeText && (search?.enabled ?? false)) {
       laneWidth -= CatchToolbarMetrics.targetExtent;
       if (!largeText && actions.isNotEmpty) {
         laneWidth -= CatchToolbarMetrics.gap;
@@ -194,20 +215,20 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
       laneWidth -= 36 + CatchSpacing.s2 + CatchSpacing.micro2;
     }
     laneWidth = math.max(1, laneWidth);
-    final titleHeight = _textHeight(
+    final titleHeight = _WorkspaceTopBarGeometry._textHeight(
       context,
       identityName ?? title ?? '',
-      _root
-          ? CatchTextStyles.headline(context)
-          : CatchTextStyles.titleL(context),
+      _titleStyle(context),
       laneWidth,
       maxLines: _lines(context),
     );
-    var textHeight = titleHeight;
+    var textHeight =
+        titleHeight +
+        (_workspace(context) ? _workspaceTitleMetrics(context).inset : 0);
     if (subtitle?.isNotEmpty ?? false) {
       textHeight +=
           CatchGaps.headerTitleToSubtitle +
-          _textHeight(
+          _WorkspaceTopBarGeometry._textHeight(
             context,
             subtitle!,
             CatchTextStyles.appBarSubtitle(context),
@@ -218,6 +239,13 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     if (identityName != null) {
       textHeight += CatchInsets.controlVerticalTight.vertical;
     }
+    final controlsWidth = math.max(
+      1.0,
+      contentWidth -
+          ((search?.enabled ?? false)
+              ? CatchToolbarMetrics.targetExtent + CatchToolbarMetrics.gap
+              : 0),
+    );
     if (selectorReflow) {
       final searchHeight = (search?.enabled ?? false)
           ? CatchSearchField.heightFor(
@@ -227,22 +255,19 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
           : target;
       final controlsHeight = math.max(
         leadingSize.height,
-        math.max(searchHeight, _actionsHeight(context, contentWidth)),
+        math.max(searchHeight, _actionsHeight(context, controlsWidth)),
       );
       return math.max(
-        CatchLayout.topBarHeight,
+        _workspace(context) ? 0 : CatchLayout.topBarHeight,
         (textHeight +
                 CatchToolbarMetrics.gap +
                 controlsHeight +
-                _padding.vertical)
+                padding.vertical)
             .ceilToDouble(),
       );
     }
-    var rowHeight = math.max(
-      hasLeading ? leadingSize.height : target,
-      textHeight,
-    );
-    if (search?.enabled ?? false) {
+    var rowHeight = math.max(hasLeading ? leadingSize.height : 0, textHeight);
+    if (!largeText && (search?.enabled ?? false)) {
       rowHeight = math.max(
         rowHeight,
         CatchSearchField.heightFor(
@@ -260,103 +285,31 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
         ),
       );
     }
-    var height = rowHeight + _padding.vertical;
-    if (largeText && actions.isNotEmpty) {
-      height += CatchSpacing.s2 + _actionsHeight(context, contentWidth);
+    var height = rowHeight + padding.vertical;
+    if (largeText && (actions.isNotEmpty || (search?.enabled ?? false))) {
+      height +=
+          CatchSpacing.s2 +
+          math.max(
+            _actionsHeight(context, controlsWidth),
+            (search?.enabled ?? false)
+                ? CatchSearchField.heightFor(
+                    context,
+                    visualExtent: CatchToolbarMetrics.visualExtent,
+                  )
+                : 0,
+          );
     }
-    return math.max(CatchLayout.topBarHeight, height.ceilToDouble());
-  }
-
-  double _actionsHeight(BuildContext context, double width) {
-    var height = CatchPlatformTokens.minimumInteractiveExtent;
-    final lane = math.max(
-      1.0,
-      (width - CatchSpacing.s2 * (actions.length - 1)) / actions.length,
+    return math.max(
+      _workspace(context) ? 0 : CatchLayout.topBarHeight,
+      height.ceilToDouble(),
     );
-    for (final item in actions) {
-      Widget? action = item;
-      // Accessibility wrappers do not change a control's painted size.
-      while (action is Semantics) {
-        action = action.child;
-      }
-      if (action is Text) {
-        height = math.max(
-          height,
-          _textHeight(
-            context,
-            action.data ?? action.textSpan?.toPlainText() ?? '',
-            action.style ?? DefaultTextStyle.of(context).style,
-            lane,
-            maxLines: action.maxLines,
-          ),
-        );
-      }
-      if (action is CatchTopBarPrimaryButton &&
-          !CatchWindowSize.fromWidth(
-            MediaQuery.sizeOf(context).width,
-          ).isCompact) {
-        height = math.max(
-          height,
-          CatchToolbarButton.sizeFor(context, label: action.label).height,
-        );
-      }
-      if (action is CatchButton && action.isTextAction) {
-        final tapTargetSize =
-            action.tapTargetSize ??
-            TextButtonTheme.of(context).style?.tapTargetSize ??
-            Theme.of(context).materialTapTargetSize;
-        height = math.max(height, action.minimumSize.height);
-        if (tapTargetSize == MaterialTapTargetSize.padded) {
-          height = math.max(height, kMinInteractiveDimension);
-        }
-        final padding = action.padding.resolve(Directionality.of(context));
-        final labelWidth =
-            lane -
-            padding.horizontal -
-            (action.leading == null
-                ? 0
-                : CatchPlatformTokens.minimumInteractiveExtent +
-                      action.leadingGap);
-        height = math.max(
-          height,
-          _textHeight(
-                context,
-                action.label,
-                action.textStyle ?? CatchTextStyles.labelL(context),
-                math.max(1, labelWidth),
-              ) +
-              padding.vertical,
-        );
-      }
-    }
-    return height.ceilToDouble();
-  }
-
-  static double _textHeight(
-    BuildContext context,
-    String text,
-    TextStyle style,
-    double width, {
-    int? maxLines,
-  }) {
-    final painter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
-      locale: Localizations.maybeLocaleOf(context),
-      maxLines: maxLines,
-      ellipsis: maxLines == null ? null : '…',
-    )..layout(maxWidth: width);
-    final height = painter.height;
-    painter.dispose();
-    return height;
   }
 
   @override
   State<CatchTopBar> createState() => _CatchTopBarState();
 }
 
-enum _TopBarKind { route, identity, screen, primaryRail }
+enum _TopBarKind { route, identity, screen, primaryRail, brand }
 
 class _CatchTopBarState extends State<CatchTopBar> {
   bool _searchOpen = false;
@@ -404,17 +357,14 @@ class _CatchTopBarState extends State<CatchTopBar> {
           CatchTopBarTone.overlay => Colors.transparent,
           CatchTopBarTone.page => t.bg,
         };
-    const crossAxisAlignment = CrossAxisAlignment.center;
+    final workspace = widget._workspace(context);
+    final crossAxisAlignment = workspace
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center;
     Widget? leading = widget.leading;
     if (leading == null) {
-      final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
       final type = widget.navigation.mode;
-      final wantsLeading = switch (type) {
-        CatchTopBarNavigationMode.none => false,
-        CatchTopBarNavigationMode.back ||
-        CatchTopBarNavigationMode.close => true,
-        CatchTopBarNavigationMode.auto => canPop,
-      };
+      final wantsLeading = widget._navigationVisible(context);
       if (wantsLeading) {
         final isClose = type == CatchTopBarNavigationMode.close;
         final localizations = MaterialLocalizations.of(context);
@@ -425,6 +375,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           icon: isClose ? CatchIcons.close : CatchIcons.arrowBackIosNewRounded,
           onPressed:
               widget.navigation.onPressed ??
+              CatchWorkspaceBackScope.maybeOf(context) ??
               () => Navigator.of(context).maybePop(),
         );
       }
@@ -451,6 +402,10 @@ class _CatchTopBarState extends State<CatchTopBar> {
                 child: Padding(
                   padding: CatchInsets.controlVerticalTight,
                   child: Row(
+                    crossAxisAlignment: workspace
+                        ? CrossAxisAlignment.baseline
+                        : CrossAxisAlignment.center,
+                    textBaseline: workspace ? TextBaseline.alphabetic : null,
                     children: [
                       CatchAvatar(
                         size: 36,
@@ -463,7 +418,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           identityName,
                           maxLines: CatchTopBar._lines(context),
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.titleL(context, color: t.ink),
+                          style: widget._titleStyle(context, color: t.ink),
                         ),
                       ),
                     ],
@@ -474,20 +429,42 @@ class _CatchTopBarState extends State<CatchTopBar> {
           )
         : widget.title == null || widget.title!.isEmpty
         ? const SizedBox.shrink()
+        : widget._kind == _TopBarKind.brand
+        ? Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(text: widget.title!.split(' ').first),
+                TextSpan(
+                  text: widget.title!.substring(
+                    widget.title!.split(' ').first.length,
+                  ),
+                  style: TextStyle(color: t.ink2),
+                ),
+              ],
+            ),
+            maxLines: CatchTopBar._lines(context),
+            overflow: TextOverflow.ellipsis,
+            style: widget._titleStyle(context, color: t.ink),
+          )
         : Text(
             widget.title!,
             maxLines: CatchTopBar._lines(context),
             overflow: TextOverflow.ellipsis,
-            style: widget._root
-                ? CatchTextStyles.headline(context, color: t.ink)
-                : CatchTextStyles.titleL(context, color: t.ink),
+            style: widget._titleStyle(context, color: t.ink),
           ));
 
     final titleBlock = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        body,
+        if (workspace)
+          Baseline(
+            baseline: widget._workspaceTitleMetrics(context).baseline,
+            baselineType: TextBaseline.alphabetic,
+            child: body,
+          )
+        else
+          body,
         if (widget.subtitle?.isNotEmpty ?? false) ...[
           const SizedBox(height: CatchGaps.headerTitleToSubtitle),
           Text(
@@ -503,14 +480,25 @@ class _CatchTopBarState extends State<CatchTopBar> {
     final trailing = effectiveActions.isNotEmpty
         ? CatchTopBarActionRow(actions: effectiveActions)
         : null;
-    final title = titleBlock;
+    final title = largeText && _searchEnabled
+        ? ExcludeSemantics(
+            excluding: _searchOpenEffective,
+            child: IgnorePointer(
+              ignoring: _searchOpenEffective,
+              child: Opacity(
+                opacity: _searchOpenEffective ? 0 : 1,
+                child: titleBlock,
+              ),
+            ),
+          )
+        : titleBlock;
     final height = widget._contentHeightFor(context, width);
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: height,
-          padding: widget._padding,
+          height: workspace ? null : height,
+          padding: widget._paddingFor(context),
           // The scroll divider paints inside the frame without reducing its title lane.
           foregroundDecoration: BoxDecoration(
             border: showDivider && widget.footer == null
@@ -520,7 +508,12 @@ class _CatchTopBarState extends State<CatchTopBar> {
           child: LayoutBuilder(
             builder: (context, frameConstraints) => selectorReflow
                 ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: workspace
+                        ? MainAxisSize.min
+                        : MainAxisSize.max,
+                    mainAxisAlignment: workspace
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       title,
@@ -529,7 +522,12 @@ class _CatchTopBarState extends State<CatchTopBar> {
                     ],
                   )
                 : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: workspace
+                        ? MainAxisSize.min
+                        : MainAxisSize.max,
+                    mainAxisAlignment: workspace
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
                     children: [
                       Row(
                         crossAxisAlignment: crossAxisAlignment,
@@ -541,7 +539,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           Expanded(
                             child: LayoutBuilder(
                               builder: (context, laneConstraints) {
-                                final search = _searchEnabled
+                                final search = _searchEnabled && !largeText
                                     ? widget.search
                                     : null;
                                 final searchWidget = search == null
@@ -627,14 +625,13 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           ),
                         ],
                       ),
-                      if (largeText && widget.actions.isNotEmpty) ...[
+                      if (largeText &&
+                          (widget.actions.isNotEmpty || _searchEnabled)) ...[
                         gapH8,
-                        Visibility(
-                          visible: !_searchOpenEffective,
-                          maintainSize: true,
-                          maintainState: true,
-                          maintainAnimation: true,
-                          child: Align(
+                        if (_searchEnabled)
+                          _selectorControls(null, frameConstraints.maxWidth)
+                        else
+                          Align(
                             alignment: AlignmentDirectional.centerEnd,
                             child: CatchToolbarScope(
                               child: CatchTopBarActionRow(
@@ -642,7 +639,6 @@ class _CatchTopBarState extends State<CatchTopBar> {
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ],
                   ),
@@ -691,7 +687,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
         tooltip: search.tooltip,
       );
 
-  Widget _selectorControls(Widget leading, double width) {
+  Widget _selectorControls(Widget? leading, double width) {
     final search = _searchEnabled ? widget.search : null;
     return Stack(
       alignment: Alignment.centerRight,
@@ -708,17 +704,21 @@ class _CatchTopBarState extends State<CatchTopBar> {
                   : CatchToolbarMetrics.targetExtent + CatchToolbarMetrics.gap,
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: CatchToolbarScope.selectorRow(child: leading),
+                if (leading != null)
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: CatchToolbarScope.selectorRow(child: leading),
+                    ),
                   ),
-                ),
                 if (widget.actions.isNotEmpty) ...[
                   const SizedBox(width: CatchToolbarMetrics.gap),
-                  CatchToolbarScope(
-                    child: CatchTopBarActionRow(actions: widget.actions),
+                  Flexible(
+                    child: CatchToolbarScope(
+                      child: CatchTopBarActionRow(actions: widget.actions),
+                    ),
                   ),
                 ],
               ],

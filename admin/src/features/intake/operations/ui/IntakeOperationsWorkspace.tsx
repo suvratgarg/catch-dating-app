@@ -1,4 +1,4 @@
-import {ListPlus, RefreshCw, Search} from "lucide-react";
+import {AlertTriangle, ListPlus, RefreshCw, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
 import {useAdminFeedback} from
@@ -15,11 +15,17 @@ import type {
   SupplyIntakePrimaryStage,
 } from "../../../../shared/operations/operationsTypes";
 import {
+  unavailableOperationRecordLabel,
+  unavailableOperationRecords,
+} from "../../../../shared/operations/operationReadDiagnostics";
+import {
   AdminButton,
+  AdminGuardrailList,
   AdminIntakeReviewWorkbench,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminWorkbenchNote,
+  Panel,
   SearchField,
   SelectField,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -107,6 +113,7 @@ export function IntakeOperationsPreviewWorkspace({
   const selected = data.workItems.find((item) =>
     item.workItemId === selectedId
   ) ?? null;
+  const unavailableRecords = unavailableOperationRecords(data);
   const run = selected ? data.runs.find((candidate) =>
     candidate.runId === selected.runId
   ) ?? null : null;
@@ -184,6 +191,29 @@ export function IntakeOperationsPreviewWorkspace({
   );
 
   return (
+    <>
+      {unavailableRecords.length ? (
+        <Panel title="Unavailable intake records" action="Read-only diagnostics"
+          icon={<AlertTriangle size={18} strokeWidth={1.9} />}>
+          <AdminWorkbenchNote>
+            {unavailableRecords.length} unavailable record(s). Healthy rows remain
+            inspectable. Persisted run totals include these records; their stage
+            and actions are unavailable.
+          </AdminWorkbenchNote>
+          <AdminGuardrailList>
+            {unavailableRecords.slice(0, 10).map((record) => (
+              <AdminWorkbenchNote key={record.documentId} title={record.documentId}>
+                {unavailableOperationRecordLabel(record)}
+              </AdminWorkbenchNote>
+            ))}
+          </AdminGuardrailList>
+          {unavailableRecords.length > 10 ? (
+            <AdminWorkbenchNote>
+              Showing 10 of {unavailableRecords.length} unavailable records.
+            </AdminWorkbenchNote>
+          ) : null}
+        </Panel>
+      ) : null}
       <AdminIntakeReviewWorkbench
         controls={controls}
         detail={selected ? operationDetail(selected, run?.status ?? "unknown") : null}
@@ -208,7 +238,13 @@ export function IntakeOperationsPreviewWorkspace({
             {data.runs.length} run{data.runs.length === 1 ? "" : "s"} ·{" "}
             {data.summary.humanReviewCount} exception
             {data.summary.humanReviewCount === 1 ? "" : "s"} ·{" "}
-            {data.workItems.length}/{data.summary.workItemCount}
+            {unavailableRecords.length ? (
+              <>
+                {data.workItems.length} healthy · {unavailableRecords.length}
+                {" "}unavailable · {data.workItems.length + unavailableRecords.length}
+                /{data.summary.workItemCount} accounted
+              </>
+            ) : `${data.workItems.length}/${data.summary.workItemCount}`}
           </span>
         }
         loadError={errorMessage}
@@ -230,6 +266,7 @@ export function IntakeOperationsPreviewWorkspace({
         }}
         onSelect={setSelectedId}
       />
+    </>
   );
 }
 

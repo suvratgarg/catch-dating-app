@@ -438,7 +438,8 @@ function AnswerReuseSection({controller}: {
                 question.questionId, event.target.checked)}>
               {question.label}
             </CheckboxField>}
-            answer={answerSummary(preview.answers[question.questionId])} />)}
+            answer={answerSummary(question, preview.answers[question.questionId],
+              controller.form?.cityOptions)} />)}
         </PublicFormReview>}
       {suggestions.length > 0 ? <Button type="button"
         disabled={controller.pending || !suggestions.some((question) =>
@@ -831,7 +832,8 @@ function ReviewStage({
             answer={question.kind === "file" || question.kind === "signature" ?
               (controller.answers[question.questionId] ?
                 publicFormsCopy.uploadedAnswer : publicFormsCopy.unanswered) :
-              answerSummary(controller.answers[question.questionId]) ||
+              answerSummary(question, controller.answers[question.questionId],
+                controller.form?.cityOptions) ||
                 publicFormsCopy.unanswered}
             key={question.questionId}
             label={question.label}

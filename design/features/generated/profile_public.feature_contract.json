@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_public.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:7862fb390b4220f5963c12b5a4846a7b824f750126613ffa75ffbf61fcf46b2b",
-  "resolvedDigest": "sha256:0d9ada1e47d1709a4cbdceac38a3952d099a86282aecaabdd2f7371828274aab",
+  "resolvedDigest": "sha256:f73abb6354a963de08fb473048d67ad9f2b436cef721f38c57522858dd144dbb",
   "feature": {
     "id": "feature.profile_public",
     "name": "Public Profile",
@@ -973,7 +973,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

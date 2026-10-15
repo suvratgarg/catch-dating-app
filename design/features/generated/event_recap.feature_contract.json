@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:e269308b4e0f26106555a2ebcc36b0911dc91a3df3b81cdd968e330e71d2a789",
-  "resolvedDigest": "sha256:74a38927fe55ce6d5050983e4a298f38f1f74a7bb73271211fe963c64d7e2d23",
+  "resolvedDigest": "sha256:2da9acbd02af80084a99671d3c1fc3fd7cdea90fd605c4b3c74361abfbab242a",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -954,7 +954,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

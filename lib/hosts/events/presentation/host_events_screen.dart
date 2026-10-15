@@ -252,10 +252,14 @@ class _HostEventsRouteScaffoldState
         : event.endTime.isAfter(_clockNow)
         ? 'setup'
         : 'report';
-    context.pushNamed(
-      Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': club.id, 'eventId': event.id},
-      queryParameters: {'section': section},
+    context.goNamed(
+      Routes.hostEventsScreen.name,
+      queryParameters: {
+        ...GoRouterState.of(context).uri.queryParameters,
+        'organizerId': club.id,
+        'eventId': event.id,
+        'section': section,
+      },
       extra: event,
     );
   }

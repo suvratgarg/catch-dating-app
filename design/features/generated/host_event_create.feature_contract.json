@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-15",
   "sourceDigest": "sha256:3bea06be5e17cda80fffaff6a1e320236220a5ff99084b71c5b0c11d7eaba8c8",
-  "resolvedDigest": "sha256:cd028e4ee86d6a1b469e156c192469f6dbff71f9912afb5488eccbeca544a617",
+  "resolvedDigest": "sha256:8a8e4112b4604a958eba6f8486b9d2728e1eeaf509875d8d4c8633a73a8fbd10",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4606,7 +4606,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

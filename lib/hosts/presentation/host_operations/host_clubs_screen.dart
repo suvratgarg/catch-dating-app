@@ -6,11 +6,13 @@ class HostClubsScreen extends ConsumerWidget {
     this.initialClubId,
     this.initialTab = HostClubTab.edit,
     this.initialExpandedEditField,
+    this.settingsRoute,
   });
 
   final String? initialClubId;
   final HostClubTab initialTab;
   final String? initialExpandedEditField;
+  final Routes? settingsRoute;
 
   HostClubTab get effectiveInitialTab =>
       initialExpandedEditField == null ? initialTab : HostClubTab.edit;
@@ -94,6 +96,7 @@ class HostClubsScreen extends ConsumerWidget {
             initialClubId: initialClubId,
             initialTab: selectedTab,
             initialExpandedEditField: initialExpandedEditField,
+            settingsRoute: settingsRoute,
           ),
         );
       },

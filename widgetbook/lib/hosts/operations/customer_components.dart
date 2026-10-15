@@ -1,7 +1,8 @@
+import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
@@ -155,31 +156,17 @@ Widget hostCustomerDetailOverviewComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerDetailTabs,
+  type: HostCustomerDetailTabBar,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
-Widget hostCustomerDetailTabsComponentStates(
-  BuildContext context,
-) => hostCustomersStates(
-  context,
-  detailBuilder: (customer) => HostCustomerDetailTabs(
-    overviewBuilder: (_) =>
-        HostCustomerDetailOverview(customer: customer, onOpenRevenue: () {}),
-    details: HostCustomerDetailsSection(
-      customer: customer,
-      onCall: () {},
-      onEmail: () {},
-    ),
-    memory: HostCustomerMemoryPreview(customer: customer, onOpenMemory: () {}),
-    history: HostCustomerTimelineSection(
-      customer: customer,
-      onOpenFormResponse: (_) {},
-      onOpenEvent: (_) {},
-      onOpenCatchThread: (_) {},
-      onOpenWhatsappThread: (_) {},
-    ),
-  ),
-);
+Widget hostCustomerDetailTabsComponentStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerDetailTabBar(
+        selected: HostCustomerDetailView.overview,
+        onChanged: (_) {},
+      ),
+    );
 
 @widgetbook.UseCase(
   name: 'Directory states',
@@ -379,4 +366,28 @@ Widget hostCustomerEmailHandoffSheetStates(BuildContext context) =>
       context,
       detailBuilder: (customer) =>
           HostCustomerEmailHandoffSheet(customer: customer),
+    );
+
+@widgetbook.UseCase(
+  name: 'Merged contact history',
+  type: HostCustomerActiveMergesSection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerActiveMergesSectionStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (_) => HostCustomerActiveMergesSection(
+        merges: [
+          HostActiveContactMerge(
+            mergeReceiptId: 'preview-merge',
+            sourceContactId: 'preview-contact',
+            sourceDisplayName: 'Leena',
+            evidence: const ['sameEmail'],
+            conflicts: const [],
+            movedFactCount: 3,
+            mergedAt: DateTime(2026, 10, 7),
+          ),
+        ],
+        onUndo: (_) {},
+      ),
     );

@@ -15,6 +15,7 @@ export interface AdminSetAdminUserRolesCallableResponse {
       | "support"
       | "finance"
       | "analyticsViewer"
+      | "salesStaff"
     )[];
     assignmentPath: string;
   };
@@ -25,6 +26,7 @@ export interface AdminSetAdminUserRolesCallableResponse {
     | "support"
     | "finance"
     | "analyticsViewer"
+    | "salesStaff"
   )[];
   afterRoles: (
     | "admin"
@@ -33,5 +35,6 @@ export interface AdminSetAdminUserRolesCallableResponse {
     | "support"
     | "finance"
     | "analyticsViewer"
+    | "salesStaff"
   )[];
 }

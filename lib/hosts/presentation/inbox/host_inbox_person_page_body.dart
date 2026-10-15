@@ -122,73 +122,69 @@ class HostInboxPersonPageBody extends ConsumerWidget {
         onBack: onBack,
       );
     }
-    return Column(
-      children: [
-        CatchTopBar.route(
-          title: context.l10n.hostInboxNewMessage,
-          navigation: CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-            onPressed: onBack,
-          ),
+    return CatchWorkspacePaneScaffold(
+      title: CatchTopBar.route(
+        title: context.l10n.hostInboxNewMessage,
+        navigation: CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+          onPressed: onBack,
         ),
-        Expanded(
-          child: programPages?.hasError == true
-              ? CatchLocalizedErrorState(
-                  programPages!.error!,
-                  onRetry: () => ref.invalidate(
-                    hostInboxProgramAudiencePagesProvider(
-                      organizerId,
-                      requestedProgramId!,
-                    ),
-                  ),
-                )
-              : waitingForScope && events.hasError
-              ? CatchLocalizedErrorState(
-                  events.error!,
-                  onRetry: () =>
-                      ref.invalidate(watchEventsForClubProvider(organizerId)),
-                )
-              : waitingForScope ||
-                    waitingForProgram ||
-                    inbox.isLoading ||
-                    whatsapp.isLoading
-              ? const CatchStateViewport.loading()
-              : programPages?.value?.nextCursor != null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CatchEmptyState(
-                      icon: CatchIcons.chatBubbleOutlineRounded,
-                      title: context.l10n.hostInboxSelectionUnavailable,
-                    ),
-                    CatchButton(
-                      label: programPages?.value?.error == null
-                          ? context.l10n.hostInboxMoreProgramGuests
-                          : context.l10n.sharedActionTryAgain,
-                      onPressed: programPages!.value!.loadingMore
-                          ? null
-                          : () => ref
-                                .read(
-                                  hostInboxProgramAudiencePagesProvider(
-                                    organizerId,
-                                    requestedProgramId!,
-                                  ).notifier,
-                                )
-                                .loadMore(),
-                    ),
-                  ],
-                )
-              : CatchEmptyState(
+      ),
+      body: programPages?.hasError == true
+          ? CatchLocalizedErrorState(
+              programPages!.error!,
+              onRetry: () => ref.invalidate(
+                hostInboxProgramAudiencePagesProvider(
+                  organizerId,
+                  requestedProgramId!,
+                ),
+              ),
+            )
+          : waitingForScope && events.hasError
+          ? CatchLocalizedErrorState(
+              events.error!,
+              onRetry: () =>
+                  ref.invalidate(watchEventsForClubProvider(organizerId)),
+            )
+          : waitingForScope ||
+                waitingForProgram ||
+                inbox.isLoading ||
+                whatsapp.isLoading
+          ? const CatchStateViewport.loading()
+          : programPages?.value?.nextCursor != null
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CatchEmptyState(
                   icon: CatchIcons.chatBubbleOutlineRounded,
                   title: context.l10n.hostInboxSelectionUnavailable,
-                  message:
-                      scope.isProgram &&
-                          (programPages?.value?.unlinkedGuestCount ?? 0) > 0
-                      ? context.l10n.hostInboxProgramContactsUnlinked
-                      : null,
                 ),
-        ),
-      ],
+                CatchButton(
+                  label: programPages?.value?.error == null
+                      ? context.l10n.hostInboxMoreProgramGuests
+                      : context.l10n.sharedActionTryAgain,
+                  onPressed: programPages!.value!.loadingMore
+                      ? null
+                      : () => ref
+                            .read(
+                              hostInboxProgramAudiencePagesProvider(
+                                organizerId,
+                                requestedProgramId!,
+                              ).notifier,
+                            )
+                            .loadMore(),
+                ),
+              ],
+            )
+          : CatchEmptyState(
+              icon: CatchIcons.chatBubbleOutlineRounded,
+              title: context.l10n.hostInboxSelectionUnavailable,
+              message:
+                  scope.isProgram &&
+                      (programPages?.value?.unlinkedGuestCount ?? 0) > 0
+                  ? context.l10n.hostInboxProgramContactsUnlinked
+                  : null,
+            ),
     );
   }
 }

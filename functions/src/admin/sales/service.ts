@@ -8,6 +8,8 @@ import {validateHostFinanceCloseInTransaction} from
 import type {CommercialPayload} from "../salesCommercial/types";
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
+import {assertSalesStaffAccount, assertSalesStaffScope,
+  isAssignedSalesStaff, SALES_STAFF_ACTIONS} from "./staffAccess";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateSalesAction, validateSalesRead} from "./schemas";
 import {newSalesAccount} from "./account";
@@ -202,13 +204,21 @@ export async function executeSalesAction(
   const input = payload as MutationPayload;
   const organizerId = "organizerId" in input ? input.organizerId : null;
   authorize(principal, action, organizerId);
+  if (isAssignedSalesStaff(principal) && action === "hosts.update") {
+    const patch = (input as UpdateHostPayload).patch;
+    if (Object.keys(patch).some((key) =>
+      !["summary", "nextAction"].includes(key))) {
+      throw new HttpsError("permission-denied",
+        "Owner review is required for assignment or qualification changes.");
+    }
+  }
   assertSalesFinanceAuthority(principal, action, payload);
   if (action === "imports.compensation.apply" &&
       (principal.clientId || !principal.roles.includes("adminOwner"))) {
     throw new HttpsError("permission-denied",
       "Current Admin Owner authority is required for compensation.");
   }
-  requireDelegationHooks(principal, deps);
+  requireDelegationHooks(principal, deps, true);
   const fieldId =
     "fieldId" in input ?
       input.fieldId :
@@ -225,6 +235,9 @@ export async function executeSalesAction(
     .doc(sha(`${principal.uid}\u0000${input.requestId}`));
   const timestamp = deps.now().toISOString();
   return db.runTransaction(async (tx) => {
+    if (organizerId) {
+      await assertSalesStaffAccount(db, principal, organizerId, tx);
+    }
     await deps.authorizeInTransaction?.(
       tx,
       db,
@@ -466,7 +479,7 @@ export async function executeSalesRead(
     action,
     typeof input.organizerId === "string" ? input.organizerId : null,
   );
-  requireDelegationHooks(principal, deps);
+  requireDelegationHooks(principal, deps, false);
   const db = deps.firestore();
   const organizerId =
     typeof input.organizerId === "string" ? input.organizerId : null;
@@ -478,6 +491,11 @@ export async function executeSalesRead(
     await deps.authorizeRead?.(db, principal, name, id, fieldId);
   };
   await checkCurrent(action, organizerId);
+  await assertSalesStaffScope(db, principal);
+  if (isAssignedSalesStaff(principal) && !principal.organizerIds?.length &&
+      ["hosts.search", "tasks.list", "opportunities.list"].includes(action)) {
+    return {rows: [], nextCursor: null};
+  }
   await assertSalesMaterialPrivacyOpen(db, input);
   let response: Record<string, unknown>;
   switch (action) {
@@ -615,6 +633,7 @@ export async function executeSalesRead(
     response = {...response,
       rows: await filterSalesPrivacyRows(db, response.rows)};
   } else await assertSalesMaterialPrivacyOpen(db, response);
+  await assertSalesStaffScope(db, principal);
   return response;
 }
 
@@ -1451,12 +1470,21 @@ function authorize(
   organizerId: string | null,
 ): void {
   const employee =
-    principal.roles.includes("admin") || principal.roles.includes("adminOwner");
+    principal.roles.some((role) =>
+      ["admin", "adminOwner", "salesStaff"].includes(role));
   if (!employee || !principal.uid) {
     throw new HttpsError(
       "permission-denied",
       "Current employee authority is required for Sales.",
     );
+  }
+  if (isAssignedSalesStaff(principal)) {
+    if (!(SALES_STAFF_ACTIONS as readonly string[]).includes(action) ||
+        !Array.isArray(principal.organizerIds) ||
+        principal.organizerIds.length > maxScopedOrganizers) {
+      throw new HttpsError("permission-denied",
+        "Action is outside assigned Sales staff authority.");
+    }
   }
   if (principal.clientId &&
     (action.startsWith("commercial.") ||
@@ -1499,6 +1527,7 @@ function authorize(
 function requireDelegationHooks(
   principal: SalesPrincipal,
   deps: SalesServiceDeps,
+  mutation: boolean,
 ): void {
   if (
     principal.clientId &&
@@ -1508,6 +1537,11 @@ function requireDelegationHooks(
       "permission-denied",
       "Delegated Sales authority needs a trusted fresh check.",
     );
+  }
+  if (isAssignedSalesStaff(principal) &&
+      !(mutation ? deps.authorizeInTransaction : deps.authorizeRead)) {
+    throw new HttpsError("permission-denied",
+      "Fresh Sales staff authentication is required.");
   }
 }
 

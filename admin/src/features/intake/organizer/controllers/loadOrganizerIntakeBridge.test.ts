@@ -372,6 +372,95 @@ describe("loadOrganizerIntakeBridge", () => {
       "invalid publication packet projection"
     );
   });
+
+  it("retains mixed and all-invalid page diagnostics while draining raw cursors", async () => {
+    const run = operationRun("indore-run", "indore", "2026-07-24T12:01:00.000Z");
+    const candidate = organizerWorkItem("indore", 1);
+    const packet = organizerPacketWorkItem("healthy", "indore");
+    const badA = unavailable("legacy-packet-a");
+    const badB = unavailable("legacy-packet-b");
+    const first = operationResponse({runs: [run], workItems: [candidate, packet]});
+    const summary = {...first.summary, workItemCount: 4};
+    mocks.listIntakeOperations
+      .mockResolvedValueOnce(operationResponse({runs: [run], workItems: []}))
+      .mockResolvedValueOnce({...first, summary,
+        workItemPage: {scannedCount: 3, unavailableRecords: [badA]},
+        nextWorkItemCursor: " legacy-packet-a "})
+      .mockResolvedValueOnce({...first, summary, workItems: [],
+        workItemPage: {scannedCount: 1, unavailableRecords: [badB]},
+        nextWorkItemCursor: null});
+
+    const result = await loadOrganizerIntakeBridge();
+
+    expect(result.workbench.searchCandidates.candidates).toHaveLength(1);
+    expect(result.workbench.items).toHaveLength(1);
+    expect(result.workbench.unavailableRecords).toEqual([badA, badB]);
+    expect(result.workbench.summary.reviewItems).toBeNull();
+    expect(result.workbench.summary.publicationReviewPackets).toBeUndefined();
+    expect(result.workbench.summary.publicationReviewReady).toBeUndefined();
+    expect(result.workbench.summary.publicationReviewBlockedByData).toBeUndefined();
+    expect(result.workbench.publicationReviewPackets.summary.packets).toBeNull();
+    expect(result.workbench.publicationReviewPackets.summary.published).toBeNull();
+    expect(mocks.listIntakeOperations.mock.calls[2]?.[0]).toMatchObject({
+      runId: "indore-run", workItemCursor: " legacy-packet-a ",
+    });
+  });
+
+  it("keeps an all-invalid organizer run explicitly unavailable", async () => {
+    const run = operationRun("indore-run", "indore", "2026-07-24T12:01:00.000Z");
+    const bad = unavailable("legacy-packet");
+    const inventory = operationResponse({runs: [run], workItems: []});
+    mocks.listIntakeOperations
+      .mockResolvedValueOnce(inventory)
+      .mockResolvedValueOnce({...inventory,
+        summary: {...inventory.summary, workItemCount: 1},
+        workItemPage: {scannedCount: 1, unavailableRecords: [bad]}});
+
+    const result = await loadOrganizerIntakeBridge();
+    expect(result.workbench.items).toEqual([]);
+    expect(result.workbench.unavailableRecords).toEqual([bad]);
+    expect(result.workbench.publicationReviewPackets.summary.packets).toBeNull();
+    expect(result.availability.publicationPackets).toBe(false);
+  });
+
+  it.each(["cursor", "run", "summary", "empty scan"])(
+    "rejects organizer %s drift instead of discarding unavailable diagnostics", async (drift) => {
+      const run = operationRun("indore-run", "indore", "2026-07-24T12:01:00.000Z");
+      const inventory = operationResponse({runs: [run], workItems: []});
+      const first = {...inventory, summary: {...inventory.summary, workItemCount: 2},
+        workItemPage: {scannedCount: 1, unavailableRecords: [unavailable("bad-1")]},
+        nextWorkItemCursor: "bad-1"};
+      const next = {...first,
+        workItemPage: {scannedCount: 1, unavailableRecords: [unavailable("bad-2")]},
+        nextWorkItemCursor: null as string | null};
+      if (drift === "cursor") next.nextWorkItemCursor = "bad-1";
+      if (drift === "run") next.runs = [{...run, runId: "other-run"}];
+      if (drift === "summary") next.summary = {...next.summary, workItemCount: 3};
+      if (drift === "empty scan") {
+        next.workItemPage = {scannedCount: 0, unavailableRecords: []};
+        next.nextWorkItemCursor = "bad-2";
+      }
+      mocks.listIntakeOperations
+        .mockResolvedValueOnce(inventory)
+        .mockResolvedValueOnce(first)
+        .mockResolvedValueOnce(next);
+      await expect(loadOrganizerIntakeBridge()).rejects.toThrow();
+    }
+  );
+
+  it("propagates query failures even after an unavailable page", async () => {
+    const run = operationRun("indore-run", "indore", "2026-07-24T12:01:00.000Z");
+    const inventory = operationResponse({runs: [run], workItems: []});
+    const failure = new Error("transport unavailable");
+    mocks.listIntakeOperations
+      .mockResolvedValueOnce(inventory)
+      .mockResolvedValueOnce({...inventory,
+        workItemPage: {scannedCount: 1, unavailableRecords: [unavailable("bad")]},
+        nextWorkItemCursor: "bad"})
+      .mockRejectedValueOnce(failure);
+    await expect(loadOrganizerIntakeBridge()).rejects.toBe(failure);
+  });
+
 });
 
 function operationRun(runId: string, market: string, updatedAt: string) {
@@ -577,4 +666,11 @@ function operationResponse({
     nextRunCursor: null,
     nextWorkItemCursor: null,
   };
+}
+
+
+function unavailable(documentId: string) {
+  return {documentId, reason: "invalid_record" as const,
+    issues: [{path: "/normalizedPayload/intake/packet/publicPresence",
+      code: "required"}], issuesTruncated: false};
 }

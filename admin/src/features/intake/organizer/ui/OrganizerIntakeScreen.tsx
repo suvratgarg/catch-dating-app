@@ -1,12 +1,17 @@
+import {AlertTriangle} from "lucide-react";
 import {lazy, Suspense, useState} from "react";
 import {useNavigate} from "react-router";
 
 import {
   AdminButton,
+  AdminGuardrailList,
   AdminIntakeReviewWorkbench,
   AdminToolbar,
   AdminWorkbenchNote,
+  Panel,
 } from "../../../../shared/ui/AdminPrimitives";
+import {unavailableOperationRecordLabel} from
+  "../../../../shared/operations/operationReadDiagnostics";
 import {useAdminFeedback} from
   "../../../../shared/feedback/AdminFeedbackContext";
 import {
@@ -65,24 +70,31 @@ export function OrganizerIntakeWorkspace({
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   if (!showDiagnostics) {
     return (
-      <organizerIntakeWorkbench.OrganizerTaskWorkbench
-        controller={controller}
-        nowMs={nowMs}
-        onShowDiagnostics={() => setShowDiagnostics(true)}
-      />
+      <>
+        <OrganizerUnavailableRecords controller={controller} />
+        <organizerIntakeWorkbench.OrganizerTaskWorkbench
+          controller={controller}
+          nowMs={nowMs}
+          onShowDiagnostics={() => setShowDiagnostics(true)}
+        />
+      </>
     );
   }
   if (!controller.diagnosticsBridge) {
     return (
-      <organizerIntakeWorkbench.OrganizerTaskWorkbench
-        controller={controller}
-        nowMs={nowMs}
-        onShowDiagnostics={() => setShowDiagnostics(false)}
-      />
+      <>
+        <OrganizerUnavailableRecords controller={controller} />
+        <organizerIntakeWorkbench.OrganizerTaskWorkbench
+          controller={controller}
+          nowMs={nowMs}
+          onShowDiagnostics={() => setShowDiagnostics(false)}
+        />
+      </>
     );
   }
   return (
     <>
+      <OrganizerUnavailableRecords controller={controller} />
       <AdminToolbar>
         <AdminWorkbenchNote>
           Diagnostics preserves generated pipeline, policy, crawl, curation,
@@ -99,5 +111,34 @@ export function OrganizerIntakeWorkspace({
         />
       </Suspense>
     </>
+  );
+}
+
+function OrganizerUnavailableRecords({controller}: {
+  controller: OrganizerIntakeController;
+}) {
+  const records = controller.bridge.unavailableRecords ?? [];
+  if (!records.length) return null;
+  return (
+    <Panel title="Unavailable intake records" action="Read-only diagnostics"
+      icon={<AlertTriangle size={18} strokeWidth={1.9} />}>
+      <AdminWorkbenchNote>
+        {records.length} unavailable record(s) in the selected organizer runs.
+        Healthy rows remain inspectable. Queue counts cover healthy rows;
+        publication totals are unavailable while records cannot be read.
+      </AdminWorkbenchNote>
+      <AdminGuardrailList>
+        {records.slice(0, 10).map((record) => (
+          <AdminWorkbenchNote key={record.documentId} title={record.documentId}>
+            {unavailableOperationRecordLabel(record)}
+          </AdminWorkbenchNote>
+        ))}
+      </AdminGuardrailList>
+      {records.length > 10 ? (
+        <AdminWorkbenchNote>
+          Showing 10 of {records.length} unavailable records.
+        </AdminWorkbenchNote>
+      ) : null}
+    </Panel>
   );
 }

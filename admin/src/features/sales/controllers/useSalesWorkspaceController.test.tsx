@@ -80,6 +80,43 @@ describe("useSalesWorkspaceController", () => {
     }));
   });
 
+  it("does not start global identity, inbound, canonical, or field queries for assigned staff", async () => {
+    const hostsHarness = createQueryHarness();
+    const hosts = renderHook(() => useSalesWorkspaceController({
+      area: "hosts", selectedOrganizerId: null, assignedStaffOnly: true,
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: hostsHarness.wrapper});
+    await waitFor(() => expect(hosts.result.current.accounts.data?.rows)
+      .toHaveLength(1));
+    act(() => hosts.result.current.setCanonicalSearch("Sample"));
+    await act(async () => new Promise((resolve) => window.setTimeout(resolve, 300)));
+    expect(repository.searchCanonicalOrganizers).not.toHaveBeenCalled();
+    hosts.unmount();
+
+    const researchHarness = createQueryHarness();
+    const research = renderHook(() => useSalesWorkspaceController({
+      area: "research", selectedOrganizerId: null, assignedStaffOnly: true,
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: researchHarness.wrapper});
+    act(() => research.result.current.setIdentitySearch("Sample"));
+    await act(async () => new Promise((resolve) => window.setTimeout(resolve, 300)));
+    expect(repository.listSalesInboundIntents).not.toHaveBeenCalled();
+    expect(repository.listSalesAccounts).toHaveBeenCalledTimes(1);
+    research.unmount();
+
+    repository.getSalesAccount.mockResolvedValue({
+      account: {organizerId: "host-one"}, organizerSummary: {},
+      activities: [], opportunities: [], tasks: [],
+    });
+    const detailHarness = createQueryHarness();
+    const detail = renderHook(() => useSalesWorkspaceController({
+      area: "hosts", selectedOrganizerId: "host-one", assignedStaffOnly: true,
+      onError: vi.fn(), onNotice: vi.fn(),
+    }), {wrapper: detailHarness.wrapper});
+    await waitFor(() => expect(detail.result.current.detail.isSuccess).toBe(true));
+    expect(repository.listSalesCustomFields).not.toHaveBeenCalled();
+  });
+
   it("reuses the request ID after an uncertain failure and reports no success", async () => {
     const {wrapper} = createQueryHarness();
     const onError = vi.fn();

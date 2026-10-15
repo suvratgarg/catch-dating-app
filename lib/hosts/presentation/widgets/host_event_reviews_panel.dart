@@ -22,24 +22,44 @@ class HostEventReviewsPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reviewsAsync = ref.watch(watchReviewsForEventProvider(eventId));
-    return CatchSection.plain(
-      title: context.l10n.hostsHostEventReviewsTitlePublicReviews,
-      subtitle: context.l10n.hostsHostEventReviewsSubtitlePublicResponse,
-      child: CatchAsyncBoundary<List<Review>>(
-        value: reviewsAsync,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchReviewsForEventProvider(eventId)),
-        builder: (context, reviews) => ReviewsPreviewSection(
-          reviews: reviews,
-          currentUid: null,
-          maxVisibleReviews: 5,
-          showAllAction: reviews.length > 5,
-          showHeader: false,
-          emptyPresentation: ReviewsEmptyPresentation.inline,
-          emptyMessage: context.l10n.hostsHostEventReviewsMessageEmpty,
-          onRespondToReview: (review) =>
-              showReviewResponseSheet(context: context, review: review),
+    final title = context.l10n.hostsHostEventReviewsTitlePublicReviews;
+    final message = context.l10n.hostsHostEventReviewsSubtitlePublicResponse;
+    return CatchAsyncBoundary<List<Review>>(
+      value: reviewsAsync,
+      errorContext: AppErrorContext.event,
+      onRetry: () => ref.invalidate(watchReviewsForEventProvider(eventId)),
+      loadingBuilder: (_) => CatchSection.status(
+        title: title,
+        message: message,
+        meta: const CatchLoadingIndicator(),
+      ),
+      errorBuilder: (_, error, _, retry) => CatchSection.action(
+        title: title,
+        message: appErrorMessage(
+          error,
+          l10n: context.l10n,
+          context: AppErrorContext.event,
         ),
+        actionLabel: context.l10n.sharedActionTryAgain,
+        actionEmphasis: CatchSectionEmphasis.secondary,
+        onAction: retry,
+      ),
+      builder: (context, reviews) => CatchSection.collection(
+        title: title,
+        message: message,
+        emptyMessage: context.l10n.hostsHostEventReviewsMessageEmpty,
+        children: [
+          if (reviews.isNotEmpty)
+            ReviewsPreviewSection(
+              reviews: reviews,
+              currentUid: null,
+              maxVisibleReviews: 5,
+              showAllAction: reviews.length > 5,
+              showHeader: false,
+              onRespondToReview: (review) =>
+                  showReviewResponseSheet(context: context, review: review),
+            ),
+        ],
       ),
     );
   }

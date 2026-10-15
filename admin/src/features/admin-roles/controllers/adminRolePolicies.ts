@@ -12,6 +12,13 @@ export interface AdminRolePolicy {
 }
 
 export const adminRolePolicies: Record<AdminRoleClaim, AdminRolePolicy> = {
+  salesStaff: {
+    role: "salesStaff",
+    label: "Assigned Sales staff",
+    capability: "Private Sales work on currently assigned accounts only. No owner, provider, publishing or sending authority.",
+    risk: "standard",
+    confirmationRequired: true,
+  },
   admin: {
     role: "admin",
     label: "Admin operator",

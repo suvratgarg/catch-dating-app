@@ -305,9 +305,13 @@ export function applicationRouteOwnershipFindings({
   const applicationsRoute = "name: Routes.hostApplicationsScreen.name";
   const applicationDetailRoute =
     "name: Routes.hostApplicationDetailScreen.name";
+  const audienceBranch = /StatefulShellBranch\(\s*navigatorKey:\s*keys\.hostAudience,\s*observers:\s*\[AnalyticsRouteObserver\(analytics\)\],\s*routes:\s*\[workspaceRoute\(Routes\.hostAudienceScreen,\s*roots\[2\]\)\],\s*\)/u;
+  const ownedDestinationMount = /routes:\s*\[\s*rootRoute,\s*\.\.\.routes\.where\(\(route\)\s*=>\s*_hostWorkspaceOwner\(route\.path\)\s*==\s*root\),\s*\]/u;
+  const audiencePathOwner = /if\s*\(path\.startsWith\('\/host\/audience'\)[\s\S]{0,180}?\)\s*\{\s*return Routes\.hostAudienceScreen;/u;
   const audienceOwnsBothRoutes =
-    routerSource.includes("navigatorKey: keys.hostAudience") &&
-    routerSource.includes("_hostAudienceRoute(keys)") &&
+    audienceBranch.test(routerSource) &&
+    ownedDestinationMount.test(routerSource) &&
+    audiencePathOwner.test(routerSource) &&
     routerSource.includes(applicationsRoute) &&
     routerSource.includes(applicationDetailRoute) &&
     !routerSource.includes("navigatorKey: keys.hostForms");

@@ -854,7 +854,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       onOpenSettingsRoute(route, widget.club.id);
       return;
     }
-    context.pushNamed(route.name, queryParameters: {'clubId': widget.club.id});
+    openHostOrganizerSetting(context, route, widget.club.id);
   }
 }
 

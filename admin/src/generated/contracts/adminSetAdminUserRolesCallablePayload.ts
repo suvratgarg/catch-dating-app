@@ -11,6 +11,7 @@ export interface AdminSetAdminUserRolesCallablePayload {
     | "support"
     | "finance"
     | "analyticsViewer"
+    | "salesStaff"
   )[];
   note: string;
 }

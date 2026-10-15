@@ -12,6 +12,7 @@ import {
   operationRuleProposal,
   operationRun,
   operationWorkItem,
+  organizerPublicationPacketWorkItem,
 } from "./testFixtures";
 import {
   validateOperationActionReceipt,
@@ -201,3 +202,34 @@ test("human review signals require the queryable task flag", () => {
       issue.code === "human_review_task_flag_required"));
   }
 });
+
+test("packet required nulls reject absent or malformed fields",
+  () => {
+    const healthy = organizerPublicationPacketWorkItem();
+    const validate = (item: ReturnType<typeof operationWorkItem>) =>
+      validateOperationWorkItem(item);
+    assert.equal(validate(healthy).ok, true);
+    const variants: Array<[string, string, unknown]> = [
+      ["publicPresence", "publishStatus", undefined],
+      ["publicPresence", "publishStatus", null],
+      ["publicPresence", "publishStatus", 42],
+      ["publicPresence", "indexStatus", ""],
+      ["publicPresence", "canonicalPath", undefined],
+      ["publicPresence", "claimTargetPath", undefined],
+      ["adminDecision", "currentDecision", undefined],
+      ["adminDecision", "currentDecision", {
+        decision: "hold", decidedAt: "2026-07-14T08:00:00.000Z",
+        appVisibility: "hidden",
+      }],
+    ];
+    for (const [group, field, value] of variants) {
+      const item = structuredClone(healthy);
+      const packet = (item.normalizedPayload.intake as {
+        packet: Record<string, Record<string, unknown>>;
+      }).packet;
+      if (value === undefined) delete packet[group][field];
+      else packet[group][field] = value;
+      assert.equal(validate(item).ok, false, `${group}.${field}`);
+    }
+    assert.deepEqual(healthy, organizerPublicationPacketWorkItem());
+  });

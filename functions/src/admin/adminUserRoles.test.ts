@@ -278,6 +278,18 @@ test("normalizeListAdminRoleAssignmentsPayload bounds status and limit", () => {
   );
 });
 
+test("Sales staff role assignment remains Owner-only", async () => {
+  assert.deepEqual(normalizeSetAdminUserRolesPayload({targetUid: "staff_1",
+    roles: ["salesStaff"], note: "Assigned account work only"}),
+  {targetUid: "staff_1", roles: ["salesStaff"],
+    note: "Assigned account work only"});
+  await assert.rejects(adminSetAdminUserRolesHandler(request({
+    targetUid: "staff_1",
+    roles: ["adminOwner"], note: "Attempted escalation"}, {salesStaff: true}),
+  deps(new FakeAuth({}), new FakeFirestore())),
+  (error) => error instanceof HttpsError && error.code === "permission-denied");
+});
+
 test("adminGetAdminUserRolesHandler returns Catch admin roles", async () => {
   const auth = new FakeAuth({
     support_1: {

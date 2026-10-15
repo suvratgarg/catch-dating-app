@@ -8565,6 +8565,33 @@
       "decidedBy": "owner-approved -> codex",
       "date": "2026-09-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:host-operational-section-composition",
+      "patternFamilyId": "host-operational-section-composition",
+      "decision": "unify-feature-composition",
+      "members": [
+        {
+          "name": "CatchSection",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessReportEmptyState",
+          "action": "discard"
+        },
+        {
+          "name": "EventAssistanceHelpEntrySection",
+          "action": "repair"
+        },
+        {
+          "name": "EventAssistanceDeliveryEntrySection",
+          "action": "repair"
+        }
+      ],
+      "rationale": "Human-approved shared quiet modules, full-width commands and compact successful-empty states. Remove local card/heading/command stacks from Program workspace/Guests and Recap; retain business callbacks, permissions and typed navigation fields. Generic outlined field recipes remain valid for form groups.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-10-08",
+      "status": "implemented"
     }
   ]
 }

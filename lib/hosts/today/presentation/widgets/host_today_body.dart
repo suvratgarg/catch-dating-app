@@ -84,14 +84,9 @@ class HostTodayHeader extends StatelessWidget {
     final date = now == null
         ? null
         : MaterialLocalizations.of(context).formatFullDate(now!);
-    return CatchViewport.atWidth(
-      breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compactBuilder: (_) =>
-          CatchTopBar.primaryRail(title: context.l10n.hostNavigationToday),
-      expandedBuilder: (_) => CatchTopBar.primaryRail(
-        title: context.l10n.hostNavigationToday,
-        subtitle: date,
-      ),
+    return CatchTopBar.primaryRail(
+      title: context.l10n.hostNavigationToday,
+      subtitle: date,
     );
   }
 }

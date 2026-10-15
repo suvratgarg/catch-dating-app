@@ -8523,7 +8523,7 @@
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
             "packages/catch_ui/lib/src/components/catch_field.dart",
-            "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
+            "packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"

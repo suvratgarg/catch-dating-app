@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
   "sourceDigest": "sha256:0811f129d3e9eded41b81933de8bdcbf3f9d539a33e76c673287653e500ae6ff",
-  "resolvedDigest": "sha256:33526b379c729d15af892de5efe90cbabb0ce8ecfa7882eb051b0aebc0d1547e",
+  "resolvedDigest": "sha256:97df774714cee814a05ac3aa16751aa4472a14bab0f37646b142c41daa232838",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4937,7 +4937,9 @@
                 "CatchSection.content",
                 "CatchSection.formRows",
                 "CatchSection.dependentFieldRows",
-                "CatchSection.action"
+                "CatchSection.action",
+                "CatchSection.collection",
+                "CatchSection.status"
               ]
             }
           },
@@ -4981,7 +4983,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

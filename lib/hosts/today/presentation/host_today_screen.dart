@@ -177,10 +177,11 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
   void _openEvent(Club organizer, Event event) {
     final isLive =
         !event.startTime.isAfter(_clockNow) && event.endTime.isAfter(_clockNow);
-    context.pushNamed(
-      Routes.hostAppEventManageScreen.name,
-      pathParameters: {'clubId': organizer.id, 'eventId': event.id},
+    context.goNamed(
+      Routes.hostTodayScreen.name,
       queryParameters: {
+        'organizerId': organizer.id,
+        'eventId': event.id,
         'section': isLive
             ? 'live'
             : event.endTime.isAfter(_clockNow)
@@ -197,10 +198,13 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
       case HostAttentionDestinationRoute.hostEventManage:
         final eventId = destination.eventId ?? item.eventId;
         if (eventId == null) return;
-        context.pushNamed(
-          Routes.hostAppEventManageScreen.name,
-          pathParameters: {'clubId': organizer.id, 'eventId': eventId},
-          queryParameters: {'section': destination.section ?? 'setup'},
+        context.goNamed(
+          Routes.hostTodayScreen.name,
+          queryParameters: {
+            'organizerId': organizer.id,
+            'eventId': eventId,
+            'section': destination.section ?? 'setup',
+          },
         );
         return;
       case HostAttentionDestinationRoute.hostApplications:

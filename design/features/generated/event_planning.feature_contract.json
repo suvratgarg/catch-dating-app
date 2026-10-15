@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:3500f5027c56ca2f4dc93aeefcb16dc6f000b6f145b614f1bd5503b4a4956c61",
-  "resolvedDigest": "sha256:1409ffd9518ed3db5caff10d114105c06998aefbd26bd4c9a36c5cfed8b0a510",
+  "resolvedDigest": "sha256:de9f405093e4d9a2159420a7297f4e9b63cfd80ed9e1d0dd0362e6e0a6061337",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -941,7 +941,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }
@@ -1702,7 +1703,8 @@
                 "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
-                "CatchTopBar.primaryRail"
+                "CatchTopBar.primaryRail",
+                "CatchTopBar.brand"
               ]
             }
           }

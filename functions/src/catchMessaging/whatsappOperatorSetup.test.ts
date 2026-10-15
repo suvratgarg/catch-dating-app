@@ -73,7 +73,7 @@ test("planning rejects current identity, role, " +
       f.snapshot.recipient.claims.adminOwner = true;
     },
     (f) => {
-      f.snapshot.actor.session.authTimeSeconds -= 301;
+      f.snapshot.actor.session.authTimeSeconds -= 901;
     },
     (f) => {
       f.snapshot.actor.auth.tokensValidAfterMillis = f.options.now;
@@ -209,4 +209,21 @@ test("apply accepts only reviewed identifier, digest and replay key", () => {
       [field]: "invented"}));
   }
   assert.throws(() => validateSetupRequest({...request, replayKey: "short"}));
+});
+
+test("setup authentication accepts through fifteen minutes " +
+  "without extending the plan", () => {
+  for (const age of [301, 899, 900]) {
+    const f = fixture();
+    f.snapshot.actor.session.authTimeSeconds = f.options.now / 1000 - age;
+    const plan = planOperatorSetup(f.scope, f.snapshot, f.options);
+    assert.equal(plan.expiresAtMillis, f.options.now + 15 * 60 * 1000);
+    assertPlannedSetupIdentity(plan, f.snapshot, f.options.now);
+    assert.throws(() => validateSetupPlan({...plan,
+      expiresAtMillis: plan.expiresAtMillis + 1}));
+  }
+  const stale = fixture();
+  stale.snapshot.actor.session.authTimeSeconds = stale.options.now / 1000 - 901;
+  assert.throws(() => planOperatorSetup(stale.scope, stale.snapshot,
+    stale.options));
 });

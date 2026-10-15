@@ -16,7 +16,7 @@ import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
   testWidgets(
-    'report empty state stays flat with full-width explanatory copy',
+    'report waiting state uses the shared quiet section and full content lane',
     (tester) async {
       final event = buildEvent(id: 'waiting-report');
       final plan = EventSuccessPlan.defaultForEvent(
@@ -45,27 +45,26 @@ void main() {
 
       final waiting = find.text('Waiting for attendee feedback');
       expect(waiting, findsOneWidget);
-      final emptyFinder = find.ancestor(
-        of: waiting,
-        matching: find.byType(CatchEmptyState),
+      final section = find.byKey(const ValueKey('event-success-report-status'));
+      expect(section, findsOneWidget);
+      final surface = tester.widget<CatchSurface>(
+        find.descendant(of: section, matching: find.byType(CatchSurface)),
       );
-      final emptyState = tester.widget<CatchEmptyState>(emptyFinder);
-      expect(emptyState.surface, isFalse);
-      expect(emptyState.variant, CatchEmptyStateVariant.inline);
+      expect(surface.tone, CatchSurfaceTone.primarySoft);
       expect(
-        find.ancestor(of: waiting, matching: find.byType(CatchSectionSurface)),
+        find.descendant(of: section, matching: find.byType(CatchEmptyState)),
         findsNothing,
       );
-      expect(
-        find.ancestor(of: waiting, matching: find.byType(CatchSurface)),
-        findsNothing,
+      final bounds = tester.getRect(section);
+      final message = tester.getRect(
+        find.text(
+          'The post-event report appears once checked-in attendees share feedback. '
+          'There is no signal to summarize yet.',
+        ),
       );
-
-      final bounds = tester.getRect(emptyFinder);
-      final message = tester.getRect(find.text(emptyState.message!));
       final heading = tester.getRect(waiting);
-      expect(message.left, bounds.left);
-      expect(message.width, bounds.width);
+      expect(message.left, bounds.left + CatchSpacing.s4);
+      expect(message.width, bounds.width - CatchSpacing.s4 * 2);
       expect(message.top, greaterThan(heading.bottom));
     },
   );

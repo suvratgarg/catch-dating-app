@@ -1005,12 +1005,6 @@
           "status": "aligned"
         },
         {
-          "path": "lib/event_success/presentation/host_report/event_success_report_empty_state.dart",
-          "role": "provider-free report empty-state placement over the shared CatchEmptyState contract with explicit title, message and icon",
-          "providerFree": true,
-          "status": "aligned"
-        },
-        {
           "path": "lib/hosts/presentation/host_invite_link_state.dart",
           "role": "provider-free private access and invitation-link status, sharing availability, mutation mode and row statistics; URL construction stays at the route edge",
           "providerFree": true,

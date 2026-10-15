@@ -207,7 +207,7 @@ void main() {
   });
 
   testWidgets(
-    'Messaging title collapses while the workspace rail stays pinned',
+    'Messaging pane header and rail remain fixed while its list scrolls',
     (tester) async {
       final previews = List<ChatThreadPreview>.generate(
         24,
@@ -227,7 +227,8 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      expect(find.byType(NestedScrollView), findsOneWidget);
+      expect(find.byType(NestedScrollView), findsNothing);
+      expect(find.byType(CatchWorkspacePaneScaffold), findsOneWidget);
       final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       expect(topBar.navigation.mode, CatchTopBarNavigationMode.none);
       final rail = find.byType(HostMessagingWorkspaceTabBar);
@@ -236,7 +237,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
       await pumpFeatureUi(tester);
       final railAfterCollapse = tester.getRect(rail);
-      expect(railAfterCollapse.top, lessThan(railBefore.top));
+      expect(railAfterCollapse.top, closeTo(railBefore.top, 0.001));
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -240));
       await pumpFeatureUi(tester);
@@ -269,10 +270,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(CatchScaffold), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('catch-master-detail-divider')),
-      findsOneWidget,
-    );
+    expect(find.byType(CatchNavigationViewport), findsOneWidget);
     expect(find.text('Select a conversation'), findsOneWidget);
     expect(find.text('Expanded Guest'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -302,10 +300,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(
-      find.byKey(const ValueKey('catch-master-detail-divider')),
-      findsNothing,
-    );
+    expect(find.byType(CatchNavigationViewport), findsOneWidget);
     expect(find.text('Select a conversation'), findsNothing);
     expect(find.text('Constrained Guest'), findsOneWidget);
     expect(tester.takeException(), isNull);

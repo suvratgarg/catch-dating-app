@@ -39,7 +39,7 @@ export function loopbackOrigin(origin: string): boolean {
   } catch {return false;}
 }
 function deadline(value: unknown, now: number) {
-  if (typeof value !== "number" || !Number.isSafeInteger(value) || value <= now || value > now + 300000) unavailable();
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value <= now || value > now + 15 * 60 * 1000) unavailable();
 }
 export function sessionLaunch(fragment: string, now = Date.now()): Readonly<SessionLaunch> {
   const value = JSON.parse(new TextDecoder("utf-8", {fatal: true}).decode(binary(fragment.replace(/^#/u, ""), 1, 4096))) as SessionLaunch;
