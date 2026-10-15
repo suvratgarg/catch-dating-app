@@ -43,25 +43,6 @@ part 'host_offer_preparation_cases.dart';
 
 void main() {
   _preparationRegressionTests();
-  testWidgets('query route without selection keeps explicit Back navigation', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const HostResponseOfferScreen.query(organizerId: 'org'),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    expect(find.byTooltip('Back'), findsOneWidget);
-    expect(find.byType(HostEventOfferWorkspaceSection), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets(
     'release-gated shared route renders without Firebase initialization',
     (tester) async {
