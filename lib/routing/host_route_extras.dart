@@ -96,8 +96,27 @@ OrganizerMomentScope _eventMomentScope(GoRouterState state) =>
 OrganizerMomentScope _programMomentScope(GoRouterState state) =>
     OrganizerMomentScope.program(state.pathParameters['programId']!);
 
-String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) =>
-    hostOrganizerAudienceRedirect(state.uri);
+String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) {
+  final setting = state.uri.queryParameters['setting'];
+  final route = const {
+    Routes.hostClubEventDefaultsScreen,
+    Routes.hostClubLiveGuideScreen,
+    Routes.hostClubTeamScreen,
+    Routes.hostClubPaymentsScreen,
+  }.where((route) => route.name == setting).firstOrNull;
+  if (route != null && state.uri.queryParameters['clubId'] != null) {
+    return state.uri
+        .replace(
+          path: route.path,
+          queryParameters: {
+            for (final entry in state.uri.queryParameters.entries)
+              if (entry.key != 'setting') entry.key: entry.value,
+          },
+        )
+        .toString();
+  }
+  return hostOrganizerAudienceRedirect(state.uri);
+}
 
 class _RouterRefreshNotifier extends ChangeNotifier {
   void notify() => notifyListeners();

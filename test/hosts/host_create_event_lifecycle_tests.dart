@@ -12,13 +12,18 @@ void runHostCreateEventLifecycleTests() {
       endTime: now.add(const Duration(hours: 3)),
     );
 
+    var section = HostEventManageSection.setup;
     await pumpEventsTestApp(
       tester,
-      HostEventManageScreen(
-        club: buildClub(),
-        event: event,
-        onBackToSuccess: () {},
-        referenceNow: now,
+      StatefulBuilder(
+        builder: (context, setState) => HostEventManageScreen(
+          club: buildClub(),
+          event: event,
+          onBackToSuccess: () {},
+          referenceNow: now,
+          initialSection: section,
+          onSectionChanged: (next) => setState(() => section = next),
+        ),
       ),
       overrides: [
         eventParticipationRepositoryProvider.overrideWith(
@@ -30,7 +35,7 @@ void runHostCreateEventLifecycleTests() {
     await _pumpHostActionFrame(tester);
 
     expect(find.text('Event preparation'), findsOneWidget);
-    expect(find.byType(HostEventRosterDrawer), findsOneWidget);
+    expect(find.byType(HostEventRosterPanel), findsNothing);
     expect(find.text('SETUP'), findsNothing);
     expect(find.text('GUESTS'), findsNothing);
     expect(find.text('LIVE'), findsNothing);
@@ -56,9 +61,8 @@ void runHostCreateEventLifecycleTests() {
     await tester.tap(find.byType(CatchTopBarPrimaryButton));
     await _pumpTestAnimation(tester);
 
-    final rosterPanel = find.byKey(
-      const ValueKey<String>('host_event_roster_drawer.panel'),
-    );
+    final rosterPanel = find.byType(HostEventRosterPanel);
+    expect(rosterPanel, findsOneWidget);
     expect(
       find.descendant(of: rosterPanel, matching: find.text('Guest roster')),
       findsWidgets,
@@ -108,13 +112,18 @@ void runHostCreateEventLifecycleTests() {
       endTime: now.subtract(const Duration(hours: 1)),
     );
 
+    var section = HostEventManageSection.setup;
     await pumpEventsTestApp(
       tester,
-      HostEventManageScreen(
-        club: buildClub(),
-        event: event,
-        onBackToSuccess: () {},
-        referenceNow: now,
+      StatefulBuilder(
+        builder: (context, setState) => HostEventManageScreen(
+          club: buildClub(),
+          event: event,
+          onBackToSuccess: () {},
+          referenceNow: now,
+          initialSection: section,
+          onSectionChanged: (next) => setState(() => section = next),
+        ),
       ),
       overrides: [
         eventParticipationRepositoryProvider.overrideWith(
@@ -133,7 +142,7 @@ void runHostCreateEventLifecycleTests() {
     expect(find.text('GUESTS'), findsNothing);
     expect(find.text('LIVE'), findsNothing);
     expect(find.text('REPORT'), findsNothing);
-    expect(find.byType(HostEventRosterDrawer), findsOneWidget);
+    expect(find.byType(HostEventRosterPanel), findsNothing);
 
     await tester.scrollUntilVisible(
       find.text('Review event setup'),
@@ -144,9 +153,8 @@ void runHostCreateEventLifecycleTests() {
 
     await tester.tap(find.byType(CatchTopBarPrimaryButton));
     await _pumpTestAnimation(tester);
-    final rosterPanel = find.byKey(
-      const ValueKey<String>('host_event_roster_drawer.panel'),
-    );
+    final rosterPanel = find.byType(HostEventRosterPanel);
+    expect(rosterPanel, findsOneWidget);
     expect(
       find.descendant(of: rosterPanel, matching: find.text('Add walk-in')),
       findsNothing,
