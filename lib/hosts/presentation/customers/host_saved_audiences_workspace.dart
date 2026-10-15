@@ -90,7 +90,9 @@ class _HostSavedAudiencesDirectoryState
   Widget build(BuildContext context) {
     final searching = query?.trim().isNotEmpty ?? false;
     final directory = searching ? null : ref.watch(_directoryProvider);
-    final continuation = directory?.asData?.value;
+    final continuation = directory == null
+        ? null
+        : catchAsyncStateFromAsyncValue(directory).value;
     final audiences = searching
         ? ref.watch(hostAllSavedAudienceSummariesProvider(organizerId))
         : directory!.whenData((state) => state.page);
