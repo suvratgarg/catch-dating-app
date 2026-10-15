@@ -45,6 +45,139 @@ const validators: Record<string, ValidateFunction> = {
   transportOperationReceipts: validateTransportOperationReceiptDocument,
 };
 
+for (const mode of ["preview", "commit"] as const) {
+  test(`program creator can ${mode} after losing organizer membership`,
+    async () => {
+      const fixture = seed();
+      fixture["organizerPrograms/program-1"].createdBy = "program-creator";
+      fixture["organizerPrograms/program-1"].kind = "wedding";
+      const store = new MiniFirestore(fixture);
+      const result = await importWeddingPhoneContactsHandler(request({
+        programId: "program-1", mode, clientOperationId: "creator-import",
+        rows: [row],
+      }, "program-creator"), deps(store), async () => true);
+      assert.equal(result.guestsCreated, 1);
+      const guests = [...store.docs.entries()].filter(([path]) =>
+        path.startsWith("programGuests/"));
+      assert.equal(guests.length, mode === "commit" ? 1 : 0);
+      for (const [, guest] of guests) {
+        assert.equal(guest.programId, "program-1");
+        assert.equal(guest.organizerId, "org-1");
+        assert.equal(guest.contactId, null);
+      }
+      assert.equal([...store.docs.keys()].some((path) =>
+        path.startsWith("organizerContacts/") ||
+        path.startsWith("organizerContactEventEdges/") ||
+        path.startsWith("contacts/")),
+      false);
+    });
+
+  for (const role of ["owner", "manager", "member"] as const) {
+    test(`organizer-only ${role} cannot ${mode} program contacts`, async () => {
+      const fixture = seed();
+      fixture["organizerPrograms/program-1"].createdBy = "program-creator";
+      fixture["organizerPrograms/program-1"].kind = "wedding";
+      fixture["organizers/org-1"] = {
+        ...fixture["organizers/org-1"],
+        ownerUserId: role === "owner" ? "organizer-account" : "org-owner",
+        hostUserId: "org-owner",
+        hostUserIds: role === "member" ? ["org-owner"] :
+          ["org-owner", "organizer-account"],
+        hostProfiles: [{uid: "organizer-account", role: "host",
+          displayName: "Synthetic organizer member", avatarUrl: null}],
+      };
+      const store = new MiniFirestore(fixture);
+      const before = new Map(store.docs);
+      await assert.rejects(importWeddingPhoneContactsHandler(request({
+        programId: "program-1", mode, clientOperationId: "organizer-import",
+        rows: [row],
+      }, "organizer-account"), deps(store), async () => true),
+      (error: unknown) => error instanceof HttpsError &&
+        error.code === "permission-denied");
+      assert.deepEqual(store.docs, before);
+    });
+  }
+}
+
+for (const mode of ["preview", "commit"] as const) {
+  for (const grantCase of ["owner-approved", "organizer-issued", "foreign",
+    "revoked", "expired"] as const) {
+    test(`${grantCase} program grant controls ${mode} contact import`,
+      async () => {
+        const fixture = seed();
+        fixture["organizerPrograms/program-1"].createdBy = "program-creator";
+        fixture["organizerPrograms/program-1"].kind = "wedding";
+        fixture["programStaffGrants/program-1__desk-1"] = {
+          programId: grantCase === "foreign" ? "another-program" : "program-1",
+          organizerId: "org-1", uid: "desk-1",
+          createdBy: grantCase === "organizer-issued" ? "manager-1" :
+            "program-creator",
+          status: grantCase === "revoked" ? "revoked" : "active",
+          expiresAt: ts(NOW + (grantCase === "expired" ? -1 : 3600_000)),
+          duties: [{duty: "guestRelations", pickupPointIds: [], hotelIds: [],
+            expiresAtMillis: NOW + 3600_000}],
+        };
+        const store = new MiniFirestore(fixture);
+        const before = new Map(store.docs);
+        const importContacts = () => importWeddingPhoneContactsHandler(
+          request({programId: "program-1", mode,
+            clientOperationId: "collaborator-import", rows: [row]}, "desk-1"),
+          deps(store), async () => true);
+        if (grantCase === "owner-approved") {
+          assert.equal((await importContacts()).guestsCreated, 1);
+        } else {
+          await assert.rejects(importContacts(), (error: unknown) =>
+            error instanceof HttpsError && error.code === "permission-denied");
+          assert.deepEqual(store.docs, before);
+        }
+      });
+  }
+}
+
+test("deleted program creator cannot import contacts", async () => {
+  const fixture = seed();
+  fixture["organizerPrograms/program-1"].createdBy = "program-creator";
+  fixture["organizerPrograms/program-1"].kind = "wedding";
+  fixture["deletedUsers/program-creator"] = {deletedAt: ts(NOW)};
+  const store = new MiniFirestore(fixture);
+  const before = new Map(store.docs);
+  await assert.rejects(importWeddingPhoneContactsHandler(request({
+    programId: "program-1", mode: "commit", clientOperationId: "deleted-import",
+    rows: [row],
+  }, "program-creator"), deps(store), async () => true),
+  (error: unknown) => error instanceof HttpsError &&
+    error.code === "permission-denied");
+  assert.deepEqual(store.docs, before);
+});
+
+test("manifest preview retries revocation before returning reconciliation",
+  async () => {
+    const fixture = seed();
+    fixture["programStaffGrants/program-1__desk-1"] = {
+      programId: "program-1", organizerId: "org-1", uid: "desk-1",
+      createdBy: "manager-1", status: "active",
+      expiresAt: ts(NOW + 3600_000),
+      duties: [{duty: "guestRelations", pickupPointIds: [], hotelIds: [],
+        expiresAtMillis: NOW + 3600_000}],
+    };
+    const store = new MiniFirestore(fixture);
+    store.beforeCommit = async () => {
+      store.beforeCommit = undefined;
+      store.updateDoc("programStaffGrants/program-1__desk-1",
+        {status: "revoked"});
+    };
+    await assert.rejects(importProgramManifestHandler(request({
+      programId: "program-1", mode: "preview",
+      clientOperationId: "preview-race",
+      rows: [row],
+    }, "desk-1"), deps(store)), (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied");
+    assert.equal(store.transactionCommits, 0);
+    assert.equal([...store.docs.keys()].some((path) =>
+      path.startsWith("programGuests/") ||
+      path.startsWith("transportOperationReceipts/")), false);
+  });
+
 test("phone endpoint fails closed while general manifest import remains usable",
   async () => {
     const fixture = seed();
@@ -214,6 +347,7 @@ test("staff without guestRelations duty cannot import", async () => {
     ...seed(),
     "programStaffGrants/program-1__greeter-1": {
       programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+      createdBy: "manager-1",
       status: "active", duties: [{duty: "airportGreeter",
         pickupPointIds: [], hotelIds: [], expiresAtMillis: NOW + 3600_000}],
       expiresAt: ts(NOW + 3600_000),
@@ -250,6 +384,7 @@ for (const mode of ["preview", "commit"] as const) {
           ...seed(),
           "programStaffGrants/program-1__desk-1": {
             programId: "program-1", organizerId: "org-1", uid: "desk-1",
+            createdBy: "manager-1",
             status: "active", duties: scopes.map((scope) => ({
               duty: "guestRelations", ...scope,
               expiresAtMillis: NOW + 3600_000,
@@ -274,6 +409,7 @@ test("guestRelations staff can preview and commit manifests", async () => {
     ...seed(),
     "programStaffGrants/program-1__desk-1": {
       programId: "program-1", organizerId: "org-1", uid: "desk-1",
+      createdBy: "manager-1",
       status: "active", duties: [{duty: "guestRelations",
         pickupPointIds: [], hotelIds: [], expiresAtMillis: NOW + 3600_000}],
       expiresAt: ts(NOW + 3600_000),

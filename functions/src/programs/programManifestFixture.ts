@@ -11,7 +11,7 @@ import {FakeFirestore as MiniFirestore, type FakeData} from
 export function seed(): Record<string, FakeData> {
   return {
     "organizerPrograms/program-1": {
-      organizerId: "org-1", timezone: "Asia/Kolkata",
+      organizerId: "org-1", timezone: "Asia/Kolkata", createdBy: "manager-1",
     },
     "organizers/org-1": {
       hostUserId: "manager-1",

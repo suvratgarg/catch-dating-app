@@ -26,7 +26,8 @@ const facts = (db: FakeFirestore) =>
   [...db.docs].filter(([path]) =>
     path.startsWith("workspaceFieldAssertions/"),
   );
-const edit = (db: FakeFirestore, extra: Record<string, unknown> = {}) =>
+const edit = (db: FakeFirestore, extra: Record<string, unknown> = {},
+  uid = "manager-1") =>
   upsertProgramGuestHandler(
     request(
       {
@@ -35,7 +36,7 @@ const edit = (db: FakeFirestore, extra: Record<string, unknown> = {}) =>
         externalReference: "fixture-row-1",
         ...extra,
       },
-      "manager-1",
+      uid,
     ),
     deps(db),
   );
@@ -233,17 +234,19 @@ test("projection tampering hides the field instead of using the raw value",
 test("revoked writer contention leaves no new guest or assertion",
   async () => {
     const db = new FakeFirestore(seed());
+    db.setDoc("programStaffGrants/program-1__coordinator-1", {
+      ...db.getDoc("programStaffGrants/program-1__dispatcher-1"),
+      uid: "coordinator-1",
+      duties: [{duty: "programCoordinator", pickupPointIds: [], hotelIds: [],
+        expiresAtMillis: now.toMillis() + 60_000}],
+    });
     db.beforeCommit = async () => {
       db.beforeCommit = undefined;
-      db.updateDoc("organizers/org-1", {
-        ownerUserId: "other",
-        hostUserId: "other",
-        hostUserIds: [],
-        hostProfiles: [],
-      });
+      db.updateDoc("programStaffGrants/program-1__coordinator-1",
+        {status: "revoked"});
     };
     await assert.rejects(
-      edit(db, {phoneE164: "+919900000001"}),
+      edit(db, {phoneE164: "+919900000001"}, "coordinator-1"),
       /active program access/,
     );
     assert.equal(facts(db).length, 0);

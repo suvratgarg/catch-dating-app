@@ -20,12 +20,14 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   assertRevision,
+  assertProgramGuestDirectoryCurrent,
   dutyAssignments,
   programProjectionExpiresAt,
   nextRevision,
   requireProgramAccess,
   requireProgramMutable,
   requireProgramDuty,
+  requireProgramGuestDirectoryAccess,
 } from "../shared/programAuthority";
 import type {
   ProgramFunctionGuestDocument,
@@ -229,9 +231,7 @@ export async function listProgramGuestsHandler(
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
     });
-    // Guest desk duty opens the read surface; programCoordinator tuples satisfy
-    // it implicitly through dutyAssignments.
-    requireProgramDuty(access, "guestRelations");
+    requireProgramGuestDirectoryAccess(access);
     const limit = data.limit ?? guestPageCap;
     let query = db.collection("programGuests")
       .where("programId", "==", data.programId)
@@ -285,6 +285,7 @@ export async function listProgramGuestsHandler(
     );
     const groups = await listReferencedGroups(
       db, access.program.organizerId, data.programId, page, tx);
+    assertProgramGuestDirectoryCurrent(access, deps.now().toMillis());
     return {
       programId: data.programId,
       guests: visible.map(({doc, guest, fields}) => ({
@@ -529,38 +530,40 @@ export async function listProgramHouseholdsHandler(
     request, validateProgramIdCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listProgramHouseholds");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
+  return db.runTransaction(async (tx) => {
+    const access = await requireProgramAccess({
+      db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
+    });
+    requireProgramGuestDirectoryAccess(access);
+    const snap = await tx.get(db.collection("programHouseholds")
+      .where("programId", "==", data.programId)
+      .limit(501));
+    if (snap.size > 500) {
+      throw new HttpsError("resource-exhausted",
+        "Household inventory exceeds its 500-record limit.");
+    }
+    assertProgramGuestDirectoryCurrent(access, deps.now().toMillis());
+    return {
+      programId: data.programId,
+      guests: [],
+      functionGuests: [],
+      groups: [],
+      households: snap.docs.map((doc) => {
+        const household = doc.data() as ProgramHouseholdDocument;
+        if (household.organizerId !== access.program.organizerId) {
+          throw new HttpsError("failed-precondition",
+            "Household ownership needs reconciliation.");
+        }
+        return {
+          householdId: doc.id,
+          label: household.label,
+          memberGuestIds: household.memberGuestIds,
+          revision: household.revision,
+        };
+      }),
+      nextCursor: null,
+    };
   });
-  requireProgramDuty(access, "guestRelations");
-  const snap = await db.collection("programHouseholds")
-    .where("programId", "==", data.programId)
-    .limit(501)
-    .get();
-  if (snap.size > 500) {
-    throw new HttpsError("resource-exhausted",
-      "Household inventory exceeds its 500-record limit.");
-  }
-  return {
-    programId: data.programId,
-    guests: [],
-    functionGuests: [],
-    groups: [],
-    households: snap.docs.map((doc) => {
-      const household = doc.data() as ProgramHouseholdDocument;
-      if (household.organizerId !== access.program.organizerId) {
-        throw new HttpsError("failed-precondition",
-          "Household ownership needs reconciliation.");
-      }
-      return {
-        householdId: doc.id,
-        label: household.label,
-        memberGuestIds: household.memberGuestIds,
-        revision: household.revision,
-      };
-    }),
-    nextCursor: null,
-  };
 }
 
 async function readHouseholds(

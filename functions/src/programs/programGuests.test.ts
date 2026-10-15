@@ -19,25 +19,27 @@ const household = (members: string[]): FakeData => ({
   primaryEmail: null, memberGuestIds: members, deliveryPreference: "none",
   createdAt: now, updatedAt: now, revision: 1,
 });
-const seed = () => seedWorkspaceFieldAssertions({...baseSeed(),
-  "programHouseholds/first": household(["guest-1"]),
-  "programHouseholds/second": household(["guest-2"]),
-  "programGuests/guest-1": {...baseSeed()["programGuests/guest-1"],
-    householdId: "first", externalReference: "person-one"},
-  "programGuests/guest-2": {...baseSeed()["programGuests/guest-2"],
-    householdId: "second"},
-});
+const seed = (): Record<string, FakeData> =>
+  seedWorkspaceFieldAssertions({...baseSeed(),
+    "programHouseholds/first": household(["guest-1"]),
+    "programHouseholds/second": household(["guest-2"]),
+    "programGuests/guest-1": {...baseSeed()["programGuests/guest-1"],
+      householdId: "first", externalReference: "person-one"},
+    "programGuests/guest-2": {...baseSeed()["programGuests/guest-2"],
+      householdId: "second"},
+  });
 const members = (db: FakeFirestore, id: string) =>
   db.getDoc(`programHouseholds/${id}`)!.memberGuestIds;
-const guestEdit = (db: FakeFirestore, patch: object = {}) =>
+const guestEdit = (db: FakeFirestore, patch: object = {}, uid = "manager-1") =>
   upsertProgramGuestHandler(request({programId: "program-1",
     guestId: "guest-1", displayName: "Rohan Sharma", expectedRevision: 1,
-    ...patch}, "manager-1"), deps(db));
-const householdEdit = (db: FakeFirestore, patch: object = {}) =>
+    ...patch}, uid), deps(db));
+const householdEdit = (db: FakeFirestore, patch: object = {},
+  uid = "manager-1") =>
   upsertProgramHouseholdHandler(request({programId: "program-1",
     householdId: "first", label: "Updated family",
     primaryContactName: "Household contact", expectedRevision: 1,
-    memberGuestIds: ["guest-1"], ...patch}, "manager-1"), deps(db));
+    memberGuestIds: ["guest-1"], ...patch}, uid), deps(db));
 
 function assertHouseholdContracts(db: FakeFirestore) {
   for (const [path, doc] of db.docs) {
@@ -105,19 +107,32 @@ test("a new guest joins its household in the same transaction", async () => {
 });
 
 for (const edit of [guestEdit, householdEdit]) {
-  test(`${edit.name} rechecks current manager authority on contention`,
+  test(`${edit.name} rechecks revoked program authority on contention`,
     async () => {
       const db = new FakeFirestore(seed());
       const before = db.getDoc("programGuests/guest-1");
+      db.setDoc("programStaffGrants/program-1__coordinator-1",
+        guestDeskGrant("coordinator-1", "programCoordinator"));
       db.beforeCommit = async () => {
         db.beforeCommit = undefined;
-        db.updateDoc("organizers/org-1", {ownerUserId: "other",
-          hostUserId: "other", hostUserIds: ["other"], hostProfiles: []});
+        db.updateDoc("programStaffGrants/program-1__coordinator-1",
+          {status: "revoked"});
       };
-      await assert.rejects(edit(db), /active program access/);
+      await assert.rejects(edit(db, {}, "coordinator-1"),
+        /active program access/);
       assert.equal(db.transactionCommits, 0);
       assert.deepEqual(db.getDoc("programGuests/guest-1"), before);
       assert.deepEqual(members(db, "first"), ["guest-1"]);
+    });
+  test(`${edit.name} preserves creator authority after organizer removal`,
+    async () => {
+      const db = new FakeFirestore(seed());
+      db.updateDoc("organizers/org-1", {ownerUserId: "other",
+        hostUserId: "other", hostUserIds: ["other"], hostProfiles: []});
+      await edit(db);
+      assert.equal(db.transactionCommits, 1);
+      assert.equal(db.getDoc("organizerPrograms/program-1")!.createdBy,
+        "manager-1");
     });
 }
 
@@ -300,6 +315,77 @@ const guestDeskGrant = (uid: string, duty: string): FakeData => ({
     now.toMillis() + 3_600_000),
   revokedBy: null, revokedAt: null, updatedAt: now, revision: 1,
 });
+
+for (const read of [listProgramGuestsHandler, listProgramHouseholdsHandler]) {
+  test(`${read.name} retries a revoked grant before returning private rows`,
+    async () => {
+      const db = new FakeFirestore({...seed(),
+        "programStaffGrants/program-1__desk-1":
+          guestDeskGrant("desk-1", "guestRelations")});
+      db.beforeCommit = async () => {
+        db.beforeCommit = undefined;
+        db.updateDoc("programStaffGrants/program-1__desk-1",
+          {status: "revoked"});
+      };
+      await assert.rejects(read(request({programId: "program-1"}, "desk-1"),
+        deps(db)), /active program access/);
+      assert.equal(db.transactionCommits, 0);
+    });
+
+  test(`${read.name} rejects duty expiry while resolving private rows`,
+    async () => {
+      const db = new FakeFirestore({...seed(),
+        "programStaffGrants/program-1__desk-1":
+          guestDeskGrant("desk-1", "guestRelations")});
+      let clockReads = 0;
+      await assert.rejects(read(request({programId: "program-1"}, "desk-1"),
+        deps(db, {now: () => ++clockReads === 1 ? now :
+          admin.firestore.Timestamp.fromMillis(now.toMillis() + 60_000)})),
+      (error: unknown) =>
+        (error as {code?: string}).code === "permission-denied");
+      assert.equal(db.transactionCommits, 0);
+    });
+
+  test(`${read.name} requires program authority beyond organizer ownership`,
+    async () => {
+      const fixture = seed();
+      fixture["organizerPrograms/program-1"].createdBy = "program-creator";
+      const db = new FakeFirestore(fixture);
+      await assert.rejects(read(request({programId: "program-1"}, "manager-1"),
+        deps(db)), /active program access/);
+      const page = await read(request({programId: "program-1"},
+        "program-creator"), deps(db));
+      assert.equal(page.programId, "program-1");
+    });
+
+  for (const scope of [
+    {pickupPointIds: ["pp-t3"], hotelIds: [], functionIds: []},
+    {pickupPointIds: [], hotelIds: ["hotel-1"], functionIds: []},
+    {pickupPointIds: ["pp-t3"], hotelIds: ["hotel-1"], functionIds: []},
+  ]) {
+    test(`${read.name} denies station-scoped whole-program contact reads ` +
+      JSON.stringify(scope), async () => {
+      const grant = guestDeskGrant("desk-1", "guestRelations");
+      grant.duties = [{duty: "guestRelations", ...scope,
+        expiresAtMillis: now.toMillis() + 60_000}];
+      const db = new FakeFirestore({...seed(),
+        "programStaffGrants/program-1__desk-1": grant});
+      await assert.rejects(read(request({programId: "program-1"}, "desk-1"),
+        deps(db)), /Program-wide guest relations/);
+    });
+  }
+
+  test(`${read.name} denies organizer-issued legacy contact access`,
+    async () => {
+      const fixture = seed();
+      fixture["organizerPrograms/program-1"].createdBy = "program-creator";
+      fixture["programStaffGrants/program-1__desk-1"] =
+        guestDeskGrant("desk-1", "guestRelations");
+      const db = new FakeFirestore(fixture);
+      await assert.rejects(read(request({programId: "program-1"}, "desk-1"),
+        deps(db)), /program owner must approve/);
+    });
+}
 
 test("guestRelations staff read the guest desk while greeters stay locked out",
   async () => {
