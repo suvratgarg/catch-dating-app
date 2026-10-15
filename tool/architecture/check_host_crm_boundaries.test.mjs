@@ -382,12 +382,20 @@ test("shared workspace keeps application routes in the Audience branch", () => {
     routerPath: "lib/routing/go_router.dart", routerSource: source,
   });
   assert.deepEqual(scan(routerSource), []);
+  for (const name of ["hostApplicationsScreen", "hostApplicationDetailScreen"]) {
+    const declaration = new RegExp(
+      `(HostWorkspaceDestination\\(\\s*root:\\s*)HostWorkspaceRoot\\.audience` +
+      `((?:(?!HostWorkspaceDestination\\()[\\s\\S])*?name:\\s*Routes\\.${name}\\.name,)`, "u",
+    );
+    assert.ok(declaration.test(routerSource), name);
+    assert.ok(scan(routerSource.replace(declaration, "$1HostWorkspaceRoot.inbox$2"))
+      .some((item) => /Audience shell branch/u.test(item.reason)), name);
+  }
   for (const [before, after] of [
     ["navigatorKey: keys.hostAudience", "navigatorKey: keys.hostInbox"],
     ["workspaceRoute(Routes.hostAudienceScreen, roots[2])",
       "workspaceRoute(Routes.hostInboxScreen, roots[2])"],
-    ["_hostWorkspaceOwner(route.path) == root", "true"],
-    ["path.startsWith('/host/audience')", "path.startsWith('/host/unowned')"],
+    ["route.root.route == root", "true"],
     ["name: Routes.hostApplicationsScreen.name", "name: Routes.hostInboxScreen.name"],
     ["name: Routes.hostApplicationDetailScreen.name", "name: Routes.hostInboxScreen.name"],
   ]) {

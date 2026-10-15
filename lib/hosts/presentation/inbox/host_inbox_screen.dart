@@ -25,7 +25,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_workspace.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
@@ -234,7 +234,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
         !clubsState.hasError) {
       return CatchScaffold.workspace(
         backgroundColor: t.bg,
-        body: HostSendsWorkspace(
+        body: HostSendsPageBody(
           club: selectedClub,
           initialSavedAudienceId: widget.initialSavedAudienceId,
           preferredEventId: _requestedScope?.eventId,

@@ -5535,8 +5535,43 @@ final directories = <_widgetbook.WidgetbookNode>[
     name: 'Host',
     children: [
       _widgetbook.WidgetbookFolder(
+        name: 'Inbox',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostSendsPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'History and outbound intent',
+                builder: _widgetbook_workspace_hosts_host_inbox_use_cases
+                    .hostSendsPanel,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Layout',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostEventPublicationRouteScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Signed-out publication boundary',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostPublicationRoute,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostEventPublicationStateScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Publication loading chrome',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostPublicationState,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'HostNavigationWorkspace',
             useCases: [
@@ -5548,12 +5583,72 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostResponseOfferPreferencesRouteScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Signed-out preferences boundary',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostOfferPreferencesRoute,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceContentScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Record keys and preview attachments',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceContentScope,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceEditorPane',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Editor contributes outer preview',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceEditorPane,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostWorkspaceIndexScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Shared Today route index',
                 builder: _widgetbook_workspace_layout_host_workspace_use_cases
                     .hostWorkspaceIndexScreen,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceRecordScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Routed record identity',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceRecordScope,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceRouteContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Selected record content',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceRouteContent,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkspaceRouteFrame',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Retained record and lifted preview',
+                builder: _widgetbook_workspace_layout_host_workspace_use_cases
+                    .hostWorkspaceRouteFrame,
               ),
             ],
           ),

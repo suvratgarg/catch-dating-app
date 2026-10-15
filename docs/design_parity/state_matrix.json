@@ -8510,7 +8510,7 @@
             "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
             "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
             "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
-            "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+            "lib/hosts/presentation/inbox/host_sends_page_body.dart",
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_operations/host_audience.dart",
             "lib/hosts/data/crm/host_campaign_repository.dart",

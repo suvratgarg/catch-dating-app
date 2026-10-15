@@ -1,62 +1,6 @@
-import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
-import 'package:catch_ui/catch_ui.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+part of 'host_sends_page_body.dart';
 
-class HostSendsWorkspace extends ConsumerStatefulWidget {
-  const HostSendsWorkspace({
-    super.key,
-    required this.club,
-    required this.initialSavedAudienceId,
-    required this.onBusyChanged,
-    required this.onOpenInbox,
-    required this.indexBuilder,
-    this.preferredEventId,
-    this.initialSegment = HostInboxAudienceSegment.booked,
-    this.broadcastEnabled = true,
-    this.now,
-  });
-
-  final Widget Function(Widget historySliver) indexBuilder;
-  final Club club;
-  final String? initialSavedAudienceId;
-  final ValueChanged<bool> onBusyChanged;
-  final VoidCallback onOpenInbox;
-  final String? preferredEventId;
-  final HostInboxAudienceSegment initialSegment;
-  final bool broadcastEnabled;
-  final DateTime? now;
-
-  @override
-  ConsumerState<HostSendsWorkspace> createState() =>
-      _HostSendsWorkspaceSliverState();
-}
-
-class _HostSendsWorkspaceSliverState extends ConsumerState<HostSendsWorkspace> {
+class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
   late _HostSendFlow _flow;
   int _generation = 0;
   bool _sameScope(int generation) => mounted && generation == _generation;
@@ -75,7 +19,7 @@ class _HostSendsWorkspaceSliverState extends ConsumerState<HostSendsWorkspace> {
   }
 
   @override
-  void didUpdateWidget(covariant HostSendsWorkspace oldWidget) {
+  void didUpdateWidget(covariant HostSendsPageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _generation++;

@@ -195,7 +195,13 @@ void main() {
         'Unsent draft',
       );
       await pumpAt(850);
-      expect(find.text('index'), findsNothing);
+      // Ancestors remain mounted in the horizontally scrolling path. The
+      // selected pane must be revealed when its available width changes.
+      expect(find.text('index'), findsOneWidget);
+      expect(
+        tester.getRect(find.byKey(const ValueKey('record-pane'))).right,
+        lessThanOrEqualTo(850),
+      );
       expect(find.text('person'), findsOneWidget);
       expect(find.text('record'), findsOneWidget);
       expect(

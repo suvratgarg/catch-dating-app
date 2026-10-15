@@ -590,7 +590,17 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostResponseOfferPreferencesRouteScreen(
       organizerId: _routeOrganizerQueryId(state)!,
       eventId: state.pathParameters['eventId']!,
-      onBack: () => context.pop(),
+      onBack: () => hostWorkspaceBack(
+        context,
+        fallback: state.uri
+            .replace(
+              path: Routes.hostResponseOfferScreen.path.replaceAll(
+                ':responseId',
+                Uri.encodeComponent(state.pathParameters['responseId']!),
+              ),
+            )
+            .toString(),
+      ),
     ),
   ),
   HostWorkspaceDestination(
@@ -602,7 +612,17 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostResponseOfferPreferencesRouteScreen(
       organizerId: _routeOrganizerQueryId(state)!,
       eventId: state.pathParameters['eventId']!,
-      onBack: () => context.pop(),
+      onBack: () => hostWorkspaceBack(
+        context,
+        fallback: state.uri
+            .replace(
+              path: Routes.hostResponseQueryOfferScreen.path.replaceAll(
+                ':formId',
+                Uri.encodeComponent(state.pathParameters['formId']!),
+              ),
+            )
+            .toString(),
+      ),
     ),
   ),
   HostWorkspaceDestination(
@@ -1019,7 +1039,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.events,
+    root: HostWorkspaceRoot.audience,
     path: Routes.hostApplicationsScreen.path,
     name: Routes.hostApplicationsScreen.name,
     redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
@@ -1380,7 +1400,7 @@ StatefulShellRoute _hostShellRoute(
       final parent = lineage.lastOrNull;
       final uri = _hostWorkspaceUri(root, state);
       final index = rootRoute.builder!(context, state);
-      return HostWorkspaceRouteScope.route(
+      return HostWorkspaceRouteFrame(
         index: index,
         navigator: child,
         selectedRoute: selected?.name,

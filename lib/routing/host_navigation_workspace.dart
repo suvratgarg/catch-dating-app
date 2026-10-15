@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Closed presentation contracts. Feature content cannot choose column counts.
@@ -107,9 +107,9 @@ class HostNavigationWorkspace extends StatelessWidget {
     final route = context
         .dependOnInheritedWidgetOfExactType<HostWorkspaceRouteScope>();
     final record = context
-        .dependOnInheritedWidgetOfExactType<_HostRouteRecordScope>();
+        .dependOnInheritedWidgetOfExactType<HostWorkspaceRecordScope>();
     final content = context
-        .dependOnInheritedWidgetOfExactType<_RouteContentKeys>();
+        .dependOnInheritedWidgetOfExactType<HostWorkspaceContentScope>();
     if (spec case final HostEditorWorkspace editor
         when record != null && content != null) {
       return CatchNavigationViewport(
@@ -117,7 +117,7 @@ class HostNavigationWorkspace extends StatelessWidget {
         panes: [
           CatchWorkspacePane(
             id: record.id,
-            child: _HostRoutedEditor(
+            child: HostWorkspaceEditorPane(
               id: record.id,
               spec: editor,
               attachments: content.attachments,
@@ -160,25 +160,6 @@ class HostWorkspaceRouteScope extends InheritedWidget {
     this.compactPaneId,
   });
 
-  /// Attaches router content to the existing viewport without owning geometry.
-  static Widget route({
-    Key? key,
-    required Widget index,
-    required Widget navigator,
-    required List<CatchWorkspacePane> ancestors,
-    required String? selectedRoute,
-    String? selectedContentId,
-    required VoidCallback onBack,
-  }) => _HostWorkspaceRouteFrame(
-    key: key,
-    index: index,
-    navigator: navigator,
-    ancestors: ancestors,
-    selectedRoute: selectedRoute,
-    selectedContentId: selectedContentId ?? selectedRoute,
-    onBack: onBack,
-  );
-
   final String? compactPaneId;
   final bool navigatorRoot;
   static bool isNavigatorRoot(BuildContext context) =>
@@ -208,29 +189,31 @@ class HostWorkspaceRouteContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = context
-        .dependOnInheritedWidgetOfExactType<_RouteContentKeys>();
+        .dependOnInheritedWidgetOfExactType<HostWorkspaceContentScope>();
     if (content == null) return builder(context);
     if (HostWorkspaceRouteScope.isNavigatorRoot(context) &&
-        content.activeId != id) {
+        (content.activeId != id ||
+            !(ModalRoute.isCurrentOf(context) ?? true))) {
       return const SizedBox.shrink();
     }
     return KeyedSubtree(
       key: content.keys.putIfAbsent(id, () => GlobalKey(debugLabel: id)),
-      child: _HostRouteRecordScope(id: id, child: builder(context)),
+      child: HostWorkspaceRecordScope(id: id, child: builder(context)),
     );
   }
 }
 
-class _HostWorkspaceRouteFrame extends StatefulWidget {
-  const _HostWorkspaceRouteFrame({
+/// Router frame retaining a single content element for each logical record.
+class HostWorkspaceRouteFrame extends StatefulWidget {
+  const HostWorkspaceRouteFrame({
     super.key,
     required this.index,
     required this.navigator,
     required this.ancestors,
     required this.selectedRoute,
-    required this.selectedContentId,
+    String? selectedContentId,
     required this.onBack,
-  });
+  }) : selectedContentId = selectedContentId ?? selectedRoute;
   final Widget index;
   final Widget navigator;
   final List<CatchWorkspacePane> ancestors;
@@ -239,11 +222,11 @@ class _HostWorkspaceRouteFrame extends StatefulWidget {
   final VoidCallback onBack;
 
   @override
-  State<_HostWorkspaceRouteFrame> createState() =>
+  State<HostWorkspaceRouteFrame> createState() =>
       _HostWorkspaceRouteFrameState();
 }
 
-class _HostWorkspaceRouteFrameState extends State<_HostWorkspaceRouteFrame> {
+class _HostWorkspaceRouteFrameState extends State<HostWorkspaceRouteFrame> {
   final _keys = <String, GlobalKey>{};
   final _attachments = <String, ValueNotifier<Widget?>>{};
 
@@ -267,7 +250,7 @@ class _HostWorkspaceRouteFrameState extends State<_HostWorkspaceRouteFrame> {
       navigatorRoot: true,
       child: widget.navigator,
     );
-    return _RouteContentKeys(
+    return HostWorkspaceContentScope(
       keys: _keys,
       activeId: widget.selectedContentId,
       attachments: _attachments,
@@ -310,8 +293,10 @@ class _HostWorkspaceRouteFrameState extends State<_HostWorkspaceRouteFrame> {
   }
 }
 
-class _RouteContentKeys extends InheritedWidget {
-  const _RouteContentKeys({
+/// Publishes route record keys and editor preview attachments.
+class HostWorkspaceContentScope extends InheritedWidget {
+  const HostWorkspaceContentScope({
+    super.key,
     required this.keys,
     required this.activeId,
     required this.attachments,
@@ -324,22 +309,28 @@ class _RouteContentKeys extends InheritedWidget {
   final VoidCallback onAttachmentsChanged;
 
   @override
-  bool updateShouldNotify(_RouteContentKeys oldWidget) =>
+  bool updateShouldNotify(HostWorkspaceContentScope oldWidget) =>
       activeId != oldWidget.activeId;
 }
 
-class _HostRouteRecordScope extends InheritedWidget {
-  const _HostRouteRecordScope({required this.id, required super.child});
+/// Identifies the record contributing content to the router frame.
+class HostWorkspaceRecordScope extends InheritedWidget {
+  const HostWorkspaceRecordScope({
+    super.key,
+    required this.id,
+    required super.child,
+  });
   final String id;
   @override
-  bool updateShouldNotify(_HostRouteRecordScope oldWidget) =>
+  bool updateShouldNotify(HostWorkspaceRecordScope oldWidget) =>
       id != oldWidget.id;
 }
 
 /// A routed editor contributes its preview to the enclosing strip. It never
 /// starts a second horizontal viewport inside an existing navigation pane.
-class _HostRoutedEditor extends StatefulWidget {
-  const _HostRoutedEditor({
+class HostWorkspaceEditorPane extends StatefulWidget {
+  const HostWorkspaceEditorPane({
+    super.key,
     required this.id,
     required this.spec,
     required this.attachments,
@@ -350,10 +341,11 @@ class _HostRoutedEditor extends StatefulWidget {
   final Map<String, ValueNotifier<Widget?>> attachments;
   final VoidCallback onChanged;
   @override
-  State<_HostRoutedEditor> createState() => _HostRoutedEditorState();
+  State<HostWorkspaceEditorPane> createState() =>
+      _HostWorkspaceEditorPaneState();
 }
 
-class _HostRoutedEditorState extends State<_HostRoutedEditor> {
+class _HostWorkspaceEditorPaneState extends State<HostWorkspaceEditorPane> {
   @override
   void initState() {
     super.initState();
@@ -361,7 +353,7 @@ class _HostRoutedEditorState extends State<_HostRoutedEditor> {
   }
 
   @override
-  void didUpdateWidget(_HostRoutedEditor oldWidget) {
+  void didUpdateWidget(HostWorkspaceEditorPane oldWidget) {
     super.didUpdateWidget(oldWidget);
     _publish();
   }
@@ -397,3 +389,16 @@ void openHostOrganizerSetting(
   Routes setting,
   String clubId,
 ) => context.pushNamed(setting.name, queryParameters: {'clubId': clubId});
+
+/// A route can be loaded directly, without a Navigator page for its parent.
+/// Prefer the owning workspace's Back policy; otherwise preserve the URI context.
+void hostWorkspaceBack(BuildContext context, {required String fallback}) {
+  final back = CatchWorkspaceBackScope.maybeOf(context);
+  if (back != null) {
+    back();
+  } else if (context.canPop()) {
+    context.pop();
+  } else {
+    context.go(fallback);
+  }
+}

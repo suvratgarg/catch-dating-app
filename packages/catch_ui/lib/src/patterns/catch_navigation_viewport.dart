@@ -63,6 +63,7 @@ class _CatchNavigationViewportState extends State<CatchNavigationViewport> {
   final _widths = <String, double>{};
   final _scroll = ScrollController();
   String? _revealedPane;
+  double? _revealedWidth;
   bool _revealScheduled = false;
 
   @override
@@ -71,18 +72,23 @@ class _CatchNavigationViewportState extends State<CatchNavigationViewport> {
     super.dispose();
   }
 
-  void _revealSelection(bool expanded) {
+  void _revealSelection(bool expanded, double viewportWidth) {
     final selected = widget.compactPaneId ?? widget.panes.last.id;
     if (!expanded) {
       _revealedPane = null;
+      _revealedWidth = null;
       return;
     }
-    if (_revealedPane == selected || _revealScheduled) return;
+    if ((_revealedPane == selected && _revealedWidth == viewportWidth) ||
+        _revealScheduled) {
+      return;
+    }
     _revealScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _revealScheduled = false;
       if (!mounted || !_scroll.hasClients) return;
       _revealedPane = selected;
+      _revealedWidth = viewportWidth;
       final index = widget.panes.indexWhere((pane) => pane.id == selected);
       final offset = widget.panes
           .take(index)
@@ -135,7 +141,7 @@ class _CatchNavigationViewportState extends State<CatchNavigationViewport> {
                   .fold<double>(0, (sum, width) => sum + width)
                   .clamp(constraints.maxWidth, double.infinity)
             : constraints.maxWidth;
-        _revealSelection(expanded);
+        _revealSelection(expanded, constraints.maxWidth);
         final t = CatchTokens.of(context);
         return PopScope(
           canPop: widget.onBack == null,

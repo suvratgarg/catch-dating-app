@@ -273,7 +273,7 @@ void main() {
         initialLocation: '/editor',
         routes: [
           ShellRoute(
-            builder: (context, state, child) => HostWorkspaceRouteScope.route(
+            builder: (context, state, child) => HostWorkspaceRouteFrame(
               index: HostNavigationWorkspace(
                 spec: HostDirectoryWorkspace<String>(
                   index: const Material(child: Text('Directory')),
@@ -375,7 +375,7 @@ void main() {
         initialLocation: '/index',
         routes: [
           ShellRoute(
-            builder: (context, state, child) => HostWorkspaceRouteScope.route(
+            builder: (context, state, child) => HostWorkspaceRouteFrame(
               index: HostNavigationWorkspace(
                 spec: HostTaskWorkspace(
                   content: Material(

@@ -17731,8 +17731,8 @@
             "symbol": "HostCampaignComposer"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-            "symbol": "HostSendsWorkspace"
+            "file": "lib/hosts/presentation/inbox/host_sends_page_body.dart",
+            "symbol": "HostSendsPageBody"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
@@ -18161,7 +18161,7 @@
           "id": "communication_intent_picker",
           "kind": "populated",
           "status": "tested",
-          "source": "HostSendsWorkspace + _HostSendsIntentPicker resolve conversation, saved-audience, event-announcement, and follower-update intents while provider policy remains in setup.",
+          "source": "HostSendsPageBody + _HostSendsIntentPicker resolve conversation, saved-audience, event-announcement, and follower-update intents while provider policy remains in setup.",
           "tests": [
             "test/hosts/host_inbox_screen_test.dart"
           ],
@@ -18205,7 +18205,7 @@
           "id": "follower_update_composer",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostSendsWorkspace + showHostFollowerUpdateComposer + HostClubPostController",
+          "source": "HostSendsPageBody + showHostFollowerUpdateComposer + HostClubPostController",
           "tests": [
             "test/hosts/host_follower_update_composer_test.dart",
             "test/hosts/host_inbox_screen_test.dart",

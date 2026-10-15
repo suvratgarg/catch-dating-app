@@ -134,7 +134,7 @@
       "path": "lib/routing/host_workspace_index_screen.dart",
       "requires": [
         {
-          "text": "Routes.hostTodayScreen =>"
+          "text": "Routes.hostTodayScreen ||"
         },
         {
           "text": "Routes.hostEventsScreen =>"
@@ -204,7 +204,7 @@
           "text": "HostDirectoryWorkspace<String>("
         },
         {
-          "text": "HostSendsWorkspace("
+          "text": "HostSendsPageBody("
         }
       ]
     },
