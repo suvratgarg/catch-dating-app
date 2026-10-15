@@ -105,18 +105,22 @@ class _EventChatParticipantsScreenState
           ref.read(uidProvider).asData?.value != reviewed.uid) {
         return;
       }
-      final latest = ref.read(
-        eventChatParticipantsControllerProvider(widget.eventId),
-      ).asData?.value;
+      final latest = ref
+          .read(eventChatParticipantsControllerProvider(widget.eventId))
+          .asData
+          ?.value;
       if (latest?.access?.canManage != true ||
           !latest!.page.items.any(
-            (row) => row.uid == person.uid &&
+            (row) =>
+                row.uid == person.uid &&
                 row.membershipRevision == person.membershipRevision,
           )) {
         return;
       }
       await ref
-          .read(eventChatParticipantsControllerProvider(widget.eventId).notifier)
+          .read(
+            eventChatParticipantsControllerProvider(widget.eventId).notifier,
+          )
           .manageMember(person, action);
     } finally {
       _ownedDialog = false;
@@ -131,8 +135,8 @@ class _EventChatParticipantsScreenState
     final provider = eventChatParticipantsControllerProvider(widget.eventId);
     final value = ref.watch(provider);
     final presented = catchAsyncStateFromAsyncValue(value);
-    final active = _resumed &&
-        ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog);
+    final active =
+        _resumed && ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog);
     _syncActive(active);
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -168,6 +172,9 @@ class _EventChatParticipantsScreenState
                       'eventId': widget.eventId,
                       'participantUid': uid,
                     },
+                    queryParameters: GoRouterState.of(
+                      context,
+                    ).uri.queryParameters,
                   ),
                   onLoadMore: () =>
                       unawaited(ref.read(provider.notifier).loadMore()),
@@ -227,10 +234,10 @@ class EventChatParticipantsRowList extends StatelessWidget {
                           person.isRemoved
                               ? l.eventChatMemberRemoved
                               : person.isBanned
-                                  ? l.eventChatMemberBanned
-                                  : person.isHost
-                                      ? l.eventChatParticipantHost
-                                      : l.eventChatParticipantAttendee,
+                              ? l.eventChatMemberBanned
+                              : person.isHost
+                              ? l.eventChatParticipantHost
+                              : l.eventChatParticipantAttendee,
                         ].join(' · '),
                         emphasis: CatchFieldEmphasis.title,
                         titleMaxLines: 3,
