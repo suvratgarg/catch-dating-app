@@ -469,14 +469,12 @@ class _HostSavedAudienceEditorFormState
         _pendingCreateRequestId = null;
         _previewError = null;
       });
-      ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
-      ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
+      _invalidateAudienceDirectories();
       final preview = await controller.previewAudience(
         organizerId: widget.organizerId,
         audience: saved,
       );
-      ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
-      ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
+      _invalidateAudienceDirectories();
       if (!mounted) return;
       if (widget.onSaved case final onSaved?) {
         onSaved(preview.audience);
@@ -509,8 +507,7 @@ class _HostSavedAudienceEditorFormState
         isCurrent: () => mounted,
       );
       if (!mounted) return;
-      ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
-      ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
+      _invalidateAudienceDirectories();
       setState(() {
         // Membership refresh does not rebase the editable draft. Save keeps
         // its original expectedRevision so concurrent edits still conflict.
@@ -545,8 +542,7 @@ class _HostSavedAudienceEditorFormState
       await ref
           .read(hostAudienceControllerProvider)
           .archiveAudience(organizerId: widget.organizerId, audience: audience);
-      ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
-      ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
+      _invalidateAudienceDirectories();
       if (mounted) context.pop(audience);
     } on Object catch (error) {
       if (mounted) _showError(error);

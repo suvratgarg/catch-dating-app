@@ -29,5 +29,16 @@ extension _HostCustomersDirectoryActions on _HostCustomersScreenState {
     if (!mounted || saved == null) return;
     ref.invalidate(hostSavedAudiencesProvider(club.id));
     ref.invalidate(hostAllSavedAudiencesProvider(club.id));
+    ref.invalidate(hostAllSavedAudienceSummariesProvider(club.id));
+    ref.invalidate(hostGroupDirectoryControllerProvider);
+  }
+}
+
+extension _HostSavedAudienceEditorActions on _HostSavedAudienceEditorFormState {
+  void _invalidateAudienceDirectories() {
+    ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
+    ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
+    ref.invalidate(hostAllSavedAudienceSummariesProvider(widget.organizerId));
+    ref.invalidate(hostGroupDirectoryControllerProvider);
   }
 }

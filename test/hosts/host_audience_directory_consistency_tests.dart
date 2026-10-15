@@ -40,9 +40,11 @@ void _registerAudienceDirectoryConsistencyTests() {
               _customerDirectoryState(),
             ),
           ),
-          hostAllSavedAudiencesProvider(club.id).overrideWithValue(
-            AsyncData(
-              HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+          hostGroupDirectoryControllerProvider.overrideWith2(
+            (_) => _FixedHostGroupDirectoryController(
+              AsyncData(
+                HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+              ),
             ),
           ),
         ],

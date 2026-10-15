@@ -1,3 +1,5 @@
+import {redactResponseSummary} from "../hostReadModels/responseRedaction";
+import {responseSummaryId} from "../hostReadModels/responseIds";
 import {readParticipantFormResponseProof} from
   "../profiles/participantFormActivitySource";
 import {organizerFormEventTargetAvailable, requireOrganizerFormEventTarget} from
@@ -957,8 +959,12 @@ export async function withdrawOrganizerFormResponseHandler(
   );
   const responseRef = db.collection("organizerFormResponses")
     .doc(data.responseId);
+  const summaryRef = db.collection("hostResponseSummaries")
+    .doc(responseSummaryId("response", data.responseId));
   const response = await db.runTransaction(async (tx) => {
-    const snapshot = await tx.get(responseRef);
+    const [snapshot, summarySnap] = await Promise.all([
+      tx.get(responseRef), tx.get(summaryRef),
+    ]);
     if (!snapshot.exists) {
       throw new HttpsError("not-found", "Form response not found.");
     }
@@ -967,8 +973,14 @@ export async function withdrawOrganizerFormResponseHandler(
       "OrganizerFormResponseDocument"
     );
     requireResponseAuthority(current, request, data.withdrawalToken);
-    if (current.status === "withdrawn") return current;
+    // Redaction commits with authority, including idempotent withdrawal.
     const now = deps.timestamp();
+    const redacted = redactResponseSummary(summarySnap.data(),
+      current.organizerId, "response", data.responseId,
+      current.withdrawnAt?.toMillis() ?? now.toMillis());
+    if (redacted) tx.set(summaryRef, redacted);
+    else tx.delete(summaryRef);
+    if (current.status === "withdrawn") return current;
     const withdrawn: OrganizerFormResponseDocument = {
       ...current,
       status: "withdrawn",

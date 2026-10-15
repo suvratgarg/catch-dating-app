@@ -21,8 +21,8 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
         scrollKey: const PageStorageKey<String>('host-customers-audiences'),
         onRefresh: () async {
           ref.invalidate(hostSavedAudiencesProvider(organizerId));
-          ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
-          await ref.read(hostAllSavedAudiencesProvider(organizerId).future);
+          ref.invalidate(hostAllSavedAudienceSummariesProvider(organizerId));
+          ref.invalidate(hostGroupDirectoryControllerProvider);
         },
         children: [
           HostSavedAudiencesDirectory(
@@ -55,13 +55,47 @@ class _HostSavedAudiencesDirectoryState
     extends ConsumerState<HostSavedAudiencesDirectory> {
   _HostSavedAudienceMembership _membership = _HostSavedAudienceMembership.all;
   bool _byName = true;
+  int _openGeneration = 0;
+  HostGroupDirectoryControllerProvider get _directoryProvider =>
+      hostGroupDirectoryControllerProvider(
+        organizerId,
+        byName: _byName,
+        isStatic: switch (_membership) {
+          _HostSavedAudienceMembership.manual => true,
+          _HostSavedAudienceMembership.automatic => false,
+          _HostSavedAudienceMembership.all => null,
+        },
+      );
+
+  @override
+  void didUpdateWidget(covariant HostSavedAudiencesDirectory oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.organizerId != widget.organizerId ||
+        oldWidget.query != widget.query) {
+      ++_openGeneration;
+    }
+  }
+
+  @override
+  void dispose() {
+    ++_openGeneration;
+    super.dispose();
+  }
+
   String get organizerId => widget.organizerId;
   String? get query => widget.query;
   ValueChanged<HostSavedAudience> get onOpen => widget.onOpen;
 
   @override
   Widget build(BuildContext context) {
-    final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
+    final searching = query?.trim().isNotEmpty ?? false;
+    final directory = searching ? null : ref.watch(_directoryProvider);
+    final continuation = directory == null
+        ? null
+        : catchAsyncStateFromAsyncValue(directory).value;
+    final audiences = searching
+        ? ref.watch(hostAllSavedAudienceSummariesProvider(organizerId))
+        : directory!.whenData((state) => state.page);
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
@@ -89,10 +123,17 @@ class _HostSavedAudiencesDirectoryState
                   ),
           ),
         ),
-        CatchAsyncBoundary<HostSavedAudiencePage>.sliver(
+        CatchAsyncBoundary<HostSavedAudienceSummaryPage>.sliver(
           value: audiences,
-          onRetry: () =>
-              ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          onRetry: () {
+            if (searching) {
+              ref.invalidate(
+                hostAllSavedAudienceSummariesProvider(organizerId),
+              );
+            } else {
+              ref.invalidate(_directoryProvider);
+            }
+          },
           initialLoadTimeout: null,
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             itemCount: 4,
@@ -115,9 +156,9 @@ class _HostSavedAudiencesDirectoryState
                     .where(
                       (audience) => switch (_membership) {
                         _HostSavedAudienceMembership.automatic =>
-                          !audience.definition.isStatic,
+                          !audience.isStatic,
                         _HostSavedAudienceMembership.manual =>
-                          audience.definition.isStatic,
+                          audience.isStatic,
                         _HostSavedAudienceMembership.all => true,
                       },
                     )
@@ -152,16 +193,52 @@ class _HostSavedAudiencesDirectoryState
                       ),
                       content: CatchRecordLayout(
                         title: audience.name,
-                        facts: [_savedAudienceDirectoryBody(context, audience)],
+                        facts: [
+                          _savedAudienceSummaryDirectoryBody(context, audience),
+                        ],
                         icon: CatchIcons.groupsOutlined,
-                        metadata: audience.definition.isStatic
+                        metadata: audience.isStatic
                             ? context.l10n.hostAudienceManualGroup
                             : context.l10n.hostAudienceAutomaticGroup,
                       ),
-                      onActivate: () => onOpen(audience),
+                      onActivate: () => _openSummary(audience),
                     );
                   },
                 ),
+                if (continuation != null &&
+                    (continuation.page.nextCursor != null ||
+                        continuation.loadMoreError != null))
+                  CatchPageBody.sliver(
+                    child: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          CatchButton(
+                            label: context.l10n.hostCustomersLoadMore,
+                            variant: CatchButtonVariant.secondary,
+                            size: CatchButtonSize.sm,
+                            status: continuation.loadingMore
+                                ? CatchButtonStatus.loading
+                                : CatchButtonStatus.idle,
+                            onPressed: continuation.loadingMore
+                                ? null
+                                : () => ref
+                                      .read(_directoryProvider.notifier)
+                                      .loadMore(),
+                          ),
+                          if (continuation.loadMoreError != null)
+                            CatchLocalizedErrorState(
+                              continuation.loadMoreError!,
+                              context: AppErrorContext.customer,
+                              mode: CatchErrorStateMode.compact,
+                              onRetry: () => ref
+                                  .read(_directoryProvider.notifier)
+                                  .loadMore(),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (visible.isEmpty)
                   SliverToBoxAdapter(
                     child: CatchEmptyState(
@@ -185,6 +262,27 @@ class _HostSavedAudiencesDirectoryState
         ),
       ],
     );
+  }
+
+  Future<void> _openSummary(HostSavedAudienceSummary summary) async {
+    final owner = organizerId;
+    final generation = ++_openGeneration;
+    bool isCurrent() =>
+        mounted && organizerId == owner && generation == _openGeneration;
+    try {
+      final audience = await ref.read(
+        hostSavedAudienceDetailProvider(owner, summary.audienceId).future,
+      );
+      if (isCurrent()) onOpen(audience);
+    } on Object catch (error) {
+      if (mounted && isCurrent()) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.customer,
+        );
+      }
+    }
   }
 
   Future<void> _chooseSort() async {
@@ -231,8 +329,8 @@ class _HostSavedAudiencesDirectoryState
   }
 }
 
-List<HostSavedAudience> _matchingSavedAudiences(
-  List<HostSavedAudience> audiences,
+List<HostSavedAudienceSummary> _matchingSavedAudiences(
+  List<HostSavedAudienceSummary> audiences,
   String? query,
 ) {
   final normalized = query?.trim().toLowerCase();
@@ -245,6 +343,14 @@ List<HostSavedAudience> _matchingSavedAudiences(
 String _savedAudienceDirectoryBody(
   BuildContext context,
   HostSavedAudience audience,
+) => _savedAudienceSummaryDirectoryBody(
+  context,
+  HostSavedAudienceSummary.fromAudience(audience),
+);
+
+String _savedAudienceSummaryDirectoryBody(
+  BuildContext context,
+  HostSavedAudienceSummary audience,
 ) {
   final count = audience.lastPreviewMatchCount;
   final countLabel = count == null

@@ -16,17 +16,22 @@ part 'host_customers_controller.g.dart';
 @riverpod
 class HostCustomersDirectoryController
     extends _$HostCustomersDirectoryController {
+  int _generation = 0;
+
   @override
   Future<HostCustomersDirectoryState> build(
     HostCustomersDirectoryRequest request,
   ) async {
+    ++_generation;
+    ref.onDispose(() => ++_generation);
     final page = await ref
-        .read(hostContactsRepositoryProvider)
+        .watch(hostContactsRepositoryProvider)
         .listContacts(request.organizerId, query: _queryFor(request));
     return _directoryStateFromPage(page);
   }
 
   Future<void> loadMore() async {
+    final generation = _generation;
     final current = state.asData?.value;
     if (current == null || !current.canLoadMore) return;
     state = AsyncData(
@@ -39,6 +44,7 @@ class HostCustomersDirectoryController
             request.organizerId,
             query: _queryFor(request, cursor: current.nextCursor),
           );
+      if (!ref.mounted || generation != _generation) return;
       final byId = <String, HostCustomerDirectoryContact>{
         for (final contact in current.contacts) contact.contactId: contact,
         for (final contact in page.contacts)
@@ -64,6 +70,7 @@ class HostCustomersDirectoryController
         ),
       );
     } on Object catch (error) {
+      if (!ref.mounted || generation != _generation) return;
       state = AsyncData(
         current.copyWith(loadingMore: false, loadMoreError: error),
       );
@@ -76,19 +83,18 @@ Future<HostCustomerSegmentCount> hostCustomerSegmentCount(
   Ref ref,
   HostCustomerSegmentCountRequest request,
 ) async {
-  final page = await ref
-      .read(hostContactsRepositoryProvider)
-      .listContacts(
+  final count = await ref
+      .watch(hostContactsRepositoryProvider)
+      .countContacts(
         request.organizerId,
         query: HostAudienceQuery(
           search: request.search,
           segment: hostAudienceSegmentForCustomerFilter(request.filter),
         ),
-        limit: 1,
       );
   return HostCustomerSegmentCount(
-    count: page.matchCount,
-    coverage: _matchCountCoverage(page.matchCountCoverage),
+    count: count.count,
+    coverage: _matchCountCoverage(count.coverage),
   );
 }
 
