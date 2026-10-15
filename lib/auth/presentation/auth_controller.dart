@@ -68,12 +68,16 @@ class AuthController extends _$AuthController {
 
   int? _resendToken;
   Future<void>? _sendOtpInFlight;
-  int _flowGeneration = 0;
+  Object? _otpAttempt;
+  Completer<void>? _sendOtpCompleter;
 
   @override
-  AuthScreenState build() => AuthScreenState(
-    countryCode: ref.watch(authInitialCountryDialCodeProvider),
-  );
+  AuthScreenState build() {
+    ref.onDispose(_abandonOtpAttempt);
+    return AuthScreenState(
+      countryCode: ref.watch(authInitialCountryDialCodeProvider),
+    );
+  }
 
   void setCountryCode(String code) {
     if (_sendOtpInFlight != null) return;
@@ -86,7 +90,14 @@ class AuthController extends _$AuthController {
     sendOtpMutation.reset(ref);
   }
 
-  void goToStep(AuthStep step) => state = state.copyWith(step: step);
+  void goToStep(AuthStep step) {
+    if (step == AuthStep.phone) {
+      _abandonOtpAttempt();
+      state = state.copyWith(step: step, verificationId: null);
+      return;
+    }
+    state = state.copyWith(step: step);
+  }
 
   Future<void> sendOtp(String phoneNumber, String countryCode) {
     final existingRequest = _sendOtpInFlight;
@@ -103,8 +114,6 @@ class AuthController extends _$AuthController {
   }
 
   Future<void> _sendOtp(String phoneNumber, String countryCode) async {
-    final requestGeneration = _flowGeneration;
-    bool isCurrentRequest() => requestGeneration == _flowGeneration;
     final normalizedCountryCode = AuthInput.normalizeCountryCode(countryCode);
     final normalizedPhoneNumber = AuthInput.normalizePhoneInput(phoneNumber);
     final formatted = AuthInput.formatPhoneNumber(
@@ -122,6 +131,13 @@ class AuthController extends _$AuthController {
         : null;
     if (forceResendingToken == null) _resendToken = null;
 
+    // Rejected input and duplicate dispatches do not supersede the current
+    // attempt. codeSent settles the send, but keeps automatic verification
+    // eligible until a newer accepted send or explicit abandonment.
+    final attempt = Object();
+    _otpAttempt = attempt;
+    bool isCurrentRequest() => ref.mounted && identical(_otpAttempt, attempt);
+
     state = state.copyWith(
       verificationId: null,
       phoneNumber: phoneNumberForState,
@@ -131,6 +147,7 @@ class AuthController extends _$AuthController {
     _debugLogOtpRequest(formatted);
 
     final completer = Completer<void>();
+    _sendOtpCompleter = completer;
 
     unawaited(
       ref
@@ -199,15 +216,18 @@ class AuthController extends _$AuthController {
 
     return completer.future.timeout(
       CatchMotion.authOtpResendCooldown,
-      onTimeout: () => throw const NetworkException(
-        'timeout',
-        'The verification request timed out. Please check your connection and try again.',
-        context: BackendErrorContext(
-          service: BackendService.auth,
-          action: 'send verification code',
-          resource: 'phone_auth',
-        ),
-      ),
+      onTimeout: () {
+        if (isCurrentRequest()) _abandonOtpAttempt();
+        throw const NetworkException(
+          'timeout',
+          'The verification request timed out. Please check your connection and try again.',
+          context: BackendErrorContext(
+            service: BackendService.auth,
+            action: 'send verification code',
+            resource: 'phone_auth',
+          ),
+        );
+      },
     );
   }
 
@@ -226,13 +246,21 @@ class AuthController extends _$AuthController {
   }
 
   void reset() {
-    _flowGeneration += 1;
-    _resendToken = null;
+    _abandonOtpAttempt();
     state = AuthScreenState(
       countryCode: ref.read(authInitialCountryDialCodeProvider),
     );
     sendOtpMutation.reset(ref);
     verifyOtpMutation.reset(ref);
+  }
+
+  void _abandonOtpAttempt() {
+    _otpAttempt = null;
+    _resendToken = null;
+    _sendOtpInFlight = null;
+    final completer = _sendOtpCompleter;
+    _sendOtpCompleter = null;
+    if (completer != null && !completer.isCompleted) completer.complete();
   }
 
   void _debugLogOtpRequest(String formattedPhoneNumber) {
