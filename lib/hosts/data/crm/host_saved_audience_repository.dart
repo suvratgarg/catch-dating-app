@@ -324,6 +324,27 @@ Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
     .watch(hostSavedAudienceRepositoryProvider)
     .savedAudienceFilterOptions(organizerId);
 
+/// Fresh selected Group details stay alive only while the requested read runs.
+/// Session changes still dispose the provider and fence the repository result.
+@riverpod
+Future<HostSavedAudience> hostSavedAudienceDetail(
+  Ref ref,
+  String organizerId,
+  String audienceId,
+) async {
+  final repository = ref.watch(hostSavedAudienceRepositoryProvider);
+  final pendingRead = ref.keepAlive();
+  try {
+    return await repository.reloadSavedAudience(
+      organizerId: organizerId,
+      audienceId: audienceId,
+      isCurrent: () => ref.mounted,
+    );
+  } finally {
+    pendingRead.close();
+  }
+}
+
 /// Preserves the workspace's exhaustive local name search using small metadata
 /// documents; full selected-member lists are loaded only when a group opens.
 @riverpod

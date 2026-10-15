@@ -47,9 +47,15 @@ const _reach = HostAudienceReachSummary(
 )
 Widget hostGroupsDirectory(BuildContext context) => ProviderScope(
   overrides: [
-    hostAllSavedAudiencesProvider(_audience.organizerId).overrideWith(
-      (_) async =>
-          HostSavedAudiencePage(audiences: [_audience], nextCursor: null),
+    hostGroupDirectoryControllerProvider(
+      _audience.organizerId,
+    ).overrideWithBuild(
+      (ref, notifier) async => HostGroupDirectoryState(
+        page: HostSavedAudienceSummaryPage(
+          audiences: [HostSavedAudienceSummary.fromAudience(_audience)],
+          nextCursor: null,
+        ),
+      ),
     ),
   ],
   child: SizedBox(

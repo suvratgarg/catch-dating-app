@@ -413,6 +413,106 @@ final class HostSavedAudienceFilterOptionsFamily extends $Family
   String toString() => r'hostSavedAudienceFilterOptionsProvider';
 }
 
+/// Fresh selected Group details stay alive only while the requested read runs.
+/// Session changes still dispose the provider and fence the repository result.
+
+@ProviderFor(hostSavedAudienceDetail)
+final hostSavedAudienceDetailProvider = HostSavedAudienceDetailFamily._();
+
+/// Fresh selected Group details stay alive only while the requested read runs.
+/// Session changes still dispose the provider and fence the repository result.
+
+final class HostSavedAudienceDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSavedAudience>,
+          HostSavedAudience,
+          FutureOr<HostSavedAudience>
+        >
+    with
+        $FutureModifier<HostSavedAudience>,
+        $FutureProvider<HostSavedAudience> {
+  /// Fresh selected Group details stay alive only while the requested read runs.
+  /// Session changes still dispose the provider and fence the repository result.
+  HostSavedAudienceDetailProvider._({
+    required HostSavedAudienceDetailFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostSavedAudienceDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostSavedAudienceDetailHash();
+
+  @override
+  String toString() {
+    return r'hostSavedAudienceDetailProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostSavedAudience> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostSavedAudience> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostSavedAudienceDetail(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostSavedAudienceDetailProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostSavedAudienceDetailHash() =>
+    r'82040e9e316e0fb547fb6aff52d1368a49e9d44b';
+
+/// Fresh selected Group details stay alive only while the requested read runs.
+/// Session changes still dispose the provider and fence the repository result.
+
+final class HostSavedAudienceDetailFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostSavedAudience>,
+          (String, String)
+        > {
+  HostSavedAudienceDetailFamily._()
+    : super(
+        retry: null,
+        name: r'hostSavedAudienceDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Fresh selected Group details stay alive only while the requested read runs.
+  /// Session changes still dispose the provider and fence the repository result.
+
+  HostSavedAudienceDetailProvider call(String organizerId, String audienceId) =>
+      HostSavedAudienceDetailProvider._(
+        argument: (organizerId, audienceId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostSavedAudienceDetailProvider';
+}
+
 /// Preserves the workspace's exhaustive local name search using small metadata
 /// documents; full selected-member lists are loaded only when a group opens.
 
