@@ -2,6 +2,7 @@ import {webcrypto, createHash, generateKeyPairSync, privateDecrypt, createDeciph
 import type {Auth, User, IdTokenResult} from "firebase/auth";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {loopbackOrigin, sessionRequest, transferSession, type SessionRequest} from "./operatorSessionHandoff";
+import {sessionFailureCode} from "./operatorSessionTransport";
 const mocks = vi.hoisted(() => ({getIdTokenResult: vi.fn()}));
 vi.mock("firebase/auth", () => ({getIdTokenResult: mocks.getIdTokenResult}));
 const now = 1800000000000;
@@ -74,7 +75,26 @@ describe("protected session protocol", () => {
   });
   it("keeps SDK exceptions private to the protected UI's fixed error handling", async () => {
     mocks.getIdTokenResult.mockRejectedValue(new Error("synthetic.private.signature"));
-    await expect(transferSession(auth(), request, () => true, () => now)).rejects.toThrow();
+    const error = await transferSession(auth(), request, () => true, () => now).catch(error => error);
+    expect(sessionFailureCode(error)).toBe("client_refresh_failed");
+    expect(error.message).toBe("Protected session handoff unavailable.");
+    expect(JSON.stringify(error)).not.toContain("synthetic.private.signature");
+  });
+  it("distinguishes a stale sign-in from mismatched signed metadata without exposing either", async () => {
+    mocks.getIdTokenResult.mockResolvedValue({...result(), claims: {...result().claims, auth_time: now / 1000 - 901}});
+    const stale = await transferSession(auth(), request, () => true, () => now).catch(error => error);
+    expect(sessionFailureCode(stale)).toBe("client_sign_in_required");
+    mocks.getIdTokenResult.mockResolvedValue({...result(), claims: {...result().claims, auth_time: now / 1000 - 901, sub: "other"}});
+    const mismatch = await transferSession(auth(), request, () => true, () => now).catch(error => error);
+    expect(sessionFailureCode(mismatch)).toBe("client_session_rejected");
+    expect(stale.message).toBe(mismatch.message);
+  });
+  it("classifies account rejection before refresh and redacts unrecognized errors", async () => {
+    const error = await transferSession({...auth(), currentUser: {...user, uid: "other"}} as Auth,
+      request, () => true, () => now).catch(error => error);
+    expect(sessionFailureCode(error)).toBe("client_account_rejected");
+    expect(mocks.getIdTokenResult).not.toHaveBeenCalled();
+    expect(sessionFailureCode({code: "helper_verification_failed", message: "synthetic.private.signature"})).toBe("handoff_unavailable");
   });
 });
 

@@ -1,3 +1,18 @@
+const failureCodes = ["client_request_rejected", "client_account_rejected", "client_refresh_failed",
+  "client_session_rejected", "client_sign_in_required", "client_encryption_failed", "client_state_changed",
+  "local_connection_failed", "local_receipt_unverified", "helper_admission_failed",
+  "helper_verification_failed", "helper_commit_unconfirmed", "handoff_unavailable"] as const;
+type SessionFailureCode = typeof failureCodes[number];
+export class SessionHandoffError extends Error {
+  readonly code: SessionFailureCode;
+  constructor(code: SessionFailureCode) {
+    super("Protected session handoff unavailable.");
+    this.code = failureCodes.includes(code) ? code : "handoff_unavailable";
+  }
+}
+export function sessionFailureCode(error: unknown): SessionFailureCode {
+  return error instanceof SessionHandoffError && failureCodes.includes(error.code) ? error.code : "handoff_unavailable";
+}
 export interface SessionLaunch {
   kind: "catch-operator-session-launch";
   schemaVersion: 1;
@@ -90,22 +105,35 @@ export function createSessionTransport(launch: Readonly<SessionLaunch>, dispatch
   // Freeze an independent copy. No HTTP response may update either key.
   const pinned = sessionLaunch(b64(encode(JSON.stringify(launch))));
   const post = async (route: "/bootstrap" | "/configure" | "/session" | "/cancel", value: unknown, csrf?: string) => {
-    if (Date.now() >= pinned.expiresAtMillis) unavailable();
-    const requestId = b64(crypto.getRandomValues(new Uint8Array(32)));
-    const id = Array.from(binary(requestId, 32), b => b.toString(16).padStart(2, "0")).join("");
-    const body = JSON.stringify(value);
-    const digest = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", encode(body))), b => b.toString(16).padStart(2, "0")).join("");
-    const response = await dispatch(pinned.localOrigin + route, {method: "POST", mode: "cors", credentials: "omit", redirect: "error", referrerPolicy: "no-referrer", signal: AbortSignal.timeout(12000),
-      headers: {"Content-Type": "application/json", "X-Catch-Request": id, ...(csrf ? {"X-Catch-CSRF": csrf} : {})}, body});
-    const raw = await response.text();
-    if (raw.length > 131072) unavailable();
-    const signed = JSON.parse(raw) as {payload: string; signature: string};
-    if (!signed || Object.keys(signed).sort().join(",") !== "payload,signature" || typeof signed.payload !== "string") unavailable();
-    const context = JSON.stringify([pinned.challenge, pinned.sourceSha, pinned.expiresAtMillis, "POST", route, id, digest, response.status, signed.payload]);
-    if (!await crypto.subtle.verify({name: "RSA-PSS", saltLength: 32}, await key(pinned.serverSigningKey, "RSA-PSS", "verify"), binary(signed.signature, 256), encode(context)) || Date.now() >= pinned.expiresAtMillis) unavailable();
-    const payload: unknown = JSON.parse(signed.payload);
-    if (!response.ok && !(route === "/cancel" && response.status === 409)) unavailable();
-    return payload;
+    let failure: SessionFailureCode = "local_connection_failed";
+    try {
+      if (Date.now() >= pinned.expiresAtMillis) unavailable();
+      const requestId = b64(crypto.getRandomValues(new Uint8Array(32)));
+      const id = Array.from(binary(requestId, 32), b => b.toString(16).padStart(2, "0")).join("");
+      const body = JSON.stringify(value);
+      const digest = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", encode(body))), b => b.toString(16).padStart(2, "0")).join("");
+      const response = await dispatch(pinned.localOrigin + route, {method: "POST", mode: "cors", credentials: "omit", redirect: "error", referrerPolicy: "no-referrer", signal: AbortSignal.timeout(12000),
+        headers: {"Content-Type": "application/json", "X-Catch-Request": id, ...(csrf ? {"X-Catch-CSRF": csrf} : {})}, body});
+      failure = "local_receipt_unverified";
+      const raw = await response.text();
+      if (raw.length > 131072) unavailable();
+      const signed = JSON.parse(raw) as {payload: string; signature: string};
+      if (!signed || Object.keys(signed).sort().join(",") !== "payload,signature" || typeof signed.payload !== "string") unavailable();
+      const context = JSON.stringify([pinned.challenge, pinned.sourceSha, pinned.expiresAtMillis, "POST", route, id, digest, response.status, signed.payload]);
+      if (!await crypto.subtle.verify({name: "RSA-PSS", saltLength: 32}, await key(pinned.serverSigningKey, "RSA-PSS", "verify"), binary(signed.signature, 256), encode(context)) || Date.now() >= pinned.expiresAtMillis) unavailable();
+      const payload: unknown = JSON.parse(signed.payload);
+      if (!response.ok && !(route === "/cancel" && response.status === 409)) {
+        const rejected = payload as {state?: unknown; code?: unknown} | null;
+        if (route === "/session" && response.status === 400 && rejected &&
+            Object.keys(rejected).sort().join(",") === "code,state" && rejected.state === "unavailable" &&
+            (rejected.code === "helper_admission_failed" || rejected.code === "helper_verification_failed" ||
+            rejected.code === "helper_commit_unconfirmed")) failure = rejected.code;
+        unavailable();
+      }
+      return payload;
+    } catch {
+      throw new SessionHandoffError(failure);
+    }
   };
   return {post, cancelOnUnload(csrf: string) {
     const id = Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, "0")).join("");
