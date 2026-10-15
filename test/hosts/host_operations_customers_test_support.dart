@@ -1,5 +1,29 @@
 part of 'host_operations_screen_test.dart';
 
+class _FixedHostGroupDirectoryController extends HostGroupDirectoryController {
+  _FixedHostGroupDirectoryController(this.value);
+
+  final AsyncValue<HostSavedAudiencePage> value;
+
+  @override
+  Future<HostGroupDirectoryState> build(
+    String organizerId, {
+    bool byName = true,
+    bool? isStatic,
+  }) async => value.when(
+    data: (page) => HostGroupDirectoryState(
+      page: HostSavedAudienceSummaryPage(
+        audiences: page.audiences
+            .map(HostSavedAudienceSummary.fromAudience)
+            .toList(),
+        nextCursor: page.nextCursor,
+      ),
+    ),
+    error: Error.throwWithStackTrace,
+    loading: () => throw StateError('Use a settled directory fixture.'),
+  );
+}
+
 HostCustomerDirectoryContact _customerDirectoryContact({
   bool hasAmbiguousIdentity = false,
   String contactId = 'contact-1',

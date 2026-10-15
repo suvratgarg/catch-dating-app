@@ -1,0 +1,28 @@
+{
+  "organizerId": "org",
+  "contactSummaryVersion": 1,
+  "segmentCounts": {
+    "new_to_organizer": 1
+  },
+  "manualTagVocabulary": [],
+  "sourceCoverage": "exact",
+  "projectionVersion": 1,
+  "summary": {
+    "organizerId": "org",
+    "contactCount": 1,
+    "pastAttendeeCount": 0,
+    "repeatAttendeeCount": 0,
+    "advocateCount": 0,
+    "highImpactAdvocateCount": 0,
+    "linkedAccountCount": 0,
+    "importedContactCount": 0,
+    "whatsappOptInCount": 0,
+    "smsOptInCount": 0,
+    "truncated": false,
+    "readiness": {
+      "inApp": "currentEventOnly",
+      "whatsapp": "providerSetupRequired",
+      "sms": "providerAndDltSetupRequired"
+    }
+  }
+}

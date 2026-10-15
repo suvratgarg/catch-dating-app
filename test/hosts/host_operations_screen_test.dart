@@ -97,6 +97,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -330,6 +331,7 @@ Future<void> _pumpHostScreen(
     ProviderScope(
       key: resetProviderScope ? UniqueKey() : null,
       overrides: [
+        firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
         hostTodayPreferenceProvider.overrideWith(
           (ref, scope) async => const HostTodayPreference.skipped(),
         ),

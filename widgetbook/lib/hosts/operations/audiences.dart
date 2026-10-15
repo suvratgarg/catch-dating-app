@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
@@ -57,7 +59,20 @@ Widget hostSavedAudiencesStates(BuildContext context) {
         height: WidgetbookPreviewLayout.feedbackViewportHeight,
         child: WidgetbookFixtureScope(
           overrides: [
-            hostAllSavedAudiencesProvider(organizerId).overrideWithValue(value),
+            hostGroupDirectoryControllerProvider(organizerId).overrideWithBuild(
+              (ref, notifier) => value.when(
+                data: (page) => HostGroupDirectoryState(
+                  page: HostSavedAudienceSummaryPage(
+                    audiences: page.audiences
+                        .map(HostSavedAudienceSummary.fromAudience)
+                        .toList(),
+                    nextCursor: page.nextCursor,
+                  ),
+                ),
+                error: (error, stack) => Future.error(error, stack),
+                loading: () => Completer<HostGroupDirectoryState>().future,
+              ),
+            ),
           ],
           child: CatchRootScreenScaffold.withPrimaryRail(
             header: CatchRootScreenHeader.custom(

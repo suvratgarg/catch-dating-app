@@ -1,6 +1,1907 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const hostResponseSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_response_summaries.schema.json",
+  "title": "HostResponseSummaryDocument",
+  "description": "Server-maintained response inbox metadata. No answer snapshots or asset URLs. Withdrawal atomically redacts a verified view or deletes an invalid view.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostResponseSummaries",
+  "x-firestore-path": "hostResponseSummaries/{summaryId}",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "summaryId",
+    "kind",
+    "formId",
+    "submittedAtMillis",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "summaryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "enum": [
+        "response",
+        "application"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "submittedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entryId",
+        "submittedAtMillis",
+        "response",
+        "application"
+      ],
+      "properties": {
+        "entryId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "submittedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "response": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "formTitle",
+                "versionId",
+                "version",
+                "status",
+                "identityKind",
+                "identity",
+                "sourceLinkId",
+                "sourceLabel",
+                "submittedAtMillis",
+                "withdrawnAtMillis",
+                "highlights",
+                "conversionKinds"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formTitle": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "identityKind": {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                "identity": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "displayName",
+                    "email",
+                    "phoneE164",
+                    "searchName",
+                    "origin"
+                  ],
+                  "properties": {
+                    "displayName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 160
+                    },
+                    "email": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "email",
+                      "maxLength": 320
+                    },
+                    "phoneE164": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^\\+[1-9][0-9]{7,14}$"
+                    },
+                    "searchName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 160
+                    },
+                    "origin": {
+                      "type": "string",
+                      "enum": [
+                        "anonymous",
+                        "respondentGranted",
+                        "organizerAcquired"
+                      ]
+                    }
+                  }
+                },
+                "sourceLinkId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "sourceLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 120
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawnAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "highlights": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "questionId",
+                      "label",
+                      "answer"
+                    ],
+                    "properties": {
+                      "questionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "answer": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 10000
+                          },
+                          {
+                            "type": "number",
+                            "minimum": -1000000000,
+                            "maximum": 1000000000
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "array",
+                            "maxItems": 100,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 500
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "conversionKinds": {
+                  "type": "array",
+                  "maxItems": 4,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "crmContact",
+                      "application",
+                      "eventAttendeeProposal",
+                      "followUp"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "application": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "applicationId",
+                "formId",
+                "formVersionId",
+                "targetKind",
+                "targetId",
+                "applicantDisplayName",
+                "reviewStatus",
+                "dataAccessState",
+                "sourceKind",
+                "providerId",
+                "submittedAtMillis",
+                "revision"
+              ],
+              "properties": {
+                "applicationId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formVersionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "targetKind": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "campaign"
+                  ]
+                },
+                "targetId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "applicantDisplayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "reviewStatus": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "inReview",
+                    "approved",
+                    "waitlisted",
+                    "declined",
+                    "withdrawn"
+                  ]
+                },
+                "dataAccessState": {
+                  "type": "string",
+                  "enum": [
+                    "organizerImported",
+                    "activeParticipantGrant",
+                    "revokedParticipantGrant",
+                    "submittedFormResponse"
+                  ]
+                },
+                "sourceKind": {
+                  "type": "string",
+                  "enum": [
+                    "native",
+                    "tabularImport",
+                    "connector"
+                  ]
+                },
+                "providerId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "contactId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "sourceResponseId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostGroupDetailDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_group_details.schema.json",
+  "title": "HostGroupDetailDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostGroupDetails",
+  "x-firestore-path": "hostGroupDetails/{audienceId}",
+  "x-document-id-field": "audienceId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "audienceId",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "title": "OrganizerSavedAudienceCallableResponse",
+      "description": "Sanitized reusable organizer CRM audience definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "audienceId",
+        "scope",
+        "name",
+        "status",
+        "definition",
+        "definitionHash",
+        "definitionVersion",
+        "revision",
+        "lastPreviewMatchCount",
+        "lastPreviewReachSummary",
+        "lastPreviewAtMillis",
+        "createdAtMillis",
+        "updatedAtMillis"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "audienceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "scope": {
+          "const": "organizerCrm"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "definition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "join",
+            "predicates"
+          ],
+          "properties": {
+            "join": {
+              "type": "string",
+              "enum": [
+                "all",
+                "any"
+              ]
+            },
+            "predicates": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "segmentId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "computedSegment"
+                      },
+                      "segmentId": {
+                        "type": "string",
+                        "enum": [
+                          "new_to_organizer",
+                          "past_attendee",
+                          "first_time_attendee",
+                          "repeat_attendee",
+                          "regular",
+                          "lapsed_regular",
+                          "reliable_attendee",
+                          "needs_confirmation",
+                          "advocate",
+                          "high_impact_advocate",
+                          "whatsapp_reachable",
+                          "sms_reachable"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "manualTagId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "manualTag"
+                      },
+                      "manualTagId": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{32}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "operator",
+                      "eventCount"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "attendanceCount"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "atLeast",
+                          "atMost"
+                        ]
+                      },
+                      "eventCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "days"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "lastSeenWithinDays"
+                      },
+                      "days": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "intent"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "reachableForIntent"
+                      },
+                      "intent": {
+                        "const": "organizerWhatsappCampaign"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "formId",
+                      "reviewStatus"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "applicationStatus"
+                      },
+                      "formId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "reviewStatus": {
+                        "type": "string",
+                        "enum": [
+                          "submitted",
+                          "inReview",
+                          "approved",
+                          "waitlisted",
+                          "declined"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "formId",
+                      "versionId",
+                      "questionId",
+                      "value"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "formAnswer"
+                      },
+                      "formId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "versionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "questionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "value": {
+                        "type": [
+                          "string",
+                          "boolean"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 160
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "eventId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "attendedEvent"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "operator",
+                      "currency",
+                      "amountMinor",
+                      "withinDays"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "spend"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "atLeast",
+                          "atMost"
+                        ]
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "amountMinor": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000000000
+                      },
+                      "withinDays": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 3650
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "contactIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "staticMembers"
+                      },
+                      "contactIds": {
+                        "type": "array",
+                        "minItems": 0,
+                        "maxItems": 2500,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "segmentIds",
+                      "manualTagIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "directoryFilters"
+                      },
+                      "segmentIds": {
+                        "type": "array",
+                        "maxItems": 12,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "new_to_organizer",
+                            "past_attendee",
+                            "first_time_attendee",
+                            "repeat_attendee",
+                            "regular",
+                            "lapsed_regular",
+                            "reliable_attendee",
+                            "needs_confirmation",
+                            "advocate",
+                            "high_impact_advocate",
+                            "whatsapp_reachable",
+                            "sms_reachable"
+                          ]
+                        }
+                      },
+                      "manualTagIds": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{32}$"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "definitionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definitionVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "lastPreviewMatchCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 2500
+        },
+        "lastPreviewReachSummary": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "inCatch",
+                "automatic",
+                "byHand",
+                "unavailable"
+              ],
+              "properties": {
+                "inCatch": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "automatic": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "byHand": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                },
+                "unavailable": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2500
+                }
+              }
+            }
+          ]
+        },
+        "lastPreviewAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostGroupSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_group_summaries.schema.json",
+  "title": "HostGroupSummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostGroupSummaries",
+  "x-firestore-path": "hostGroupSummaries/{audienceId}",
+  "x-document-id-field": "audienceId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "audienceId",
+    "status",
+    "updatedAtMillis",
+    "row",
+    "version",
+    "searchName",
+    "isStatic",
+    "lastPreviewAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "audienceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "audienceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "isStatic": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lastPreviewMatchCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "lastPreviewAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "organizerId",
+        "audienceId",
+        "name",
+        "status",
+        "isStatic",
+        "revision",
+        "lastPreviewMatchCount",
+        "lastPreviewAtMillis",
+        "updatedAtMillis"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "searchName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "isStatic": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "lastPreviewAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostEventSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_summaries.schema.json",
+  "title": "HostEventSummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventSummaries",
+  "x-firestore-path": "hostEventSummaries/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "eventId",
+    "startTimeMillis",
+    "status",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "startTimeMillis": {
+      "type": "integer",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "name",
+        "city",
+        "localDate",
+        "localStartTime",
+        "timezone",
+        "startTimeMillis",
+        "setupRevision",
+        "status",
+        "detailsConfigured"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "city": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cityId",
+            "marketId"
+          ],
+          "properties": {
+            "cityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "marketId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        "localDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "localStartTime": {
+          "type": "string",
+          "pattern": "^[0-9]{2}:[0-9]{2}$"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "startTimeMillis": {
+          "type": "integer"
+        },
+        "setupRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "cancelled"
+          ]
+        },
+        "detailsConfigured": {
+          "type": "boolean"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostFormSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_form_summaries.schema.json",
+  "title": "HostFormSummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostFormSummaries",
+  "x-firestore-path": "hostFormSummaries/{formId}",
+  "x-document-id-field": "formId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "formId",
+    "updatedAtMillis",
+    "status",
+    "purpose",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "paused",
+        "archived"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "application",
+        "registration",
+        "intake",
+        "waiver",
+        "feedback",
+        "survey"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "formId",
+        "title",
+        "description",
+        "purpose",
+        "status",
+        "templateId",
+        "publicFormId",
+        "defaultTargetKind",
+        "defaultTargetId",
+        "activeVersionId",
+        "draftRevision",
+        "publishedVersion",
+        "submittedResponseCount",
+        "consequences",
+        "updatedAtMillis",
+        "publishedAtMillis",
+        "lastResponseAtMillis"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "formId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "application",
+            "registration",
+            "intake",
+            "waiver",
+            "feedback",
+            "survey"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "paused",
+            "archived"
+          ]
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "publicFormId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{20,80}$"
+        },
+        "defaultTargetKind": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event",
+            "campaign"
+          ]
+        },
+        "defaultTargetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activeVersionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "draftRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "publishedVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "submittedResponseCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "consequences": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coverage",
+            "identityPolicy",
+            "enabledAutomationActionKinds"
+          ],
+          "properties": {
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "identityOnly",
+                "unavailable"
+              ]
+            },
+            "identityPolicy": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "anonymous",
+                    "emailVerified",
+                    "phoneVerified",
+                    "emailOrPhoneVerified",
+                    "catchAccount"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enabledAutomationActionKinds": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "notifyTeam",
+                  "addOrganizerTag",
+                  "createCrmContact",
+                  "addApplicationQueue",
+                  "proposeEventAttendee",
+                  "signedWebhook",
+                  "campaignHandoff"
+                ]
+              }
+            }
+          }
+        },
+        "updatedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "publishedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lastResponseAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostContactSummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_contact_summaries.schema.json",
+  "title": "HostContactSummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostContactSummaries",
+  "x-firestore-path": "hostContactSummaries/{contactId}",
+  "x-document-id-field": "contactId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "contactId",
+    "searchName",
+    "lastSeenAtMillis",
+    "manualTagIds",
+    "linkedAccount",
+    "importedContact",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "searchName": {
+      "type": "string",
+      "maxLength": 320,
+      "x-catch-ownership": "server-only"
+    },
+    "lastSeenAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "manualTagIds": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 32
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "linkedAccount": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "importedContact": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contactId",
+        "displayName",
+        "phoneE164",
+        "email",
+        "identityState",
+        "identityConfidence",
+        "ambiguousCandidateCount",
+        "attendedEventCount",
+        "expectedEventCount",
+        "lastAttendedAtMillis",
+        "segmentIds",
+        "whatsappStatus",
+        "whatsappAdminSuppressed",
+        "smsStatus",
+        "sourceCoverage",
+        "revision"
+      ],
+      "properties": {
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "identityState": {
+          "type": "string",
+          "enum": [
+            "unlinked",
+            "verified",
+            "ambiguous"
+          ]
+        },
+        "identityConfidence": {
+          "type": "string",
+          "enum": [
+            "eventOnly",
+            "proposed",
+            "verified"
+          ]
+        },
+        "ambiguousCandidateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "attendedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "expectedEventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "lastAttendedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "segmentIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 16,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "past_attendee",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "manualTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tagId",
+              "label"
+            ],
+            "properties": {
+              "tagId": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              }
+            }
+          }
+        },
+        "whatsappStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "whatsappAdminSuppressed": {
+          "type": "boolean"
+        },
+        "smsStatus": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "sourceCoverage": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "insufficientData"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const hostDirectorySummaryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_directory_summaries.schema.json",
+  "title": "HostDirectorySummaryDocument",
+  "description": "Server-maintained organizer-scoped Host read view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostDirectorySummaries",
+  "x-firestore-path": "hostDirectorySummaries/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "contactSummaryVersion",
+    "segmentCounts",
+    "summary",
+    "manualTagVocabulary",
+    "sourceCoverage",
+    "projectionVersion"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "segmentCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "summary": {
+      "title": "GetOrganizerCrmSummaryCallableResponse",
+      "description": "Projected Host CRM counts. No attendee identity or contact field is returned.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "contactCount",
+        "pastAttendeeCount",
+        "repeatAttendeeCount",
+        "advocateCount",
+        "highImpactAdvocateCount",
+        "linkedAccountCount",
+        "importedContactCount",
+        "whatsappOptInCount",
+        "smsOptInCount",
+        "truncated",
+        "readiness"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "contactCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "pastAttendeeCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "repeatAttendeeCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "advocateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "highImpactAdvocateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "linkedAccountCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "importedContactCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "whatsappOptInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "smsOptInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "readiness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inApp",
+            "whatsapp",
+            "sms"
+          ],
+          "properties": {
+            "inApp": {
+              "type": "string",
+              "enum": [
+                "currentEventOnly"
+              ]
+            },
+            "whatsapp": {
+              "type": "string",
+              "enum": [
+                "providerSetupRequired"
+              ]
+            },
+            "sms": {
+              "type": "string",
+              "enum": [
+                "providerAndDltSetupRequired"
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "manualTagVocabulary": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tagId",
+          "label"
+        ],
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "partial"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "projectionVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "x-catch-ownership": "server-only"
+    },
+    "formSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "eventSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "groupSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "responseSummaryVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const catchWhatsappOperatorSetupOperationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_whatsapp_operator_setup_operations.schema.json",
