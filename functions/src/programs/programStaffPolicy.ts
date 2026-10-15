@@ -1,7 +1,10 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {isOrganizerManager} from "../shared/organizerHosts";
-import {loadProgramBundle, supportsProgramDutyScope} from
+import {programOwnerAuthorizationDeadline, requireProgramAccess,
+  requireProgramDuty, supportsProgramDutyScope} from
   "../shared/programAuthority";
+import type {ProgramAccess, ProgramAuthorization} from
+  "../shared/programAuthority";
+import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import type {
   ProgramHotelDocument,
   ProgramPickupPointDocument,
@@ -17,16 +20,44 @@ export async function requireProgramManager(
   db: FirebaseFirestore.Firestore,
   programId: string,
   actorUid: string,
-  transaction?: FirebaseFirestore.Transaction
-): Promise<Awaited<ReturnType<typeof loadProgramBundle>>> {
-  const bundle = await loadProgramBundle({db, programId, transaction});
-  if (!isOrganizerManager(bundle.organizer, actorUid)) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only organizer managers can manage program staff."
-    );
+  transaction?: FirebaseFirestore.Transaction,
+  now?: FirebaseFirestore.Timestamp
+): Promise<ProgramAccess> {
+  const access = await requireProgramAccess({db, programId, actorUid,
+    transaction, now});
+  requireProgramDuty(access, "programAdmin");
+  return access;
+}
+
+/** Delegation cannot extend the creator-approved root or live admin duty. */
+export function programAdministrationDeadline(access: ProgramAccess,
+  nowMillis: number): number | null {
+  if (access.role === "manager") return null;
+  const assignments = requireProgramDuty(access, "programAdmin")
+    .filter((assignment) => assignment.expiresAtMillis > nowMillis);
+  const root = programOwnerAuthorizationDeadline(access.program,
+    access.grant!);
+  if (root === null || root <= nowMillis || assignments.length === 0) {
+    throw new HttpsError("permission-denied",
+      "Program administration expired.");
   }
-  return bundle;
+  return Math.min(root, staffTimestampMillis(access.grant!.expiresAt),
+    Math.max(...assignments.map((assignment) => assignment.expiresAtMillis)));
+}
+
+/** Called again at the commit boundary, preserving a bounded approval chain. */
+export function authorizeProgramStaffGrant(access: ProgramAccess,
+  actorUid: string, expiresAtMillis: number, nowMillis: number):
+  ProgramAuthorization {
+  const deadline = programAdministrationDeadline(access, nowMillis);
+  if (expiresAtMillis <= nowMillis ||
+      (deadline !== null && expiresAtMillis > deadline)) {
+    throw new HttpsError("permission-denied",
+      "Delegated access must end within your approved program admin window.");
+  }
+  return {ownerUid: access.program.createdBy, approvedByUid: actorUid,
+    approvedAtMillis: nowMillis,
+    authorizedUntilMillis: expiresAtMillis};
 }
 
 /** Validate the same resource versions that the staff mutation commits with. */
@@ -69,13 +100,16 @@ export function dedupeDuties<T extends DutyScope>(duties: T[]): T[] {
       throw new HttpsError("invalid-argument",
         assignment.duty === "hotelDesk" ?
           "Hotel desk duties are scoped by hotel, not pickup point." :
-          "Program coordinators must have program-wide scope.");
+          "Program administrators and coordinators need program-wide scope.");
     }
     const normalized = {...assignment,
       pickupPointIds: [...new Set(assignment.pickupPointIds)].sort(),
-      hotelIds: [...new Set(assignment.hotelIds)].sort()};
+      hotelIds: [...new Set(assignment.hotelIds)].sort(),
+      ...(assignment.functionIds === undefined ? {} :
+        {functionIds: [...new Set(assignment.functionIds)].sort()})};
     const key = JSON.stringify([normalized.duty,
-      normalized.pickupPointIds, normalized.hotelIds]);
+      normalized.pickupPointIds, normalized.hotelIds,
+      normalized.functionIds ?? []]);
     const existing = byScope.get(key);
     if (existing && "expiresAtMillis" in existing &&
         "expiresAtMillis" in normalized) {

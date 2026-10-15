@@ -5,9 +5,12 @@ import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {
   createOrganizerProgramHandler,
+  getOrganizerProgramHandler,
   listOrganizerProgramsHandler,
   updateOrganizerProgramHandler,
 } from "./programs";
+import {archiveProgramHandler, unarchiveProgramHandler} from
+  "./programRetention";
 
 const input = (extra: Record<string, unknown> = {}) => ({
   organizerId: "org-1", kind: "wedding", title: "Wedding weekend",
@@ -25,6 +28,319 @@ const inventory = (db: FakeFirestore, organizerId = "org-1",
   uid = "manager-1") => listOrganizerProgramsHandler(
   request({organizerId}, uid), deps(db));
 
+function removeOrganizerRole(db: FakeFirestore): void {
+  db.updateDoc("organizers/org-1", {ownerUserId: "replacement",
+    hostUserId: "replacement", hostUserIds: ["replacement"], hostProfiles: []});
+}
+
+function grantProgramAdmin(db: FakeFirestore, deadline = now.toMillis() + 1000):
+  void {
+  db.setDoc("programStaffGrants/program-1__admin", {
+    ...db.getDoc("programStaffGrants/program-1__dispatcher-1")!,
+    uid: "admin", createdBy: "manager-1",
+    expiresAt: admin.firestore.Timestamp.fromMillis(deadline),
+    duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+      functionIds: [], expiresAtMillis: deadline}],
+  });
+}
+
+test("creator role loss keeps bounded own-program paging and ID rediscovery",
+  async () => {
+    const seed = baseSeed();
+    for (let i = 0; i < 55; i++) {
+      seed[`organizerPrograms/own-${String(i).padStart(2, "0")}`] = {
+        ...seed["organizerPrograms/program-1"],
+      };
+    }
+    for (let i = 0; i < 100; i++) {
+      seed[`organizerPrograms/other-${i}`] = {
+        ...seed["organizerPrograms/program-1"], createdBy: "replacement",
+        startsAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000),
+      };
+    }
+    seed["organizerPrograms/foreign-own"] = {
+      ...seed["organizerPrograms/program-1"], organizerId: "org-2",
+    };
+    const db = new FakeFirestore(seed);
+    removeOrganizerRole(db);
+    const queries: {collectionPath: string; limitN: number | null;
+      wheres: {field: string; op: string; value: unknown}[]}[] = [];
+    const read = db.runQuery.bind(db);
+    db.runQuery = async (query) => {
+      queries.push(query); return read(query);
+    };
+    const first = await inventory(db);
+    assert.equal(first.programs.length, 50);
+    assert.ok(first.nextCursor);
+    const second = await listOrganizerProgramsHandler(request({
+      organizerId: "org-1", cursor: first.nextCursor,
+    }, "manager-1"), deps(db));
+    assert.equal(second.programs.length, 6);
+    assert.equal(second.nextCursor, null);
+    const rows = [...first.programs, ...second.programs];
+    assert.equal(new Set(rows.map((row) => row.programId)).size, 56);
+    assert.ok(rows.every((row) => row.canArchive && !row.canUnarchive));
+    assert.ok(queries.filter((q) => q.collectionPath === "organizerPrograms")
+      .every((q) => q.limitN === 51 && q.wheres.some((where) =>
+        where.field === "createdBy" && where.value === "manager-1")));
+    const exact = await listOrganizerProgramsHandler(request({
+      organizerId: "org-1", programId: "program-1",
+    }, "manager-1"), deps(db));
+    assert.deepEqual(exact.programs.map((row) => row.programId), ["program-1"]);
+    assert.equal(exact.programs[0].functionCount, 0);
+    await assert.rejects(listOrganizerProgramsHandler(request({
+      organizerId: "org-1", programId: "foreign-own",
+    }, "manager-1"), deps(db)), code("not-found"));
+    for (const selector of [{programId: "other-0"}, {cursor: "other-0"}]) {
+      await assert.rejects(listOrganizerProgramsHandler(request({
+        organizerId: "org-1", ...selector,
+      }, "manager-1"), deps(db)), code(
+        "programId" in selector ? "permission-denied" : "not-found"));
+    }
+  });
+
+test("creator reopens and edits only their program after organizer-role loss",
+  async () => {
+    const seed = baseSeed();
+    seed["organizerPrograms/other"] = {
+      ...seed["organizerPrograms/program-1"], createdBy: "replacement",
+    };
+    const db = new FakeFirestore(seed);
+    removeOrganizerRole(db);
+    const detail = await getOrganizerProgramHandler(
+      request({programId: "program-1"}, "manager-1"), deps(db));
+    assert.equal(detail.program.programId, "program-1");
+    const edited = await updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3, title: "Creator's update",
+    }, "manager-1"), deps(db));
+    assert.equal(db.getDoc("organizerPrograms/program-1")!.createdBy,
+      "manager-1");
+    assert.equal(db.getDoc("organizerPrograms/program-1")!.revision,
+      edited.revision);
+    const before = new Map(db.docs);
+    await assert.rejects(updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3, title: "Stale update",
+    }, "manager-1"), deps(db)), code("aborted"));
+    await assert.rejects(getOrganizerProgramHandler(
+      request({programId: "other"}, "manager-1"), deps(db)),
+    code("permission-denied"));
+    assert.deepEqual(db.docs, before);
+  });
+
+test("organizer-only managers keep setup but have no archive or restore action",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    removeOrganizerRole(db);
+    const row = (await inventory(db, "org-1", "replacement")).programs[0];
+    assert.equal(row.canArchive, false);
+    assert.equal(row.canUnarchive, false);
+    const detail = await getOrganizerProgramHandler(
+      request({programId: "program-1"}, "replacement"), deps(db));
+    assert.equal(detail.counts.guests, 2);
+    assert.equal(JSON.stringify(detail).includes("Rohan Sharma"), false);
+    assert.equal(JSON.stringify(detail).includes("+919999900001"), false);
+    const edited = await updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3, title: "Managed setup",
+    }, "replacement"), deps(db));
+    const before = new Map(db.docs);
+    await assert.rejects(archiveProgramHandler(request({
+      programId: "program-1", expectedRevision: edited.revision,
+    }, "replacement"), deps(db)), code("permission-denied"));
+    await assert.rejects(unarchiveProgramHandler(request({
+      programId: "program-1", expectedRevision: edited.revision,
+    }, "replacement"), deps(db)), code("permission-denied"));
+    assert.deepEqual(db.docs, before);
+  });
+
+test("approved program admin can rediscover and edit their exact program only",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    grantProgramAdmin(db);
+    const exact = await listOrganizerProgramsHandler(request({
+      organizerId: "org-1", programId: "program-1",
+    }, "admin"), deps(db));
+    assert.equal(exact.programs[0].canArchive, false);
+    assert.equal(exact.programs[0].canUnarchive, false);
+    await getOrganizerProgramHandler(
+      request({programId: "program-1"}, "admin"), deps(db));
+    const edited = await updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3, title: "Admin setup",
+    }, "admin"), deps(db));
+    const before = new Map(db.docs);
+    await assert.rejects(archiveProgramHandler(
+      request({programId: "program-1", expectedRevision: edited.revision},
+        "admin"), deps(db)), code("permission-denied"));
+    await assert.rejects(unarchiveProgramHandler(
+      request({programId: "program-1", expectedRevision: edited.revision},
+        "admin"), deps(db)), code("permission-denied"));
+    await assert.rejects(inventory(db, "org-1", "admin"),
+      code("permission-denied"));
+    await assert.rejects(getOrganizerProgramHandler(
+      request({programId: "program-1"}, "greeter-1"), deps(db)),
+    code("permission-denied"));
+    assert.deepEqual(db.docs, before);
+  });
+
+test("program admin expiry during setup reads returns no stale authorized view",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    grantProgramAdmin(db);
+    let clock = now;
+    const read = db.runQuery.bind(db);
+    db.runQuery = async (query) => {
+      const result = await read(query);
+      if (query.collectionPath === "programStaffGrants") {
+        clock = admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000);
+      }
+      return result;
+    };
+    const before = new Map(db.docs);
+    await assert.rejects(getOrganizerProgramHandler(
+      request({programId: "program-1"}, "admin"),
+      deps(db, {now: () => clock})), code("permission-denied"));
+    assert.deepEqual(db.docs, before);
+  });
+
+test("program admin expiry during exact-ID counts returns no stale inventory",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    grantProgramAdmin(db);
+    let clock = now;
+    const read = db.runQuery.bind(db);
+    db.runQuery = async (query) => {
+      const result = await read(query);
+      clock = admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000);
+      return result;
+    };
+    const before = new Map(db.docs);
+    await assert.rejects(listOrganizerProgramsHandler(request({
+      organizerId: "org-1", programId: "program-1",
+    }, "admin"), deps(db, {now: () => clock})), code("permission-denied"));
+    assert.deepEqual(db.docs, before);
+  });
+
+for (const change of ["revocation", "approval withdrawal", "deleted actor",
+  "valid control"]) {
+  test(`inventory rechecks ${change} after delayed counts`, async () => {
+    const db = new FakeFirestore(baseSeed());
+    grantProgramAdmin(db);
+    const grantPath = "programStaffGrants/program-1__admin";
+    // Explicit creator approval is needed for this delegated grant. Removing
+    // that approval cannot fall back to a legacy creator-issued grant.
+    db.updateDoc(grantPath, {
+      createdBy: "delegating-admin",
+      programAuthorization: {ownerUid: "manager-1",
+        approvedByUid: "delegating-admin", approvedAtMillis: now.toMillis(),
+        authorizedUntilMillis: now.toMillis() + 1000},
+    });
+    let countStarted!: () => void;
+    let releaseCount!: () => void;
+    const started = new Promise<void>((resolve) => {
+      countStarted = resolve;
+    });
+    const released = new Promise<void>((resolve) => {
+      releaseCount = resolve;
+    });
+    const read = db.runQuery.bind(db);
+    db.runQuery = async (query) => {
+      const result = await read(query);
+      if (query.collectionPath === "programFunctions") {
+        countStarted();
+        await released;
+      }
+      return result;
+    };
+    let clock = now;
+    const pending = listOrganizerProgramsHandler(request({
+      organizerId: "org-1", programId: "program-1",
+    }, "admin"), deps(db, {now: () => clock}));
+    await started;
+    clock = admin.firestore.Timestamp.fromMillis(now.toMillis() + 999);
+    if (change === "revocation") {
+      db.updateDoc(grantPath, {status: "revoked", revokedAt: clock,
+        revokedBy: "manager-1"});
+    } else if (change === "approval withdrawal") {
+      const withdrawn = {...db.getDoc(grantPath)!};
+      delete withdrawn.programAuthorization;
+      db.setDoc(grantPath, withdrawn);
+    } else if (change === "deleted actor") {
+      db.setDoc("deletedUsers/admin", {status: "processing"});
+    } else {
+      db.updateDoc("organizerPrograms/program-1", {
+        title: "Current authorized setup", revision: 4,
+      });
+    }
+    const afterChange = new Map(db.docs);
+    releaseCount();
+    if (change === "valid control") {
+      const result = await pending;
+      assert.equal(result.nextCursor, null);
+      assert.equal(result.programs.length, 1);
+      const row = result.programs[0];
+      assert.equal(row.programId, "program-1");
+      assert.equal(row.title, "Current authorized setup");
+      assert.equal(row.revision, 4);
+      assert.equal(row.functionCount, 0);
+      assert.equal(row.canArchive, false);
+      assert.equal(row.canUnarchive, false);
+    } else {
+      await assert.rejects(pending, code("permission-denied"));
+    }
+    assert.deepEqual(db.docs, afterChange);
+  });
+}
+
+test("program admin expiry before the setup write preserves the saved draft",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    grantProgramAdmin(db);
+    let clock = now;
+    const read = db.getDoc.bind(db);
+    db.getDoc = (path) => {
+      const result = read(path);
+      if (path === "programStaffGrants/program-1__admin") {
+        clock = admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000);
+      }
+      return result;
+    };
+    const before = new Map(db.docs);
+    await assert.rejects(updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3, title: "Expired edit",
+    }, "admin"), deps(db, {now: () => clock})), code("permission-denied"));
+    assert.deepEqual(db.docs, before);
+  });
+
+test("creator lifecycle rediscovery keeps revision fences and restore grace",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    removeOrganizerRole(db);
+    const archived = await archiveProgramHandler(request({
+      programId: "program-1", expectedRevision: 3,
+    }, "manager-1"), deps(db));
+    const row = (await inventory(db)).programs[0];
+    assert.equal(row.canArchive, false);
+    assert.equal(row.canUnarchive, true);
+    assert.equal(row.revision, archived.revision);
+    assert.equal(row.anonymizeAtMillis, archived.anonymizeAtMillis);
+    const before = new Map(db.docs);
+    await assert.rejects(unarchiveProgramHandler(request({
+      programId: "program-1", expectedRevision: 3,
+    }, "manager-1"), deps(db)), code("aborted"));
+    await assert.rejects(unarchiveProgramHandler(request({
+      programId: "program-1", expectedRevision: archived.revision,
+    }, "manager-1"), deps(db, {now: () =>
+      admin.firestore.Timestamp.fromMillis(archived.anonymizeAtMillis)})),
+    code("failed-precondition"));
+    assert.deepEqual(db.docs, before);
+    await unarchiveProgramHandler(request({programId: "program-1",
+      expectedRevision: archived.revision}, "manager-1"), deps(db));
+    const restored = (await inventory(db)).programs[0];
+    assert.equal(restored.status, "active");
+    assert.equal(restored.canArchive, true);
+    assert.equal(restored.canUnarchive, false);
+    assert.equal(restored.anonymizeAtMillis, null);
+  });
+
 test("create receipt persists the same ID in the draft inventory", async () => {
   const db = new FakeFirestore(baseSeed());
   const result = await create(db, {requestId: "program-create-request-1"});
@@ -37,6 +353,8 @@ test("create receipt persists the same ID in the draft inventory", async () => {
   assert.equal(saved.startsAtMillis, input().startsAtMillis);
   assert.equal(saved.endsAtMillis, input().endsAtMillis);
   assert.equal(saved.functionCount, 0);
+  assert.equal(saved.canArchive, true);
+  assert.equal(saved.canUnarchive, false);
   assert.ok(rows.some((row) => row.programId === "program-1"));
 });
 
@@ -140,6 +458,12 @@ test(
     const before = new Map(db.docs);
     await assert.rejects(create(db, key), code("permission-denied"));
     await assert.rejects(inventory(db), code("permission-denied"));
+    await assert.rejects(getOrganizerProgramHandler(
+      request({programId: "program-1"}, "manager-1"), deps(db)),
+    code("permission-denied"));
+    await assert.rejects(updateOrganizerProgramHandler(request({
+      programId: "program-1", expectedRevision: 3, title: "Deleted actor edit",
+    }, "manager-1"), deps(db)), code("permission-denied"));
     await assert.rejects(
       listOrganizerProgramsHandler(
         request(

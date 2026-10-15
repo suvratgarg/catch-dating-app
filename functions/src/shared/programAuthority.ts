@@ -4,6 +4,7 @@ import type {
   OrganizerDocument,
   OrganizerProgramDocument,
   ProgramStaffGrantDocument,
+  ProgramStaffInviteDocument,
 } from "./generated/firestoreAdminTypes";
 import {requireDoc} from "./validation";
 import {staffTimestampMillis} from "./eventOperatorAuthority";
@@ -24,7 +25,8 @@ export function supportsProgramDutyScope(assignment: Pick<ProgramDutyAssignment,
   "duty" | "pickupPointIds" | "hotelIds"> &
   {functionIds?: string[]}): boolean {
   const functionIds = assignment.functionIds ?? [];
-  return (assignment.duty !== "programCoordinator" ||
+  return ((assignment.duty !== "programCoordinator" &&
+    assignment.duty !== "programAdmin") ||
     (assignment.pickupPointIds.length === 0 &&
       assignment.hotelIds.length === 0 &&
       functionIds.length === 0)) &&
@@ -34,6 +36,7 @@ export function supportsProgramDutyScope(assignment: Pick<ProgramDutyAssignment,
 }
 
 export const programStaffDuties: ProgramStaffDuty[] = [
+  "programAdmin",
   "programCoordinator",
   "guestRelations",
   "communications",
@@ -55,6 +58,46 @@ export interface ProgramAccess {
   organizer: OrganizerDocument;
   role: "manager" | "staff";
   grant: ProgramStaffGrantDocument | null;
+}
+
+export type ProgramAuthorization =
+  NonNullable<ProgramStaffGrantDocument["programAuthorization"]>;
+
+/** Bind server approval to the immutable creator; reject malformed markers. */
+export function programOwnerAuthorizationDeadline(
+  program: OrganizerProgramDocument,
+  record: ProgramStaffGrantDocument | ProgramStaffInviteDocument
+): number | null {
+  if (typeof program.createdBy !== "string" || !program.createdBy) return null;
+  const proof = record.programAuthorization;
+  if (proof === undefined) {
+    const expiry = staffTimestampMillis(record.expiresAt);
+    return record.createdBy === program.createdBy &&
+      Number.isSafeInteger(expiry) && expiry > 0 ? expiry : null;
+  }
+  if (!proof || proof.ownerUid !== program.createdBy ||
+      typeof proof.approvedByUid !== "string" || !proof.approvedByUid ||
+      !Number.isSafeInteger(proof.approvedAtMillis) ||
+      proof.approvedAtMillis <= 0 ||
+      !Number.isSafeInteger(proof.authorizedUntilMillis) ||
+      proof.authorizedUntilMillis <= proof.approvedAtMillis ||
+      proof.authorizedUntilMillis >
+        staffTimestampMillis(record.expiresAt)) return null;
+  return proof.authorizedUntilMillis;
+}
+
+export async function requireActiveProgramActor(params: {
+  db: FirebaseFirestore.Firestore;
+  actorUid: string;
+  transaction?: FirebaseFirestore.Transaction;
+}): Promise<void> {
+  const ref = params.db.collection("deletedUsers").doc(params.actorUid);
+  const account = params.transaction ?
+    await params.transaction.get(ref) : await ref.get();
+  if (account.exists) {
+    throw new HttpsError("permission-denied",
+      "This account cannot access private program operations.");
+  }
 }
 
 export async function loadProgramBundle(params: {
@@ -93,13 +136,7 @@ export async function requireProgramAccess(params: {
   transaction?: FirebaseFirestore.Transaction;
 }): Promise<ProgramAccess> {
   const {program, organizer} = await loadProgramBundle(params);
-  const accountRef = params.db.collection("deletedUsers").doc(params.actorUid);
-  const account = params.transaction ?
-    await params.transaction.get(accountRef) : await accountRef.get();
-  if (account.exists) {
-    throw new HttpsError("permission-denied",
-      "This account cannot access private program operations.");
-  }
+  await requireActiveProgramActor(params);
   if (program.createdBy === params.actorUid) {
     return {program, organizer, role: "manager", grant: null};
   }
@@ -112,14 +149,16 @@ export async function requireProgramAccess(params: {
   if (!grant || grant.programId !== params.programId ||
       grant.organizerId !== program.organizerId ||
       grant.uid !== params.actorUid || grant.status !== "active" ||
+      grant.revokedAt != null || grant.revokedBy != null ||
       staffTimestampMillis(grant.expiresAt) <= now.toMillis()) {
     throw new HttpsError(
       "permission-denied",
       "This account does not have active program access."
     );
   }
-  if (typeof program.createdBy !== "string" ||
-      program.createdBy.length === 0 || grant.createdBy !== program.createdBy) {
+  if (programOwnerAuthorizationDeadline(program, grant) === null ||
+      (grant.programAuthorization !== undefined &&
+        grant.programAuthorization.approvedAtMillis > now.toMillis())) {
     throw new HttpsError("permission-denied",
       "The program owner must approve this program access.");
   }
@@ -134,12 +173,20 @@ export async function requireProgramAccess(params: {
 /** Legacy assignments without their own expiry cannot prove authority. */
 export function activeProgramDuties(grant: ProgramStaffGrantDocument,
   nowMillis: number): ProgramDutyAssignment[] {
-  if (grant.status !== "active" ||
-      staffTimestampMillis(grant.expiresAt) <= nowMillis) return [];
+  if (grant.status !== "active" || grant.revokedAt != null ||
+      grant.revokedBy != null ||
+      staffTimestampMillis(grant.expiresAt) <= nowMillis ||
+      (grant.programAuthorization !== undefined &&
+        (!grant.programAuthorization ||
+          grant.programAuthorization.approvedAtMillis > nowMillis))) return [];
+  const deadline = grant.programAuthorization?.authorizedUntilMillis ??
+    staffTimestampMillis(grant.expiresAt);
   return (grant.duties ?? []).filter((assignment) =>
+    programStaffDuties.includes(assignment.duty) &&
     Number.isSafeInteger(assignment.expiresAtMillis) &&
     assignment.expiresAtMillis > nowMillis &&
     assignment.expiresAtMillis <= staffTimestampMillis(grant.expiresAt) &&
+    assignment.expiresAtMillis <= deadline &&
     Array.isArray(assignment.pickupPointIds) &&
     Array.isArray(assignment.hotelIds) &&
     (assignment.functionIds === undefined ||
@@ -152,7 +199,8 @@ export function dutyAssignments(access: ProgramAccess,
   duty: ProgramStaffDuty): ProgramDutyAssignment[] {
   if (access.role === "manager") return [];
   return access.grant!.duties.filter((assignment) =>
-    assignment.duty === "programCoordinator" || assignment.duty === duty);
+    (duty !== "programAdmin" &&
+      assignment.duty === "programCoordinator") || assignment.duty === duty);
 }
 
 export function requireProgramDuty(access: ProgramAccess,

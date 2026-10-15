@@ -77,7 +77,7 @@ const seed = (): Record<string, FakeData> => ({
     organizerId: "org-1", uid: "manager-1", role: "owner",
     status: "active",
   },
-  "programStaffGrants/prog_program-1_staff-1": programGrant("staff-1"),
+  "programStaffGrants/program-1__staff-1": programGrant("staff-1"),
   "eventStaffGrants/estaff_event-1_staff-1":
     eventGrant("staff-1", "checkInOperator"),
 });
@@ -110,7 +110,7 @@ test("staff receive both scopes sorted event-first with resolved shells",
 
 test("greeter sees dispatch only when dispatcher is also granted", async () => {
   const data = seed();
-  data["programStaffGrants/prog_program-1_staff-1"] =
+  data["programStaffGrants/program-1__staff-1"] =
       programGrant("staff-1", {
         duties: [
           {duty: "airportGreeter", pickupPointIds: [], hotelIds: [],
@@ -126,7 +126,7 @@ test("greeter sees dispatch only when dispatcher is also granted", async () => {
 
 test("revoked and expired grants never resolve", async () => {
   const data = seed();
-  data["programStaffGrants/prog_program-1_staff-1"] =
+  data["programStaffGrants/program-1__staff-1"] =
       programGrant("staff-1", {status: "revoked"});
   data["eventStaffGrants/estaff_event-1_staff-1"] =
       eventGrant("staff-1", "checkInOperator", {
@@ -156,7 +156,7 @@ test("includeExpired returns dead grants with an empty shell", async () => {
 
 test("per-duty expiry drops only the dead duty", async () => {
   const data = seed();
-  data["programStaffGrants/prog_program-1_staff-1"] =
+  data["programStaffGrants/program-1__staff-1"] =
       programGrant("staff-1", {
         duties: [
           {duty: "airportGreeter", pickupPointIds: [], hotelIds: [],
@@ -187,9 +187,82 @@ test("archived programs and unknown event roles are skipped", async () => {
 test("managers land in the manager shell even with staff grants",
   async () => {
     const data = seed();
-    data["programStaffGrants/prog_program-1_manager-1"] =
+    data["programStaffGrants/program-1__manager-1"] =
       programGrant("manager-1");
     const out = await list(new FakeFirestore(data), "manager-1");
     assert.equal(out.shellEntry, "managerShell");
     assert.equal(out.assignments.length, 1);
   });
+
+for (const patch of [
+  {createdBy: "organizer-only"}, {organizerId: "foreign"},
+  {revokedAt: now}, {revokedBy: "manager-1"},
+  {programAuthorization: {ownerUid: "foreign", approvedByUid: "manager-1",
+    approvedAtMillis: now.toMillis() - 1,
+    authorizedUntilMillis: FAR_FUTURE}},
+  {programAuthorization: {ownerUid: "manager-1",
+    approvedByUid: "manager-1", approvedAtMillis: now.toMillis() + 1,
+    authorizedUntilMillis: FAR_FUTURE}},
+  {duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: []}]},
+]) {
+  test("assignment discovery does not expose unauthorized program work",
+    async () => {
+      const data = seed();
+      data["programStaffGrants/program-1__staff-1"] =
+        programGrant("staff-1", patch);
+      const result = await list(new FakeFirestore(data), "staff-1",
+        {includeExpired: true});
+      const program = result.assignments.find((row) => row.kind === "program");
+      if (patch.duties) {
+        assert.equal(program?.shellMode, "none");
+        assert.deepEqual(program?.duties, []);
+      } else {
+        assert.equal(program, undefined);
+      }
+    });
+}
+
+test("discovery uses exact grant identity and current transaction authority",
+  async () => {
+    const data = seed();
+    data["programStaffGrants/foreign-key"] =
+      data["programStaffGrants/program-1__staff-1"];
+    delete data["programStaffGrants/program-1__staff-1"];
+    const db = new FakeFirestore(data);
+    assert.equal((await list(db, "staff-1")).assignments.some((row) =>
+      row.kind === "program"), false);
+    db.setDoc("programStaffGrants/program-1__staff-1", programGrant("staff-1"));
+    db.beforeCommit = async () => {
+      db.beforeCommit = undefined;
+      db.updateDoc("programStaffGrants/program-1__staff-1",
+        {status: "revoked"});
+    };
+    assert.equal((await list(db, "staff-1")).assignments.some((row) =>
+      row.kind === "program"), false);
+  });
+
+test("approved admin discovery exposes Team as an expiring staff task",
+  async () => {
+    const data = seed();
+    data["programStaffGrants/program-1__staff-1"] = programGrant("staff-1", {
+      createdBy: "delegating-admin",
+      programAuthorization: {ownerUid: "manager-1",
+        approvedByUid: "delegating-admin", approvedAtMillis: now.toMillis() - 1,
+        authorizedUntilMillis: FAR_FUTURE},
+      duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+        expiresAtMillis: FAR_FUTURE}],
+    });
+    const result = await list(new FakeFirestore(data), "staff-1");
+    const program = result.assignments.find((row) => row.kind === "program")!;
+    assert.deepEqual(program.destinations, ["team"]);
+    assert.equal(program.shellMode, "task");
+    assert.equal(program.grantExpiresAtMillis, FAR_FUTURE);
+    assert.equal(result.shellEntry, "workShell");
+  });
+
+test("deleted accounts cannot discover host assignments", async () => {
+  const data = seed();
+  data["deletedUsers/staff-1"] = {deletedAt: now};
+  await assert.rejects(list(new FakeFirestore(data), "staff-1"),
+    {code: "permission-denied"});
+});

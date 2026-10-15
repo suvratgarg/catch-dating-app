@@ -6,18 +6,35 @@
   "duties": [
     {
       "duty": "airportGreeter",
-      "pickupPointIds": ["pickup-1"],
+      "pickupPointIds": [
+        "pickup-1"
+      ],
       "hotelIds": []
     }
   ],
   "status": "pending",
   "createdBy": "host-1",
-  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "expiresAt": {"_seconds": 1786711800, "_nanoseconds": 0},
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "expiresAt": {
+    "_seconds": 1786711800,
+    "_nanoseconds": 0
+  },
   "claimedByUid": null,
   "claimedAt": null,
   "revokedBy": null,
   "revokedAt": null,
-  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "revision": 1
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "programAuthorization": {
+    "ownerUid": "host-1",
+    "approvedByUid": "host-1",
+    "approvedAtMillis": 1786625400000,
+    "authorizedUntilMillis": 1786711800000
+  }
 }

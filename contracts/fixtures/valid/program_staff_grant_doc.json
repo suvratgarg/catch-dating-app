@@ -38,5 +38,11 @@
     "_seconds": 1786625400,
     "_nanoseconds": 0
   },
-  "revision": 1
+  "revision": 1,
+  "programAuthorization": {
+    "ownerUid": "host-1",
+    "approvedByUid": "host-1",
+    "approvedAtMillis": 1786625400000,
+    "authorizedUntilMillis": 1786711800000
+  }
 }

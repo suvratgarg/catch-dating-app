@@ -83,6 +83,7 @@ const schemaListMyHostAssignmentsCallableResponseSchema = <String, Object?>{
                 'duty': <String, Object?>{
                   'type': 'string',
                   'enum': <Object?>[
+                    'programAdmin',
                     'programCoordinator',
                     'guestRelations',
                     'communications',
@@ -152,6 +153,7 @@ const schemaListMyHostAssignmentsCallableResponseSchema = <String, Object?>{
                 'exceptions',
                 'export',
                 'overview',
+                'team',
               ],
               'description': 'A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties.',
             },
@@ -179,6 +181,7 @@ const schemaListMyHostAssignmentsCallableResponseSchema = <String, Object?>{
                 'exceptions',
                 'export',
                 'overview',
+                'team',
               ],
               'description': 'A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties.',
             },

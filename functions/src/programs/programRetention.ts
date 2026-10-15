@@ -13,11 +13,10 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {isOrganizerManager} from "../shared/organizerHosts";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
   assertRevision,
-  loadProgramBundle,
+  requireProgramAccess,
   nextRevision,
 } from "../shared/programAuthority";
 import {loadFlightProviderConfig} from "../transport/flightProviderConfig";
@@ -43,7 +42,6 @@ import {
 import {
   validateUnarchiveProgramCallablePayload,
 } from "../shared/generated/validators/unarchiveProgramInput";
-import {requireActiveProgramAccount} from "./programs";
 
 /** Approved policy: archive grants a 14-day grace window before the
  *  identity scrub runs; unarchive is only possible inside it. */
@@ -88,14 +86,13 @@ export async function archiveProgramHandler(
   let committed: {revision: number; anonymizeAtMillis: number;
     alreadyApplied: boolean} | null = null;
   await db.runTransaction(async (tx) => {
-    await requireActiveProgramAccount({db, actorUid, transaction: tx});
-    const {program, organizer} = await loadProgramBundle({
-      db, programId: data.programId, transaction: tx,
+    const {program, role} = await requireProgramAccess({
+      db, programId: data.programId, actorUid, transaction: tx, now: deps.now(),
     });
-    if (!isOrganizerManager(organizer, actorUid)) {
+    if (role !== "manager") {
       throw new HttpsError(
         "permission-denied",
-        "Only organizer managers can archive programs."
+        "Only the program creator can archive this program."
       );
     }
     assertRevision(program.revision, data.expectedRevision);
@@ -142,15 +139,15 @@ export async function unarchiveProgramHandler(
   let committed: {revision: number;
     restoredStatus: OrganizerProgramDocument["status"]} | null = null;
   await db.runTransaction(async (tx) => {
-    await requireActiveProgramAccount({db, actorUid, transaction: tx});
-    const [{program, organizer}, runSnap] = await Promise.all([
-      loadProgramBundle({db, programId: data.programId, transaction: tx}),
+    const [{program, role}, runSnap] = await Promise.all([
+      requireProgramAccess({db, programId: data.programId, actorUid,
+        transaction: tx, now: deps.now()}),
       tx.get(runRef),
     ]);
-    if (!isOrganizerManager(organizer, actorUid)) {
+    if (role !== "manager") {
       throw new HttpsError(
         "permission-denied",
-        "Only organizer managers can restore programs."
+        "Only the program creator can restore this program."
       );
     }
     assertRevision(program.revision, data.expectedRevision);

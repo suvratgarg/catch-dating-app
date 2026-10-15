@@ -42,6 +42,7 @@ export const grantProgramStaffCallablePayloadSchema: Record<string, unknown> = {
           "duty": {
             "type": "string",
             "enum": [
+              "programAdmin",
               "programCoordinator",
               "guestRelations",
               "communications",

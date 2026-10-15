@@ -442,3 +442,58 @@ test("invalid household membership fails before loading an unbounded roster",
     await assert.rejects(householdEdit(db), /membership needs reconciliation/);
     assert.equal(db.transactionCommits, 0);
   });
+
+for (const create of [false, true]) {
+  for (const deadline of ["grant", "duty"]) {
+    test(`household ${create ? "create" : "update"} rejects ${deadline} expiry`,
+      async () => {
+        const boundary = now.toMillis() + 60_000;
+        const run = async (finalMillis: number, reject: boolean) => {
+          const data = seed();
+          const grant = guestDeskGrant("coordinator-1", "programCoordinator");
+          grant.expiresAt = admin.firestore.Timestamp.fromMillis(
+            deadline === "grant" ? boundary : boundary + 60_000);
+          grant.duties = [{duty: "programCoordinator", pickupPointIds: [],
+            hotelIds: [], expiresAtMillis: deadline === "duty" ?
+              boundary : boundary + 60_000}];
+          if (deadline === "grant") {
+            // The duty outlives neither the admitted grant nor its authority.
+            (grant.duties as Array<{expiresAtMillis: number}>)[0]
+              .expiresAtMillis = boundary;
+          }
+          const db = new FakeFirestore({...data,
+            "programStaffGrants/program-1__coordinator-1": grant});
+          const before = new Map(db.docs);
+          let clockMillis = now.toMillis();
+          let advancedOnRead = false;
+          const readDoc = db.getDoc.bind(db);
+          db.getDoc = (path) => {
+            const document = readDoc(path);
+            if (create ? path === "programHouseholds/second" :
+              path.startsWith("workspaceFieldAssertions/")) {
+              clockMillis = finalMillis;
+              advancedOnRead = true;
+            }
+            return document;
+          };
+          const mutation = upsertProgramHouseholdHandler(request({
+            programId: "program-1", label: "Updated family",
+            primaryContactName: "Changed contact", memberGuestIds: ["guest-2"],
+            ...(create ? {} : {householdId: "first", expectedRevision: 1}),
+          }, "coordinator-1"), deps(db, {now: () =>
+            admin.firestore.Timestamp.fromMillis(clockMillis)}));
+          if (reject) {
+            await assert.rejects(mutation, {code: "permission-denied"});
+            assert.equal(db.transactionCommits, 0);
+            assert.deepEqual(db.docs, before);
+          } else {
+            await mutation;
+            assert.equal(db.transactionCommits, 1);
+          }
+          assert.equal(advancedOnRead, true);
+        };
+        await run(boundary - 1, false);
+        await run(boundary, true);
+      });
+  }
+}

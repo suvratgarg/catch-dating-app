@@ -226,8 +226,12 @@ test("program groups reject staff without the coordinator duty", async () => {
       hostUserId: "owner-1", ownerUserId: "owner-1",
       hostUserIds: ["owner-1"], hostProfiles: []},
   });
+  const owned = await listProgramGuestGroupsHandler(request({
+    programId: "program-1"}, "manager-1"), deps(db));
+  assert.equal(owned.groups.length, 2);
   await assert.rejects(listProgramGuestGroupsHandler(request({
-    programId: "program-1"}, "manager-1"), deps(db)), /access|not found/i);
+    programId: "program-1"}, "dispatcher-1"), deps(db)),
+  /lacks the programCoordinator duty/);
 });
 
 

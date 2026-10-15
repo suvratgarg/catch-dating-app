@@ -15,6 +15,7 @@ export interface InviteProgramStaffCallablePayload {
    */
   duties: {
     duty:
+      | "programAdmin"
       | "programCoordinator"
       | "guestRelations"
       | "communications"

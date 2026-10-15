@@ -211,7 +211,7 @@ export async function replanMoment(
   const nominal = planRun(moment, facts, now);
   const recipients = travel && nominal.kind === "planned" ?
     (await resolveMomentRecipients(db, moment, nominal.run,
-      travel)).recipients : null;
+      now, travel)).recipients : null;
   const travelLeadMinutes = recipients ? recipients.reduce((max,
     recipient) => Math.max(max, recipient.travelLeadMinutes ?? 0), 0) :
     undefined;
@@ -592,7 +592,7 @@ async function dispatchRun(
   const dayKey = await deps.localDayKey(moment.scope, now);
 
   const resolution = await resolveMomentRecipients(
-    db, moment, run, travel);
+    db, moment, run, now, travel);
   const decisions: PolicyDecision[] = [];
   const byRecipient = new Map<string, ResolvedRecipient>();
   for (const recipient of resolution.recipients) {

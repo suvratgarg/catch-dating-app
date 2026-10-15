@@ -44,6 +44,7 @@ const schemaGrantProgramStaffCallablePayloadSchema = <String, Object?>{
           'duty': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
+              'programAdmin',
               'programCoordinator',
               'guestRelations',
               'communications',

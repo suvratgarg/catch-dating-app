@@ -23,15 +23,20 @@ import {
   loadProgramBundle,
   nextRevision,
   programStaffGrantId,
+  programOwnerAuthorizationDeadline,
+  requireActiveProgramActor,
+  requireProgramAccess,
   requireProgramMutable,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {normalizeRosterPhone} from "../events/eventAttendees";
 import {
   dedupeDuties,
+  authorizeProgramStaffGrant,
   grantDuties,
   maxGrantDurationMillis,
   maxProgramStaff,
+  programAdministrationDeadline,
   requireProgramManager,
   validateDutyStations,
 } from "./programStaffPolicy";
@@ -99,7 +104,7 @@ export async function inviteProgramStaffHandler(
   const ref = invites.doc(`inv_${randomUUID()}`);
   return db.runTransaction(async (tx) => {
     const bundle = await requireProgramManager(
-      db, data.programId, actorUid, tx);
+      db, data.programId, actorUid, tx, deps.now());
     requireProgramMutable(bundle.program);
     const now = deps.now();
     if (data.expiresAtMillis <= now.toMillis() ||
@@ -107,6 +112,8 @@ export async function inviteProgramStaffHandler(
       throw new HttpsError("invalid-argument",
         "Invite expiry must be within the staff access window.");
     }
+    authorizeProgramStaffGrant(bundle, actorUid, data.expiresAtMillis,
+      now.toMillis());
     await validateDutyStations({db, programId: data.programId,
       organizerId: bundle.program.organizerId, duties, transaction: tx});
     const existingSnap = await tx.get(invites
@@ -118,7 +125,8 @@ export async function inviteProgramStaffHandler(
     if (existingSnap.size > 0) {
       const existing = existingSnap.docs[0];
       const invite = existing.data() as ProgramStaffInviteDocument;
-      if (existingSnap.size !== 1 ||
+      if (existingSnap.size !== 1 || invite.revokedAt != null ||
+          invite.revokedBy != null ||
           invite.organizerId !== bundle.program.organizerId ||
           invite.displayName !== displayName ||
           staffTimestampMillis(invite.expiresAt) !== data.expiresAtMillis ||
@@ -126,8 +134,27 @@ export async function inviteProgramStaffHandler(
         throw new HttpsError("failed-precondition",
           "A different invite is pending. Revoke it before changing access.");
       }
-      if (staffTimestampMillis(invite.expiresAt) <= deps.now().toMillis()) {
+      const committedAt = deps.now();
+      if (staffTimestampMillis(invite.expiresAt) <= committedAt.toMillis()) {
         throw new HttpsError("failed-precondition", "Staff invite expired.");
+      }
+      const programAuthorization = authorizeProgramStaffGrant(bundle, actorUid,
+        data.expiresAtMillis, committedAt.toMillis());
+      if (programOwnerAuthorizationDeadline(bundle.program, invite) === null &&
+          bundle.role !== "manager") {
+        throw new HttpsError("permission-denied",
+          "The program creator must approve this legacy invite.");
+      }
+      // The creator can explicitly approve an identical legacy request. An
+      // admin can explicitly reapprove an already owner-approved request.
+      const approvedBy = invite.programAuthorization?.approvedByUid ??
+        invite.createdBy;
+      if (programOwnerAuthorizationDeadline(bundle.program, invite) === null ||
+          approvedBy !== actorUid) {
+        const revision = nextRevision(invite.revision, committedAt);
+        tx.set(existing.ref, {...invite, programAuthorization,
+          updatedAt: committedAt, revision});
+        return {entityId: existing.id, revision, alreadyApplied: false};
       }
       return {entityId: existing.id, revision: invite.revision,
         alreadyApplied: true};
@@ -136,6 +163,8 @@ export async function inviteProgramStaffHandler(
     if (data.expiresAtMillis <= committedAt.toMillis()) {
       throw new HttpsError("failed-precondition", "Staff invite expired.");
     }
+    const programAuthorization = authorizeProgramStaffGrant(bundle, actorUid,
+      data.expiresAtMillis, committedAt.toMillis());
     const document: ProgramStaffInviteDocument = {
       organizerId: bundle.program.organizerId,
       programId: data.programId,
@@ -144,6 +173,7 @@ export async function inviteProgramStaffHandler(
       duties,
       status: "pending",
       createdBy: actorUid,
+      programAuthorization,
       createdAt: committedAt,
       expiresAt: admin.firestore.Timestamp.fromMillis(data.expiresAtMillis),
       claimedByUid: null,
@@ -191,8 +221,23 @@ export async function claimProgramStaffInviteHandler(
     if (!invite) {
       throw new HttpsError("not-found", "Staff invite not found.");
     }
+    await requireActiveProgramActor({db, actorUid: uid, transaction: tx});
+    if (invite.revokedAt != null || invite.revokedBy != null) {
+      throw new HttpsError("failed-precondition",
+        "This staff invite is no longer valid.");
+    }
     if (invite.status === "claimed") {
       if (invite.claimedByUid === uid) {
+        if (invite.phoneE164 !== callerPhone) {
+          throw new HttpsError("permission-denied", "Invite phone changed.");
+        }
+        const access = await requireProgramAccess({db,
+          programId: invite.programId, actorUid: uid,
+          transaction: tx, now: deps.now()});
+        if (access.program.organizerId !== invite.organizerId) {
+          throw new HttpsError("failed-precondition",
+            "Invite ownership changed.");
+        }
         return {programId: invite.programId, alreadyApplied: true};
       }
       throw new HttpsError(
@@ -216,6 +261,18 @@ export async function claimProgramStaffInviteHandler(
     if (program.organizerId !== invite.organizerId) {
       throw new HttpsError("failed-precondition", "Invite ownership changed.");
     }
+    const inviteDeadline = programOwnerAuthorizationDeadline(program, invite);
+    if (inviteDeadline === null || inviteDeadline <= now.toMillis() ||
+        staffTimestampMillis(invite.expiresAt) > inviteDeadline ||
+        (invite.programAuthorization !== undefined &&
+          invite.programAuthorization.approvedAtMillis > now.toMillis())) {
+      throw new HttpsError("permission-denied",
+        "The program creator must approve this invite.");
+    }
+    const issuerUid = invite.programAuthorization?.approvedByUid ??
+      invite.createdBy;
+    const issuer = await requireProgramManager(db, invite.programId, issuerUid,
+      tx, deps.now());
     await validateDutyStations({db, programId: invite.programId,
       organizerId: program.organizerId, duties: invite.duties,
       transaction: tx});
@@ -237,19 +294,30 @@ export async function claimProgramStaffInviteHandler(
         "Staff grant ownership changed.");
     }
     const committedAt = deps.now();
-    if (staffTimestampMillis(invite.expiresAt) <= committedAt.toMillis()) {
+    if (staffTimestampMillis(invite.expiresAt) <= committedAt.toMillis() ||
+        inviteDeadline <= committedAt.toMillis()) {
       throw new HttpsError("failed-precondition", "Staff invite expired.");
     }
-    const currentActive = current?.status === "active" &&
+    const authorization = authorizeProgramStaffGrant(issuer, issuerUid,
+      staffTimestampMillis(invite.expiresAt), committedAt.toMillis());
+    if (current && programOwnerAuthorizationDeadline(program, current) ===
+        null && issuer.role !== "manager") {
+      throw new HttpsError("permission-denied",
+        "The program creator must approve legacy staff access.");
+    }
+    const currentOccupiesSlot = current?.status === "active" &&
       current.programId === invite.programId &&
       current.organizerId === invite.organizerId && current.uid === uid &&
       staffTimestampMillis(current.expiresAt) > committedAt.toMillis();
-    if (!currentActive && activeSnap.size >= maxProgramStaff) {
+    if (!currentOccupiesSlot && activeSnap.size >= maxProgramStaff) {
       throw new HttpsError(
         "resource-exhausted",
         "This program already has the maximum number of staff grants."
       );
     }
+    const currentActive = currentOccupiesSlot && current!.revokedAt == null &&
+      current!.revokedBy == null &&
+      programOwnerAuthorizationDeadline(program, current!) !== null;
     const mergedDuties = dedupeDuties([
       ...(currentActive ?
         activeProgramDuties(current!, committedAt.toMillis()) : []),
@@ -257,6 +325,10 @@ export async function claimProgramStaffInviteHandler(
     ]);
     const grantExpiryMillis = Math.max(
       ...mergedDuties.map((assignment) => assignment.expiresAtMillis));
+    // Existing owner-approved tuples retain their exact deadlines. The
+    // document ceiling is only an inventory bound; it never renews a tuple.
+    const programAuthorization = {...authorization,
+      authorizedUntilMillis: grantExpiryMillis};
     const grant: ProgramStaffGrantDocument = {
       organizerId: invite.organizerId,
       programId: invite.programId,
@@ -265,6 +337,7 @@ export async function claimProgramStaffInviteHandler(
       phoneLastFour: invite.phoneE164.slice(-4),
       duties: mergedDuties,
       status: "active",
+      programAuthorization,
       createdBy: current?.createdBy ?? invite.createdBy,
       createdAt: current?.createdAt ?? committedAt,
       expiresAt:
@@ -302,7 +375,7 @@ export async function revokeProgramStaffInviteHandler(
   return db.runTransaction(async (tx) => {
     const [snap, {program}] = await Promise.all([
       tx.get(inviteRef),
-      requireProgramManager(db, data.programId, actorUid, tx),
+      requireProgramManager(db, data.programId, actorUid, tx, deps.now()),
     ]);
     requireProgramMutable(program);
     const invite = snap.data() as ProgramStaffInviteDocument | undefined;
@@ -318,6 +391,8 @@ export async function revokeProgramStaffInviteHandler(
       };
     }
     const committedAt = deps.now();
+    programAdministrationDeadline(await requireProgramManager(db,
+      data.programId, actorUid, tx, committedAt), committedAt.toMillis());
     const revision = nextRevision(invite.revision, committedAt);
     tx.set(inviteRef, {
       ...invite,
@@ -340,7 +415,7 @@ function scopeFingerprint(
 ): string {
   return JSON.stringify(dedupeDuties(duties).map((assignment) =>
     JSON.stringify([assignment.duty, assignment.pickupPointIds,
-      assignment.hotelIds])).sort());
+      assignment.hotelIds, assignment.functionIds ?? []])).sort());
 }
 
 export const inviteProgramStaff = onCall(

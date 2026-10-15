@@ -4,7 +4,7 @@
 // contracts, or generated code so the same policy can run anywhere.
 
 export type WorkDuty =
-  "programCoordinator" | "guestRelations" | "communications" |
+  "programAdmin" | "programCoordinator" | "guestRelations" | "communications" |
     "functionCheckIn" | "functionLead" | "airportGreeter" | "hotelDesk" |
     "transportDispatcher" | "reconciliationViewer" | "stakeholderViewer" |
     "eventLead";
@@ -14,7 +14,7 @@ export type WorkDuty =
 export type WorkDestination =
   "arrivals" | "dispatch" | "inbound" | "rooms" | "nowNext" | "door" |
     "walkIns" | "attention" | "guests" | "rsvpInbox" | "imports" | "inbox" |
-    "moments" | "trips" | "exceptions" | "export" | "overview";
+    "moments" | "trips" | "exceptions" | "export" | "overview" | "team";
 
 export type WorkShellMode = "task" | "tabs" | "programWorkspace" | "none";
 
@@ -45,7 +45,7 @@ export interface WorkShellResolution {
 export const WORK_DESTINATIONS: ReadonlyArray<WorkDestination> = [
   "arrivals", "dispatch", "inbound", "rooms", "nowNext", "door", "walkIns",
   "attention", "guests", "rsvpInbox", "imports", "inbox", "moments", "trips",
-  "exceptions", "export", "overview",
+  "exceptions", "export", "overview", "team",
 ];
 
 const DESTINATION_RANK = new Map<WorkDestination, number>(
@@ -57,6 +57,7 @@ const DESTINATION_RANK = new Map<WorkDestination, number>(
 // program-locked workspace shell mode instead of bar destinations.
 export const WORK_DUTY_DESTINATIONS:
 Readonly<Record<WorkDuty, ReadonlyArray<WorkDestination>>> = {
+  programAdmin: ["team"],
   programCoordinator: [],
   guestRelations: ["guests", "rsvpInbox", "imports"],
   communications: ["inbox", "moments"],
@@ -79,7 +80,8 @@ export function resolveScopeDestinations(
   if (grantedDuties.has("programCoordinator")) {
     // The coordinator workspace is a distinct program-locked shell mode
     // with its own local sections; it never fills the bottom bar.
-    return {destinations: [], overflow: [], shellMode: "programWorkspace"};
+    return {destinations: grantedDuties.has("programAdmin") ? ["team"] : [],
+      overflow: [], shellMode: "programWorkspace"};
   }
   const granted = new Set<WorkDestination>();
   for (const duty of applicable) {

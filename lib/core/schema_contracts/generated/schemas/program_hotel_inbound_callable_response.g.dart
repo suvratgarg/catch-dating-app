@@ -209,7 +209,7 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
       ],
       'minimum': 1,
       'maximum': 9007199254740991,
-      'description': 'Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.',
+      'description': 'Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active.',
     },
     'nextTripCursor': <String, Object?>{
       'type': <Object?>[

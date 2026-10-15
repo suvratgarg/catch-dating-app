@@ -85,6 +85,7 @@ const schemaProgramStaffInviteDocumentSchema = <String, Object?>{
           'duty': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
+              'programAdmin',
               'programCoordinator',
               'guestRelations',
               'communications',
@@ -308,6 +309,39 @@ const schemaProgramStaffInviteDocumentSchema = <String, Object?>{
         },
       ],
       'description': 'Identity/free-text scrub marker set by the archive retention sweep; null until anonymized.',
+    },
+    'programAuthorization': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.',
+      'required': <Object?>[
+        'ownerUid',
+        'approvedByUid',
+        'approvedAtMillis',
+        'authorizedUntilMillis',
+      ],
+      'properties': <String, Object?>{
+        'ownerUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'approvedByUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'approvedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'authorizedUntilMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+      },
     },
   },
 };

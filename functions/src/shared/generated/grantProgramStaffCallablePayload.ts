@@ -14,6 +14,7 @@ export interface GrantProgramStaffCallablePayload {
    */
   duties: {
     duty:
+      | "programAdmin"
       | "programCoordinator"
       | "guestRelations"
       | "communications"

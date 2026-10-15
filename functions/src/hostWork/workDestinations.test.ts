@@ -161,3 +161,14 @@ test("mapEventRoleToDuty maps known roles and drops the rest", () => {
 test("canonical order covers every destination exactly once", () => {
   assert.equal(new Set(WORK_DESTINATIONS).size, WORK_DESTINATIONS.length);
 });
+
+test("program admin resolves only Team, without coordinator operations", () => {
+  assert.deepEqual(resolveScopeDestinations(programA, [{duty: "programAdmin"}]),
+    {destinations: ["team"], overflow: [], shellMode: "task"});
+});
+
+test("coordinator plus admin keeps workspace and explicit Team", () => {
+  assert.deepEqual(resolveScopeDestinations(programA, [
+    {duty: "programCoordinator"}, {duty: "programAdmin"},
+  ]), {destinations: ["team"], overflow: [], shellMode: "programWorkspace"});
+});

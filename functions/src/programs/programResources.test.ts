@@ -46,12 +46,12 @@ for (const scope of scopes) {
     assert.equal(db.getDoc(scope.path)!.revision, result.revision);
   });
 
-  test(`${scope.label} cannot commit after manager revocation`, async () => {
+  test(`${scope.label} fails after creator account deletion`, async () => {
     const db = new FakeFirestore(resourceSeed());
     const before = db.getDoc(scope.path);
     db.beforeCommit = async () => {
       db.beforeCommit = undefined;
-      revokeManager(db);
+      db.setDoc("deletedUsers/manager-1", {deletedAt: now});
     };
     await assert.rejects(update(db), code("permission-denied"));
     assert.deepEqual(db.getDoc(scope.path), before);

@@ -8,7 +8,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/program_staff_list_response.schema.json',
   'title': 'ProgramStaffListCallableResponse',
-  'description': 'Manager\'s view of program staff grants.',
+  'description': 'Program creator or explicitly authorized program administrator view of staff grants.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -83,6 +83,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
                 'duty': <String, Object?>{
                   'type': 'string',
                   'enum': <Object?>[
+                    'programAdmin',
                     'programCoordinator',
                     'guestRelations',
                     'communications',
@@ -143,6 +144,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
               'active',
               'expired',
               'revoked',
+              'approvalRequired',
             ],
           },
           'expiresAtMillis': <String, Object?>{

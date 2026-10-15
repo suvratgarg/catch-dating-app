@@ -2,6 +2,11 @@
   organizerId:ASCENDING,
   startsAt:DESCENDING
 ) */
+/* firestore-index: organizerPrograms (
+  organizerId:ASCENDING,
+  createdBy:ASCENDING,
+  startsAt:DESCENDING
+) */
 /* firestore-index: programFunctions (
   organizerId:ASCENDING,
   programId:ASCENDING
@@ -26,6 +31,9 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {isOrganizerManager} from "../shared/organizerHosts";
+import {programAdministrationDeadline, requireProgramManager} from
+  "./programStaffPolicy";
+import type {ProgramAccess} from "../shared/programAuthority";
 import {
   assertRevision,
   loadProgramBundle,
@@ -34,6 +42,7 @@ import {
 } from "../shared/programAuthority";
 import {replanProgramMoments} from "../moments/momentRunner";
 import type {
+  OrganizerDocument,
   OrganizerProgramDocument,
   ProgramFunctionDocument,
   ProgramHotelDocument,
@@ -111,6 +120,28 @@ const defaultTransportSettings:
   };
 
 const programCallableLimits = {timeoutSeconds: 60, maxInstances: 20};
+
+/** Setup preserves organizer management, without granting guest access or
+ * creator-only retention authority. A creator or approved program admin can
+ * also reopen this exact program after losing organizer membership. */
+async function requireProgramSetupAccess(params: {
+  db: FirebaseFirestore.Firestore;
+  programId: string;
+  actorUid: string;
+  transaction: FirebaseFirestore.Transaction;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<{program: OrganizerProgramDocument;
+  administration: ProgramAccess | null}> {
+  const {program, organizer} = await loadProgramBundle(params);
+  if (program.createdBy === params.actorUid ||
+      isOrganizerManager(organizer, params.actorUid)) {
+    return {program, administration: null};
+  }
+  const administration = await requireProgramManager(params.db,
+    params.programId, params.actorUid, params.transaction, params.now);
+  programAdministrationDeadline(administration, params.now.toMillis());
+  return {program: administration.program, administration};
+}
 
 export async function createOrganizerProgramHandler(
   request: CallableRequest<unknown>,
@@ -205,14 +236,10 @@ export async function updateOrganizerProgramHandler(
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
     await requireActiveProgramAccount({db, actorUid, transaction: tx});
-    const {program, organizer} = await loadProgramBundle({
-      db, programId: data.programId, transaction: tx,
+    const {program, administration} = await requireProgramSetupAccess({
+      db, programId: data.programId, actorUid,
+      transaction: tx, now: deps.now(),
     });
-    if (!isOrganizerManager(organizer, actorUid)) {
-      throw new HttpsError(
-        "permission-denied", "Only organizer managers can edit programs."
-      );
-    }
     assertRevision(program.revision, data.expectedRevision);
     // Archive/unarchive are dedicated lifecycle callables; the generic
     // update path may never enter or leave the archived state.
@@ -239,6 +266,9 @@ export async function updateOrganizerProgramHandler(
       );
     }
     const now = deps.now();
+    if (administration !== null) {
+      programAdministrationDeadline(administration, now.toMillis());
+    }
     const update: Record<string, unknown> = {
       updatedAt: now,
       revision: nextRevision(program.revision, now),
@@ -308,49 +338,69 @@ export async function listOrganizerProgramsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerPrograms");
   const pageSize = data.limit ?? 50;
-  const {programDocs, hasMore} = await db.runTransaction(async (tx) => {
-    await requireActiveProgramAccount({db, actorUid, transaction: tx});
-    await requireOrganizerManager({
-      db, organizerId: data.organizerId, actorUid, transaction: tx,
+  const {programDocs, hasMore} =
+    await db.runTransaction(async (tx) => {
+      await requireActiveProgramAccount({db, actorUid, transaction: tx});
+      const organizerSnap = await tx.get(
+        db.collection("organizers").doc(data.organizerId));
+      if (!organizerSnap.exists) {
+        throw new HttpsError("not-found", "Organizer not found.");
+      }
+      const organizer = requireDoc<OrganizerDocument>(
+        organizerSnap, "OrganizerDocument");
+      const isManager = isOrganizerManager(organizer, actorUid);
+      if (data.programId !== undefined) {
+        const program = await tx.get(
+          db.collection("organizerPrograms").doc(data.programId)
+        );
+        if (!program.exists ||
+            program.data()?.organizerId !== data.organizerId) {
+          throw new HttpsError(
+            "not-found", "Program is unavailable in this organizer."
+          );
+        }
+        await requireProgramSetupAccess({
+          db, programId: data.programId, actorUid,
+          transaction: tx, now: deps.now(),
+        });
+        return {programDocs: [program], hasMore: false};
+      }
+      let query = db.collection("organizerPrograms")
+        .where("organizerId", "==", data.organizerId);
+      // Apply creator ownership before the read bound; never fetch an organizer
+      // page and filter afterward, which can omit the creator's own programs.
+      if (!isManager) query = query.where("createdBy", "==", actorUid);
+      query = query
+        .orderBy("startsAt", "desc")
+        .orderBy(FieldPath.documentId(), "desc");
+      if (data.cursor !== undefined) {
+        const stableCursor = decodeProgramInventoryCursor(data.cursor);
+        const cursorId = stableCursor?.programId ?? data.cursor;
+        const cursor = await tx.get(
+          db.collection("organizerPrograms").doc(cursorId)
+        );
+        if (!cursor.exists || cursor.data()?.organizerId !== data.organizerId ||
+            (!isManager && cursor.data()?.createdBy !== actorUid)) {
+          throw new HttpsError(
+            "not-found", "Program inventory cursor is unavailable."
+          );
+        }
+        query = stableCursor === null ? query.startAfter(cursor) :
+          query.startAfter(
+            admin.firestore.Timestamp.fromMillis(stableCursor.startsAtMillis),
+            stableCursor.programId
+          );
+      }
+      const snap = await tx.get(query.limit(pageSize + 1));
+      if (!isManager && data.cursor === undefined && snap.empty) {
+        throw new HttpsError("permission-denied",
+          "This account has no created programs in this organizer.");
+      }
+      return {
+        programDocs: snap.docs.slice(0, pageSize),
+        hasMore: snap.size > pageSize,
+      };
     });
-    if (data.programId !== undefined) {
-      const program = await tx.get(
-        db.collection("organizerPrograms").doc(data.programId)
-      );
-      if (!program.exists || program.data()?.organizerId !== data.organizerId) {
-        throw new HttpsError(
-          "not-found", "Program is unavailable in this organizer."
-        );
-      }
-      return {programDocs: [program], hasMore: false};
-    }
-    let query = db.collection("organizerPrograms")
-      .where("organizerId", "==", data.organizerId)
-      .orderBy("startsAt", "desc")
-      .orderBy(FieldPath.documentId(), "desc");
-    if (data.cursor !== undefined) {
-      const stableCursor = decodeProgramInventoryCursor(data.cursor);
-      const cursorId = stableCursor?.programId ?? data.cursor;
-      const cursor = await tx.get(
-        db.collection("organizerPrograms").doc(cursorId)
-      );
-      if (!cursor.exists || cursor.data()?.organizerId !== data.organizerId) {
-        throw new HttpsError(
-          "not-found", "Program inventory cursor is unavailable."
-        );
-      }
-      query = stableCursor === null ? query.startAfter(cursor) :
-        query.startAfter(
-          admin.firestore.Timestamp.fromMillis(stableCursor.startsAtMillis),
-          stableCursor.programId
-        );
-    }
-    const snap = await tx.get(query.limit(pageSize + 1));
-    return {
-      programDocs: snap.docs.slice(0, pageSize),
-      hasMore: snap.size > pageSize,
-    };
-  });
   // Batch only the authorized inventory IDs. Bound work to two reads for the
   // canonical 50-row inventory; partial or failed counts never conceal rows.
   const functionCounts = new Map<string, number>();
@@ -375,6 +425,30 @@ export async function listOrganizerProgramsHandler(
       logger.warn("Program inventory count unavailable", {error});
     }
   }
+  let exactProgram: OrganizerProgramDocument | null = null;
+  if (data.programId !== undefined) {
+    const programId = data.programId;
+    // Count reads can outlive a grant, approval, account or organizer role.
+    // Read current authority again; cached expiry alone cannot prove access.
+    const setup = await db.runTransaction(async (tx) => {
+      await requireActiveProgramAccount({db, actorUid, transaction: tx});
+      const current = await requireProgramSetupAccess({
+        db, programId, actorUid, transaction: tx, now: deps.now(),
+      });
+      if (current.program.organizerId !== data.organizerId) {
+        throw new HttpsError(
+          "not-found", "Program is unavailable in this organizer.");
+      }
+      return current;
+    });
+    exactProgram = setup.program;
+    // Sample time after the final awaited read, with no later awaits before
+    // returning the row from the same freshly authorized program version.
+    if (setup.administration !== null) {
+      programAdministrationDeadline(
+        setup.administration, deps.now().toMillis());
+    }
+  }
   const lastProgram = hasMore ? requireDoc<OrganizerProgramDocument>(
     programDocs.at(-1)!, "OrganizerProgramDocument") : null;
   return {
@@ -383,7 +457,7 @@ export async function listOrganizerProgramsHandler(
       programId: programDocs.at(-1)!.id,
     }),
     programs: programDocs.map((doc) => {
-      const program = requireDoc<OrganizerProgramDocument>(
+      const program = exactProgram ?? requireDoc<OrganizerProgramDocument>(
         doc, "OrganizerProgramDocument");
       return {
         programId: doc.id,
@@ -394,6 +468,10 @@ export async function listOrganizerProgramsHandler(
         startsAtMillis: program.startsAt.toMillis(),
         endsAtMillis: program.endsAt.toMillis(),
         capabilities: program.capabilities,
+        canArchive: program.createdBy === actorUid &&
+          program.status !== "archived",
+        canUnarchive: program.createdBy === actorUid &&
+          program.status === "archived",
         ...(functionCounts.has(doc.id) ?
           {functionCount: functionCounts.get(doc.id)!} : {}),
         archivedAtMillis: program.archivedAt?.toMillis() ?? null,
@@ -414,106 +492,104 @@ export async function getOrganizerProgramHandler(
     request, validateProgramIdCallablePayload, normalizeProgramPayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getOrganizerProgram");
-  const {program, organizer} = await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     await requireActiveProgramAccount({db, actorUid, transaction: tx});
-    return loadProgramBundle({
-      db, programId: data.programId, transaction: tx,
+    const {program, administration} = await requireProgramSetupAccess({
+      db, programId: data.programId, actorUid, transaction: tx, now: deps.now(),
     });
+    const read = (query: FirebaseFirestore.Query) => tx.get(query);
+    const [functionsSnap, pickupsSnap, hotelsSnap, guestsSnap,
+      householdsSnap, legsSnap, staffSnap] = await Promise.all([
+      read(db.collection("programFunctions")
+        .where("programId", "==", data.programId).limit(40)),
+      read(db.collection("programPickupPoints")
+        .where("programId", "==", data.programId).limit(32)),
+      read(db.collection("programHotels")
+        .where("programId", "==", data.programId).limit(64)),
+      read(db.collection("programGuests")
+        .where("programId", "==", data.programId).limit(501)),
+      read(db.collection("programHouseholds")
+        .where("programId", "==", data.programId).limit(501)),
+      read(db.collection("programTravelLegs")
+        .where("programId", "==", data.programId)
+        .where("kind", "==", "inbound").limit(501)),
+      read(db.collection("programStaffGrants")
+        .where("programId", "==", data.programId)
+        .where("status", "==", "active").limit(101)),
+    ]);
+    if (administration !== null) {
+      programAdministrationDeadline(administration, deps.now().toMillis());
+    }
+    const capped = (snap: FirebaseFirestore.QuerySnapshot) =>
+      Math.min(snap.size, 500);
+    return {
+      program: {
+        programId: data.programId,
+        organizerId: program.organizerId,
+        kind: program.kind,
+        title: program.title,
+        timezone: program.timezone,
+        status: program.status,
+        startsAtMillis: program.startsAt.toMillis(),
+        endsAtMillis: program.endsAt.toMillis(),
+        capabilities: program.capabilities,
+        transportSettings: program.transportSettings,
+        archivedAtMillis: program.archivedAt?.toMillis() ?? null,
+        anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
+        anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
+        revision: program.revision,
+      },
+      functions: functionsSnap.docs.map((doc) => {
+        const fn = doc.data() as ProgramFunctionDocument;
+        return {
+          functionId: doc.id,
+          name: fn.name,
+          startsAtMillis: fn.startsAt.toMillis(),
+          endsAtMillis: fn.endsAt.toMillis(),
+          venueName: fn.venueName,
+          status: fn.status,
+          invitationMode: fn.invitationMode ?? "allGuests",
+          checkInEnabled: fn.checkInEnabled ?? false,
+          dressCode: fn.dressCode ?? null,
+          instructions: fn.instructions ?? null,
+          expectedCount: fn.expectedCount ?? null,
+          checkedInCount: fn.checkedInCount ?? null,
+          revision: fn.revision,
+        };
+      }),
+      pickupPoints: pickupsSnap.docs.map((doc) => {
+        const point = doc.data() as ProgramPickupPointDocument;
+        return {
+          pickupPointId: doc.id,
+          kind: point.kind,
+          label: point.label,
+          iataCode: point.iataCode,
+          terminal: point.terminal,
+          meetingZone: point.meetingZone,
+          instructions: point.instructions,
+          active: point.active,
+          revision: point.revision,
+        };
+      }),
+      hotels: hotelsSnap.docs.map((doc) => {
+        const hotel = doc.data() as ProgramHotelDocument;
+        return {
+          hotelId: doc.id,
+          name: hotel.name,
+          address: hotel.address,
+          receptionContact: hotel.receptionContact,
+          active: hotel.active,
+          revision: hotel.revision,
+        };
+      }),
+      counts: {
+        guests: capped(guestsSnap),
+        households: capped(householdsSnap),
+        inboundLegs: capped(legsSnap),
+        activeStaff: Math.min(staffSnap.size, 100),
+      },
+    };
   });
-  if (!isOrganizerManager(organizer, actorUid)) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only organizer managers can open program setup."
-    );
-  }
-  const [functionsSnap, pickupsSnap, hotelsSnap, guestsSnap,
-    householdsSnap, legsSnap, staffSnap] = await Promise.all([
-    db.collection("programFunctions")
-      .where("programId", "==", data.programId).limit(40).get(),
-    db.collection("programPickupPoints")
-      .where("programId", "==", data.programId).limit(32).get(),
-    db.collection("programHotels")
-      .where("programId", "==", data.programId).limit(64).get(),
-    db.collection("programGuests")
-      .where("programId", "==", data.programId).limit(501).get(),
-    db.collection("programHouseholds")
-      .where("programId", "==", data.programId).limit(501).get(),
-    db.collection("programTravelLegs")
-      .where("programId", "==", data.programId)
-      .where("kind", "==", "inbound").limit(501).get(),
-    db.collection("programStaffGrants")
-      .where("programId", "==", data.programId)
-      .where("status", "==", "active").limit(101).get(),
-  ]);
-  const capped = (snap: FirebaseFirestore.QuerySnapshot) =>
-    Math.min(snap.size, 500);
-  return {
-    program: {
-      programId: data.programId,
-      organizerId: program.organizerId,
-      kind: program.kind,
-      title: program.title,
-      timezone: program.timezone,
-      status: program.status,
-      startsAtMillis: program.startsAt.toMillis(),
-      endsAtMillis: program.endsAt.toMillis(),
-      capabilities: program.capabilities,
-      transportSettings: program.transportSettings,
-      archivedAtMillis: program.archivedAt?.toMillis() ?? null,
-      anonymizeAtMillis: program.anonymizeAt?.toMillis() ?? null,
-      anonymizedAtMillis: program.anonymizedAt?.toMillis() ?? null,
-      revision: program.revision,
-    },
-    functions: functionsSnap.docs.map((doc) => {
-      const fn = doc.data() as ProgramFunctionDocument;
-      return {
-        functionId: doc.id,
-        name: fn.name,
-        startsAtMillis: fn.startsAt.toMillis(),
-        endsAtMillis: fn.endsAt.toMillis(),
-        venueName: fn.venueName,
-        status: fn.status,
-        invitationMode: fn.invitationMode ?? "allGuests",
-        checkInEnabled: fn.checkInEnabled ?? false,
-        dressCode: fn.dressCode ?? null,
-        instructions: fn.instructions ?? null,
-        expectedCount: fn.expectedCount ?? null,
-        checkedInCount: fn.checkedInCount ?? null,
-        revision: fn.revision,
-      };
-    }),
-    pickupPoints: pickupsSnap.docs.map((doc) => {
-      const point = doc.data() as ProgramPickupPointDocument;
-      return {
-        pickupPointId: doc.id,
-        kind: point.kind,
-        label: point.label,
-        iataCode: point.iataCode,
-        terminal: point.terminal,
-        meetingZone: point.meetingZone,
-        instructions: point.instructions,
-        active: point.active,
-        revision: point.revision,
-      };
-    }),
-    hotels: hotelsSnap.docs.map((doc) => {
-      const hotel = doc.data() as ProgramHotelDocument;
-      return {
-        hotelId: doc.id,
-        name: hotel.name,
-        address: hotel.address,
-        receptionContact: hotel.receptionContact,
-        active: hotel.active,
-        revision: hotel.revision,
-      };
-    }),
-    counts: {
-      guests: capped(guestsSnap),
-      households: capped(householdsSnap),
-      inboundLegs: capped(legsSnap),
-      activeStaff: Math.min(staffSnap.size, 100),
-    },
-  };
 }
 
 export function validateVehicleClasses(

@@ -42,12 +42,11 @@ for (const duties of [
   });
 }
 
-test("direct grant retries require current management", async () => {
+test("direct grant retries reject a deleted creator", async () => {
   const store = new FakeFirestore(baseSeed());
   store.beforeCommit = async () => {
     store.beforeCommit = undefined;
-    store.updateDoc("organizers/org-1", {ownerUserId: "other",
-      hostUserId: "other", hostUserIds: [], hostProfiles: []});
+    store.setDoc("deletedUsers/manager-1", {deletedAt: now});
   };
   await assert.rejects(grantProgramStaffHandler(
     request(payload, "manager-1"), deps(store)), code("permission-denied"));
@@ -201,8 +200,7 @@ test("staff continuations survive revocation and deletion of the anchor",
     assert.equal((await read(first.nextCursor!)).members[0].uid, "greeter-1");
     db.docs.delete("programStaffGrants/program-1__dispatcher-1");
     assert.equal((await read(first.nextCursor!)).members[0].uid, "greeter-1");
-    db.updateDoc("organizers/org-1", {ownerUserId: "other",
-      hostUserId: "other", hostUserIds: [], hostProfiles: []});
+    db.setDoc("deletedUsers/manager-1", {deletedAt: now});
     await assert.rejects(read(first.nextCursor!), code("permission-denied"));
   });
 
@@ -358,4 +356,130 @@ test("unrestricted function overflow is explicit", async () => {
   await assert.rejects(getProgramWorkAccessHandler(
     request({programId: "program-1"}, "manager-1"), deps(store)),
   code("resource-exhausted"));
+});
+
+function adminStore(deadline = now.toMillis() + 60_000) {
+  const seed = baseSeed();
+  seed["programStaffGrants/program-1__admin-1"] = {
+    ...seed["programStaffGrants/program-1__greeter-1"], uid: "admin-1",
+    duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: deadline}],
+    expiresAt: Timestamp.fromMillis(deadline),
+    programAuthorization: {ownerUid: "manager-1", approvedByUid: "manager-1",
+      approvedAtMillis: now.toMillis() - 1, authorizedUntilMillis: deadline},
+  };
+  return new FakeFirestore(seed);
+}
+
+test("creator retains delegation after every organizer role is removed",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    db.updateDoc("organizers/org-1", {ownerUserId: "other",
+      hostUserId: "other", hostUserIds: [], hostProfiles: []});
+    const receipt = await grantProgramStaffHandler(
+      request(payload, "manager-1"), deps(db));
+    const grant = db.getDoc(
+      `programStaffGrants/program-1__${receipt.entityId}`)!;
+    assert.deepEqual(grant.programAuthorization, {ownerUid: "manager-1",
+      approvedByUid: "manager-1", approvedAtMillis: now.toMillis(),
+      authorizedUntilMillis: payload.expiresAtMillis});
+  });
+
+for (const actor of ["organizer-only", "greeter-1", "dispatcher-1"]) {
+  test(`organizer or operational duty cannot delegate: ${actor}`, async () => {
+    const db = new FakeFirestore(baseSeed());
+    db.updateDoc("organizers/org-1", {ownerUserId: actor,
+      hostUserId: actor, hostUserIds: [actor]});
+    await assert.rejects(grantProgramStaffHandler(
+      request(payload, actor), deps(db)), code("permission-denied"));
+    await assert.rejects(listProgramStaffHandler(
+      request({programId: "program-1"}, actor), deps(db)),
+    code("permission-denied"));
+    assert.equal(db.transactionCommits, 0);
+  });
+}
+
+test("explicit admin delegates only within its creator-approved deadline",
+  async () => {
+    const db = adminStore();
+    const result = await grantProgramStaffHandler(
+      request(payload, "admin-1"), deps(db));
+    assert.equal(result.entityId, "new-staff-1");
+    const stored = db.getDoc("programStaffGrants/program-1__new-staff-1")!;
+    assert.equal((stored.programAuthorization as {approvedByUid: string})
+      .approvedByUid, "admin-1");
+    await assert.rejects(grantProgramStaffHandler(request({...payload,
+      expiresAtMillis: payload.expiresAtMillis + 1}, "admin-1"), deps(db)),
+    code("permission-denied"));
+  });
+
+test("admin bootstrap remains expiring staff with no operational resources",
+  async () => {
+    const access = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "admin-1"), deps(adminStore()));
+    assert.equal(access.actorRole, "staff");
+    assert.equal(access.grantExpiresAtMillis, payload.expiresAtMillis);
+    assert.deepEqual(access.pickupPoints, []);
+    assert.deepEqual(access.hotels, []);
+    assert.deepEqual(access.functions, []);
+  });
+
+test("admin cannot extend itself or a peer through renewal", async () => {
+  const db = adminStore();
+  const selfDeps = deps(db, {getUserByPhoneNumber: async () =>
+    ({uid: "admin-1", displayName: "Admin"})});
+  await assert.rejects(grantProgramStaffHandler(request({...payload,
+    duties: [{duty: "programAdmin", pickupPointIds: [], hotelIds: []}],
+    expiresAtMillis: payload.expiresAtMillis + 1}, "admin-1"), selfDeps),
+  code("permission-denied"));
+  assert.equal(db.getDoc("programStaffGrants/program-1__admin-1")?.revision, 1);
+});
+
+test("creator reissue replaces legacy duties and preserves creation audit",
+  async () => {
+    const db = adminStore();
+    const legacy = {...db.getDoc("programStaffGrants/program-1__greeter-1"),
+      uid: "new-staff-1", createdBy: "organizer-only"};
+    db.setDoc("programStaffGrants/program-1__new-staff-1", legacy);
+    const page = await listProgramStaffHandler(
+      request({programId: "program-1"}, "manager-1"), deps(db));
+    assert.equal(page.members.find((member) => member.uid === "new-staff-1")
+      ?.status, "approvalRequired");
+    await assert.rejects(grantProgramStaffHandler(
+      request(payload, "admin-1"), deps(db)), code("permission-denied"));
+    await grantProgramStaffHandler(request(payload, "manager-1"), deps(db));
+    const grant = db.getDoc("programStaffGrants/program-1__new-staff-1")!;
+    assert.equal(grant.createdBy, "organizer-only");
+    assert.deepEqual(grant.duties, payload.duties.map((duty) =>
+      ({...duty, expiresAtMillis: payload.expiresAtMillis})));
+    const access = await getProgramWorkAccessHandler(
+      request({programId: "program-1"}, "new-staff-1"), deps(db));
+    assert.equal(access.actorRole, "staff");
+  });
+
+test("revoked admin on transaction retry cannot commit a child grant",
+  async () => {
+    const db = adminStore();
+    db.beforeCommit = async () => {
+      db.beforeCommit = undefined;
+      db.updateDoc("programStaffGrants/program-1__admin-1",
+        {status: "revoked"});
+    };
+    await assert.rejects(grantProgramStaffHandler(
+      request(payload, "admin-1"), deps(db)), code("permission-denied"));
+    assert.equal(db.getDoc("programStaffGrants/program-1__new-staff-1"),
+      undefined);
+  });
+
+test("revoke rechecks admin expiry after reading its target", async () => {
+  const db = adminStore();
+  let reads = 0;
+  const advancing = deps(db, {now: () => ++reads < 3 ? now :
+    Timestamp.fromMillis(payload.expiresAtMillis)});
+  await assert.rejects(revokeProgramStaffHandler(request({
+    programId: "program-1", uid: "greeter-1", expectedRevision: 1,
+  }, "admin-1"), advancing), code("permission-denied"));
+  assert.equal(db.getDoc("programStaffGrants/program-1__greeter-1")?.status,
+    "active");
+  assert.equal(db.transactionCommits, 0);
 });

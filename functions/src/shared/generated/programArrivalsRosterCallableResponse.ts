@@ -92,7 +92,7 @@ export interface ProgramArrivalsRosterCallableResponse {
     sortOrder: number;
   }[];
   /**
-   * Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.
+   * Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active.
    */
   accessExpiresAtMillis: number | null;
 }

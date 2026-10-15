@@ -26,14 +26,15 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {isOrganizerManager} from "../shared/organizerHosts";
 import {
   activeProgramDuties,
   nextRevision,
   programStaffGrantId,
+  programOwnerAuthorizationDeadline,
   requireProgramAccess,
   requireProgramMutable,
 } from "../shared/programAuthority";
+import type {ProgramAccess} from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {normalizeRosterPhone} from "../events/eventAttendees";
 import {eventStaffDisplayName, resolveStaffAuthUser} from
@@ -72,8 +73,10 @@ import {
 
 import {
   grantDuties,
+  authorizeProgramStaffGrant,
   maxGrantDurationMillis,
   maxProgramStaff,
+  programAdministrationDeadline,
   requireProgramManager,
   unionScope,
   validateDutyStations,
@@ -112,11 +115,13 @@ export async function getProgramWorkAccessHandler(
     db, programId: data.programId, actorUid, now: deps.now(),
   });
   const {program} = access;
+  const operationalDuties = access.grant?.duties.filter((assignment) =>
+    assignment.duty !== "programAdmin") ?? [];
   const pickupScope = access.role === "manager" ? null :
-    unionScope(access.grant!.duties.filter((duty) => duty.duty !== "hotelDesk"),
+    unionScope(operationalDuties.filter((duty) => duty.duty !== "hotelDesk"),
       "pickupPointIds");
   const hotelScope = access.role === "manager" ? null :
-    unionScope(access.grant!.duties, "hotelIds");
+    unionScope(operationalDuties, "hotelIds");
   // Function surfaces exist only for door and guest-desk duties; other staff
   // never pay the function query and always read an empty list. An empty
   // scope set loads nothing; null means unrestricted.
@@ -256,8 +261,11 @@ export async function listProgramStaffHandler(
     request, validateListProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listProgramStaff");
-  const {program} = await requireProgramManager(db, data.programId, actorUid);
-  return programStaffList(db, data, program.organizerId, deps.now());
+  return db.runTransaction(async (tx) => {
+    const access = await requireProgramManager(db, data.programId, actorUid,
+      tx, deps.now());
+    return programStaffList(db, data, access, tx, deps.now);
+  });
 }
 
 export async function grantProgramStaffHandler(
@@ -269,8 +277,9 @@ export async function grantProgramStaffHandler(
     request, validateGrantProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "grantProgramStaff");
-  const {program, organizer} =
-    await requireProgramManager(db, data.programId, actorUid);
+  const initial = await requireProgramManager(db, data.programId, actorUid,
+    undefined, deps.now());
+  const {program} = initial;
   requireProgramMutable(program);
   const now = deps.now();
   if (data.expiresAtMillis <= now.toMillis() ||
@@ -280,6 +289,8 @@ export async function grantProgramStaffHandler(
       "Program staff access must expire within the next 14 days."
     );
   }
+  authorizeProgramStaffGrant(initial, actorUid, data.expiresAtMillis,
+    now.toMillis());
   await validateDutyStations({db, programId: data.programId,
     organizerId: program.organizerId, duties: data.duties});
   const phone = normalizeRosterPhone(data.phoneNumber);
@@ -288,20 +299,20 @@ export async function grantProgramStaffHandler(
   }
   const authUser = await resolveStaffAuthUser(
     deps.getUserByPhoneNumber, phone.value);
-  if (isOrganizerManager(organizer, authUser.uid)) {
+  if (program.createdBy === authUser.uid) {
     throw new HttpsError(
       "failed-precondition",
-      "Organizer managers already have program access."
+      "The program creator already owns this program."
     );
   }
   const ref = db.collection("programStaffGrants").doc(
     programStaffGrantId(data.programId, authUser.uid));
   return db.runTransaction(async (tx) => {
     const fresh = await requireProgramManager(
-      db, data.programId, actorUid, tx);
+      db, data.programId, actorUid, tx, deps.now());
     requireProgramMutable(fresh.program);
     if (fresh.program.organizerId !== program.organizerId ||
-        isOrganizerManager(fresh.organizer, authUser.uid)) {
+        fresh.program.createdBy === authUser.uid) {
       throw new HttpsError("aborted", "Program staff authority changed.");
     }
     await validateDutyStations({db, programId: data.programId,
@@ -324,6 +335,11 @@ export async function grantProgramStaffHandler(
       throw new HttpsError("failed-precondition",
         "Staff grant ownership changed.");
     }
+    if (current && programOwnerAuthorizationDeadline(fresh.program,
+      current) === null && fresh.role !== "manager") {
+      throw new HttpsError("permission-denied",
+        "The program creator must approve legacy staff access.");
+    }
     const currentActive = current?.status === "active" &&
       staffTimestampMillis(current.expiresAt) > now.toMillis();
     if (!currentActive && activeSnap.size >= maxProgramStaff) {
@@ -339,6 +355,8 @@ export async function grantProgramStaffHandler(
       throw new HttpsError("failed-precondition",
         "Staff access window changed.");
     }
+    const programAuthorization = authorizeProgramStaffGrant(fresh, actorUid,
+      data.expiresAtMillis, committedAt.toMillis());
     const document: ProgramStaffGrantDocument = {
       organizerId: program.organizerId,
       programId: data.programId,
@@ -347,6 +365,7 @@ export async function grantProgramStaffHandler(
       phoneLastFour: phone.value!.slice(-4),
       duties: grantDuties(data.duties, data.expiresAtMillis),
       status: "active",
+      programAuthorization,
       createdBy: current?.createdBy ?? actorUid,
       createdAt: current?.createdAt ?? committedAt,
       expiresAt:
@@ -372,14 +391,15 @@ export async function revokeProgramStaffHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "revokeProgramStaff");
   const {program: programForRevoke} =
-    await requireProgramManager(db, data.programId, actorUid);
+    await requireProgramManager(db, data.programId, actorUid,
+      undefined, deps.now());
   requireProgramMutable(programForRevoke);
   const ref = db.collection("programStaffGrants").doc(
     programStaffGrantId(data.programId, data.uid));
-  const now = deps.now();
   return db.runTransaction(async (tx) => {
-    const {program} = await requireProgramManager(
-      db, data.programId, actorUid, tx);
+    const access = await requireProgramManager(
+      db, data.programId, actorUid, tx, deps.now());
+    const {program} = access;
     requireProgramMutable(program);
     const snap = await tx.get(ref);
     const grant = snap.data() as ProgramStaffGrantDocument | undefined;
@@ -391,12 +411,14 @@ export async function revokeProgramStaffHandler(
       throw new HttpsError(
         "aborted", "Staff access changed. Reload and retry.");
     }
-    const revision = nextRevision(grant.revision, now);
+    const committedAt = deps.now();
+    programAdministrationDeadline(access, committedAt.toMillis());
+    const revision = nextRevision(grant.revision, committedAt);
     tx.update(ref, {
       status: "revoked",
       revokedBy: actorUid,
-      revokedAt: now,
-      updatedAt: now,
+      revokedAt: committedAt,
+      updatedAt: committedAt,
       revision,
     });
     return {entityId: data.uid, revision, alreadyApplied: false};
@@ -406,13 +428,14 @@ export async function revokeProgramStaffHandler(
 async function programStaffList(
   db: FirebaseFirestore.Firestore,
   data: ListProgramStaffCallablePayload,
-  organizerId: string,
-  now: FirebaseFirestore.Timestamp
+  access: ProgramAccess,
+  tx: FirebaseFirestore.Transaction,
+  now: () => FirebaseFirestore.Timestamp
 ): Promise<ProgramStaffListCallableResponse> {
   const limit = data.limit ?? 50;
   let query = db.collection("programStaffGrants")
     .where("programId", "==", data.programId)
-    .where("organizerId", "==", organizerId)
+    .where("organizerId", "==", access.program.organizerId)
     .orderBy(FieldPath.documentId())
     .limit(limit + 1);
   // Stable identity order survives grant renewal, revocation and deletion.
@@ -420,7 +443,7 @@ async function programStaffList(
   if (data.cursor) {
     query = query.startAfter(programStaffGrantId(data.programId, data.cursor));
   }
-  const snap = await query.get();
+  const snap = await tx.get(query);
   const page = snap.docs.slice(0, limit);
   const members = page.map((doc) => {
     const member = doc.data() as ProgramStaffGrantDocument;
@@ -430,6 +453,9 @@ async function programStaffList(
     }
     return member;
   });
+  const currentMillis = now().toMillis();
+  // Reads and authority share the transaction; time is checked after paging.
+  programAdministrationDeadline(access, currentMillis);
   return {
     programId: data.programId,
     nextCursor: snap.size > limit ? members[members.length - 1].uid : null,
@@ -440,9 +466,12 @@ async function programStaffList(
       duties: member.duties.map((assignment) => ({...assignment,
         expiresAtMillis: Number.isSafeInteger(assignment.expiresAtMillis) &&
           assignment.expiresAtMillis > 0 ? assignment.expiresAtMillis : 1})),
-      status: member.status === "revoked" ? "revoked" :
-        activeProgramDuties(member, now.toMillis()).length === 0 ?
-          "expired" : "active",
+      status: member.status === "revoked" || member.revokedAt != null ||
+        member.revokedBy != null ? "revoked" :
+        programOwnerAuthorizationDeadline(access.program, member) === null ?
+          "approvalRequired" :
+          activeProgramDuties(member, currentMillis).length === 0 ?
+            "expired" : "active",
       expiresAtMillis: staffTimestampMillis(member.expiresAt),
       revision: member.revision,
     })),

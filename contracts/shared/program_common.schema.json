@@ -34,6 +34,7 @@
     "programStaffDuty": {
       "type": "string",
       "enum": [
+        "programAdmin",
         "programCoordinator",
         "guestRelations",
         "communications",
@@ -461,7 +462,7 @@
       ],
       "minimum": 1,
       "maximum": 9007199254740991,
-      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for the program creator. Refresh after expiry even if another narrower duty remains active."
     },
     "transportManifestSource": {
       "type": "string",
@@ -470,6 +471,39 @@
         "currentRecords"
       ],
       "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
+    },
+    "programAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Server-owned proof that this exact program owner approved access, directly or through a current programAdmin. The inherited deadline bounds every delegated renewal. Optional only for legacy creator-issued records.",
+      "required": [
+        "ownerUid",
+        "approvedByUid",
+        "approvedAtMillis",
+        "authorizedUntilMillis"
+      ],
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "authorizedUntilMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   }
 }

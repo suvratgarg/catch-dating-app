@@ -494,6 +494,13 @@ export async function upsertProgramHouseholdHandler(
           nextHouseholdId: selected.has(id) ? ref.id : null})));
     document.memberGuestIds = memberships.get(ref.id) ??
       document.memberGuestIds;
+    const committedAtMillis = deps.now().toMillis();
+    const expiry = programProjectionExpiresAt(access,
+      dutyAssignments(access, "programCoordinator").filter((assignment) =>
+        assignment.expiresAtMillis > committedAtMillis));
+    if (expiry !== null && expiry <= committedAtMillis) {
+      throw new HttpsError("permission-denied", "Household duty expired.");
+    }
     for (const assertion of fields.assertions) {
       tx.create(db.collection("workspaceFieldAssertions").doc(assertion.id),
         assertion.data);

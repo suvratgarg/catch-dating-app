@@ -85678,7 +85678,7 @@ abstract final class CatchContractConstraints {
     path: 'grantProgramStaffCallablePayload.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const grantProgramStaffCallablePayloadDutiesItemsFunctionIds = CatchContractFieldConstraints(
@@ -90836,7 +90836,7 @@ abstract final class CatchContractConstraints {
     path: 'inviteProgramStaffCallablePayload.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const inviteProgramStaffCallablePayloadDutiesItemsFunctionIds = CatchContractFieldConstraints(
@@ -92554,14 +92554,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+    itemEnumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview', 'team'],
   );
 
   static const listMyHostAssignmentsCallableResponseAssignmentsItemsDestinationsItems = CatchContractFieldConstraints(
     path: 'listMyHostAssignmentsCallableResponse.assignments.items.destinations.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+    enumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview', 'team'],
   );
 
   static const listMyHostAssignmentsCallableResponseAssignmentsItemsDuties = CatchContractFieldConstraints(
@@ -92575,7 +92575,7 @@ abstract final class CatchContractConstraints {
     path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'transportDispatcher', 'hotelDesk', 'reconciliationViewer', 'stakeholderViewer', 'eventLead'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'transportDispatcher', 'hotelDesk', 'reconciliationViewer', 'stakeholderViewer', 'eventLead'],
   );
 
   static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsFunctionIds = CatchContractFieldConstraints(
@@ -92657,14 +92657,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+    itemEnumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview', 'team'],
   );
 
   static const listMyHostAssignmentsCallableResponseAssignmentsItemsOverflowDestinationsItems = CatchContractFieldConstraints(
     path: 'listMyHostAssignmentsCallableResponse.assignments.items.overflowDestinations.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+    enumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview', 'team'],
   );
 
   static const listMyHostAssignmentsCallableResponseAssignmentsItemsScopeId = CatchContractFieldConstraints(
@@ -120490,6 +120490,18 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const organizerProgramListCallableResponseProgramsItemsCanArchive = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.canArchive',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProgramListCallableResponseProgramsItemsCanUnarchive = CatchContractFieldConstraints(
+    path: 'organizerProgramListCallableResponse.programs.items.canUnarchive',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerProgramListCallableResponseProgramsItemsCapabilities = CatchContractFieldConstraints(
     path: 'organizerProgramListCallableResponse.programs.items.capabilities',
     required: true,
@@ -128454,7 +128466,7 @@ abstract final class CatchContractConstraints {
     path: 'programAccessCallableResponse.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programAccessCallableResponseDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
@@ -134511,7 +134523,7 @@ abstract final class CatchContractConstraints {
     path: 'programStaffGrantDocument.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programStaffGrantDocumentDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
@@ -134598,6 +134610,38 @@ abstract final class CatchContractConstraints {
     path: 'programStaffGrantDocument.phoneLastFour',
     valueTypes: <String>['string'],
     pattern: '^[0-9]{4}\$',
+  );
+
+  static const programStaffGrantDocumentProgramAuthorizationApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.programAuthorization.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStaffGrantDocumentProgramAuthorizationApprovedByUid = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.programAuthorization.approvedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffGrantDocumentProgramAuthorizationAuthorizedUntilMillis = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.programAuthorization.authorizedUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStaffGrantDocumentProgramAuthorizationOwnerUid = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.programAuthorization.ownerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const programStaffGrantDocumentProgramId = CatchContractFieldConstraints(
@@ -134743,7 +134787,7 @@ abstract final class CatchContractConstraints {
     path: 'programStaffInviteDocument.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programStaffInviteDocumentDutiesItemsFunctionIds = CatchContractFieldConstraints(
@@ -134822,6 +134866,38 @@ abstract final class CatchContractConstraints {
     path: 'programStaffInviteDocument.phoneE164',
     maxLength: 32,
     minLength: 4,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentProgramAuthorizationApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.programAuthorization.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStaffInviteDocumentProgramAuthorizationApprovedByUid = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.programAuthorization.approvedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentProgramAuthorizationAuthorizedUntilMillis = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.programAuthorization.authorizedUntilMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStaffInviteDocumentProgramAuthorizationOwnerUid = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.programAuthorization.ownerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -134909,7 +134985,7 @@ abstract final class CatchContractConstraints {
     path: 'programStaffListCallableResponse.members.items.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+    enumValues: <String>['programAdmin', 'programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programStaffListCallableResponseMembersItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
@@ -134994,7 +135070,7 @@ abstract final class CatchContractConstraints {
     path: 'programStaffListCallableResponse.members.items.status',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['active', 'expired', 'revoked'],
+    enumValues: <String>['active', 'expired', 'revoked', 'approvalRequired'],
   );
 
   static const programStaffListCallableResponseMembersItemsUid = CatchContractFieldConstraints(
@@ -183124,6 +183200,8 @@ abstract final class CatchContractConstraints {
     'organizerProgramListCallableResponse.programs.items.anonymizeAtMillis': organizerProgramListCallableResponseProgramsItemsAnonymizeAtMillis,
     'organizerProgramListCallableResponse.programs.items.anonymizedAtMillis': organizerProgramListCallableResponseProgramsItemsAnonymizedAtMillis,
     'organizerProgramListCallableResponse.programs.items.archivedAtMillis': organizerProgramListCallableResponseProgramsItemsArchivedAtMillis,
+    'organizerProgramListCallableResponse.programs.items.canArchive': organizerProgramListCallableResponseProgramsItemsCanArchive,
+    'organizerProgramListCallableResponse.programs.items.canUnarchive': organizerProgramListCallableResponseProgramsItemsCanUnarchive,
     'organizerProgramListCallableResponse.programs.items.capabilities': organizerProgramListCallableResponseProgramsItemsCapabilities,
     'organizerProgramListCallableResponse.programs.items.capabilities.items': organizerProgramListCallableResponseProgramsItemsCapabilitiesItems,
     'organizerProgramListCallableResponse.programs.items.endsAtMillis': organizerProgramListCallableResponseProgramsItemsEndsAtMillis,
@@ -185055,6 +185133,10 @@ abstract final class CatchContractConstraints {
     'programStaffGrantDocument.expiresAt._seconds': programStaffGrantDocumentExpiresAtSeconds,
     'programStaffGrantDocument.organizerId': programStaffGrantDocumentOrganizerId,
     'programStaffGrantDocument.phoneLastFour': programStaffGrantDocumentPhoneLastFour,
+    'programStaffGrantDocument.programAuthorization.approvedAtMillis': programStaffGrantDocumentProgramAuthorizationApprovedAtMillis,
+    'programStaffGrantDocument.programAuthorization.approvedByUid': programStaffGrantDocumentProgramAuthorizationApprovedByUid,
+    'programStaffGrantDocument.programAuthorization.authorizedUntilMillis': programStaffGrantDocumentProgramAuthorizationAuthorizedUntilMillis,
+    'programStaffGrantDocument.programAuthorization.ownerUid': programStaffGrantDocumentProgramAuthorizationOwnerUid,
     'programStaffGrantDocument.programId': programStaffGrantDocumentProgramId,
     'programStaffGrantDocument.revision': programStaffGrantDocumentRevision,
     'programStaffGrantDocument.revokedAt._nanoseconds': programStaffGrantDocumentRevokedAtNanoseconds,
@@ -185085,6 +185167,10 @@ abstract final class CatchContractConstraints {
     'programStaffInviteDocument.expiresAt._seconds': programStaffInviteDocumentExpiresAtSeconds,
     'programStaffInviteDocument.organizerId': programStaffInviteDocumentOrganizerId,
     'programStaffInviteDocument.phoneE164': programStaffInviteDocumentPhoneE164,
+    'programStaffInviteDocument.programAuthorization.approvedAtMillis': programStaffInviteDocumentProgramAuthorizationApprovedAtMillis,
+    'programStaffInviteDocument.programAuthorization.approvedByUid': programStaffInviteDocumentProgramAuthorizationApprovedByUid,
+    'programStaffInviteDocument.programAuthorization.authorizedUntilMillis': programStaffInviteDocumentProgramAuthorizationAuthorizedUntilMillis,
+    'programStaffInviteDocument.programAuthorization.ownerUid': programStaffInviteDocumentProgramAuthorizationOwnerUid,
     'programStaffInviteDocument.programId': programStaffInviteDocumentProgramId,
     'programStaffInviteDocument.revision': programStaffInviteDocumentRevision,
     'programStaffInviteDocument.revokedAt._nanoseconds': programStaffInviteDocumentRevokedAtNanoseconds,

@@ -24,6 +24,7 @@ export interface ListMyHostAssignmentsCallableResponse {
        * Canonical duty across event and program scopes. checkInOperator event grants map to functionCheckIn; eventOperator grants map to eventLead.
        */
       duty:
+        | "programAdmin"
         | "programCoordinator"
         | "guestRelations"
         | "communications"
@@ -75,6 +76,7 @@ export interface ListMyHostAssignmentsCallableResponse {
       | "exceptions"
       | "export"
       | "overview"
+      | "team"
     )[];
     /**
      * Destinations beyond the first three, for the overflow menu.
@@ -97,6 +99,7 @@ export interface ListMyHostAssignmentsCallableResponse {
       | "exceptions"
       | "export"
       | "overview"
+      | "team"
     )[];
     /**
      * task = single destination, no bar; tabs = two or three destinations in the bar; programWorkspace = program-locked coordinator workspace; none = no reachable destination.
