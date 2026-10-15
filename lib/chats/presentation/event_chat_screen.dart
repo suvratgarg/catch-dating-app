@@ -357,6 +357,9 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
                   : () => context.pushNamed(
                       Routes.eventChatParticipantsScreen.name,
                       pathParameters: {'eventId': widget.eventId},
+                      queryParameters: GoRouterState.of(
+                        context,
+                      ).uri.queryParameters,
                     ),
             ),
           if (current != null)
@@ -367,6 +370,9 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
                   : () => context.pushNamed(
                       Routes.eventProfileSharingScreen.name,
                       pathParameters: {'eventId': widget.eventId},
+                      queryParameters: GoRouterState.of(
+                        context,
+                      ).uri.queryParameters,
                     ),
               child: Icon(CatchIcons.personOutlineRounded),
             ),

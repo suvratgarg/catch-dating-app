@@ -74,6 +74,35 @@ enum Routes {
   hostTodayFocusScreen('/host/today/focus', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostAudienceScreen('/host/audience', AppRouteAudience.host),
+  hostNewMessageScreen('/host/inbox/new', AppRouteAudience.host),
+  hostEventRosterScreen(
+    '/host/organizers/:clubId/events/:eventId/guests',
+    AppRouteAudience.host,
+  ),
+  hostEventPublicationScreen(
+    '/host/organizers/:clubId/events/:eventId/publication',
+    AppRouteAudience.host,
+  ),
+  hostResponseOfferScreen(
+    '/host/audience/responses/:responseId/offer',
+    AppRouteAudience.host,
+  ),
+  hostResponseOfferReviewScreen(
+    '/host/audience/responses/:responseId/offer/review',
+    AppRouteAudience.host,
+  ),
+  hostResponseOfferPreferencesScreen(
+    '/host/audience/responses/:responseId/offers/:eventId/preferences',
+    AppRouteAudience.host,
+  ),
+  hostResponseQueryOfferPreferencesScreen(
+    '/host/audience/forms/:formId/query-offer/events/:eventId/preferences',
+    AppRouteAudience.host,
+  ),
+  hostResponseQueryOfferScreen(
+    '/host/audience/forms/:formId/query-offer',
+    AppRouteAudience.host,
+  ),
   hostAddCustomerScreen('/host/audience/people/new', AppRouteAudience.host),
   hostCreateSavedAudienceScreen(
     '/host/audience/audiences/new',

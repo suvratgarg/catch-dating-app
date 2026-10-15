@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +8,8 @@ import 'package:flutter/material.dart';
 ///
 /// The flow keeps one controller, page state, validation contract, and action
 /// footer at every width. Wider layouts add only provider-free views over that
-/// same state: a step rail, a capped form lane, and finally a source-backed
-/// consequence pane.
+/// same state: one editing pane and a flowing step/review preview. The shared
+/// workspace owns adaptation and resizing.
 class CreateEventAdaptiveWorkspace extends StatelessWidget {
   const CreateEventAdaptiveWorkspace({
     super.key,
@@ -32,41 +31,32 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
   final List<CatchFormReviewSummaryItem> summaryItems;
 
   @override
-  Widget build(BuildContext context) {
-    return CatchViewport.atWidth(
-      breakpoint: ComponentBreakpoints.hostCreateEventStepRailBreakpoint,
-      compactBuilder: (_) =>
-          CreateEventWorkspaceFrame(header: header, body: body),
-      expandedBuilder: (_) => CatchViewport.atWidth(
-        breakpoint:
-            ComponentBreakpoints.hostCreateEventConsequencePaneBreakpoint,
-        compactBuilder: (_) => CreateEventWorkspaceFrame(
-          header: header,
-          body: CreateEventSplitWorkspace(
-            body: body,
-            steps: steps,
-            currentStep: currentStep,
-            onStepSelected: onStepSelected,
-            summaryTitle: summaryTitle,
-            summaryItems: summaryItems,
-            showsConsequencePane: false,
-          ),
-        ),
-        expandedBuilder: (_) => CreateEventWorkspaceFrame(
-          header: header,
-          body: CreateEventSplitWorkspace(
-            body: body,
-            steps: steps,
-            currentStep: currentStep,
-            onStepSelected: onStepSelected,
-            summaryTitle: summaryTitle,
-            summaryItems: summaryItems,
-            showsConsequencePane: true,
-          ),
-        ),
+  Widget build(BuildContext context) => HostNavigationWorkspace(
+    spec: HostEditorWorkspace(
+      editor: CreateEventWorkspaceFrame(
+        key: const ValueKey('host-create-event-form-lane'),
+        header: header,
+        body: body,
       ),
-    );
-  }
+      preview: ListView(
+        padding: CatchInsets.pageBodyTight,
+        children: [
+          CreateEventStepRail(
+            key: const ValueKey('host-create-event-step-rail'),
+            steps: steps,
+            currentStep: currentStep,
+            onStepSelected: onStepSelected,
+          ),
+          gapH4,
+          CreateEventConsequencePane(
+            key: const ValueKey('host-create-event-consequence-pane'),
+            title: summaryTitle,
+            items: summaryItems,
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class CreateEventWorkspaceFrame extends StatelessWidget {
@@ -92,89 +82,6 @@ class CreateEventWorkspaceFrame extends StatelessWidget {
   }
 }
 
-class CreateEventSplitWorkspace extends StatelessWidget {
-  const CreateEventSplitWorkspace({
-    super.key,
-    required this.body,
-    required this.steps,
-    required this.currentStep,
-    required this.onStepSelected,
-    required this.summaryTitle,
-    required this.summaryItems,
-    required this.showsConsequencePane,
-  });
-
-  final Widget body;
-  final List<CatchFormStepReviewItem> steps;
-  final int currentStep;
-  final ValueChanged<int> onStepSelected;
-  final String summaryTitle;
-  final List<CatchFormReviewSummaryItem> summaryItems;
-  final bool showsConsequencePane;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(
-          key: const ValueKey('host-create-event-step-rail'),
-          width: CatchLayout.hostCreateEventStepRailWidth,
-          child: CreateEventStepRail(
-            steps: steps,
-            currentStep: currentStep,
-            onStepSelected: onStepSelected,
-          ),
-        ),
-        VerticalDivider(
-          width: CatchStroke.hairline,
-          thickness: CatchStroke.hairline,
-          color: t.line,
-        ),
-        Expanded(child: CreateEventFormLane(body: body)),
-        if (showsConsequencePane) ...[
-          VerticalDivider(
-            width: CatchStroke.hairline,
-            thickness: CatchStroke.hairline,
-            color: t.line,
-          ),
-          SizedBox(
-            key: const ValueKey('host-create-event-consequence-pane'),
-            width: CatchLayout.hostCreateEventConsequencePaneWidth,
-            child: CreateEventConsequencePane(
-              title: summaryTitle,
-              items: summaryItems,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class CreateEventFormLane extends StatelessWidget {
-  const CreateEventFormLane({super.key, required this.body});
-
-  final Widget body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CatchLayout.hostCreateEventFormLaneMaxWidth,
-        ),
-        child: SizedBox.expand(
-          key: const ValueKey('host-create-event-form-lane'),
-          child: body,
-        ),
-      ),
-    );
-  }
-}
-
 class CreateEventStepRail extends StatelessWidget {
   const CreateEventStepRail({
     super.key,
@@ -190,30 +97,25 @@ class CreateEventStepRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = currentStep.clamp(0, steps.length - 1);
-    return ListView(
-      padding: CatchInsets.pageBodyTight,
-      children: [
-        CatchSection.plain(
-          title: steps[selectedIndex].title,
-          count: '${selectedIndex + 1}/${steps.length}',
-          child: CatchFieldLanes.divided(
-            children: [
-              for (final item in steps)
-                CatchField.nav(
-                  copy: catchFieldCopy(context.l10n),
-                  key: ValueKey('catch-form-step-overview-${item.index}'),
-                  title: item.title,
-                  body: _statusLabel(context, item.status),
-                  tone: item.index == selectedIndex
-                      ? CatchFieldTone.primary
-                      : CatchFieldTone.normal,
-                  showChevron: false,
-                  onTap: () => onStepSelected(item.index),
-                ),
-            ],
-          ),
-        ),
-      ],
+    return CatchSection.plain(
+      title: steps[selectedIndex].title,
+      count: '${selectedIndex + 1}/${steps.length}',
+      child: CatchFieldLanes.divided(
+        children: [
+          for (final item in steps)
+            CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
+              key: ValueKey('catch-form-step-overview-${item.index}'),
+              title: item.title,
+              body: _statusLabel(context, item.status),
+              tone: item.index == selectedIndex
+                  ? CatchFieldTone.primary
+                  : CatchFieldTone.normal,
+              showChevron: false,
+              onTap: () => onStepSelected(item.index),
+            ),
+        ],
+      ),
     );
   }
 
@@ -242,25 +144,20 @@ class CreateEventConsequencePane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: CatchInsets.pageBodyTight,
-      children: [
-        CatchSection.plain(
-          title: title,
-          child: CatchFieldLanes.divided(
-            children: [
-              for (final item in items)
-                CatchField.read(
-                  copy: catchFieldCopy(context.l10n),
-                  title: item.label,
-                  body: item.value,
-                  bodyMaxLines: 4,
-                  icon: item.icon,
-                ),
-            ],
-          ),
-        ),
-      ],
+    return CatchSection.plain(
+      title: title,
+      child: CatchFieldLanes.divided(
+        children: [
+          for (final item in items)
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              title: item.label,
+              body: item.value,
+              bodyMaxLines: 4,
+              icon: item.icon,
+            ),
+        ],
+      ),
     );
   }
 }

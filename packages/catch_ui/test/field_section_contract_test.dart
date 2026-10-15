@@ -651,7 +651,9 @@ void main() {
         tester.view.physicalSize.width / tester.view.devicePixelRatio,
       );
       await tester.tapAt(Offset(left.left + 1, left.center.dy));
-      await tester.tapAt(Offset(right.right - 1, right.center.dy));
+      await tester.tapAt(
+        Offset(right.right - CatchSpacing.s3 - 1, right.center.dy),
+      );
       expect(leftTaps, 1);
       expect(rightTaps, 1);
       expect(tester.takeException(), isNull);

@@ -40,21 +40,47 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
     if (HostWorkspaceRouteScope.isNavigatorRoot(context)) {
       return const SizedBox.shrink();
     }
+    final organizerId = uri.queryParameters['organizerId'];
+    final eventId = uri.queryParameters['eventId'];
     return switch (root) {
-      Routes.hostTodayScreen => HostNavigationWorkspace.event(
-        uri: uri,
-        initialEvent: initialEvent,
-        index: HostTodayScreen(
-          initialOrganizerId: uri.queryParameters['organizerId'],
-        ),
-      ),
-      Routes.hostEventsScreen => HostNavigationWorkspace.event(
-        uri: uri,
-        initialEvent: initialEvent,
-        index: HostEventsScreen(
-          initialOrganizerId: uri.queryParameters['organizerId'],
-          initialProgramId: uri.queryParameters['programId'],
-          initialProgramAnchor: initialProgramAnchor,
+      Routes.hostTodayScreen ||
+      Routes.hostEventsScreen => HostNavigationWorkspace(
+        spec: HostDirectoryWorkspace<({String organizerId, String eventId})>(
+          index: root == Routes.hostTodayScreen
+              ? HostTodayScreen(initialOrganizerId: organizerId)
+              : HostEventsScreen(
+                  initialOrganizerId: organizerId,
+                  initialProgramId: uri.queryParameters['programId'],
+                  initialProgramAnchor: initialProgramAnchor,
+                ),
+          selection: organizerId == null || eventId == null
+              ? null
+              : (organizerId: organizerId, eventId: eventId),
+          unselected: CatchEmptyState(
+            icon: CatchIcons.chevronRightRounded,
+            title: context.l10n.coreCatchFieldVisiblecopySelect,
+          ),
+          onBack: () => context.go(hostWorkspaceIndexUri(uri).toString()),
+          recordId: (_) => Routes.hostAppEventManageScreen.name,
+          detailBuilder: (selection) => HostWorkspaceRouteContent(
+            id: hostWorkspaceContentId(
+              Routes.hostAppEventManageScreen.name,
+              Routes.hostAppEventManageScreen.path,
+              {'clubId': selection.organizerId, 'eventId': selection.eventId},
+            ),
+            builder: (context) => HostEventManageRouteScreen(
+              key: ValueKey('${selection.organizerId}/${selection.eventId}'),
+              clubId: selection.organizerId,
+              eventId: selection.eventId,
+              initialEvent: initialEvent,
+              initialSection: switch (uri.queryParameters['section']) {
+                'live' => HostEventManageSection.live,
+                'report' => HostEventManageSection.report,
+                'guests' => HostEventManageSection.guests,
+                _ => HostEventManageSection.setup,
+              },
+            ),
+          ),
         ),
       ),
       Routes.hostAudienceScreen => switch (hostAudienceViewFromName(
@@ -62,8 +88,15 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
       )) {
         HostAudienceView.forms ||
         HostAudienceView.responses => HostNavigationWorkspace(
-          uri: uri,
-          index: hostAudienceScreenForUri(uri),
+          spec: HostDirectoryWorkspace<String>(
+            index: hostAudienceScreenForUri(uri),
+            selection: null,
+            detailBuilder: (_) => const SizedBox.shrink(),
+            unselected: CatchEmptyState(
+              icon: CatchIcons.chevronRightRounded,
+              title: context.l10n.coreCatchFieldVisiblecopySelect,
+            ),
+          ),
         ),
         _ => hostAudienceScreenForUri(
           uri,
@@ -74,7 +107,8 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
         uri,
         initialOrganizerId: initialOrganizerId,
       ),
-      _ => hostOrganizerScreenForUri(uri),
+      Routes.hostOrganizerScreen => hostOrganizerScreenForUri(uri),
+      _ => throw StateError('Not a Host workspace root: $root'),
     };
   }
 }

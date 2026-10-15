@@ -37,16 +37,35 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   test('directory pagination keeps account and session identity', () {
-    const first = HostFormListRequest(organizerId: 'forms-club',
-        accountUid: 'host-1', accountGeneration: 2);
+    const first = HostFormListRequest(
+      organizerId: 'forms-club',
+      accountUid: 'host-1',
+      accountGeneration: 2,
+    );
     final pageTwo = first.copyWith(cursor: 'next-page');
     expect(pageTwo.accountUid, 'host-1');
     expect(pageTwo.accountGeneration, 2);
     expect(pageTwo.cursor, 'next-page');
-    expect(first, isNot(const HostFormListRequest(organizerId: 'forms-club',
-        accountUid: 'host-2', accountGeneration: 2)));
-    expect(first, isNot(const HostFormListRequest(organizerId: 'forms-club',
-        accountUid: 'host-1', accountGeneration: 3)));
+    expect(
+      first,
+      isNot(
+        const HostFormListRequest(
+          organizerId: 'forms-club',
+          accountUid: 'host-2',
+          accountGeneration: 2,
+        ),
+      ),
+    );
+    expect(
+      first,
+      isNot(
+        const HostFormListRequest(
+          organizerId: 'forms-club',
+          accountUid: 'host-1',
+          accountGeneration: 3,
+        ),
+      ),
+    );
   });
 
   testWidgets('Responses empty state centers below controls and above nav', (
@@ -224,6 +243,22 @@ void main() {
         final responseRequests = <HostFormResponseListRequest>[];
         final club = buildClub(id: 'forms-club', ownerUserId: 'host-1');
 
+        final router = GoRouter(
+          initialLocation: '/host/audience?view=forms&organizerId=forms-club',
+          routes: [
+            GoRoute(
+              path: Routes.hostAudienceScreen.path,
+              name: Routes.hostAudienceScreen.name,
+              builder: (context, state) => HostFormsScreen(
+                initialResponses:
+                    state.uri.queryParameters['view'] == 'responses',
+                initialOrganizerId: state.uri.queryParameters['organizerId'],
+                initialFormId: state.uri.queryParameters['formId'],
+              ),
+            ),
+          ],
+        );
+        addTearDown(router.dispose);
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -239,9 +274,9 @@ void main() {
                 (_) => _FixedHostFormResponsesController(responseRequests),
               ),
             ],
-            child: MaterialApp(
+            child: MaterialApp.router(
               theme: AppTheme.light,
-              home: const HostFormsScreen(),
+              routerConfig: router,
             ),
           ),
         );
@@ -506,8 +541,11 @@ void main() {
               ),
               hostFormsDirectoryControllerProvider.overrideWith2(
                 (_) => _AccountSwitchDirectoryController(
-                  auth, nextDirectory, pendingReadDisposals,
-                  directoryRequests),
+                  auth,
+                  nextDirectory,
+                  pendingReadDisposals,
+                  directoryRequests,
+                ),
               ),
             ],
             child: MaterialApp(
@@ -565,15 +603,26 @@ void main() {
           expect(directoryRequests.last.accountGeneration, 2);
         }
 
-        nextDirectory.complete(HostFormsDirectoryState(
-          forms: [_formSummary(id: 'new', status: HostFormLifecycleStatus.published)],
-          nextCursor: null,
-        ));
+        nextDirectory.complete(
+          HostFormsDirectoryState(
+            forms: [
+              _formSummary(
+                id: 'new',
+                status: HostFormLifecycleStatus.published,
+              ),
+            ],
+            nextCursor: null,
+          ),
+        );
         await pumpFeatureUi(tester);
-        expect(find.byKey(const ValueKey('host-form-old')),
-            returnToA ? findsOneWidget : findsNothing);
-        expect(find.byKey(const ValueKey('host-form-new')),
-            returnToA ? findsNothing : findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('host-form-old')),
+          returnToA ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(const ValueKey('host-form-new')),
+          returnToA ? findsNothing : findsOneWidget,
+        );
       },
     );
   }
@@ -710,8 +759,11 @@ class _TestUser extends Fake implements User {
 
 class _AccountSwitchDirectoryController extends HostFormsDirectoryController {
   _AccountSwitchDirectoryController(
-    this.auth, this.nextDirectory, this.pendingReadDisposals,
-    this.requests);
+    this.auth,
+    this.nextDirectory,
+    this.pendingReadDisposals,
+    this.requests,
+  );
   final _TestAuth auth;
   final Completer<HostFormsDirectoryState> nextDirectory;
   final _ReadDisposeProbe pendingReadDisposals;
@@ -722,7 +774,9 @@ class _AccountSwitchDirectoryController extends HostFormsDirectoryController {
     requests.add(request);
     if (auth.uid == 'host-1') {
       return HostFormsDirectoryState(
-        forms: [_formSummary(id: 'old', status: HostFormLifecycleStatus.published)],
+        forms: [
+          _formSummary(id: 'old', status: HostFormLifecycleStatus.published),
+        ],
         nextCursor: null,
       );
     }

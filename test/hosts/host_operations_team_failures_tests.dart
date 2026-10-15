@@ -656,6 +656,9 @@ void _registerHostOperationsTeamFailuresTests() {
       const HostClubsScreen(),
       overrides: [
         ..._hostClubOverrides(owned: [club]),
+        clubDetailViewModelProvider(club.id).overrideWithValue(
+          AsyncData<ClubDetailViewModel?>(_previewViewModel(club)),
+        ),
         authRepositoryProvider.overrideWithValue(authRepository),
         watchHostPaymentAccountsProvider(
           _hostUid,
