@@ -1508,7 +1508,7 @@ function projectEditor(
   };
 }
 
-function projectSummary(
+export function projectSummary(
   formId: string,
   form: OrganizerFormDocument
 ): FormSummary {

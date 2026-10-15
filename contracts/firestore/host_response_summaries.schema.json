@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_response_summaries.schema.json",
+  "title": "HostResponseSummaryDocument",
+  "description": "Server-maintained response inbox metadata. No answer snapshots or asset URLs. Withdrawal atomically redacts a verified view or deletes an invalid view.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostResponseSummaries",
+  "x-firestore-path": "hostResponseSummaries/{summaryId}",
+  "x-owner": "Host read model projector",
+  "required": [
+    "organizerId",
+    "summaryId",
+    "kind",
+    "formId",
+    "submittedAtMillis",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "summaryId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "enum": [
+        "response",
+        "application"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "submittedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "$ref": "../callable_responses/list_organizer_form_responses_response.schema.json#/properties/entries/items",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

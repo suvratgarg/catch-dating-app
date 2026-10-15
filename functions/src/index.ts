@@ -905,3 +905,14 @@ export {adminGetSalesDemoPartnerReview,
   adminShareSalesDemoPartnerReview} from "./salesDemo/callables";
 export {getSalesPartnerDemoReviews,
   proposeSalesPartnerDemoWording} from "./partners/callables";
+
+export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
+  onHostContactChannelSummaryChanged, onHostContactVocabularySummaryChanged,
+  onHostFormSummaryChanged, onHostEventSummaryChanged,
+  onHostAudienceSummaryCoverageChanged, onHostGroupSummaryChanged,
+  onHostResponseSummaryChanged, onHostApplicationSummaryChanged,
+  onHostApplicationEvidenceSummaryChanged, onHostApplicationGrantSummaryChanged,
+  onHostResponseConversionSummaryChanged,
+  onHostResponseSourceLabelSummaryChanged,
+  onHostResponseContactOriginChanged} from
+  "./hostReadModels/triggers";

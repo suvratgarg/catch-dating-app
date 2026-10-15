@@ -58,7 +58,7 @@ final class HostCustomersDirectoryControllerProvider
 }
 
 String _$hostCustomersDirectoryControllerHash() =>
-    r'9023e7aa009a45ad7c6fed6e392bab068707eda9';
+    r'5220cf1f215dbf14b6e7ec4352aff253e1b1f99f';
 
 final class HostCustomersDirectoryControllerFamily extends $Family
     with
@@ -178,7 +178,7 @@ final class HostCustomerSegmentCountProvider
 }
 
 String _$hostCustomerSegmentCountHash() =>
-    r'bdb422e702069de79c05c44bda68d3ed2397e944';
+    r'90ffb886c917ce8bbc75261119626dd4bac83410';
 
 final class HostCustomerSegmentCountFamily extends $Family
     with
