@@ -7,14 +7,10 @@ from pathlib import Path
 import signal
 import subprocess
 import sys
+import time
 
 VALIDATION_TIMEOUT_SECONDS = 30
 UPLOAD_TIMEOUT_SECONDS = 180
-
-
-class StageInterrupted(Exception):
-    def __init__(self, number):
-        self.number = number
 
 
 def stop_worker(worker):
@@ -37,32 +33,57 @@ def stop_worker(worker):
 
 def run_stage(arguments, timeout_seconds, stage):
     """Return SDK failure unchanged; a timeout is a failure, never an upload pass."""
-    try:
-        worker = subprocess.Popen(arguments, start_new_session=True)
-    except OSError:
-        print("Crashlytics %s could not start." % stage, file=sys.stderr)
-        return 1
-    def interrupted(number, _frame):
-        raise StageInterrupted(number)
+    worker = None
+    cancellation = None
 
-    previous = {number: signal.signal(number, interrupted)
-                for number in [signal.SIGTERM, signal.SIGINT]}
+    def interrupted(number, _frame):
+        # Never unwind Popen before it returns the owned handle, or interrupt
+        # TERM/grace/KILL/reaping. Repeated signals retain the first reason.
+        nonlocal cancellation
+        if cancellation is None:
+            cancellation = number
+
+    previous = {}
     try:
+        # Install both handlers before a worker can exist. A signal arriving
+        # inside Popen is recorded and handled as soon as the handle is owned.
+        for number in [signal.SIGTERM, signal.SIGINT]:
+            previous[number] = signal.signal(number, interrupted)
+        if cancellation is not None:
+            return 128 + cancellation
         try:
-            return worker.wait(timeout=timeout_seconds)
-        except subprocess.TimeoutExpired:
-            stop_worker(worker)
-            print("Crashlytics %s timed out; symbol upload is incomplete." % stage,
-                  file=sys.stderr)
-            return 124
-        except StageInterrupted as error:
-            stop_worker(worker)
-            print("Crashlytics %s interrupted; symbol upload is incomplete." % stage,
-                  file=sys.stderr)
-            return 128 + error.number
+            worker = subprocess.Popen(arguments, start_new_session=True)
+        except OSError:
+            print("Crashlytics %s could not start." % stage, file=sys.stderr)
+            return 128 + cancellation if cancellation is not None else 1
+        deadline = time.monotonic() + timeout_seconds
+        while True:
+            if cancellation is not None:
+                stop_worker(worker)
+                print("Crashlytics %s interrupted; symbol upload is incomplete." % stage,
+                      file=sys.stderr)
+                return 128 + cancellation
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                stop_worker(worker)
+                print("Crashlytics %s timed out; symbol upload is incomplete." % stage,
+                      file=sys.stderr)
+                return 128 + cancellation if cancellation is not None else 124
+            try:
+                result = worker.wait(timeout=min(.1, remaining))
+            except subprocess.TimeoutExpired:
+                continue
+            if cancellation is not None:
+                stop_worker(worker)
+                return 128 + cancellation
+            return result
     finally:
-        for number, handler in previous.items():
-            signal.signal(number, handler)
+        try:
+            if worker is not None and worker.poll() is None:
+                stop_worker(worker)
+        finally:
+            for number, handler in previous.items():
+                signal.signal(number, handler)
 
 
 def upload_symbols(uploader, app_id, dsym_paths, run=run_stage):
