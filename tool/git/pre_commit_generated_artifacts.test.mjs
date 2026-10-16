@@ -454,3 +454,21 @@ test("docs-only staging permits an unrelated dirty catalog", t => {
   assert.deepEqual(f.snapshot(), before);
   assert.deepEqual(f.mutations, []);
 });
+
+for (const obstruction of ["terminal directory", "file ancestor"]) {
+  test(`generated output ${obstruction} fails before any earlier output is written`, t => {
+    const f = gitFixture(t);
+    const blockedOutput = "lib/l10n/generated/blocked/second.dart";
+    const selected = structuredClone(fixtureGraph);
+    selected.compileCodegen[0].outputs.push(blockedOutput);
+    f.stage("tool/harness/component_graph.json", JSON.stringify(selected));
+    f.stage(arb, "staged");
+    if (obstruction === "terminal directory") {
+      fs.mkdirSync(path.join(f.root, blockedOutput), {recursive: true});
+    } else {
+      f.write("lib/l10n/generated/blocked", "private obstruction");
+    }
+    f.refusesWithoutWrites();
+    assert.equal(fs.readFileSync(path.join(f.root, output), "utf8"), "original");
+  });
+}

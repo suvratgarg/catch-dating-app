@@ -172,17 +172,18 @@ function readIndexedGraph({repoRoot, runCommand}) {
   return indexed;
 }
 
-function assertRegularPaths(repoRoot, candidates) {
+function assertRegularPaths(repoRoot, candidates, terminalType = "file") {
   for (const candidate of candidates) {
     const parts = candidate.split("/");
     for (let count = 1; count <= parts.length; count += 1) {
       const relative = parts.slice(0, count).join("/");
       let stat;
       try { stat = fs.lstatSync(path.join(repoRoot, relative)); } catch (error) {
-        if (error.code === "ENOENT" || error.code === "ENOTDIR") break;
+        if (error.code === "ENOENT") break;
         throw error;
       }
-      if (!stat.isFile() && !stat.isDirectory()) {
+      const expectsDirectory = count < parts.length || terminalType === "directory";
+      if (expectsDirectory ? !stat.isDirectory() : !stat.isFile()) {
         throw new PreCommitGeneratedArtifactError(`Refusing to use a non-regular generator or formatter path: ${JSON.stringify(relative)}`);
       }
     }
@@ -220,12 +221,15 @@ function assertIndexIntegrity({
       ["lib/l10n/*.arb", ...(plan.l10nInputChanged ? ["lib/l10n/generated/**"] : [])] : [])];
   // Bound discovery to declared families. Do not exclude ignored files: a
   // generator can consume or overwrite them just like ordinary untracked files.
-  const roots = [...new Set(patterns.map(pattern => {
+  const wildcardRoots = patterns.filter(pattern => /[*?]/u.test(pattern)).map(pattern => {
     const wildcard = pattern.search(/[*?]/u);
     const slash = pattern.lastIndexOf("/", wildcard);
-    return wildcard < 0 ? pattern : slash < 0 ? "." : pattern.slice(0, slash);
-  }))];
-  assertRegularPaths(repoRoot, roots);
+    return slash < 0 ? "." : pattern.slice(0, slash);
+  });
+  const exactPaths = patterns.filter(pattern => !/[*?]/u.test(pattern));
+  const roots = [...new Set([...exactPaths, ...wildcardRoots])];
+  assertRegularPaths(repoRoot, exactPaths);
+  assertRegularPaths(repoRoot, wildcardRoots, "directory");
   const untracked = readGitPaths({repoRoot, runCommand,
     args: ["ls-files", "--others", "-z", "--", ...roots.map(root => `:(literal)${root}`)]});
   const tracked = readGitPaths({repoRoot, runCommand,
