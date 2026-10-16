@@ -1,16 +1,10 @@
 #!/usr/bin/env node
-import fs from "node:fs";
-import path from "node:path";
-import {createRequire} from "node:module";
-import {fileURLToPath, pathToFileURL} from "node:url";
+import {isMain} from "../lib/cli_args.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
+import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
-const toolDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(toolDir, "../..");
-const requireFromFunctions = createRequire(
-  path.join(repoRoot, "functions/package.json")
-);
-
-if (isMain()) {
+const requireFromFunctions = createFunctionsRequire();
+if (isMain(import.meta.url)) {
   await main();
 }
 
@@ -26,7 +20,9 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const admin = requireFromFunctions("firebase-admin");
-  admin.initializeApp({projectId: resolveProjectId(args)});
+  admin.initializeApp({
+    projectId: resolveFirebaseProjectId({...args, defaultEnv: null}),
+  });
   const db = admin.firestore();
   const plan = await buildClubHostProfileRepairPlan(db);
 
@@ -172,23 +168,6 @@ function requireValue(argv, index, flag) {
   return value;
 }
 
-function resolveProjectId(parsed) {
-  if (parsed.project) return parsed.project;
-  if (parsed.env) {
-    const firebaserc = JSON.parse(
-      fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-    );
-    const project = firebaserc.projects?.[parsed.env];
-    if (!project) {
-      throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
-    }
-    return project;
-  }
-  return process.env.GCLOUD_PROJECT ||
-    process.env.GOOGLE_CLOUD_PROJECT ||
-    "catchdates-dev";
-}
-
 function printHelp() {
   console.log(`Usage: node tool/data/recompute_club_host_profiles.mjs [options]
 
@@ -294,9 +273,4 @@ function printSummary(summary) {
       console.log(`... ${summary.warnings.length - 100} more warnings`);
     }
   }
-}
-
-function isMain() {
-  return process.argv[1] &&
-    import.meta.url === pathToFileURL(process.argv[1]).href;
 }
