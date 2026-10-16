@@ -1217,7 +1217,6 @@ void main() {
       );
 
       await pumpFeatureUi(tester);
-
       expect(find.text('Taylor'), findsOneWidget);
       expect(find.text('Say hi to Taylor!'), findsOneWidget);
     });

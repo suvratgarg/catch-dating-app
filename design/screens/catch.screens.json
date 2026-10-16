@@ -1847,7 +1847,7 @@
         },
         {
           "file": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
-          "symbol": "PrivateEventDetailsScreen",
+          "symbol": "_PrivateEventDetailsBody",
           "family": "step-flow",
           "expression": "CatchScaffold.stepFlow",
           "bodyGeometry": "intrinsic",

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_se
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/experimental/scope.dart';
 
 class TestHostEventOfferController {
   TestHostEventOfferController(
@@ -87,8 +88,7 @@ class TestHostEventOfferController {
 }
 
 // This fixture owns a ProviderContainer with both workspace families overridden.
-// The widget-scoping lint cannot infer this test-only container boundary.
-// ignore: provider_dependencies
+@Dependencies([HostEventOfferWorkspaceController])
 class TestHostEventOfferWorkspaceController {
   TestHostEventOfferWorkspaceController({
     required String organizerId,

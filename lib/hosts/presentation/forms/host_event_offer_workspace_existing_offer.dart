@@ -3,6 +3,113 @@ part of 'host_event_offer_workspace_controller.dart';
 /// Existing-offer loading, payment refresh, and external handoff actions.
 extension HostEventOfferWorkspaceExistingOfferActions
     on HostEventOfferWorkspaceController {
+  void _prepareDraft(
+    List<HostFormResponseDetail> details,
+    HostOfferEventConfiguration configuration,
+  ) {
+    final expiry = configuration.suggestedExpiresAt;
+    if (expiry == null) {
+      return;
+    }
+    final draft = HostOfferWorkspacePolicy.draft(
+      organizerId: _organizerId,
+      details: details,
+      configuration: configuration,
+      personalMode: _personalMode,
+      personalLinks: _personalLinks,
+    );
+    _update(() {
+      _draft = draft;
+      _commitRequestId = HostOfferWorkspacePolicy.newRequestId();
+    });
+  }
+
+  Future<void> previewPersonal() async {
+    if (!_active) return;
+    final accountId = _accountId;
+    final event = _event;
+    final previous = _configuration;
+    final generation = _generation;
+    if (accountId == null ||
+        event == null ||
+        previous == null ||
+        _isLoading ||
+        _selectionStale ||
+        _hasUnresolvedCommand ||
+        !_personalMode) {
+      return;
+    }
+    _update(() {
+      _loading = true;
+      _stage = HostOfferWorkspaceStage.preparingOffer;
+      _error = null;
+    });
+    try {
+      if (!await _revalidate(generation, accountId)) {
+        return;
+      }
+      late List<HostFormResponseDetail> details;
+      late List<HostFormResponseDetail> missing;
+      late HostOfferEventConfiguration current;
+      await Future.wait<void>([
+        (() async {
+          details = await _resolveDetails(
+            isCurrent: () => _current(generation, accountId),
+          );
+          missing = await HostOfferWorkspacePolicy.missingContacts(
+            details: details,
+            isResponseReviewed: _isResponseReviewed,
+            isCurrent: () => _current(generation, accountId),
+          );
+        })(),
+        (() async {
+          current = await _targets.configuration(
+            organizerId: _organizerId,
+            eventId: event.eventId,
+          );
+        })(),
+      ]);
+      if (!await _revalidate(generation, accountId)) {
+        return;
+      }
+      if (missing.isNotEmpty) {
+        _update(() {
+          _missingContacts = List.unmodifiable(missing);
+          _draft = null;
+        });
+        return;
+      }
+      if (HostOfferWorkspacePolicy.personalReviewChanged(
+        current,
+        previous,
+        details,
+        _details,
+      )) {
+        _update(() => _selectionStale = true);
+        return;
+      }
+      _update(() => _recoveringPending = true);
+      _prepareDraft(details, current);
+      if (_draft case final draft?) {
+        await _offerController.preview(
+          draft: draft,
+          now: _now(),
+          eventStartsAt: current.startsAt,
+        );
+      }
+    } on Object catch (error) {
+      if (_current(generation, accountId)) _update(() => _error = error);
+    } finally {
+      if (_current(generation, accountId)) {
+        _update(() {
+          _loading = false;
+          _stage = HostOfferWorkspaceStage.idle;
+          _recoveringPending = false;
+        });
+      }
+    }
+  }
+
   Future<void> refreshOffers() => _fetchOffers(append: false);
 
   Future<void> _fetchOffers({required bool append}) async {

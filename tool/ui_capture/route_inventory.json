@@ -1935,11 +1935,11 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:2f214d9cbc96746fe49d0e23370dd26c828a919f9b516074c693265442f47a32:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName),fullscreenDialog:true)",
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:b2930c77989f03b56e9e4578c003c71f99071a69b44583458a9bd0ce0c1c8c15:1",
+      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??state.event?.eventDetails.venueName),fullscreenDialog:true)",
       "sourcePath": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName)",
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??state.event?.eventDetails.venueName)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },

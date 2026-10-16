@@ -31,6 +31,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:riverpod_annotation/experimental/scope.dart';
 import '../../support/catch_test_fonts.dart';
 import '../../test_pump_helpers.dart';
 import '../../ui_captures/support/capture_device.dart';
@@ -40,6 +41,7 @@ import 'event_offer_controller_test_support.dart';
 part 'host_event_offer_workspace_fixtures.dart';
 part 'host_offer_preparation_cases.dart';
 
+@Dependencies([HostEventOfferWorkspaceController])
 void main() {
   _preparationRegressionTests();
   testWidgets(

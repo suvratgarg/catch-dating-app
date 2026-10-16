@@ -1,5 +1,6 @@
 part of 'host_event_offer_workspace_test.dart';
 
+@Dependencies([HostEventOfferWorkspaceController])
 void _preparationRegressionTests() {
   test(
     'personal preparation overlaps fresh reads and cancellation prevents preview',
@@ -562,6 +563,7 @@ class _PreparationTargets extends _Targets {
   }
 }
 
+@Dependencies([HostEventOfferWorkspaceController])
 TestHostEventOfferWorkspaceController _preparationWorkspace({
   bool autoDispose = true,
   TestHostEventOfferController? offerController,

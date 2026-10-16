@@ -72,8 +72,6 @@ void main() {
 
   test('repeat preserves the explicit member review exemption', () {
     final event = buildEvent(
-      capacityLimit: 20,
-      priceInPaise: 0,
       eventPolicy: EventPolicyBundle.requestToJoinEvent(
         capacityLimit: 20,
         basePriceInPaise: 0,
