@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.33
+version: 2.7.34
 updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
@@ -3177,10 +3177,19 @@ The job verifies the immutable package twice, preserves selected runtime setting
 provider parameters and numeric secret bindings (including PROD webhook secret
 version2), and snapshots all unselected Functions, Extensions, indexes, field
 overrides, rules, Remote Config and project IAM. Any drift stops the job; it has
-no force, retry, rollback, broad deployment or full-baseline/cursor route.
+no force, automatic deployment retry, rollback, broad deployment or full-baseline/cursor route.
 
 A completed deployment receipt is source/serving proof only. Booking and refund
 acceptance still requires a separately budgeted synthetic TEST transaction and
 readback demonstrating schema-valid booking, verified payment and full refund
 without manual field or refund reconciliation. Existing refunded transactions
 and earlier webhook delivery evidence do not prove that new booking flow.
+
+The `cat151-booking-prod-recovery` profile is limited to the predeployment
+Firebase CLI installation failure in run38910329785 attempt1. Before cloud
+authentication it verifies that exact failed run and its skipped deployment,
+then validates the pinned successful DEV artifact12051195096 and receipt bytes.
+It does not redeploy DEV, relax PROD predecessor checks, or accept arbitrary
+recovery runs. A new configured human `prod` approval is required. Only Firebase
+CLI installation has bounded retries; the Function deployment command remains
+single-shot. This recovery cannot resume a partial or completed PROD deployment.

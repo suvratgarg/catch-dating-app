@@ -513,16 +513,44 @@ export function verifyDev(receipt,manifest) {
  validateFunctionsDeployment(receipt.deployment,{manifest,scope:scopeFor("dev"),baseSha:RELEASE.baseSha,selectedTargets:TARGETS,paramsSha256:receipt.paramsBinding.materializedSha256});
  return {devVerified:true};
 }
+// One reviewed recovery for the CLI install failure before PROD mutation.
+export function verifyPredeployRecovery(run, jobs) {
+ assert.equal(run.id,38910329785);assert.equal(run.run_attempt,1);
+ assert.equal(run.workflow_id,375348513);assert.equal(run.head_sha,"621454fe1f2c61ec7647f2de9ec9a66378ef8efd");
+ assert.equal(run.path,".github/workflows/selective-backend-release.yml");
+ assert.equal(run.event,"workflow_dispatch");assert.equal(run.head_branch,"main");
+ assert.equal(run.status,"completed");assert.equal(run.conclusion,"failure");
+ assert.ok(Array.isArray(jobs.jobs));assert.equal(jobs.total_count,jobs.jobs.length);
+ const one=name=>{const found=jobs.jobs.filter(j=>j.name===name);assert.equal(found.length,1);return found[0];};
+ const dev=one("dev-cat151-booking / CAT151 booking writer dev promotion");
+ assert.equal(dev.status,"completed");assert.equal(dev.conclusion,"success");
+ const prod=one("prod-cat151-booking / CAT151 booking writer prod promotion");
+ assert.equal(prod.status,"completed");assert.equal(prod.conclusion,"failure");
+ const step=name=>{const found=prod.steps.filter(s=>s.name===name);assert.equal(found.length,1);return found[0];};
+ const install=step("Install Firebase CLI");assert.equal(install.conclusion,"failure");
+ for(const name of ["Require recorded human PROD environment approval for operator release",
+   "Verify this run's successful DEV receipt before PROD credentials",
+   "Capture all retained Functions, Extensions and protected configuration",
+   "Verify environment prerequisites for the approved targets"])
+   assert.equal(step(name).conclusion,"success");
+ const deploy=step("Deploy the fixed fourteen CAT151 Functions once");
+ assert.ok(deploy.number>install.number);assert.equal(deploy.conclusion,"skipped");
+ for(const row of prod.steps.filter(s=>s.number>install.number&&s.number<=deploy.number))
+   assert.equal(row.conclusion,"skipped");
+ assert.equal(prod.steps.filter(s=>s.conclusion==="failure").length,1);
+ return {predeployRecoveryVerified:true,priorRunId:run.id,productionMutationStarted:false};
+}
 const read=file=>JSON.parse(fs.readFileSync(file,"utf8"));
 const write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+"\n",{flag:"wx",mode:0o600});
 export async function runCli(argv,{snapshot=readSnapshot}={}) {
  const [command,...rest]=argv,args={};
  for(let i=0;i<rest.length;i+=2){assert.match(rest[i],/^--[a-z-]+$/);assert.ok(rest[i+1]);const k=rest[i].slice(2);assert.ok(!Object.hasOwn(args,k));args[k]=rest[i+1];}
- const keys={source:["current-main","source-root"],artifact:["metadata"],archive:["archive"],provenance:["manifest"],prepare:["manifest","package-plan","output"],
+ const keys={"verify-predeploy-recovery":["run","jobs"],source:["current-main","source-root"],artifact:["metadata"],archive:["archive"],provenance:["manifest"],prepare:["manifest","package-plan","output"],
   before:["environment","output"],params:["environment","params-file","provenance","output"],"verify-params":["environment","params-file","provenance","binding"],
   "verify-before":["environment","before"],complete:["environment","before","params-file","params-provenance","params-binding","manifest","package-plan","deployment","output"],
   "verify-dev":["receipt","manifest"],"verify-candidate":["environment","candidate","before","params-file"]};
  assert.ok(Object.hasOwn(keys,command));exactKeys(args,keys[command]);
+ if(command==="verify-predeploy-recovery")return verifyPredeployRecovery(read(args.run),read(args.jobs));
  if(command==="source")return checkSource(args["current-main"],args["source-root"]);
  if(command==="artifact")return verifyArtifact(read(args.metadata));
  if(command==="archive"){assert.equal(bytesDigest(fs.readFileSync(args.archive)),RELEASE.artifactSha256);return {archiveVerified:true};}

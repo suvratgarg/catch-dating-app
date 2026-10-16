@@ -9,7 +9,7 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {extractSteps} from '../harness/lib/workflow_steps.mjs';
 import {RELEASE,TARGETS,PREDECESSORS,prepare,verifyManifest,verifyArtifact,verifyPredecessors,
-  verifyPreservation,verifyCandidate,verifyParams,verifyDev,complete,readSnapshot,runCli,checkSource} from './cat151_booking_release.mjs';
+  verifyPreservation,verifyCandidate,verifyParams,verifyDev,verifyPredeployRecovery,complete,readSnapshot,runCli,checkSource} from './cat151_booking_release.mjs';
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const projects={dev:'catchdates-dev',prod:'catch-dating-app-64e51'};
 const manifest=()=>({schema:'catch.delivery-provenance/v2',sourceSha:RELEASE.sourceSha,
@@ -127,7 +127,7 @@ test('CAT151 caller scope predicate rejects mixed profiles and missing DEV evide
  const source=fs.readFileSync('.github/workflows/_firebase-promote.yml','utf8');
  const step=extractSteps(jobText(source,'promote-cat151-booking'))[0];
  const predicate=step.run.match(/jq -e '\n([\s\S]*?)\n\s*' <<</)[1];
- const base={cat151_booking_release:true,intake_pr596_release:false,operator_release:false,whatsapp_five_release:false,sales_pr543_release:false,wedding_phone_import_release:false,require_current_main:false,environment:'dev',approval_environment:'',control_plane_sha:'a'.repeat(40),source_sha:RELEASE.sourceSha,base_sha:RELEASE.baseSha,source_ci_run_id:RELEASE.sourceCiRunId,source_ci_run_attempt:'1',resume_delivery_run_id:'',resume_delivery_attempt:'1',dev_completion_artifact_id:'',dev_completion_artifact_digest:'',dev_completion_receipt_sha256:''};
+ const base={cat151_predeploy_recovery:false,cat151_booking_release:true,intake_pr596_release:false,operator_release:false,whatsapp_five_release:false,sales_pr543_release:false,wedding_phone_import_release:false,require_current_main:false,environment:'dev',approval_environment:'',control_plane_sha:'a'.repeat(40),source_sha:RELEASE.sourceSha,base_sha:RELEASE.baseSha,source_ci_run_id:RELEASE.sourceCiRunId,source_ci_run_attempt:'1',resume_delivery_run_id:'',resume_delivery_attempt:'1',dev_completion_artifact_id:'',dev_completion_artifact_digest:'',dev_completion_receipt_sha256:''};
  const accepts=v=>spawnSync('jq',['-e',predicate],{input:JSON.stringify(v),encoding:'utf8',env:{...process.env,GITHUB_SHA:'a'.repeat(40)}}).status===0;
  assert.equal(accepts(base),true);
  for(const patch of [{operator_release:true},{intake_pr596_release:true},{environment:'staging'},{environment:'prod'},{source_sha:'0'.repeat(40)},{resume_delivery_run_id:'123'},{dev_completion_artifact_id:'123'}])assert.equal(accepts({...base,...patch}),false);
@@ -148,4 +148,32 @@ test('CAT151 binds real materializer bytes and rejects changed values under an u
  assert.throws(()=>verifyParams(outputPath,provenance,undefined,'dev'));
  fs.writeFileSync(outputPath,fs.readFileSync(outputPath,'utf8').replace('rzp_test_synthetic','rzp_test_changed'));
  assert.throws(()=>verifyParams(outputPath,provenance,binding,'prod'));
+});
+
+test('CAT151 recovery requires the exact terminal predeployment failure and successful DEV',()=>{
+ const run={id:38910329785,run_attempt:1,workflow_id:375348513,head_sha:'621454fe1f2c61ec7647f2de9ec9a66378ef8efd',path:'.github/workflows/selective-backend-release.yml',event:'workflow_dispatch',head_branch:'main',status:'completed',conclusion:'failure'};
+ const names=['Require recorded human PROD environment approval for operator release',"Verify this run's successful DEV receipt before PROD credentials",'Capture all retained Functions, Extensions and protected configuration','Verify environment prerequisites for the approved targets','Install Firebase CLI','Create a separate deploy tree','Deploy the fixed fourteen CAT151 Functions once'];
+ const jobs={total_count:2,jobs:[{name:'dev-cat151-booking / CAT151 booking writer dev promotion',status:'completed',conclusion:'success'},
+  {name:'prod-cat151-booking / CAT151 booking writer prod promotion',status:'completed',conclusion:'failure',steps:names.map((name,i)=>({name,number:i+1,conclusion:i<4?'success':i===4?'failure':'skipped'}))}]};
+ assert.equal(verifyPredeployRecovery(run,jobs).productionMutationStarted,false);
+ for(const patch of [{id:1},{run_attempt:2},{head_sha:'0'.repeat(40)},{status:'in_progress'},{conclusion:'success'},{workflow_id:1},{head_branch:'other'}])assert.throws(()=>verifyPredeployRecovery({...run,...patch},jobs));
+ for(const mutate of [j=>j.total_count++,j=>j.jobs[0].conclusion='failure',j=>j.jobs[1].steps[4].conclusion='success',j=>j.jobs[1].steps[5].conclusion='success',j=>j.jobs[1].steps[6].conclusion='success',j=>j.jobs[1].steps.pop(),j=>j.jobs[1].steps[0].conclusion='skipped']){
+  const changed=structuredClone(jobs);mutate(changed);assert.throws(()=>verifyPredeployRecovery(run,changed));
+ }
+});
+test('CAT151 recovery workflow pins DEV proof and checks prior failure before cloud credentials',()=>{
+ const caller=fs.readFileSync('.github/workflows/selective-backend-release.yml','utf8');
+ const reusable=fs.readFileSync('.github/workflows/_firebase-promote.yml','utf8');
+ const recovery=jobText(caller,'prod-cat151-booking-recovery');
+ assert.match(recovery,/environment: prod/);assert.match(recovery,/cat151_predeploy_recovery: true/);
+ assert.match(jobText(caller,'dev-cat151-booking'),/inputs.release_kind == 'cat151-booking'/);
+ for(const pin of ['12051195096','ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f','b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09'])assert.ok(recovery.includes(pin));
+ const job=jobText(reusable,'promote-cat151-booking');
+ assert.ok(job.indexOf('verify-predeploy-recovery')<job.indexOf('google-github-actions/auth@v3'));
+ assert.match(job,/actions\/runs\/38910329785\/attempts\/1/);
+ const predicate=extractSteps(job)[0].run.match(/jq -e '\n([\s\S]*?)\n\s*' <<</)[1];
+ const base={cat151_predeploy_recovery:true,cat151_booking_release:true,intake_pr596_release:false,operator_release:false,whatsapp_five_release:false,sales_pr543_release:false,wedding_phone_import_release:false,require_current_main:false,environment:'prod',approval_environment:'',control_plane_sha:'a'.repeat(40),source_sha:RELEASE.sourceSha,base_sha:RELEASE.baseSha,source_ci_run_id:RELEASE.sourceCiRunId,source_ci_run_attempt:'1',resume_delivery_run_id:'',resume_delivery_attempt:'1',dev_completion_artifact_id:'12051195096',dev_completion_artifact_digest:'ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f',dev_completion_receipt_sha256:'b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09'};
+ const accepts=v=>spawnSync('jq',['-e',predicate],{input:JSON.stringify(v),encoding:'utf8',env:{...process.env,GITHUB_SHA:'a'.repeat(40)}}).status===0;
+ assert.equal(accepts(base),true);
+ for(const patch of [{environment:'dev'},{dev_completion_artifact_id:'1'},{dev_completion_artifact_digest:'0'.repeat(64)},{dev_completion_receipt_sha256:'0'.repeat(64)}])assert.equal(accepts({...base,...patch}),false);
 });
