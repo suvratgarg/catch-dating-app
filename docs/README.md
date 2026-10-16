@@ -112,6 +112,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
 | Sales demo persona cohorts | `sales_demo_persona_cohorts.md` | Cohort scope, NYC and India persona-library decisions, roster reuse policy, and city overlay rules for high-fidelity sales demos. |
+| Sales operator handoff | `sales_operator_runbook.md` | Referral-partner onboarding, lead ownership, reviewed outreach, and daily follow-up operations. Private prospect and commercial records remain outside Git. |
 | Sales demo image generation | `sales_demo_image_generation_runbook.md` | Mechanical ChatGPT-web image generation, review, local organization, UID-owned Storage upload, and post-upload validation workflow. |
 | Enforcement rules | `../tool/policy/rules.json` | Authored recurring rules and their executable enforcement bindings. Historical audit receipts and generated pass/file/metric ledgers remain available only through Git history. |
 
