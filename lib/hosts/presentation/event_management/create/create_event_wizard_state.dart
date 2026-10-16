@@ -248,7 +248,7 @@ class CreateEventWizardReviewState {
     if (name.trim().isEmpty) return false;
     if (activityKind == ActivityKind.openActivity) {
       final label = customActivityLabel.trim();
-      return label.length >= 3 && label.length <= 64;
+      return label.length <= 80;
     }
     if (!activityKind.isDistanceBased) return true;
     final parsedDistance = double.tryParse(distance.trim());

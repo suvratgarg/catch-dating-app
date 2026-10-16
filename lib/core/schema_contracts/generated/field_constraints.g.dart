@@ -127567,6 +127567,217 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const privateEventSetupCallableResponseEventDetailsEventPhotos = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationReason = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.reason',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.reviewedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.reviewedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationStatus = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'rejected'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsPosition = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsStoragePath = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.storagePath',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsThumbnailStoragePath = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.thumbnailStoragePath',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsThumbnailUrl = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.thumbnailUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventPhotosItemsUrl = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItinerary = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const privateEventSetupCallableResponseEventDetailsMeetingLocationAddress = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.address',
     maxLength: 500,
@@ -160587,6 +160798,217 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotos = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationReason = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.reason',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.reviewedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.reviewedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationStatus = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'rejected'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsPosition = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.position',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsStoragePath = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.storagePath',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsThumbnailStoragePath = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.thumbnailStoragePath',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsThumbnailUrl = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.thumbnailUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsUrl = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItinerary = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.itinerary.items.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updatePrivateEventDetailsCallablePayloadDetailsPace = CatchContractFieldConstraints(
     path: 'updatePrivateEventDetailsCallablePayload.details.pace',
     valueTypes: <String>['string'],
@@ -184181,6 +184603,35 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.unitOutcome': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesUnitOutcome,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.interactionModel': privateEventSetupCallableResponseEventDetailsEventFormatInteractionModel,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.version': privateEventSetupCallableResponseEventDetailsEventFormatVersion,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos': privateEventSetupCallableResponseEventDetailsEventPhotos,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.createdAt._nanoseconds': privateEventSetupCallableResponseEventDetailsEventPhotosItemsCreatedAtNanoseconds,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.createdAt._seconds': privateEventSetupCallableResponseEventDetailsEventPhotosItemsCreatedAtSeconds,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.id': privateEventSetupCallableResponseEventDetailsEventPhotosItemsId,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.reason': privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationReason,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.reviewedAt._nanoseconds': privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationReviewedAtNanoseconds,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.reviewedAt._seconds': privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationReviewedAtSeconds,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.moderation.status': privateEventSetupCallableResponseEventDetailsEventPhotosItemsModerationStatus,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.position': privateEventSetupCallableResponseEventDetailsEventPhotosItemsPosition,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.storagePath': privateEventSetupCallableResponseEventDetailsEventPhotosItemsStoragePath,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.thumbnailStoragePath': privateEventSetupCallableResponseEventDetailsEventPhotosItemsThumbnailStoragePath,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.thumbnailUrl': privateEventSetupCallableResponseEventDetailsEventPhotosItemsThumbnailUrl,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.updatedAt._nanoseconds': privateEventSetupCallableResponseEventDetailsEventPhotosItemsUpdatedAtNanoseconds,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.updatedAt._seconds': privateEventSetupCallableResponseEventDetailsEventPhotosItemsUpdatedAtSeconds,
+    'privateEventSetupCallableResponse.eventDetails.eventPhotos.items.url': privateEventSetupCallableResponseEventDetailsEventPhotosItemsUrl,
+    'privateEventSetupCallableResponse.eventDetails.itinerary': privateEventSetupCallableResponseEventDetailsItinerary,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.description': privateEventSetupCallableResponseEventDetailsItineraryItemsDescription,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.durationMinutes': privateEventSetupCallableResponseEventDetailsItineraryItemsDurationMinutes,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.id': privateEventSetupCallableResponseEventDetailsItineraryItemsId,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.kind': privateEventSetupCallableResponseEventDetailsItineraryItemsKind,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.address': privateEventSetupCallableResponseEventDetailsItineraryItemsLocationAddress,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.latitude': privateEventSetupCallableResponseEventDetailsItineraryItemsLocationLatitude,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.longitude': privateEventSetupCallableResponseEventDetailsItineraryItemsLocationLongitude,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.name': privateEventSetupCallableResponseEventDetailsItineraryItemsLocationName,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.notes': privateEventSetupCallableResponseEventDetailsItineraryItemsLocationNotes,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.location.placeId': privateEventSetupCallableResponseEventDetailsItineraryItemsLocationPlaceId,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.offsetMinutes': privateEventSetupCallableResponseEventDetailsItineraryItemsOffsetMinutes,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.routeDistanceMeters': privateEventSetupCallableResponseEventDetailsItineraryItemsRouteDistanceMeters,
+    'privateEventSetupCallableResponse.eventDetails.itinerary.items.title': privateEventSetupCallableResponseEventDetailsItineraryItemsTitle,
     'privateEventSetupCallableResponse.eventDetails.meetingLocation.address': privateEventSetupCallableResponseEventDetailsMeetingLocationAddress,
     'privateEventSetupCallableResponse.eventDetails.meetingLocation.latitude': privateEventSetupCallableResponseEventDetailsMeetingLocationLatitude,
     'privateEventSetupCallableResponse.eventDetails.meetingLocation.longitude': privateEventSetupCallableResponseEventDetailsMeetingLocationLongitude,
@@ -188714,6 +189165,35 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.unitOutcome': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesUnitOutcome,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.interactionModel': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueInteractionModel,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.version': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueVersion,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos': updatePrivateEventDetailsCallablePayloadDetailsEventPhotos,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.createdAt._nanoseconds': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsCreatedAtNanoseconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.createdAt._seconds': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsCreatedAtSeconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.id': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsId,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.reason': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationReason,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.reviewedAt._nanoseconds': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationReviewedAtNanoseconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.reviewedAt._seconds': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationReviewedAtSeconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.moderation.status': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsModerationStatus,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.position': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsPosition,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.storagePath': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsStoragePath,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.thumbnailStoragePath': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsThumbnailStoragePath,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.thumbnailUrl': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsThumbnailUrl,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.updatedAt._nanoseconds': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsUpdatedAtNanoseconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.updatedAt._seconds': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsUpdatedAtSeconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventPhotos.items.url': updatePrivateEventDetailsCallablePayloadDetailsEventPhotosItemsUrl,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary': updatePrivateEventDetailsCallablePayloadDetailsItinerary,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.description': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsDescription,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.durationMinutes': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsDurationMinutes,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.id': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsId,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.kind': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsKind,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.address': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationAddress,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.latitude': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationLatitude,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.longitude': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationLongitude,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.name': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationName,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.notes': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationNotes,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.location.placeId': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsLocationPlaceId,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.offsetMinutes': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsOffsetMinutes,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.routeDistanceMeters': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsRouteDistanceMeters,
+    'updatePrivateEventDetailsCallablePayload.details.itinerary.items.title': updatePrivateEventDetailsCallablePayloadDetailsItineraryItemsTitle,
     'updatePrivateEventDetailsCallablePayload.details.pace': updatePrivateEventDetailsCallablePayloadDetailsPace,
     'updatePrivateEventDetailsCallablePayload.details.venue.mode': updatePrivateEventDetailsCallablePayloadDetailsVenueMode,
     'updatePrivateEventDetailsCallablePayload.details.venue.value.address': updatePrivateEventDetailsCallablePayloadDetailsVenueValueAddress,

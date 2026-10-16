@@ -10,6 +10,7 @@ import 'package:catch_dating_app/events/events.dart'
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_listing_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_content_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -76,6 +77,7 @@ class PrivateEventDetailsScreen extends StatelessWidget {
           longitude: result.coordinate.longitude,
           address: result.address,
           placeId: result.placeId,
+          notes: current?.notes,
         );
       }
       if (location != null && controller.canEdit) {
@@ -246,6 +248,7 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 inputMode: editable
                                     ? CatchTextInputMode.editable
                                     : CatchTextInputMode.inactive,
+                                labelMode: CatchFieldLabelTextMode.optional,
                                 maxLength: 3,
                                 onValidate: (value) {
                                   final text = value?.trim() ?? '';
@@ -259,6 +262,17 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 },
                                 onSubmitted: editable
                                     ? (text) {
+                                        if (text.trim().isEmpty) {
+                                          unawaited(
+                                            controller.save(
+                                              const PrivateEventDetailsPatch(
+                                                durationMinutes:
+                                                    EventSetupValue.clear(),
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
                                         final minutes = int.tryParse(
                                           text.trim(),
                                         );
@@ -353,14 +367,25 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                     ? CatchTextInputMode.editable
                                     : CatchTextInputMode.inactive,
                                 maxLength: 240,
+                                labelMode: CatchFieldLabelTextMode.optional,
                                 onValidate: (value) =>
-                                    (value?.trim().isEmpty ?? true)
+                                    (value?.trim().length ?? 0) > 240
                                     ? l10n.hostsEventPreferenceInvalidValue
                                     : null,
                                 onSubmitted: editable
                                     ? (text) {
                                         final name = text.trim();
-                                        if (name.isEmpty || name.length > 240) {
+                                        if (name.isEmpty) {
+                                          unawaited(
+                                            controller.save(
+                                              const PrivateEventDetailsPatch(
+                                                venue: EventSetupValue.clear(),
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        if (name.length > 240) {
                                           controller.reportValidationError(
                                             const FormatException(
                                               'Invalid event venue',
@@ -371,7 +396,14 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                         unawaited(
                                           controller.save(
                                             PrivateEventDetailsPatch(
-                                              venue: EventSetupValue.set(name),
+                                              meetingLocation: details
+                                                  ?.meetingLocation
+                                                  ?.copyWith(name: name),
+                                              venue:
+                                                  details?.meetingLocation ==
+                                                      null
+                                                  ? EventSetupValue.set(name)
+                                                  : null,
                                             ),
                                           ),
                                         );
@@ -441,6 +473,14 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                           unawaited(
                                             controller.save(
                                               PrivateEventDetailsPatch(
+                                                itinerary: details?.itinerary
+                                                    .map(
+                                                      (item) => item.copyWith(
+                                                        routeDistanceMeters:
+                                                            null,
+                                                      ),
+                                                    )
+                                                    .toList(),
                                                 eventFormat: EventSetupValue.set(
                                                   EventFormatSnapshot.fromActivityKind(
                                                     selection.single,
@@ -461,9 +501,16 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                         currentFormat != null
                                     ? () => unawaited(
                                         controller.save(
-                                          const PrivateEventDetailsPatch(
+                                          PrivateEventDetailsPatch(
+                                            itinerary: details?.itinerary
+                                                .map(
+                                                  (item) => item.copyWith(
+                                                    routeDistanceMeters: null,
+                                                  ),
+                                                )
+                                                .toList(),
                                             eventFormat:
-                                                EventSetupValue.clear(),
+                                                const EventSetupValue.clear(),
                                           ),
                                         ),
                                       )
@@ -471,6 +518,8 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+                          if (event != null)
+                            PrivateEventContentSection(controller: controller),
                           if (event != null)
                             HostPrivateEventListingSection(
                               key: ValueKey(

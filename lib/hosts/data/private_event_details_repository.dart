@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
@@ -18,11 +20,15 @@ class PrivateEventDetailsPatch {
     this.meetingLocation,
     this.eventFormat,
     this.description,
+    this.itinerary,
+    this.eventPhotos,
     this.admissionTerms,
     this.distanceKm,
     this.pace,
   });
 
+  final List<EventItineraryItem>? itinerary;
+  final List<UploadedPhoto>? eventPhotos;
   final String? description;
   final PrivateEventAdmissionTerms? admissionTerms;
   final double? distanceKm;
@@ -38,10 +44,37 @@ class PrivateEventDetailsPatch {
         meetingLocation == null &&
         eventFormat == null &&
         description == null &&
+        itinerary == null &&
+        eventPhotos == null &&
         admissionTerms == null &&
         distanceKm == null &&
         pace == null) {
       return false;
+    }
+    final items = itinerary;
+    if (items != null) {
+      if (items.length > 40 ||
+          items.map((item) => item.id).toSet().length != items.length) {
+        return false;
+      }
+      var previousOffset = -1;
+      for (final item in items) {
+        if (!RegExp(r'^[A-Za-z0-9_-]{1,80}$').hasMatch(item.id) ||
+            item.title.trim().isEmpty ||
+            item.title.length > 120 ||
+            item.offsetMinutes < 0 ||
+            item.offsetMinutes > 1440 ||
+            item.offsetMinutes < previousOffset ||
+            (item.durationMinutes != null &&
+                (item.durationMinutes! < 1 || item.durationMinutes! > 1440)) ||
+            (item.description?.length ?? 0) > 500 ||
+            (item.routeDistanceMeters != null &&
+                (item.routeDistanceMeters! < 0 ||
+                    item.routeDistanceMeters! > 1000000))) {
+          return false;
+        }
+        previousOffset = item.offsetMinutes;
+      }
     }
     if ((description != null && description!.length > 2000) ||
         (admissionTerms != null && !admissionTerms!.isValid) ||
@@ -82,6 +115,11 @@ class PrivateEventDetailsPatch {
             place.value!.length > 240)) {
       return false;
     }
+    final label = eventFormat?.value?.customActivityLabel;
+    if (label != null && (label.trim().isEmpty || label.length > 80)) {
+      return false;
+    }
+    if ((meetingLocation?.notes?.length ?? 0) > 1000) return false;
     final format = eventFormat;
     if (format?.mode == EventSetupValueMode.inherit ||
         (format?.mode == EventSetupValueMode.set &&
@@ -93,6 +131,26 @@ class PrivateEventDetailsPatch {
 
   Map<String, Object?> toJson() => {
     if (description != null) 'description': description,
+    if (itinerary != null)
+      'itinerary': itinerary!.map((item) => item.toJson()).toList(),
+    if (eventPhotos != null)
+      'eventPhotos': eventPhotos!
+          .map(
+            (photo) => {
+              ...photo.toJson(),
+              'createdAt': {
+                '_seconds': photo.createdAt.millisecondsSinceEpoch ~/ 1000,
+                '_nanoseconds':
+                    (photo.createdAt.microsecondsSinceEpoch % 1000000) * 1000,
+              },
+              'updatedAt': {
+                '_seconds': photo.updatedAt.millisecondsSinceEpoch ~/ 1000,
+                '_nanoseconds':
+                    (photo.updatedAt.microsecondsSinceEpoch % 1000000) * 1000,
+              },
+            },
+          )
+          .toList(),
     if (admissionTerms != null) 'admissionTerms': admissionTerms!.toJson(),
     if (distanceKm != null) 'distanceKm': distanceKm,
     if (pace != null) 'pace': pace,
@@ -111,6 +169,8 @@ class PrivateEventDetailsPatch {
       'venue',
       'eventFormat',
       'description',
+      'itinerary',
+      'eventPhotos',
       'admissionTerms',
       'distanceKm',
       'pace',
@@ -146,6 +206,24 @@ class PrivateEventDetailsPatch {
             rawLocation.containsKey('longitude'));
     final patch = PrivateEventDetailsPatch(
       description: json['description'] as String?,
+      itinerary: json['itinerary'] == null
+          ? null
+          : (json['itinerary'] as List)
+                .map(
+                  (item) => EventItineraryItem.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList(),
+      eventPhotos: json['eventPhotos'] == null
+          ? null
+          : (json['eventPhotos'] as List)
+                .map(
+                  (item) => privateEventPhotoFromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList(),
       distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       pace: json['pace'] as String?,
       admissionTerms: json['admissionTerms'] == null

@@ -85,6 +85,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   sourceVenueId: json['sourceVenueId'] as String?,
   name: json['name'] as String? ?? '',
   startTime: const TimestampConverter().fromJson(json['startTime']),
+  eventTimezone: json['eventTimezone'] as String?,
   endTime: const TimestampConverter().fromJson(json['endTime']),
   meetingPoint: json['meetingPoint'] as String,
   meetingLocation: json['meetingLocation'] == null
@@ -182,6 +183,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'sourceVenueId': ?instance.sourceVenueId,
   'name': instance.name,
   'startTime': const TimestampConverter().toJson(instance.startTime),
+  'eventTimezone': ?instance.eventTimezone,
   'endTime': const TimestampConverter().toJson(instance.endTime),
   'meetingPoint': instance.meetingPoint,
   'meetingLocation': ?instance.meetingLocation?.toJson(),

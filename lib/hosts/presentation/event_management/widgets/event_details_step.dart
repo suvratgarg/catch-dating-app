@@ -185,6 +185,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       contract: CatchContractConstraints
                           .createEventCallablePayloadEventFormatCustomActivityLabel,
                       controller: widget.customActivityLabelController,
+                      labelMode: CatchFieldLabelTextMode.optional,
                       inputHint: context
                           .l10n
                           .hostsEventDetailsStepPlaceholderSalsaNight,
@@ -193,17 +194,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       textInputAction: TextInputAction.next,
                       onValidate: (value) {
                         final normalized = value?.trim() ?? '';
-                        if (normalized.isEmpty) {
-                          return context
-                              .l10n
-                              .hostsEventDetailsStepVisiblecopyRequired;
-                        }
-                        if (normalized.length < 3) {
-                          return context
-                              .l10n
-                              .hostsEventDetailsStepVisiblecopyTooShort;
-                        }
-                        if (normalized.length > 64) {
+                        if (normalized.length > 80) {
                           return context
                               .l10n
                               .hostsEventDetailsStepVisiblecopyTooLong;
@@ -389,6 +380,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
               ),
               if (_showItinerary) ...[
                 if (widget.selectedActivityKind == ActivityKind.openActivity ||
+                    widget.selectedActivityKind.isDistanceBased ||
+                    widget.selectedActivityKind == ActivityKind.barCrawl ||
                     widget.routePlan != null)
                   RouteEventPlanEditor(
                     activityKind: widget.selectedActivityKind,
@@ -399,6 +392,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ),
                 EventItineraryEditor(
                   items: widget.itinerary,
+                  hasRoutePath: (widget.routePlan?.path.length ?? 0) >= 2,
                   onChanged: widget.onItineraryChanged,
                   defaultLocation: widget.defaultItineraryLocation,
                   onPickLocation: widget.onPickItineraryLocation,

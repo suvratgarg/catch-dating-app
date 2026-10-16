@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -142,7 +143,7 @@ class EventDetailItinerary extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    final steps = _itineraryFor(event);
+    final steps = _itineraryFor(event, context.l10n);
 
     return Column(
       children: [
@@ -491,27 +492,38 @@ class EventDetailPhotoStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    final photos = event.eventPhotos.take(_photoStripTileCount).toList();
+    final photos = event.eventPhotos;
     if (photos.isEmpty) return const SizedBox.shrink();
 
     return Column(
       children: [
-        Row(
-          children: [
-            for (var index = 0; index < _photoStripTileCount; index++) ...[
-              Expanded(
-                child: EventDetailPhotoStripTile(
-                  index: index,
-                  photo: index < photos.length ? photos[index] : null,
-                  backgroundColor: activity.soft,
-                  iconColor: activity.deep,
-                  icon: activity.glyph,
+        for (
+          var start = 0;
+          start < photos.length;
+          start += _photoStripTileCount
+        ) ...[
+          if (start > 0) gapH8,
+          Row(
+            children: [
+              for (
+                var index = start;
+                index < photos.length && index < start + _photoStripTileCount;
+                index++
+              ) ...[
+                if (index > start) gapW8,
+                Expanded(
+                  child: EventDetailPhotoStripTile(
+                    index: index,
+                    photo: photos[index],
+                    backgroundColor: activity.soft,
+                    iconColor: activity.deep,
+                    icon: activity.glyph,
+                  ),
                 ),
-              ),
-              if (index != _photoStripTileCount - 1) gapW8,
+              ],
             ],
-          ],
-        ),
+          ),
+        ],
         gapH8,
         Row(
           children: [

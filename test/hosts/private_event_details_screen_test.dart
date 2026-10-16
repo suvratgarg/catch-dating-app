@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
@@ -20,6 +21,8 @@ void main() {
 
   for (final actionKind in [
     'duration',
+    'notes',
+    'custom-label',
     'map',
     'map-failure',
     'terms',
@@ -51,20 +54,42 @@ void main() {
           throw StateError('Response lost');
         },
       );
-      controller.event = const PrivateEventBasicSummary(
+      controller.event = PrivateEventBasicSummary(
         eventId: 'event-1',
         organizerId: 'club-1',
         setupRevision: 2,
         name: 'Saturday mixer',
-        city: EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+        city: const EventSetupCity(
+          cityId: 'in-mh-mumbai',
+          marketId: 'in-mh-mumbai',
+        ),
         localDate: '2026-10-03',
         localStartTime: '19:00',
         timezone: 'Asia/Kolkata',
         startTimeMillis: 1791043800000,
         status: 'active',
-        setupDefaults: {},
+        setupDefaults: const {},
         detailsConfigured: false,
         eventPreferences: null,
+        eventDetails: actionKind == 'notes'
+            ? const PrivateEventDetailsSnapshot(
+                meetingLocation: EventMeetingLocation(
+                  name: 'Town Hall',
+                  latitude: 19.2,
+                  longitude: 72.9,
+                  notes: 'Side gate',
+                  address: 'Main Street',
+                ),
+              )
+            : actionKind == 'custom-label'
+            ? const PrivateEventDetailsSnapshot(
+                eventFormat: EventFormatSnapshot(
+                  activityKind: ActivityKind.openActivity,
+                  interactionModel: EventInteractionModel.openFormat,
+                  customActivityLabel: 'Board games',
+                ),
+              )
+            : const PrivateEventDetailsSnapshot(),
         canEditBasics: true,
       );
       controller.defaults = ManagerEventSetupDefaults(
@@ -185,6 +210,34 @@ void main() {
         expect(sent?.details.admissionTerms?.capacityLimit, 12);
         expect(sent?.details.admissionTerms?.cancellationPolicyId, 'standard');
         expect(controller.pending, isNotNull);
+        expect(tester.takeException(), isNull);
+        return;
+      }
+      if (actionKind == 'notes' || actionKind == 'custom-label') {
+        final field = find.byKey(
+          ValueKey(
+            actionKind == 'notes'
+                ? 'private-directions-2'
+                : 'private-format-label-2',
+          ),
+        );
+        await ensureCentered(tester, field);
+        await tester.tap(field);
+        await pumpFeatureUi(tester);
+        final input = find.descendant(
+          of: field,
+          matching: find.byType(EditableText),
+        );
+        await tester.enterText(input, '');
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await pumpFeatureUi(tester);
+        expect(sent, isNotNull);
+        if (actionKind == 'notes') {
+          expect(sent!.details.meetingLocation!.notes, isNull);
+          expect(sent!.details.meetingLocation!.address, 'Main Street');
+        } else {
+          expect(sent!.details.eventFormat!.value!.customActivityLabel, isNull);
+        }
         expect(tester.takeException(), isNull);
         return;
       }

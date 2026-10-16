@@ -112,6 +112,7 @@ class _HostPrivateEventListingSectionState
               title: l10n.hostsEventDetailsStepTitleDescription,
               contractExemption:
                   'Optional description is saved on the canonical event.',
+              labelMode: CatchFieldLabelTextMode.optional,
               initialValue: details.description ?? '',
               maxLength: 2000,
               inputMode: mode,

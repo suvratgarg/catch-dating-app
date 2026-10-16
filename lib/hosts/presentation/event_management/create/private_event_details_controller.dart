@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_journal.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
@@ -31,7 +32,11 @@ class PrivateEventDetailsController extends ChangeNotifier {
     this.journal = const PrivateEventDetailsJournal(),
     this.currentUserId,
     this.reconcile,
+    this.pickAndUploadPhotos,
   });
+
+  final Future<List<UploadedPhoto>> Function(int position)? pickAndUploadPhotos;
+  bool uploading = false;
 
   final String userId;
   final String organizerId;
@@ -88,7 +93,8 @@ class PrivateEventDetailsController extends ChangeNotifier {
       defaults != null &&
       pending == null &&
       !loading &&
-      !saving;
+      !saving &&
+      !uploading;
   bool get canEditFormat => canEdit && event?.canEditBasics == true;
 
   void reportValidationError(Object cause) {
@@ -127,6 +133,35 @@ class PrivateEventDetailsController extends ChangeNotifier {
       error = cause;
     } finally {
       loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addPhotos() async {
+    final upload = pickAndUploadPhotos;
+    if (!canEdit || upload == null) return;
+    final snapshot = event!;
+    uploading = true;
+    error = null;
+    notifyListeners();
+    try {
+      final photos = await upload(snapshot.eventDetails.eventPhotos.length);
+      uploading = false;
+      if (!actorAvailable || photos.isEmpty) return;
+      if (!canEdit || event?.setupRevision != snapshot.setupRevision) {
+        throw StateError('Event changed while photos were uploading.');
+      }
+      // The exact attachment command is journaled before sending. Never delete
+      // uploaded media after an uncertain write: a replay may already own it.
+      await save(
+        PrivateEventDetailsPatch(
+          eventPhotos: [...snapshot.eventDetails.eventPhotos, ...photos],
+        ),
+      );
+    } catch (cause) {
+      if (actorAvailable) error = cause;
+    } finally {
+      uploading = false;
       notifyListeners();
     }
   }

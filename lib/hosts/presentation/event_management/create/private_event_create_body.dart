@@ -97,6 +97,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         readEvent: eventRepository.get,
         readDefaults: defaultsRepository.get,
         write: detailsRepository.update,
+        pickAndUploadPhotos: (position) => ref
+            .read(privateEventMediaServiceProvider)
+            .pickAndUpload(
+              userId: uid,
+              eventId: receipt.eventId,
+              position: position,
+            ),
         reconcile: detailsRepository.reconcile,
         currentUserId: () =>
             mounted ? ref.read(uidProvider).asData?.value : null,

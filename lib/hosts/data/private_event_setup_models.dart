@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/domain/private_event_setup_basics.dart';
@@ -158,11 +160,15 @@ class PrivateEventDetailsSnapshot {
     this.sourceVenueId,
     this.eventFormat,
     this.description,
+    this.itinerary = const [],
+    this.eventPhotos = const [],
     this.admissionTerms,
     this.distanceKm,
     this.pace,
   });
 
+  final List<EventItineraryItem> itinerary;
+  final List<UploadedPhoto> eventPhotos;
   final String? description;
   final PrivateEventAdmissionTerms? admissionTerms;
   final double? distanceKm;
@@ -177,7 +183,7 @@ class PrivateEventDetailsSnapshot {
     if (response is! Map) throw const FormatException('Invalid event details');
     final data = Map<String, Object?>.from(response);
     if (data.length < 4 ||
-        data.length > 9 ||
+        data.length > 11 ||
         data.keys.toSet().difference({
           'endTimeMillis',
           'venueName',
@@ -185,6 +191,8 @@ class PrivateEventDetailsSnapshot {
           'eventFormat',
           'meetingLocation',
           'description',
+          'itinerary',
+          'eventPhotos',
           'admissionTerms',
           'distanceKm',
           'pace',
@@ -250,6 +258,24 @@ class PrivateEventDetailsSnapshot {
     return PrivateEventDetailsSnapshot(
       meetingLocation: location,
       description: data['description'] as String?,
+      itinerary: data['itinerary'] == null
+          ? const []
+          : (data['itinerary'] as List)
+                .map(
+                  (item) => EventItineraryItem.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList(),
+      eventPhotos: data['eventPhotos'] == null
+          ? const []
+          : (data['eventPhotos'] as List)
+                .map(
+                  (item) => privateEventPhotoFromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList(),
       distanceKm: (data['distanceKm'] as num?)?.toDouble(),
       pace: data['pace'] as String?,
       admissionTerms: data['admissionTerms'] == null
@@ -436,4 +462,25 @@ class PrivateEventBasicSummary {
             ),
     );
   }
+}
+
+/// Callable timestamps are serialized maps; journals preserve that wire shape.
+UploadedPhoto privateEventPhotoFromJson(Map<String, dynamic> json) {
+  Object? timestamp(Object? value) {
+    if (value is! Map) return value;
+    final seconds = value['_seconds'];
+    final nanos = value['_nanoseconds'];
+    if (seconds is! int || nanos is! int || nanos < 0 || nanos >= 1000000000) {
+      throw const FormatException('Invalid event photo timestamp');
+    }
+    return DateTime.fromMicrosecondsSinceEpoch(
+      seconds * 1000000 + nanos ~/ 1000,
+    );
+  }
+
+  return UploadedPhoto.fromJson({
+    ...json,
+    'createdAt': timestamp(json['createdAt']),
+    'updatedAt': timestamp(json['updatedAt']),
+  });
 }

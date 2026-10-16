@@ -88,6 +88,19 @@ class EventLocationMapScreen extends StatelessWidget {
                               state.locationName,
                               style: CatchTextStyles.sectionTitle(context),
                             ),
+                            if (state.event.effectiveMeetingLocation?.address
+                                    ?.trim()
+                                case final address?
+                                when address.isNotEmpty) ...[
+                              gapH2,
+                              Text(
+                                address,
+                                style: CatchTextStyles.supporting(
+                                  context,
+                                  color: t.ink2,
+                                ),
+                              ),
+                            ],
                             if (state.locationNotes != null) ...[
                               gapH2,
                               Text(

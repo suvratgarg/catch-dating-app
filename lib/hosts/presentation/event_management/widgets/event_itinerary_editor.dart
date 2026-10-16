@@ -17,8 +17,10 @@ class EventItineraryEditor extends StatelessWidget {
     required this.onChanged,
     this.defaultLocation,
     this.onPickLocation,
+    this.hasRoutePath = false,
   });
 
+  final bool hasRoutePath;
   final List<EventItineraryItem> items;
   final ValueChanged<List<EventItineraryItem>> onChanged;
   final EventMeetingLocation? defaultLocation;
@@ -48,7 +50,9 @@ class EventItineraryEditor extends StatelessWidget {
           body: context.l10n.hostsEventItineraryAddBody,
           valueText: context.l10n.hostsEventItineraryAddAction,
           icon: CatchIcons.addRounded,
-          onTap: () => _edit(context, items.length, null),
+          onTap: items.length < 40
+              ? () => _edit(context, items.length, null)
+              : null,
         ),
       ],
     );
@@ -62,6 +66,7 @@ class EventItineraryEditor extends StatelessWidget {
     final result = await _showItineraryDialog(
       context,
       existing: existing,
+      hasRoutePath: hasRoutePath,
       defaultLocation: defaultLocation,
       onPickLocation: onPickLocation,
       generatedId: 'step-${DateTime.now().microsecondsSinceEpoch}',
@@ -93,6 +98,7 @@ class _ItineraryDialogResult {
 Future<_ItineraryDialogResult?> _showItineraryDialog(
   BuildContext context, {
   required EventItineraryItem? existing,
+  required bool hasRoutePath,
   required EventMeetingLocation? defaultLocation,
   required EventItineraryLocationPicker? onPickLocation,
   required String generatedId,
@@ -103,6 +109,9 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
   );
   final duration = TextEditingController(
     text: existing?.durationMinutes?.toString() ?? '',
+  );
+  final routeDistance = TextEditingController(
+    text: existing?.routeDistanceMeters?.toString() ?? '',
   );
   final description = TextEditingController(text: existing?.description);
   var kind = existing?.kind ?? EventItineraryKind.activity;
@@ -115,53 +124,75 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
             ? context.l10n.hostsEventItineraryDialogAdd
             : context.l10n.hostsEventItineraryDialogEdit,
         actions: [
-          if (existing != null)
-            CatchButton(
-              label: context.l10n.hostsEventItineraryDelete,
-              variant: CatchButtonVariant.danger,
-              size: CatchButtonSize.sm,
-              onPressed: () => Navigator.of(
-                dialogContext,
-              ).pop(const _ItineraryDialogResult.delete()),
-            ),
-          CatchButton(
-            label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-            variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
-            onPressed: () => Navigator.of(dialogContext).pop(),
-          ),
-          CatchButton(
-            label: context.l10n.hostsEventItinerarySave,
-            size: CatchButtonSize.sm,
-            onPressed: () {
-              final normalizedTitle = title.text.trim();
-              final normalizedOffset = int.tryParse(offset.text.trim());
-              final normalizedDuration = duration.text.trim().isEmpty
-                  ? null
-                  : int.tryParse(duration.text.trim());
-              if (normalizedTitle.isEmpty ||
-                  normalizedOffset == null ||
-                  normalizedOffset < 0 ||
-                  (duration.text.trim().isNotEmpty &&
-                      (normalizedDuration == null || normalizedDuration < 1))) {
-                return;
-              }
-              Navigator.of(dialogContext).pop(
-                _ItineraryDialogResult.item(
-                  EventItineraryItem(
-                    id: existing?.id ?? generatedId,
-                    kind: kind,
-                    offsetMinutes: normalizedOffset,
-                    durationMinutes: normalizedDuration,
-                    title: normalizedTitle,
-                    description: description.text.trim().isEmpty
-                        ? null
-                        : description.text.trim(),
-                    location: selectedLocation,
+          Expanded(
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                if (existing != null)
+                  CatchButton(
+                    label: context.l10n.hostsEventItineraryDelete,
+                    variant: CatchButtonVariant.danger,
+                    size: CatchButtonSize.sm,
+                    onPressed: () => Navigator.of(
+                      dialogContext,
+                    ).pop(const _ItineraryDialogResult.delete()),
                   ),
+                CatchButton(
+                  label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+                  variant: CatchButtonVariant.secondary,
+                  size: CatchButtonSize.sm,
+                  onPressed: () => Navigator.of(dialogContext).pop(),
                 ),
-              );
-            },
+                CatchButton(
+                  label: context.l10n.hostsEventItinerarySave,
+                  size: CatchButtonSize.sm,
+                  onPressed: () {
+                    final normalizedTitle = title.text.trim();
+                    final normalizedOffset = int.tryParse(offset.text.trim());
+                    final normalizedDuration = duration.text.trim().isEmpty
+                        ? null
+                        : int.tryParse(duration.text.trim());
+                    final meters = routeDistance.text.trim().isEmpty
+                        ? null
+                        : int.tryParse(routeDistance.text.trim());
+                    if ((routeDistance.text.trim().isNotEmpty &&
+                            (meters == null ||
+                                meters < 0 ||
+                                meters > 1000000)) ||
+                        description.text.trim().length > 500 ||
+                        normalizedTitle.length > 120 ||
+                        normalizedTitle.isEmpty ||
+                        normalizedOffset == null ||
+                        normalizedOffset < 0 ||
+                        normalizedOffset > 1440 ||
+                        (duration.text.trim().isNotEmpty &&
+                            (normalizedDuration == null ||
+                                normalizedDuration < 1 ||
+                                normalizedDuration > 1440))) {
+                      return;
+                    }
+                    Navigator.of(dialogContext).pop(
+                      _ItineraryDialogResult.item(
+                        EventItineraryItem(
+                          id: existing?.id ?? generatedId,
+                          kind: kind,
+                          offsetMinutes: normalizedOffset,
+                          durationMinutes: normalizedDuration,
+                          title: normalizedTitle,
+                          description: description.text.trim().isEmpty
+                              ? null
+                              : description.text.trim(),
+                          location: selectedLocation,
+                          routeDistanceMeters: meters,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ],
         child: Flexible(
@@ -199,6 +230,18 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.timerOutlined,
                 ),
+                if (hasRoutePath || existing?.routeDistanceMeters != null)
+                  CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
+                    key: const ValueKey('event-itinerary-route-distance'),
+                    title: context.l10n.hostsItineraryRouteDistance,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadItineraryItemsRouteDistanceMeters,
+                    controller: routeDistance,
+                    keyboardType: TextInputType.number,
+                    labelMode: CatchFieldLabelTextMode.optional,
+                    icon: CatchIcons.routeOutlined,
+                  ),
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.itineraryDescription,

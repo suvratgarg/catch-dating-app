@@ -217,6 +217,7 @@ abstract class Event with _$Event {
     @JsonKey(includeIfNull: false) String? sourceVenueId,
     @Default('') String name,
     @TimestampConverter() required DateTime startTime,
+    @JsonKey(includeIfNull: false) String? eventTimezone,
     @TimestampConverter() required DateTime endTime,
     required String meetingPoint,
     @JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation,
