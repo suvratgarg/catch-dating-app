@@ -207,10 +207,7 @@ class _Cat151AcceptanceScreenState
 
     final db = ref.read(firebaseFirestoreProvider);
     final projectId = Firebase.app().options.projectId;
-    final repositories = (
-      event: ref.read(eventRepositoryProvider),
-      participation: ref.read(eventParticipationRepositoryProvider),
-    );
+    final eventRepository = ref.read(eventRepositoryProvider);
     final values = await Future.wait<Object?>([
       db
           .collection('events')
@@ -222,7 +219,11 @@ class _Cat151AcceptanceScreenState
           .get(const GetOptions(source: Source.server)),
       db
           .collection('eventParticipations')
-          .doc(eventParticipationId(eventId: eventId, uid: signedInUid))
+          // Ownership rules cannot authorize a missing document's fields.
+          // An owner-scoped query proves absence without relaxing those rules.
+          .where('uid', isEqualTo: signedInUid)
+          .where('eventId', isEqualTo: eventId)
+          .limit(2)
           .get(const GetOptions(source: Source.server)),
       db
           .collection('payments')
@@ -240,8 +241,13 @@ class _Cat151AcceptanceScreenState
     final user = rawUser.data() == null
         ? null
         : UserProfile.fromJson({...rawUser.data()!, 'uid': rawUser.id});
-    final rawParticipation =
-        values[2] as DocumentSnapshot<Map<String, dynamic>>;
+    final rawParticipations = values[2] as QuerySnapshot<Map<String, dynamic>>;
+    if (rawParticipations.docs.length > 1 ||
+        (rawParticipations.docs.isNotEmpty &&
+            rawParticipations.docs.single.id !=
+                eventParticipationId(eventId: eventId, uid: signedInUid))) {
+      throw StateError('Participation evidence is not canonical.');
+    }
     final rawPayments = values[3] as QuerySnapshot<Map<String, dynamic>>;
     final payment = rawPayments.docs.isEmpty
         ? null
@@ -258,20 +264,16 @@ class _Cat151AcceptanceScreenState
           .collection('organizers')
           .doc(event.organizerId)
           .get(const GetOptions(source: Source.server)),
-      repositories.event.fetchViewerState(
+      eventRepository.fetchViewerState(
         eventId: event.id,
         inviteCode: inviteCode,
       ),
-      repositories.participation
-          .watchParticipation(eventId: event.id, uid: signedInUid)
-          .first,
     ]);
     final rawOrganizer = followup[0] as DocumentSnapshot<Map<String, dynamic>>;
     final organizer = rawOrganizer.data() == null
         ? null
         : Club.fromJson({...rawOrganizer.data()!, 'id': rawOrganizer.id});
     final viewer = followup[1] as EventViewerState;
-    final participation = followup[2] as EventParticipation?;
     if (organizer == null) {
       throw StateError('Required organizer fixture is unavailable.');
     }
@@ -316,7 +318,7 @@ class _Cat151AcceptanceScreenState
       viewerAdmission: viewer.admission,
       viewerPayment: viewer.payment,
       viewerWaitlisted: viewer.waitlisted,
-      hasParticipation: rawParticipation.exists || participation != null,
+      hasParticipation: rawParticipations.docs.isNotEmpty,
       hasSuccessfulPayment: payment != null,
       beforeStart: event.startTime.difference(DateTime.now()),
       fullRefundUntilBeforeStart:
