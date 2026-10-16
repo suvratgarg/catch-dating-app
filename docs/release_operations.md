@@ -3201,6 +3201,9 @@ PR626 source `bbff52defd3c0dfb8df7c78c336c6549af7df47a`, successful main CI
 38931076239 attempt1 and artifact12059462962. The provider rejected
 long event receipts before order creation; the source fix bounds them to forty
 ASCII characters while retaining the full booking ownership notes.
+The package delivery baseline is `6817b248294ccb8e0084e7d3cac9161d058fe70d`,
+read from its verified `delivery-plan.json`; it is distinct from the source
+commit parent. Package verification and deployment proof bind that same baseline.
 
 `tool/ci/cat151_receipt_release.mjs` pins the immutable package and exact
 predecessors. `_cat151-receipt-promote.yml` runs DEV first and binds its receipt

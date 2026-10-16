@@ -43,7 +43,7 @@ jobs:
       artifact_id: ${{ steps.cat151-receipt.outputs.artifact-id }}
       artifact_digest: ${{ steps.cat151-receipt.outputs.artifact-digest }}
     steps:
-      - name: Validate the fixed receipt caller and reject all extra inputs
+      - name: Validate the fixed receipt caller and reject unexpected scope
         env:
           INPUTS: ${{ toJSON(inputs) }}
         run: |
@@ -53,7 +53,19 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
           jq -e '
-            (keys | sort) == (["environment", "control_plane_sha", "dev_completion_artifact_id", "dev_completion_artifact_digest", "dev_completion_receipt_sha256"] | sort) and
+            # GitHub can include the workflow_dispatch caller inputs alongside
+            # workflow_call inputs. Admit only that exact fixed caller scope.
+            ((keys - ["environment", "control_plane_sha", "dev_completion_artifact_id", "dev_completion_artifact_digest", "dev_completion_receipt_sha256",
+              "release_kind", "source_sha", "reason", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543", "confirm_booking_functions", "confirm_intake_pr596", "resume_delivery_run_id", "resume_delivery_attempt"]) | length) == 0 and
+            (del(.environment, .control_plane_sha, .dev_completion_artifact_id, .dev_completion_artifact_digest, .dev_completion_receipt_sha256) as $caller |
+              $caller == {} or (
+                .release_kind == "cat151-order-receipt" and .source_sha == "bbff52defd3c0dfb8df7c78c336c6549af7df47a" and
+                .confirm_booking_functions == false and .confirm_four_functions_five_indexes == false and
+                .confirm_whatsapp_five == false and .confirm_sales_pr543 == false and .confirm_intake_pr596 == false and
+                (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and
+                (.reason | type) == "string" and (.reason | length) >= 12 and (.reason | length) <= 240 and
+                (.reason | test("[\\r\\n]") | not) and (.reason | test("[^\\s]"))
+              )) and
             (.environment == "dev" or .environment == "prod") and .control_plane_sha == env.GITHUB_SHA and
             (if .environment == "dev" then
               .dev_completion_artifact_id == "" and .dev_completion_artifact_digest == "" and .dev_completion_receipt_sha256 == ""
@@ -144,7 +156,7 @@ jobs:
           tar -xzf build/delivery/source/firebase-backend.tar.gz -C build/delivery/package
           node tool/ci/package_firebase_delivery.mjs verify \
             --source-root build/delivery/source-checkout --package-dir build/delivery/package \
-            --source-sha bbff52defd3c0dfb8df7c78c336c6549af7df47a --base-sha 2f3d78db47343a0a363e619ee7dddc9cf8ad1199 \
+            --source-sha bbff52defd3c0dfb8df7c78c336c6549af7df47a --base-sha 6817b248294ccb8e0084e7d3cac9161d058fe70d \
             --ci-run-id 38931076239 --ci-run-attempt 1 --provenance-manifest build/delivery/source/firebase-provenance.json \
             --affected-functions true > build/delivery/package-plan.json
           node tool/ci/backend_source_review.mjs --source-root build/delivery/source-checkout \
@@ -289,7 +301,7 @@ jobs:
           node tool/ci/cat151_receipt_release.mjs provenance --manifest build/delivery/source/firebase-provenance.json
           node tool/ci/package_firebase_delivery.mjs verify \
             --source-root build/delivery/source-checkout --package-dir build/delivery/deploy-tree \
-            --source-sha bbff52defd3c0dfb8df7c78c336c6549af7df47a --base-sha 2f3d78db47343a0a363e619ee7dddc9cf8ad1199 \
+            --source-sha bbff52defd3c0dfb8df7c78c336c6549af7df47a --base-sha 6817b248294ccb8e0084e7d3cac9161d058fe70d \
             --ci-run-id 38931076239 --ci-run-attempt 1 --provenance-manifest build/delivery/source/firebase-provenance.json \
             --allow-runtime-dependencies true --trusted-package-dir build/delivery/package --affected-functions true \
             > build/delivery/reverified-plan.json
@@ -410,7 +422,7 @@ jobs:
             --manifest build/delivery/source/firebase-provenance.json --artifact build/delivery/source/firebase-backend.tar.gz \
             --source-sha bbff52defd3c0dfb8df7c78c336c6549af7df47a --ci-run-id 38931076239 --ci-run-attempt 1 \
             --scope firebase:${{ inputs.environment }}:${{ steps.verify.outputs.project_id }} --checkpoint build/delivery/cat151-selected/checkpoint.json \
-            --base-sha 2f3d78db47343a0a363e619ee7dddc9cf8ad1199 --targets functions:createRazorpayOrder \
+            --base-sha 6817b248294ccb8e0084e7d3cac9161d058fe70d --targets functions:createRazorpayOrder \
             --params-file build/delivery/deploy-tree/functions/.env.${{ steps.verify.outputs.project_id }}
           node tool/ci/cat151_receipt_release.mjs complete --environment "${{ inputs.environment }}" --before build/delivery/cat151-before.json \
             --params-file build/delivery/deploy-tree/functions/.env.${{ steps.verify.outputs.project_id }} \
