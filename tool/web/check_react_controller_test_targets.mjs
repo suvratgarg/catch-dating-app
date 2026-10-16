@@ -115,6 +115,18 @@ function inspectSuite(fileName, source, compilerOptions = {}) {
   const ast = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true);
   if (ast.parseDiagnostics.length) return {parseError: ts.flattenDiagnosticMessageText(ast.parseDiagnostics[0].messageText, "\n")};
   const imports = new Set();
+  // Match the owner's TypeScript import elision without executing the suite.
+  // Unused and type-position-only bindings are not runtime ownership proof.
+  const emitted = ts.transpileModule(source, {fileName,
+    compilerOptions: {...compilerOptions, noEmit: false}, reportDiagnostics: true});
+  if (emitted.diagnostics?.length) return {parseError:
+    ts.flattenDiagnosticMessageText(emitted.diagnostics[0].messageText, "\n")};
+  const runtime = ts.createSourceFile(`${fileName}.js`, emitted.outputText, ts.ScriptTarget.Latest, true);
+  for (const node of runtime.statements) {
+    if (!ts.isImportDeclaration(node) || !ts.isStringLiteral(node.moduleSpecifier)) continue;
+    const resolution = ts.resolveModuleName(node.moduleSpecifier.text, fileName, compilerOptions, ts.sys).resolvedModule;
+    if (resolution) imports.add(path.resolve(resolution.resolvedFileName));
+  }
   const bindings = new Map();
   for (const node of ast.statements) {
     if (!ts.isImportDeclaration(node) || !ts.isStringLiteral(node.moduleSpecifier)) continue;
@@ -124,8 +136,6 @@ function inspectSuite(fileName, source, compilerOptions = {}) {
     const runtimeNames = named && ts.isNamedImports(named) ? named.elements.filter(item => !item.isTypeOnly) : [];
     if (!clause.name && !(named && ts.isNamespaceImport(named)) && !runtimeNames.length) continue;
     const specifier = node.moduleSpecifier.text;
-    const resolution = ts.resolveModuleName(specifier, fileName, compilerOptions, ts.sys).resolvedModule;
-    if (resolution) imports.add(path.resolve(resolution.resolvedFileName));
     if (specifier !== "vitest") continue;
     if (named && ts.isNamespaceImport(named)) bindings.set(named.name.text, "namespace");
     for (const item of runtimeNames) {
@@ -228,7 +238,7 @@ async function runSelfTest() {
   };
   const options = {root,
     selectedByOwner: new Map([["website", new Set([path.join(root, testPath)])]]),
-    optionsByOwner: new Map([["website", {moduleResolution: ts.ModuleResolutionKind.Bundler}]]),
+    optionsByOwner: new Map([["website", {module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler}]]),
   };
   const inspect = (source, entries = [target], overrides = {}) => validateManifest(
     {schemaVersion: 1, targets: entries}, new Set(entries.map(entry => entry.source)),
@@ -244,6 +254,8 @@ async function runSelfTest() {
       wrongTarget: "import {useExampleController} from '../other/useExampleController'; import {it} from 'vitest'; " + normal,
       typeOnly: "import type {useExampleController} from './useExampleController'; import {it} from 'vitest'; " + normal,
       typeSpecifier: "import {type useExampleController} from './useExampleController'; import {it} from 'vitest'; " + normal,
+      unusedImport: imports + "it('other', () => {});",
+      typePositionOnly: imports + "type Hook = typeof useExampleController; it('other', () => {});",
       unrelated: "// useExampleController\nimport {it} from 'vitest'; it('other', () => {});",
       skipped: imports + "it.skip('skip', () => useExampleController());",
       skippedSuite: imports + "describe.skip('skip', () => { " + normal + " });",
@@ -290,7 +302,7 @@ async function runSelfTest() {
     write(second.source, "export function useOtherController() {}\n");
     assert.deepEqual(inspect(imports + "import {useOtherController} from './useOtherController'; " + normal +
       "it('other', () => useOtherController());", [target, second]), []);
-    const aliasOptions = new Map([["website", {moduleResolution: ts.ModuleResolutionKind.Bundler,
+    const aliasOptions = new Map([["website", {module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
       paths: {"@hooks/*": [path.join(root, "website/src/example/*")]}}]]);
     assert.deepEqual(inspect(imports.replace("./useExampleController", "@hooks/useExampleController") + normal,
       [target], {optionsByOwner: aliasOptions}), []);
@@ -322,7 +334,7 @@ async function runSelfTest() {
       {selectedByOwner: actualSelection}).some(finding => finding.includes("not selected")));
     assert.ok(inspect(imports + normal, [{...target, test: "website/src/other-project.ts"}],
       {selectedByOwner: actualSelection}).some(finding => finding.includes("not selected")));
-    console.log("React controller test-target self-test passed: 30 negative and 12 positive registration fixtures, shared suite, resolution and real project discovery.");
+    console.log("React controller test-target self-test passed: 32 negative and 12 positive registration fixtures, shared suite, resolution and real project discovery.");
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
