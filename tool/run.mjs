@@ -369,7 +369,7 @@ function loadComponentGraph() {
 function discoverManagedScripts() {
   return repositorySnapshot().listFiles({prefix: "tool/"}).filter((relativePath) => {
     const ext = path.extname(relativePath);
-    if (![".mjs", ".js", ".dart", ".py", ".rb", ".sh"].includes(ext)) {
+    if (![".mjs", ".cjs", ".js", ".dart", ".py", ".rb", ".sh", ".swift"].includes(ext)) {
       return false;
     }
     if (relativePath.includes("/lib/")) return false;

@@ -2356,6 +2356,22 @@
       }
     },
     {
+      "id": "branding:catch-icon",
+      "category": "branding",
+      "path": "tool/branding/generate_catch_icon.swift",
+      "command": "swift tool/branding/generate_catch_icon.swift",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "platforms": [
+        "darwin"
+      ],
+      "description": "Generates Catch app icon and splash PNG assets using AppKit and the bundled Archivo font; checks parse syntax only.",
+      "checks": [
+        "swiftc -parse tool/branding/generate_catch_icon.swift"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "branding:native-assets",
       "category": "branding",
       "path": "tool/branding/generate_native_brand_assets.dart",
@@ -5377,6 +5393,22 @@
       ]
     },
     {
+      "id": "marketing:catch-host-store-screenshots",
+      "category": "marketing",
+      "path": "tool/store/generate_catch_host_app_store_screenshots.swift",
+      "command": "swift tool/store/generate_catch_host_app_store_screenshots.swift",
+      "safety": "local-writes-store-assets",
+      "status": "active",
+      "platforms": [
+        "darwin"
+      ],
+      "description": "Generates the five-image Catch Host App Store draft source set from existing captures; checks parse syntax, not rendering or submission approval.",
+      "checks": [
+        "swiftc -parse tool/store/generate_catch_host_app_store_screenshots.swift"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "marketing:app-listing-prototypes",
       "category": "marketing",
       "path": "tool/store/generate_app_listing_screenshot_prototypes.swift",
@@ -7809,6 +7841,17 @@
           "rejects root typography overrides while ignoring comments and strings"
         ]
       }
+    },
+    {
+      "id": "demo:rsvp-fixture-builder",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/build_fixture.cjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "internal",
+      "description": "Internal synthetic RSVP fixture builder dispatched and checked by the active demo:rsvp-preview owner.",
+      "checks": [
+        "node --check tool/demo/rsvp_escape/build_fixture.cjs"
+      ]
     },
     {
       "id": "demo:rsvp-preview",
