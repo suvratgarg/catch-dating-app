@@ -6,7 +6,7 @@ void _preparationRegressionTests() {
     () async {
       final targets = _PersonalTargets();
       final gateway = _Offers();
-      final offers = HostEventOfferController(gateway);
+      final offers = TestHostEventOfferController(gateway);
       final response = Completer<HostFormResponseDetail>();
       var reads = 0;
       final workspace = _preparationWorkspace(
@@ -47,7 +47,7 @@ void _preparationRegressionTests() {
       var approved = true;
       final workspace = _preparationWorkspace(
         targets: _PersonalTargets(),
-        offerController: HostEventOfferController(gateway),
+        offerController: TestHostEventOfferController(gateway),
         getResponse: (_) async =>
             _detail('contact-one', applicationId: 'application-one'),
         reviewed: (_) async => approved,
@@ -80,7 +80,7 @@ void _preparationRegressionTests() {
       );
       query.toggleSelection('response-one');
       final outbox = _PreparationOutbox();
-      final offers = HostEventOfferController(
+      final offers = TestHostEventOfferController(
         _Offers(),
         outbox: outbox,
         accountId: 'manager',
@@ -134,7 +134,7 @@ void _preparationRegressionTests() {
       query.toggleSelection('response-one');
       final outbox = _PreparationOutbox()
         ..commitGate = Completer<HostOfferCommitReceipt?>();
-      final offers = HostEventOfferController(
+      final offers = TestHostEventOfferController(
         _Offers(),
         outbox: outbox,
         accountId: 'manager',
@@ -184,7 +184,7 @@ void _preparationRegressionTests() {
       );
       query.toggleSelection('response-one');
       final outbox = _PreparationOutbox()..delayRecovery = true;
-      final offers = HostEventOfferController(
+      final offers = TestHostEventOfferController(
         _Offers(),
         outbox: outbox,
         accountId: 'manager',
@@ -247,7 +247,7 @@ void _preparationRegressionTests() {
     'completed receipt metadata does not block retry after an offer-list failure',
     () async {
       final outbox = _PreparationOutbox();
-      final offers = HostEventOfferController(
+      final offers = TestHostEventOfferController(
         _Offers(),
         outbox: outbox,
         accountId: 'manager',
@@ -422,7 +422,18 @@ void _preparationRegressionTests() {
     workspace.addListener(() => notifications++);
     final preparing = workspace.choose(workspace.events.single);
     await Future<void>.delayed(Duration.zero);
+    final notifier = workspace.notifier;
+    final selected = workspace.events.single;
     workspace.dispose();
+    // Callbacks captured by a removed screen must not restart its work.
+    await notifier.loadEvents();
+    await notifier.choose(selected);
+    await notifier.returnForConversion('response-one');
+    await notifier.refreshOffers();
+    await notifier.openSettings();
+    notifier.changeEvent();
+    notifier.closeExisting();
+    notifier.setPersonalLink('contact-one', 'https://example.com/pay');
     final before = notifications;
     targets.configurations.single.complete(
       await _Targets().configuration(organizerId: 'org', eventId: 'event-one'),
@@ -463,7 +474,7 @@ void _preparationRegressionTests() {
   testWidgets('recipient chooser orders existing events first and keeps '
       'preparation visible and cancellable', (tester) async {
     final targets = _PreparationTargets();
-    final offers = HostEventOfferController(_Offers());
+    final offers = TestHostEventOfferController(_Offers());
     addTearDown(offers.dispose);
     await tester.pumpWidget(
       MaterialApp(
@@ -472,7 +483,7 @@ void _preparationRegressionTests() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
-            child: HostEventOfferWorkspaceSection(
+            child: TestHostEventOfferWorkspaceSection(
               organizerId: 'org',
               accountId: 'manager',
               responseId: 'response-one',
@@ -551,9 +562,9 @@ class _PreparationTargets extends _Targets {
   }
 }
 
-HostEventOfferWorkspaceController _preparationWorkspace({
+TestHostEventOfferWorkspaceController _preparationWorkspace({
   bool autoDispose = true,
-  HostEventOfferController? offerController,
+  TestHostEventOfferController? offerController,
   HostResponseQueryController? query,
   HostOfferEventTargetsGateway? targets,
   Future<HostFormResponseDetail> Function(String)? getResponse,
@@ -565,8 +576,8 @@ HostEventOfferWorkspaceController _preparationWorkspace({
   })?
   list,
 }) {
-  final offers = offerController ?? HostEventOfferController(_Offers());
-  final workspace = HostEventOfferWorkspaceController(
+  final offers = offerController ?? TestHostEventOfferController(_Offers());
+  final workspace = TestHostEventOfferWorkspaceController(
     organizerId: 'org',
     accountId: 'manager',
     responseId: query == null ? 'response-one' : null,

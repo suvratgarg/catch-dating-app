@@ -6,15 +6,16 @@ extension HostEventOfferWorkspaceExistingOfferActions
   Future<void> refreshOffers() => _fetchOffers(append: false);
 
   Future<void> _fetchOffers({required bool append}) async {
+    if (!_active) return;
     final event = _event;
-    final accountId = this.accountId;
+    final accountId = _accountId;
     final generation = _generation;
     if (event == null || accountId == null) {
       return;
     }
     try {
-      final response = await listOffers(
-        organizerId: organizerId,
+      final response = await _listOffers(
+        organizerId: _organizerId,
         eventId: event.eventId,
         afterOfferId: append ? _nextOfferCursor : null,
       );
@@ -40,8 +41,9 @@ extension HostEventOfferWorkspaceExistingOfferActions
   }
 
   Future<void> selectExisting(Map<String, Object?> item) async {
+    if (!_active) return;
     final event = _event;
-    final accountId = this.accountId;
+    final accountId = _accountId;
     final generation = _generation;
     final contactId = item['contactId'];
     final offerId = item['offerId'];
@@ -58,8 +60,8 @@ extension HostEventOfferWorkspaceExistingOfferActions
       _error = null;
     });
     try {
-      final offer = await getOffer(
-        organizerId: organizerId,
+      final offer = await _getOffer(
+        organizerId: _organizerId,
         eventId: event.eventId,
         contactId: contactId,
       );
@@ -67,7 +69,7 @@ extension HostEventOfferWorkspaceExistingOfferActions
           _event?.eventId != event.eventId) {
         return;
       }
-      if (offer.organizerId != organizerId ||
+      if (offer.organizerId != _organizerId ||
           offer.eventId != event.eventId ||
           offer.contactId != contactId ||
           offer.offerId != offerId) {
@@ -94,9 +96,9 @@ extension HostEventOfferWorkspaceExistingOfferActions
   }
 
   void manualUpdated(HostEventOffer updated) {
+    if (!_active) return;
     final previous = _selectedOffer;
-    if (_disposed ||
-        previous == null ||
+    if (previous == null ||
         previous.offerId != updated.offerId ||
         previous.organizerId != updated.organizerId ||
         previous.eventId != updated.eventId ||
@@ -114,8 +116,9 @@ extension HostEventOfferWorkspaceExistingOfferActions
   }
 
   Future<void> prepareSelectedHandoff() async {
+    if (!_active) return;
     final selected = _selectedOffer;
-    final accountId = this.accountId;
+    final accountId = _accountId;
     final generation = _generation;
     if (selected == null || accountId == null || _loading) {
       return;
@@ -129,8 +132,8 @@ extension HostEventOfferWorkspaceExistingOfferActions
     try {
       final prepared = await HostOfferWorkspacePolicy.verifiedHandoff(
         selected: selected,
-        getOffer: getOffer,
-        prepareHandoff: prepareHandoff,
+        getOffer: _getOffer,
+        prepareHandoff: _prepareHandoff,
         isCurrent: () =>
             _current(generation, accountId) && _sameSelectedOffer(selected),
       );
@@ -157,8 +160,9 @@ extension HostEventOfferWorkspaceExistingOfferActions
       HostOfferWorkspacePolicy.sameOfferRevision(_selectedOffer, offer);
 
   Future<void> copyPreparedHandoff() async {
+    if (!_active) return;
     final handoff = _handoff;
-    final accountId = this.accountId;
+    final accountId = _accountId;
     final generation = _generation;
     if (handoff?.kind != 'prepared' ||
         handoff?.copyText == null ||
@@ -167,7 +171,7 @@ extension HostEventOfferWorkspaceExistingOfferActions
       return;
     }
     try {
-      await copyMessage(handoff!.copyText!);
+      await _copyMessage(handoff!.copyText!);
       if (_current(generation, accountId) && identical(_handoff, handoff)) {
         _update(() => _messageCopied = true);
       }
@@ -177,8 +181,9 @@ extension HostEventOfferWorkspaceExistingOfferActions
   }
 
   Future<void> openPreparedWhatsapp() async {
+    if (!_active) return;
     final handoff = _handoff;
-    final accountId = this.accountId;
+    final accountId = _accountId;
     final generation = _generation;
     if (handoff?.kind != 'prepared' ||
         handoff?.whatsappUrl == null ||
@@ -195,7 +200,7 @@ extension HostEventOfferWorkspaceExistingOfferActions
       return;
     }
     try {
-      final opened = await openHandoff(uri);
+      final opened = await _openHandoff(uri);
       if (_current(generation, accountId) && identical(_handoff, handoff)) {
         _update(() => _handoffOpenFailed = !opened);
       }
@@ -207,7 +212,8 @@ extension HostEventOfferWorkspaceExistingOfferActions
   }
 
   void closeExisting() {
-    if (loading) return;
+    if (!_active) return;
+    if (_isLoading) return;
     _update(() {
       _selectedOffer = null;
       _handoff = null;

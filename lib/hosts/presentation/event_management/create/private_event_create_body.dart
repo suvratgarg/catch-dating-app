@@ -24,39 +24,33 @@ typedef ReadPrivateEventOrganizerDefaults =
 extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   void _openPublication() {
     final receipt = _receipt;
-    if (receipt == null || _publicationController != null) return;
+    if (receipt == null || _publicationScope != null) return;
     try {
       final uid = ref.read(uidProvider).asData?.value;
       if (uid == null || uid.isEmpty) {
         throw const SignInRequiredException('manage event visibility');
       }
-      final functions = ref.read(firebaseFunctionsProvider);
-      final controller = EventPublicationController(
+      final scope = (
         userId: uid,
         organizerId: widget.club.id,
         eventId: receipt.eventId,
-        read: PrivateEventSetupRepository(functions).get,
-        write: EventPublicationRepository(functions).set,
-        currentUserId: () =>
-            mounted ? ref.read(uidProvider).asData?.value : null,
       );
-      controller.addListener(_refresh);
       _mutateScreenState(() {
-        _publicationController = controller;
+        _publicationScope = scope;
         _editingPublication = true;
       });
-      unawaited(controller.load());
+      unawaited(
+        ref.read(eventPublicationControllerProvider(scope).notifier).load(),
+      );
     } catch (error) {
       if (mounted) showCatchNoticeError(context, error);
     }
   }
 
   void _closePublication() {
-    final controller = _publicationController;
-    if (controller == null) return;
-    final event = controller.event;
-    controller.removeListener(_refresh);
-    controller.dispose();
+    final scope = _publicationScope;
+    if (scope == null) return;
+    final event = ref.read(eventPublicationControllerProvider(scope)).event;
     _mutateScreenState(() {
       if (event != null) {
         _receipt = PrivateEventCreateReceipt(
@@ -68,7 +62,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         _canEditSavedBasics = event.canEditBasics;
         _canChangeSavedCity = event.canChangeCity;
       }
-      _publicationController = null;
+      _publicationScope = null;
       _editingPublication = false;
     });
     if (event == null && _receipt != null) {
@@ -153,7 +147,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   void _openPreferences() {
     final receipt = _receipt;
-    if (receipt == null || _preferencesController != null) {
+    if (receipt == null || _preferencesScope != null) {
       return;
     }
     try {
@@ -161,42 +155,34 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (uid == null || uid.isEmpty) {
         throw const SignInRequiredException('edit private event settings');
       }
-      final functions = ref.read(firebaseFunctionsProvider);
-      final eventRepository = PrivateEventSetupRepository(functions);
-      final defaultsRepository = ManagerEventSetupDefaultsRepository(functions);
-      final preferencesRepository = PrivateEventPreferencesRepository(
-        functions,
-      );
-      final controller = PrivateEventPreferencesController(
+      final scope = (
         userId: uid,
         organizerId: widget.club.id,
         eventId: receipt.eventId,
-        readEvent: eventRepository.get,
-        readDefaults: defaultsRepository.get,
-        write: preferencesRepository.update,
-        readPreview: EventOfferPreferencesRepository(functions).preview,
-        currentUserId: () =>
-            mounted ? ref.read(uidProvider).asData?.value : null,
       );
-      controller.addListener(_refresh);
       _mutateScreenState(() {
-        _preferencesController = controller;
+        _preferencesScope = scope;
         _editingPreferences = true;
       });
-      unawaited(controller.load());
+      unawaited(
+        ref
+            .read(privateEventPreferencesControllerProvider(scope).notifier)
+            .load(),
+      );
     } catch (error) {
       if (mounted) showCatchNoticeError(context, error);
     }
   }
 
   void _closePreferences() {
-    final controller = _preferencesController;
-    if (controller == null) {
+    final scope = _preferencesScope;
+    if (scope == null) {
       return;
     }
-    final latestRevision = controller.event?.setupRevision;
-    controller.removeListener(_refresh);
-    controller.dispose();
+    final latestRevision = ref
+        .read(privateEventPreferencesControllerProvider(scope))
+        .event
+        ?.setupRevision;
     _mutateScreenState(() {
       if (latestRevision != null &&
           _receipt != null &&
@@ -207,7 +193,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           replayed: true,
         );
       }
-      _preferencesController = null;
+      _preferencesScope = null;
       _editingPreferences = false;
     });
   }

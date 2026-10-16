@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
@@ -32,11 +31,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import '../../support/catch_test_fonts.dart';
 import '../../test_pump_helpers.dart';
 import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
+import 'event_offer_controller_test_support.dart';
 
 part 'host_event_offer_workspace_fixtures.dart';
 part 'host_offer_preparation_cases.dart';
@@ -107,7 +106,7 @@ void main() {
       tester,
       find.byKey(const ValueKey('offer-target-event-one')),
     );
-    final workspaceState = tester.state(
+    final workspaceElement = tester.element(
       find.byType(HostEventOfferWorkspaceSection),
     );
     final preview = AppLocalizationsEn().hostEventOfferPreview;
@@ -118,8 +117,8 @@ void main() {
     expect(dock, findsOneWidget);
     expect(tester.getBottomLeft(dock).dy, greaterThan(500));
     expect(
-      tester.state(find.byType(HostEventOfferWorkspaceSection)),
-      same(workspaceState),
+      tester.element(find.byType(HostEventOfferWorkspaceSection)),
+      same(workspaceElement),
     );
     await tester.tap(find.text('Sunday run'));
     await pumpFeatureUi(tester);
@@ -362,7 +361,7 @@ void main() {
     for (final stage in ['choose', 'empty', 'review', 'confirm', 'existing']) {
       for (final scale in [1.0, 2.0]) {
         testWidgets('capture unified offer $stage at $scale', (tester) async {
-          final controller = HostEventOfferController(_Offers());
+          final controller = TestHostEventOfferController(_Offers());
           addTearDown(controller.dispose);
           await captureCatchWidget(
             tester,
@@ -370,7 +369,7 @@ void main() {
             device: CaptureDevice.iphone17Pro,
             textScale: scale,
             outputDirectory: Directory(output),
-            builder: (context) => HostEventOfferWorkspaceSection(
+            builder: (context) => TestHostEventOfferWorkspaceSection(
               organizerId: 'org',
               accountId: 'manager',
               responseId: 'response-one',
@@ -482,11 +481,11 @@ void main() {
     test(
       'single response uses the shared flow and checks application review: $approved',
       () async {
-        final offers = HostEventOfferController(_Offers());
+        final offers = TestHostEventOfferController(_Offers());
         final targets = _Targets();
         var reviewed = approved;
         var reads = 0;
-        final workspace = HostEventOfferWorkspaceController(
+        final workspace = TestHostEventOfferWorkspaceController(
           organizerId: 'org',
           accountId: 'manager',
           responseId: 'response-one',
@@ -541,8 +540,8 @@ void main() {
   test(
     'single response rejects an identity changed by an asynchronous detail read',
     () async {
-      final offers = HostEventOfferController(_Offers());
-      final workspace = HostEventOfferWorkspaceController(
+      final offers = TestHostEventOfferController(_Offers());
+      final workspace = TestHostEventOfferWorkspaceController(
         organizerId: 'org',
         accountId: 'manager',
         responseId: 'different-response',
@@ -583,7 +582,7 @@ void main() {
         'for ${applicationId ?? 'registration'}', () async {
       final source = _Query();
       final query = HostResponseQueryController(source);
-      final offers = HostEventOfferController(_Offers());
+      final offers = TestHostEventOfferController(_Offers());
       final targets = _Targets();
       addTearDown(query.dispose);
       addTearDown(offers.dispose);
@@ -595,7 +594,7 @@ void main() {
         ),
       );
       query.toggleSelection('response-one');
-      final workspace = HostEventOfferWorkspaceController(
+      final workspace = TestHostEventOfferWorkspaceController(
         organizerId: 'org',
         accountId: 'manager',
         queryController: query,
@@ -677,7 +676,7 @@ void main() {
   test('workspace controller invalidates selected offer context when the '
       'underlying query selection changes', () async {
     final query = HostResponseQueryController(_Query());
-    final offers = HostEventOfferController(_Offers());
+    final offers = TestHostEventOfferController(_Offers());
     addTearDown(query.dispose);
     addTearDown(offers.dispose);
     await query.apply(
@@ -688,7 +687,7 @@ void main() {
       ),
     );
     query.toggleSelection('response-one');
-    final workspace = HostEventOfferWorkspaceController(
+    final workspace = TestHostEventOfferWorkspaceController(
       organizerId: 'org',
       accountId: 'manager',
       queryController: query,
@@ -730,7 +729,7 @@ void main() {
       'offer preview', (tester) async {
     final query = HostResponseQueryController(_Query());
     final offers = _Offers();
-    final offerController = HostEventOfferController(offers);
+    final offerController = TestHostEventOfferController(offers);
     addTearDown(query.dispose);
     addTearDown(offerController.dispose);
     await query.apply(
@@ -747,7 +746,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: SingleChildScrollView(
-            child: HostEventOfferWorkspaceSection(
+            child: TestHostEventOfferWorkspaceSection(
               organizerId: 'org',
               accountId: 'manager',
               queryController: query,
@@ -808,7 +807,7 @@ void main() {
       final source = _Query();
       final query = HostResponseQueryController(source);
       final offers = _Offers();
-      final offerController = HostEventOfferController(offers);
+      final offerController = TestHostEventOfferController(offers);
       addTearDown(query.dispose);
       addTearDown(offerController.dispose);
       await query.apply(
@@ -825,7 +824,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: SingleChildScrollView(
-              child: HostEventOfferWorkspaceSection(
+              child: TestHostEventOfferWorkspaceSection(
                 organizerId: 'org',
                 accountId: 'manager',
                 queryController: query,
@@ -886,7 +885,7 @@ void main() {
       (tester) async {
         final query = HostResponseQueryController(_Query());
         final offers = _Offers();
-        final controller = HostEventOfferController(offers);
+        final controller = TestHostEventOfferController(offers);
         addTearDown(query.dispose);
         addTearDown(controller.dispose);
         await query.apply(
@@ -905,7 +904,7 @@ void main() {
             theme: AppTheme.light,
             home: Scaffold(
               body: SingleChildScrollView(
-                child: HostEventOfferWorkspaceSection(
+                child: TestHostEventOfferWorkspaceSection(
                   organizerId: 'org',
                   accountId: 'manager',
                   queryController: query,
@@ -1027,7 +1026,7 @@ void main() {
   ) async {
     final query = HostResponseQueryController(_Query());
     final pending = _PendingMutation();
-    final controller = HostEventOfferController(
+    final controller = TestHostEventOfferController(
       _Offers(),
       mutationOutbox: pending,
       accountId: 'manager',
@@ -1047,7 +1046,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: SingleChildScrollView(
-            child: HostEventOfferWorkspaceSection(
+            child: TestHostEventOfferWorkspaceSection(
               organizerId: 'org',
               accountId: 'manager',
               queryController: query,
@@ -1118,7 +1117,7 @@ void main() {
       'enables private setup', (tester) async {
     final query = HostResponseQueryController(_Query());
     final offers = _Offers();
-    final offerController = HostEventOfferController(offers);
+    final offerController = TestHostEventOfferController(offers);
     addTearDown(query.dispose);
     addTearDown(offerController.dispose);
     await query.apply(
@@ -1136,7 +1135,7 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: SingleChildScrollView(
-          child: HostEventOfferWorkspaceSection(
+          child: TestHostEventOfferWorkspaceSection(
             organizerId: 'org',
             accountId: 'manager',
             queryController: query,
