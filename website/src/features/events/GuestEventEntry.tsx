@@ -1,3 +1,6 @@
+import {useEffect, useState, type ReactNode} from "react";
+import {EventGuestActions, EventGuestDialog} from "../../shared/ui/primitives/eventDetail";
+import {guestEventAction} from "./guestEventAction";
 import {Button, ButtonLink, TextField, FormStatus, EventRegistrationForm,
   EventRegistrationPrivacy, ActionGroup, CheckboxField} from "../../shared/ui/primitives";
 import {guestEventCopy as copy, approvalNotificationCopy as notificationCopy} from "../../content/events";
@@ -9,17 +12,63 @@ import {useApprovalNotificationsController} from "./useApprovalNotificationsCont
 import type {User} from "../../firebase";
 
 type Guest = NonNullable<GetEventViewerStateCallableResponse["viewer"]["guest"]>;
-export function GuestEventEntry({eventId}: {eventId: string}) {
+export function GuestEventEntry({eventId, invitation}: {
+  eventId: string; invitation?: {price: string; title: string};
+}) {
   const controller = useGuestEventController(eventId);
-  return <>
-    <GuestEventEntryView eventId={eventId} controller={controller} />
-    {controller.user?.phoneNumber && controller.viewer?.guest?.applicationStatus ?
-      <ApprovalNotifications key={`${eventId}:${controller.user.uid}`} eventId={eventId} user={controller.user} /> : null}
+  const notifications = controller.user?.phoneNumber && controller.viewer?.guest?.applicationStatus ?
+    <ApprovalNotifications key={`${eventId}:${controller.user.uid}`} eventId={eventId} user={controller.user} /> : null;
+  return invitation ? <GuestInvitation eventId={eventId} controller={controller}
+    invitation={invitation} notifications={notifications} /> : <>
+    <GuestEventEntryView eventId={eventId} controller={controller} />{notifications}
   </>;
 }
-export function GuestEventEntryView({eventId, controller: c}: {
+function GuestInvitation({eventId, controller: c, invitation, notifications}: {
   eventId: string; controller: ReturnType<typeof useGuestEventController>;
+  invitation: {price: string; title: string}; notifications: ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
+  const [visited, setVisited] = useState(false);
+  // A refresh may discover a held payment while checkout is open. Keep its
+  // transaction controller mounted until the guest leaves or changes identity.
+  const [flow, setFlow] = useState<{uid: string; mode: "free" | "paid"} | null>(null);
+  useEffect(() => {
+    if (flow && flow.uid !== c.user?.uid) setFlow(null);
+  }, [flow, c.user?.uid]);
+  const guest = c.viewer?.guest;
+  const action = !c.user?.phoneNumber ? {label: copy.signIn, status: copy.ready, href: undefined} :
+    guest && !c.error ? guestEventAction(guest, eventId) : {label: copy.refresh, status: copy.unavailable, href: undefined};
+  function beginRegistration() {
+    if (c.user && (guest?.action === "registerFree" || guest?.action === "bookPaid")) {
+      setFlow({uid: c.user.uid, mode: guest.action === "bookPaid" ? "paid" : "free"});
+    }
+  }
+  function show() {
+    setVisited(true); setOpen(true); beginRegistration();
+  }
+  return <>
+    <EventGuestActions price={invitation.price} status={c.loading ? copy.loading : action.status}>
+      {action.href && !c.loading ? <ButtonLink href={action.href}>{action.label}</ButtonLink> :
+        <Button disabled={c.loading} onClick={show}>{c.loading ? copy.loading : action.label}</Button>}
+    </EventGuestActions>
+    {c.user?.phoneNumber && (notifications || action.href || action.label !== copy.details) ? <Button variant="ghost" onClick={() => {setVisited(true); setOpen(true);}}>
+      {notifications ? copy.updates : copy.details}</Button> : null}
+    <EventGuestDialog open={open} title={invitation.title} closeLabel={copy.close}
+      onClose={() => {setOpen(false); setFlow(null); if (!c.pending) c.changePhone(); if (c.user?.phoneNumber) void c.refresh();}}>
+      {visited ? <>
+        {flow && flow.uid === c.user?.uid ? <PublicEventRegistration key={`${eventId}:${flow.uid}`}
+          eventId={eventId} mode={flow.mode} /> : <GuestEventEntryView eventId={eventId}
+          controller={c} onBeginRegistration={beginRegistration} />}
+        {notifications}
+      </> : null}
+    </EventGuestDialog>
+  </>;
+}
+export function GuestEventEntryView({eventId, controller: c, onBeginRegistration, invitation}: {
+  eventId: string; controller: ReturnType<typeof useGuestEventController>; onBeginRegistration?: () => void;
+  invitation?: {price: string; title: string};
+}) {
+  if (invitation) return <GuestInvitation eventId={eventId} controller={c} invitation={invitation} notifications={null} />;
   if (c.loading) return <p role="status">{copy.loading}</p>;
   if (!c.user?.phoneNumber) return <EventRegistrationForm onSubmit={c.submit}>
     <TextField id={`${c.recaptchaId}-phone`} label={copy.phone} autoComplete="tel"
@@ -42,13 +91,14 @@ export function GuestEventEntryView({eventId, controller: c}: {
     <Button variant="ghost" onClick={() => void c.changeAccount()}>{copy.changeAccount}</Button>
   </>;
   return <>
-    <GuestStatus guest={guest} eventId={eventId} />
+    <GuestStatus guest={guest} eventId={eventId} onBeginRegistration={onBeginRegistration} />
     <Button variant="ghost" onClick={() => void c.refresh()}>{copy.refresh}</Button>
     <Button variant="ghost" onClick={() => void c.changeAccount()}>{copy.changeAccount}</Button>
   </>;
 }
-function GuestStatus({guest, eventId}: {guest: Guest; eventId: string}) {
+function GuestStatus({guest, eventId, onBeginRegistration}: {guest: Guest; eventId: string; onBeginRegistration?: () => void}) {
   if (guest.action === "registerFree" || guest.action === "bookPaid") {
+    if (onBeginRegistration) return <Button onClick={onBeginRegistration}>{guestEventAction(guest, eventId).label}</Button>;
     return <PublicEventRegistration eventId={eventId}
       mode={guest.action === "bookPaid" ? "paid" : "free"} />;
   }

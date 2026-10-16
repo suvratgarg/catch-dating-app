@@ -167625,13 +167625,113 @@ abstract final class CatchContractConstraints {
 
   static const websiteHostListingProjectionCatchEventsItemsEndTime = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.endTime',
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsId = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.id',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItinerary = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsDescription = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.description',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsDurationMinutes = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.durationMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1440,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsId = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsKind = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gather', 'activity', 'stop', 'break', 'transition', 'finish'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationName = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsOffsetMinutes = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.offsetMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsRouteDistanceMeters = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.routeDistanceMeters',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsItineraryItemsTitle = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.itinerary.items.title',
+    maxLength: 120,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -167647,6 +167747,56 @@ abstract final class CatchContractConstraints {
   static const websiteHostListingProjectionCatchEventsItemsLocationDetails = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.locationDetails',
     valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsMeetingLocationAddress = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.meetingLocation.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsMeetingLocationLatitude = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.meetingLocation.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsMeetingLocationLongitude = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.meetingLocation.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsMeetingLocationName = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.meetingLocation.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsMeetingLocationNotes = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.meetingLocation.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsMeetingLocationPlaceId = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.meetingLocation.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsPhotoUrl = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.photoUrl',
+    maxLength: 2048,
+    valueTypes: <String>['string'],
+    format: 'uri',
   );
 
   static const websiteHostListingProjectionCatchEventsItemsPriceLabel = CatchContractFieldConstraints(
@@ -191848,8 +191998,29 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.date': websiteHostListingProjectionCatchEventsItemsDate,
     'websiteHostListingProjection.catchEvents.items.endTime': websiteHostListingProjectionCatchEventsItemsEndTime,
     'websiteHostListingProjection.catchEvents.items.id': websiteHostListingProjectionCatchEventsItemsId,
+    'websiteHostListingProjection.catchEvents.items.itinerary': websiteHostListingProjectionCatchEventsItemsItinerary,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.description': websiteHostListingProjectionCatchEventsItemsItineraryItemsDescription,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.durationMinutes': websiteHostListingProjectionCatchEventsItemsItineraryItemsDurationMinutes,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.id': websiteHostListingProjectionCatchEventsItemsItineraryItemsId,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.kind': websiteHostListingProjectionCatchEventsItemsItineraryItemsKind,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.location.address': websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationAddress,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.location.latitude': websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationLatitude,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.location.longitude': websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationLongitude,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.location.name': websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationName,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.location.notes': websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationNotes,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.location.placeId': websiteHostListingProjectionCatchEventsItemsItineraryItemsLocationPlaceId,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.offsetMinutes': websiteHostListingProjectionCatchEventsItemsItineraryItemsOffsetMinutes,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.routeDistanceMeters': websiteHostListingProjectionCatchEventsItemsItineraryItemsRouteDistanceMeters,
+    'websiteHostListingProjection.catchEvents.items.itinerary.items.title': websiteHostListingProjectionCatchEventsItemsItineraryItemsTitle,
     'websiteHostListingProjection.catchEvents.items.location': websiteHostListingProjectionCatchEventsItemsLocation,
     'websiteHostListingProjection.catchEvents.items.locationDetails': websiteHostListingProjectionCatchEventsItemsLocationDetails,
+    'websiteHostListingProjection.catchEvents.items.meetingLocation.address': websiteHostListingProjectionCatchEventsItemsMeetingLocationAddress,
+    'websiteHostListingProjection.catchEvents.items.meetingLocation.latitude': websiteHostListingProjectionCatchEventsItemsMeetingLocationLatitude,
+    'websiteHostListingProjection.catchEvents.items.meetingLocation.longitude': websiteHostListingProjectionCatchEventsItemsMeetingLocationLongitude,
+    'websiteHostListingProjection.catchEvents.items.meetingLocation.name': websiteHostListingProjectionCatchEventsItemsMeetingLocationName,
+    'websiteHostListingProjection.catchEvents.items.meetingLocation.notes': websiteHostListingProjectionCatchEventsItemsMeetingLocationNotes,
+    'websiteHostListingProjection.catchEvents.items.meetingLocation.placeId': websiteHostListingProjectionCatchEventsItemsMeetingLocationPlaceId,
+    'websiteHostListingProjection.catchEvents.items.photoUrl': websiteHostListingProjectionCatchEventsItemsPhotoUrl,
     'websiteHostListingProjection.catchEvents.items.priceLabel': websiteHostListingProjectionCatchEventsItemsPriceLabel,
     'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled': websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled,
     'websiteHostListingProjection.catchEvents.items.registrationMode': websiteHostListingProjectionCatchEventsItemsRegistrationMode,

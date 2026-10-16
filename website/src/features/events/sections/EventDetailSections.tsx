@@ -1,342 +1,100 @@
 import type {ReactNode} from "react";
 import {trackOrganizerProviderOutboundClick} from "../../organizers/observeOrganizerProviders";
 import {trackOrganizerAnalytics} from "../../organizers/analytics";
-import {
-  ActionGroup,
-  ButtonLink,
-  EventDetailActionPanel,
-  EventDetailFactGrid,
-  EventDetailHeroLayout,
-  EventDetailMedia,
-  EventDetailOrganizerPanel,
-  EventDetailProvenanceFacts,
-  EventDetailProvenanceLayout,
-  EventDetailReviewPreview,
-  EventDetailSection,
-  EventDetailSourceLink,
-  ReviewSignalLane,
-} from "../../../shared/ui/primitives";
-import {SectionHeader} from "../../../shared/site";
-import {eventDetailCopy} from "../../../content/events";
+import {ButtonLink, EventDetailFactGrid, EventDetailHeroLayout, EventDetailMedia,
+  EventDetailOrganizerPanel, EventDetailSection, EventDetailSourceLink,
+  ReviewSignalLane} from "../../../shared/ui/primitives";
+import {EventDetailBodyLayout, EventDetailItinerary} from "../../../shared/ui/primitives/eventDetail";
+import {eventDetailCopy as copy} from "../../../content/events";
 import {interpolateContent} from "../../../content/interpolate";
-import {
-  ActivityMark,
-  StatusBadge,
-} from "../../organizers/OrganizerIdentity";
+import {ActivityMark, StatusBadge} from "../../organizers/OrganizerIdentity";
 import {organizerPolicyForListing} from "../../organizers/organizerPolicy";
 import {activityForKind} from "../../organizers/publicDiscovery";
-import {claimHrefForListing} from "../../organizers/routing";
 import {buildListingReviewSummary} from "../../reviews/reviewModel";
 import type {EventDetailRecord} from "../eventDetailModel";
-import {PublicEventRegistration} from "../PublicEventRegistration";
 
-export function EventDetailHeroSection({
-  event,
-  guestEntry,
-}: {
-  event: EventDetailRecord;
-  guestEntry?: ReactNode;
+export function EventDetailHeroSection({event, guestEntry}: {
+  event: EventDetailRecord; guestEntry?: ReactNode;
 }) {
-  const isExternal = event.supply === "external";
-  const hasWebRegistration = event.registrationState === "webOtp";
-  const webWaitlistOnly = hasWebRegistration && event.registrationMode === "free" && event.remainingCapacity === 0;
-  const listingPath = event.listing.path;
-  const organizerPolicy = organizerPolicyForListing(event.listing);
   const activity = activityForKind(event.activityKind);
-  const reviewSummary = buildListingReviewSummary(
-    event.listing,
-    event.eventReviews
-  );
-  const previewReview = reviewSummary.verifiedReviews[0];
-  const organizerMetrics = [
-    event.listing.metrics?.rating
-      ? {
-        label: eventDetailCopy.hero.organizerMetrics.rating,
-        value: event.listing.metrics.rating.toFixed(1),
-      }
-      : null,
-    event.listing.metrics?.reviewCount
-      ? {
-        label: eventDetailCopy.hero.organizerMetrics.reviews,
-        value: String(event.listing.metrics.reviewCount),
-      }
-      : null,
-    event.listing.metrics?.memberCount
-      ? {
-        label: eventDetailCopy.hero.organizerMetrics.members,
-        value: String(event.listing.metrics.memberCount),
-      }
-      : null,
-  ].filter((item): item is Exclude<typeof item, null> => item !== null);
-  return (
-    <EventDetailHeroLayout
-      activityToken={activity.token}
-      eyebrow={isExternal
-        ? interpolateContent(eventDetailCopy.hero.externalEyebrow, {
-          source: event.sourceLabel,
-        })
-        : eventDetailCopy.hero.catchEyebrow}
-      facts={[
-        {label: eventDetailCopy.hero.facts.when, value: event.date},
-        {label: eventDetailCopy.hero.facts.where, value: event.location},
-        {label: eventDetailCopy.hero.facts.format, value: activity.label},
-      ]}
-      media={<EventDetailMedia
-        alt={eventDetailCopy.hero.media.alt}
-        src={eventDetailCopy.hero.media.src}
-        srcSet={eventDetailCopy.hero.media.mobileSrcSet}
-      />}
-      metaLine={`${activity.label} · ${event.location}`}
-      reviewPreview={<EventDetailReviewPreview
-        body={previewReview
-          ? previewReview.comment
-          : organizerPolicy.canReadPublicReviews
-            ? eventDetailCopy.reviews.emptyBody
-            : eventDetailCopy.reviews.unavailableBody}
-        eyebrow={eventDetailCopy.reviews.eyebrow}
-        meta={previewReview
-          ? `${previewReview.rating.toFixed(1)} / 5 · ${previewReview.reviewerName}`
-          : undefined}
-        title={previewReview
-          ? previewReview.reviewerName
-          : organizerPolicy.canReadPublicReviews
-            ? eventDetailCopy.reviews.emptyTitle
-            : eventDetailCopy.reviews.unavailableTitle}
-      />}
-      planLabel={eventDetailCopy.hero.planLabel}
-      summary={event.summary}
-      supplyLabel={isExternal
-        ? interpolateContent(eventDetailCopy.hero.externalSupply, {
-          source: event.sourceLabel,
-        })
-        : eventDetailCopy.hero.catchSupply}
-      title={event.title}
-    >
-      <EventDetailOrganizerPanel
-        activity={<ActivityMark listing={event.listing} size="lg" />}
-        badge={<StatusBadge listing={event.listing} />}
-        claimAction={organizerPolicy.canRequestClaim ? (
-          <ButtonLink
-            href={claimHrefForListing(event.listing)}
-            variant="ghost"
-          >
-            {eventDetailCopy.hero.claimAction}
-          </ButtonLink>
-        ) : undefined}
-        eyebrow={eventDetailCopy.hero.hostedByLabel}
-        location={[event.listing.city, event.listing.country]
-          .filter(Boolean)
-          .join(", ")}
-        metrics={organizerMetrics}
-        name={event.listing.name}
-        primaryAction={(
-          <ButtonLink href={listingPath} variant="ghost">
-            {eventDetailCopy.nav.organizerAction}
-          </ButtonLink>
-        )}
-      />
-      <EventDetailActionPanel
-        date={event.date}
-        description={event.registrationState === "closed" ? eventDetailCopy.details.registrationClosed : isExternal
-          ? eventDetailCopy.hero.externalActionBody
-          : hasWebRegistration
-            ? event.registrationMode === "paid" ? eventDetailCopy.hero.webPaidBody : webWaitlistOnly
-              ? eventDetailCopy.hero.webWaitlistBody
-              : eventDetailCopy.hero.webActionBody
-            : eventDetailCopy.hero.catchActionBody}
-        title={event.registrationState === "closed" ? eventDetailCopy.hero.closedHeading : isExternal
-          ? interpolateContent(eventDetailCopy.hero.externalActionHeading, {
-            source: event.sourceLabel,
-          })
-          : hasWebRegistration
-            ? event.registrationMode === "paid" ? eventDetailCopy.hero.webPaidHeading : webWaitlistOnly
-              ? eventDetailCopy.hero.webWaitlistHeading
-              : eventDetailCopy.hero.webActionHeading
-            : eventDetailCopy.hero.catchActionHeading}
-      >
-        {!isExternal && guestEntry ? guestEntry : event.registrationState === "closed" ? event.paidBookingAvailable ? <PublicEventRegistration eventId={event.eventId} mode="paid" allowNewBookings={false} /> : null : hasWebRegistration ? (
-          <PublicEventRegistration eventId={event.eventId} mode={event.registrationMode === "paid" ? "paid" : "free"} />
-        ) : isExternal && event.sourceHref ? (
-          <ActionGroup variant="flow">
-            <ButtonLink
-              onClick={() => { trackOrganizerAnalytics(event.listing, "outboundClick", "external_event_booking", event.eventId); trackOrganizerProviderOutboundClick(event.listing.id, event.eventId); }}
-              href={event.sourceHref}
-              rel="noreferrer"
-              target="_blank"
-              variant="primary"
-            >
-              {eventDetailCopy.hero.officialSourceAction}
-            </ButtonLink>
-          </ActionGroup>
-        ) : (
-          <ButtonLink href={`/booking/${encodeURIComponent(event.eventId)}/`}>
-            {eventDetailCopy.hero.guestAction}
-          </ButtonLink>
-        )}
-      </EventDetailActionPanel>
-    </EventDetailHeroLayout>
-  );
+  const external = event.supply === "external";
+  return <EventDetailHeroLayout activityToken={activity.token} eyebrow={activity.label}
+    title={event.title}
+    media={<EventDetailMedia src={event.photoUrl} alt={interpolateContent(copy.invitation.coverAlt, {title: event.title})}
+      fallback={<><span>{activity.label}</span><strong>{event.title}</strong><span>{event.listing.name}</span></>} />}
+    host={<><ActivityMark listing={event.listing} size="sm" /><div><span>{copy.hero.hostedByLabel}</span>
+      <EventDetailSourceLink href={event.listing.path}>{event.listing.name}</EventDetailSourceLink></div></>}
+    facts={[
+      {label: copy.hero.facts.when, value: <>{event.date}{event.timezone ? <small>{event.timezone}</small> : null}</>},
+      {label: copy.hero.facts.where, value: <>{event.location}{event.locationDetails.trim() ? <small>{event.locationDetails}</small> : null}</>},
+      {label: copy.details.price, value: event.priceLabel},
+    ]}>
+    {external ? <>
+      <p>{event.registrationState === "closed" ? copy.details.registrationClosed :
+        interpolateContent(copy.hero.externalActionHeading, {source: event.sourceLabel})}</p>
+      {event.registrationState !== "closed" && event.sourceHref ? <ButtonLink href={event.sourceHref}
+        target="_blank" rel="noreferrer" onClick={() => trackSource(event, "external_event_booking")}>
+        {copy.hero.officialSourceAction}</ButtonLink> : null}
+    </> : guestEntry ?? <ButtonLink href={`/booking/${encodeURIComponent(event.eventId)}/`}>
+      {copy.hero.guestAction}</ButtonLink>}
+  </EventDetailHeroLayout>;
 }
 
 export function EventDetailFactsSection({event}: {event: EventDetailRecord}) {
-  const isExternal = event.supply === "external";
   const details = [
-    {label: eventDetailCopy.details.schedule, value: event.date},
-    {
-      label: eventDetailCopy.details.timezone,
-      value: event.timezone || eventDetailCopy.details.timezoneMissing,
-    },
-    {label: eventDetailCopy.details.location, value: event.location},
-    {
-      label: eventDetailCopy.details.locationDisclosure,
-      value: event.locationDetails || (
-        isExternal
-          ? eventDetailCopy.details.locationExternalFallback
-          : eventDetailCopy.details.locationCatchFallback
-      ),
-    },
-    {label: eventDetailCopy.details.price, value: event.priceLabel},
-    {
-      label: eventDetailCopy.details.registration,
-      value: registrationLabel(event),
-    },
-    {
-      label: eventDetailCopy.details.requirements,
-      value: event.requirements || eventDetailCopy.details.requirementsMissing,
-    },
-    {
-      label: eventDetailCopy.details.accessibility,
-      value: event.accessibility || eventDetailCopy.details.accessibilityMissing,
-    },
-    {
-      label: eventDetailCopy.details.freshness,
-      value: interpolateContent(eventDetailCopy.details.freshnessTemplate, {
-        date: event.listing.lastVerifiedAt,
-      }),
-    },
-  ];
-  return (
-    <EventDetailSection aria-labelledby="event-detail-facts-title">
-      <SectionHeader
-        body={eventDetailCopy.details.body}
-        eyebrow={eventDetailCopy.details.eyebrow}
-        id="event-detail-facts-title"
-        title={eventDetailCopy.details.title}
-        wide
-      />
-      <EventDetailFactGrid items={details} />
-    </EventDetailSection>
-  );
+    {label: copy.details.requirements, value: event.requirements.trim()},
+    {label: copy.details.accessibility, value: event.accessibility.trim()},
+  ].filter((item) => item.value);
+  const itinerary = event.itinerary ?? [];
+  return <EventDetailSection aria-label={copy.details.eyebrow}>
+    <EventDetailBodyLayout host={<EventDetailOrganizerPanel
+      activity={<ActivityMark listing={event.listing} size="lg" />}
+      badge={<StatusBadge listing={event.listing} />} eyebrow={copy.hero.hostedByLabel}
+      location={[event.listing.city, event.listing.country].filter(Boolean).join(", ")}
+      metrics={[]} name={event.listing.name}
+      primaryAction={<ButtonLink href={event.listing.path} variant="ghost">{copy.nav.organizerAction}</ButtonLink>} />}>
+      {event.summary.trim() ? <><h2>{copy.invitation.about}</h2><p>{event.summary}</p></> : null}
+      {itinerary.length ? <><h2>{copy.invitation.itinerary}</h2><EventDetailItinerary items={itinerary.map((item) => ({
+        id: item.id, title: item.title, description: item.description,
+        time: itineraryTime(event, item.offsetMinutes),
+        location: item.location ? <EventDetailSourceLink target="_blank" rel="noreferrer"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${item.location.latitude},${item.location.longitude}`)}`}>
+          {item.location.name}{item.location.address ? ` · ${item.location.address}` : ""}
+        </EventDetailSourceLink> : undefined,
+      }))} /></> : null}
+      {details.length ? <EventDetailFactGrid items={details} /> : null}
+    </EventDetailBodyLayout>
+  </EventDetailSection>;
 }
 
-export function EventDetailProvenanceSection({
-  event,
-}: {
-  event: EventDetailRecord;
-}) {
-  const isExternal = event.supply === "external";
-  const sourceValue = isExternal && event.sourceHref ? (
-    <EventDetailSourceLink
-      onClick={() => { trackOrganizerAnalytics(event.listing, "outboundClick", "external_event_source", event.eventId); trackOrganizerProviderOutboundClick(event.listing.id, event.eventId); }}
-      href={event.sourceHref}
-      rel="noreferrer"
-      target="_blank"
-    >
-      {event.sourceLabel}
-    </EventDetailSourceLink>
-  ) : event.sourceLabel;
-  return (
-    <EventDetailSection
-      aria-labelledby="event-detail-provenance-title"
-      variant="provenance"
-    >
-      <EventDetailProvenanceLayout
-        intro={<SectionHeader
-          body={isExternal
-            ? eventDetailCopy.provenance.externalBody
-            : eventDetailCopy.provenance.catchBody}
-          eyebrow={eventDetailCopy.provenance.eyebrow}
-          id="event-detail-provenance-title"
-          title={eventDetailCopy.provenance.title}
-          wide
-        />}
-      >
-        <EventDetailProvenanceFacts items={[
-          {
-            label: eventDetailCopy.provenance.sourceLabel,
-            value: sourceValue,
-          },
-          {
-            label: eventDetailCopy.provenance.organizerLabel,
-            value: <StatusBadge listing={event.listing} compact />,
-          },
-          {
-            label: eventDetailCopy.provenance.reviewedLabel,
-            value: event.listing.lastVerifiedAt,
-          },
-        ]} />
-      </EventDetailProvenanceLayout>
-    </EventDetailSection>
-  );
+export function EventDetailProvenanceSection({event}: {event: EventDetailRecord}) {
+  if (event.supply !== "external" || !event.sourceHref) return null;
+  return <EventDetailSection variant="provenance">
+    <p>{copy.hero.externalActionBody} <EventDetailSourceLink href={event.sourceHref} target="_blank" rel="noreferrer"
+      onClick={() => trackSource(event, "external_event_source")}>{event.sourceLabel}</EventDetailSourceLink></p>
+  </EventDetailSection>;
 }
 
-export function EventDetailReviewsSection({
-  event,
-}: {
-  event: EventDetailRecord;
-}) {
-  const reviewSummary = buildListingReviewSummary(
-    event.listing,
-    event.eventReviews
-  );
-  const reviewsUnavailable = !organizerPolicyForListing(event.listing)
-    .canReadPublicReviews;
-  return (
-    <EventDetailSection
-      id="reviews"
-      aria-labelledby="event-detail-reviews-title"
-      variant="reviews"
-    >
-      <SectionHeader
-        body={eventDetailCopy.reviews.body}
-        eyebrow={eventDetailCopy.reviews.eyebrow}
-        id="event-detail-reviews-title"
-        title={eventDetailCopy.reviews.title}
-        wide
-      />
-      <ReviewSignalLane
-        body={eventDetailCopy.reviews.laneBody}
-        emptyBody={reviewsUnavailable
-          ? eventDetailCopy.reviews.unavailableBody
-          : eventDetailCopy.reviews.emptyBody}
-        emptyTitle={reviewsUnavailable
-          ? eventDetailCopy.reviews.unavailableTitle
-          : eventDetailCopy.reviews.emptyTitle}
-        reviews={reviewSummary.verifiedReviews}
-        title={eventDetailCopy.reviews.laneTitle}
-      />
-    </EventDetailSection>
-  );
+export function EventDetailReviewsSection({event}: {event: EventDetailRecord}) {
+  if (!organizerPolicyForListing(event.listing).canReadPublicReviews) return null;
+  const reviews = buildListingReviewSummary(event.listing, event.eventReviews).verifiedReviews;
+  if (!reviews.length) return null;
+  return <EventDetailSection id="reviews" aria-label={copy.reviews.eyebrow} variant="reviews">
+    <ReviewSignalLane body={copy.reviews.laneBody} emptyBody={copy.reviews.emptyBody}
+      emptyTitle={copy.reviews.emptyTitle} reviews={reviews} title={copy.reviews.laneTitle} />
+  </EventDetailSection>;
 }
 
-function registrationLabel(event: EventDetailRecord) {
-  switch (event.registrationState) {
-    case "catchApp":
-      return interpolateContent(eventDetailCopy.details.catchRegistrationOpen, {
-        count: String(event.remainingCapacity ?? 0),
-      });
-    case "full":
-      return eventDetailCopy.details.catchRegistrationFull;
-    case "external":
-      return eventDetailCopy.details.externalRegistration;
-    case "webOtp":
-      if (event.remainingCapacity === 0) {
-        return event.registrationMode === "free" ? eventDetailCopy.details.webRegistrationWaitlist : eventDetailCopy.details.catchRegistrationFull;
-      }
-      return interpolateContent(eventDetailCopy.details.webRegistrationOpen, {
-        count: String(event.remainingCapacity ?? 0),
-      });
-    case "closed":
-      return eventDetailCopy.details.registrationClosed;
-  }
+function trackSource(event: EventDetailRecord, placement: string) {
+  trackOrganizerAnalytics(event.listing, "outboundClick", placement, event.eventId);
+  trackOrganizerProviderOutboundClick(event.listing.id, event.eventId);
+}
+
+function itineraryTime(event: EventDetailRecord, offsetMinutes: number): string {
+  // Never imply a browser-local time when the organizer has not supplied a zone.
+  if (!event.timezone || !Number.isFinite(Date.parse(event.startTime))) return copy.invitation.offset(offsetMinutes);
+  try {
+    return new Intl.DateTimeFormat("en-IN", {timeZone: event.timezone, hour: "numeric", minute: "2-digit"})
+      .format(new Date(Date.parse(event.startTime) + offsetMinutes * 60_000));
+  } catch { return copy.invitation.offset(offsetMinutes); }
 }

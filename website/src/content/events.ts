@@ -1,5 +1,14 @@
 export const eventDetailCopy = {
+  menu: {
+    dialogLabel: "Event navigation", openLabel: "Menu", closeLabel: "Close",
+    kicker: "Catch", hint: "Find your people. Make a plan.", navLabel: "Event links",
+  },
+  invitation: {
+    about: "About this event", itinerary: "The plan", coverAlt: "Event artwork for {title}",
+    offset: (minutes: number) => minutes === 0 ? "Start" : `+${minutes} min`,
+  },
   nav: {
+    help: "Help",
     organizers: "Organizers",
     host: "Host an event",
     organizerAction: "View organizer",
@@ -136,7 +145,7 @@ export const eventDetailCopy = {
       "Catch will show event-specific reviews here after the organizer review target is verified. No organizer-level review is attributed to this event.",
   },
   footerBody:
-    "Read event details on the web, then use Catch or the official source for registration.",
+    "Find your people. Make a plan.",
 } as const;
 
 export const publicCheckoutCopy = {
@@ -166,6 +175,11 @@ export const publicCheckoutCopy = {
 } as const;
 
 export const guestEventCopy = {
+  close: "Close", details: "View your status", signIn: "Sign in to continue",
+  register: "Reserve a place", book: "Book now", updates: "Manage application updates",
+  ready: "Continue to see your next step. No app download needed.",
+  registrationReady: "Review your details to reserve a place.",
+  bookingReady: "Review the current price and terms before paying.",
   changePhone: "Change phone number",
   changeAccount: "Use another account",
   loading: "Checking your event status…", phone: "Mobile number", code: "6-digit OTP",

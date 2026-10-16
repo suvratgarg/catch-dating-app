@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.25.0
-updated: 2026-10-16
+version: 0.25.1
+updated: 2026-10-17
 owner: web_platform
 status: active
 ---
@@ -1394,7 +1394,10 @@ older strict clients retain their receipt shape. Runtime account transitions
 clear private assignments, profile answers and account-scoped graph queries;
 late bootstrap responses cannot restore the prior account. Feature gates and
 provider/deployment readiness remain independent of
-source implementation. Event page visual redesign remains separate.
+source implementation. The invitation layout uses this same guest projection
+for its inline and mobile action, and the existing transaction owners in its
+registration dialog. See `marketing_website_architecture.md` for the shared
+presentation and optional-content contract.
 
 ### Approval notification transport boundary
 

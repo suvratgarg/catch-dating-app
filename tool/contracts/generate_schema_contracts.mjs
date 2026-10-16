@@ -6700,6 +6700,18 @@ async function main() {
     "tool/contracts/generated/schema_contract_validators.mjs",
     renderToolValidators()
   );
+  const eventDisplayProperties = bundledSchemas.get("WebsiteHostListingProjection")
+    .definitions.catchEvent.properties;
+  addTextOutput(
+    "website/src/shared/contracts/generated/publicEventDisplaySchemas.ts",
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+    "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n" +
+    "export const publicEventDisplaySchemas = " + JSON.stringify({
+      photoUrl: eventDisplayProperties.photoUrl,
+      meetingLocation: eventDisplayProperties.meetingLocation,
+      itinerary: eventDisplayProperties.itinerary,
+    }, null, 2) + " as const;\n"
+  );
   addTextOutput(
     "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
     renderWebsiteJoinWaitlistSchemas({

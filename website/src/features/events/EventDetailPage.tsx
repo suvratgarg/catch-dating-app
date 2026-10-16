@@ -32,28 +32,28 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
   }, [event.eventId, inviteToken]);
   return (
     <>
-      <PublicSiteHeader
+      <PublicSiteHeader audience="guest" guestMenuCopy={eventDetailCopy.menu}
         localActions={[{
           href: event.listing.path,
           label: eventDetailCopy.nav.organizerAction,
         }]}
         localNav={[
           {href: "/organizers/", label: eventDetailCopy.nav.organizers},
-          {href: "/host/", label: eventDetailCopy.nav.host},
+          {href: "/help/", label: eventDetailCopy.nav.help},
         ]}
       />
 
       <WebsitePageMain id="event-detail">
         <EventDetailHeroSection
           event={event}
-          guestEntry={event.supply === "catchNative" ? <GuestEventEntry eventId={event.eventId} /> : undefined}
+          guestEntry={event.supply === "catchNative" ? <GuestEventEntry key={event.eventId} eventId={event.eventId} invitation={{price: event.priceLabel, title: event.title}} /> : undefined}
         />
         <EventDetailFactsSection event={event} />
         <EventDetailProvenanceSection event={event} />
         <EventDetailReviewsSection event={event} />
       </WebsitePageMain>
 
-      <PublicSiteFooter
+      <PublicSiteFooter audience="guest"
         body={eventDetailCopy.footerBody}
         links={[
           {href: event.listing.path, label: eventDetailCopy.nav.organizerAction},
