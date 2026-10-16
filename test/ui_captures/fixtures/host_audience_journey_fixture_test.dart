@@ -269,8 +269,9 @@ void main() {
           options.events.map((event) => event.id),
           organizerId == 'org_1' ? ['sunday-social'] : isEmpty,
         );
-        if (organizerId == 'org_1')
+        if (organizerId == 'org_1') {
           expect(options.events.single.title, 'Sunday social');
+        }
         expect(
           options.questions,
           isEmpty,
