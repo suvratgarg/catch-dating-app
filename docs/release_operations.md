@@ -3193,3 +3193,25 @@ It does not redeploy DEV, relax PROD predecessor checks, or accept arbitrary
 recovery runs. A new configured human `prod` approval is required. Only Firebase
 CLI installation has bounded retries; the Function deployment command remains
 single-shot. This recovery cannot resume a partial or completed PROD deployment.
+
+### Bounded CAT151 order receipt follow-up
+
+The `cat151-order-receipt` profile deploys only `createRazorpayOrder` from
+PR626 source `bbff52defd3c0dfb8df7c78c336c6549af7df47a`, successful main CI
+38931076239 attempt1 and artifact12059462962. The provider rejected
+long event receipts before order creation; the source fix bounds them to forty
+ASCII characters while retaining the full booking ownership notes.
+The package delivery baseline is `6817b248294ccb8e0084e7d3cac9161d058fe70d`,
+read from its verified `delivery-plan.json`; it is distinct from the source
+commit parent. Package verification and deployment proof bind that same baseline.
+
+`tool/ci/cat151_receipt_release.mjs` pins the immutable package and exact
+predecessors. `_cat151-receipt-promote.yml` runs DEV first and binds its receipt
+to the same run's human-reviewed PROD job. Choose this release kind with every
+other scope confirmation false and no recovery run. The profile admits no
+backend drift, arbitrary source/target inputs, recovery, deployment retry or
+baseline cursor. It preserves all unselected Functions, the completed booking
+schema deployment, webhook configuration, provider parameters, numeric secret
+versions, IAM, rules, indexes and flags through full before/after comparisons.
+The separately approved replacement native TEST checkout and full refund remain
+required acceptance; the rejected attempt is retained and is not reset.

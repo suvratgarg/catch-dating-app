@@ -8,6 +8,7 @@ on:
         required: true
         type: choice
         options:
+          - cat151-order-receipt
           - cat151-booking
           - cat151-booking-prod-recovery
           - intake-pr596
@@ -419,4 +420,59 @@ jobs:
       dev_completion_receipt_sha256: b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09
       dev_completion_artifact_id: '12051195096'
       dev_completion_artifact_digest: ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f
+    secrets: inherit
+
+  authorize-cat151-receipt:
+    if: ${{ inputs.release_kind == 'cat151-order-receipt' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Verify the fixed receipt source and exclusive operator scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          jq -e '
+            .release_kind == "cat151-order-receipt" and .source_sha == "bbff52defd3c0dfb8df7c78c336c6549af7df47a" and
+            .confirm_booking_functions == false and .confirm_four_functions_five_indexes == false and
+            .confirm_whatsapp_five == false and .confirm_sales_pr543 == false and .confirm_intake_pr596 == false and
+            (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and
+            (.reason | length) >= 12 and (.reason | length) <= 240 and
+            (.reason | test("[\\r\\n]") | not) and (.reason | test("[^\\s]"))
+          ' <<< "$INPUTS" > /dev/null
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+          test "$(git rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
+          node tool/ci/cat151_receipt_release.mjs source --current-main "$GITHUB_SHA" --source-root .
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38931076239/attempts/1" | jq -e '
+            .status == "completed" and .conclusion == "success" and .event == "push" and .head_branch == "main" and
+            .head_sha == "bbff52defd3c0dfb8df7c78c336c6549af7df47a" and .run_attempt == 1 and .workflow_id == 320377139' > /dev/null
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/12059462962" > /tmp/cat151-receipt-artifact.json
+          node tool/ci/cat151_receipt_release.mjs artifact --metadata /tmp/cat151-receipt-artifact.json
+
+  dev-cat151-receipt:
+    needs: authorize-cat151-receipt
+    uses: ./.github/workflows/_cat151-receipt-promote.yml
+    with:
+      environment: dev
+      control_plane_sha: ${{ github.sha }}
+    secrets: inherit
+
+  prod-cat151-receipt:
+    needs: [authorize-cat151-receipt, dev-cat151-receipt]
+    if: ${{ needs['dev-cat151-receipt'].result == 'success' }}
+    uses: ./.github/workflows/_cat151-receipt-promote.yml
+    with:
+      environment: prod
+      control_plane_sha: ${{ github.sha }}
+      dev_completion_receipt_sha256: ${{ needs['dev-cat151-receipt'].outputs.receipt_sha256 }}
+      dev_completion_artifact_id: ${{ needs['dev-cat151-receipt'].outputs.artifact_id }}
+      dev_completion_artifact_digest: ${{ needs['dev-cat151-receipt'].outputs.artifact_digest }}
     secrets: inherit
