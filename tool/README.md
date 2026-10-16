@@ -162,6 +162,24 @@ The authored graph and compile-codegen allowlist live in
 `tool/harness/component_graph.json`. Use the plan's check ids with the explicit
 `node tool/run.mjs check <id...>` runner. Harness commands are read-only.
 
+## Source Preflight
+
+`node tool/harness/verify_local.mjs --preflight --base origin/main --json`
+runs the affected source checks and graph-selected compile-codegen freshness
+checks before rendering or expensive validation. It collects all findings in
+one pass. Missing runtimes, packages or a sparse checkout make the preflight
+incomplete and return failure; bootstrap the selected dependencies first.
+`--allow-deferred` is reserved for inexpensive sparse planning/feedback and
+reports every deferred obligation. It never sets `preflightComplete` true while
+one remains and never ignores a failing executable check.
+
+The required `source-preflight` job uses a full checkout and pinned runtimes.
+Its structural gates include dependency direction, mutation/error boundaries,
+route literals, source/test size, generated route/catalog/responsibility/design
+references, provider ownership and resolved composition. Selected expensive
+jobs depend on its success, and Required CI independently rejects missing,
+skipped, failed or cancelled preflight. Full tests and analysis remain required.
+
 ## Documentation Checks And Retrieval
 
 `docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
@@ -757,7 +775,11 @@ Marketing app screenshots are tracked by `tool/marketing/capture_manifest.json`.
 The `marketing-captures.yml` hosted macOS exporter accepts an exact source SHA
 through manual dispatch or an explicit `capture:requested` label event on an
 open same-repository PR into `main`. It uploads all 12 validated canonical
-exports without committing or publishing. Capture requests preserve full-CI
+exports without committing or publishing. The producer renders only invalid or
+changed-input/font captures; reuse preserves the original PNG and render SHA,
+while the v2 receipt records verification against the selected source SHA.
+Website captions and destination metadata do not invalidate rendering.
+Capture requests preserve full-CI
 admission and merge authority. See
 `docs/marketing_app_media_pipeline.md#hosted-export-cat159-enabling-slice`
 for controller integration, exact event/source selection and artifact receipts. Its focused

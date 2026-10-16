@@ -64,6 +64,8 @@ jobs:
         with:
           ref: ${{ env.CAPTURE_SOURCE_SHA }}
           path: capture-source
+          # Reused PNGs must prove their original render is an ancestor.
+          fetch-depth: 0
           persist-credentials: false
       - name: Verify source and matching toolchain pins
         shell: bash

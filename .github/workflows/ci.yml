@@ -193,7 +193,7 @@ jobs:
           node tool/harness/compare_selectors.mjs --base "$base_sha" --head "$HEAD_SHA" \
             --mode "$event_mode" > build/ci/selector-comparison.json
 
-          node tool/harness/verify_local.mjs --preflight \
+          node tool/harness/verify_local.mjs --preflight --allow-deferred \
             --base "$base_sha" --head "$HEAD_SHA" --mode "$event_mode" \
             "${full_flag[@]}" "${window_flag[@]}"
 
@@ -292,8 +292,51 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  tools:
+  source-preflight:
+    name: Complete source preflight
     needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - run: npm ci
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get --enforce-lockfile
+      - name: Install selected contract generator dependencies
+        if: ${{ needs.plan.outputs.contracts == 'true' }}
+        run: npm --prefix functions ci
+      - name: Execute complete source and generation preflight
+        env:
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          MODE: ${{ needs.plan.outputs.mode }}
+          FULL: ${{ needs.plan.outputs.full }}
+          COMMIT_WINDOW: ${{ needs.plan.outputs.commit_window }}
+        run: |
+          set -euo pipefail
+          args=(--preflight --base "$BASE_SHA" --head "$SOURCE_SHA" --mode "$MODE" --json)
+          [[ "$FULL" != true ]] || args+=(--full)
+          [[ "$COMMIT_WINDOW" != true ]] || args+=(--commit-window)
+          mkdir -p build/ci
+          node tool/harness/verify_local.mjs "${args[@]}" > build/ci/source-preflight.json
+      - name: Retain preflight findings
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/source-preflight.json
+          if-no-files-found: error
+          retention-days: 7
+
+  tools:
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.tools == 'true' }}
     uses: ./.github/workflows/tools-ci.yml
     with:
@@ -305,25 +348,25 @@ jobs:
     secrets: inherit
 
   contracts:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.contracts == 'true' }}
     uses: ./.github/workflows/contracts-ci.yml
     secrets: inherit
 
   functions:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.functions == 'true' }}
     uses: ./.github/workflows/functions-ci.yml
     secrets: inherit
 
   firestore-rules:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.firestore_rules == 'true' }}
     uses: ./.github/workflows/firestore-rules-ci.yml
     secrets: inherit
 
   flutter:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.flutter == 'true' }}
     uses: ./.github/workflows/flutter-ci.yml
     with:
@@ -336,13 +379,13 @@ jobs:
     secrets: inherit
 
   visual-integration:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.visual_integration == 'true' }}
     uses: ./.github/workflows/visual-integration-ci.yml
     secrets: inherit
 
   admin:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.admin == 'true' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
@@ -350,7 +393,7 @@ jobs:
     secrets: inherit
 
   marketing:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.marketing == 'true' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
@@ -359,18 +402,18 @@ jobs:
     secrets: inherit
 
   capture-freshness:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.capture_freshness == 'true' }}
     uses: ./.github/workflows/capture-freshness-ci.yml
 
   operations:
-    needs: plan
+    needs: [plan, source-preflight]
     if: ${{ needs.plan.outputs.operations == 'true' }}
     uses: ./.github/workflows/operations-ci.yml
     secrets: inherit
 
   docs-policy:
-    needs: plan
+    needs: [plan, source-preflight]
     if: >-
       needs.plan.outputs.docs == 'true' ||
       needs.plan.outputs.policy_docs == 'true'
@@ -457,7 +500,7 @@ jobs:
         run: node tool/run.mjs check agent:harness-v2
 
   app-builds:
-    needs: plan
+    needs: [plan, source-preflight]
     if: >-
       needs.plan.outputs.flutter_build_android == 'true' ||
       needs.plan.outputs.flutter_build_ios == 'true' ||
@@ -480,6 +523,7 @@ jobs:
       !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs:
       - plan
+      - source-preflight
       - tools
       - contracts
       - functions
@@ -568,6 +612,7 @@ jobs:
       needs.finalize-plan.outputs.deploy_required == 'true'
     needs:
       - plan
+      - source-preflight
       - finalize-plan
       - tools
       - contracts
@@ -702,6 +747,7 @@ jobs:
     needs:
       - admission
       - plan
+      - source-preflight
       - finalize-plan
       - tools
       - contracts
@@ -761,6 +807,7 @@ jobs:
             exit 1
           fi
           test "$(jq -er '.plan.result' <<< "$NEEDS_JSON")" = success
+          test "$(jq -er '.["source-preflight"].result' <<< "$NEEDS_JSON")" = success
           # Selection only counts when its owning job actually succeeded.
           jq -e '
             . as $needs |

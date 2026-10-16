@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir -p build/ci
           node tool/harness/compare_selectors.mjs --base "$BASE_SHA" --head HEAD --mode pr > build/ci/selector-comparison.json
-          node tool/harness/verify_local.mjs --preflight --base "$BASE_SHA" --head HEAD --mode pr
+          node tool/harness/verify_local.mjs --preflight --allow-deferred --base "$BASE_SHA" --head HEAD --mode pr
           echo 'This is inexpensive feedback, not merge approval. Full validation requires the sole ci:admitted label.' >> "$GITHUB_STEP_SUMMARY"
       - name: Upload selector comparison
         uses: actions/upload-artifact@v7
