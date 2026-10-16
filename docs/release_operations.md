@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.32
+version: 2.7.33
 updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
@@ -3154,3 +3154,33 @@ probe. Existing-authority authenticated Admin pagination remains a separate
 acceptance check; this route grants no new user, import, send or data-repair
 authority. Any failed metadata or postcondition stops the job and retains its
 isolated selected-only evidence. Source drift requires a new reviewed profile.
+
+## Immutable CAT151 booking writer release
+
+The selective backend caller's `cat151-booking` profile pins PR621 source
+`24eab314944b20ce3035756bb5d08cfbf3007f4d`, successful main CI38895481991
+attempt1 and artifact12044213158. The executable profile names fourteen existing
+Functions that reach the shared booking writer. It excludes dormant targets,
+indexes, rules, IAM repairs, flags, provider activation and application data.
+This fixed release does not use the generic fingerprint selector: the candidate
+contains a known unresolved dynamic Operations import. The reviewed fixed list
+is the scope authority; this is not proof of a full backend baseline or permission
+to drain the disabled Delivery queue. Source/package hashes and observed predecessor
+identities are enforced by `tool/ci/cat151_booking_release.mjs`. Current-main
+compatibility permits only the exact reviewed PR622 Sales catalog/test blobs;
+other backend source drift requires a new reviewed profile.
+
+DEV must finish first. PROD consumes the exact DEV receipt and requires approval
+by a configured human reviewer in `prod` before cloud authentication. Both stages
+retain the existing outer backend-delivery lock and per-environment Firebase lock.
+The job verifies the immutable package twice, preserves selected runtime settings,
+provider parameters and numeric secret bindings (including PROD webhook secret
+version2), and snapshots all unselected Functions, Extensions, indexes, field
+overrides, rules, Remote Config and project IAM. Any drift stops the job; it has
+no force, retry, rollback, broad deployment or full-baseline/cursor route.
+
+A completed deployment receipt is source/serving proof only. Booking and refund
+acceptance still requires a separately budgeted synthetic TEST transaction and
+readback demonstrating schema-valid booking, verified payment and full refund
+without manual field or refund reconciliation. Existing refunded transactions
+and earlier webhook delivery evidence do not prove that new booking flow.
