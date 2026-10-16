@@ -149,10 +149,12 @@ test('CAT151 caller scope predicate rejects mixed profiles and missing DEV evide
   resume_delivery_attempt:'1'};
  for(const stage of [base,{...base,environment:'prod',dev_completion_artifact_id:'123',dev_completion_artifact_digest:'b'.repeat(64),dev_completion_receipt_sha256:'c'.repeat(64)}]) {
   assert.equal(accepts({...stage,...inherited}),true);
+  assert.equal(accepts({...stage,...inherited,confirm_cat165:false}),true);
   assert.equal(accepts({...stage,...inherited,resume_delivery_run_id:''}),true);
   for(const patch of [{release_kind:'cat151-booking'},{source_sha:'0'.repeat(40)},
    {confirm_booking_functions:true},{confirm_four_functions_five_indexes:true},
    {confirm_whatsapp_five:true},{confirm_sales_pr543:true},{confirm_intake_pr596:true},
+   {confirm_cat165:true},{confirm_cat165:'false'},{confirm_cat165:null},
    {confirm_booking_functions:'false'},{resume_delivery_attempt:'2'},
    {resume_delivery_run_id:'123'},{reason:'short'},{reason:'line break\nforbidden'},
    {reason:' '.repeat(20)},{reason:'x'.repeat(241)},{unknown_scope:true}]) {
