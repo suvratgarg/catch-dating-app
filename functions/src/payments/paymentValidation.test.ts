@@ -117,13 +117,15 @@ test("order receipts fit Razorpay's 40-character contract for long event ids",
     }
   });
 
-test("order receipts preserve the boundary and bound Unicode or long tokens",
+test("order receipts bound Unicode and long tokens at the boundary",
   () => {
     const inputs = {event: buildEventDoc(), userId: "runner-1",
       receiptToken: 123};
     const boundaryId = "e".repeat(30);
-    assert.equal(buildOrderCreatePayload({...inputs, eventId: boundaryId}).receipt,
-      `event_${boundaryId}_123`);
+    assert.equal(
+      buildOrderCreatePayload({...inputs, eventId: boundaryId}).receipt,
+      `event_${boundaryId}_123`
+    );
     for (const [eventId, receiptToken] of [
       [boundaryId + "x", 123],
       ["é".repeat(30), 123],
