@@ -15,10 +15,13 @@ const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
 
 function run(args, {cwd = repositoryRoot, env = process.env} = {}) {
+  const childEnv = {...env};
+  // These are independent CLI invocations, not recursive node:test workers.
+  delete childEnv.NODE_TEST_CONTEXT;
   return spawnSync("node", ["tool/run.mjs", ...args], {
     cwd,
     encoding: "utf8",
-    env,
+    env: childEnv,
   });
 }
 
@@ -239,6 +242,74 @@ test("the runner executes manifest checks without task authority metadata", (con
   assert.match(result.stdout, /fixture-check/u);
   assert.match(result.stdout, /Tool checks passed/u);
   assert.doesNotMatch(result.stderr, /authority|lease|phase|managed task/iu);
+});
+
+const restoredProofOwners = [
+  ["audit:adopted-architecture-boundaries", "tool/architecture/check_adopted_architecture_boundaries.test.mjs"],
+  ["audit:dependency-direction", "tool/architecture/check_dependency_direction.test.mjs"],
+  ["audit:mutation-error-surfaces", "tool/architecture/check_mutation_error_surfaces.test.mjs"],
+  ["audit:route-string-literals", "tool/architecture/check_route_string_literals.test.mjs"],
+  ["web:admin-callable-validators", "tool/admin/callable_inventory.test.mjs"],
+  ["demo:ops", "tool/demo/demo_seed_scenario_catalog.test.mjs"],
+  ["data:backfill-location-markets", "tool/data/backfill_location_market_fields.test.mjs"],
+  ["design:reference-screens", "tool/design/check_reference_screens.test.mjs"],
+];
+
+for (const [ownerId, proofPath] of restoredProofOwners) {
+  test(`${ownerId} propagates its declared suite's failing sentinel`, context => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const owner = manifest.tools.find(tool => tool.id === ownerId);
+    assert.equal(owner.status, "active");
+    // The test runs first, so this isolated fixture never reaches a real
+    // generator, provider operation or scanner after the sentinel fails.
+    assert.equal(owner.checks[0], `node --test ${proofPath}`);
+    const fixture = createRunnerFixture(context);
+    for (const [file, source] of [[owner.path, "export {};"],
+      [proofPath, "throw new Error('owner-execution-sentinel');"]]) {
+      fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
+      fs.writeFileSync(path.join(fixture, file), source);
+    }
+    mutateFixtureManifest(fixture, doc => doc.tools.push(owner));
+    const result = run(["check", ownerId], {cwd: fixture});
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stdout + result.stderr, /owner-execution-sentinel/u);
+    assert.doesNotMatch(result.stdout, /Tool checks passed/u);
+    assert.equal(result.stdout.match(/^==>/gm)?.length, 1);
+  });
+
+  test(`${ownerId} owns isolated helper and regression edits`, () => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    for (const changedPath of [proofPath, proofPath.replace(".test.mjs", ".mjs")]) {
+      const result = run(["affected-tools", "--paths", changedPath, "--json"]);
+      assert.equal(result.status, 0, result.stderr);
+      const plan = JSON.parse(result.stdout);
+      assert.equal(plan.mode, "affected", changedPath);
+      assert.deepEqual(plan.ownersByPath[changedPath], [ownerId]);
+      assert.deepEqual(plan.toolIds, [...new Set([...manifest.ciImpact.mandatoryCheckIds, ownerId])].sort());
+    }
+  });
+}
+
+test("scenario fixture changes select the active demo consumer", () => {
+  const changedPath = "tool/demo/demo_seed/scenarios/host-demo.json";
+  const result = run(["affected-tools", "--paths", changedPath, "--json"]);
+  assert.equal(result.status, 0, result.stderr);
+  const plan = JSON.parse(result.stdout);
+  assert.equal(plan.mode, "affected");
+  assert.deepEqual(plan.ownersByPath[changedPath], ["demo:ops", "demo:seed"]);
+});
+
+test("a failing imported proof propagates through the supported owner command", context => {
+  const fixture = createRunnerFixture(context);
+  fs.writeFileSync(path.join(fixture, "tool/alternate.test.mjs"), "import './proof.test.mjs';");
+  fs.writeFileSync(path.join(fixture, "tool/proof.test.mjs"), "throw new Error('imported-proof-sentinel');");
+  mutateFixtureManifest(fixture, manifest => {
+    manifest.tools.find(tool => tool.id === "fixture:check").checks = ["node --test tool/alternate.test.mjs"];
+  });
+  const result = run(["check", "fixture:check"], {cwd: fixture});
+  assert.equal(result.status, 1);
+  assert.match(result.stdout + result.stderr, /imported-proof-sentinel/u);
+  assert.doesNotMatch(result.stdout, /Tool checks passed/u);
 });
 
 test("direct tool execution forwards shell-sensitive arguments safely", (context) => {

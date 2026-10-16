@@ -1591,6 +1591,7 @@
       "status": "active",
       "description": "Enforces provider/routing-free imports and API usage for aligned provider-free adopters tracked in the architecture pattern registry.",
       "checks": [
+        "node --test tool/architecture/check_adopted_architecture_boundaries.test.mjs",
         "node --check tool/architecture/check_adopted_architecture_boundaries.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
@@ -1604,7 +1605,11 @@
         "contains": [
           "scanBoundaryFile flags provider, routing, data, and repository access"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
+        "tool/architecture/check_adopted_architecture_boundaries.mjs"
+      ]
     },
     {
       "id": "audit:app-architecture-exhibits",
@@ -1641,6 +1646,7 @@
       "status": "active",
       "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files.",
       "checks": [
+        "node --test tool/architecture/check_dependency_direction.test.mjs",
         "node --check tool/architecture/check_dependency_direction.mjs",
         "node tool/architecture/check_dependency_direction.mjs"
       ],
@@ -1674,7 +1680,11 @@
           "scanFile flags presentation files with multiple route screens",
           "scanDependencyDirection flags untracked state adapters as a hard gate"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_dependency_direction.test.mjs",
+        "tool/architecture/check_dependency_direction.mjs"
+      ]
     },
     {
       "id": "audit:mutation-error-surfaces",
@@ -1685,6 +1695,7 @@
       "status": "active",
       "description": "Checks production Dart build methods that read Mutation isPending state also expose mutation error feedback.",
       "checks": [
+        "node --test tool/architecture/check_mutation_error_surfaces.test.mjs",
         "node --check tool/architecture/check_mutation_error_surfaces.mjs",
         "node tool/architecture/check_mutation_error_surfaces.mjs"
       ],
@@ -1698,7 +1709,11 @@
         "contains": [
           "scanFile flags build methods that read mutation pending without errors"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_mutation_error_surfaces.test.mjs",
+        "tool/architecture/check_mutation_error_surfaces.mjs"
+      ]
     },
     {
       "id": "audit:host-crm-boundaries",
@@ -1740,6 +1755,7 @@
       "status": "active",
       "description": "Checks production Dart navigation calls outside lib/routing avoid raw route path string literals.",
       "checks": [
+        "node --test tool/architecture/check_route_string_literals.test.mjs",
         "node --check tool/architecture/check_route_string_literals.mjs",
         "node tool/architecture/check_route_string_literals.mjs"
       ],
@@ -1753,7 +1769,11 @@
         "contains": [
           "scanFile flags context navigation with raw path strings"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_route_string_literals.test.mjs",
+        "tool/architecture/check_route_string_literals.mjs"
+      ]
     },
     {
       "id": "audit:widget-cleanup",
@@ -3252,8 +3272,14 @@
       "status": "active",
       "description": "Audits and optionally backfills location, city, region, and market projection fields for clubs, users, public profiles, and config cities.",
       "checks": [
+        "node --test tool/data/backfill_location_market_fields.test.mjs",
         "node --check tool/data/backfill_location_market_fields.mjs"
-      ]
+      ],
+      "impactPaths": [
+        "tool/data/backfill_location_market_fields.test.mjs",
+        "tool/data/backfill_location_market_fields.mjs"
+      ],
+      "checkSafety": "local-readonly"
     },
     {
       "id": "data:hygiene-media-paths",
@@ -3333,14 +3359,19 @@
         "tool/demo/demo_ops_core.mjs",
         "tool/demo/demo_ops_core.test.mjs",
         "tool/demo/cross_paths_demo_core.mjs",
-        "tool/demo/cross_paths_demo_core.test.mjs"
+        "tool/demo/cross_paths_demo_core.test.mjs",
+        "tool/demo/demo_seed_scenario_catalog.test.mjs",
+        "tool/demo/demo_seed_scenario_catalog.mjs",
+        "tool/demo/demo_seed/scenarios/**"
       ],
       "checks": [
+        "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
         "node --check tool/demo/demo_ops.mjs",
         "node --test tool/demo/demo_ops_core.test.mjs tool/demo/cross_paths_demo_core.test.mjs",
         "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
       ],
-      "role": "generator"
+      "role": "generator",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "demo:cross-paths-core",
@@ -6693,10 +6724,15 @@
       "status": "active",
       "description": "Validates exported design reference PNG metadata and supports advisory pixel comparison against UI capture artifacts.",
       "checks": [
+        "node --test tool/design/check_reference_screens.test.mjs",
         "node --check tool/design/check_reference_screens.mjs",
         "node tool/design/check_reference_screens.mjs --check --summary"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "tool/design/check_reference_screens.test.mjs",
+        "tool/design/check_reference_screens.mjs"
+      ]
     },
     {
       "id": "design:reference-screen-exporter",
@@ -7060,6 +7096,7 @@
       "status": "active",
       "description": "Checks the generated admin callable request/response validator registry against current adminApi callables and schema contracts.",
       "checks": [
+        "node --test tool/admin/callable_inventory.test.mjs",
         "node --check admin/scripts/generateCallableValidators.mjs",
         "node admin/scripts/generateCallableValidators.mjs --self-test",
         "npm --workspace catch-admin run check:callable-validators"
@@ -7075,7 +7112,11 @@
           "simulated schema drift",
           "Admin callable validator drift self-test passed."
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/admin/callable_inventory.test.mjs",
+        "tool/admin/callable_inventory.mjs"
+      ]
     },
     {
       "id": "design:component-lexicon",
