@@ -409,6 +409,26 @@ test("structural preflight runs from the declared sparse closure and fails close
   unsupported:
     steps:
     - run: echo noncanonical
+  container-job:
+    steps:
+      - run: echo verify
+    container: node:24
+  services-job:
+    services:
+      database:
+        image: postgres
+    steps:
+      - run: echo verify
+  matrix-job:
+    steps:
+      - run: echo verify
+    strategy:
+      matrix:
+        node: [22, 24]
+  conditional-job:
+    if: false
+    steps:
+      - run: echo verify
 `);
     const inspect = format => spawnSync(process.execPath, [
       "tool/harness/verify_local.mjs", "--target", "fixture", format,
@@ -417,14 +437,14 @@ test("structural preflight runs from the declared sparse closure and fails close
     assert.equal(fixture.status, 0, fixture.stderr);
     const fixtureReport = JSON.parse(fixture.stdout);
     assert.deepEqual(fixtureReport.gates.map(gate => gate.workingDirectory), ["one", "two"]);
-    assert.equal(fixtureReport.skipped.length, 3);
+    assert.equal(fixtureReport.skipped.length, 7);
     assert.deepEqual(fixtureReport.skipped.map(step => step.job),
-      ["inherited", "other-context", "unsupported"]);
+      ["inherited", "other-context", "unsupported", "container-job", "services-job", "matrix-job", "conditional-job"]);
     assert.ok(fixtureReport.skipped.every(step => step.line > 0));
-    assert.equal(fixtureReport.githubOnlyObligations.length, 4);
+    assert.equal(fixtureReport.githubOnlyObligations.length, 8);
     const text = inspect("--list");
     assert.equal(text.status, 0, text.stderr);
-    assert.match(text.stdout, /3 CI step\(s\) are NOT covered locally/u);
+    assert.match(text.stdout, /7 CI step\(s\) are NOT covered locally/u);
     assert.match(text.stdout, /inherited:\d+/u);
     assert.match(text.stdout, /unsupported .*structure/u);
     assert.match(text.stdout, /working directory: two/u);
@@ -664,4 +684,19 @@ test("multiline execution context is deferred rather than truncated", () => {
 
 test("ownership refuses noncanonical job fields instead of falling back to a guessed workflow", () => {
   assert.throws(() => deriveTargetWorkflows("jobs:\n  checks:\n      if: needs.plan.outputs.flutter\n      uses: ./.github/workflows/other.yml\n"), /Unsupported ownership job fields/u);
+});
+
+
+test("job runtime context is deferred before or after steps", () => {
+  for (const field of ["container: node:24", "services:\n      database:\n        image: postgres",
+    "strategy:\n      matrix:\n        node: [22, 24]", "if: false"]) {
+    for (const after of [false, true]) {
+      const steps = "    steps:\n      - run: node --version\n";
+      const context = `    ${field}\n`;
+      const [step] = extractSteps(`jobs:\n  checks:\n${after ? steps + context : context + steps}`);
+      assert.equal(step.runnable, false, field);
+      assert.match(step.skipReason, /inherited execution context/u);
+      assert.ok(step.skipReason.includes(`job ${field.split(":")[0]}`));
+    }
+  }
 });

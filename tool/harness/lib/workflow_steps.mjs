@@ -84,7 +84,11 @@ export function extractSteps(source) {
       row.indent === 6 && !row.text.startsWith("- "))) {
       return [skipped("unsupported step indentation or sequence", job.name, steps[0].line)];
     }
-    const context = inherited || fields.some(row => /^(env|defaults):/u.test(row.text));
+    const context = [
+      ...(inherited ? ["workflow env/defaults"] : []),
+      ...fields.filter(row => /^(env|defaults|container|services|strategy|if):/u.test(row.text))
+        .map(row => `job ${row.text.split(":")[0]}`),
+    ];
     return headers.map((header, index) => {
       const nextLine = headers[index + 1]?.line ??
         (end < 0 ? job.endLine : job.rows[end].line);
@@ -138,7 +142,7 @@ export function extractSteps(source) {
       const raw = lines.slice(header.line - 1, nextLine - 1).join("\n");
       if (!step.skipReason && !step.run) step.skipReason = step.uses ? `composite action (${step.uses})` : "no run block";
       if (step.run && GITHUB_COUPLED.test(raw)) step.skipReason = "references GitHub Actions runtime context";
-      if (context && step.run) step.skipReason = "requires inherited workflow/job environment or defaults";
+      if (context.length && step.run) step.skipReason = `requires inherited execution context (${context.join(", ")})`;
       step.runnable = step.skipReason === null;
       return step;
     });
