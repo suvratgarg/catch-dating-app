@@ -43,7 +43,7 @@ jobs:
       artifact_id: ${{ steps.cat151-receipt.outputs.artifact-id }}
       artifact_digest: ${{ steps.cat151-receipt.outputs.artifact-digest }}
     steps:
-      - name: Validate the fixed receipt caller and reject all extra inputs
+      - name: Validate the fixed receipt caller and reject unexpected scope
         env:
           INPUTS: ${{ toJSON(inputs) }}
         run: |
@@ -53,7 +53,19 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
           jq -e '
-            (keys | sort) == (["environment", "control_plane_sha", "dev_completion_artifact_id", "dev_completion_artifact_digest", "dev_completion_receipt_sha256"] | sort) and
+            # GitHub can include the workflow_dispatch caller inputs alongside
+            # workflow_call inputs. Admit only that exact fixed caller scope.
+            ((keys - ["environment", "control_plane_sha", "dev_completion_artifact_id", "dev_completion_artifact_digest", "dev_completion_receipt_sha256",
+              "release_kind", "source_sha", "reason", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543", "confirm_booking_functions", "confirm_intake_pr596", "resume_delivery_run_id", "resume_delivery_attempt"]) | length) == 0 and
+            (del(.environment, .control_plane_sha, .dev_completion_artifact_id, .dev_completion_artifact_digest, .dev_completion_receipt_sha256) as $caller |
+              $caller == {} or (
+                .release_kind == "cat151-order-receipt" and .source_sha == "bbff52defd3c0dfb8df7c78c336c6549af7df47a" and
+                .confirm_booking_functions == false and .confirm_four_functions_five_indexes == false and
+                .confirm_whatsapp_five == false and .confirm_sales_pr543 == false and .confirm_intake_pr596 == false and
+                (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and
+                (.reason | type) == "string" and (.reason | length) >= 12 and (.reason | length) <= 240 and
+                (.reason | test("[\\r\\n]") | not) and (.reason | test("[^\\s]"))
+              )) and
             (.environment == "dev" or .environment == "prod") and .control_plane_sha == env.GITHUB_SHA and
             (if .environment == "dev" then
               .dev_completion_artifact_id == "" and .dev_completion_artifact_digest == "" and .dev_completion_receipt_sha256 == ""
