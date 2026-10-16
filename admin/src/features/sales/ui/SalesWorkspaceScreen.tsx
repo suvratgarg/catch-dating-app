@@ -1,3 +1,4 @@
+import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
@@ -593,6 +594,8 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
       <HostCustomFields
       detail={detail} controller={controller} /> : null}
+    {!assignedStaffOnly && visibleTab === "overview" ? renderSalesPartnerOffer(
+      currentUserUid, detail.account.organizerId, detail.organizerSummary.name) : null}
     <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}
       currentUserUid={currentUserUid} assignedStaffOnly={assignedStaffOnly} />
   </AdminDetailScreenStack>;

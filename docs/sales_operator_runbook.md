@@ -1,6 +1,6 @@
 ---
 doc_id: sales_operator_runbook
-version: 1.0.0
+version: 1.1.0
 updated: 2026-10-16
 owner: sales_operations
 status: active
@@ -44,6 +44,16 @@ lists, commercial terms, contact details and handoff snapshots outside Git.
    existing assignment action with current revisions, an explicit next action,
    review date and expiry. Do not write membership or assignment documents
    directly. Import procedures are in `operations_platform.md`.
+
+   For a first offer, open **Sales → Hosts → the reviewed host → Overview** and
+   use **Offer this lead to a referral partner**. Enter the verified partner account
+   UID, next action, local review time, expiry and assignment reason; review the
+   exact recipient before offering. This control uses revision zero and cannot
+   overwrite any earlier assignment. A failed-precondition or revision rejection
+   requires review of the current records. If completion is uncertain, keep the
+   form open and use **Retry unchanged offer** to recover the same request. Existing
+   assignment transfers and revocations remain separate administrative actions.
+
 5. The partner accepts or declines each offer and records the established channel.
    On accepted leads, they maintain **Next action** and **Review at (UTC)**. Convert
    the intended local time to UTC before saving. Marketing asset access is a
