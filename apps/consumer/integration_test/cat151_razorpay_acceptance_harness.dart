@@ -86,9 +86,13 @@ class _Cat151AcceptanceScreenState
   static const _evidenceDeadline = Duration(minutes: 2);
   static const _refundDeadline = Duration(minutes: 3);
 
-  final _expectedUid = TextEditingController();
-  final _seedPrefix = TextEditingController();
-  final _eventId = TextEditingController();
+  final _expectedUid = TextEditingController(
+    text: 'cross_paths_mumbai_qa_user_002',
+  );
+  final _seedPrefix = TextEditingController(text: 'cross_paths_mumbai_qa');
+  final _eventId = TextEditingController(
+    text: 'cat151-prod-test-20261005-checkout',
+  );
   final _inviteCode = TextEditingController();
   final _secondAttemptConfirmation = TextEditingController();
   final _ledger = Cat151AttemptLedger();
@@ -110,6 +114,43 @@ class _Cat151AcceptanceScreenState
     _secondAttemptConfirmation.dispose();
     super.dispose();
   }
+
+  String _requireExpectedAccount() {
+    final uid = ref.read(uidProvider).asData?.value;
+    if (_expectedUid.text.trim().isEmpty ||
+        uid == null ||
+        uid != _expectedUid.text.trim() ||
+        uid != widget.uid) {
+      throw StateError(
+        'The signed-in account does not match the expected synthetic UID. '
+        'Use the normal sign-in flow for the approved test account.',
+      );
+    }
+    return uid;
+  }
+
+  Future<void> _verifyAccount() => _guarded(() async {
+    final uid = _requireExpectedAccount();
+    final profile = await ref
+        .read(firebaseFirestoreProvider)
+        .collection('users')
+        .doc(uid)
+        .get(const GetOptions(source: Source.server));
+    final data = profile.data();
+    if (data == null ||
+        data['synthetic'] != true ||
+        _seedPrefix.text.trim().isEmpty ||
+        data['seedPrefix'] != _seedPrefix.text.trim()) {
+      throw StateError('The account is not the approved synthetic fixture.');
+    }
+    if (mounted) {
+      setState(() {
+        _status =
+            'Synthetic account verified against the server. '
+            'No event, order, or payment has been created.';
+      });
+    }
+  });
 
   Future<void> _runPreflight() => _guarded(() async {
     final result = await _readPreflight();
@@ -154,8 +195,8 @@ class _Cat151AcceptanceScreenState
     );
     final eventId = inputs.eventId;
     final inviteCode = inputs.inviteCode;
-    final signedInUid = ref.read(uidProvider).asData?.value;
-    if (eventId.isEmpty || signedInUid == null) {
+    final signedInUid = _requireExpectedAccount();
+    if (eventId.isEmpty) {
       throw StateError('A signed-in UID and event ID are required.');
     }
 
@@ -857,6 +898,16 @@ class _Cat151AcceptanceScreenState
     TimeoutException() =>
       'Bounded evidence polling timed out. No automatic retry was performed.',
     StateError() => '${error.message} No automatic retry was performed.',
+    FirebaseException(code: final code)
+        when const {
+          'permission-denied',
+          'unauthenticated',
+          'unavailable',
+          'failed-precondition',
+          'not-found',
+          'deadline-exceeded',
+        }.contains(code) =>
+      'Firebase check failed ($code). No automatic retry was performed.',
     _ =>
       'Operation failed closed. No automatic retry was performed; inspect evidence before continuing.',
   };
@@ -940,6 +991,11 @@ class _Cat151AcceptanceScreenState
               ),
             ),
             const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: _busy ? null : _verifyAccount,
+              child: const Text('Verify synthetic account (read only)'),
+            ),
+            const SizedBox(height: 8),
             FilledButton(
               onPressed: _busy ? null : _runPreflight,
               child: const Text('Run strict preflight'),
