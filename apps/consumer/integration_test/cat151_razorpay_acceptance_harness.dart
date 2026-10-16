@@ -185,7 +185,10 @@ class _Cat151AcceptanceScreenState
       _status = result.scope.isAccepted
           ? 'Preflight passed. No order has been created.'
           : durable == null
-          ? 'Preflight failed closed.'
+          ? 'Preflight failed closed. '
+                'Viewer restriction: ${result.viewer.restriction?.name ?? 'none'}; '
+                'membership: ${result.viewer.membership.name}; '
+                'route: ${result.viewer.route?.name ?? 'none'}.'
           : 'Preflight blocks a new order; durable recovery remains available.';
     });
   });
@@ -327,6 +330,7 @@ class _Cat151AcceptanceScreenState
     return _PreflightResult(
       projectId: projectId,
       scope: scope,
+      viewer: viewer,
       event: event,
       user: user,
       payment: payment,
@@ -1073,6 +1077,7 @@ final class _PreflightResult {
   const _PreflightResult({
     required this.projectId,
     required this.scope,
+    required this.viewer,
     required this.event,
     required this.user,
     required this.payment,
@@ -1081,6 +1086,7 @@ final class _PreflightResult {
 
   final String projectId;
   final Cat151AcceptanceScope scope;
+  final EventViewerState viewer;
   final Event event;
   final UserProfile user;
   final Payment? payment;
