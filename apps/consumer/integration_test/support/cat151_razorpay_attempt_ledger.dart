@@ -129,6 +129,7 @@ final class Cat151AttemptLedgerException implements Exception {
 final class Cat151AttemptLedger {
   Cat151AttemptLedger({Cat151StringStore? store, int Function()? nowMillis})
     : _schemaAcceptance = false,
+      _schemaReceiptRecovery = false,
       _store = store ?? Cat151SharedPreferencesStore(),
       _nowMillis = nowMillis ?? (() => DateTime.now().millisecondsSinceEpoch);
 
@@ -138,12 +139,26 @@ final class Cat151AttemptLedger {
     Cat151StringStore? store,
     int Function()? nowMillis,
   }) : _schemaAcceptance = true,
+       _schemaReceiptRecovery = false,
+       _store = store ?? Cat151SharedPreferencesStore(),
+       _nowMillis = nowMillis ?? (() => DateTime.now().millisecondsSinceEpoch);
+
+  /// One replacement approved after the first schema order was rejected.
+  /// Both prior ledgers survive; attempt two still needs explicit confirmation.
+  Cat151AttemptLedger.schemaReceiptRecovery({
+    Cat151StringStore? store,
+    int Function()? nowMillis,
+  }) : _schemaAcceptance = true,
+       _schemaReceiptRecovery = true,
        _store = store ?? Cat151SharedPreferencesStore(),
        _nowMillis = nowMillis ?? (() => DateTime.now().millisecondsSinceEpoch);
 
   final bool _schemaAcceptance;
-  int get maximumAttempts => _schemaAcceptance ? 1 : 2;
-  bool get allowsSecondAuthorization => !_schemaAcceptance;
+  final bool _schemaReceiptRecovery;
+  int get maximumAttempts =>
+      _schemaAcceptance && !_schemaReceiptRecovery ? 1 : 2;
+  bool get allowsSecondAuthorization =>
+      !_schemaAcceptance || _schemaReceiptRecovery;
 
   final Cat151StringStore _store;
   final int Function() _nowMillis;
@@ -211,7 +226,14 @@ final class Cat151AttemptLedger {
       }
     }
     final raw = await _store.getString(_key(projectId));
-    if (raw == null) return null;
+    if (raw == null) {
+      if (_schemaReceiptRecovery) {
+        throw const Cat151AttemptLedgerException(
+          'The consumed schema-acceptance attempt must be preserved.',
+        );
+      }
+      return null;
+    }
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) throw const FormatException();
@@ -380,7 +402,16 @@ final class Cat151AttemptLedger {
       state.eventId,
       state.seedPrefix,
     );
+    if (_schemaReceiptRecovery &&
+        (state.attempts.isEmpty ||
+            state.attempts.length > 2 ||
+            state.attempts.first.status != Cat151AttemptStatus.reserved)) {
+      throw const Cat151AttemptLedgerException(
+        'Only one replacement of the preserved failed checkout is approved.',
+      );
+    }
     if (_schemaAcceptance &&
+        !_schemaReceiptRecovery &&
         (state.secondAttemptAuthorized || state.attempts.length > 1)) {
       throw const Cat151AttemptLedgerException(
         'The additional approval permits exactly one checkout.',

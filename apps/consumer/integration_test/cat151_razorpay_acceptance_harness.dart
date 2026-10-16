@@ -93,7 +93,7 @@ class _Cat151AcceptanceScreenState
   final _eventId = TextEditingController(text: cat151SchemaAcceptanceEvent);
   final _inviteCode = TextEditingController();
   final _secondAttemptConfirmation = TextEditingController();
-  final _ledger = Cat151AttemptLedger.schemaAcceptance();
+  final _ledger = Cat151AttemptLedger.schemaReceiptRecovery();
 
   bool _testModeConfirmed = false;
   bool _busy = false;

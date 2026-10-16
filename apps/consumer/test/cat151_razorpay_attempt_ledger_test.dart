@@ -178,6 +178,77 @@ void main() {
       eventId: event,
     );
 
+    test('receipt recovery preserves the failed schema attempt', () async {
+      await preserveOriginal();
+      final originalBytes = Map<String, String>.from(store.values);
+      final recovery = Cat151AttemptLedger.schemaReceiptRecovery(store: store);
+      await expectLater(
+        bindAdditional(recovery),
+        throwsA(isA<Cat151AttemptLedgerException>()),
+      );
+      final initial = Cat151AttemptLedger.schemaAcceptance(store: store);
+      final first = await initial.reserveNext(await bindAdditional(initial));
+      final firstJson = first.attempts.single.toJson();
+      var current = (await recovery.load(project))!;
+      await expectLater(
+        recovery.reserveNext(current),
+        throwsA(isA<Cat151AttemptLedgerException>()),
+      );
+      current = await recovery.authorizeSecondAttempt(
+        current,
+        confirmation: cat151SecondAttemptConfirmation,
+      );
+      current = await recovery.reserveNext(current);
+      expect(current.attempts.length, 2);
+      expect(current.attempts.first.toJson(), firstJson);
+      await expectLater(
+        recovery.reserveNext(current),
+        throwsA(isA<Cat151AttemptLedgerException>()),
+      );
+      current = (await Cat151AttemptLedger.schemaReceiptRecovery(
+        store: store,
+      ).load(project))!;
+      current = await recovery.markAdmitted(
+        current,
+        attemptNumber: 2,
+        paymentId: 'pay-replacement',
+        orderId: 'order-replacement',
+      );
+      current = await recovery.markRefunded(
+        current,
+        attemptNumber: 2,
+        paymentId: 'pay-replacement',
+        orderId: 'order-replacement',
+      );
+      expect(current.attempts.first.toJson(), firstJson);
+      expect(current.attempts.last.status, Cat151AttemptStatus.refunded);
+      await expectLater(
+        recovery.reserveNext(current),
+        throwsA(isA<Cat151AttemptLedgerException>()),
+      );
+      for (final entry in originalBytes.entries) {
+        expect(store.values[entry.key], entry.value);
+      }
+    });
+
+    test('receipt recovery rejects an admitted first attempt', () async {
+      await preserveOriginal();
+      final initial = Cat151AttemptLedger.schemaAcceptance(store: store);
+      var first = await initial.reserveNext(await bindAdditional(initial));
+      first = await initial.markAdmitted(
+        first,
+        attemptNumber: 1,
+        paymentId: 'pay-first',
+        orderId: 'order-first',
+      );
+      final before = Map<String, String>.from(store.values);
+      await expectLater(
+        Cat151AttemptLedger.schemaReceiptRecovery(store: store).load(project),
+        throwsA(isA<Cat151AttemptLedgerException>()),
+      );
+      expect(store.values, before);
+    });
+
     test('requires the intact consumed original ledger', () async {
       final additional = Cat151AttemptLedger.schemaAcceptance(store: store);
       await expectLater(
