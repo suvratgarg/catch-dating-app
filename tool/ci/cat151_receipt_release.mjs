@@ -11,7 +11,7 @@ import {gcloudIndexList} from "../firebase/wait_firestore_indexes_ready.mjs";
 // Fixed, executable release admission. Never a general target selector or cursor.
 export const RELEASE = Object.freeze({
  sourceSha: "bbff52defd3c0dfb8df7c78c336c6549af7df47a",
- baseSha: "2f3d78db47343a0a363e619ee7dddc9cf8ad1199",
+ baseSha: "6817b248294ccb8e0084e7d3cac9161d058fe70d",
  sourceCiRunId: "38931076239", sourceCiRunAttempt: "1", artifactId: 12059462962,
  artifactSha256: "019fb14dc514f57ad490192ae532435f45b62fbf01bd76cbc8ecc5ae3c91291c",
  packageSha256: "958039d958aea567bb8254c6b177561adc10e5455dcf3b385fc1f7679b983a93",
