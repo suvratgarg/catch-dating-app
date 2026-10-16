@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 3.4.0
-updated: 2026-10-06
+version: 3.5.0
+updated: 2026-10-16
 owner: agent_operating_model
 status: active
 ---
@@ -20,7 +20,13 @@ tests and scanners prove correctness, and CI stores run evidence.
    use the ambient checkout HEAD as a new-task base. Existing non-main work may
    be continued only in its existing worktree when the user explicitly asks
    to continue it.
-3. Read the owner document for the changed surface.
+3. Reread `AGENTS.md` and the changed surface owner in the newly created
+   worktree; the instructions injected from an older checkout may be stale.
+   Before launching a new task or maintenance command, compare the primary
+   checkout's lifecycle files with fetched `origin/main`. If its `main` is
+   behind, preserve unrelated work and fast-forward only when Git can do so
+   safely; never reset, stash or discard work to refresh instructions. `start`
+   refuses stale lifecycle files even when `--base-sha` is correct.
 4. For broad work, inspect a read-only impact plan. Add the optional context
    guidance when owner-doc or check routing would help:
 
@@ -50,8 +56,9 @@ work that hosted runners cannot perform. On the saved cloud VM, source
 Flutter, and Java versions with `tool/ci/toolchain.env` before relying on it.
 Install only the dependency family needed for the selected check with
 `bash tool/git/bootstrap_worktree.sh --target <family>` (`root`, `functions`,
-or `flutter`). The default `all` remains available for tasks that need all
-three. Docs-only tasks with dependency-free checks need no bootstrap.
+or `flutter`). Use `--target all` explicitly only for tasks that need all three;
+an omitted target is an error. Docs-only tasks with dependency-free checks need
+no bootstrap.
 
 Publish source through an exact commit and normal branch/PR handoff, then use
 required CI on that head. A downloaded or generated source snapshot is not a
@@ -152,5 +159,9 @@ checklist in `docs/agent_operating_model.md#completion`. Keep the guarded task's
 claim through acceptance, run the guard's dry-run `retire`, then its admitted
 `retire --apply` from outside the worktree. Record the returned exact retention
 reason, accountable owner and next action when blocked; a reminder or claim-only
-`finish` is not retirement. Ordinary product work must not
+`finish` is not retirement. Plain `finish` refuses claim-only closeout;
+`finish --retain --reason <blocker-and-next-action>` preserves the original
+claim for later `retire`. Clean up verified generated dependencies during the
+same closeout, then retry retirement; do not report an ignored-file blocker as
+successful cleanup. Ordinary product work must not
 recreate or replace the removed evidence layer.

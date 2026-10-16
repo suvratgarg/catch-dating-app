@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.4.0
-updated: 2026-10-06
+version: 3.5.0
+updated: 2026-10-16
 owner: agent_operating_model
 status: active
 ---
@@ -54,7 +54,13 @@ have been removed. Put recurring protection in the owning test or scanner.
    task worktree from that commit through `worktree_guard.mjs start`. Ambient
    checkout HEAD is never a new-task base. Continue a non-main branch only in
    its existing worktree when the user explicitly asks to continue that work.
-3. Read `AGENTS.md`, then only the owner documents for the changed surface.
+3. Reread `AGENTS.md` and the changed surface owners in that new worktree.
+   Compare lifecycle files in the launcher with fetched `origin/main`; `start`
+   rejects stale instructions/tooling even with the correct base SHA. Refresh
+   the primary `main` with a safe fast-forward after preserving unrelated work.
+   If it cannot fast-forward, retain it and report the exact divergence; never
+   reset or stash another task's work to update the launcher. Maintenance and
+   retirement must likewise use current lifecycle tooling, not an old task's copy.
 4. For a broad change, inspect the impact plan:
 
    ```sh
@@ -80,7 +86,8 @@ toolchain against `tool/ci/toolchain.env`. On that VM, source
 `/workspace/catch-cloud-setup/env.sh` when it exists. Install only the dependency
 family selected by the task's checks with `bootstrap_worktree.sh --target
 <family>` (`root`, `functions`, or `flutter`). Omit bootstrap for checks that
-need no packages. Use `all` only when all three families are needed.
+need no packages. Use `--target all` explicitly only when all three families are
+needed. The bootstrap refuses an omitted target before installing anything.
 Each task still has one guarded worktree and its own dependencies; do not copy
 or symlink another checkout's installed packages. Close accepted worktrees with
 the existing retirement procedure instead of accumulating completed checkouts.
@@ -221,8 +228,8 @@ validators. A failure prints the exact write command to run.
 
 The hook does not run the analyzer or broad test suites. It refuses partially
 staged Dart files because formatting and re-staging one would otherwise absorb
-unstaged work into the commit. Bootstrap a fresh worktree before using the hook
-so its pinned Flutter, Dart, root npm, and Functions npm dependencies exist.
+unstaged work into the commit. Install only the dependency families needed by
+the triggered hook/checks; do not bootstrap every worktree with the full stack.
 
 ## Parallel Worktrees
 
@@ -238,7 +245,7 @@ with the repository command:
 bash tool/git/bootstrap_worktree.sh --target root       # root npm checks
 bash tool/git/bootstrap_worktree.sh --target functions  # Functions checks
 bash tool/git/bootstrap_worktree.sh --target flutter    # Flutter checks
-# Omit --target to install all three when the task needs all three.
+# Use --target all explicitly only when the task needs all three.
 ```
 
 The command checks the selected committed manifests and lockfiles, then runs
@@ -256,7 +263,8 @@ node tool/git/worktree_guard.mjs start \
   --paths <claimed-path[,claimed-path...]>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
 node tool/git/worktree_guard.mjs scope --paths <additional-paths> --worktree <path>
-node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path> \
+  --retain --reason <blocker-and-next-action>
 node tool/git/worktree_guard.mjs finish --worktree <path> \
   --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs retire --task-id <task-id> --worktree <path> \
@@ -281,8 +289,12 @@ identity and Git state, and refuses overlap with another task or any existing
 inspection blocker. In-scope uncommitted work is preserved; already out-of-scope
 edits cannot be legitimized through scope expansion. Repeated additions are
 idempotent. The command cannot narrow a claim or change its branch or base.
-`finish` removes only the local claim after the branch
-is clean and any unique commits are pushed. `stale` reports candidates and
+Plain `finish` refuses claim-only closeout. `finish --retain --reason <why>`
+checks that the branch is clean and unique work is pushed, reports handoff
+readiness rather than completion, and preserves the original claim and
+worktree. Its reason names the accountable next action/review condition.
+Successful `retire --apply` is the normal path that removes the checkout and
+then its claim. `stale` reports candidates and
 never deletes anything. When a task is deliberately superseded and pushing its
 commits is inappropriate, `finish --abandon` releases the claim only if the
 worktree is clean. It requires a reason, records `--by` or the local Git
@@ -290,8 +302,8 @@ identity in a disposable file under Git's common directory, and leaves the
 branch and worktree untouched.
 
 For a task awaiting acceptance, keep the claim until `retire` rather than
-releasing it with `finish`. `retire` reports eligibility and exact retention
-reasons; its explicit `--apply` performs only non-forced `git worktree remove`
+calling `finish` without an explicit retention reason. `retire` reports
+eligibility and exact retention reasons; its explicit `--apply` performs only non-forced `git worktree remove`
 and releases the own claim after verifying path and registration absence.
 It preserves every branch, recovery ref and stash. Repeat after successful
 closure returns `already_absent` without another removal; absence alone never
@@ -410,6 +422,28 @@ After changing skill routing, run:
 node tool/run.mjs check agent:context-pack
 ```
 
+## Storage Discipline
+
+Retire accepted disposable worktrees while their context is fresh. Retained
+worktrees need an exact path, owner, reason and next action in the existing task
+handoff. Age, a merged PR, an unclaimed checkout, or a green hygiene audit does
+not replace preservation/ownership checks. Keep lightweight Git recovery refs
+instead of repeated full source clones when they provide the required recovery.
+Do not copy installed dependencies into backup/source handoffs.
+
+Install only the selected dependency family. Keep required recovery and release
+outputs explicitly identified so generated caches can be reviewed and removed
+at closeout. Dart's global analyzer/plugin caches and application update caches
+are shared across tasks: inspect their size and active consumers separately,
+never delete them from a child task's closeout. Re-measure actual filesystem
+free space after approved cleanup; apparent folder totals are not recovered
+bytes on APFS.
+
+The local branch-hygiene automation and GitHub Branch Hygiene workflow are
+read-only auditors, not cleanup workers. They must not be represented as
+retiring local checkouts. Follow up on actionable retained-worktree findings
+through the existing task owner; do not create another tracked cleanup ledger.
+
 ## Completion
 
 A local contribution is ready for handoff when its intended source and
@@ -475,8 +509,14 @@ Retirement is part of closeout, using existing Git and the guard:
    claim, stale timestamp, typed flag or previously denied deletion is not
    authority. Preserve denied targets and route their blocker to the existing
    owner; never try another actor or cleanup path. Preserve unique ignored files
-   and verify external recovery; have the existing storage owner normally dispose
-   of proven regenerable caches before retrying. There is no ignored-file bypass.
+   and verify external recovery. During the same closeout, the task owner reviews
+   the compact ignored-directory list, stops its consumers and disposes only of
+   proven regenerable dependency/build caches within the existing cleanup
+   authorization, then retries. Do not defer ordinary dependency cleanup to a
+   separate task or drop the claim to silence the blocker. Unknown files,
+   credentials, release binaries and recovery/report outputs remain protected;
+   the directory name `build` alone is not deletion proof. There is no
+   ignored-file bypass.
 6. In the normal admitted cleanup slot, repeat the exact `retire` command with
    `--apply`. It rechecks and runs `git worktree remove <path>` without force,
    verifies path/registration absence, then releases only its own claim. A Git
