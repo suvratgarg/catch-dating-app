@@ -260,6 +260,16 @@ export function eventParticipationPatch(params: {
 
   if (!params.exists) {
     patch.createdAt = now;
+    // These nullable fields are required by the canonical roster contract.
+    // Initialize only new edges so later transitions retain existing history
+    // and payment attribution unless the status explicitly clears a field.
+    patch.signedUpAt = null;
+    patch.waitlistedAt = null;
+    patch.attendedAt = null;
+    patch.cancelledAt = null;
+    patch.deletedAt = null;
+    patch.genderAtSignup = null;
+    patch.paymentId = null;
   }
   if (params.genderAtSignup !== undefined) {
     patch.genderAtSignup = params.genderAtSignup;
@@ -274,21 +284,21 @@ export function eventParticipationPatch(params: {
   switch (params.status) {
   case "signedUp":
     patch.signedUpAt = now;
-    patch.waitlistedAt = admin.firestore.FieldValue.delete();
-    patch.attendedAt = admin.firestore.FieldValue.delete();
-    patch.cancelledAt = admin.firestore.FieldValue.delete();
-    patch.deletedAt = admin.firestore.FieldValue.delete();
+    patch.waitlistedAt = null;
+    patch.attendedAt = null;
+    patch.cancelledAt = null;
+    patch.deletedAt = null;
     break;
   case "waitlisted":
     patch.waitlistedAt = now;
-    patch.attendedAt = admin.firestore.FieldValue.delete();
-    patch.cancelledAt = admin.firestore.FieldValue.delete();
-    patch.deletedAt = admin.firestore.FieldValue.delete();
+    patch.attendedAt = null;
+    patch.cancelledAt = null;
+    patch.deletedAt = null;
     break;
   case "attended":
     patch.attendedAt = now;
-    patch.cancelledAt = admin.firestore.FieldValue.delete();
-    patch.deletedAt = admin.firestore.FieldValue.delete();
+    patch.cancelledAt = null;
+    patch.deletedAt = null;
     break;
   case "cancelled":
     patch.cancelledAt = now;
