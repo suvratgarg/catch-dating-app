@@ -69,7 +69,11 @@ export function captureInputHash(capture) {
       }
     }
   }
-  const hash = crypto.createHash('sha256').update(JSON.stringify(capture));
+  // Website copy and destinations do not enter Flutter or device framing.
+  // Retain all other (including unknown future) fields conservatively.
+  const recipe = {...capture};
+  for (const key of ['alt', 'caption', 'walkthroughStep', 'websitePath', 'placeholderPath']) delete recipe[key];
+  const hash = crypto.createHash('sha256').update(JSON.stringify(recipe));
   for (const file of [...inputs].sort()) {
     hash.update(file).update('\0').update(fs.readFileSync(fromRepo(file))).update('\0');
   }
@@ -102,7 +106,7 @@ export function stampCapture(capture, captureId, fontPath) {
   fs.writeFileSync(file, Buffer.concat([image.subarray(0, image.length - 12), chunk, image.subarray(-12)]));
 }
 
-export function validateCapture(capture, captureId) {
+export function validateCapture(capture, captureId, {fontPath} = {}) {
   try {
     const {width, height, chunks} = parsePng(fs.readFileSync(fromRepo(capture.sourcePath)));
     assertFrame(capture, width, height);
@@ -114,6 +118,7 @@ export function validateCapture(capture, captureId) {
         !/^[a-f0-9]{40}$/u.test(record.sourceRevision) || !/^[a-f0-9]{64}$/u.test(record.nativeFontSha256)) {
       throw new Error('Render provenance does not match the catalog/native iPhone recipe.');
     }
+    if (fontPath && record.nativeFontSha256 !== digest(fs.readFileSync(fontPath))) throw new Error('Native font changed; render again.');
     if (record.imageSha256 !== digest(withoutProvenance(chunks))) throw new Error('PNG bytes differ from the recorded render.');
     if (record.inputSha256 !== captureInputHash(capture)) throw new Error('Capture inputs changed; regenerate and inspect before syncing.');
     return [];

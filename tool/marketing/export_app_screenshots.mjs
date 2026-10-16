@@ -31,6 +31,10 @@ if (command === "--help" || command === "-h" || command === "help") {
   command === "check-design-json"
 ) {
   checkDesignJson();
+} else if (command === "--plan") {
+  printRenderPlan();
+} else if (command === "--update-stale") {
+  updateExports(true);
 } else if (command === "--update" || command === "update") {
   updateExports();
 } else {
@@ -154,24 +158,40 @@ function buildDesignJson(manifest, catalog) {
   };
 }
 
-function updateExports() {
+function nativeFont() {
+  const fontPath = valueAfter("--sf-font") ??
+    (process.platform === "darwin" ? "/System/Library/Fonts/SFNS.ttf" : null);
+  if (!fontPath || !fs.existsSync(fontPath)) {
+    fail("Native iPhone product captures require a local system font.", [
+      "Run on macOS or pass --sf-font with an available native iOS font file.",
+    ]);
+  }
+  return fontPath;
+}
+
+function printRenderPlan() {
+  const {manifest, catalog} = loadContext();
+  const errors = validateExports(manifest, catalog, {requireSources: false});
+  if (errors.length) fail("Marketing capture planning failed.", errors);
+  const fontPath = nativeFont();
+  console.log(JSON.stringify(selectCaptures(manifest).map(capture => {
+    const entry = findCatalogEntry(catalog, capture.fixtureKey);
+    const reasons = validateCapture(capture, entry.id, {fontPath});
+    return {id: capture.id, render: reasons.length > 0, reasons};
+  }), null, 2));
+}
+
+function updateExports(staleOnly = false) {
   const {manifest, catalog} = loadContext();
   const errors = validateExports(manifest, catalog, {requireSources: false});
   if (errors.length > 0) fail("Marketing app screenshot export failed.", errors);
 
-  const selectedCaptures = selectCaptures(manifest);
+  const sfFont = nativeFont();
+  const selectedCaptures = selectCaptures(manifest).filter(capture => !staleOnly ||
+    validateCapture(capture, findCatalogEntry(catalog, capture.fixtureKey).id, {fontPath: sfFont}).length > 0);
   if (selectedCaptures.length === 0) {
     console.log("No active marketing captures selected.");
     return;
-  }
-
-  // Device framing must not disguise Android typography as an iPhone render.
-  const sfFont = valueAfter("--sf-font") ??
-    (process.platform === "darwin" ? "/System/Library/Fonts/SFNS.ttf" : null);
-  if (!sfFont || !fs.existsSync(sfFont)) {
-    fail("Native iPhone product captures require a local system font.", [
-      "Run on macOS or pass --sf-font with an available native iOS font file.",
-    ]);
   }
 
   const selected = selectedCaptures.map((capture) => ({
@@ -577,7 +597,9 @@ function printHelp() {
 
 Commands:
   --list             Show marketing slots and catalog mapping.
-  --update           Render active app captures and write framed source PNGs.
+  --update           Force a fresh render of selected active captures.
+  --update-stale     Render only missing, invalid or changed-input captures.
+  --plan             Print the per-capture render/reuse decision as JSON.
   --check            Verify frame, render provenance, and current capture inputs.
   --design-json      Print Figma/AI-friendly capture metadata and frame geometry.
   --update-design-json

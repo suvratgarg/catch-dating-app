@@ -149,11 +149,36 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
       process.versions.node.split(".")[0] !== pin("NODE_VERSION")) {
     throw new Error("Installed Node/Flutter versions do not match source toolchain pins.");
   }
-  // Remove every selected final output so even a successful no-op cannot
-  // package old images. The canonical exporter also clears its raw outputs.
-  for (const file of generatedPaths) fs.unlinkSync(path.join(root, file));
+  // Reuse only current-input, current-font PNGs, byte-for-byte. Never stamp an
+  // old image with a new source identity. Older source exporters retain the
+  // original render-all path until they support the checked planning protocol.
+  const exporterHelp = execute(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--help"], true);
+  const plan = exporterHelp.includes("--update-stale")
+    ? JSON.parse(execute(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--sf-font", sfFont], true))
+    : captures.map(capture => ({id: capture.id, render: true}));
+  if (!Array.isArray(plan) || plan.length !== captures.length ||
+      new Set(plan.map(item => item.id)).size !== captures.length ||
+      plan.some(item => typeof item.render !== "boolean" || !captures.some(c => c.id === item.id))) {
+    throw new Error("Invalid or incomplete capture reuse plan.");
+  }
+  const renderIds = new Set(plan.filter(item => item.render).map(item => item.id));
+  const reusedBytes = new Map(captures.filter(c => !renderIds.has(c.id)).map(c =>
+    [c.id, fs.readFileSync(regularFile(root, c.sourcePath))]));
+  for (const capture of captures) {
+    if (!renderIds.has(capture.id)) {
+      const origin = readProvenance(reusedBytes.get(capture.id)).sourceRevision;
+      if (!/^[a-f0-9]{40}$/u.test(origin ?? "")) throw new Error("Invalid original render revision.");
+      git("merge-base", "--is-ancestor", origin, sourceSha);
+      continue;
+    }
+    // A failed/no-op renderer must never fall back to an old selected output.
+    fs.unlinkSync(path.join(root, capture.sourcePath));
+    fs.unlinkSync(path.join(root, capture.websitePath));
+  }
+  for (const file of [designPath, websiteManifestPath]) fs.unlinkSync(path.join(root, file));
   const commands = [
-    ["tool/marketing/export_app_screenshots.mjs", "--update", "--sf-font", sfFont],
+    ...(renderIds.size ? [["tool/marketing/export_app_screenshots.mjs", "--update",
+      "--ids", [...renderIds].join(","), "--sf-font", sfFont]] : []),
     ["tool/marketing/export_app_screenshots.mjs", "--update-design-json"],
     ["tool/marketing/sync_website_media.mjs", "--update"],
     ["tool/marketing/export_app_screenshots.mjs", "--check"],
@@ -169,19 +194,24 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   const records = captures.map(capture => {
     const bytes = fs.readFileSync(regularFile(root, capture.sourcePath));
     const provenance = readProvenance(bytes);
-    if (provenance.sourceRevision !== sourceSha || provenance.nativeFontSha256 !== fontHash) {
+    if ((renderIds.has(capture.id) && provenance.sourceRevision !== sourceSha) ||
+        provenance.nativeFontSha256 !== fontHash) {
       throw new Error(`Capture has a different source revision or font: ${capture.id}`);
+    }
+    if (reusedBytes.has(capture.id) && !bytes.equals(reusedBytes.get(capture.id))) {
+      throw new Error(`Reused capture bytes changed: ${capture.id}`);
     }
     if (!bytes.equals(fs.readFileSync(regularFile(root, capture.websitePath)))) {
       throw new Error(`Website copy differs: ${capture.id}`);
     }
-    return {id: capture.id, sourcePath: capture.sourcePath, websitePath: capture.websitePath, provenance};
+    return {id: capture.id, sourcePath: capture.sourcePath, websitePath: capture.websitePath, provenance,
+      disposition: renderIds.has(capture.id) ? "rendered" : "reused", verifiedSourceSha: sourceSha};
   });
   const files = [manifestPath, ...generatedPaths].map(file => {
     const bytes = fs.readFileSync(regularFile(root, file));
     return {path: file, bytes: bytes.length, sha256: sha256(bytes)};
   });
-  const receipt = {version: 1, kind: "canonical marketing export; synthetic fixture evidence",
+  const receipt = {version: 2, kind: "canonical marketing export; synthetic fixture evidence",
     sourceSha, sourceTree: git("rev-parse", "HEAD^{tree}"), workflowSha, repository, runId, runAttempt,
     ...(request ? {workflowDefinitionSha: request.workflowDefinitionSha, request} : {}),
     runUrl: `https://github.com/${repository}/actions/runs/${runId}/attempts/${runAttempt}`,

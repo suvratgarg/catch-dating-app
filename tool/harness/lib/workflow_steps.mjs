@@ -296,3 +296,33 @@ export function planCodegenFreshness({graph, codegenIds, repositoryPaths, sparse
   }
   return checks;
 }
+
+/** Early source gates share their executable owners with the selected CI lanes.
+ * These are checks, never generators or deploy tools. Keep unavailable runtimes
+ * explicit so a sparse planning checkout cannot claim a complete preflight.
+ */
+export function planSourcePreflight({targets, sparsePaths = [], executableAvailable, packageAvailable}) {
+  if (!targets.some(target => target === "flutter" || target === "contracts" ||
+      target === "visual_integration" || target === "tools" || target.startsWith("flutter_"))) return [];
+  const commands = [
+    ["node tool/architecture/check_dependency_direction.mjs"],
+    ["node tool/architecture/check_mutation_error_surfaces.mjs"],
+    ["node tool/architecture/check_route_string_literals.mjs"],
+    ["node tool/architecture/check_flutter_source_size.mjs --check"],
+    ["node tool/test/check_flutter_test_size.mjs --check"],
+    ["node tool/ui_capture/check_route_inventory.mjs --check"],
+    ["node tool/design/generate_widget_catalog.mjs --check"],
+    ["node tool/design/build_host_feature_responsibilities.mjs --check"],
+    ["node tool/design/build_design_sync_manifest.mjs --check"],
+    ["dart run tool/architecture/provider_graph.dart --check", "analyzer"],
+    ["dart run tool/architecture/check_ui_composition_contracts.dart --check", "analyzer"],
+  ];
+  return commands.map(([command, dependency]) => {
+    const reasons = [];
+    if (sparsePaths.length) reasons.push("source preflight requires a full checkout");
+    if (!executableAvailable(command.split(" ")[0])) reasons.push("missing runtime for " + command);
+    if (dependency && !packageAvailable({kind: "dart", name: dependency,
+      from: ".dart_tool/package_config.json"})) reasons.push("missing Dart package " + dependency);
+    return {command, timeoutSeconds: 180, runnable: reasons.length === 0, reasons};
+  });
+}

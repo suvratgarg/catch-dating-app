@@ -201,6 +201,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.equal(source.match(/persist-credentials: false/gu)?.length, 2);
   assert.match(source, /ref: \$\{\{ env.CAPTURE_WORKFLOW_SHA \}\}/u);
   assert.match(source, /ref: \$\{\{ env.CAPTURE_SOURCE_SHA \}\}/u);
+  assert.match(source, /path: capture-source\n[^]*?fetch-depth: 0\n/u);
   assert.ok(steps.findIndex(s => s.name === "Validate capture request and controller identity") <
     steps.findIndex(s => s.name === "Checkout exact capture source separately"));
   assert.match(source, /if-no-files-found: error/u);
@@ -389,4 +390,74 @@ test("runner output path is initialized on the runner, never in job-level env", 
   assert.equal(result.status, 0, result.stderr);
   assert.equal(fs.readFileSync(envFile, "utf8"), `CAPTURE_OUTPUT_DIR=${runnerTemp}/canonical-marketing-captures\n`);
   assert.match(source, /path: \$\{\{ env.CAPTURE_OUTPUT_DIR \}\}\//u);
+});
+
+
+function preserveAndAdvance(f, message) {
+  f.git("add", ".");
+  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", message);
+  f.options.sourceSha = f.git("rev-parse", "HEAD");
+  f.options.outputDir += "-next";
+}
+
+test("hosted reuse preserves original render SHA and bytes under a new verified source", t => {
+  const f = fixture(t);
+  const original = exportHostedCaptures(f.options);
+  f.write("unrelated-backend.txt", "does not affect rendering");
+  preserveAndAdvance(f, "Preserve captures and unrelated change");
+  const calls = fs.readFileSync(f.calls, "utf8");
+  const reused = exportHostedCaptures(f.options);
+  assert.equal(reused.version, 2);
+  assert.equal(fs.readFileSync(f.calls, "utf8"), calls, "no renderer or framer needed");
+  for (const [i, capture] of reused.captures.entries()) {
+    assert.equal(capture.disposition, "reused");
+    assert.equal(capture.verifiedSourceSha, f.options.sourceSha);
+    assert.equal(capture.provenance.sourceRevision, original.sourceSha);
+    assert.notEqual(capture.provenance.sourceRevision, capture.verifiedSourceSha);
+    assert.deepEqual(capture.provenance, original.captures[i].provenance);
+  }
+});
+
+test("one corrupted capture rerenders alone while the other eleven retain original provenance", t => {
+  const f = fixture(t);
+  exportHostedCaptures(f.options);
+  f.write(f.manifest.captures[0].sourcePath, "corrupt PNG");
+  preserveAndAdvance(f, "Corrupt one image");
+  const before = fs.readFileSync(f.calls, "utf8").trim().split("\n").length;
+  const result = exportHostedCaptures(f.options);
+  assert.equal(result.captures.filter(c => c.disposition === "rendered").length, 1);
+  assert.equal(result.captures.filter(c => c.disposition === "reused").length, 11);
+  assert.equal(fs.readFileSync(f.calls, "utf8").trim().split("\n").length - before, 2);
+});
+
+test("valid image bytes from an unrelated render revision cannot be reused", t => {
+  const f = fixture(t);
+  exportHostedCaptures(f.options);
+  preserveAndAdvance(f, "Preserve rendered captures");
+  const unrelated = f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid",
+    "commit-tree", f.git("rev-parse", "HEAD^{tree}"), "-m", "Unrelated history with identical files");
+  f.git("reset", "--hard", unrelated);
+  f.options.sourceSha = unrelated;
+  const calls = fs.readFileSync(f.calls, "utf8");
+  assert.throws(() => exportHostedCaptures(f.options), /merge-base --is-ancestor/);
+  assert.equal(fs.readFileSync(f.calls, "utf8"), calls);
+  assert.ok(!fs.existsSync(f.options.outputDir));
+});
+
+test("changed transitive inputs and changed native font invalidate reuse", t => {
+  const f = fixture(t);
+  exportHostedCaptures(f.options);
+  f.write("lib/leaf.dart", "const title = 'Changed';\n");
+  preserveAndAdvance(f, "Change render dependency");
+  assert.ok(exportHostedCaptures(f.options).captures.every(c => c.disposition === "rendered"));
+  preserveAndAdvance(f, "Preserve new captures");
+  fs.writeFileSync(f.options.sfFont, "new font version");
+  assert.ok(exportHostedCaptures(f.options).captures.every(c => c.disposition === "rendered"));
+});
+
+test("a successful no-op framer cannot package an invalidated capture", t => {
+  const f = fixture(t);
+  f.executable("dart", "process.exit(0);");
+  assert.throws(() => exportHostedCaptures(f.options), /failed/);
+  assert.ok(!fs.existsSync(f.options.outputDir));
 });

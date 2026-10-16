@@ -1015,8 +1015,8 @@ test("PR admission serializes full validation without green deferred checks", ()
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   const feedback = workflow("pr-feedback.yml");
   const plan = namedStep(feedback, "Plan affected checks");
-  assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --base "\$BASE_SHA" --head HEAD --mode pr/u);
-  assert.match(ci, /node tool\/harness\/verify_local\.mjs --preflight \\\n\s+--base "\$base_sha" --head "\$HEAD_SHA" --mode "\$event_mode"/u);
+  assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --allow-deferred --base "\$BASE_SHA" --head HEAD --mode pr/u);
+  assert.match(ci, /node tool\/harness\/verify_local\.mjs --preflight --allow-deferred \\\n\s+--base "\$base_sha" --head "\$HEAD_SHA" --mode "\$event_mode"/u);
   for (const source of [ci, feedback]) {
     assert.match(source, /uses: \.\/\.github\/actions\/load-toolchain/u);
     assert.match(source, /uses: actions\/setup-node@v6/u);
@@ -1053,18 +1053,31 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
 
 test("headless journeys start independently of macOS rendering and native smoke", () => {
   const source = workflow("visual-integration-ci.yml");
-  const headless = source.split("  headless-journeys:\n")[1]?.split("  visual-and-integration:\n")[0];
+  const headless = source.split("  headless-journeys:\n")[1]?.split("  goldens:\n")[0];
   assert.ok(headless);
   assert.match(headless, /runs-on: ubuntu-latest/u);
   assert.match(headless, /timeout-minutes: 20/u);
   assert.match(headless, /run: bash tool\/test_app_shell_integration.sh/u);
   assert.doesNotMatch(headless, /needs:|goldens|Widgetbook|CocoaPods/u);
-  const native = source.split("  visual-and-integration:\n")[1];
-  assert.match(native, /flutter test --concurrency=1 test\/goldens/u);
-  assert.match(native, /Widgetbook corpus goldens \(pass 1\)/u);
-  assert.match(native, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
+  const goldens = source.split("  goldens:\n")[1].split("  native-smoke:\n")[0];
+  const native = source.split("  native-smoke:\n")[1];
+  assert.match(goldens, /flutter test --concurrency=1 test\/goldens/u);
+  assert.match(goldens, /Widgetbook corpus goldens \(pass 1\)/u);
+  assert.match(goldens, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
+  assert.match(goldens, /git diff --exit-code/u);
   assert.match(native, /bash tool\/test_app_shell_integration.sh macos smoke/u);
-  assert.doesNotMatch(native, /Deterministic app-shell integration suites/u);
+  assert.match(native, /cache-cocoapods/u);
+  assert.match(native, /actions\/checkout@v6/u);
+  assert.doesNotMatch(goldens, /macos smoke/u);
+  assert.doesNotMatch(native, /flutter test.*goldens/u);
+  for (const job of [goldens, native]) {
+    assert.doesNotMatch(job, /^    (?:needs:|if:|continue-on-error:)/mu,
+      "both jobs must execute independently and remain required");
+    assert.doesNotMatch(job, /continue-on-error/u);
+  }
+  const ci = workflow("ci.yml");
+  assert.match(ci, /uses: \.\/\.github\/workflows\/visual-integration-ci.yml/u);
+  assert.match(ci.slice(ci.indexOf("\n  required:")), /- visual-integration/u);
 });
 
 test("backend integration runs strict execution inside both emulators with a bounded job", () => {
@@ -1176,4 +1189,23 @@ test("Flutter design checks share only complete owners in the actual required To
   }
   assert.match(flutter, /--check-handoff[\s\S]*--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
   assert.doesNotMatch(flutter, /run: node tool\/design\/build_context_pack\.mjs --check/u);
+});
+
+
+test("complete source preflight gates fanout and cannot be bypassed by Required CI", () => {
+  const ci = workflow("ci.yml");
+  const block = ci.slice(ci.indexOf("  source-preflight:\n"), ci.indexOf("  tools:\n"));
+  assert.match(block, /needs: plan/u);
+  assert.match(block, /npm ci/u);
+  assert.match(block, /setup-flutter/u);
+  assert.match(block, /flutter pub get --enforce-lockfile/u);
+  assert.match(block, /verify_local.mjs/u);
+  assert.doesNotMatch(block, /--allow-deferred|continue-on-error/u);
+  const after = ci.slice(ci.indexOf("  tools:\n"));
+  assert.doesNotMatch(after, /^    needs: plan$/mu);
+  for (const id of ["required", "finalize-plan", "package-firebase"]) {
+    const job = ci.slice(ci.indexOf(`\n  ${id}:\n`)).split(/\n  [a-z-]+:\n/u)[1];
+    assert.match(job, /- source-preflight/u);
+  }
+  assert.match(ci.slice(ci.indexOf("  required:\n")), /source-preflight.*result/u);
 });

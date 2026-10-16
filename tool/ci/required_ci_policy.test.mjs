@@ -23,7 +23,7 @@ const dependencies = [...required.matchAll(/^      - ([a-z-]+)$/gmu)].map((match
 const graph = JSON.parse(fs.readFileSync(path.join(root, "tool/harness/component_graph.json"), "utf8"));
 const successfulNeeds = () => {
   const needs = Object.fromEntries(dependencies.map((job) =>
-    [job, {result: ["admission", "plan", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
+    [job, {result: ["admission", "plan", "source-preflight", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
   needs.plan.outputs = Object.fromEntries(graph.targets.map(target => [target, "false"]));
   return needs;
 };
@@ -43,7 +43,7 @@ function failed(result) {
 }
 
 test("Required CI retains every automated dependency without the human source gate", () => {
-  assert.deepEqual(dependencies, ["admission", "plan", "finalize-plan", ...selectedLanes, "package-firebase"]);
+  assert.deepEqual(dependencies, ["admission", "plan", "source-preflight", "finalize-plan", ...selectedLanes, "package-firebase"]);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   passed(run("Require every selected lane"));
   const needs = successfulNeeds();
@@ -221,5 +221,15 @@ for (const target of graph.targets) {
     passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(passedNeeds)}));
     delete passedNeeds.plan.outputs[target];
     failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(passedNeeds)}));
+  });
+}
+
+
+for (const result of ["failure", "cancelled", "skipped", undefined]) {
+  test(`Required CI rejects incomplete source preflight (${result})`, () => {
+    const needs = successfulNeeds();
+    if (result === undefined) delete needs["source-preflight"];
+    else needs["source-preflight"].result = result;
+    failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs)}));
   });
 }

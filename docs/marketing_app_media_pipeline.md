@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.7.0
-updated: 2026-10-06
+version: 1.8.0
+updated: 2026-10-16
 owner: marketing_website
 status: active
 ---
@@ -66,7 +66,9 @@ byte hash, and capture input hash. Inputs include the capture runner/catalog,
 local transitive Dart imports/exports/parts (including production widgets and
 fixtures), canonical scenario/persona JSON, declared assets/fonts, package
 manifests/lock, framing/export tools,
-and pinned toolchain configuration. The catalog is shared, so an input change
+and pinned toolchain configuration. Website-only alt text, captions, walkthrough
+labels and destination paths are excluded; unknown recipe fields remain hashed.
+The catalog is shared, so an input change
 can conservatively invalidate multiple slots. Adding an asset to a declared
 directory also invalidates captures. No machine-specific font path or font
 bytes are distributed.
@@ -204,8 +206,18 @@ unpublished Programs commits cannot be dispatched. The job runs at most 12
 canonical catalog entries through the real iOS/SF Flutter capture path, frames
 the 12 light marketing exports, regenerates design context, syncs website
 copies, then runs the existing provenance, input freshness, framing and
-copy-byte checks. All old final outputs are removed first. Any render/check
-failure prevents artifact upload; there is no stale image fallback.
+copy-byte checks. A per-capture plan reuses only byte-verified PNGs whose full
+render-input fingerprint and native font match. Reused PNGs keep their original
+render SHA, which must be an ancestor of the selected source; they are never
+restamped. Only invalidated outputs are removed before rendering. A render/check
+failure prevents artifact upload; there is no stale image fallback. Older source
+exporters without this protocol retain the full-render behavior.
+
+`--plan --sf-font <path>` prints render/reuse reasons; `--update-stale` renders
+only invalidated selections. `--update` still forces rendering for intentional
+review. Source dependency changes, new assets, font changes, missing or corrupt
+PNGs all invalidate reuse. Reusing a valid source can repair a missing or stale
+website copy without rerendering.
 
 The seven-day immutable artifact is named
 `canonical-marketing-<source-sha>-<run-id>-<attempt>`. It contains exactly the
@@ -213,7 +225,12 @@ The seven-day immutable artifact is named
 website manifest, design context, and `capture-receipt.json`. The receipt
 records per-file hashes/sizes, embedded PNG provenance, exact source SHA/tree,
 controller and workflow-definition SHAs, validated trigger request, helper hash,
-toolchain/runner identity and run/attempt URL.
+toolchain/runner identity and run/attempt URL. Receipt version 2 additionally
+records each capture's `rendered`/`reused` disposition and `verifiedSourceSha`.
+For reuse, the PNG's `sourceRevision` identifies the original render and must not
+be relabeled as the current render source. Consumers must verify the selected
+source receipt, original provenance, full input validation and byte inventory;
+they must not assume every image was newly rendered.
 The job summary records the upload's artifact ID, digest and download URL;
 retain that identity together with the receipt when reviewing or handing off.
 SF font bytes, dependency caches and arbitrary checkout files are excluded.
