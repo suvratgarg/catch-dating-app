@@ -6,15 +6,18 @@ import {spawnSync} from "node:child_process";
 import test from "node:test";
 const packageJson = JSON.parse(await fs.readFile(new URL("../package.json", import.meta.url), "utf8"));
 
-test("supported Operations test selection includes the nested Sales adapter suite", () => {
+test("supported Operations test selection uses the nonempty discovery driver", () => {
   assert.equal(packageJson.scripts.test,
-    "node --test test/*.test.mjs src/workflows/outreach-drafting/*.test.mjs");
+    "node scripts/run-tests.mjs");
 });
 
 test("a failing nested adapter sentinel fails the unchanged supported npm test command", async (t) => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "catch-outreach-discovery-"));
   t.after(() => fs.rm(directory, {recursive: true, force: true}));
   await fs.mkdir(path.join(directory, "test"));
+  await fs.mkdir(path.join(directory, "scripts"));
+  await fs.copyFile(new URL("../scripts/run-tests.mjs", import.meta.url),
+    path.join(directory, "scripts/run-tests.mjs"));
   const nested = path.join(directory, "src/workflows/outreach-drafting");
   await fs.mkdir(nested, {recursive: true});
   await fs.writeFile(path.join(directory, "package.json"), JSON.stringify({
