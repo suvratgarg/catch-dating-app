@@ -108,6 +108,7 @@ function emulatorGuardedTest(source, file = "fixture.test.ts") {
   const registrationNames = new Set(["test", "it", "describe"]);
   const namespaces = new Set();
   const bindings = new Map();
+  const unsafeBindings = new Set();
   const walk = (node, visit) => {
     visit(node);
     ts.forEachChild(node, child => walk(child, visit));
@@ -128,8 +129,17 @@ function emulatorGuardedTest(source, file = "fixture.test.ts") {
         }
       }
     }
+    if (ts.isParameter(node) || ts.isFunctionDeclaration(node) && node.name) {
+      const mark = name => {
+        if (ts.isIdentifier(name)) unsafeBindings.add(name.text);
+        else ts.forEachChild(name, mark);
+      };
+      mark(node.name);
+    }
     if (!ts.isVariableDeclaration(node) || !node.initializer) return;
     if (ts.isIdentifier(node.name)) {
+      if (!ts.isVariableDeclarationList(node.parent) ||
+          !(node.parent.flags & ts.NodeFlags.Const)) unsafeBindings.add(node.name.text);
       const previous = bindings.get(node.name.text) ?? [];
       bindings.set(node.name.text, [...previous, node.initializer]);
       if (isTestModule(node.initializer)) {
@@ -152,6 +162,7 @@ function emulatorGuardedTest(source, file = "fixture.test.ts") {
         [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword, ts.SyntaxKind.NullKeyword].includes(node.kind)) return false;
     if (ts.isIdentifier(node)) {
       if (node.text === "undefined") return false;
+      if (unsafeBindings.has(node.text)) return unsupported(node);
       const values = bindings.get(node.text);
       if (values?.length !== 1 || visiting.has(node.text)) return unsupported(node);
       return emulatorDependent(values[0], new Set([...visiting, node.text]));
@@ -184,6 +195,7 @@ function emulatorGuardedTest(source, file = "fixture.test.ts") {
     return unsupported(node);
   }
   function testCallee(node) {
+    if (isTestModule(node)) return true;
     if (ts.isIdentifier(node)) return tests.has(node.text);
     if (!ts.isPropertyAccessExpression(node)) return false;
     if (registrationNames.has(node.name.text) && (isTestModule(node.expression) ||
@@ -197,7 +209,7 @@ function emulatorGuardedTest(source, file = "fixture.test.ts") {
       // test binding; the enclosing property expression is checked separately.
       if (ts.isIdentifier(child) && ts.isPropertyAccessExpression(child.parent) &&
           child.parent.name === child) return;
-      if (testCallee(child)) found = true;
+      if (testCallee(child) || ts.isIdentifier(child) && namespaces.has(child.text)) found = true;
     });
     return found;
   }
@@ -214,6 +226,24 @@ function emulatorGuardedTest(source, file = "fixture.test.ts") {
     if (!testCallee(node.expression)) {
       if (referencesRegistration(node.expression)) unsupported(node.expression);
       return;
+    }
+    // A wrapper that exits before registering a test is conditional coverage.
+    // Reject that control flow instead of attempting to execute/evaluate it.
+    for (let child = node, parent = node.parent; parent && !ts.isFunctionLike(parent);
+      child = parent, parent = parent.parent) {
+      if (!ts.isBlock(parent)) continue;
+      for (const statement of parent.statements) {
+        if (statement === child) break;
+        if (!ts.isIfStatement(statement)) continue;
+        let exits = false;
+        const findExit = part => {
+          if (ts.isFunctionLike(part)) return;
+          if (ts.isReturnStatement(part)) exits = true;
+          ts.forEachChild(part, findExit);
+        };
+        findExit(statement);
+        if (exits) unsupported(statement);
+      }
     }
     const options = node.arguments[1];
     if (options && ts.isObjectLiteralExpression(options)) {
@@ -276,6 +306,7 @@ test("canonical strict rules lane selects every authored emulator-guarded test",
 test("emulator inventory follows direct, aliased and conditional registrations", () => {
   for (const source of [
     "import {test} from 'node:test'; test('case', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
+    "require('node:test')('case', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
     "import test from 'node:test'; const host = process.env.FIRESTORE_EMULATOR_HOST ?? ''; const enabled = host.length > 0 && /localhost/.test(host); test('case', {skip: !enabled}, () => {});",
     "const {test: nodeTest} = require('node:test'); const enabled = Boolean(process.env['FIREBASE_STORAGE_EMULATOR_HOST']); const test = (name, fn) => nodeTest(name, {skip: !enabled}, fn);",
     "import * as tests from 'node:test'; if (process.env.FIRESTORE_EMULATOR_HOST) tests.test('case', () => {});",
@@ -302,6 +333,10 @@ test("unsupported registration guards fail explicitly instead of losing coverage
   for (const registration of [
     "test('case', {skip: !hasEmulator()}, () => {});",
     "test('case', options, () => {});",
+    "let enabled = false; enabled = !!process.env.FIRESTORE_EMULATOR_HOST; test('case', {skip: !enabled}, () => {});",
+    "const enabled = false; function wrapper(enabled = !!process.env.FIRESTORE_EMULATOR_HOST) { test('case', {skip: !enabled}, () => {}); }",
+    "const tests = require('node:test'); tests['test']('case', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
+    "function wrapper() { if (!process.env.FIRESTORE_EMULATOR_HOST) return; test('case', () => {}); }",
     "test('case', {...options}, () => {});",
     "test('case', {['skip']: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
     "const enabled = true; function other() { const enabled = false; } test('case', {skip: enabled}, () => {});",
