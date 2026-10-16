@@ -4,6 +4,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {matchesGlobPath} from "../lib/path_glob.mjs";
+import {matchesCodegenInput} from "../harness/lib/component_graph.mjs";
 
 export class PreCommitGeneratedArtifactError extends Error {}
 
@@ -19,14 +20,12 @@ export function planPreCommitActions({graph, stagedPaths}) {
       generator.id === "admin.callable-validators" &&
       paths.some((candidate) => pathIsWithin(candidate, "contracts/callables"))
     ) return true;
-    return paths.some((candidate) =>
-      [...generator.inputs, ...generator.outputs].some((pattern) =>
-        matchesGlobPath(candidate, pattern)));
+    return paths.some((candidate) => matchesGeneratorPath(candidate, generator));
   });
   const l10n = generators.find((generator) => generator.id === "flutter.l10n");
   const l10nInputChanged = paths.some((candidate) =>
     matchesGlobPath(candidate, "lib/l10n/*.arb") ||
-      (l10n?.inputs ?? []).some((pattern) => matchesGlobPath(candidate, pattern)));
+      (l10n != null && matchesCodegenInput(candidate, l10n)));
   return {
     // Schema outputs have an exact canonical generator format. Formatting them
     // again would invalidate the freshness check that runs in this same hook.
@@ -53,12 +52,8 @@ export function runPreCommitGeneratedArtifacts({
   unstagedPaths: injectedUnstagedPaths,
 } = {}) {
   const resolvedRoot = path.resolve(repoRoot ?? defaultRepoRoot());
-  const sourceGraph = graph ?? JSON.parse(fs.readFileSync(
-    path.join(resolvedRoot, "tool/harness/component_graph.json"),
-    "utf8",
-  ));
   let stagedPaths = injectedStagedPaths ?? readGitPaths({
-    args: ["diff", "--cached", "--name-only", "--diff-filter=ACMRD", "-z", "--"],
+    args: ["diff", "--cached", "--name-only", "--no-renames", "-z", "--"],
     repoRoot: resolvedRoot,
     runCommand,
   });
@@ -66,14 +61,28 @@ export function runPreCommitGeneratedArtifacts({
     return {formattedDartPaths: [], generated: [], checked: []};
   }
 
-  assertNoPartiallyStagedDart({
-    repoRoot: resolvedRoot,
-    runCommand,
-    stagedPaths,
-    unstagedPaths: injectedUnstagedPaths,
-  });
+  const indexedGraph = graph == null ? readIndexedGraph({repoRoot: resolvedRoot, runCommand}) : null;
+  let sourceGraph = graph;
+  if (sourceGraph == null) {
+    try { sourceGraph = JSON.parse(indexedGraph.toString("utf8")); } catch {
+      throw new PreCommitGeneratedArtifactError("Refusing to use an invalid generator catalog in the Git index.");
+    }
+  }
 
   let plan = planPreCommitActions({graph: sourceGraph, stagedPaths});
+  // Generation can select downstream freshness checks through its outputs.
+  const preflightPlan = planPreCommitActions({graph: sourceGraph, stagedPaths:
+    plan.l10nInputChanged ? [...stagedPaths, ...plan.l10nOutputs] : stagedPaths});
+  if (indexedGraph != null && (preflightPlan.dartPaths.length > 0 ||
+    preflightPlan.triggeredGenerators.length > 0)) {
+    const catalog = "tool/harness/component_graph.json";
+    assertRegularPaths(resolvedRoot, [catalog]);
+    if (!fs.readFileSync(path.join(resolvedRoot, catalog)).equals(indexedGraph)) {
+      throw new PreCommitGeneratedArtifactError("Refusing to use a generator catalog that differs from the Git index.");
+    }
+  }
+  assertIndexIntegrity({plan: preflightPlan, repoRoot: resolvedRoot, runCommand,
+    unstagedPaths: injectedUnstagedPaths});
   const generated = [];
   if (plan.l10nInputChanged) {
     if (!plan.l10nWriteCommand || plan.l10nOutputs.length === 0) {
@@ -146,16 +155,50 @@ export function runPreCommitGeneratedArtifacts({
   return {checked, formattedDartPaths, generated};
 }
 
-function assertNoPartiallyStagedDart({
+function matchesGeneratorPath(candidate, generator) {
+  return matchesCodegenInput(candidate, generator) ||
+    generator.outputs.some(pattern => matchesGlobPath(candidate, pattern)) ||
+    generator.id === "flutter.l10n" && matchesGlobPath(candidate, "lib/l10n/*.arb");
+}
+
+function readIndexedGraph({repoRoot, runCommand}) {
+  const candidate = "tool/harness/component_graph.json";
+  const result = runCommand({command: "git", args: ["show", `:${candidate}`],
+    cwd: repoRoot, encoding: "buffer"});
+  const indexed = Buffer.from(result.stdout ?? "");
+  if (result.error || result.status !== 0) {
+    throw new PreCommitGeneratedArtifactError("Refusing to plan without the generator catalog in the Git index.");
+  }
+  return indexed;
+}
+
+function assertRegularPaths(repoRoot, candidates) {
+  for (const candidate of candidates) {
+    const parts = candidate.split("/");
+    for (let count = 1; count <= parts.length; count += 1) {
+      const relative = parts.slice(0, count).join("/");
+      let stat;
+      try { stat = fs.lstatSync(path.join(repoRoot, relative)); } catch (error) {
+        if (error.code === "ENOENT" || error.code === "ENOTDIR") break;
+        throw error;
+      }
+      if (!stat.isFile() && !stat.isDirectory()) {
+        throw new PreCommitGeneratedArtifactError(`Refusing to use a non-regular generator or formatter path: ${JSON.stringify(relative)}`);
+      }
+    }
+  }
+}
+
+function assertIndexIntegrity({
+  plan,
   repoRoot,
   runCommand,
-  stagedPaths,
   unstagedPaths,
 }) {
-  const stagedDart = new Set(stagedPaths.filter((candidate) => candidate.endsWith(".dart")));
-  if (stagedDart.size === 0) return;
+  const stagedDart = new Set(plan.dartPaths);
+  if (stagedDart.size === 0 && plan.triggeredGenerators.length === 0) return;
   const unstaged = unstagedPaths ?? readGitPaths({
-    args: ["diff", "--name-only", "--diff-filter=ACMR", "-z", "--"],
+    args: ["diff", "--name-only", "--no-renames", "-z", "--"],
     repoRoot,
     runCommand,
   });
@@ -166,13 +209,52 @@ function assertNoPartiallyStagedDart({
       `include unstaged work:\n${partial.map((candidate) => `  ${candidate}`).join("\n")}`,
     );
   }
+
+  const matchesSelected = candidate => stagedDart.has(candidate) ||
+    candidate === "tool/harness/component_graph.json" ||
+    plan.triggeredGenerators.some(generator => matchesGeneratorPath(candidate, generator)) ||
+    plan.l10nInputChanged && matchesGlobPath(candidate, "lib/l10n/generated/**");
+  const patterns = [...stagedDart, "tool/harness/component_graph.json",
+    ...plan.triggeredGenerators.flatMap(generator => [...generator.inputs, ...generator.outputs]),
+    ...(plan.triggeredGeneratorIds.includes("flutter.l10n") ?
+      ["lib/l10n/*.arb", ...(plan.l10nInputChanged ? ["lib/l10n/generated/**"] : [])] : [])];
+  // Bound discovery to declared families. Do not exclude ignored files: a
+  // generator can consume or overwrite them just like ordinary untracked files.
+  const roots = [...new Set(patterns.map(pattern => {
+    const wildcard = pattern.search(/[*?]/u);
+    const slash = pattern.lastIndexOf("/", wildcard);
+    return wildcard < 0 ? pattern : slash < 0 ? "." : pattern.slice(0, slash);
+  }))];
+  assertRegularPaths(repoRoot, roots);
+  const untracked = readGitPaths({repoRoot, runCommand,
+    args: ["ls-files", "--others", "-z", "--", ...roots.map(root => `:(literal)${root}`)]});
+  const tracked = readGitPaths({repoRoot, runCommand,
+    args: ["ls-files", "-v", "-z", "--", ...roots.map(root => `:(literal)${root}`)]});
+  assertRegularPaths(repoRoot, tracked.map(entry => entry.slice(2)).filter(matchesSelected));
+  const hidden = tracked.filter(entry => /^[a-zS] /u.test(entry)).map(entry => entry.slice(2));
+  const deleted = plan.l10nInputChanged ? readGitPaths({repoRoot, runCommand,
+    args: ["diff", "--cached", "--name-only", "--no-renames", "--diff-filter=D", "-z", "--"]}) : [];
+  const conflicts = [...new Set([
+    ...unstaged.filter(matchesSelected),
+    ...untracked.filter(matchesSelected),
+    ...hidden.filter(matchesSelected),
+    ...deleted.filter(candidate => plan.l10nOutputs.includes(candidate)),
+  ])].sort();
+  if (conflicts.length > 0) {
+    throw new PreCommitGeneratedArtifactError(
+      "Refusing to generate, format, or check against files that differ from the Git index " +
+      "or hide their index state. Stage or preserve the selected inputs/outputs explicitly " +
+      "before retrying (including staged output deletions):\n" +
+      conflicts.map(candidate => `  ${JSON.stringify(candidate)}`).join("\n"),
+    );
+  }
 }
 
 function readGitPaths({args, repoRoot, runCommand}) {
   const result = runCommand({args, command: "git", cwd: repoRoot, encoding: "buffer"});
-  if (result.status !== 0) {
+  if (result.error || result.status !== 0) {
     throw new PreCommitGeneratedArtifactError(
-      result.stderr?.toString().trim() || `git ${args.join(" ")} failed.`,
+      result.error?.message || result.stderr?.toString().trim() || `git ${args.join(" ")} failed.`,
     );
   }
   const output = Buffer.isBuffer(result.stdout)
@@ -206,6 +288,8 @@ function defaultRunCommand({args, command, cwd, encoding}) {
     encoding: encoding === "buffer" ? undefined : "utf8",
     shell: false,
     stdio: encoding === "buffer" ? "pipe" : "inherit",
+    maxBuffer: 16 * 1024 * 1024,
+    env: {...process.env, GIT_OPTIONAL_LOCKS: "0", GIT_NO_LAZY_FETCH: "1"},
   });
 }
 
