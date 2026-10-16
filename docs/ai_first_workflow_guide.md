@@ -1,7 +1,7 @@
 ---
 doc_id: ai_first_workflow_guide
-version: 2.2.0
-updated: 2026-08-07
+version: 2.3.0
+updated: 2026-10-16
 owner: agent_operating_model
 status: active
 ---
@@ -70,12 +70,14 @@ condition.
 ## 3. Concurrent Agent Work
 
 Git worktrees isolate simultaneous Codex, Claude, and human changes. The local
-task guard should add only four protections:
+task guard should add five protections:
 
 1. create a worktree from an exact commit;
 2. refuse overlapping active write scopes;
 3. report out-of-scope or dirty changes;
-4. refuse closeout when unique commits are not pushed.
+4. refuse closeout when unique commits are not pushed;
+5. retain the original claim during handoff and require actual guarded retirement
+   or an explicit retention reason. Plain `finish` must not orphan a worktree.
 
 Task state belongs under the common Git directory and is local. It does not
 belong in repository ledgers. The guard must work without GitHub for local

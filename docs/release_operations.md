@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.32
+version: 2.7.34
 updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
@@ -3154,3 +3154,64 @@ probe. Existing-authority authenticated Admin pagination remains a separate
 acceptance check; this route grants no new user, import, send or data-repair
 authority. Any failed metadata or postcondition stops the job and retains its
 isolated selected-only evidence. Source drift requires a new reviewed profile.
+
+## Immutable CAT151 booking writer release
+
+The selective backend caller's `cat151-booking` profile pins PR621 source
+`24eab314944b20ce3035756bb5d08cfbf3007f4d`, successful main CI38895481991
+attempt1 and artifact12044213158. The executable profile names fourteen existing
+Functions that reach the shared booking writer. It excludes dormant targets,
+indexes, rules, IAM repairs, flags, provider activation and application data.
+This fixed release does not use the generic fingerprint selector: the candidate
+contains a known unresolved dynamic Operations import. The reviewed fixed list
+is the scope authority; this is not proof of a full backend baseline or permission
+to drain the disabled Delivery queue. Source/package hashes and observed predecessor
+identities are enforced by `tool/ci/cat151_booking_release.mjs`. Current-main
+compatibility permits only the exact reviewed PR622 Sales catalog/test blobs;
+other backend source drift requires a new reviewed profile.
+
+DEV must finish first. PROD consumes the exact DEV receipt and requires approval
+by a configured human reviewer in `prod` before cloud authentication. Both stages
+retain the existing outer backend-delivery lock and per-environment Firebase lock.
+The job verifies the immutable package twice, preserves selected runtime settings,
+provider parameters and numeric secret bindings (including PROD webhook secret
+version2), and snapshots all unselected Functions, Extensions, indexes, field
+overrides, rules, Remote Config and project IAM. Any drift stops the job; it has
+no force, automatic deployment retry, rollback, broad deployment or full-baseline/cursor route.
+
+A completed deployment receipt is source/serving proof only. Booking and refund
+acceptance still requires a separately budgeted synthetic TEST transaction and
+readback demonstrating schema-valid booking, verified payment and full refund
+without manual field or refund reconciliation. Existing refunded transactions
+and earlier webhook delivery evidence do not prove that new booking flow.
+
+The `cat151-booking-prod-recovery` profile is limited to the predeployment
+Firebase CLI installation failure in run38910329785 attempt1. Before cloud
+authentication it verifies that exact failed run and its skipped deployment,
+then validates the pinned successful DEV artifact12051195096 and receipt bytes.
+It does not redeploy DEV, relax PROD predecessor checks, or accept arbitrary
+recovery runs. A new configured human `prod` approval is required. Only Firebase
+CLI installation has bounded retries; the Function deployment command remains
+single-shot. This recovery cannot resume a partial or completed PROD deployment.
+
+### Bounded CAT151 order receipt follow-up
+
+The `cat151-order-receipt` profile deploys only `createRazorpayOrder` from
+PR626 source `bbff52defd3c0dfb8df7c78c336c6549af7df47a`, successful main CI
+38931076239 attempt1 and artifact12059462962. The provider rejected
+long event receipts before order creation; the source fix bounds them to forty
+ASCII characters while retaining the full booking ownership notes.
+The package delivery baseline is `6817b248294ccb8e0084e7d3cac9161d058fe70d`,
+read from its verified `delivery-plan.json`; it is distinct from the source
+commit parent. Package verification and deployment proof bind that same baseline.
+
+`tool/ci/cat151_receipt_release.mjs` pins the immutable package and exact
+predecessors. `_cat151-receipt-promote.yml` runs DEV first and binds its receipt
+to the same run's human-reviewed PROD job. Choose this release kind with every
+other scope confirmation false and no recovery run. The profile admits no
+backend drift, arbitrary source/target inputs, recovery, deployment retry or
+baseline cursor. It preserves all unselected Functions, the completed booking
+schema deployment, webhook configuration, provider parameters, numeric secret
+versions, IAM, rules, indexes and flags through full before/after comparisons.
+The separately approved replacement native TEST checkout and full refund remain
+required acceptance; the rejected attempt is retained and is not reset.

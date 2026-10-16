@@ -37,7 +37,7 @@ printf '%s|npm|%s\\n' "$PWD" "$*" >> "$CATCH_BOOTSTRAP_TEST_LOG"
 printf '%s|flutter|%s\\n' "$PWD" "$*" >> "$CATCH_BOOTSTRAP_TEST_LOG"
 `);
 
-  const result = spawnSync("bash", [scriptPath], {
+  const result = spawnSync("bash", [scriptPath, "--target", "all"], {
     cwd: fixtureRoot,
     encoding: "utf8",
     env: {
@@ -109,6 +109,13 @@ test("worktree bootstrap help is dependency-free", () => {
   assert.match(result.stdout, /root npm workspace dependencies/u);
   assert.match(result.stdout, /Firebase Functions npm dependencies/u);
   assert.match(result.stdout, /Flutter\/Dart packages/u);
+});
+
+test("bootstrap refuses implicit full-stack installation before running any tools", () => {
+  const result = spawnSync("bash", [scriptPath], {encoding: "utf8", env: {...process.env, PATH: "/usr/bin:/bin"}});
+  assert.equal(result.status, 64);
+  assert.match(result.stderr, /--target/u);
+  assert.doesNotMatch(result.stdout, /Installing|Resolving|complete/u);
 });
 
 function writeExecutable(filePath, source) {

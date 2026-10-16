@@ -181,10 +181,10 @@
     },
     "backend-delivery-control": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]},
-        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]}
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]}
       },
       "affected": {}
     },
@@ -828,6 +828,10 @@
     {
       "id": "backend-delivery-control",
       "paths": {"include": [
+        "tool/ci/cat151_booking_release.mjs", "tool/ci/cat151_booking_release.test.mjs",
+        "tool/ci/cat151_receipt_release.mjs", "tool/ci/cat151_receipt_release.test.mjs",
+        ".github/workflows/_cat151-receipt-promote.yml",
+        ".github/workflows/selective-backend-release.yml",
         ".github/workflows/delivery.yml", ".github/workflows/_firebase-promote.yml",
         ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
         ".github/workflows/_backend-rebaseline.yml",
