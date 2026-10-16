@@ -356,7 +356,7 @@ export type EventOfferCheckoutResponse = ManageEventOfferCheckoutCallableRespons
 export async function manageEventOfferCheckout(
   payload: ManageEventOfferCheckoutCallablePayload
 ): Promise<ManageEventOfferCheckoutCallableResponse> {
-  return invokeWebsiteCallable("manageEventOfferCheckout", payload,
+  return invokeWebsiteCallable("manageEventOfferCheckout", {...payload, includeEventAccess: true},
     publicFormsFirebaseConfigured, "Event invitation checkout");
 }
 

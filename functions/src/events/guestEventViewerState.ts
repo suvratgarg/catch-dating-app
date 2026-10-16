@@ -45,6 +45,7 @@ export async function readGuestEventViewerState(params: {
   db: FirebaseFirestore.Firestore; uid: string; eventId: string;
   phoneE164: string; nowMillis: number;
   loadCurrentAuthUser?: LoadRecipientAuth;
+  offersEnabled?: () => Promise<boolean>;
 }): Promise<(EventViewerStateSource & {guest: Guest}) | null> {
   const {db, uid, eventId, nowMillis} = params;
   return db.runTransaction(async (tx) => {
@@ -58,7 +59,9 @@ export async function readGuestEventViewerState(params: {
       runtimeId: null, attendeeId: null, expiresAtMillis: nowMillis + 30_000};
     const viewer: EventViewerStateSource & {guest: Guest} = {eventId,
       organizerId, observedAtMillis: nowMillis, guest,
-      membership: {state: "notRequired", revision: null, decisionId: null},
+      membership: {state: event.eventPolicy?.admission.membershipRequired ||
+        event.eventPolicy?.admission.format === "membersOnly" ?
+        "none" : "notRequired", revision: null, decisionId: null},
       review: "none", admission: "none", attendance: "notRecorded",
       waitlisted: false, payment: "notRead",
       futureBooking: {allowed: false, reason: "unsupportedRoute"},
@@ -98,6 +101,8 @@ export async function readGuestEventViewerState(params: {
     if (participation && validateEventParticipationDocument(participation) &&
         participation.eventId === eventId && participation.uid === uid &&
         participation.clubId === event.clubId &&
+        (participation.organizerId === undefined ||
+          participation.organizerId === organizerId) &&
         ["signedUp", "attended"].includes(participation.status)) {
       viewer.admission = "nativeParticipation";
       guest.action = "registered";
@@ -196,17 +201,27 @@ export async function readGuestEventViewerState(params: {
     }
     // Claimed grants are recoverable without retaining secret invitation URLs.
     // An unclaimed grant still requires the original recipient-bound handoff.
+    let offerScope: string | null = null;
+    let issuedAt = -1;
+    let ambiguousOffer = false;
     for (const row of grants.docs) {
       try {
         const current = await readVerifiedOfferRecipient({db, tx, uid,
           grantId: row.id, nowMillis,
           loadCurrentAuthUser: params.loadCurrentAuthUser});
-        if (current.source.offer.paymentSnapshot.collectionMode !==
-            "catchCheckout") continue;
-        if (guest.offerGrantId) {
-          guest.offerGrantId = null; break;
+        if (current.source.offer.paymentSnapshot.expectedAmountMinor !== 0 &&
+            current.source.offer.paymentSnapshot.collectionMode !==
+              "catchCheckout") continue;
+        const key = [current.grant.offerId, current.grant.offerGeneration,
+          current.grant.offerRevision].join(":");
+        if (offerScope && offerScope !== key) {
+          ambiguousOffer = true; guest.offerGrantId = null; break;
         }
-        guest.offerGrantId = row.id;
+        offerScope = key;
+        if (current.grant.issuedAtMillis > issuedAt) {
+          issuedAt = current.grant.issuedAtMillis;
+          guest.offerGrantId = row.id;
+        }
       } catch (error) {
         if (!(error instanceof HttpsError) ||
             error.code !== "failed-precondition") throw error;
@@ -216,10 +231,13 @@ export async function readGuestEventViewerState(params: {
       try {
         assertUnpartitionedAdmission(event);
         guest.action = guest.offerPaymentId ||
-          await eventOfferIntegrationReady() ? "offer" : "unsupported";
+          await (params.offersEnabled ?? eventOfferIntegrationReady)() ?
+          "offer" : "unsupported";
       } catch {
         guest.action = guest.offerPaymentId ? "offer" : "unsupported";
       }
+    } else if (ambiguousOffer) {
+      guest.action = "unsupported";
     } else if (["submitted",
       "inReview"].includes(guest.applicationStatus ?? "")) {
       guest.action = "applicationPending";

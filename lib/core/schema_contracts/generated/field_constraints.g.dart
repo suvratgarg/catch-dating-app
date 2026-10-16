@@ -97878,6 +97878,30 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const manageEventOfferCheckoutCallablePayloadExpectedLedgerRevision = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.expectedLedgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadExpectedOfferGeneration = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.expectedOfferGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallablePayloadExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.expectedOfferRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const manageEventOfferCheckoutCallablePayloadExpectedRefundAmountPaise = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallablePayload.expectedRefundAmountPaise',
     required: true,
@@ -97893,6 +97917,11 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const manageEventOfferCheckoutCallablePayloadIncludeEventAccess = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallablePayload.includeEventAccess',
+    valueTypes: <String>['boolean'],
+  );
+
   static const manageEventOfferCheckoutCallablePayloadPaymentId = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallablePayload.paymentId',
     required: true,
@@ -97904,7 +97933,7 @@ abstract final class CatchContractConstraints {
     path: 'manageEventOfferCheckoutCallablePayload.requestId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9_-]{8,120}\$',
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
   );
 
   static const manageEventOfferCheckoutCallablePayloadToken = CatchContractFieldConstraints(
@@ -97914,11 +97943,28 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
+  static const manageEventOfferCheckoutCallableResponseAdmissionAttendeeId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.admission.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventOfferCheckoutCallableResponseAdmissionEventId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.admission.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
+  );
+
   static const manageEventOfferCheckoutCallableResponseGrantAmountPaise = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallableResponse.grant.amountPaise',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 100,
+    minimum: 0,
     maximum: 100000000,
   );
 
@@ -97962,6 +98008,30 @@ abstract final class CatchContractConstraints {
 
   static const manageEventOfferCheckoutCallableResponseGrantExpiresAtMillis = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallableResponse.grant.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantFreeAdmissionExpectedLedgerRevision = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.freeAdmission.expectedLedgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantFreeAdmissionExpectedOfferGeneration = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.freeAdmission.expectedOfferGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventOfferCheckoutCallableResponseGrantFreeAdmissionExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.grant.freeAdmission.expectedOfferRevision',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 1,
@@ -98067,6 +98137,15 @@ abstract final class CatchContractConstraints {
   static const manageEventOfferCheckoutCallableResponsePaymentCurrency = CatchContractFieldConstraints(
     path: 'manageEventOfferCheckoutCallableResponse.payment.currency',
     required: true,
+  );
+
+  static const manageEventOfferCheckoutCallableResponsePaymentEventId = CatchContractFieldConstraints(
+    path: 'manageEventOfferCheckoutCallableResponse.payment.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_:-]+\$',
   );
 
   static const manageEventOfferCheckoutCallableResponsePaymentExpiresAtMillis = CatchContractFieldConstraints(
@@ -180560,11 +180639,17 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallablePayload.callback.signature': manageEventOfferCheckoutCallablePayloadCallbackSignature,
     'manageEventOfferCheckoutCallablePayload.cancellationPolicy.eventStartsAtMillis': manageEventOfferCheckoutCallablePayloadCancellationPolicyEventStartsAtMillis,
     'manageEventOfferCheckoutCallablePayload.cancellationPolicy.refundDeadlineMillis': manageEventOfferCheckoutCallablePayloadCancellationPolicyRefundDeadlineMillis,
+    'manageEventOfferCheckoutCallablePayload.expectedLedgerRevision': manageEventOfferCheckoutCallablePayloadExpectedLedgerRevision,
+    'manageEventOfferCheckoutCallablePayload.expectedOfferGeneration': manageEventOfferCheckoutCallablePayloadExpectedOfferGeneration,
+    'manageEventOfferCheckoutCallablePayload.expectedOfferRevision': manageEventOfferCheckoutCallablePayloadExpectedOfferRevision,
     'manageEventOfferCheckoutCallablePayload.expectedRefundAmountPaise': manageEventOfferCheckoutCallablePayloadExpectedRefundAmountPaise,
     'manageEventOfferCheckoutCallablePayload.grantId': manageEventOfferCheckoutCallablePayloadGrantId,
+    'manageEventOfferCheckoutCallablePayload.includeEventAccess': manageEventOfferCheckoutCallablePayloadIncludeEventAccess,
     'manageEventOfferCheckoutCallablePayload.paymentId': manageEventOfferCheckoutCallablePayloadPaymentId,
     'manageEventOfferCheckoutCallablePayload.requestId': manageEventOfferCheckoutCallablePayloadRequestId,
     'manageEventOfferCheckoutCallablePayload.token': manageEventOfferCheckoutCallablePayloadToken,
+    'manageEventOfferCheckoutCallableResponse.admission.attendeeId': manageEventOfferCheckoutCallableResponseAdmissionAttendeeId,
+    'manageEventOfferCheckoutCallableResponse.admission.eventId': manageEventOfferCheckoutCallableResponseAdmissionEventId,
     'manageEventOfferCheckoutCallableResponse.grant.amountPaise': manageEventOfferCheckoutCallableResponseGrantAmountPaise,
     'manageEventOfferCheckoutCallableResponse.grant.cancellationPolicy.eventStartsAtMillis': manageEventOfferCheckoutCallableResponseGrantCancellationPolicyEventStartsAtMillis,
     'manageEventOfferCheckoutCallableResponse.grant.cancellationPolicy.refundDeadlineMillis': manageEventOfferCheckoutCallableResponseGrantCancellationPolicyRefundDeadlineMillis,
@@ -180572,6 +180657,9 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallableResponse.grant.eventId': manageEventOfferCheckoutCallableResponseGrantEventId,
     'manageEventOfferCheckoutCallableResponse.grant.eventName': manageEventOfferCheckoutCallableResponseGrantEventName,
     'manageEventOfferCheckoutCallableResponse.grant.expiresAtMillis': manageEventOfferCheckoutCallableResponseGrantExpiresAtMillis,
+    'manageEventOfferCheckoutCallableResponse.grant.freeAdmission.expectedLedgerRevision': manageEventOfferCheckoutCallableResponseGrantFreeAdmissionExpectedLedgerRevision,
+    'manageEventOfferCheckoutCallableResponse.grant.freeAdmission.expectedOfferGeneration': manageEventOfferCheckoutCallableResponseGrantFreeAdmissionExpectedOfferGeneration,
+    'manageEventOfferCheckoutCallableResponse.grant.freeAdmission.expectedOfferRevision': manageEventOfferCheckoutCallableResponseGrantFreeAdmissionExpectedOfferRevision,
     'manageEventOfferCheckoutCallableResponse.grant.grantId': manageEventOfferCheckoutCallableResponseGrantGrantId,
     'manageEventOfferCheckoutCallableResponse.grant.startTimeMillis': manageEventOfferCheckoutCallableResponseGrantStartTimeMillis,
     'manageEventOfferCheckoutCallableResponse.payment.amountPaise': manageEventOfferCheckoutCallableResponsePaymentAmountPaise,
@@ -180586,6 +180674,7 @@ abstract final class CatchContractConstraints {
     'manageEventOfferCheckoutCallableResponse.payment.checkout.orderId': manageEventOfferCheckoutCallableResponsePaymentCheckoutOrderId,
     'manageEventOfferCheckoutCallableResponse.payment.checkout.publicToken': manageEventOfferCheckoutCallableResponsePaymentCheckoutPublicToken,
     'manageEventOfferCheckoutCallableResponse.payment.currency': manageEventOfferCheckoutCallableResponsePaymentCurrency,
+    'manageEventOfferCheckoutCallableResponse.payment.eventId': manageEventOfferCheckoutCallableResponsePaymentEventId,
     'manageEventOfferCheckoutCallableResponse.payment.expiresAtMillis': manageEventOfferCheckoutCallableResponsePaymentExpiresAtMillis,
     'manageEventOfferCheckoutCallableResponse.payment.mode': manageEventOfferCheckoutCallableResponsePaymentMode,
     'manageEventOfferCheckoutCallableResponse.payment.paymentId': manageEventOfferCheckoutCallableResponsePaymentPaymentId,

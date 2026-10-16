@@ -1,3 +1,7 @@
+import {findRecipientAdmission} from "./recipientAdmission";
+import {createHash} from "node:crypto";
+import {commitOrganizerFormAdmission, previewOrganizerFormAdmission} from
+  "../organizerFormAdmission/admissionService";
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
@@ -43,6 +47,8 @@ export const recipientCallableDefaults = {
   prepareRouting: prepareRazorpayCollectionRouting,
   reserve: reserveOfferPayment, execution: offerPaymentExecutionFor,
   project: projectOfferPayment, cancel: cancelPaidOfferForCancelledEvent,
+  previewAdmission: previewOrganizerFormAdmission,
+  commitAdmission: commitOrganizerFormAdmission,
 };
 type Deps = typeof recipientCallableDefaults;
 
@@ -77,21 +83,45 @@ export async function manageEventOfferCheckoutHandler(
   await deps.rateLimit(db, uid, "manageEventOfferCheckout");
   const result: Response = {grant: null, payment: null,
     serverTimeMillis: deps.now()};
+  const respond = () => checkedResponse(result, deps.now(),
+    data.includeEventAccess === true);
   if (data.action === "claim") {
     // A returning payer can recover history even after the offer expires.
     const grantId = offerRecipientGrantId(data.token);
+    result.admission = await findRecipientAdmission(db, uid, grantId);
+    if (result.admission) return respond();
+    delete result.admission;
     result.payment = await findOwnedPayment(db, uid, grantId, deps);
-    if (result.payment) return checkedResponse(result, deps.now());
+    if (result.payment) return respond();
     if (!await deps.enabled()) unavailable();
     const claimed = await deps.claim({db, uid, token: data.token,
       authTokenPhoneNumber: phone, nowMillis: deps.now});
     result.grant = await currentGrant(db, uid, claimed.grantId, deps);
   } else if (data.action === "find") {
+    result.admission = await findRecipientAdmission(db, uid, data.grantId);
+    if (result.admission) return respond();
+    delete result.admission;
     result.payment = await findOwnedPayment(db, uid, data.grantId, deps);
     if (!result.payment) {
       if (!await deps.enabled()) unavailable();
       result.grant = await currentGrant(db, uid, data.grantId, deps);
     }
+  } else if (data.action === "acceptFree") {
+    if (!await deps.enabled()) unavailable();
+    const {grant} = await db.runTransaction((tx) => deps.readRecipient({
+      db, tx, grantId: data.grantId, uid, nowMillis: deps.now()}));
+    const receipt = await deps.commitAdmission({db, actorUid: uid,
+      recipientGrantId: data.grantId, nowMillis: deps.now,
+      payload: {organizerId: grant.organizerId, eventId: grant.eventId,
+        responseId: grant.responseId, contactId: grant.contactId,
+        offerId: grant.offerId,
+        requestId: "free_" + createHash("sha256")
+          .update(`${uid}:${data.grantId}:${data.requestId}`).digest("hex"),
+        expectedOfferGeneration: data.expectedOfferGeneration,
+        expectedOfferRevision: data.expectedOfferRevision,
+        expectedLedgerRevision: data.expectedLedgerRevision}});
+    result.admission = {eventId: receipt.eventId,
+      attendeeId: receipt.attendeeId};
   } else {
     const paymentId = data.action === "prepare" ?
       offerPaymentId(data.grantId, uid, data.requestId) : data.paymentId;
@@ -148,10 +178,12 @@ export async function manageEventOfferCheckoutHandler(
     result.payment = await deps.project({db, paymentId, payment,
       uid, nowMillis: deps.now()});
   }
-  return checkedResponse(result, deps.now());
+  return respond();
 }
 
-function checkedResponse(result: Response, nowMillis: number): Response {
+function checkedResponse(result: Response, nowMillis: number,
+  includeEventAccess: boolean): Response {
+  if (result.payment && !includeEventAccess) delete result.payment.eventId;
   result.serverTimeMillis = nowMillis;
   if (!validateResponse(result)) {
     throw new HttpsError("internal", "Invalid checkout result.");
@@ -176,16 +208,28 @@ async function findOwnedPayment(db: FirebaseFirestore.Firestore, uid: string,
 
 async function currentGrant(db: FirebaseFirestore.Firestore, uid: string,
   grantId: string, deps: Deps): Promise<NonNullable<Response["grant"]>> {
-  const {source} = await db.runTransaction((tx) => deps.readRecipient({
+  const {grant, source} = await db.runTransaction((tx) => deps.readRecipient({
     db, tx, grantId: grantId, uid, nowMillis: deps.now()}));
   const terms = source.offer.paymentSnapshot;
-  if (terms.collectionMode !== "catchCheckout" || terms.currency !== "INR" ||
-        typeof terms.expectedAmountMinor !== "number" ||
-        terms.expectedAmountMinor < 100) unavailable();
+  const free = terms.expectedAmountMinor === 0;
+  if (!free && (terms.collectionMode !== "catchCheckout" ||
+      terms.currency !== "INR" ||
+      typeof terms.expectedAmountMinor !== "number" ||
+      terms.expectedAmountMinor < 100)) unavailable();
+  const preview = free ? await deps.previewAdmission({db, actorUid: uid,
+    recipientGrantId: grantId, nowMillis: deps.now,
+    payload: {organizerId: grant.organizerId, eventId: grant.eventId,
+      responseId: grant.responseId, contactId: grant.contactId,
+      offerId: grant.offerId}}) : null;
+  if (preview && !preview.canCommit) unavailable();
   return {grantId: grantId, eventId: source.offer.eventId,
     eventName: (source.event.name?.trim() || "Your event").slice(0, 200),
     startTimeMillis: source.event.startTime.toMillis(),
-    amountPaise: terms.expectedAmountMinor, currency: "INR",
+    amountPaise: terms.expectedAmountMinor!, currency: "INR",
+    ...(preview ? {freeAdmission: {
+      expectedOfferGeneration: preview.expectedOfferGeneration!,
+      expectedOfferRevision: preview.expectedOfferRevision!,
+      expectedLedgerRevision: preview.expectedLedgerRevision!}} : {}),
     expiresAtMillis: source.offer.expiresAtMillis,
     cancellationPolicy: offerCancellationPolicy(source.event)};
 }

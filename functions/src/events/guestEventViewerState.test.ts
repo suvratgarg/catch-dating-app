@@ -1,3 +1,5 @@
+import {setup as offerFixture} from
+  "../payments/offerPayments/offerPaymentTestFixture";
 import {approvedApplicationFixture, responseId} from
   "../organizerFormAdmission/admissionTestFixture";
 import assert from "node:assert/strict";
@@ -33,6 +35,7 @@ test("unsupported policy does not manufacture an application or checkout route",
     {admission: {membershipRequired?: boolean}};
     policy.admission.membershipRequired = true;
     assert.equal((await h.read())?.guest.action, "unsupported");
+    assert.equal((await h.read())?.membership.state, "none");
     assert.equal((await h.read())?.guest.publicFormId, null);
   });
 test("free and paid paths share start-time and publication guards",
@@ -101,4 +104,24 @@ test("application review and withdrawal stay separate from admission",
   }
   h.store.get(`organizerFormResponses/${responseId}`)!.status = "withdrawn";
   assert.equal((await h.read())?.guest.applicationStatus, "withdrawn");
+  });
+
+test("repeated invitation links for one offer keep a recoverable entry",
+  async () => {
+    const h = await fixture();
+    const offered = await offerFixture();
+    for (const [path, value] of offered.store.rows) {
+      if (/^organizer(Form|Contact|EventOffer)/u.test(path)) {
+        h.store.put(path, value);
+      }
+    }
+    const original = h.store.get("organizerEventOfferRecipients/" +
+      offered.invitation.grantId)!;
+    h.store.put("organizerEventOfferRecipients/" + "f".repeat(64),
+      {...original, issuedAtMillis: now - 1});
+    const result = await read({db: h.store.db(), uid, phoneE164: phone,
+      eventId, nowMillis: now + 20, loadCurrentAuthUser: h.auth,
+      offersEnabled: async () => true});
+    assert.equal(result?.guest.action, "offer");
+    assert.equal(result?.guest.offerGrantId, offered.invitation.grantId);
   });

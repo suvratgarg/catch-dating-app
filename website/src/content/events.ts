@@ -166,6 +166,7 @@ export const publicCheckoutCopy = {
 } as const;
 
 export const guestEventCopy = {
+  changePhone: "Change phone number",
   changeAccount: "Use another account",
   loading: "Checking your event status…", phone: "Mobile number", code: "6-digit OTP",
   continue: "Continue with phone", verify: "Verify phone", refresh: "Refresh status",

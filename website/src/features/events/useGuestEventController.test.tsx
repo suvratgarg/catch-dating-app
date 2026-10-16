@@ -60,3 +60,17 @@ it("background refresh preserves the current form until new status arrives", asy
   expect(result.current.viewer).toBeTruthy();
   expect(result.current.loading).toBe(false);
 });
+
+it("lets a guest correct the phone number after requesting a code", async () => {
+  initial = null;
+  const clear = vi.fn();
+  api.otp.mockResolvedValue({confirm: vi.fn(), clear});
+  const {result} = renderHook(() => useGuestEventController("event1"), {wrapper});
+  act(() => result.current.setPhone("+919000000001"));
+  await act(() => result.current.submit({preventDefault: vi.fn()} as unknown as React.FormEvent));
+  await waitFor(() => expect(result.current.codeSent).toBe(true));
+  act(() => result.current.changePhone());
+  expect(clear).toHaveBeenCalledOnce();
+  expect(result.current.codeSent).toBe(false);
+  expect(result.current.code).toBe("");
+});

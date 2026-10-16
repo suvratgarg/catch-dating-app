@@ -79,6 +79,12 @@ export function useGuestEventController(eventId: string) {
     pending: mutation.isPending, recaptchaId,
     viewer: query.isError || !query.data?.guest || query.data.guest.expiresAtMillis <= Date.now() ? null : query.data,
     loading: user === undefined || Boolean(user?.phoneNumber) && query.isPending,
+    changePhone: () => {
+      if (mutation.isPending) return;
+      scope.current.epoch++;
+      challenge.current?.clear(); challenge.current = null;
+      setCode(""); setCodeSent(false); setMessage(""); reset();
+    },
     changeAccount: () => signOutGuestUser().catch(() => setMessage(copy.verificationFailed)),
     error: query.isError, refresh: () => query.refetch()};
 }

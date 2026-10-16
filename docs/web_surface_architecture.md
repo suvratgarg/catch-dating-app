@@ -1377,9 +1377,16 @@ retry protocols while sharing authentication transport.
 
 Unsupported cohort, membership and pair-inventory admission remains explicitly
 host-managed. This pass does not add a membership review exemption, new guest
-quota reservation authority, free-offer self-acceptance, or automatic approval
-message delivery. Issued links retain their existing manual handoff; claimed
-paid offers can be recovered by authenticated non-secret reference. Those
+quota reservation authority, or automatic approval message delivery. Issued links retain their existing manual handoff; claimed
+offers can be recovered by authenticated non-secret reference. Free invitations
+use an explicit recipient-authorized call to the existing admission transaction,
+including current offer, response, identity, ledger and retry checks. The
+existing Host message preparation includes that free acceptance link. A free
+acceptance never creates a payment order; its owned receipt survives invitation
+expiry. Paid receipt recovery opts into its event access destination while
+older strict clients retain their receipt shape. Runtime account transitions
+clear private assignments, profile answers and account-scoped graph queries;
+late bootstrap responses cannot restore the prior account. Those
 remaining capabilities require shared policy/writer integration, not frontend
 bypasses. Feature gates and provider/deployment readiness remain independent of
 source implementation. Event page visual redesign remains separate.

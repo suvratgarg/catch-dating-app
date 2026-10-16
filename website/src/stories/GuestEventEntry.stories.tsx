@@ -4,7 +4,7 @@ const noop = () => undefined;
 const controller = {user: null, phone: "", setPhone: noop, code: "", setCode: noop,
   codeSent: false, submit: async () => undefined, message: "", pending: false,
   recaptchaId: "preview", viewer: null, loading: false, error: false,
-  refresh: async () => ({}),
+  refresh: async () => ({}), changePhone: noop, changeAccount: async () => undefined,
 } as unknown as Parameters<typeof GuestEventEntryView>[0]["controller"];
 const meta = {title: "Events/Guest entry", component: GuestEventEntryView,
   args: {eventId: "preview-event", controller},

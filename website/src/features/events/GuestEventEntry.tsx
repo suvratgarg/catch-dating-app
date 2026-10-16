@@ -23,6 +23,8 @@ export function GuestEventEntryView({eventId, controller: c}: {
       value={c.code} onChange={(event) => c.setCode(event.target.value.replace(/\D/gu, ""))} /> : null}
     <div id={c.recaptchaId} />
     <Button type="submit" loading={c.pending}>{c.codeSent ? copy.verify : copy.continue}</Button>
+    {c.codeSent ? <Button type="button" variant="ghost" disabled={c.pending}
+      onClick={c.changePhone}>{copy.changePhone}</Button> : null}
     <FormStatus status={{message: c.message, tone: "is-error"}} />
     <EventRegistrationPrivacy>{copy.privacy}</EventRegistrationPrivacy>
   </EventRegistrationForm>;
@@ -30,6 +32,7 @@ export function GuestEventEntryView({eventId, controller: c}: {
   if (!guest || c.error) return <>
     <p role="status">{copy.unavailable}</p>
     <Button onClick={() => void c.refresh()}>{copy.refresh}</Button>
+    <Button variant="ghost" onClick={() => void c.changeAccount()}>{copy.changeAccount}</Button>
   </>;
   return <>
     <GuestStatus guest={guest} eventId={eventId} />

@@ -48244,6 +48244,10 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
         "token": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "includeEventAccess": {
+          "type": "boolean",
+          "description": "Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape."
         }
       }
     },
@@ -48287,6 +48291,10 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
               "maximum": 9007199254740991
             }
           }
+        },
+        "includeEventAccess": {
+          "type": "boolean",
+          "description": "Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape."
         }
       }
     },
@@ -48304,6 +48312,10 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
         "grantId": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "includeEventAccess": {
+          "type": "boolean",
+          "description": "Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape."
         }
       }
     },
@@ -48347,6 +48359,10 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
               "type": "null"
             }
           ]
+        },
+        "includeEventAccess": {
+          "type": "boolean",
+          "description": "Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape."
         }
       }
     },
@@ -48370,6 +48386,54 @@ export const manageEventOfferCheckoutCallablePayloadSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 100000000
+        },
+        "includeEventAccess": {
+          "type": "boolean",
+          "description": "Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "grantId",
+        "requestId",
+        "expectedOfferGeneration",
+        "expectedOfferRevision",
+        "expectedLedgerRevision"
+      ],
+      "properties": {
+        "action": {
+          "const": "acceptFree"
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+        },
+        "expectedOfferGeneration": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedOfferRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedLedgerRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "includeEventAccess": {
+          "type": "boolean",
+          "description": "Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape."
         }
       }
     }
@@ -48503,7 +48567,7 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
             },
             "amountPaise": {
               "type": "integer",
-              "minimum": 100,
+              "minimum": 0,
               "maximum": 100000000
             },
             "currency": {
@@ -48528,6 +48592,32 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
                   "maximum": 9007199254740991
                 },
                 "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "freeAdmission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expectedOfferGeneration",
+                "expectedOfferRevision",
+                "expectedLedgerRevision"
+              ],
+              "properties": {
+                "expectedOfferGeneration": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "expectedOfferRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "expectedLedgerRevision": {
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 9007199254740991
@@ -48705,6 +48795,12 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
                   "type": "null"
                 }
               ]
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9_:-]+$"
             }
           }
         },
@@ -48717,6 +48813,27 @@ export const manageEventOfferCheckoutCallableResponseSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "attendeeId"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9_:-]+$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
     }
   }
 };

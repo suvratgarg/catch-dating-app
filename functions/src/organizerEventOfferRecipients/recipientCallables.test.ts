@@ -1,3 +1,5 @@
+import {commitOrganizerFormAdmission, previewOrganizerFormAdmission} from
+  "../organizerFormAdmission/admissionService";
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
@@ -53,6 +55,12 @@ async function harness() {
       claimOfferRecipientInvitation({...input, loadCurrentAuthUser: h.auth}),
     readRecipient: (input: Parameters<typeof readVerifiedOfferRecipient>[0]) =>
       readVerifiedOfferRecipient({...input, loadCurrentAuthUser: h.auth}),
+    previewAdmission: (input: Parameters<
+      typeof previewOrganizerFormAdmission>[0]) =>
+      previewOrganizerFormAdmission({...input, loadCurrentAuthUser: h.auth}),
+    commitAdmission: (input: Parameters<
+      typeof commitOrganizerFormAdmission>[0]) =>
+      commitOrganizerFormAdmission({...input, loadCurrentAuthUser: h.auth}),
     prepareRouting: async () => {
       routes++; return h.routing;
     },
@@ -67,6 +75,7 @@ async function harness() {
     },
     project: async ({paymentId, payment}: Parameters<
       typeof recipientCallableDefaults.project>[0]) => ({paymentId,
+      eventId: payment.eventId,
       status: payment.status, amountPaise: payment.amountPaise,
       currency: "INR" as const, mode: payment.routing.selection.mode,
       refundedAmountPaise: payment.refundedAmountPaise,
@@ -109,6 +118,7 @@ test("prepare replays its frozen attempt without selecting another route",
           h.store.get(`events/${eventId}`) as unknown as EventDocument)});
     const first = await manageEventOfferCheckoutHandler(input, h.deps);
     assert.ok(first.payment);
+    assert.equal(first.payment.eventId, undefined);
     assert.equal(h.routes(), 1);
     const replay = await manageEventOfferCheckoutHandler(input, h.deps);
     assert.equal(replay.payment?.paymentId, first.payment.paymentId);
@@ -202,4 +212,34 @@ test("claimed offer recovery can resume before a payment was created",
     await assert.rejects(manageEventOfferCheckoutHandler(request({
       action: "find",
       grantId: h.invitation.grantId}, "other"), h.deps));
+  });
+
+test("free acceptance and reload never create a provider order", async () => {
+  const h = await harness();
+  Object.assign(h.store.get(`organizerEventOffers/${offerId}`)!
+    .paymentSnapshot as object, {expectedAmountMinor: 0, collectionMode: null});
+  const first = await manageEventOfferCheckoutHandler(request({action: "find",
+    grantId: h.invitation.grantId}), h.deps);
+  assert.ok(first.grant?.freeAdmission);
+  const input = {action: "acceptFree", grantId: h.invitation.grantId,
+    requestId: "free_request_001", ...first.grant.freeAdmission};
+  const accepted = await manageEventOfferCheckoutHandler(request(input),
+    h.deps);
+  assert.equal(accepted.admission?.eventId, eventId);
+  const recovered = await manageEventOfferCheckoutHandler(request({
+    action: "find", grantId: h.invitation.grantId}), h.deps);
+  assert.deepEqual(recovered.admission, accepted.admission);
+  assert.equal(recovered.payment, null);
+  assert.equal(h.routes(), 0);
+  assert.equal(h.executions(), 0);
+});
+
+test("event access metadata is opt-in for existing strict paid clients",
+  async () => {
+    const h = await harness();
+    const {paymentId} = await h.reserve();
+    const result = await manageEventOfferCheckoutHandler(request({
+      action: "status", paymentId, callback: null,
+      includeEventAccess: true}), h.deps);
+    assert.equal(result.payment?.eventId, eventId);
   });

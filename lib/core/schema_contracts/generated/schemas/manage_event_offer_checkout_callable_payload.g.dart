@@ -24,6 +24,10 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
           'type': 'string',
           'pattern': '^[A-Za-z0-9_-]{43}\$',
         },
+        'includeEventAccess': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.',
+        },
       },
     },
     <String, Object?>{
@@ -67,6 +71,10 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        'includeEventAccess': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.',
+        },
       },
     },
     <String, Object?>{
@@ -83,6 +91,10 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
         'grantId': <String, Object?>{
           'type': 'string',
           'pattern': '^[a-f0-9]{64}\$',
+        },
+        'includeEventAccess': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.',
         },
       },
     },
@@ -127,6 +139,10 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
             },
           ],
         },
+        'includeEventAccess': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.',
+        },
       },
     },
     <String, Object?>{
@@ -149,6 +165,54 @@ const schemaManageEventOfferCheckoutCallablePayloadSchema = <String, Object?>{
           'type': 'integer',
           'minimum': 0,
           'maximum': 100000000,
+        },
+        'includeEventAccess': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.',
+        },
+      },
+    },
+    <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'action',
+        'grantId',
+        'requestId',
+        'expectedOfferGeneration',
+        'expectedOfferRevision',
+        'expectedLedgerRevision',
+      ],
+      'properties': <String, Object?>{
+        'action': <String, Object?>{
+          'const': 'acceptFree',
+        },
+        'grantId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'requestId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+        },
+        'expectedOfferGeneration': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'expectedOfferRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'expectedLedgerRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'includeEventAccess': <String, Object?>{
+          'type': 'boolean',
+          'description': 'Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.',
         },
       },
     },
