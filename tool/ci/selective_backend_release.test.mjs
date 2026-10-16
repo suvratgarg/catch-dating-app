@@ -1082,3 +1082,246 @@ test("Intake PR596 snapshot rejects filter, runtime, IAM and ordered-array chang
     assert.throws(() => verifyIntakePreservation(before, after), /unselected Function\/Extension identity or configuration changed/);
   }
 });
+
+import {CAT165_RELEASE, CAT165_INDEX, CAT165_PREDECESSORS, verifyCat165Predecessors, readCat165Snapshot, prepareCat165Release, verifyCat165ArtifactMetadata,
+  verifyCat165Provenance, verifyCat165Preservation, verifyCat165ParameterPreservation, prepareCat165Deployment,
+  verifyCat165BindingPreservation, runCat165ReleaseCli, checkCat165GitCompatibility} from "./selective_backend_release.mjs";
+import {materializedNonSecretParams} from "../firebase/prepare_functions_params_for_deploy.mjs";
+import {selectReadinessRequirements} from "../firebase/check_environment_readiness.mjs";
+import readinessManifest from "../firebase/environment_readiness.json" with {type: "json"};
+const cat165Package = () => ({manifest: {schema: PROVENANCE_SCHEMA,
+  sourceSha: CAT165_RELEASE.sourceSha, sourceCiRunId: CAT165_RELEASE.sourceCiRunId, sourceCiRunAttempt: "1",
+  stages: ["firestore-indexes", "functions"], artifact: {name: "firebase-backend.tar.gz", sizeBytes: 10, sha256: CAT165_RELEASE.packageSha256}},
+packagePlan: {schema: "catch.firebase-delivery-plan/v2", sourceSha: CAT165_RELEASE.sourceSha,
+  baseSha: CAT165_RELEASE.baseSha, sourceCiRunId: CAT165_RELEASE.sourceCiRunId, sourceCiRunAttempt: "1",
+  stages: ["firestore-indexes", "functions"], deployGroups: ["firestore-indexes", "functions"],
+  targets: ["firestore:indexes", [...CAT165_RELEASE.targets, ...CAT165_RELEASE.deferredTargets].sort().join(",")]},
+indexes: {indexes: [structuredClone(CAT165_INDEX)], fieldOverrides: []}});
+const cat165Candidate = () => {
+  const r = CAT165_RELEASE, serviceAccount = "574779808785-compute@developer.gserviceaccount.com";
+  const requirements = selectReadinessRequirements({manifest: readinessManifest, environment: "prod", targets: r.targets});
+  return {version: 1, sourceSha: r.sourceSha, environment: "prod", projectId: r.projectId, paramsSha256: "e".repeat(64),
+    functions: r.targets.map((target) => ({consumer: target.slice(10), serviceAccount})),
+    bindings: requirements.filter((entry) => ["secret-version", "secret-reference"].includes(entry.kind)).flatMap((entry) =>
+      entry.requiredWhen.anyDeployTarget.filter((target) => r.targets.includes(target)).map((target) => ({
+        requirementId: entry.id, consumer: target.slice(10), serviceAccount, active: entry.kind === "secret-version",
+        reference: entry.kind === "secret-version" ? `projects/${r.projectId}/secrets/${entry.name}/versions/1` : null}))) };
+};
+const cat165Before = () => {
+  const p = CAT165_RELEASE.projectId, candidate = cat165Candidate();
+  const reviewed = CAT165_PREDECESSORS.rows.map((row) => ({...structuredClone(intakeCompleted().selected.identity),
+    ...structuredClone(row.identity), service: `projects/${p}/locations/asia-south1/services/${row.function.toLowerCase()}`}))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const selected = CAT165_RELEASE.targets.map((target) => {
+    const name = target.slice(10), record = structuredClone(intakeCompleted().selected);
+    record.identity = reviewed.find((identity) => identity.name.endsWith(`/${name}`));
+    record.runtime.entryPoint = name;
+    record.configurationSha256 = "a".repeat(64); record.parameterValuesSha256 = "b".repeat(64);
+    record.secretReferences = candidate.bindings.filter((binding) => binding.consumer === name && binding.active)
+      .map((binding) => ({key: binding.reference.split("/")[3], reference: binding.reference}));
+    record.runtime.secretBindings = record.secretReferences.length;
+    return record;
+  });
+  return {schema: "catch.cat165-metadata/v2", projectId: p, selected, reviewed, index: null,
+    functions: [...selected.map((record) => ({name: record.identity.name, sha256: "d".repeat(64)})),
+      {name: `projects/${p}/locations/us-central1/functions/ext-retained`, sha256: "c".repeat(64)},
+      ...CAT165_RELEASE.deferredTargets.map((target) => ({name: `projects/${p}/locations/asia-south1/functions/${target.slice(10)}`, sha256: "c".repeat(64)}))]
+      .sort((a,b) => a.name.localeCompare(b.name)), protectedResources: intakeBefore().protectedResources};
+};
+const cat165After = () => {
+  const result = cat165Before();
+  result.index = {...structuredClone(CAT165_INDEX), fields: [...structuredClone(CAT165_INDEX.fields), {fieldPath: "__name__", order: "DESCENDING"}], name: `projects/${CAT165_RELEASE.projectId}/databases/(default)/collectionGroups/organizerPrograms/indexes/synthetic`, state: "READY"};
+  for (const record of result.selected) {
+    record.identity.build += "-new"; record.identity.revision += "-new";
+    record.identity.source.generation = "2";
+  }
+  return result;
+};
+test("CAT165 pins artifact authority, exactly 62 targets and one additive index without changing the package plan", () => {
+  const input = cat165Package(), original = structuredClone(input);
+  const plan = prepareCat165Release(input);
+  assert.deepEqual(input, original); assert.equal(plan.targets[1], CAT165_RELEASE.targets.join(","));
+  assert.deepEqual(plan.selectedIndexes.indexes, [CAT165_INDEX]);
+  assert.equal(plan.privacyAcceptanceComplete, false); assert.equal(plan.impactedDeferredTargets.length, 11);
+  assert.equal(createHash("sha256").update(CAT165_RELEASE.targets.join("\n") + "\n").digest("hex"), CAT165_RELEASE.targetsSha256);
+  assert.throws(() => verifyCat165Provenance(input.manifest));
+  const artifact = {id: CAT165_RELEASE.artifactId, expired: false, name: `firebase-delivery-${CAT165_RELEASE.sourceSha}-1`,
+    digest: `sha256:${CAT165_RELEASE.artifactSha256}`, workflow_run: {id: Number(CAT165_RELEASE.sourceCiRunId), head_sha: CAT165_RELEASE.sourceSha}};
+  verifyCat165ArtifactMetadata(artifact);
+  for (const key of ["id", "expired", "digest", "name", "workflow_run"]) {
+    assert.throws(() => verifyCat165ArtifactMetadata({...artifact, [key]: null}));
+  }
+});
+for (const [name, change] of [
+  ["source", (v) => {v.manifest.sourceSha = "0".repeat(40);}],
+  ["base", (v) => {v.packagePlan.baseSha = "0".repeat(40);}],
+  ["rerun", (v) => {v.packagePlan.sourceCiRunAttempt = "2";}],
+  ["tar bytes", (v) => {v.manifest.artifact.sha256 = "0".repeat(64);}],
+  ["rules stage", (v) => {v.packagePlan.stages.push("firestore-rules");}],
+  ["missing authority", (v) => {v.packagePlan.targets[1] = CAT165_RELEASE.targets.slice(1).join(",");}],
+  ["duplicate target", (v) => {v.packagePlan.targets[1] += "," + CAT165_RELEASE.targets[0];}],
+  ["index order", (v) => {v.indexes.indexes[0].fields.reverse();}],
+  ["duplicate index", (v) => {v.indexes.indexes.push(v.indexes.indexes[0]);}],
+]) test(`CAT165 preparation rejects ${name}`, () => {
+  const input = cat165Package(); change(input); assert.throws(() => prepareCat165Release(input));
+});
+test("CAT165 requires READY before Functions and retains 11 deferred functions and Extensions", () => {
+  const before = cat165Before(), indexed = cat165Before(); indexed.index = cat165After().index;
+  verifyCat165Preservation(before, structuredClone(before));
+  verifyCat165Preservation(before, indexed, {phase: "indexed"});
+  const result = verifyCat165Preservation(before, cat165After(), {phase: "completed", paramsSha256: "e".repeat(64)});
+  assert.equal(result.retainedFunctions, 12); assert.equal(result.privacyAcceptanceComplete, false);
+  assert.match(result.legacyHouseholdBearerLimitation, /until expiry/);
+  assert.throws(() => verifyCat165Preservation(before, cat165After(), {phase: "indexed"}));
+  indexed.index.state = "CREATING";
+  assert.throws(() => verifyCat165Preservation(before, indexed, {phase: "indexed"}));
+});
+for (const [name, change] of [
+  ["unselected function", (v) => {v.functions.find((row) => row.name.endsWith("createOrganizerProgram")).sha256 = "0".repeat(64);}],
+  ["extension", (v) => {v.functions.find((row) => row.name.endsWith("ext-retained")).sha256 = "0".repeat(64);}],
+  ...["extensions", "indexes", "fields", "rules", "remoteConfig", "projectIam"].map((key) => [key, (v) => {v.protectedResources[key] = "0".repeat(64);}]),
+  ["IAM", (v) => {v.selected[0].iamSha256 = "0".repeat(64);}],
+  ["non-public callable", (v) => {v.selected[0].publicInvoker = false;}],
+  ["provider or configuration", (v) => {v.selected[0].configurationSha256 = "0".repeat(64);}],
+  ["missing selected", (v) => {v.selected.pop();}],
+  ["duplicate inventory", (v) => {v.functions.push(v.functions[0]);}],
+  ["old build", (v) => {v.selected[0].identity.build = cat165Before().selected[0].identity.build;}],
+  ["old revision", (v) => {v.selected[0].identity.revision = cat165Before().selected[0].identity.revision;}],
+  ["old upload", (v) => {v.selected[0].identity.source = cat165Before().selected[0].identity.source;}],
+  ["configuration marker", (v) => {v.selected[0].runtime.paramsSha256 = "0".repeat(64);}],
+]) test(`CAT165 completion rejects ${name}`, () => {
+  const after = cat165After(); change(after);
+  assert.throws(() => verifyCat165Preservation(cat165Before(), after, {phase: "completed", paramsSha256: "e".repeat(64)}));
+});
+test("CAT165 rejects implicit latest secret rotation, missing bindings and identity changes before mutation", () => {
+  verifyCat165BindingPreservation(cat165Before(), cat165Candidate());
+  for (const change of [
+    (c) => {c.bindings.find((b) => b.reference?.includes("PROGRAM_HOUSEHOLD_RSVP_SECRET")).reference = `projects/${CAT165_RELEASE.projectId}/secrets/PROGRAM_HOUSEHOLD_RSVP_SECRET/versions/2`;},
+    (c) => {c.bindings.pop();}, (c) => {c.functions.pop();},
+    (c) => {c.functions[0].serviceAccount = "foreign@catch-dating-app-64e51.iam.gserviceaccount.com";},
+    (c) => {c.bindings.push(c.bindings[0]);}, (c) => {c.sourceSha = "0".repeat(40);},
+  ]) {const candidate = cat165Candidate(); change(candidate); assert.throws(() => verifyCat165BindingPreservation(cat165Before(), candidate));}
+});
+test("CAT165 rejects parameter activation and missing values without printing values", () => {
+  const before = cat165Before(), values = materializedNonSecretParams.map((key) => [key, "false"]);
+  const contents = [...values, ["CATCH_DEPLOY_CONFIG_SHA256", "e".repeat(64)]].map(([key,value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n";
+  before.selected.forEach((record) => {record.parameterValuesSha256 = createHash("sha256").update(JSON.stringify(values)).digest("hex");});
+  verifyCat165ParameterPreservation(before, contents);
+  for (const invalid of [contents.replace('="false"', '="sensitive-synthetic-value"'), contents.split("\n").slice(1).join("\n"), contents + contents.split("\n")[0]]) {
+    assert.throws(() => verifyCat165ParameterPreservation(before, invalid), (error) => {
+      assert.doesNotMatch(JSON.stringify(error) + error.message, /sensitive-synthetic-value/); return true;
+    });
+  }
+});
+test("CAT165 CLI rejects authority overrides before any read and source gate accepts only the exact candidate closure", async () => {
+  let reads = 0;
+  for (const flag of ["targets", "project", "resume", "baseline", "allow-drift"]) {
+    await assert.rejects(runCat165ReleaseCli(["cat165-before", "--output", "unused", `--${flag}`, "anything"],
+      {readSnapshot: async () => {reads++; return cat165Before();}}));
+  }
+  assert.equal(reads, 0);
+  assert.deepEqual((await runCat165ReleaseCli(["cat165-targets"])).targets, CAT165_RELEASE.targets);
+  const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
+  checkCat165GitCompatibility(CAT165_RELEASE.sourceSha, root);
+  assert.throws(() => checkCat165GitCompatibility(CAT165_RELEASE.baseSha, root));
+});
+
+test("CAT165 records the selected two-stage package without a generic checkpoint prefix or baseline", () => {
+  const manifest = cat165Package().manifest, snapshot = cat165After();
+  const paramsBinding = {materializedSha256: "c".repeat(64), configurationSha256: "e".repeat(64)};
+  const deployment = prepareCat165Deployment({manifest, snapshot, paramsBinding});
+  assert.equal(deployment.schema, FUNCTIONS_DEPLOYMENT_SCHEMA);
+  assert.deepEqual(deployment.functions, snapshot.selected.map((record) => record.identity));
+  assert.deepEqual(deployment.targets, CAT165_RELEASE.targets);
+  assert.deepEqual(deployment.provenance, createCheckpointState(manifest, CAT165_RELEASE.scope).provenance);
+  assert.equal(deployment.paramsSha256, paramsBinding.materializedSha256);
+  assert.equal(Object.hasOwn(deployment, "stageCheckpoints"), false);
+});
+
+test("CAT165 reviewed predecessor evidence preserves all 73 targets and the receipt/observation distinction", () => {
+  assert.equal(CAT165_PREDECESSORS.rows.length, 73);
+  // SHA-256 of the exact JSON projection published in the independent owner handoff.
+  assert.equal(createHash("sha256").update(JSON.stringify(CAT165_PREDECESSORS)).digest("hex"),
+    "842b8a1c74502132c023a823fe69462c60433009426fa1c812feceb0c4bfd29a");
+  assert.deepEqual(CAT165_PREDECESSORS.counts, {baseline647: {selected: 56, deferred: 10},
+    programs6f08: {selected: 5, deferred: 1}, contacts137: {selected: 1, deferred: 0}});
+  assert.deepEqual(CAT165_PREDECESSORS.cohorts.programs6f08.receiptFieldCoverage, ["revision", "source.generation"]);
+  assert.deepEqual(CAT165_PREDECESSORS.cohorts.programs6f08.observationOnlyFields, ["build", "source.bucket", "source.object"]);
+  assert.equal(verifyCat165Predecessors(cat165Before()).reviewedPredecessors, 73);
+  assert.throws(() => {CAT165_PREDECESSORS.rows[0].identity.source.generation = "1";}, TypeError);
+});
+test("CAT165 capture rejects prior code-only drift for every selected and deferred predecessor", async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-predecessors-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const output = path.join(directory, "before.json");
+  const accepted = await runCat165ReleaseCli(["cat165-before", "--output", output], {readSnapshot: async () => cat165Before()});
+  assert.equal(accepted.reviewedPredecessors, 73); assert.ok(fs.existsSync(output)); fs.unlinkSync(output);
+  for (let i = 0; i < 73; i++) for (const field of ["build", "revision", "bucket", "object", "generation"]) {
+    const changed = cat165Before(), identity = changed.reviewed[i];
+    if (field === "build" || field === "revision") identity[field] += "-unreviewed";
+    else identity.source[field] = field === "generation" ? "999" : `${identity.source[field]}-unreviewed`;
+    // Config/IAM/params/secret metadata and inventory hashes are deliberately unchanged.
+    await assert.rejects(runCat165ReleaseCli(["cat165-before", "--output", output], {readSnapshot: async () => changed}),
+      /reviewed predecessor changed/);
+    assert.equal(fs.existsSync(output), false);
+    assert.throws(() => verifyCat165Preservation(changed, structuredClone(changed)), /reviewed predecessor changed/);
+  }
+});
+for (const [name, mutate] of [
+  ["missing selected identity", (v) => {v.reviewed.splice(0, 1);}],
+  ["missing deferred identity", (v) => {v.reviewed = v.reviewed.filter((row) => !row.name.endsWith("/createOrganizerProgram"));}],
+  ["duplicate identity", (v) => {v.reviewed[1] = structuredClone(v.reviewed[0]);}],
+  ["misassigned build and storage", (v) => {v.reviewed[0].build = v.reviewed[1].build; v.reviewed[0].source = structuredClone(v.reviewed[1].source);}],
+  ["swapped target names", (v) => {[v.reviewed[0].name, v.reviewed[1].name] = [v.reviewed[1].name, v.reviewed[0].name];}],
+  ["missing deferred inventory row", (v) => {v.functions = v.functions.filter((row) => !row.name.endsWith("/createOrganizerProgram"));}],
+  ["selected projection mismatch", (v) => {v.selected[0].identity = {...v.selected[0].identity, build: v.selected[0].identity.build + "-unreviewed"};}],
+  ["legacy unbound snapshot", (v) => {delete v.reviewed; v.schema = "catch.cat165-metadata/v1";}],
+  ["dormant function exists", (v) => {v.functions.push({name: `projects/${CAT165_RELEASE.projectId}/locations/asia-south1/functions/anonymizeDueProgramsSweep`, sha256: "a".repeat(64)}); v.functions.sort((a,b) => a.name.localeCompare(b.name));}],
+]) test(`CAT165 initial receipt rejects ${name} before writing evidence`, async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-invalid-predecessors-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const output = path.join(directory, "before.json"), snapshot = cat165Before(); mutate(snapshot);
+  await assert.rejects(runCat165ReleaseCli(["cat165-before", "--output", output], {readSnapshot: async () => snapshot}));
+  assert.equal(fs.existsSync(output), false);
+});
+async function cat165MetadataCapture(change = () => {}) {
+  const before = cat165Before(), project = CAT165_RELEASE.projectId;
+  const functions = before.reviewed.map((identity) => ({name: identity.name, state: "ACTIVE", environment: "GEN_2",
+    updateTime: identity.updateTime,
+    buildConfig: {runtime: "nodejs24", entryPoint: identity.name.split("/").at(-1), build: identity.build,
+      sourceProvenance: {resolvedStorageSource: structuredClone(identity.source)}},
+    serviceConfig: {service: identity.service, revision: identity.revision, serviceAccountEmail: "574779808785-compute@developer.gserviceaccount.com",
+      availableMemory: "512Mi", maxInstanceCount: 50, environmentVariables: {}},
+  }));
+  change(functions);
+  const runServices = new Map(functions.map((fn) => {
+    const service = fn.serviceConfig.service, revision = `${service}/revisions/${fn.serviceConfig.revision}`;
+    return [service, {name: service, uid: "synthetic", generation: "1", observedGeneration: "1",
+      terminalCondition: {state: "CONDITION_SUCCEEDED"}, latestReadyRevision: revision, latestCreatedRevision: revision,
+      trafficStatuses: [{percent: 100, type: "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION", revision}]}];
+  }));
+  return readCat165Snapshot({run: () => ({status: 0, stdout: "synthetic-token"}), listIndexes: () => [],
+    request: async (raw) => {
+      const url = new URL(raw); let body;
+      if (url.hostname === "cloudfunctions.googleapis.com") body = {functions};
+      else if (url.hostname === "run.googleapis.com") body = url.pathname.endsWith(":getIamPolicy") ?
+        {version: 3, bindings: [{role: "roles/run.invoker", members: ["allUsers"]}]} : runServices.get(url.pathname.replace(/^\/v2\//, ""));
+      else if (url.hostname === "firestore.googleapis.com") body = {fields: []};
+      else if (url.hostname === "firebaseextensions.googleapis.com") body = {instances: []};
+      else if (url.hostname === "firebaserules.googleapis.com") body = {releases: []};
+      else if (url.hostname === "firebaseremoteconfig.googleapis.com") body = {};
+      else {assert.equal(url.hostname, "cloudresourcemanager.googleapis.com"); body = {version: 3, bindings: []};}
+      assert.ok(body); return {ok: true, status: 200, json: async () => structuredClone(body)};
+    }});
+}
+test("CAT165 actual metadata reader captures 73 independently validated serving identities", async () => {
+  const before = await cat165MetadataCapture();
+  assert.equal(before.reviewed.length, 73); verifyCat165Predecessors(before);
+  const drift = await cat165MetadataCapture((functions) => {
+    functions.find((fn) => fn.name.endsWith("/createOrganizerProgram")).buildConfig.sourceProvenance.resolvedStorageSource.generation = "999";
+  });
+  assert.throws(() => verifyCat165Predecessors(drift), /reviewed predecessor changed/);
+  await assert.rejects(cat165MetadataCapture((functions) => {
+    functions.splice(functions.findIndex((fn) => fn.name.endsWith("/createOrganizerProgram")), 1);
+  }), /Exactly one live Function required/);
+});
