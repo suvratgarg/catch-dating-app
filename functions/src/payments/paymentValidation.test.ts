@@ -90,6 +90,57 @@ test("buildOrderCreatePayload derives trusted amount and notes", () => {
   });
 });
 
+test("order receipts fit Razorpay's 40-character contract for long event ids",
+  () => {
+    const inputs = {
+      eventId: "cat151-prod-test-20261016-schema-acceptance",
+      event: buildEventDoc(),
+      userId: "cross_paths_mumbai_qa_user_002",
+      receiptToken: 1792165900000,
+      inviteVerified: true,
+    };
+    const payload = buildOrderCreatePayload(inputs);
+    assert.ok(payload.receipt.length <= 40);
+    assert.match(payload.receipt, /^[a-zA-Z0-9_-]+$/);
+    assert.equal(payload.amount, 25000);
+    assert.equal(payload.notes.eventId, inputs.eventId);
+    assert.equal(payload.notes.userId, inputs.userId);
+    assert.equal(payload.notes.inviteVerified, "true");
+    assert.equal(buildOrderCreatePayload(inputs).receipt, payload.receipt);
+    for (const changed of [
+      {eventId: inputs.eventId + "-other"},
+      {userId: inputs.userId + "-other"},
+      {receiptToken: inputs.receiptToken + 1},
+    ]) {
+      assert.notEqual(buildOrderCreatePayload({...inputs, ...changed}).receipt,
+        payload.receipt);
+    }
+  });
+
+test("order receipts preserve the boundary and bound Unicode or long tokens",
+  () => {
+    const inputs = {event: buildEventDoc(), userId: "runner-1",
+      receiptToken: 123};
+    const boundaryId = "e".repeat(30);
+    assert.equal(buildOrderCreatePayload({...inputs, eventId: boundaryId}).receipt,
+      `event_${boundaryId}_123`);
+    for (const [eventId, receiptToken] of [
+      [boundaryId + "x", 123],
+      ["é".repeat(30), 123],
+      ["event-1", "token".repeat(100)],
+    ] as const) {
+      const payload = buildOrderCreatePayload({...inputs, eventId, receiptToken});
+      assert.ok(Buffer.byteLength(payload.receipt, "utf8") <= 40);
+      assert.match(payload.receipt, /^[a-zA-Z0-9_-]+$/);
+      assert.equal(payload.notes.eventId, eventId);
+    }
+    const prefix = "same-prefix-".repeat(10);
+    assert.notEqual(
+      buildOrderCreatePayload({...inputs, eventId: prefix + "a"}).receipt,
+      buildOrderCreatePayload({...inputs, eventId: prefix + "b"}).receipt
+    );
+  });
+
 test("buildOrderCreatePayload records verified invite orders", () => {
   const payload = buildOrderCreatePayload({
     eventId: "event-1",

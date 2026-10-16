@@ -1,3 +1,4 @@
+import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
   PaymentStatus,
@@ -100,10 +101,20 @@ export function buildOrderCreatePayload({
     );
   }
 
+  // Razorpay documents a 40-character receipt limit. Keep short legacy
+  // receipts, but hash the complete identity instead of truncating long ids.
+  // Fulfillment reads the unchanged authoritative notes, never this label.
+  const legacyReceipt = `event_${eventId}_${receiptToken}`;
+  const receipt = /^[a-zA-Z0-9_-]{1,40}$/.test(legacyReceipt) ?
+    legacyReceipt :
+    "event_" + createHash("sha256")
+      .update(JSON.stringify([eventId, userId, String(receiptToken)]))
+      .digest("hex").slice(0, 34);
+
   return {
     amount: trustedAmountInPaise,
     currency: eventCurrency,
-    receipt: `event_${eventId}_${receiptToken}`,
+    receipt,
     notes: {
       eventId,
       userId,
