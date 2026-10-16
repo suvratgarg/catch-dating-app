@@ -18,7 +18,6 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/event_publication_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
@@ -32,7 +31,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/host
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_media_service.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
@@ -119,7 +117,7 @@ class _PrivateEventCreateScreenState
   EventPublicationController? _publicationController;
   String _savedPublicationState = 'private';
   bool _editingDetails = false;
-  PrivateEventDetailsController? _detailsController;
+  PrivateEventDetailsScope? _detailsScope;
   bool _loadingSavedEvent = false;
   bool _canEditSavedBasics = false;
   bool _canChangeSavedCity = false;
@@ -257,8 +255,6 @@ class _PrivateEventCreateScreenState
   void dispose() {
     _preferencesController?.removeListener(_refresh);
     _preferencesController?.dispose();
-    _detailsController?.removeListener(_refresh);
-    _detailsController?.dispose();
     _publicationController?.removeListener(_refresh);
     _publicationController?.dispose();
     _nameController.removeListener(_refresh);
@@ -534,12 +530,14 @@ class _PrivateEventCreateScreenState
         },
       );
     }
-    if (_editingDetails && _detailsController != null) {
+    if (_editingDetails && _detailsScope != null) {
+      final details = ref.watch(
+        privateEventDetailsControllerProvider(_detailsScope!),
+      );
       final currentUid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
       if (!currentUid.isSettledData ||
-          currentUid.value != _detailsController!.userId ||
-          !_detailsController!.actorAvailable) {
-        _detailsController!.invalidateActor();
+          currentUid.value != _detailsScope!.userId ||
+          !details.actorAvailable) {
         return CatchScaffold.stepFlow(
           body: CatchErrorState(
             title: context.l10n.hostsEventPreferenceError,
@@ -553,7 +551,7 @@ class _PrivateEventCreateScreenState
         );
       }
       return PrivateEventDetailsScreen(
-        controller: _detailsController!,
+        scope: _detailsScope!,
         onBack: _PrivateEventCreateBody(this)._closeDetails,
       );
     }

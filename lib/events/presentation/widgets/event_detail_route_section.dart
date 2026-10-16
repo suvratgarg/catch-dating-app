@@ -37,11 +37,10 @@ class EventDetailRouteSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final row in rows)
-            Padding(
-              padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-              child: Text(row, style: CatchTextStyles.supporting(context)),
-            ),
+          for (final row in rows) ...[
+            Text(row, style: CatchTextStyles.supporting(context)),
+            const SizedBox(height: CatchSpacing.s2),
+          ],
         ],
       ),
     );

@@ -26,7 +26,7 @@ final class PrivateEventMediaServiceProvider
         argument: null,
         retry: null,
         name: r'privateEventMediaServiceProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,4 +55,4 @@ final class PrivateEventMediaServiceProvider
 }
 
 String _$privateEventMediaServiceHash() =>
-    r'eadf07b24ac2e6d5d17ba60cf7ddfdb41c0af24c';
+    r'85fad90996af28c3dbab4cb796eefe7fb737e0c3';

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/events/domain/event_content_validation.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -50,7 +51,9 @@ class EventItineraryEditor extends StatelessWidget {
           body: context.l10n.hostsEventItineraryAddBody,
           valueText: context.l10n.hostsEventItineraryAddAction,
           icon: CatchIcons.addRounded,
-          onTap: items.length < 40
+          onTap:
+              items.length <
+                  CatchContractConstraints.eventDocumentItinerary.maxItems!
               ? () => _edit(context, items.length, null)
               : null,
         ),
@@ -157,38 +160,29 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                     final meters = routeDistance.text.trim().isEmpty
                         ? null
                         : int.tryParse(routeDistance.text.trim());
-                    if ((routeDistance.text.trim().isNotEmpty &&
-                            (meters == null ||
-                                meters < 0 ||
-                                meters > 1000000)) ||
-                        description.text.trim().length > 500 ||
-                        normalizedTitle.length > 120 ||
-                        normalizedTitle.isEmpty ||
-                        normalizedOffset == null ||
-                        normalizedOffset < 0 ||
-                        normalizedOffset > 1440 ||
+                    if (normalizedOffset == null ||
+                        (routeDistance.text.trim().isNotEmpty &&
+                            meters == null) ||
                         (duration.text.trim().isNotEmpty &&
-                            (normalizedDuration == null ||
-                                normalizedDuration < 1 ||
-                                normalizedDuration > 1440))) {
+                            normalizedDuration == null)) {
                       return;
                     }
-                    Navigator.of(dialogContext).pop(
-                      _ItineraryDialogResult.item(
-                        EventItineraryItem(
-                          id: existing?.id ?? generatedId,
-                          kind: kind,
-                          offsetMinutes: normalizedOffset,
-                          durationMinutes: normalizedDuration,
-                          title: normalizedTitle,
-                          description: description.text.trim().isEmpty
-                              ? null
-                              : description.text.trim(),
-                          location: selectedLocation,
-                          routeDistanceMeters: meters,
-                        ),
-                      ),
+                    final item = EventItineraryItem(
+                      id: existing?.id ?? generatedId,
+                      kind: kind,
+                      offsetMinutes: normalizedOffset,
+                      durationMinutes: normalizedDuration,
+                      title: normalizedTitle,
+                      description: description.text.trim().isEmpty
+                          ? null
+                          : description.text.trim(),
+                      location: selectedLocation,
+                      routeDistanceMeters: meters,
                     );
+                    if (!isValidEventItinerary([item])) return;
+                    Navigator.of(
+                      dialogContext,
+                    ).pop(_ItineraryDialogResult.item(item));
                   },
                 ),
               ],

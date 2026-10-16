@@ -21,7 +21,12 @@ import 'package:flutter/material.dart';
 /// Optional content uses the same editors as the complete create flow. Each
 /// saved edit goes through the private setup revision and retry journal.
 class PrivateEventContentSection extends StatelessWidget {
-  const PrivateEventContentSection({super.key, required this.controller});
+  const PrivateEventContentSection({
+    super.key,
+    required this.state,
+    required this.controller,
+  });
+  final PrivateEventDetailsState state;
   final PrivateEventDetailsController controller;
 
   void _format(Map<String, dynamic> json) => unawaited(
@@ -34,7 +39,7 @@ class PrivateEventContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final event = controller.event!;
+    final event = state.event!;
     final details = event.eventDetails;
     final format = details.eventFormat;
     final location = details.meetingLocation;
@@ -42,8 +47,8 @@ class PrivateEventContentSection extends StatelessWidget {
         .where((city) => city.effectiveCityId == event.city.cityId)
         .firstOrNull;
     final copy = catchFieldCopy(context.l10n);
-    final editable = controller.canEdit;
-    final formatEditable = controller.canEditFormat;
+    final editable = state.canEdit;
+    final formatEditable = state.canEditFormat;
     final photos = details.eventPhotos;
     final plan = format?.routePlan;
     return CatchSectionList(
@@ -191,7 +196,7 @@ class PrivateEventContentSection extends StatelessWidget {
                       ),
                     ),
                   );
-              if (result == null || !controller.canEdit) return null;
+              if (result == null || !state.canEdit) return null;
               final name = result.displayName ?? current?.name;
               if (name == null || name.trim().isEmpty) return null;
               return EventMeetingLocation(
@@ -224,7 +229,7 @@ class PrivateEventContentSection extends StatelessWidget {
                   imageUrl: photo.thumbnailOrUrl,
                 ),
             ],
-            onAddPhotos: editable && controller.pickAndUploadPhotos != null
+            onAddPhotos: editable && state.canAddPhotos
                 ? () => unawaited(controller.addPhotos())
                 : null,
             onRemovePhoto: editable

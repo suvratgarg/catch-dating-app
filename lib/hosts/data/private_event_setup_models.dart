@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
@@ -113,18 +115,29 @@ class PrivateEventAdmissionTerms {
   final String currency;
   final String cancellationPolicyId;
   bool get isValid =>
-      capacityLimit >= 1 &&
-      capacityLimit <= 1000 &&
-      priceInPaise >= 0 &&
-      priceInPaise <= 100000000 &&
-      RegExp(r'^[A-Z]{3}$').hasMatch(currency) &&
+      acceptsContractValue(
+        CatchContractConstraints
+            .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCapacityLimit,
+        capacityLimit,
+      ) &&
+      acceptsContractValue(
+        CatchContractConstraints
+            .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise,
+        priceInPaise,
+      ) &&
+      acceptsContractValue(
+        CatchContractConstraints
+            .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCurrency,
+        currency,
+      ) &&
+      acceptsContractValue(
+        CatchContractConstraints
+            .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCancellationPolicyId,
+        cancellationPolicyId,
+      ) &&
       (priceInPaise == 0
           ? cancellationPolicyId == 'notApplicable'
-          : const {
-              'flexible',
-              'standard',
-              'strict',
-            }.contains(cancellationPolicyId));
+          : cancellationPolicyId != 'notApplicable');
   Map<String, Object?> toJson() => {
     'capacityLimit': capacityLimit,
     'priceInPaise': priceInPaise,

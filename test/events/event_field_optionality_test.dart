@@ -14,6 +14,7 @@ import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
 import 'events_test_helpers.dart';
 
 void main() {
@@ -147,19 +148,19 @@ void main() {
       ),
     );
     await tester.tap(find.text('Water stop'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text(AppLocalizationsEn().hostsEventItinerarySave));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(result!.single.routeDistanceMeters, 1000);
     await tester.tap(find.text('Water stop'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final field = find.descendant(
       of: find.byKey(const ValueKey('event-itinerary-route-distance')),
       matching: find.byType(EditableText),
     );
     await tester.enterText(field, '');
     await tester.tap(find.text(AppLocalizationsEn().hostsEventItinerarySave));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(result!.single.routeDistanceMeters, isNull);
   });
 

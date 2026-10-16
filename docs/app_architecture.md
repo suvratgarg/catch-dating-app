@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.75.0
-updated: 2026-10-07
+version: 1.76.0
+updated: 2026-10-16
 owner: app_architecture
 status: active
 ---
@@ -4846,6 +4846,15 @@ lib/new_feature/
   presentation/new_feature_view_model.dart
   presentation/widgets/new_feature_body.dart
 ```
+
+The private event details editor is a scoped example of this boundary:
+`privateEventDetailsControllerProvider` owns an immutable `PrivateEventDetailsState`
+for a `(userId, organizerId, eventId)` scope. The controller orchestrates repository
+commands, the persistent exact-command journal, and the media service. Screens
+watch state and dispatch commands; local text/price drafts remain widget state.
+Riverpod owns disposal, account changes permanently fence the old scope, and late
+async results cannot update a disposed controller. Lost responses retain the
+original command for retry rather than generating a fresh mutation.
 
 Add a controller only when there is a mutation or durable flow state.
 

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.168.0
+version: 1.169.0
 updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
@@ -2181,6 +2181,26 @@ It does not own multi-document business behavior, ranking algorithms,
 notification fan-out, dynamic Auth/current-time checks, or full Firestore rules.
 Those stay in Functions, repositories, rules, and domain services, consuming
 generated constants/validators where useful.
+
+### Generated event domain projections
+
+`tool/contracts/generate_domain_classes.mjs` owns the Dart declarations for
+`Event`, `EventOrigin`, `EventRuntimeAccess`, `EventMeetingLocation`, and
+`EventItineraryItem`. The Event projection combines root requirements with the
+published/legacy schema branch. Private drafts continue to use their private
+setup response model; they are not decoded as a published Event. Projection
+specs retain explicit compatibility defaults, legacy nullable coordinate/counter
+mirrors, timestamp conversions, and the organizerId/clubId read fallback.
+Derived behavior lives in companion extensions. New persisted fields still need
+an explicit projection decision; generation does not expose every server field.
+
+The private-details command adapter retains set/clear/inherit intent and exact
+retry serialization. Scalar bounds come from generated field constraints, shared
+itinerary/location validation owns nested checks, and cross-field rules remain
+explicit. These presentation-neutral field constraints describe non-null input
+values, not the complete JSON Schema; optional typed values are skipped by the
+adapter, and server schema validation remains authoritative. Blank duration and
+venue inputs produce clear commands rather than invalid set values.
 
 ### Generated Dart Callable Request DTOs
 

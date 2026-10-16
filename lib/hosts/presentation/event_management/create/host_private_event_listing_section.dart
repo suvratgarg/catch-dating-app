@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
@@ -14,7 +16,12 @@ import 'package:flutter/material.dart';
 /// Listing fields on the existing private-event editor. Local terms stay a
 /// draft until saved together; setting a price does not open registration.
 class HostPrivateEventListingSection extends StatefulWidget {
-  const HostPrivateEventListingSection({super.key, required this.controller});
+  const HostPrivateEventListingSection({
+    super.key,
+    required this.state,
+    required this.controller,
+  });
+  final PrivateEventDetailsState state;
   final PrivateEventDetailsController controller;
 
   @override
@@ -40,7 +47,7 @@ class _HostPrivateEventListingSectionState
   @override
   void didUpdateWidget(covariant HostPrivateEventListingSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final incoming = widget.controller.event!.eventDetails.admissionTerms
+    final incoming = widget.state.event!.eventDetails.admissionTerms
         ?.toJson()
         .toString();
     if (incoming != _savedTermsSignature &&
@@ -50,7 +57,7 @@ class _HostPrivateEventListingSectionState
   }
 
   void _readSavedTerms() {
-    final event = widget.controller.event!;
+    final event = widget.state.event!;
     final terms = event.eventDetails.admissionTerms;
     _savedTermsSignature = terms?.toJson().toString();
     _dirty = false;
@@ -92,8 +99,9 @@ class _HostPrivateEventListingSectionState
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
     final controller = widget.controller;
-    final details = controller.event!.eventDetails;
-    final editable = controller.canEdit;
+    final state = widget.state;
+    final details = state.event!.eventDetails;
+    final editable = state.canEdit;
     final mode = editable
         ? CatchTextInputMode.editable
         : CatchTextInputMode.inactive;
@@ -110,11 +118,11 @@ class _HostPrivateEventListingSectionState
             CatchField.input(
               copy: copy,
               title: l10n.hostsEventDetailsStepTitleDescription,
-              contractExemption:
-                  'Optional description is saved on the canonical event.',
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsDescription,
               labelMode: CatchFieldLabelTextMode.optional,
               initialValue: details.description ?? '',
-              maxLength: 2000,
+
               inputMode: mode,
               maxLines: 6,
               onSubmitted: editable
@@ -129,8 +137,8 @@ class _HostPrivateEventListingSectionState
               CatchField.input(
                 copy: copy,
                 title: l10n.hostsEventDetailsStepTitleDistanceKm,
-                contractExemption:
-                    'Distance is required only for distance-based formats.',
+                contract: CatchContractConstraints
+                    .updatePrivateEventDetailsCallablePayloadDetailsDistanceKm,
                 initialValue: details.distanceKm?.toString() ?? '',
                 inputMode: mode,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -138,14 +146,22 @@ class _HostPrivateEventListingSectionState
                 ),
                 onValidate: (value) {
                   final km = double.tryParse(value?.trim() ?? '');
-                  return km != null && km.isFinite && km >= 0 && km <= 100
+                  return acceptsContractValue(
+                        CatchContractConstraints
+                            .updatePrivateEventDetailsCallablePayloadDetailsDistanceKm,
+                        km,
+                      )
                       ? null
                       : l10n.hostsEventPreferenceInvalidValue;
                 },
                 onSubmitted: editable
                     ? (value) {
                         final km = double.tryParse(value.trim());
-                        if (km == null || !km.isFinite || km < 0 || km > 100) {
+                        if (!acceptsContractValue(
+                          CatchContractConstraints
+                              .updatePrivateEventDetailsCallablePayloadDetailsDistanceKm,
+                          km,
+                        )) {
                           return;
                         }
                         unawaited(
@@ -159,8 +175,8 @@ class _HostPrivateEventListingSectionState
               CatchField<PaceLevel>.control(
                 copy: copy,
                 title: l10n.hostsEventDetailsStepLabelPaceLevel,
-                contractExemption:
-                    'Explicit pace choice for a distance-based event.',
+                contract: CatchContractConstraints
+                    .updatePrivateEventDetailsCallablePayloadDetailsPace,
                 child: CatchChoiceInput<PaceLevel>(
                   values: PaceLevel.values,
                   itemLabelBuilder: (pace) => pace.label,
@@ -198,11 +214,11 @@ class _HostPrivateEventListingSectionState
             CatchField.input(
               copy: copy,
               title: l10n.hostsEditHostedEventScreenLabelCapacity,
-              contractExemption:
-                  'Capacity is committed with price and refund terms.',
+              contract: CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCapacityLimit,
               initialValue: _capacity,
               inputMode: mode,
-              maxLength: 4,
+
               keyboardType: TextInputType.number,
               onChanged: (value) => setState(() {
                 _capacity = value;
@@ -210,7 +226,11 @@ class _HostPrivateEventListingSectionState
               }),
               onValidate: (value) {
                 final count = int.tryParse(value?.trim() ?? '');
-                return count != null && count >= 1 && count <= 1000
+                return acceptsContractValue(
+                      CatchContractConstraints
+                          .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCapacityLimit,
+                      count,
+                    )
                     ? null
                     : l10n.hostsEventPreferenceInvalidValue;
               },
@@ -236,7 +256,11 @@ class _HostPrivateEventListingSectionState
                   value ?? '',
                   currencyCode: _currency,
                 );
-                return amount != null && amount >= 0 && amount <= 100000000
+                return acceptsContractValue(
+                      CatchContractConstraints
+                          .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise,
+                      amount,
+                    )
                     ? null
                     : l10n.hostsEventPreferenceInvalidValue;
               },
@@ -248,7 +272,11 @@ class _HostPrivateEventListingSectionState
                 contractExemption:
                     'Cash-refund cutoff; credits are not offered.',
                 child: CatchChoiceInput<String>(
-                  values: const ['flexible', 'standard', 'strict'],
+                  values: CatchContractConstraints
+                      .updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCancellationPolicyId
+                      .enumValues!
+                      .where((value) => value != 'notApplicable')
+                      .toList(),
                   itemLabelBuilder: (value) =>
                       l10n.hostsPrivateEventRefundCutoff(
                         hours: value == 'flexible'

@@ -6,12 +6,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'private_event_media_service.g.dart';
 
-// keepalive: Uploads outlive the read-only caller; retain Ref for actor checks.
-@Riverpod(keepAlive: true)
+// The details controller retains this service while its scope is active.
+@riverpod
 PrivateEventMediaService privateEventMediaService(Ref ref) {
   return PrivateEventMediaService(
-    images: ref.read(imageUploadRepositoryProvider),
-    currentUserId: () => ref.read(uidProvider).asData?.value,
+    images: ref.watch(imageUploadRepositoryProvider),
+    currentUserId: () =>
+        ref.mounted ? ref.read(uidProvider).asData?.value : null,
   );
 }
 

@@ -15,6 +15,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'private_event_details_test_support.dart';
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
@@ -313,16 +315,14 @@ void main() {
         );
       }
 
-      PrivateEventDetailsController controller() =>
-          PrivateEventDetailsController(
-            userId: 'host-1',
-            organizerId: 'club-1',
-            eventId: 'event-1',
-            readEvent: ({required organizerId, required eventId}) async =>
-                read(),
-            readDefaults: (_) async => defaults,
-            write: write,
-          );
+      TestPrivateEventDetailsController controller() => createDetailsController(
+        userId: 'host-1',
+        organizerId: 'club-1',
+        eventId: 'event-1',
+        readEvent: ({required organizerId, required eventId}) async => read(),
+        readDefaults: (_) async => defaults,
+        write: write,
+      );
       final first = controller();
       await first.load();
       // Existing guests lock basic/format changes, not later venue or duration.
@@ -375,7 +375,7 @@ void main() {
   test('failed details reread disables stale editing', () async {
     final hash = List.filled(64, 'a').join();
     var denied = false;
-    final controller = PrivateEventDetailsController(
+    final controller = createDetailsController(
       userId: 'host-1',
       organizerId: 'club-1',
       eventId: 'event-1',
@@ -432,7 +432,7 @@ void main() {
       var cancelled = false;
       var currentUid = 'host-1';
       var writes = 0;
-      final controller = PrivateEventDetailsController(
+      final controller = createDetailsController(
         userId: 'host-1',
         organizerId: 'club-1',
         eventId: 'event-1',
@@ -746,7 +746,7 @@ const _progress = PrivateSeatReconciliationResult.pending(
     scannedRows: 25,
   ),
 );
-PrivateEventDetailsController _reconciliationController(
+TestPrivateEventDetailsController _reconciliationController(
   Future<PrivateSeatReconciliationResult> Function(
     PrivateEventDetailsUpdateRequest,
   )
@@ -756,7 +756,7 @@ PrivateEventDetailsController _reconciliationController(
   Future<List<UploadedPhoto>> Function(int)? pickAndUploadPhotos,
 }) {
   final hash = List.filled(64, 'a').join();
-  return PrivateEventDetailsController(
+  return createDetailsController(
     userId: 'host-1',
     organizerId: 'club-1',
     eventId: 'event-1',
