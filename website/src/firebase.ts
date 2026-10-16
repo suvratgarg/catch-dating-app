@@ -418,13 +418,8 @@ export async function completePublicFormEmailSignIn(
   if (!runtime || !publicFormsFirebaseConfigured) {
     throw new Error("Public forms are not configured for this build.");
   }
-  const {isSignInWithEmailLink, signInWithEmailLink} = await import(
-    "firebase/auth"
-  );
-  if (!isSignInWithEmailLink(runtime.auth, emailLink)) {
-    throw new Error("This email verification link is invalid or expired.");
-  }
-  return (await signInWithEmailLink(runtime.auth, email, emailLink)).user;
+  const {signInOrLinkEmailLink} = await import("./firebaseClaimAccountLinking");
+  return signInOrLinkEmailLink(runtime.auth, email, emailLink);
 }
 
 export interface EventRuntimeMission {

@@ -86,3 +86,36 @@ export async function beginClaimPhoneLink(auth: Auth, phone: string,
     }};
   } catch (error) {return recovery(error);}
 }
+
+/** Email verification follows the same UID-preserving boundary as phone. */
+export async function signInOrLinkEmailLink(auth: Auth, email: string,
+  emailLink: string, sdk?: AuthSdk): Promise<User> {
+  await auth.authStateReady();
+  const api = sdk ?? await import("firebase/auth");
+  if (!api.isSignInWithEmailLink(auth, emailLink)) {
+    throw new Error("This email verification link is invalid or expired.");
+  }
+  const current = auth.currentUser;
+  try {
+    if (!current) {
+      const result = await api.signInWithEmailLink(auth, email, emailLink);
+      unchanged(auth, result.user);
+      await result.user.getIdToken(true);
+      unchanged(auth, result.user);
+      return result.user;
+    }
+    unchanged(auth, current);
+    if (current.email && current.email.toLowerCase() !== email.trim().toLowerCase()) {
+      throw new Error("Use the email already linked to this account, or recover the intended account before continuing.");
+    }
+    const credential = api.EmailAuthProvider.credentialWithLink(email, emailLink);
+    const result = current.providerData.some((provider) => provider.providerId === "password") ?
+      await api.reauthenticateWithCredential(current, credential) :
+      await api.linkWithCredential(current, credential);
+    unchanged(auth, current);
+    if (result.user.uid !== current.uid) throw new Error("Email verification changed your account. Restart verification.");
+    await result.user.getIdToken(true);
+    unchanged(auth, current);
+    return result.user;
+  } catch (error) {return recovery(error);}
+}
