@@ -25774,6 +25774,11 @@ abstract final class CatchContractConstraints {
     format: 'uri',
   );
 
+  static const createEventCallablePayloadEventPolicyAdmissionApprovedMembersSkipReview = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventPolicy.admission.approvedMembersSkipReview',
+    valueTypes: <String>['boolean'],
+  );
+
   static const createEventCallablePayloadEventPolicyAdmissionBalancedRatioPolicyLeftCohortId = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventPolicy.admission.balancedRatioPolicy.leftCohortId',
     maxLength: 120,
@@ -47142,6 +47147,11 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const eventDocumentEventPolicyAdmissionApprovedMembersSkipReview = CatchContractFieldConstraints(
+    path: 'eventDocument.eventPolicy.admission.approvedMembersSkipReview',
+    valueTypes: <String>['boolean'],
   );
 
   static const eventDocumentEventPolicyAdmissionBalancedRatioPolicyLeftCohortId = CatchContractFieldConstraints(
@@ -157190,6 +157200,11 @@ abstract final class CatchContractConstraints {
     format: 'uri',
   );
 
+  static const updateEventCallablePayloadFieldsEventPolicyAdmissionApprovedMembersSkipReview = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventPolicy.admission.approvedMembersSkipReview',
+    valueTypes: <String>['boolean'],
+  );
+
   static const updateEventCallablePayloadFieldsEventPolicyAdmissionBalancedRatioPolicyLeftCohortId = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.eventPolicy.admission.balancedRatioPolicy.leftCohortId',
     maxLength: 120,
@@ -170920,6 +170935,7 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.eventPhotos.items.updatedAt._nanoseconds': createEventCallablePayloadEventPhotosItemsUpdatedAtNanoseconds,
     'createEventCallablePayload.eventPhotos.items.updatedAt._seconds': createEventCallablePayloadEventPhotosItemsUpdatedAtSeconds,
     'createEventCallablePayload.eventPhotos.items.url': createEventCallablePayloadEventPhotosItemsUrl,
+    'createEventCallablePayload.eventPolicy.admission.approvedMembersSkipReview': createEventCallablePayloadEventPolicyAdmissionApprovedMembersSkipReview,
     'createEventCallablePayload.eventPolicy.admission.balancedRatioPolicy.leftCohortId': createEventCallablePayloadEventPolicyAdmissionBalancedRatioPolicyLeftCohortId,
     'createEventCallablePayload.eventPolicy.admission.balancedRatioPolicy.maxSkew': createEventCallablePayloadEventPolicyAdmissionBalancedRatioPolicyMaxSkew,
     'createEventCallablePayload.eventPolicy.admission.balancedRatioPolicy.openingBufferPerCohort': createEventCallablePayloadEventPolicyAdmissionBalancedRatioPolicyOpeningBufferPerCohort,
@@ -173776,6 +173792,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventPhotos.items.updatedAt._nanoseconds': eventDocumentEventPhotosItemsUpdatedAtNanoseconds,
     'eventDocument.eventPhotos.items.updatedAt._seconds': eventDocumentEventPhotosItemsUpdatedAtSeconds,
     'eventDocument.eventPhotos.items.url': eventDocumentEventPhotosItemsUrl,
+    'eventDocument.eventPolicy.admission.approvedMembersSkipReview': eventDocumentEventPolicyAdmissionApprovedMembersSkipReview,
     'eventDocument.eventPolicy.admission.balancedRatioPolicy.leftCohortId': eventDocumentEventPolicyAdmissionBalancedRatioPolicyLeftCohortId,
     'eventDocument.eventPolicy.admission.balancedRatioPolicy.maxSkew': eventDocumentEventPolicyAdmissionBalancedRatioPolicyMaxSkew,
     'eventDocument.eventPolicy.admission.balancedRatioPolicy.openingBufferPerCohort': eventDocumentEventPolicyAdmissionBalancedRatioPolicyOpeningBufferPerCohort,
@@ -188813,6 +188830,7 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.eventPhotos.items.updatedAt._nanoseconds': updateEventCallablePayloadFieldsEventPhotosItemsUpdatedAtNanoseconds,
     'updateEventCallablePayload.fields.eventPhotos.items.updatedAt._seconds': updateEventCallablePayloadFieldsEventPhotosItemsUpdatedAtSeconds,
     'updateEventCallablePayload.fields.eventPhotos.items.url': updateEventCallablePayloadFieldsEventPhotosItemsUrl,
+    'updateEventCallablePayload.fields.eventPolicy.admission.approvedMembersSkipReview': updateEventCallablePayloadFieldsEventPolicyAdmissionApprovedMembersSkipReview,
     'updateEventCallablePayload.fields.eventPolicy.admission.balancedRatioPolicy.leftCohortId': updateEventCallablePayloadFieldsEventPolicyAdmissionBalancedRatioPolicyLeftCohortId,
     'updateEventCallablePayload.fields.eventPolicy.admission.balancedRatioPolicy.maxSkew': updateEventCallablePayloadFieldsEventPolicyAdmissionBalancedRatioPolicyMaxSkew,
     'updateEventCallablePayload.fields.eventPolicy.admission.balancedRatioPolicy.openingBufferPerCohort': updateEventCallablePayloadFieldsEventPolicyAdmissionBalancedRatioPolicyOpeningBufferPerCohort,

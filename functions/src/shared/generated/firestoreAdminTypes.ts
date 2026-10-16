@@ -487,6 +487,10 @@ export interface EventPolicyAdmissionDocument {
   inviteRequired?: boolean;
   membershipRequired?: boolean;
   manualApprovalRequired?: boolean;
+  /**
+   * When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false.
+   */
+  approvedMembersSkipReview?: boolean;
   privateAccessPolicy?: EventPolicyPrivateAccessDocument;
   cohortCapacityLimits?: {
     [k: string]: number;

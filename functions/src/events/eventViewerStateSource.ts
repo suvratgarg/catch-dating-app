@@ -167,7 +167,8 @@ export async function readEventViewerStateSource(params: {
     }
     // Retained admission and current entitlement are distinct even on failure.
     try {
-      if (requiresCommunityMembership(policy)) {
+      if (requiresCommunityMembership(policy) ||
+          policy.admission.approvedMembersSkipReview === true) {
         result.membership.state = "unavailable";
         const membership = await readCommunityMembership({db, tx,
           organizerId: result.organizerId, uid, nowMillis});

@@ -40634,6 +40634,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label} · {pace}/km'**
   String eventsRoutePaceGroup({required String label, required String pace});
+
+  /// Admission preset label for member review exemption
+  ///
+  /// In en, this message translates to:
+  /// **'Members skip review'**
+  String get hostsCreateEventPolicyStateLabelMembersSkipReview;
+
+  /// Admission preset title for member review exemption
+  ///
+  /// In en, this message translates to:
+  /// **'Members skip review'**
+  String get hostsCreateEventPolicyStateTitleMembersSkipReview;
+
+  /// Explains that current approved members skip review but retain other booking requirements
+  ///
+  /// In en, this message translates to:
+  /// **'Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.'**
+  String get hostsCreateEventPolicyStateDescriptionMembersSkipReview;
 }
 
 class _AppLocalizationsDelegate

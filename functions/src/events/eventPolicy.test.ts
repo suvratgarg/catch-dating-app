@@ -338,3 +338,27 @@ test("grants cannot waive invite, cohort or balance restrictions", () => {
   assert.deepEqual(signupPolicyDecision({...params, hasValidInvite: true}),
     {allowed: false, reason: "balanceUnavailable"});
 });
+
+
+test("member review exemption retains other admission gates", () => {
+  const gated = policy("standard");
+  gated.admission.manualApprovalRequired = true;
+  gated.admission.approvedMembersSkipReview = true;
+  const input = {policy: gated, cohortId: "menInterestedInWomen",
+    roster: {totalBooked: 0, bookedCountsByCohort: {},
+      waitlistedCountsByCohort: {}}};
+  assert.deepEqual(signupPolicyDecision(input),
+    {allowed: false, reason: "reviewRequired"});
+  const member = {...input, hasActiveCommunityMembership: true};
+  assert.deepEqual(signupPolicyDecision(member), {allowed: true});
+  assert.deepEqual(signupPolicyDecision({...member,
+    roster: {...input.roster, totalBooked: 20}}),
+  {allowed: false, reason: "full"});
+  gated.admission.inviteRequired = true;
+  assert.deepEqual(signupPolicyDecision(member),
+    {allowed: false, reason: "inviteRequired"});
+  gated.admission.inviteRequired = false;
+  gated.admission.cohortCapacityLimits = {menInterestedInWomen: 0};
+  assert.deepEqual(signupPolicyDecision(member),
+    {allowed: false, reason: "cohortCapacityUnavailable"});
+});

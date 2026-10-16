@@ -254,7 +254,8 @@ export async function readGuestEventViewerState(params: {
           throw new HttpsError("failed-precondition",
             "Closed");
         }
-        assertPublicRegistrationPolicy(event, organizer, mode, nowMillis);
+        assertPublicRegistrationPolicy(event, organizer, mode, nowMillis,
+          membership?.state === "active");
         guest.action = mode === "free" ? "registerFree" : "bookPaid";
       } catch (error) {
         if (!(error instanceof HttpsError) ||

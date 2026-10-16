@@ -116,7 +116,7 @@ class EventPolicyStep extends StatelessWidget {
       CatchFormDependency(
         id: _PolicyField.requestGuidance,
         parent: _PolicyField.admission,
-        when: admissionPreset == EventAdmissionPreset.requestToJoin,
+        when: admissionPreset.requiresReview,
       ),
       CatchFormDependency(
         id: _PolicyField.demandPricing,
@@ -247,7 +247,9 @@ class EventPolicyStep extends StatelessWidget {
                       contractValueBuilder: (preset) => switch (preset) {
                         EventAdmissionPreset.openCapacity => 'open',
                         EventAdmissionPreset.inviteOnly => 'inviteOnly',
-                        EventAdmissionPreset.requestToJoin => 'manualApproval',
+                        EventAdmissionPreset.requestToJoin ||
+                        EventAdmissionPreset.requestToJoinMembersExempt =>
+                          'manualApproval',
                         EventAdmissionPreset.balancedSingles => 'balancedRatio',
                       },
                       values: EventAdmissionPreset.values,

@@ -31910,5 +31910,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@hostsCreateEventPolicyStateLabelMembersSkipReview": {"description": "Admission preset label for member review exemption"},
+  "hostsCreateEventPolicyStateLabelMembersSkipReview": "Members skip review",
+  "@hostsCreateEventPolicyStateTitleMembersSkipReview": {"description": "Admission preset title for member review exemption"},
+  "hostsCreateEventPolicyStateTitleMembersSkipReview": "Members skip review",
+  "@hostsCreateEventPolicyStateDescriptionMembersSkipReview": {"description": "Explains that current approved members skip review but retain other booking requirements"},
+  "hostsCreateEventPolicyStateDescriptionMembersSkipReview": "Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply."
 }

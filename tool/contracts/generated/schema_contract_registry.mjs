@@ -181319,6 +181319,10 @@ export const eventDocumentSchema = {
             "manualApprovalRequired": {
               "type": "boolean"
             },
+            "approvedMembersSkipReview": {
+              "type": "boolean",
+              "description": "When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false."
+            },
             "privateAccessPolicy": {
               "type": "object",
               "additionalProperties": false,
@@ -251474,6 +251478,10 @@ export const createEventCallablePayloadSchema = {
             "manualApprovalRequired": {
               "type": "boolean"
             },
+            "approvedMembersSkipReview": {
+              "type": "boolean",
+              "description": "When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false."
+            },
             "privateAccessPolicy": {
               "type": "object",
               "additionalProperties": false,
@@ -253388,6 +253396,10 @@ export const updateEventCallablePayloadSchema = {
                 },
                 "manualApprovalRequired": {
                   "type": "boolean"
+                },
+                "approvedMembersSkipReview": {
+                  "type": "boolean",
+                  "description": "When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false."
                 },
                 "privateAccessPolicy": {
                   "type": "object",

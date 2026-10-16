@@ -25185,4 +25185,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String eventsRoutePaceGroup({required String label, required String pace}) {
     return '$label · $pace/km';
   }
+
+  @override
+  String get hostsCreateEventPolicyStateLabelMembersSkipReview =>
+      'Members skip review';
+
+  @override
+  String get hostsCreateEventPolicyStateTitleMembersSkipReview =>
+      'Members skip review';
+
+  @override
+  String get hostsCreateEventPolicyStateDescriptionMembersSkipReview =>
+      'Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.';
 }

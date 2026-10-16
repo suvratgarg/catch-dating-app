@@ -1375,9 +1375,15 @@ results. Free registration mutations live in a controller, separate from the
 form widgets. Public payment/offer controllers retain their own transaction and
 retry protocols while sharing authentication transport.
 
-Unsupported cohort, membership and pair-inventory admission remains explicitly
-host-managed. This pass does not add a membership review exemption, new guest
-quota reservation authority, or automatic approval message delivery. Issued links retain their existing manual handoff; claimed
+Cohort and pair-inventory guest admission remains explicitly host-managed.
+The event policy's optional `approvedMembersSkipReview` defaults to false.
+Host create/edit offers an explicit member-exempt request-to-join preset and
+preserves it through drafts and repeats. Native and public booking re-read the
+current community entitlement; free registration, paid quote/reservation and
+paid fulfillment share that check. Membership skips only review, never current
+capacity, invitation, pricing, or unsupported inventory requirements. Public
+registration configuration validates supported policy shape separately from
+recipient eligibility. Issued links retain their existing manual handoff; claimed
 offers can be recovered by authenticated non-secret reference. Free invitations
 use an explicit recipient-authorized call to the existing admission transaction,
 including current offer, response, identity, ledger and retry checks. The

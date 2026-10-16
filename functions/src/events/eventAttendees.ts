@@ -1,3 +1,4 @@
+import {publicGuestMembership} from "./publicRegistration/authority";
 import {assertPublicRegistrationPolicy, publicRegistrationMode} from
   "./publicRegistration/policy";
 import {heldSeatCount} from "./seatAuthority/seatAuthority";
@@ -879,7 +880,9 @@ export async function registerPublicEventHandler(
         attendee.status === "checkedIn" ? count + 1 : count;
     }, 0) ?? 0;
     const now = deps.timestamp();
-    assertPublicRegistrationPolicy(event, organizer, "free", now.toMillis());
+    assertPublicRegistrationPolicy(event, organizer, "free", now.toMillis(),
+      await publicGuestMembership({db, tx, event, uid,
+        nowMillis: now.toMillis()}));
     if (publicRegistrationMode(event) !== "free") {
       throw new HttpsError("failed-precondition",
         "Registration must match the event's current terms.");
