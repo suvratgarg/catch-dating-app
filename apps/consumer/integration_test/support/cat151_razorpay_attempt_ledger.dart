@@ -2,6 +2,12 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+const cat151SchemaAcceptanceEvent =
+    'cat151-prod-test-20261016-schema-acceptance';
+const _schemaProject = 'catch-dating-app-64e51';
+const _schemaUid = 'cross_paths_mumbai_qa_user_002';
+const _schemaSeed = 'cross_paths_mumbai_qa';
+
 const cat151SecondAttemptConfirmation = 'AUTHORIZE ATTEMPT 2';
 
 abstract interface class Cat151StringStore {
@@ -122,15 +128,31 @@ final class Cat151AttemptLedgerException implements Exception {
 /// provider result. The ledger has no reset API.
 final class Cat151AttemptLedger {
   Cat151AttemptLedger({Cat151StringStore? store, int Function()? nowMillis})
-    : _store = store ?? Cat151SharedPreferencesStore(),
+    : _schemaAcceptance = false,
+      _store = store ?? Cat151SharedPreferencesStore(),
       _nowMillis = nowMillis ?? (() => DateTime.now().millisecondsSinceEpoch);
+
+  /// The separately approved, single checkout after the schema deployment.
+  /// The prior project ledger is required and is never replaced or reset.
+  Cat151AttemptLedger.schemaAcceptance({
+    Cat151StringStore? store,
+    int Function()? nowMillis,
+  }) : _schemaAcceptance = true,
+       _store = store ?? Cat151SharedPreferencesStore(),
+       _nowMillis = nowMillis ?? (() => DateTime.now().millisecondsSinceEpoch);
+
+  final bool _schemaAcceptance;
+  int get maximumAttempts => _schemaAcceptance ? 1 : 2;
+  bool get allowsSecondAuthorization => !_schemaAcceptance;
 
   final Cat151StringStore _store;
   final int Function() _nowMillis;
 
   String _key(String projectId) {
     final normalized = _requiredText(projectId, 'projectId');
-    return 'cat151_razorpay_acceptance_v1_${base64Url.encode(utf8.encode(normalized))}';
+    final base =
+        'cat151_razorpay_acceptance_v1_${base64Url.encode(utf8.encode(normalized))}';
+    return _schemaAcceptance ? '${base}_schema_acceptance_20261016' : base;
   }
 
   Future<Cat151AttemptLedgerState> bindScope({
@@ -143,6 +165,12 @@ final class Cat151AttemptLedger {
     final normalizedUid = _requiredText(uid, 'uid');
     final normalizedEvent = _requiredText(eventId, 'eventId');
     final normalizedSeed = _requiredText(seedPrefix, 'seedPrefix');
+    _validateSupplementalScope(
+      normalizedProject,
+      normalizedUid,
+      normalizedEvent,
+      normalizedSeed,
+    );
     final current = await load(normalizedProject);
     if (current == null) {
       final created = Cat151AttemptLedgerState(
@@ -167,12 +195,29 @@ final class Cat151AttemptLedger {
   }
 
   Future<Cat151AttemptLedgerState?> load(String projectId) async {
+    if (_schemaAcceptance) {
+      final prior = await Cat151AttemptLedger(
+        store: _store,
+      ).load(_schemaProject);
+      if (projectId.trim() != _schemaProject ||
+          prior == null ||
+          prior.uid != _schemaUid ||
+          prior.seedPrefix != _schemaSeed ||
+          prior.eventId != 'cat151-prod-test-20261005-checkout' ||
+          prior.attempts.isEmpty) {
+        throw const Cat151AttemptLedgerException(
+          'The preserved original acceptance ledger is required.',
+        );
+      }
+    }
     final raw = await _store.getString(_key(projectId));
     if (raw == null) return null;
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) throw const FormatException();
-      return _decode(decoded, expectedProjectId: projectId.trim());
+      final state = _decode(decoded, expectedProjectId: projectId.trim());
+      _validateSupplementalState(state);
+      return state;
     } on Cat151AttemptLedgerException {
       rethrow;
     } catch (_) {
@@ -186,7 +231,7 @@ final class Cat151AttemptLedger {
     Cat151AttemptLedgerState expected,
   ) async {
     final current = await _requireUnchanged(expected);
-    if (current.isTerminal || current.attempts.length >= 2) {
+    if (current.isTerminal || current.attempts.length >= maximumAttempts) {
       throw const Cat151AttemptLedgerException(
         'The bounded checkout budget is exhausted.',
       );
@@ -211,7 +256,8 @@ final class Cat151AttemptLedger {
     required String confirmation,
   }) async {
     final current = await _requireUnchanged(expected);
-    if (!current.canAuthorizeSecond ||
+    if (!allowsSecondAuthorization ||
+        !current.canAuthorizeSecond ||
         confirmation.trim() != cat151SecondAttemptConfirmation) {
       throw const Cat151AttemptLedgerException(
         'Attempt 2 authorization was not explicit or is not available.',
@@ -305,8 +351,42 @@ final class Cat151AttemptLedger {
     return current;
   }
 
-  Future<void> _save(Cat151AttemptLedgerState state) =>
-      _store.setString(_key(state.projectId), jsonEncode(state.toJson()));
+  Future<void> _save(Cat151AttemptLedgerState state) async {
+    _validateSupplementalState(state);
+    await _store.setString(_key(state.projectId), jsonEncode(state.toJson()));
+  }
+
+  void _validateSupplementalScope(
+    String project,
+    String uid,
+    String event,
+    String seed,
+  ) {
+    if (_schemaAcceptance &&
+        (project != _schemaProject ||
+            uid != _schemaUid ||
+            event != cat151SchemaAcceptanceEvent ||
+            seed != _schemaSeed)) {
+      throw const Cat151AttemptLedgerException(
+        'The additional approval applies only to the fixed schema acceptance scope.',
+      );
+    }
+  }
+
+  void _validateSupplementalState(Cat151AttemptLedgerState state) {
+    _validateSupplementalScope(
+      state.projectId,
+      state.uid,
+      state.eventId,
+      state.seedPrefix,
+    );
+    if (_schemaAcceptance &&
+        (state.secondAttemptAuthorized || state.attempts.length > 1)) {
+      throw const Cat151AttemptLedgerException(
+        'The additional approval permits exactly one checkout.',
+      );
+    }
+  }
 
   static Cat151AttemptLedgerState _copy(
     Cat151AttemptLedgerState state, {

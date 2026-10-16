@@ -90,12 +90,10 @@ class _Cat151AcceptanceScreenState
     text: 'cross_paths_mumbai_qa_user_002',
   );
   final _seedPrefix = TextEditingController(text: 'cross_paths_mumbai_qa');
-  final _eventId = TextEditingController(
-    text: 'cat151-prod-test-20261005-checkout',
-  );
+  final _eventId = TextEditingController(text: cat151SchemaAcceptanceEvent);
   final _inviteCode = TextEditingController();
   final _secondAttemptConfirmation = TextEditingController();
-  final _ledger = Cat151AttemptLedger();
+  final _ledger = Cat151AttemptLedger.schemaAcceptance();
 
   bool _testModeConfirmed = false;
   bool _busy = false;
@@ -938,7 +936,8 @@ class _Cat151AcceptanceScreenState
         !_busy &&
         _rejections.isEmpty &&
         ledger != null &&
-        (ledger.canReserveFirst || ledger.canReserveSecond);
+        (ledger.canReserveFirst ||
+            (_ledger.allowsSecondAuthorization && ledger.canReserveSecond));
     final canCancel =
         !_busy &&
         _payment?.status == PaymentStatus.completed &&
@@ -1036,7 +1035,8 @@ class _Cat151AcceptanceScreenState
                   : null,
               child: const Text('Refresh read-only evidence'),
             ),
-            if (ledger?.canAuthorizeSecond == true) ...[
+            if (_ledger.allowsSecondAuthorization &&
+                ledger?.canAuthorizeSecond == true) ...[
               const SizedBox(height: 12),
               TextField(
                 controller: _secondAttemptConfirmation,
@@ -1066,7 +1066,7 @@ class _Cat151AcceptanceScreenState
             if (ledger != null) ...[
               const SizedBox(height: 12),
               Text(
-                'Durable attempts: ${ledger.attempts.length}/2  •  '
+                'Durable attempts: ${ledger.attempts.length}/${_ledger.maximumAttempts}  •  '
                 'attempt 2 authorized: ${ledger.secondAttemptAuthorized}',
               ),
               ...ledger.attempts.map(
