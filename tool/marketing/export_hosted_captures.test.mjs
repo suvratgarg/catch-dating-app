@@ -430,6 +430,20 @@ test("one corrupted capture rerenders alone while the other eleven retain origin
   assert.equal(fs.readFileSync(f.calls, "utf8").trim().split("\n").length - before, 2);
 });
 
+test("valid image bytes from an unrelated render revision cannot be reused", t => {
+  const f = fixture(t);
+  exportHostedCaptures(f.options);
+  preserveAndAdvance(f, "Preserve rendered captures");
+  const unrelated = f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid",
+    "commit-tree", f.git("rev-parse", "HEAD^{tree}"), "-m", "Unrelated history with identical files");
+  f.git("reset", "--hard", unrelated);
+  f.options.sourceSha = unrelated;
+  const calls = fs.readFileSync(f.calls, "utf8");
+  assert.throws(() => exportHostedCaptures(f.options), /merge-base --is-ancestor/);
+  assert.equal(fs.readFileSync(f.calls, "utf8"), calls);
+  assert.ok(!fs.existsSync(f.options.outputDir));
+});
+
 test("changed transitive inputs and changed native font invalidate reuse", t => {
   const f = fixture(t);
   exportHostedCaptures(f.options);
