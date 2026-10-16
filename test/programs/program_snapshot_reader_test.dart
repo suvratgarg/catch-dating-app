@@ -203,9 +203,7 @@ void main() {
       'duty': 'hotelDesk',
       'pickupPointIds': [],
       'hotelIds': ['hotel'],
-      'expiresAtMillis': DateTime.now()
-          .add(const Duration(hours: 1))
-          .millisecondsSinceEpoch,
+      'expiresAtMillis': raw['grantExpiresAtMillis'],
     });
     await store.save('account', programSnapshotScope('work', 'p1'), raw);
     await store.save('account', scope, {'programId': 'p1', 'guest': 'Private'});
@@ -238,6 +236,44 @@ void main() {
       result.value.hotelScope(ProgramStaffDuty.hotelDesk, now: DateTime.now()),
       {'hotel'},
     );
+  });
+
+  test('duty beyond parent expiry cannot authorize cached work', () async {
+    final raw = access();
+    final grantExpiresAtMillis = raw['grantExpiresAtMillis']! as int;
+    final duties = raw['duties']! as List<Map<String, Object?>>;
+    duties.first['expiresAtMillis'] = DateTime.fromMillisecondsSinceEpoch(
+      grantExpiresAtMillis,
+    ).subtract(const Duration(hours: 2)).millisecondsSinceEpoch;
+    duties.add({
+      'duty': 'hotelDesk',
+      'pickupPointIds': [],
+      'hotelIds': ['hotel'],
+      'expiresAtMillis': grantExpiresAtMillis + 1,
+    });
+    final workScope = programSnapshotScope('work', 'p1');
+    await store.save('account', workScope, raw);
+    await store.save('account', scope, {'programId': 'p1', 'guest': 'Private'});
+    expect(await store.load('account', workScope), isNotNull);
+    expect(await store.load('account', scope), isNotNull);
+    const offline = NetworkException('connection-failed', 'Offline');
+    final now = DateTime.now();
+
+    await expectLater(
+      readProgramWithSnapshot(
+        accountId: 'account',
+        programId: 'p1',
+        scope: workScope,
+        store: store,
+        isCurrentAccount: () => true,
+        live: () async => throw offline,
+        parse: ProgramWorkAccess.fromCallableData,
+        now: () => now,
+      ),
+      throwsA(same(offline)),
+    );
+    expect(await store.load('account', workScope), isNull);
+    expect(await store.load('account', scope), isNull);
   });
 
   test(
