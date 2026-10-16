@@ -162,6 +162,24 @@ The authored graph and compile-codegen allowlist live in
 `tool/harness/component_graph.json`. Use the plan's check ids with the explicit
 `node tool/run.mjs check <id...>` runner. Harness commands are read-only.
 
+## Source Preflight
+
+`node tool/harness/verify_local.mjs --preflight --base origin/main --json`
+runs the affected source checks and graph-selected compile-codegen freshness
+checks before rendering or expensive validation. It collects all findings in
+one pass. Missing runtimes, packages or a sparse checkout make the preflight
+incomplete and return failure; bootstrap the selected dependencies first.
+`--allow-deferred` is reserved for inexpensive sparse planning/feedback and
+reports every deferred obligation. It never sets `preflightComplete` true while
+one remains and never ignores a failing executable check.
+
+The required `source-preflight` job uses a full checkout and pinned runtimes.
+Its structural gates include dependency direction, mutation/error boundaries,
+route literals, source/test size, generated route/catalog/responsibility/design
+references, provider ownership and resolved composition. Selected expensive
+jobs depend on its success, and Required CI independently rejects missing,
+skipped, failed or cancelled preflight. Full tests and analysis remain required.
+
 ## Documentation Checks And Retrieval
 
 `docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
@@ -757,7 +775,11 @@ Marketing app screenshots are tracked by `tool/marketing/capture_manifest.json`.
 The `marketing-captures.yml` hosted macOS exporter accepts an exact source SHA
 through manual dispatch or an explicit `capture:requested` label event on an
 open same-repository PR into `main`. It uploads all 12 validated canonical
-exports without committing or publishing. Capture requests preserve full-CI
+exports without committing or publishing. The producer renders only invalid or
+changed-input/font captures; reuse preserves the original PNG and render SHA,
+while the v2 receipt records verification against the selected source SHA.
+Website captions and destination metadata do not invalidate rendering.
+Capture requests preserve full-CI
 admission and merge authority. See
 `docs/marketing_app_media_pipeline.md#hosted-export-cat159-enabling-slice`
 for controller integration, exact event/source selection and artifact receipts. Its focused
@@ -905,16 +927,21 @@ new task worktrees. After an explicit `git fetch origin main`, `start` requires
 the exact fetched `origin/main` commit and rejects overlap with another active
 local claimed-path set. Continue explicitly requested non-main work in its
 existing worktree instead of using an ambient branch as a new base. `doctor`
-reports dirty and out-of-scope
-work. `finish` refuses to drop the local claim while unique work is uncommitted
-or unpushed. `finish --abandon --reason <why>` releases a deliberately
-superseded claim only when its worktree is clean, retaining an attributable
+reports dirty and out-of-scope work. `start` also refuses lifecycle files that differ from fetched main in
+its launcher; refresh a stale primary checkout safely and reread the new task's
+instructions. Plain `finish` refuses claim-only closeout. `finish --retain
+--reason <blocker-and-next-action>` checks clean/pushed work, retains its original
+claim, and reports handoff readiness rather than retirement.
+`finish --abandon --reason <why>` releases a deliberately superseded claim only when its worktree is clean, retaining an attributable
 local record under Git's common directory. `stale` reports candidates and
 never deletes them. After merge/release acceptance, `retire` checks the exact
 owned task/head against current remote main, proves ancestry or exact squash
 path equivalence, and verifies unique history has a live remote recovery ref.
-Dirty, untracked and ignored files block removal. Keep the claim until admitted
-`retire --apply` confirms ordinary non-forced Git removal; all refs and stashes
+Dirty, untracked and ignored files block removal. Ignored output is reported
+by directory root rather than every dependency file, keeping large installs
+within the subprocess output limit. Review and dispose of proven generated
+caches in the same closeout, preserve unique files, then retry retirement.
+Keep the claim until admitted `retire --apply` confirms ordinary non-forced Git removal; all refs and stashes
 remain preserved. Current external acceptance, owners/cross-clone claims,
 users/runtime consumers and deletion authority are explicit manual checks in
 `docs/agent_operating_model.md#completion`, identified by `--by` and `--clearance`.
@@ -923,7 +950,8 @@ users/runtime consumers and deletion authority are explicit manual checks in
 node tool/git/worktree_guard.mjs start \
   --task-id <task-id> --base-sha <40-character-sha> --paths <paths>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
-node tool/git/worktree_guard.mjs finish --worktree <path>
+node tool/git/worktree_guard.mjs finish --worktree <path> \
+  --retain --reason <blocker-and-next-action>
 node tool/git/worktree_guard.mjs finish --worktree <path> \
   --abandon --reason <why> [--by <identity>]
 node tool/git/worktree_guard.mjs stale --stale-days 7
@@ -939,6 +967,7 @@ delete refs, or authorize commands. Retirement uses read-only live ref queries
 and refuses stale/unavailable remote evidence. Its local claims are disposable; Git
 branches and commits remain authoritative.
 
+Bootstrap requires an explicit target and fails before installing if omitted.
 A newly created worktree contains tracked files only. Install the selected
 locked dependency family before its checks; omit bootstrap for dependency-free
 checks:
@@ -947,7 +976,7 @@ checks:
 bash tool/git/bootstrap_worktree.sh --target root
 bash tool/git/bootstrap_worktree.sh --target functions
 bash tool/git/bootstrap_worktree.sh --target flutter
-# No --target installs all three families when required.
+# Explicit --target all only when all three families are required.
 ```
 
 The repo-managed hook at `tool/git/hooks/pre-commit` is installed per clone with

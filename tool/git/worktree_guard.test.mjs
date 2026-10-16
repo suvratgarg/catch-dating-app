@@ -442,44 +442,63 @@ test("finish abandon requires a reason and refuses a dirty worktree", (context) 
   assert.deepEqual(abandonmentFiles(fixture.root), []);
 });
 
-test("finish permits an unchanged branch without an upstream and removes only its claim", (context) => {
+test("finish cannot orphan an unchanged or pushed worktree by releasing its claim", (context) => {
   const fixture = createRepository(context);
-  const execution = start(fixture, "no-op-finish", ["owned"]);
-  const worktree = execution.result.worktreePath;
-
-  const finish = guard(worktree, ["finish"]);
-  assert.equal(finish.status, 0);
-  assert.equal(finish.result.finished, true);
-  assert.equal(finish.result.upstream, null);
-  assert.equal(fs.existsSync(execution.result.claimPath), false);
-  assert.equal(fs.existsSync(worktree), true);
-  assert.match(gitText(fixture.root, ["worktree", "list", "--porcelain"]), new RegExp(escapeRegex(worktree), "u"));
+  const task = start(fixture, "handoff-retained", ["owned"]);
+  const worktree = task.result.worktreePath;
+  for (const pushed of [false, true]) {
+    if (pushed) {
+      fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "pushed\n");
+      commitAll(worktree, "pushed work");
+      git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+    }
+    const before = fs.readFileSync(task.result.claimPath, "utf8");
+    const refused = guard(worktree, ["finish"]);
+    assert.equal(refused.status, 1);
+    assert.equal(refused.result.finished, false);
+    assert.ok(refused.result.blockers.includes("closeout_disposition_required"));
+    const retained = guard(worktree, ["finish", "--retain", "--reason", "Awaiting PR acceptance; task owner will retire after merge"]);
+    assert.equal(retained.status, 0);
+    assert.equal(retained.result.finished, false);
+    assert.equal(retained.result.readyForHandoff, true);
+    assert.equal(retained.result.claimRetained, true);
+    assert.equal(retained.result.retired, false);
+    assert.match(retained.result.retainedReason, /Awaiting PR/u);
+    assert.equal(fs.readFileSync(task.result.claimPath, "utf8"), before);
+    assert.equal(fs.existsSync(worktree), true);
+  }
+  git(fixture.root, ["merge", "--no-edit", task.result.branch]);
+  git(fixture.root, ["push", "origin", "main"]);
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  const retired = guard(fixture.root, [...retirementArgs(task, head, head), "--apply"]);
+  assert.equal(retired.result.retired, true);
+  assert.equal(fs.existsSync(worktree), false);
+  assert.equal(fs.existsSync(task.result.claimPath), false);
 });
 
-test("finish accepts pushed work, removes its claim, and leaves Git worktree cleanup explicit", (context) => {
+test("retained handoff requires a reason and rejects ambiguous dispositions", (context) => {
   const fixture = createRepository(context);
-  const execution = start(fixture, "pushed-finish", ["owned"]);
-  const worktree = execution.result.worktreePath;
-  fs.appendFileSync(path.join(worktree, "owned", "allowed.txt"), "pushed\n");
-  commitAll(worktree, "pushed work");
-  git(worktree, [
-    "push",
-    "--set-upstream",
-    "origin",
-    "HEAD:refs/heads/codex/pushed-finish",
-  ]);
+  const task = start(fixture, "retention-options", ["owned"]);
+  for (const args of [["finish", "--retain"], ["finish", "--retain", "--reason", " "],
+    ["finish", "--retain", "--abandon", "--reason", "ambiguous"], ["doctor", "--retain"]]) {
+    assert.throws(() => guard(task.result.worktreePath, args), TaskUsageError);
+    assert.equal(fs.existsSync(task.result.claimPath), true);
+  }
+});
 
-  const finish = guard(worktree, ["finish"]);
-  assert.equal(finish.status, 0);
-  assert.equal(finish.result.finished, true);
-  assert.equal(finish.result.unpushedCommits, 0);
-  assert.equal(finish.result.upstream, "origin/codex/pushed-finish");
-  assert.equal(fs.existsSync(execution.result.claimPath), false);
-  assert.equal(fs.existsSync(worktree), true);
-  assert.equal(gitText(worktree, ["rev-parse", "HEAD"]), gitText(
-    fixture.remote,
-    ["rev-parse", "refs/heads/codex/pushed-finish"],
-  ));
+test("start rejects stale lifecycle instructions even with the correct new-task base", (context) => {
+  const fixture = createRepository(context);
+  fs.writeFileSync(path.join(fixture.root, "AGENTS.md"), "current closeout rules\n");
+  commitAll(fixture.root, "new lifecycle");
+  git(fixture.root, ["push", "origin", "main"]);
+  const current = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  git(fixture.root, ["checkout", "--detach", fixture.baseSha]);
+  assert.throws(() => guard(fixture.root, ["start", "--task-id", "stale-launcher",
+    "--base-sha", current, "--paths", "owned"]), /launcher instructions\/tooling differ/u);
+  assert.deepEqual(claimFiles(fixture.root), []);
+  git(fixture.root, ["checkout", "main"]);
+  const task = start({...fixture, baseSha: current}, "fresh-launcher", ["owned"]);
+  assert.equal(task.status, 0);
 });
 
 test("a failed worktree add rolls back its claim without deleting unrelated Git state", (context) => {
@@ -755,6 +774,21 @@ test("retire rejects nonphysical paths, unsupported force and cross-command appl
   const link = [...args]; link[4] = dangling;
   assert.throws(() => guard(fixture.root, link), TaskUsageError);
   assert.equal(fs.existsSync(task.result.claimPath), true);
+});
+
+test("retire reports ignored directory roots without losing preservation protection", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-cache-roots", ["owned"]);
+  fs.appendFileSync(path.join(fixture.root, ".git/info/exclude"), "node_modules/\nbuild/\n");
+  for (const file of ["node_modules/pkg/index.js", "build/reports/recovery.json"]) {
+    const target = path.join(task.result.worktreePath, file);
+    fs.mkdirSync(path.dirname(target), {recursive: true});
+    fs.writeFileSync(target, "preserve until reviewed");
+  }
+  const retained = assertRetained(fixture, task, retirementArgs(task, fixture.baseSha, fixture.baseSha),
+    "ignored_files_require_preservation");
+  assert.deepEqual(retained.result.ignoredPaths, ["build/", "node_modules/"]);
+  assert.equal(fs.existsSync(path.join(task.result.worktreePath, "build/reports/recovery.json")), true);
 });
 
 function retirementArgs(task, headSha, acceptedSha) {

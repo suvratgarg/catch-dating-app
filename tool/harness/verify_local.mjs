@@ -8,6 +8,8 @@
  *   node tool/harness/verify_local.mjs --base origin/main --json
  *   node tool/harness/verify_local.mjs --target flutter --list       # one target
  *   node tool/harness/verify_local.mjs --preflight --base origin/main # cheap structural gates
+ *   # Sparse feedback only: --preflight --allow-deferred reports unavailable
+ *   # checks without accepting that report as a complete preflight.
  *
  * Motivation: every prompt, checklist and doc in this repository that restated
  * "the gates to run" has drifted from CI at least once, and each drift cost a
@@ -28,7 +30,7 @@ import {pathToFileURL} from "node:url";
 import path from "node:path";
 import process from "node:process";
 
-import {deriveTargetWorkflows, extractSteps, planCodegenFreshness, workflowForTarget} from "./lib/workflow_steps.mjs";
+import {deriveTargetWorkflows, extractSteps, planCodegenFreshness, planSourcePreflight, workflowForTarget} from "./lib/workflow_steps.mjs";
 import {planAffectedToolChecks} from "../lib/tool_impact.mjs";
 
 const WORKFLOW_DIR = ".github/workflows";
@@ -41,6 +43,7 @@ function parseArgs(argv) {
     if (arg === "--list") args.list = true;
     else if (arg === "--json") args.json = true;
     else if (arg === "--preflight") args.preflight = true;
+    else if (arg === "--allow-deferred") args.allowDeferred = true;
     else if (arg === "--full") args.full = true;
     else if (arg === "--commit-window") args.commitWindow = true;
     else if (arg === "--base") args.base = argv[++i];
@@ -53,6 +56,7 @@ function parseArgs(argv) {
   if (args.preflight && (args.list || args.targets.length > 0)) {
     throw new Error("--preflight requires a base/head plan and cannot use --list or --target.");
   }
+  if (args.allowDeferred && !args.preflight) throw new Error("--allow-deferred requires --preflight.");
   return args;
 }
 
@@ -126,7 +130,7 @@ function runPreflight(args, context) {
   if (inventory.status !== 0) throw new Error("Cannot inspect freshness source materialization.");
   const files = inventory.stdout.split("\0").filter(Boolean);
   const runtimes = new Map();
-  const freshnessChecks = planCodegenFreshness({graph, codegenIds: context.codegenIds,
+  const requirements = {graph, codegenIds: context.codegenIds,
     repositoryPaths: files.map((file) => file.slice(2)),
     sparsePaths: files.filter((file) => file.startsWith("S ")).map((file) => file.slice(2)),
     fileAvailable: (file) => fs.existsSync(file) && fs.statSync(file).isFile(),
@@ -151,31 +155,35 @@ function runPreflight(args, context) {
         return false;
       }
     },
-  });
-  for (const check of freshnessChecks) {
+  };
+  const freshnessChecks = planCodegenFreshness(requirements);
+  const sourceChecks = planSourcePreflight({...requirements, targets: context.targets});
+  const failures = [];
+  for (const check of [...sourceChecks, ...freshnessChecks]) {
     if (!check.runnable) { check.status = "ci-only"; continue; }
     const [executable, ...commandArgs] = check.command.trim().split(/\s+/u);
     const result = spawnSync(executable, commandArgs, {encoding: "utf8",
       timeout: check.timeoutSeconds * 1000, maxBuffer: 32 * 1024 * 1024});
     check.status = result.status === 0 ? "passed" : "failed";
-    localRunnableChecks.push({codegenId: check.codegenId, command: check.command,
-      status: check.status});
+    localRunnableChecks.push({codegenId: check.codegenId, command: check.command, status: check.status});
     if (result.status !== 0) {
-      throw new Error(`Freshness preflight failed for ${check.codegenId}: ${check.command}\n` +
+      failures.push(`${check.codegenId ? "Freshness preflight failed for " + check.codegenId : "Source preflight failed: " + check.command}:\n` +
         (result.error?.message || result.stderr || result.stdout) +
-        `\nRegenerate with: ${check.writeCommand}`);
+        (check.writeCommand ? `\nRegenerate with: ${check.writeCommand}` : ""));
     }
   }
+  const deferred = [...sourceChecks, ...freshnessChecks].filter(check => check.status === "ci-only");
   const report = {
     baseSha: commitSha(args.base), headSha: commitSha(args.head),
     mode: context.mode, full: context.full, commitWindow: args.commitWindow,
     complete: true, changedPaths: context.changedPaths, targets: context.targets,
-    codegenIds: context.codegenIds, freshnessChecks,
+    codegenIds: context.codegenIds, sourceChecks, freshnessChecks,
+    preflightComplete: failures.length === 0 && deferred.length === 0, failures,
     freshnessComplete: freshnessChecks.every((check) => check.status === "passed"),
     validationComplete: false,
     localRunnableChecks,
     githubOnlyObligations: [
-      ...freshnessChecks.filter((check) => check.status === "ci-only").map((check) => ({
+      ...deferred.map((check) => ({
         codegenId: check.codegenId, command: check.command,
         reason: check.reasons.join("; "),
       })),
@@ -185,10 +193,20 @@ function runPreflight(args, context) {
   };
   if (args.json) console.log(JSON.stringify(report, null, 2));
   else {
-    console.log(`Structural preflight passed for ${report.baseSha}..${report.headSha} (${report.mode}).`);
-    console.log(`${localRunnableChecks.length} available structural/freshness checks passed; ` +
+    console.log(`Source preflight ${report.preflightComplete ? "passed" : "incomplete"} for ${report.baseSha}..${report.headSha} (${report.mode}).`);
+    console.log(`${localRunnableChecks.filter(check => check.status === "passed").length} structural/freshness checks passed; ` +
+      `${failures.length} failed; ${deferred.length} deferred; ` +
       `${report.githubOnlyObligations.length} required check/lane(s) remain GitHub obligations.`);
   }
+  if (failures.length) {
+    console.error(failures.join("\n\n"));
+    process.exitCode = 1;
+  } else if (deferred.length && !args.allowDeferred) {
+    console.error("Preflight incomplete: " + deferred.map(check =>
+      `${check.command}: ${check.reasons.join("; ")}`).join("\n"));
+    process.exitCode = 1;
+  }
+
 }
 
 function collectGates(targets, context) {

@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.6.0",
+  "catalogVersion": "1.7.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -2012,6 +2012,22 @@ export const adminActionCatalog = {
       ],
       "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
       "controlPlane": false
+    },
+    {
+      "actionId": "sales.partners.offer",
+      "callable": "adminAssignSalesPartner",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Offer a reviewed organizer lead to an exact active referral partner with a bounded next action, review time and expiry.",
+      "controlPlane": true
     }
   ],
   "workflows": [
@@ -2287,7 +2303,8 @@ export const adminActionCatalog = {
         "sales.privacy.batch.apply",
         "sales.privacy.case.get",
         "sales.demo.GetSalesDemoPartnerReview",
-        "sales.demo.ShareSalesDemoPartnerReview"
+        "sales.demo.ShareSalesDemoPartnerReview",
+        "sales.partners.offer"
       ]
     }
   ]

@@ -196,3 +196,30 @@ test('website captions disclose synthetic previews without changing captured pix
   assert.equal(result.status, 1);
   assert.match(result.stderr, /previewDisclosure is required/);
 });
+
+
+test('unchanged render inputs reuse exact PNG bytes but font and source edits still render', t => {
+  const f = fixture(t);
+  const exporter = 'tool/marketing/export_app_screenshots.mjs';
+  const font = path.join(f.root, 'fonts/native.ttf');
+  const original = fs.readFileSync(path.join(f.root, f.capture.sourcePath));
+  let result = f.run(exporter, '--update-stale', '--sf-font', font);
+  assert.equal(result.status, 0, result.stderr);
+  assert.ok(!fs.existsSync(path.join(f.root, 'calls.jsonl')));
+  assert.deepEqual(fs.readFileSync(path.join(f.root, f.capture.sourcePath)), original);
+  const manifestFile = path.join(f.root, 'tool/marketing/capture_manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestFile));
+  manifest.captures[0].caption = 'New website caption';
+  manifest.captures[0].alt = 'New accessible website description';
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest));
+  assert.equal(f.run(sync, '--update').status, 0);
+  result = f.run(exporter, '--plan', '--sf-font', font);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout)[0].render, false);
+  f.write('fonts/native.ttf', 'changed native font');
+  assert.equal(JSON.parse(f.run(exporter, '--plan', '--sf-font', font).stdout)[0].render, true);
+  assert.equal(f.run(exporter, '--update-stale', '--sf-font', font).status, 0);
+  assert.equal(f.readCalls().length, 2);
+  f.write('lib/leaf.dart', "const title = 'Changed';\n");
+  assert.equal(JSON.parse(f.run(exporter, '--plan', '--sf-font', font).stdout)[0].render, true);
+});

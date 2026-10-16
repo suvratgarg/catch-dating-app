@@ -9,6 +9,7 @@ import {
   deriveTargetWorkflows,
   extractSteps,
   planCodegenFreshness,
+  planSourcePreflight,
   workflowForTarget,
 } from "./lib/workflow_steps.mjs";
 
@@ -253,8 +254,8 @@ test("structural preflight runs from the declared sparse closure and fails close
   const sourceRoot = process.cwd();
   const graphPath = "tool/harness/component_graph.json";
   const manifestPath = "tool/tools_manifest.json";
-  const run = () => spawnSync(process.execPath, [
-    "tool/harness/verify_local.mjs", "--preflight", "--base", "HEAD",
+  const run = (allowDeferred = true) => spawnSync(process.execPath, [
+    "tool/harness/verify_local.mjs", "--preflight", ...(allowDeferred ? ["--allow-deferred"] : []), "--base", "HEAD",
     "--head", "HEAD", "--mode", "pr", "--json",
   ], {cwd: root, encoding: "utf8"});
   try {
@@ -289,6 +290,10 @@ test("structural preflight runs from the declared sparse closure and fails close
     assert.equal(report.baseSha, report.headSha);
     assert.deepEqual(report.codegenIds, []);
     assert.equal(report.validationComplete, false);
+    const strict = run(false);
+    assert.notEqual(strict.status, 0);
+    assert.equal(JSON.parse(strict.stdout).preflightComplete, false);
+    assert.match(strict.stderr, /Preflight incomplete/u);
 
     const materialize = (files) => {
       for (const file of files) {
@@ -310,6 +315,7 @@ test("structural preflight runs from the declared sparse closure and fails close
     const selected = JSON.parse(current.stdout);
     assert.deepEqual(selected.codegenIds, ["copy.notification", "platform.ios-pod-policy"]);
     assert.equal(selected.freshnessComplete, true);
+    assert.equal(selected.preflightComplete, false);
     assert.equal(selected.validationComplete, false);
     assert.deepEqual(selected.freshnessChecks.map((check) => check.status), ["passed", "passed"]);
     assert.ok(selected.githubOnlyObligations.some((item) => item.target === "functions"));
@@ -327,10 +333,13 @@ test("structural preflight runs from the declared sparse closure and fails close
     assert.ok(partial.githubOnlyObligations.some((item) =>
       item.codegenId === "flutter.l10n" && /unmaterialized/u.test(item.reason)));
     fs.appendFileSync(path.join(root, notification.outputs[0]), "// Stale output fixture.\n");
+    fs.appendFileSync(path.join(root, ios.outputs[0]), "// Another stale output.\n");
     const stale = run();
     assert.notEqual(stale.status, 0);
     assert.match(stale.stderr, /Freshness preflight failed for copy\.notification/u);
     assert.match(stale.stderr, /Regenerate with:/u);
+    assert.equal(JSON.parse(stale.stdout).failures.length, 2, "report every stale generator in one pass");
+    expectGit(["restore", "--", ...ios.outputs]);
     fs.unlinkSync(path.join(root, notification.outputs[0]));
     const missingOutput = run();
     assert.notEqual(missingOutput.status, 0);
@@ -433,4 +442,23 @@ test("freshness selection uses explicit graph requirements and never loses unava
   const declared = planCodegenFreshness({...options, graph: explicit,
     codegenIds: ["copy.notification"], executableAvailable: (name) => name === "node"});
   assert.deepEqual(declared[0].reasons, ["missing runtime flutter"]);
+});
+
+
+test("source preflight includes the queue regressions and refuses unavailable coverage", () => {
+  const options = {targets: ["flutter"], executableAvailable: () => true,
+    packageAvailable: () => true};
+  const checks = planSourcePreflight(options);
+  for (const command of ["check_dependency_direction", "check_flutter_test_size",
+    "check_flutter_source_size", "check_route_inventory", "generate_widget_catalog",
+    "build_host_feature_responsibilities", "build_design_sync_manifest",
+    "provider_graph", "check_ui_composition_contracts"]) {
+    assert.ok(checks.some(check => check.command.includes(command)), command);
+  }
+  assert.ok(checks.every(check => check.runnable));
+  assert.deepEqual(planSourcePreflight({...options, targets: ["docs"]}), []);
+  assert.ok(planSourcePreflight({...options, sparsePaths: ["lib/main.dart"]})
+    .every(check => !check.runnable && check.reasons.length));
+  assert.ok(planSourcePreflight({...options, packageAvailable: () => false})
+    .filter(check => check.command.startsWith("dart ")).every(check => !check.runnable));
 });

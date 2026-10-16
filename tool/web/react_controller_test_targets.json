@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 17,
-  "updated": "2026-10-07",
+  "version": 19,
+  "updated": "2026-10-16",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -302,6 +302,11 @@
     {
       "source": "website/src/features/events/useApprovalNotificationsController.ts",
       "test": "website/src/features/events/useApprovalNotificationsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/sales/controllers/useSalesPartnerOfferController.ts",
+      "test": "admin/src/features/sales/controllers/useSalesPartnerOfferController.test.tsx",
       "status": "required"
     }
   ]

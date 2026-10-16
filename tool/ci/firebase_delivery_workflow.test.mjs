@@ -117,7 +117,13 @@ test("CI packages one immutable backend from its exact plan and tested Functions
   assert.match(ci, /name: firebase-delivery-\$\{\{ needs\.plan\.outputs\.source_sha \}\}-\$\{\{ github\.run_attempt \}\}/);
   assert.match(ci, /name: harness-plan-[\s\S]*retention-days: 90/);
   assert.match(ci, /name: firebase-delivery-[\s\S]*retention-days: 90/);
-  assert.doesNotMatch(ci, /npm --prefix functions (?:ci|test|run build)/);
+  const preflight = ciJob(ci, "source-preflight");
+  // Source generation needs the schema compiler, but cannot build or publish
+  // a second Functions payload. Packaging still consumes only the tested one.
+  assert.match(preflight, /name: Install selected contract generator dependencies\n        if: \$\{\{ needs\.plan\.outputs\.contracts == 'true' \}\}\n        run: npm --prefix functions ci --ignore-scripts\n/u);
+  assert.equal((preflight.match(/npm --prefix functions ci/gu) ?? []).length, 1);
+  assert.doesNotMatch(preflight, /npm --prefix functions (?:test|run build)|functions-lib-|package_firebase_delivery|firebase deploy/u);
+  assert.doesNotMatch(ci.replace(preflight, ""), /npm --prefix functions (?:ci|test|run build)/);
 });
 
 test("each deploy group requires its mandatory validation lane to succeed", () => {
@@ -714,7 +720,7 @@ test("one-time PROD operator caller retains protected review and cannot borrow a
   assert.match(caller, /source_sha: 656f093d1910afdbe4d93d31565d1782c39aab63/);
   assert.match(caller, /base_sha: ea518ad0576829dbc505293d4edbd9f6710a2b8f/);
   assert.match(caller, /operator_release: true/);
-  assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
+  assert.doesNotMatch(ciJob(caller, "prod"), /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /environment: \$\{\{ inputs\.approval_environment \|\| inputs\.environment \}\}/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release/);
   assert.match(promotion, /8d96961ceca63f4959b25097168ebddf01cb5280568f1b09829421c0ef089af1[\s\S]*firebase-backend\.tar\.gz \| sha256sum --check --status/);
@@ -780,7 +786,7 @@ test("PR543 Sales caller pins 44 Functions plus rules behind existing protected 
   assert.match(caller, /if \[\[ -n "\$RESUME_RUN_ID" \]\]; then[\s\S]*checkpoint-source[\s\S]*else[\s\S]*selective_backend_release\.mjs source/);
   assert.match(promotion, /test "\$should_restore" = true[\s\S]*11463988816[\s\S]*5c64be7605a46cff585e7d334878d329360aaff253e43f713710f8732c579341/);
   assert.match(promotion, /11463298945[\s\S]*e557f76637abc20b097ba1d2451d626f9f044ad2f9eff5482e5da2726453be49/);
-  assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
+  assert.doesNotMatch(ciJob(caller, "prod-sales-pr543"), /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /SALES_PR543_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.sales_pr543_release/);
   assert.match(promotion, /594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5/);
@@ -1698,7 +1704,7 @@ test("Functions retries stop on missing params or secrets and retain transient r
 
 test("Intake PR596 uses the protected fixed-scope job and cannot enter generic mutation routes", () => {
   const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-intake-pr596");
-  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release \}\}/);
+  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release && !inputs\.cat151_booking_release \}\}/);
   assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
   assert.match(workflow("selective-backend-release.yml"), /group: backend-delivery\n  cancel-in-progress: false/);
   assert.ok(job.indexOf("Require recorded human") < job.indexOf("google-github-actions/auth@v3"));

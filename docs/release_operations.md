@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.31
-updated: 2026-10-08
+version: 2.7.34
+updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -365,6 +365,12 @@ slot. Failed or unadmitted runs still execute the rejecting aggregate; every
 selected target requires a successful owning job. A cancelled workflow has no
 successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. The
 single admitted integration slot and its live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+
+The required source preflight runs before validation fanout from a full checkout
+with pinned Node/Flutter and selected generator dependencies. It checks the
+structural and generation obligations in `verify_local.mjs`, collects failures,
+and refuses unavailable checks. Sparse planning explicitly allows deferral;
+that preliminary result cannot satisfy the required complete preflight job.
 
 Preserve these contracts when narrowing work:
 
@@ -2480,14 +2486,15 @@ release runbook. Run the split local suite with:
 node tool/run.mjs run test:app-shell-integration
 ```
 
-Pull requests that touch Flutter integration or golden surfaces run
-`.github/workflows/visual-integration-ci.yml` on macOS. It executes the desktop
-goldens with the checked 0.30% hosted-macOS raster tolerance, all deterministic
-headless app-shell wrappers, and the bounded app-shell smoke through the native
-macOS integration binding sequentially. It retains failure diffs and also runs
-on a weekday schedule so platform drift cannot hide behind path filtering. The
-tolerance has a focused known-good/known-bad regression test and must not be
-widened to accept a visual change.
+Pull requests that touch Flutter integration or golden surfaces select
+`.github/workflows/visual-integration-ci.yml`. Its three independent jobs run
+Ubuntu headless journeys, macOS desktop/Widgetbook goldens (including the second
+determinism pass), and native macOS app-shell smoke. Goldens and native smoke
+use separate pinned macOS runners at the same workflow source; neither job
+waits for or substitutes for the other. Committed generated-source freshness
+remains required in the golden job. The smoke retains bounded infrastructure
+retries, and every selected job must pass. The existing 0.30% hosted-macOS
+raster tolerance and known-good/known-bad tests remain unchanged.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
@@ -3147,3 +3154,42 @@ probe. Existing-authority authenticated Admin pagination remains a separate
 acceptance check; this route grants no new user, import, send or data-repair
 authority. Any failed metadata or postcondition stops the job and retains its
 isolated selected-only evidence. Source drift requires a new reviewed profile.
+
+## Immutable CAT151 booking writer release
+
+The selective backend caller's `cat151-booking` profile pins PR621 source
+`24eab314944b20ce3035756bb5d08cfbf3007f4d`, successful main CI38895481991
+attempt1 and artifact12044213158. The executable profile names fourteen existing
+Functions that reach the shared booking writer. It excludes dormant targets,
+indexes, rules, IAM repairs, flags, provider activation and application data.
+This fixed release does not use the generic fingerprint selector: the candidate
+contains a known unresolved dynamic Operations import. The reviewed fixed list
+is the scope authority; this is not proof of a full backend baseline or permission
+to drain the disabled Delivery queue. Source/package hashes and observed predecessor
+identities are enforced by `tool/ci/cat151_booking_release.mjs`. Current-main
+compatibility permits only the exact reviewed PR622 Sales catalog/test blobs;
+other backend source drift requires a new reviewed profile.
+
+DEV must finish first. PROD consumes the exact DEV receipt and requires approval
+by a configured human reviewer in `prod` before cloud authentication. Both stages
+retain the existing outer backend-delivery lock and per-environment Firebase lock.
+The job verifies the immutable package twice, preserves selected runtime settings,
+provider parameters and numeric secret bindings (including PROD webhook secret
+version2), and snapshots all unselected Functions, Extensions, indexes, field
+overrides, rules, Remote Config and project IAM. Any drift stops the job; it has
+no force, automatic deployment retry, rollback, broad deployment or full-baseline/cursor route.
+
+A completed deployment receipt is source/serving proof only. Booking and refund
+acceptance still requires a separately budgeted synthetic TEST transaction and
+readback demonstrating schema-valid booking, verified payment and full refund
+without manual field or refund reconciliation. Existing refunded transactions
+and earlier webhook delivery evidence do not prove that new booking flow.
+
+The `cat151-booking-prod-recovery` profile is limited to the predeployment
+Firebase CLI installation failure in run38910329785 attempt1. Before cloud
+authentication it verifies that exact failed run and its skipped deployment,
+then validates the pinned successful DEV artifact12051195096 and receipt bytes.
+It does not redeploy DEV, relax PROD predecessor checks, or accept arbitrary
+recovery runs. A new configured human `prod` approval is required. Only Firebase
+CLI installation has bounded retries; the Function deployment command remains
+single-shot. This recovery cannot resume a partial or completed PROD deployment.
