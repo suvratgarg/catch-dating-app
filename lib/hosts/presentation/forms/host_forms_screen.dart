@@ -255,7 +255,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: _preferredRouteOrganizerId,
     )!;
-    if (_preferredRouteOrganizerId != selectedClub.id) {
+    if (_preferredRouteOrganizerId != null &&
+        _preferredRouteOrganizerId != selectedClub.id) {
+      if (_boundOrganizerId == selectedClub.id) _resetWorkspace();
       _preferredRouteOrganizerId = null;
     }
     _bindOrganizer(selectedClub.id);

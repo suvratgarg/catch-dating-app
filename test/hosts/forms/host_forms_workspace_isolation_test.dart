@@ -111,6 +111,37 @@ void main() {
     },
   );
 
+  testWidgets(
+    'invalid later route clears IDs even when fallback stays unchanged',
+    (tester) async {
+      final h = await _Harness.mount(tester);
+      final before = h.repo.responses.length;
+      h.router.go(
+        _location(
+          org: 'foreign',
+          form: 'foreign-form',
+          contact: 'foreign-contact',
+        ),
+      );
+      await _frames(tester);
+      expect(h.repo.responses.skip(before), isNotEmpty);
+      expect(
+        h.repo.responses
+            .skip(before)
+            .every(
+              (r) =>
+                  r.organizerId == 'a' &&
+                  r.formId == null &&
+                  r.contactId == null,
+            ),
+        isTrue,
+      );
+      expect(h.panel(tester).formId, isNull);
+      expect(h.uri.queryParameters['organizerId'], 'a');
+      expect(h.uri.queryParameters.containsKey('contactId'), isFalse);
+    },
+  );
+
   for (final returnToA in [false, true]) {
     testWidgets('retained Responses clears before new reads; ABA=$returnToA', (
       tester,
