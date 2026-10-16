@@ -157,3 +157,23 @@ test("partner composition sharing remains Owner-only with exact current preview 
   assert.throws(() => catalog.validateRequest(share.actionId,
     {...share.example, expectedPreviewHash: "unreviewed"}), {code: "ADMIN_ACTION_INPUT_INVALID"});
 });
+
+test("partner offers remain exact-target employee UI actions, not CLI capabilities", async () => {
+  const catalog = await loadAdminActionCatalog();
+  const action = catalog.actionsById.get("sales.partners.offer");
+  assert.equal(action.callable, "adminAssignSalesPartner");
+  assert.equal(action.controlPlane, true);
+  assert.deepEqual(action.roles, ["admin", "adminOwner"]);
+  assert.equal(action.confirmation, "action-and-target");
+  assert.equal(action.targetField, "organizerId");
+  assert.equal(catalog.validateRequest(action.actionId, action.example), action.example);
+  assert.throws(() => catalog.validateRequest(action.actionId,
+    {...action.example, grantsSendPermission: true}), {code: "ADMIN_ACTION_INPUT_INVALID"});
+  let calls = 0;
+  await assert.rejects(runAction({catalog, actionId: action.actionId,
+    flags: {example: true, apply: true, confirm: action.actionId,
+      confirmTarget: action.example.organizerId}, repoRoot: process.cwd(),
+    dependencies: {client: {invoke: async () => { calls += 1; }}},
+  }), {code: "ADMIN_ACTION_CONTROL_PLANE_ONLY"});
+  assert.equal(calls, 0);
+});
