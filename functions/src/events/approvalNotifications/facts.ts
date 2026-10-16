@@ -185,9 +185,16 @@ export async function readFacts(
     email,
   };
   const broad = broadSnap.data();
-  const stopAt = broad?.whatsapp?.updatedAt ?
-    timestampMillis(broad.whatsapp.updatedAt) :
-    0;
+  // A new event-specific choice can supersede an older withdrawal, but
+  // missing withdrawal evidence must never reopen a route.
+  const withdrawn = (channel?: {
+    status?: string;
+    updatedAt?: {_seconds: number; _nanoseconds: number};
+  }) => {
+    if (channel?.status !== "optedOut") return false;
+    const at = channel.updatedAt ? timestampMillis(channel.updatedAt) : NaN;
+    return !Number.isFinite(at) || at >= preference.updatedAtMillis;
+  };
   const endpointStop = phone ?
     await tx.get(
       db
@@ -201,8 +208,9 @@ export async function readFacts(
   const whatsappAllowed =
     (!endpointStopRecord ||
       endpointStopRecord.stoppedAt < preference.updatedAtMillis) &&
-    (broad?.whatsapp?.status !== "optedOut" ||
-      stopAt < preference.updatedAtMillis);
+    !withdrawn(broad?.whatsapp) &&
+    !withdrawn(broad?.whatsappPurposes?.eventOperations);
+  const smsAllowed = whatsappAllowed && !withdrawn(broad?.sms);
   const readyWhatsapp = Boolean(
     phone &&
       whatsappAllowed &&
@@ -224,6 +232,7 @@ export async function readFacts(
     preference,
     snapshotHash(snapshot),
     whatsappAllowed,
+    smsAllowed,
     user.emailVerified,
     user.email ?? null,
     user.phoneNumber ?? null,
@@ -235,7 +244,7 @@ export async function readFacts(
         routeId === "approvalWhatsapp" ?
           readyWhatsapp :
           phone &&
-            whatsappAllowed &&
+            smsAllowed &&
             /^\+91[6-9][0-9]{9}$/.test(phone) &&
             config.sms;
     const senderId =

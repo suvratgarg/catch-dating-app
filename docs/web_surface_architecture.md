@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.24.0
-updated: 2026-09-30
+version: 0.25.0
+updated: 2026-10-16
 owner: web_platform
 status: active
 ---
@@ -1392,9 +1392,8 @@ acceptance never creates a payment order; its owned receipt survives invitation
 expiry. Paid receipt recovery opts into its event access destination while
 older strict clients retain their receipt shape. Runtime account transitions
 clear private assignments, profile answers and account-scoped graph queries;
-late bootstrap responses cannot restore the prior account. Those
-remaining capabilities require shared policy/writer integration, not frontend
-bypasses. Feature gates and provider/deployment readiness remain independent of
+late bootstrap responses cannot restore the prior account. Feature gates and
+provider/deployment readiness remain independent of
 source implementation. Event page visual redesign remains separate.
 
 ### Approval notification transport boundary
@@ -1425,8 +1424,10 @@ The guest page exposes two optional, initially unchecked choices and can verify
 an email on the current phone account through Firebase's verification action.
 The preferences callable fences the expected UID against current authentication;
 private contact evidence is removed during account deletion. Event-specific
-permission can be withdrawn without changing admission. A newer WhatsApp STOP
-also suppresses the phone lane until fresh explicit opt-in.
+permission can be withdrawn without changing admission. A newer organizer
+event-operations withdrawal or WhatsApp STOP also suppresses the phone lane
+until fresh explicit opt-in; a newer SMS withdrawal blocks fallback.
+Marketing-only withdrawal does not change this service permission.
 
 Phone delivery attempts WhatsApp first and permits SMS only after confirmed
 technical failure. Accepted/unknown outcomes cannot start fallback. The shared

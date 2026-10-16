@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.99.0
-updated: 2026-10-07
+version: 1.100.0
+updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -183,6 +183,10 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `setEventChatReaction` / `setEventChatTyping` | Callable | Event conversations | Per-person reaction changes and expiring typing hints | Revision fences, payload-bound reaction retries, anonymous aggregates; typing contains no draft text and can be withdrawn after access revocation. |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | Callable | Participant WhatsApp permissions | Own Catch/organizer preferences and immutable permission receipts | UID-scoped bounded reads show independently recorded organizer operations, organizer marketing and Catch marketing. A withdrawal can stop one purpose or the whole sender; optimistic receipt fences and idempotent retries return the current canonical projection, including a newer opt-in after an old STOP. No opt-in, dispatch, booking, or profile mutation. |
 | `promoteFormCommunicationIntent` | Callable | Submitted public form completion after phone verification | Private pending form intent, owned response and withdrawal bearer, canonical purpose receipts/preferences | App Check, UID rate limit and exact verified phone endpoint; rechecks organizer/form/version/response ownership, reviewed copy hash and decision order. Promotes only selected source-bound purposes, cannot revive a later STOP or withdrawn response, and replays without widening consent. New form-originated WhatsApp delivery remains provider-disabled. |
+| `manageEventApprovalNotifications` | Callable | Signed-in guest event page | Private event approval preferences and immutable receipts | Expected UID and revision fences; verified owned endpoints; optional phone and email choices start off. Does not grant booking or marketing permission. |
+| `onEventApplicationApprovalNotification` / `onEventApprovalNotificationPreference` | Firestore triggers | Approval transition or guest preference change | Deterministic approval outbox and Operations work | One phone lane and one independent email lane per approval revision; current source, permission, organizer and identity rechecked before submission. |
+| `onEventApprovalNotificationMessage` / `retryEventApprovalNotifications` | Firestore trigger / five-minute scheduler | Durable approval work | Shared Operations leases, checkpoints, private dispatch proofs and account budgets | WhatsApp first, SMS only after confirmed technical failure; replaceable email transport. Unknown outcomes never authorize fallback. Provider settings default off. |
+| `onEventApprovalWhatsappReceipt` | Firestore trigger | Verified provider webhook queue | Approval outbox receipt and durable work wakeup | Requires signed ingress evidence and immutable attempt/endpoint/payload correlation. Email and SMS acceptance records submission only, not delivery. |
 | `getEventViewerState` | Callable | Authenticated Consumer event detail | No domain writes; canonical private viewer read source | Auth/App Check/rate limits; current grant/review/policy/inventory checks, independent retained admission/attendance, strict response and bounded incomplete-source rejection. |
 | `listParticipantActivity` / `getParticipantActivity` | Callable | Own account form activity | No domain writes; bounded UID query and exact immutable response/version proof | Auth-derived account only, including email/account-only submissions. No profile claim, answers, private Host notes or admission inference. Subject/source-bound cursors advance over omitted rows. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |

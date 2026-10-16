@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.169.0
+version: 1.170.0
 updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
@@ -3282,6 +3282,33 @@ re-verification is needed to withdraw account permission. The UI discards
 results after account changes. Campaign selection and send-time dispatch check
 marketing purpose; new form-originated managed WhatsApp delivery remains
 provider-disabled. Existing event-service permission paths are independent.
+
+### Event application approval notifications
+
+`eventApprovalNotificationPreferences` and immutable
+`eventApprovalNotificationReceipts` record a separate event-specific service
+choice for the current authenticated guest. Phone updates (WhatsApp with SMS
+fallback) and email updates start off and can be skipped independently.
+`manageEventApprovalNotifications` fences the expected UID and preference
+revision and requires current verified ownership of each selected endpoint.
+These receipts grant no marketing, attendee, admission or booking authority.
+Existing form choices do not implicitly enable this workflow.
+
+Dispatch rechecks current application approval, response access, organizer,
+event, account and receipt. A newer organizer event-operations withdrawal or
+sender-wide WhatsApp STOP suppresses the phone lane; a newer SMS withdrawal
+also blocks fallback. Marketing-only withdrawal does not stop approval updates.
+Only a fresh explicit event choice can supersede an older withdrawal. Email
+remains an independent choice. Raw endpoint preferences and receipts are removed
+on account deletion; deletion tombstones also fence late work.
+
+Server-only settings, budgets, messages and dispatch proofs use the shared
+Operations and delivery outbox. Disabled or missing settings cannot send.
+WhatsApp must fail technically with confirmed evidence before SMS becomes
+eligible; an uncertain outcome cannot trigger fallback. Email and SMS provider
+acceptance means submission, not delivery. Provider activation and the
+replaceable email transport are owned by the
+[web guest journey](web_surface_architecture.md).
 
 ### Private form profile preparation
 

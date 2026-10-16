@@ -12,6 +12,8 @@ import {metaWhatsappGraphVersion} from
   "../../organizers/organizerMessagingSetup";
 import {GupshupSmsTransport, parseSmsCredentials} from
   "../../messaging/gupshupSmsTransport";
+import {smsProviderCorrelation} from
+  "../../eventSuccess/operations/smsReportCredentials";
 import {smsSegments} from "../../eventSuccess/operations/smsProtocol";
 import {whatsappStatusCorrelation} from
   "../../eventSuccess/operations/whatsappDeliveryProtocol";
@@ -183,7 +185,7 @@ export class ApprovalNotificationTransports {
           mask: sms.mask,
           principalEntityId: sms.principalEntityId,
           dltTemplateId: sms.dltTemplateId,
-          msg_id: attemptId,
+          msg_id: smsProviderCorrelation(attemptId),
         });
         const result = await transport.submit(form, endpoint, deadline);
         if (result.kind === "accepted") return result;
