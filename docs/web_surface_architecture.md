@@ -1397,6 +1397,33 @@ remaining capabilities require shared policy/writer integration, not frontend
 bypasses. Feature gates and provider/deployment readiness remain independent of
 source implementation. Event page visual redesign remains separate.
 
+### Approval notification transport boundary
+
+The selected transactional email transport is Resend, behind the server-only
+`TransactionalEmailProvider` port in `functions/src/email/emailProvider.ts`.
+Application code must depend on that port; provider-specific HTTP, credentials,
+response parsing and error classification remain in `ResendEmailProvider`.
+The adapter has no automatic retries, SDK client, subscription provisioning or
+billing upgrades. Each immutable message carries its own idempotency key and
+an authorization deadline. Acceptance is distinct from delivery; ambiguous
+submissions stay unknown. Quota exhaustion returns a bounded deferral.
+
+As verified on 2026-10-16, Resend's free plan allows 3,000 emails per month and
+100 per day without a monthly subscription. Recheck
+[provider pricing](https://resend.com/pricing) before activation; a free email
+plan does not make WhatsApp, SMS or infrastructure usage free.
+
+This is a transport implementation, not an activated approval workflow.
+Automatic approval delivery still needs the application source adapter, current
+recipient and permission checks, durable Operations scheduling and shared outbox
+integration, sender setup, and authenticated receipt reconciliation. The desired
+policy is two independent delivery obligations: WhatsApp with proven-failure SMS
+fallback, and email. Pending or unknown WhatsApp delivery must never trigger SMS
+merely because time elapsed. Existing attendee-only delivery authority cannot be
+used for pre-admission applicants, and marketing permission must not be treated
+as application-service permission. No bearer offer secret belongs in email;
+notifications should return guests to the authenticated event journey.
+
 ### Partner workspace in the React console
 
 `/partners/` uses the existing React console, Firebase session epoch and Query
