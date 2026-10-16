@@ -83,6 +83,7 @@ jobs:
       visual_integration: ${{ steps.plan.outputs.visual_integration }}
       base_sha: ${{ steps.plan.outputs.base_sha }}
       source_sha: ${{ steps.plan.outputs.source_sha }}
+      producer_attempt: ${{ steps.plan.outputs.producer_attempt }}
       deploy_groups: ${{ steps.plan.outputs.deploy_groups }}
       deploy_required: ${{ steps.plan.outputs.deploy_required }}
       mode: ${{ steps.plan.outputs.mode }}
@@ -222,6 +223,7 @@ jobs:
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "producer_attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
@@ -295,6 +297,7 @@ jobs:
   source-preflight:
     name: Complete source preflight
     needs: plan
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -337,7 +340,7 @@ jobs:
 
   tools:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.tools == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.tools == 'true' }}
     uses: ./.github/workflows/tools-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
@@ -349,25 +352,25 @@ jobs:
 
   contracts:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.contracts == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.contracts == 'true' }}
     uses: ./.github/workflows/contracts-ci.yml
     secrets: inherit
 
   functions:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.functions == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' }}
     uses: ./.github/workflows/functions-ci.yml
     secrets: inherit
 
   firestore-rules:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.firestore_rules == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.firestore_rules == 'true' }}
     uses: ./.github/workflows/firestore-rules-ci.yml
     secrets: inherit
 
   flutter:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.flutter == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.flutter == 'true' }}
     uses: ./.github/workflows/flutter-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
@@ -380,13 +383,13 @@ jobs:
 
   visual-integration:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.visual_integration == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' }}
     uses: ./.github/workflows/visual-integration-ci.yml
     secrets: inherit
 
   admin:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.admin == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.admin == 'true' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
@@ -394,7 +397,7 @@ jobs:
 
   marketing:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.marketing == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.marketing == 'true' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
@@ -403,20 +406,21 @@ jobs:
 
   capture-freshness:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.capture_freshness == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.capture_freshness == 'true' }}
     uses: ./.github/workflows/capture-freshness-ci.yml
 
   operations:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.operations == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.operations == 'true' }}
     uses: ./.github/workflows/operations-ci.yml
     secrets: inherit
 
   docs-policy:
     needs: [plan, source-preflight]
     if: >-
-      needs.plan.outputs.docs == 'true' ||
-      needs.plan.outputs.policy_docs == 'true'
+      needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
+      (needs.plan.outputs.docs == 'true' ||
+       needs.plan.outputs.policy_docs == 'true')
     runs-on: ubuntu-latest
     # A policy-doc change needs the complete history for Git-backed metadata
     # validation. Full checkout is normally fast, but a three-minute action
@@ -502,10 +506,11 @@ jobs:
   app-builds:
     needs: [plan, source-preflight]
     if: >-
-      needs.plan.outputs.flutter_build_android == 'true' ||
-      needs.plan.outputs.flutter_build_ios == 'true' ||
-      needs.plan.outputs.flutter_build_web == 'true' ||
-      needs.plan.outputs.flutter_web_smoke == 'true'
+      needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
+      (needs.plan.outputs.flutter_build_android == 'true' ||
+       needs.plan.outputs.flutter_build_ios == 'true' ||
+       needs.plan.outputs.flutter_build_web == 'true' ||
+       needs.plan.outputs.flutter_web_smoke == 'true')
     uses: ./.github/workflows/app-build-matrix.yml
     with:
       app_roles: ${{ needs.plan.outputs.app_roles }}
@@ -520,6 +525,7 @@ jobs:
     if: >-
       !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
+      needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
       !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs:
       - plan
@@ -608,6 +614,7 @@ jobs:
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       needs.plan.result == 'success' &&
+      needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
       needs.finalize-plan.result == 'success' &&
       needs.finalize-plan.outputs.deploy_required == 'true'
     needs:
@@ -774,6 +781,17 @@ jobs:
           if [[ "$ADMITTED" != "true" ]]; then
             echo "Admission status: ${REASON_CODE:-unavailable}. Full validation did not run."
             exit 1
+          fi
+      - name: Require this attempt's planner
+        env:
+          PRODUCER_ATTEMPT: ${{ needs.plan.outputs.producer_attempt }}
+        run: |
+          set -euo pipefail
+          if [[ ! "${PRODUCER_ATTEMPT:-}" =~ ^[1-9][0-9]*$ ||
+                ! "${GITHUB_RUN_ATTEMPT:-}" =~ ^[1-9][0-9]*$ ||
+                "$PRODUCER_ATTEMPT" != "$GITHUB_RUN_ATTEMPT" ]]; then
+            echo 'This CI attempt has no matching planner execution. Use Re-run all jobs; partial retries cannot reuse an older plan.'
+            exit 64
           fi
       - name: Checkout admission verifier
         if: ${{ github.event_name == 'pull_request' }}
