@@ -1,54 +1,11 @@
 part of 'screen_capture_catalog.dart';
 
-Map<String, Object?> _audienceCaptureDetailMap() => {
-  'response': {
-    'responseId': 'response_1',
-    'formId': 'form_1',
-    'formTitle': 'Saturday Social application',
-    'versionId': 'version_1',
-    'version': 1,
-    'status': 'submitted',
-    'identityKind': 'phoneVerified',
-    'identity': {
-      'displayName': 'Maya Kapoor',
-      'email': 'maya@example.com',
-      'phoneE164': '+919876543210',
-      'origin': 'respondentGranted',
-    },
-    'sourceLinkId': null,
-    'sourceLabel': 'Instagram',
-    'submittedAtMillis': DateTime(2026, 8, 20, 10, 42).millisecondsSinceEpoch,
-    'withdrawnAtMillis': null,
-    'highlights': <Object?>[],
-    'conversionKinds': <Object?>[],
-  },
-  'answers': [
-    {
-      'questionId': 'question_1',
-      'key': 'why_join',
-      'label': 'Why do you want to join?',
-      'kind': 'longText',
-      'privacyClass': 'organizerCustom',
-      'hostPresentation': 'detailOnly',
-      'answer': 'I love meeting new people in the city.',
-      'origin': 'respondentGranted',
-      'assetDownloads': <Object?>[],
-    },
-    {
-      'questionId': 'question_2',
-      'key': 'anything_else',
-      'label': 'Anything else we should know?',
-      'kind': 'longText',
-      'privacyClass': 'organizerCustom',
-      'hostPresentation': 'detailOnly',
-      'answer': 'I am visiting from Montreal.',
-      'origin': 'respondentGranted',
-      'assetDownloads': <Object?>[],
-    },
-  ],
-  'consentVersion': 'v1',
-  'completionMillis': 82000,
-};
+final _audienceCaptureJourney = HostAudienceJourneyFixture.maya;
+final _personCaptureJourney = HostAudienceJourneyFixture.ananya(
+  HostOperationsFixtures.primaryClub.id,
+);
+Map<String, Object?> _audienceCaptureDetailMap() =>
+    _audienceCaptureJourney.responseData();
 
 final _audienceCaptureAudience = HostSavedAudience(
   organizerId: 'preview-organizer',
@@ -123,88 +80,16 @@ class _AudienceCapturePreviewAudienceMembers
   }
 }
 
-final _audienceCaptureApplication = HostApplicationDetail(
-  organizerId: 'org_1',
-  applicationId: 'design-application-1',
-  formId: 'form_1',
-  formVersionId: 'design-form-version-1',
-  targetKind: 'event',
-  targetId: 'sunday-social',
-  applicantDisplayName: 'Maya Kapoor',
-  reviewStatus: HostApplicationReviewStatus.approved,
-  answers: const [
-    HostApplicationAnswer(
-      questionId: 'interests',
-      questionKey: 'interests',
-      questionLabel: 'What would you like to join?',
-      questionKind: 'text',
-      canonicalFieldId: null,
-      privacyClass: 'organizer',
-      hostPresentation: 'text',
-      value: HostApplicationAnswerValue(
-        valueKind: 'text',
-        textValue: 'Smaller weekend events and running groups.',
-        numberValue: null,
-        booleanValue: null,
-        dateValue: null,
-        optionValues: [],
-        assetIds: [],
-      ),
-    ),
-  ],
-  outreach: const HostApplicationOutreach(
-    phoneE164: '+919876543210',
-    email: 'maya@example.com',
-    instagramUrl: 'https://www.instagram.com/ananya.example/',
-    linkedinUrl: null,
-  ),
-  reviewNote: null,
-  assignedReviewerUid: null,
-  submittedAt: DateTime(2026, 8, 20),
-  reviewedAt: DateTime(2026, 8, 21),
-  revision: 2,
-  contactId: 'contact_1',
-  sourceResponseId: 'design-response-1',
-  dataAccessState: 'submittedFormResponse',
-);
+final _audienceCaptureApplication = _audienceCaptureJourney.application();
 
 HostApplicationDetail _responseReviewCaptureApplication({
   bool imported = false,
   bool revoked = false,
-}) {
-  final base = _audienceCaptureApplication;
-  return HostApplicationDetail(
-    organizerId: base.organizerId,
-    applicationId: base.applicationId,
-    formId: base.formId,
-    formVersionId: base.formVersionId,
-    targetKind: base.targetKind,
-    targetId: base.targetId,
-    applicantDisplayName: base.applicantDisplayName,
-    reviewStatus: HostApplicationReviewStatus.submitted,
-    answers: revoked ? const [] : base.answers,
-    outreach: revoked
-        ? const HostApplicationOutreach(
-            phoneE164: null,
-            email: null,
-            instagramUrl: null,
-            linkedinUrl: null,
-          )
-        : const HostApplicationOutreach(
-            phoneE164: '+919876543210',
-            email: 'maya@example.com',
-            instagramUrl: 'https://www.instagram.com/maya.example/',
-            linkedinUrl: 'https://www.linkedin.com/in/maya-example/',
-          ),
-    reviewNote: null,
-    assignedReviewerUid: null,
-    submittedAt: base.submittedAt,
-    reviewedAt: null,
-    revision: 1,
-    sourceResponseId: imported ? null : base.sourceResponseId,
-    dataAccessState: revoked ? 'revokedParticipantGrant' : base.dataAccessState,
-  );
-}
+}) => _audienceCaptureJourney.application(
+  imported: imported,
+  revoked: revoked,
+  status: HostApplicationReviewStatus.submitted,
+);
 
 class _AudienceCaptureResponses extends HostFormResponsesController {
   @override
@@ -273,24 +158,34 @@ class _AudienceCaptureApplications extends HostApplicationsDirectoryController {
   @override
   Future<HostApplicationsDirectoryState> build(
     HostApplicationListRequest request,
-  ) async => HostApplicationsDirectoryState(
-    applications: [
-      HostApplicationSummary(
-        applicationId: _audienceCaptureApplication.applicationId,
-        formId: _audienceCaptureApplication.formId,
-        formVersionId: _audienceCaptureApplication.formVersionId,
-        targetKind: _audienceCaptureApplication.targetKind,
-        targetId: _audienceCaptureApplication.targetId,
-        applicantDisplayName: _audienceCaptureApplication.applicantDisplayName,
-        reviewStatus: _audienceCaptureApplication.reviewStatus,
-        sourceKind: HostApplicationSourceKind.native,
-        providerId: null,
-        submittedAt: _audienceCaptureApplication.submittedAt,
-        revision: _audienceCaptureApplication.revision,
-      ),
-    ],
-    nextCursor: null,
-  );
+  ) async {
+    final story = _personCaptureJourney;
+    if (request.organizerId != story.organizerId ||
+        request.contactId != story.contactId) {
+      throw StateError(
+        'Person capture requested an unrelated application scope',
+      );
+    }
+    final application = story.application();
+    return HostApplicationsDirectoryState(
+      applications: [
+        HostApplicationSummary(
+          applicationId: application.applicationId,
+          formId: application.formId,
+          formVersionId: application.formVersionId,
+          targetKind: application.targetKind,
+          targetId: application.targetId,
+          applicantDisplayName: application.applicantDisplayName,
+          reviewStatus: application.reviewStatus,
+          sourceKind: HostApplicationSourceKind.native,
+          providerId: null,
+          submittedAt: application.submittedAt,
+          revision: application.revision,
+        ),
+      ],
+      nextCursor: null,
+    );
+  }
 }
 
 class _AudienceCaptureAutomations extends HostFormAutomationsController {
@@ -485,10 +380,13 @@ Map<String, Object?> _audienceCapturePublishedQuestion({
 final _audienceCaptureResponse = HostFormResponseDetail.fromCallableData(
   _audienceCaptureDetailMap(),
 );
-List<Object> _audienceCaptureSources(String organizerId) => [
+List<Object> _audienceCaptureSources(
+  String organizerId, {
+  HostSavedAudienceFilterOptions? options,
+}) => [
   hostSavedAudienceFilterOptionsProvider(
     organizerId,
-  ).overrideWith((_) async => _audienceCaptureOptions),
+  ).overrideWith((_) async => options ?? _audienceCaptureJourney.filterOptions),
 ];
 List<Object> _audienceCaptureFormOverrides({bool published = false}) => [
   hostFormEditorControllerProvider(
@@ -519,16 +417,12 @@ List<Object> _audienceCaptureResponseOverrides({
   hostFormResponseDetailProvider(
     organizerId: 'org_1',
     responseId: 'response_1',
-  ).overrideWith((_) async {
-    final data = _audienceCaptureDetailMap();
-    if (application && !withdrawn) {
-      data['applicationId'] = 'design-application-1';
-    }
-    if (withdrawn) {
-      (data['response'] as Map<String, Object?>)['status'] = 'withdrawn';
-    }
-    return HostFormResponseDetail.fromCallableData(data);
-  }),
+  ).overrideWith(
+    (_) async => _audienceCaptureJourney.response(
+      linked: application,
+      withdrawn: withdrawn,
+    ),
+  ),
 ];
 List<Object> _audienceCaptureAutomationOverrides() => [
   ..._audienceCaptureSources('org_1'),
@@ -537,7 +431,10 @@ List<Object> _audienceCaptureAutomationOverrides() => [
   ),
 ];
 List<Object> _audienceCaptureGroupOverrides() => [
-  ..._audienceCaptureSources(_audienceCaptureAudience.organizerId),
+  ..._audienceCaptureSources(
+    _audienceCaptureAudience.organizerId,
+    options: _audienceCaptureOptions,
+  ),
   hostSavedAudienceMembersControllerProvider(
     _audienceCaptureAudience,
   ).overrideWith(_AudienceCapturePreviewAudienceMembers.new),
@@ -547,7 +444,10 @@ List<Object> _audienceCapturePersonOverrides() => [
   uidProvider.overrideWithValue(
     const AsyncData<String?>(HostOperationsFixtures.hostUid),
   ),
-  ..._audienceCaptureSources(HostOperationsFixtures.primaryClub.id),
+  ..._audienceCaptureSources(
+    _personCaptureJourney.organizerId,
+    options: _personCaptureJourney.filterOptions,
+  ),
   hostAudienceContactDetailProvider(
     HostOperationsFixtures.primaryClub.id,
     'capture-customer-ananya',
@@ -557,9 +457,13 @@ List<Object> _audienceCapturePersonOverrides() => [
     'capture-customer-ananya',
   ).overrideWithValue(AsyncData(_hostCustomerMemoryCommunicationPlan())),
   hostApplicationDetailProvider(
-    HostOperationsFixtures.primaryClub.id,
-    'design-application-1',
-  ).overrideWithValue(AsyncData(_audienceCaptureApplication)),
+    _personCaptureJourney.organizerId,
+    _personCaptureJourney.applicationId,
+  ).overrideWithValue(AsyncData(_personCaptureJourney.application())),
+  hostFormResponseDetailProvider(
+    organizerId: _personCaptureJourney.organizerId,
+    responseId: _personCaptureJourney.responseId,
+  ).overrideWith((_) async => _personCaptureJourney.response()),
   hostApplicationsDirectoryControllerProvider.overrideWith2(
     (_) => _AudienceCaptureApplications(),
   ),
