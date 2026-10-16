@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.32
-updated: 2026-10-15
+version: 2.7.33
+updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -365,6 +365,12 @@ slot. Failed or unadmitted runs still execute the rejecting aggregate; every
 selected target requires a successful owning job. A cancelled workflow has no
 successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. The
 single admitted integration slot and its live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+
+The required source preflight runs before validation fanout from a full checkout
+with pinned Node/Flutter and selected generator dependencies. It checks the
+structural and generation obligations in `verify_local.mjs`, collects failures,
+and refuses unavailable checks. Sparse planning explicitly allows deferral;
+that preliminary result cannot satisfy the required complete preflight job.
 
 Preserve these contracts when narrowing work:
 
@@ -2480,14 +2486,15 @@ release runbook. Run the split local suite with:
 node tool/run.mjs run test:app-shell-integration
 ```
 
-Pull requests that touch Flutter integration or golden surfaces run
-`.github/workflows/visual-integration-ci.yml` on macOS. It executes the desktop
-goldens with the checked 0.30% hosted-macOS raster tolerance, all deterministic
-headless app-shell wrappers, and the bounded app-shell smoke through the native
-macOS integration binding sequentially. It retains failure diffs and also runs
-on a weekday schedule so platform drift cannot hide behind path filtering. The
-tolerance has a focused known-good/known-bad regression test and must not be
-widened to accept a visual change.
+Pull requests that touch Flutter integration or golden surfaces select
+`.github/workflows/visual-integration-ci.yml`. Its three independent jobs run
+Ubuntu headless journeys, macOS desktop/Widgetbook goldens (including the second
+determinism pass), and native macOS app-shell smoke. Goldens and native smoke
+use separate pinned macOS runners at the same workflow source; neither job
+waits for or substitutes for the other. Committed generated-source freshness
+remains required in the golden job. The smoke retains bounded infrastructure
+retries, and every selected job must pass. The existing 0.30% hosted-macOS
+raster tolerance and known-good/known-bad tests remain unchanged.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
