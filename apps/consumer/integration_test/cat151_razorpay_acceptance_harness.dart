@@ -4,6 +4,7 @@ import 'package:catch_consumer_app/consumer_platform_app.dart';
 import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
+import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -150,6 +151,10 @@ class _Cat151AcceptanceScreenState
             'No event, order, or payment has been created.';
       });
     }
+  });
+
+  Future<void> _switchAccount() => _guarded(() async {
+    await ref.read(authSessionControllerProvider.notifier).signOut();
   });
 
   Future<void> _runPreflight() => _guarded(() async {
@@ -944,6 +949,11 @@ class _Cat151AcceptanceScreenState
               'No fixture creation, token minting, provider override, or automatic payment retry is available.',
             ),
             const SizedBox(height: 20),
+            OutlinedButton(
+              onPressed: _busy ? null : _switchAccount,
+              child: const Text('Switch account using normal sign-in'),
+            ),
+            const SizedBox(height: 12),
             TextField(
               controller: _expectedUid,
               enabled: !_busy,
