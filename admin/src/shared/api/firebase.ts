@@ -19,24 +19,31 @@ export async function signInWithGoogleAdmin() {
   await signInWithPopup(auth, provider);
 }
 
+let phoneSignInGeneration = 0;
 let phoneConfirmation: ConfirmationResult | null = null;
 let phoneRecaptchaVerifier: RecaptchaVerifier | null = null;
 
 export async function requestPhoneSignInCode(phoneNumber: string) {
   resetPhoneSignIn();
-  phoneRecaptchaVerifier = new RecaptchaVerifier(
+  const generation = phoneSignInGeneration;
+  const verifier = new RecaptchaVerifier(
     auth,
     "admin-phone-recaptcha",
     {size: "invisible"}
   );
+  phoneRecaptchaVerifier = verifier;
   try {
-    phoneConfirmation = await signInWithPhoneNumber(
+    const confirmation = await signInWithPhoneNumber(
       auth,
       phoneNumber,
-      phoneRecaptchaVerifier
+      verifier
     );
+    if (generation !== phoneSignInGeneration) {
+      throw new Error("Phone verification was cancelled. Request a new code.");
+    }
+    phoneConfirmation = confirmation;
   } catch (error) {
-    resetPhoneSignIn();
+    if (generation === phoneSignInGeneration) resetPhoneSignIn();
     throw error;
   }
 }
@@ -50,6 +57,7 @@ export async function confirmPhoneSignInCode(code: string) {
 }
 
 export function resetPhoneSignIn() {
+  ++phoneSignInGeneration;
   phoneConfirmation = null;
   phoneRecaptchaVerifier?.clear();
   phoneRecaptchaVerifier = null;

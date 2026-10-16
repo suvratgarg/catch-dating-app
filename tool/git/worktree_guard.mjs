@@ -19,15 +19,16 @@ Commands:
           [--branch <branch>] [--worktree <path>]
   doctor  [--worktree <path>]
   scope   --paths <additional-paths> [--worktree <path>]
-  finish  [--worktree <path>]
-          [--abandon --reason <why> [--by <identity>]]
+  finish  [--worktree <path>] --retain --reason <blocker-and-next-action>
+          | --abandon --reason <why> [--by <identity>]
   retire  --task-id <id> --worktree <path> --head-sha <40-char-sha>
           --accepted-sha <40-char-sha> [--by <owner> --clearance <evidence>]
           [--apply]
   stale   [--stale-days <days>]
 
 The guard stores one disposable scope claim under Git's common directory for
-each active worktree. Claims are removed on successful finish. Explicit
+each active worktree. Ordinary handoff retains its claim until retire succeeds.
+finish requires an explicit retention reason; it does not complete retirement. Explicit
 abandonment removes a clean worktree's claim and keeps a local record of who
 abandoned it and why. The guard never installs dependencies, runs checks,
 pushes branches or deletes refs/stale state. Retire reports first; --apply uses
@@ -50,6 +51,9 @@ export function executeTaskCommand({
   if (command !== "retire" && ["headSha", "acceptedSha", "clearance", "apply"]
     .some((key) => options[key] != null)) {
     throw new TaskUsageError("Retirement options require the retire command.");
+  }
+  if (command !== "finish" && options.retain) {
+    throw new TaskUsageError("--retain requires the finish command.");
   }
   const repository = resolveRepository({cwd, runner});
   if (command === "start") {
@@ -129,6 +133,15 @@ export function startTask({repository, options, now = () => new Date(), runner =
     throw new TaskUsageError(
       `New task base ${baseSha} must match origin/main ${mainSha}. Fetch origin main and use its exact SHA; continue existing branch work in its existing worktree.`,
     );
+  }
+  // Exact creation base is insufficient when the launcher still contains old
+  // operating rules/closeout code. Do not let a stale primary checkout create
+  // more tasks using a lifecycle that has already been replaced on main.
+  const launcher = runner({cwd: repository.currentRoot, args: ["diff", "--quiet",
+    NEW_TASK_BASE_REF, "--", "AGENTS.md", "CLAUDE.md", "docs/agent_operating_model.md",
+    "tool/git/worktree_guard.mjs", "tool/git/bootstrap_worktree.sh"]});
+  if (launcher.status !== 0) {
+    throw new TaskUsageError("Task launcher instructions/tooling differ from fetched origin/main. Preserve local work, fast-forward the primary main checkout when safe, and run start there; then reread AGENTS.md in the new worktree.");
   }
   const claimedPaths = normalizeClaimedPaths(options.paths);
   if (claimedPaths.length === 0) {
@@ -271,14 +284,16 @@ export function finishTask({
   runner = runGit,
 }) {
   const worktreePath = path.resolve(options.worktree ?? repository.currentRoot);
+  if (options.retain && options.abandon) throw new TaskUsageError("Choose --retain or --abandon, not both.");
+  if (options.retain) requireRecordedValue(options.reason, "--reason", 500);
   return withClaimsLock(repository, () => {
     const claim = claimForWorktree(repository, worktreePath);
     const inspection = inspectClaim({repository, claim, runner});
     if (options.abandon === true) {
       return abandonClaim({repository, claim, inspection, options, now, runner});
     }
-    if (options.reason != null || options.by != null) {
-      throw new TaskUsageError("--reason and --by require --abandon.");
+    if ((!options.retain && options.reason != null) || options.by != null) {
+      throw new TaskUsageError("--reason requires --retain or --abandon; --by requires --abandon.");
     }
     const blockers = [...inspection.blockers];
     if (inspection.dirtyPaths.length > 0) blockers.push("uncommitted_changes");
@@ -322,8 +337,13 @@ export function finishTask({
         },
       };
     }
-    const finishedAt = now().toISOString();
-    fs.unlinkSync(claim.claimPath);
+    if (!options.retain) {
+      return {status: 1, result: {operation: "finish", ...inspection, upstream, unpushedCommits,
+        finished: false, claimRetained: true, retired: false,
+        blockers: ["closeout_disposition_required"],
+        note: "Use retire after acceptance, or finish --retain --reason <blocker and next action>. Claim-only closeout would orphan the checkout."}};
+    }
+    const retainedAt = now().toISOString();
     return {
       status: 0,
       result: {
@@ -332,9 +352,13 @@ export function finishTask({
         upstream,
         unpushedCommits,
         blockers: [],
-        finished: true,
-        finishedAt,
-        note: "Claim removed. Remove the worktree explicitly with Git when desired.",
+        finished: false,
+        readyForHandoff: true,
+        claimRetained: true,
+        retired: false,
+        retainedAt,
+        retainedReason: options.reason.trim(),
+        note: "Handoff only. Worktree and original claim retained for accepted retirement; report the retention reason and next action.",
       },
     };
   });
@@ -480,10 +504,10 @@ export function retireTask({repository, options, runner = runGit}) {
       const dirtyPaths = dirtyPathsAt(worktreePath, runner);
       if (dirtyPaths.length > 0) block("uncommitted_changes", `Preserve and resolve staged, unstaged and untracked files: ${dirtyPaths.join(", ")}.`);
       const ignored = runner({cwd: worktreePath,
-        args: ["ls-files", "--others", "--ignored", "--exclude-standard", "-z"]});
+        args: ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory", "-z"]});
       ignoredPaths = parseNulPaths(ignored.stdout);
       if (ignored.status !== 0) block("ignored_file_scan_failed", "Verify all local files and recovery before removal.");
-      else if (ignoredPaths.length > 0) block("ignored_files_require_preservation", "Have the storage/task owner preserve unique ignored files and verify recovery or normally dispose of regenerable caches; then repeat this scan.");
+      else if (ignoredPaths.length > 0) block("ignored_files_require_preservation", "Review the listed ignored paths: preserve secrets, release artifacts and recovery; remove only verified regenerable dependencies/build caches after stopping their consumers, then rerun retire in this closeout. Do not release the claim or call the task retired.");
       const currentHead = runner({cwd: worktreePath, args: ["rev-parse", "HEAD"]});
       if (currentHead.status !== 0 || currentHead.stdout.trim() !== headSha) block("head_changed", "Reinspect the changed exact head before retrying closeout.");
       const currentBranch = runner({cwd: worktreePath, args: ["symbolic-ref", "--quiet", "--short", "HEAD"]});
@@ -567,7 +591,8 @@ function abandonClaim({repository, claim, inspection, options, now, runner}) {
       abandonedBy,
       reason,
       abandonRecordPath,
-      note: "Clean claim abandoned. Review or remove the worktree explicitly with Git.",
+      retired: false,
+      note: "Clean claim abandoned, not retired. Preserve the retained path and recovery in the handoff; legacy cleanup requires owner review.",
     },
   };
 }
@@ -795,8 +820,8 @@ function parseTaskOptions(args) {
       options.apply = true;
       continue;
     }
-    if (arg === "--abandon") {
-      options.abandon = true;
+    if (arg === "--abandon" || arg === "--retain") {
+      options[arg.slice(2)] = true;
       continue;
     }
     const key = values.get(arg);
@@ -814,7 +839,7 @@ function parseTaskOptions(args) {
 
 function requireRecordedValue(value, flag, maxLength) {
   if (typeof value !== "string" || value.trim() === "") {
-    throw new TaskUsageError(`${flag} is required with --abandon.`);
+    throw new TaskUsageError(`${flag} is required for explicit retention or abandonment.`);
   }
   const normalized = value.trim();
   if (normalized.length > maxLength || /[\u0000-\u001f\u007f]/u.test(normalized)) {

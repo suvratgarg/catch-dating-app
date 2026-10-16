@@ -720,7 +720,7 @@ test("one-time PROD operator caller retains protected review and cannot borrow a
   assert.match(caller, /source_sha: 656f093d1910afdbe4d93d31565d1782c39aab63/);
   assert.match(caller, /base_sha: ea518ad0576829dbc505293d4edbd9f6710a2b8f/);
   assert.match(caller, /operator_release: true/);
-  assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
+  assert.doesNotMatch(ciJob(caller, "prod"), /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /environment: \$\{\{ inputs\.approval_environment \|\| inputs\.environment \}\}/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release/);
   assert.match(promotion, /8d96961ceca63f4959b25097168ebddf01cb5280568f1b09829421c0ef089af1[\s\S]*firebase-backend\.tar\.gz \| sha256sum --check --status/);
@@ -786,7 +786,7 @@ test("PR543 Sales caller pins 44 Functions plus rules behind existing protected 
   assert.match(caller, /if \[\[ -n "\$RESUME_RUN_ID" \]\]; then[\s\S]*checkpoint-source[\s\S]*else[\s\S]*selective_backend_release\.mjs source/);
   assert.match(promotion, /test "\$should_restore" = true[\s\S]*11463988816[\s\S]*5c64be7605a46cff585e7d334878d329360aaff253e43f713710f8732c579341/);
   assert.match(promotion, /11463298945[\s\S]*e557f76637abc20b097ba1d2451d626f9f044ad2f9eff5482e5da2726453be49/);
-  assert.doesNotMatch(caller, /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
+  assert.doesNotMatch(ciJob(caller, "prod-sales-pr543"), /dev_completion_artifact_id:|prod-backend|backend-delivery-cursor\.json/);
   assert.match(promotion, /SALES_PR543_RELEASE:[\s\S]*test "\$DEPLOY_ENVIRONMENT" = prod[\s\S]*test "\$APPROVAL_ENVIRONMENT" = prod/);
   assert.match(promotion, /Require recorded human PROD environment approval for operator release\n        if: \$\{\{[^\n]*inputs\.sales_pr543_release/);
   assert.match(promotion, /594dcd96b724a1a81c0545a015c6099277e35475d30aa0969e4540b1dee319e5/);
@@ -1704,7 +1704,7 @@ test("Functions retries stop on missing params or secrets and retain transient r
 
 test("Intake PR596 uses the protected fixed-scope job and cannot enter generic mutation routes", () => {
   const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-intake-pr596");
-  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release && !inputs\.cat165_release \}\}/);
+  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release && !inputs\.cat151_booking_release && !inputs\.cat165_release \}\}/);
   assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
   assert.match(workflow("selective-backend-release.yml"), /group: backend-delivery\n  cancel-in-progress: false/);
   assert.ok(job.indexOf("Require recorded human") < job.indexOf("google-github-actions/auth@v3"));
@@ -1789,6 +1789,37 @@ test("Intake PR596 caller accepts GitHub-omitted empty recovery and rejects any 
 });
 
 import {CAT165_RELEASE} from "./selective_backend_release.mjs";
+import {RELEASE as CAT151_RELEASE} from "./cat151_booking_release.mjs";
+test("CAT151 ordinary and recovery admission reject mixed CAT165 authority", () => {
+  const caller = extractSteps(ciJob(workflow("selective-backend-release.yml"), "authorize-cat151-booking"))
+    .find((step) => step.name === "Verify immutable source, producer and operator scope").run;
+  const promoter = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat151-booking"))[0].run;
+  const accepts = (body, inputs) => {
+    const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+    return spawnSync("jq", ["-e", filter], {input: JSON.stringify(inputs), encoding: "utf8",
+      env: {...process.env, GITHUB_SHA: "a".repeat(40)}}).status === 0;
+  };
+  for (const recovery of [false, true]) {
+    const dispatch = {release_kind: recovery ? "cat151-booking-prod-recovery" : "cat151-booking",
+      confirm_booking_functions: true, confirm_cat165: false, confirm_intake_pr596: false,
+      confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
+      resume_delivery_attempt: "1"};
+    assert.equal(accepts(caller, dispatch), true);
+    assert.equal(accepts(caller, {...dispatch, confirm_cat165: true}), false);
+    const inputs = {cat151_booking_release: true, cat151_predeploy_recovery: recovery, cat165_release: false,
+      intake_pr596_release: false, operator_release: false, whatsapp_five_release: false,
+      sales_pr543_release: false, wedding_phone_import_release: false, require_current_main: false,
+      environment: recovery ? "prod" : "dev", approval_environment: "", control_plane_sha: "a".repeat(40),
+      source_sha: CAT151_RELEASE.sourceSha, base_sha: CAT151_RELEASE.baseSha,
+      source_ci_run_id: CAT151_RELEASE.sourceCiRunId, source_ci_run_attempt: "1",
+      resume_delivery_run_id: "", resume_delivery_attempt: "1",
+      dev_completion_artifact_id: recovery ? "12051195096" : "",
+      dev_completion_artifact_digest: recovery ? "ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f" : "",
+      dev_completion_receipt_sha256: recovery ? "b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09" : ""};
+    assert.equal(accepts(promoter, inputs), true);
+    assert.equal(accepts(promoter, {...inputs, cat165_release: true}), false);
+  }
+});
 test("CAT165 uses protected approval, fixed artifact proofs and isolated selected-only completion", () => {
   const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-cat165");
   assert.match(ciJob(source, "promote"), /!inputs\.cat165_release/);
@@ -1826,7 +1857,7 @@ test("CAT165 reusable input predicate rejects every other mode, authority drift 
   const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8",
     env: {...process.env, GITHUB_SHA: "a".repeat(40)}}).status === 0;
   assert.equal(accepted(inputs), true);
-  for (const key of ["intake_pr596_release", "operator_release", "whatsapp_five_release", "sales_pr543_release", "wedding_phone_import_release", "require_current_main"]) {
+  for (const key of ["cat151_booking_release", "cat151_predeploy_recovery", "intake_pr596_release", "operator_release", "whatsapp_five_release", "sales_pr543_release", "wedding_phone_import_release", "require_current_main"]) {
     assert.equal(accepted({...inputs, [key]: true}), false, key);
   }
   for (const patch of [{environment: "dev"}, {approval_environment: "prod-backend"}, {source_ci_run_attempt: "2"},
@@ -1842,7 +1873,7 @@ test("CAT165 caller rejects missing consent, mixed release confirmations and mal
     resume_delivery_attempt: "1", source_sha: CAT165_RELEASE.sourceSha, reason: "Reviewed protected CAT165 release"};
   const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8"}).status === 0;
   assert.equal(accepted(inputs), true);
-  for (const key of ["confirm_intake_pr596", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543"]) {
+  for (const key of ["confirm_booking_functions", "confirm_intake_pr596", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543"]) {
     assert.equal(accepted({...inputs, [key]: true}), false);
   }
   for (const patch of [{confirm_cat165: false}, {release_kind: "intake-pr596"}, {resume_delivery_attempt: "2"},
