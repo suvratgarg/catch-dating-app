@@ -13,7 +13,7 @@ import {RELEASE,TARGETS,PREDECESSORS,prepare,verifyManifest,verifyArtifact,verif
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const projects={dev:'catchdates-dev',prod:'catch-dating-app-64e51'};
 const manifest=()=>({schema:'catch.delivery-provenance/v2',sourceSha:RELEASE.sourceSha,
- sourceCiRunId:RELEASE.sourceCiRunId,sourceCiRunAttempt:'1',artifact:{name:'firebase-backend.tar.gz',sizeBytes:8314774,sha256:RELEASE.packageSha256},stages:['functions']});
+ sourceCiRunId:RELEASE.sourceCiRunId,sourceCiRunAttempt:'1',artifact:{name:'firebase-backend.tar.gz',sizeBytes:8317451,sha256:RELEASE.packageSha256},stages:['functions']});
 const plan=()=>({schema:'catch.firebase-delivery-plan/v2',sourceSha:RELEASE.sourceSha,baseSha:RELEASE.baseSha,
  sourceCiRunId:RELEASE.sourceCiRunId,sourceCiRunAttempt:'1',stages:['functions'],deployGroups:['functions'],targets:[[...TARGETS,'functions:retained'].sort().join(',')]});
 const providerKeys=['RAZORPAY_PUBLIC_KEY_ID','RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION','EVENT_VENUE_SESSION_TTL_SECONDS','EVENT_VENUE_SESSION_REFRESH_SECONDS','STRIPE_APPLICATION_FEE_BPS'];
@@ -49,6 +49,16 @@ test('CAT151 selects only the fixed order creator from the immutable main packag
  for(const mutate of [v=>v.baseSha='0'.repeat(40),v=>v.targets=['functions:razorpayWebhook'],v=>v.targets=[TARGETS.join(',')+','+TARGETS[0]],v=>v.deployGroups.push('storage')]){
   const p=plan();mutate(p);assert.throws(()=>prepare({manifest:manifest(),packagePlan:p}));
  }
+});
+test('CAT151 uses the packaged delivery baseline rather than the source parent',()=>{
+ // Binding read from artifact12059462962 delivery-plan.json; independent of RELEASE.
+ const packaged={...plan(),sourceSha:'bbff52defd3c0dfb8df7c78c336c6549af7df47a',
+  baseSha:'6817b248294ccb8e0084e7d3cac9161d058fe70d',sourceCiRunId:'38931076239',sourceCiRunAttempt:'1'};
+ assert.deepEqual(prepare({manifest:manifest(),packagePlan:packaged}).targets,['functions:createRazorpayOrder']);
+ assert.throws(()=>prepare({manifest:manifest(),packagePlan:{...packaged,baseSha:'2f3d78db47343a0a363e619ee7dddc9cf8ad1199'}}));
+ const workflow=fs.readFileSync('.github/workflows/_cat151-receipt-promote.yml','utf8');
+ const pins=[...workflow.matchAll(/--base-sha ([a-f0-9]{40})/g)].map(m=>m[1]);
+ assert.deepEqual(pins,Array(3).fill(packaged.baseSha));
 });
 test('CAT151 artifact metadata rejects wrong producer, source, archive and expired evidence',()=>{
  const a={id:RELEASE.artifactId,expired:false,name:`firebase-delivery-${RELEASE.sourceSha}-1`,digest:`sha256:${RELEASE.artifactSha256}`,workflow_run:{id:Number(RELEASE.sourceCiRunId),head_sha:RELEASE.sourceSha}};
