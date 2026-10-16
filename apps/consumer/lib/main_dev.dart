@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 Future<void> main() {
   return runCatchApp(
     appRole: AppRole.consumer,
+    providerOverrides: consumerPlatformOverrides(),
     app: const ConsumerPlatformApp(),
     environment: AppEnvironment.dev,
   );

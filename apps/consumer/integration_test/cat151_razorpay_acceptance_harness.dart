@@ -18,6 +18,7 @@ import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -32,10 +33,8 @@ import 'support/cat151_razorpay_attempt_ledger.dart';
 
 Future<void> main() => runCatchApp(
   appRole: AppRole.consumer,
-  app: ProviderScope(
-    overrides: consumerPlatformOverrides(),
-    child: const _Cat151AcceptanceApp(),
-  ),
+  providerOverrides: consumerPlatformOverrides(),
+  app: const _Cat151AcceptanceApp(),
 );
 
 class _Cat151AcceptanceApp extends StatelessWidget {
@@ -343,7 +342,7 @@ class _Cat151AcceptanceScreenState
       title: 'Start one real TEST order?',
       body:
           'This reserves an attempt before opening native Razorpay. The amount must be exactly ₹10, and any uncertain result remains consumed.',
-      confirmation: 'START ₹10 TEST CHECKOUT',
+      confirmation: 'START INR 10 TEST CHECKOUT',
     );
     if (!confirmed || !mounted) return;
 
@@ -357,6 +356,13 @@ class _Cat151AcceptanceScreenState
         _status = 'Checkout blocked by a fresh preflight.';
       });
       return;
+    }
+    if (!ref
+        .read(paymentRepositoryProvider)
+        .supportsPaidBookingsForCurrency(result.event.currency)) {
+      throw StateError(
+        'Native paid checkout is unavailable before reservation.',
+      );
     }
     var ledgerState = await _ledger.bindScope(
       projectId: result.projectId,
@@ -388,11 +394,13 @@ class _Cat151AcceptanceScreenState
         throw StateError('Paid checkout returned no confirmation.');
       }
       confirmation = value;
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
       setState(() {
         _status =
-            'Attempt $attemptNumber is uncertain and remains consumed. Refresh evidence before considering attempt 2.';
+            'Attempt $attemptNumber is uncertain and remains consumed. '
+            'Failure type: ${error.runtimeType}. '
+            'Refresh evidence before considering attempt 2.';
       });
       return;
     }

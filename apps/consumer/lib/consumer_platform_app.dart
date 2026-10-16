@@ -5,23 +5,19 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_consumer_app/mobile_health_activity_client.dart';
 import 'package:catch_consumer_app/razorpay_checkout_adapter.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 
-/// Consumer-owned native capability bindings around the shared Consumer UI.
+/// Consumer routing root. Native capabilities are installed by bootstrap.
 class ConsumerPlatformApp extends StatelessWidget {
   const ConsumerPlatformApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: consumerPlatformOverrides(),
-      child: MyApp(routerProvider: consumerGoRouterProvider),
-    );
+    return MyApp(routerProvider: consumerGoRouterProvider);
   }
 }
 
-/// Production native bindings shared by supervised native entrypoints.
+/// Production root bindings shared by Consumer and supervised native entrypoints.
 ///
 /// Keeping these bindings in one list prevents an acceptance harness from
 /// substituting a fake checkout while leaving the shipped app unchanged.
