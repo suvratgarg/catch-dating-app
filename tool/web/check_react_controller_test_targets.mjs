@@ -167,18 +167,33 @@ function inspectSuite(fileName, source, compilerOptions = {}) {
     }
     return null;
   }
-  function registrations(statements, inherited, parameters = []) {
+  function registrations(statements, inherited, parameters = [], ownName) {
     const scope = new Map(inherited);
     const shadow = node => {
       if (ts.isIdentifier(node)) scope.delete(node.text);
       else ts.forEachChild(node, shadow);
     };
+    if (ownName) shadow(ownName);
     for (const parameter of parameters) shadow(parameter.name);
+    const hoisted = node => {
+      if (ts.isFunctionLike(node) || ts.isClassLike(node)) return;
+      if (ts.isVariableDeclarationList(node) && !(node.flags & ts.NodeFlags.BlockScoped)) {
+        node.declarations.forEach(item => shadow(item.name));
+      }
+      ts.forEachChild(node, hoisted);
+    };
     for (const statement of statements) {
+      hoisted(statement);
       if (ts.isVariableStatement(statement)) statement.declarationList.declarations.forEach(item => shadow(item.name));
       else if ((ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement)) && statement.name) shadow(statement.name);
     }
     for (const statement of statements) {
+      // Do not evaluate control flow or assume registration continues past an
+      // early exit, conditional, loop, try block or other statement container.
+      if (ts.isReturnStatement(statement) || ts.isThrowStatement(statement) ||
+          ts.isIfStatement(statement) || ts.isSwitchStatement(statement) ||
+          ts.isIterationStatement(statement, false) || ts.isTryStatement(statement) ||
+          ts.isBlock(statement) || ts.isLabeledStatement(statement) || ts.isWithStatement(statement)) return false;
       if (!ts.isExpressionStatement(statement) || !ts.isCallExpression(statement.expression)) continue;
       const call = statement.expression;
       const match = registration(call.expression, scope);
@@ -194,7 +209,7 @@ function inspectSuite(fileName, source, compilerOptions = {}) {
       if (match.role === "it" || match.role === "test") return true;
       if ((match.role === "describe" || match.role === "suite") &&
           registrations(ts.isBlock(callback.body) ? callback.body.statements :
-            [ts.factory.createExpressionStatement(callback.body)], scope, callback.parameters)) return true;
+            [ts.factory.createExpressionStatement(callback.body)], scope, callback.parameters, callback.name)) return true;
     }
     return false;
   }
@@ -241,6 +256,12 @@ async function runSelfTest() {
       missingCallback: imports + "it('later');",
       fakeTest: "import {useExampleController} from './useExampleController'; function test() {} test('fake', () => {});",
       uncalled: imports + "function neverCalled() { " + normal + " }",
+      earlyReturn: imports + "describe('suite', () => { return; " + normal + " });",
+      earlyThrow: imports + "describe('suite', () => { throw new Error('stop'); " + normal + " });",
+      conditionalReturn: imports + "describe('suite', () => { if (true) return; " + normal + " });",
+      conditionalThrow: imports + "describe('suite', () => { if (condition) throw new Error('stop'); " + normal + " });",
+      namedCallback: imports + "describe('suite', function it() { it('fake', () => {}); });",
+      hoistedVar: imports + "describe('suite', () => { { var it = () => {}; } " + normal + " });",
       shadowed: imports + "describe('suite', (it) => { " + normal + " });",
       shadowedLocal: imports + "describe('suite', () => { const it = () => {}; " + normal + " });",
       conditional: imports + "if (false) { " + normal + " }",
@@ -252,6 +273,7 @@ async function runSelfTest() {
 
     for (const [name, source] of Object.entries({
       ordinary: imports + normal,
+      nestedHelperScope: imports + "function helper() { var it = () => {}; return; } " + normal,
       literalOptions: imports + "it('works', {timeout: 100, skip: false, todo: false}, () => useExampleController());",
       jsExtension: imports.replace("./useExampleController", "./useExampleController.js") + normal,
       aliasTarget: "import {useExampleController as hook} from './useExampleController'; import {it} from 'vitest'; it('case', () => hook());",
@@ -300,7 +322,7 @@ async function runSelfTest() {
       {selectedByOwner: actualSelection}).some(finding => finding.includes("not selected")));
     assert.ok(inspect(imports + normal, [{...target, test: "website/src/other-project.ts"}],
       {selectedByOwner: actualSelection}).some(finding => finding.includes("not selected")));
-    console.log("React controller test-target self-test passed: 24 negative and 11 positive registration fixtures, shared suite, resolution and real project discovery.");
+    console.log("React controller test-target self-test passed: 30 negative and 12 positive registration fixtures, shared suite, resolution and real project discovery.");
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
