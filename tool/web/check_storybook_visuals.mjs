@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
+import vm from "node:vm";
 import {chromium} from "playwright";
 import {PNG} from "pngjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
@@ -15,6 +17,10 @@ if (args.help) {
 }
 if (args.selfTest) {
   await runSelfTest();
+  process.exit(0);
+}
+if (args.browserSelfTest) {
+  await runBrowserSelfTest();
   process.exit(0);
 }
 
@@ -100,6 +106,12 @@ const jobs = resolvedStories.flatMap((story) =>
   viewports.map((viewport) => ({story, viewport}))
 );
 const failures = [];
+const source = {
+  head: execFileSync("git", ["rev-parse", "HEAD"], {cwd: fromRepo("."), encoding: "utf8"}).trim(),
+  dirty: execFileSync("git", ["status", "--porcelain", "--untracked-files=no"], {
+    cwd: fromRepo("."), encoding: "utf8",
+  }).trim() !== "",
+};
 if (args.components.length === 0) {
   const expectedFiles = new Set(jobs.map(({story, viewport}) => captureFileName(story, viewport)));
   const staleFiles = fs.readdirSync(baselineRoot)
@@ -119,7 +131,12 @@ try {
       reducedMotion: "reduce",
       viewport: {width: viewport.width, height: viewport.height},
     });
+    const fileName = captureFileName(story, viewport);
+    const actualPath = path.join(actualRoot, fileName);
+    const receipt = {source, storyId: story.id, viewport, storybook: args.storybook ?? config.defaultStorybook};
+    let actual;
     try {
+      await page.addInitScript(installStoryLifecycle, story.id);
       await page.goto(`${server.origin}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story`, {
         waitUntil: "networkidle",
       });
@@ -128,6 +145,9 @@ try {
         {state: "visible", timeout: 15_000}
       );
       await page.locator(".sb-preparing-story").waitFor({state: "hidden", timeout: 15_000});
+      // Mount visibility precedes play; wait through afterEach/reporting before
+      // normalizing animations or accepting the final visual state.
+      await waitForStoryFinished(page);
       await waitForVisibleImages(page);
       await page.evaluate(async () => {
         await document.fonts.ready;
@@ -151,10 +171,13 @@ try {
         ? await errorDisplay.textContent()
         : null;
       if (storyError?.trim()) throw new Error(storyError.trim().replace(/\s+/gu, " ").slice(0, 2000));
-      const actual = await page.screenshot({animations: "disabled", fullPage: false});
-      const fileName = captureFileName(story, viewport);
+      await waitForStoryFinished(page);
+      const captureSequence = await page.evaluate(() => globalThis.__catchVisualLifecycle.sequence);
+      actual = await page.screenshot({animations: "disabled", fullPage: false});
+      receipt.capturedAt = new Date().toISOString();
+      receipt.lifecycle = await page.evaluate(() => globalThis.__catchVisualLifecycleSnapshot());
+      if (!captureMatchesLifecycle(receipt.lifecycle, captureSequence)) throw new Error("Story changed or failed during screenshot");
       const baselinePath = path.join(baselineRoot, fileName);
-      const actualPath = path.join(actualRoot, fileName);
       if (args.update) {
         fs.writeFileSync(baselinePath, actual);
       } else if (!fs.existsSync(baselinePath)) {
@@ -176,7 +199,11 @@ try {
       }
     } catch (error) {
       failures.push(`${story.id} (${viewport.name}): ${error.message}`);
+      receipt.error = error.message;
+      await retainFailureCapture(page, actualPath, receipt, actual);
     } finally {
+      receipt.lifecycle ??= await page.evaluate(() => globalThis.__catchVisualLifecycle).catch(() => null);
+      fs.writeFileSync(`${actualPath}.json`, `${JSON.stringify(receipt, null, 2)}\n`);
       await page.close();
       completed += 1;
       if (completed % 50 === 0 || completed === jobs.length) {
@@ -200,6 +227,108 @@ console.log(
   `${resolvedStories.length} ready story(s), ${jobs.length} capture(s), ` +
   `surface ${args.surface}, platform ${capturePlatform}.`
 );
+
+// Installed before Storybook creates its channel, so fast/no-play stories cannot
+// finish between a readiness poll and listener registration. Use the installed
+// channel rather than postMessage, which has no parent in a standalone iframe.
+function installStoryLifecycle(storyId) {
+  const state = {storyId, renderId: null, phase: null, status: null, playPending: false, error: null, sequence: 0, events: []};
+  globalThis.__catchVisualLifecycle = state;
+  globalThis.__catchVisualLifecycleSnapshot = () => {
+    const current = globalThis.__STORYBOOK_PREVIEW__?.currentRender;
+    return {...state, successful: !state.error && state.status === "success" && !state.playPending &&
+      state.phase === "finished" && current?.id === state.storyId &&
+      current.renderId === state.renderId && current.phase === "finished"};
+  };
+  const record = (event) => {
+    state.sequence += 1;
+    state.events.push({atMs: performance.now(), ...event});
+    if (state.events.length > 200) state.events.shift();
+  };
+  const attached = new WeakSet();
+  let channel = globalThis.__STORYBOOK_ADDONS_CHANNEL__;
+  const attach = (next) => {
+    try {
+      if (!next || typeof next.on !== "function" || attached.has(next)) return;
+      attached.add(next);
+      // Channel listeners run synchronously. Observer failures must fail our
+      // checker without interrupting Storybook's own render/event delivery.
+      const on = (type, handler) => next.on(type, (...values) => {
+        try { handler(...values); }
+        catch (error) { state.sequence += 1; state.error = `Lifecycle observer failed: ${error.message}`; }
+      });
+      on("storyRenderPhaseChanged", ({storyId: id, renderId, newPhase}) => {
+        if (id !== storyId) return;
+        state.renderId = renderId;
+        state.phase = newPhase;
+        state.status = null;
+        // An args rerender during play reuses Storybook's renderId and can finish
+        // independently. It must not conceal the original pending play function.
+        if (newPhase === "playing") state.playPending = true;
+        if (["played", "errored"].includes(newPhase)) state.playPending = false;
+        record({type: "phase", renderId, phase: newPhase});
+        if (["errored", "aborted"].includes(newPhase)) state.error = `Story render ${newPhase}`;
+      });
+      on("storyFinished", ({storyId: id, status, reporters = []}) => {
+        if (id !== storyId) return;
+        const current = globalThis.__STORYBOOK_PREVIEW__?.currentRender;
+        record({type: "finished", renderId: current?.renderId, status,
+          reports: reporters.map((report) => ({type: report.type, status: report.status})).slice(0, 20)});
+        // STORY_FINISHED omits renderId in Storybook 10.6. Bind it to the active
+        // render and its finished phase; a stale/wrong render cannot admit pixels.
+        if (current?.id !== storyId || current.renderId !== state.renderId ||
+            state.renderId == null || current.phase !== "finished" || state.phase !== "finished") {
+          state.error = "Story finished without a matching active render";
+        } else if (status !== "success" || reporters.some((report) => report.status === "failed")) {
+          state.error = `Story finished with ${status} status or failed reports`;
+        } else {
+          state.status = status;
+        }
+      });
+      for (const type of ["storyErrored", "storyThrewException", "playFunctionThrewException", "unhandledErrorsWhilePlaying"]) {
+        on(type, () => {
+          record({type, renderId: state.renderId});
+          state.error = `Storybook emitted ${type}`;
+        });
+      }
+    } catch (error) {
+      state.sequence += 1;
+      state.error = `Lifecycle observer could not attach: ${error.message}`;
+    }
+  };
+  Object.defineProperty(globalThis, "__STORYBOOK_ADDONS_CHANNEL__", {
+    configurable: true,
+    enumerable: true,
+    get: () => channel,
+    set: (next) => { channel = next; attach(next); },
+  });
+  attach(channel);
+}
+
+function storyLifecycleSettled() {
+  const state = globalThis.__catchVisualLifecycleSnapshot?.();
+  return Boolean(state?.error || state?.successful);
+}
+
+function captureMatchesLifecycle(snapshot, sequence) {
+  return snapshot?.successful === true && !snapshot.error && snapshot.sequence === sequence;
+}
+
+async function waitForStoryFinished(page, timeout = 30_000) {
+  await page.waitForFunction(storyLifecycleSettled, undefined, {timeout});
+  const error = await page.evaluate(() => globalThis.__catchVisualLifecycle.error);
+  if (error) throw new Error(error);
+}
+
+async function retainFailureCapture(page, actualPath, receipt, actual) {
+  try {
+    if (actual) fs.writeFileSync(actualPath, actual);
+    else await page.screenshot({path: actualPath, fullPage: false, timeout: 5_000});
+    receipt.capturedAt = new Date().toISOString();
+  } catch (captureError) {
+    receipt.captureError = captureError.message;
+  }
+}
 
 async function waitForVisibleImages(page) {
   await page.waitForFunction(() => {
@@ -430,6 +559,7 @@ function captureWorkerCount(surface, override = null) {
 function parseArgs(argv) {
   const parsed = {
     components: [],
+    browserSelfTest: false,
     concurrency: null,
     help: false,
     selfTest: false,
@@ -442,6 +572,7 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--self-test") parsed.selfTest = true;
+    else if (arg === "--self-test-browser") parsed.browserSelfTest = true;
     else if (arg === "--update") parsed.update = true;
     else if (arg === "--check") {}
     else if (arg === "--component") parsed.components.push(requiredValue(argv, ++index, arg));
@@ -468,7 +599,172 @@ function requiredValue(argv, index, flag) {
   return value;
 }
 
+function runLifecycleSelfTest() {
+  const harness = () => {
+    const context = vm.createContext({performance});
+    vm.runInContext(`(${installStoryLifecycle})("requested")`, context);
+    const listeners = new Map();
+    const channel = {on: (type, handler) => {
+      const entries = listeners.get(type) ?? [];
+      entries.push(handler);
+      listeners.set(type, entries);
+    }};
+    context.__STORYBOOK_ADDONS_CHANNEL__ = channel;
+    context.__STORYBOOK_ADDONS_CHANNEL__ = channel;
+    assert.equal(listeners.get("storyFinished").length, 1, "reattaching must not duplicate listeners");
+    const current = {id: "requested", renderId: 1, phase: "preparing"};
+    context.__STORYBOOK_PREVIEW__ = {currentRender: current};
+    const emit = (type, payload) => listeners.get(type)?.forEach((handler) => handler(payload));
+    const phase = (newPhase) => {
+      current.phase = newPhase;
+      emit("storyRenderPhaseChanged", {storyId: current.id, renderId: current.renderId, newPhase});
+    };
+    return {context, current, emit, phase,
+      finish: (patch = {}) => emit("storyFinished", {storyId: "requested", status: "success", ...patch}),
+      settled: () => vm.runInContext(`(${storyLifecycleSettled})()`, context),
+      state: context.__catchVisualLifecycle};
+  };
+  const delayed = harness();
+  for (const phase of ["preparing", "loading", "rendering", "playing", "played", "completing", "completed", "afterEach", "finished"]) {
+    delayed.phase(phase);
+    assert.equal(delayed.settled(), false, `${phase} alone cannot admit a screenshot`);
+  }
+  delayed.finish({storyId: "another-story"});
+  assert.equal(delayed.settled(), false, "wrong-story completion cannot admit pixels");
+  delayed.finish();
+  assert.equal(delayed.settled(), true);
+  assert.equal(delayed.state.error, null);
+  const accepted = delayed.context.__catchVisualLifecycleSnapshot();
+  assert.equal(captureMatchesLifecycle(accepted, accepted.sequence), true);
+  delayed.emit("playFunctionThrewException", {});
+  assert.equal(captureMatchesLifecycle(delayed.context.__catchVisualLifecycleSnapshot(), accepted.sequence), false,
+    "a late failure must reject the atomic capture receipt");
+  const newlyRendering = harness();
+  newlyRendering.phase("finished"); newlyRendering.finish();
+  const priorSequence = newlyRendering.state.sequence;
+  newlyRendering.phase("rendering");
+  assert.equal(captureMatchesLifecycle(newlyRendering.context.__catchVisualLifecycleSnapshot(), priorSequence), false);
+  const changed = harness();
+  changed.phase("finished"); changed.finish();
+  const changedSequence = changed.state.sequence;
+  changed.emit("storyRenderPhaseChanged", null);
+  assert.equal(captureMatchesLifecycle(changed.context.__catchVisualLifecycleSnapshot(), changedSequence), false,
+    "observer failure after capture must also invalidate its sequence");
+  const reset = harness();
+  reset.phase("finished"); reset.finish();
+  reset.phase("rendering");
+  assert.equal(reset.settled(), false, "a new render phase invalidates prior success");
+  const noPlay = harness();
+  for (const phase of ["preparing", "loading", "rendering", "completing", "completed", "afterEach", "finished"]) noPlay.phase(phase);
+  noPlay.finish();
+  assert.equal(noPlay.settled(), true, "stories without play still finish normally");
+  const rerender = harness();
+  for (const phase of ["rendering", "playing", "rendering", "completed", "afterEach", "finished"]) rerender.phase(phase);
+  rerender.finish();
+  assert.equal(rerender.settled(), false, "same-render args updates cannot conceal pending play");
+  for (const phase of ["played", "completed", "afterEach", "finished"]) rerender.phase(phase);
+  rerender.finish();
+  assert.equal(rerender.settled(), true);
+  for (const patch of [{status: "error"}, {status: "unknown"}, {reporters: [{status: "failed"}]}, {reporters: null}]) {
+    const failed = harness();
+    failed.phase("finished");
+    failed.finish(patch);
+    assert.ok(failed.state.error, "failed or malformed completion must fail closed");
+  }
+  for (const phase of ["errored", "aborted"]) {
+    const failed = harness();
+    failed.phase(phase);
+    failed.phase("finished");
+    failed.finish();
+    assert.ok(failed.state.error, "later success cannot erase an observed render failure");
+  }
+  for (const type of ["storyErrored", "storyThrewException", "playFunctionThrewException", "unhandledErrorsWhilePlaying"]) {
+    const failed = harness();
+    failed.emit(type, {});
+    assert.ok(failed.state.error);
+  }
+  for (const patch of [{id: "other"}, {renderId: 2}, {phase: "playing"}]) {
+    const stale = harness();
+    stale.phase("finished");
+    Object.assign(stale.current, patch);
+    stale.finish();
+    assert.ok(stale.state.error, "stale/mismatched render completion must fail closed");
+  }
+  const missingPhase = harness();
+  missingPhase.finish();
+  assert.ok(missingPhase.state.error, "completion without observed render identity must fail closed");
+  const malformed = harness();
+  assert.doesNotThrow(() => malformed.emit("storyRenderPhaseChanged", null));
+  assert.match(malformed.state.error, /observer failed/u);
+}
+
+async function runBrowserSelfTest() {
+  const outputRoot = fromRepo("artifacts/visual-actuals/lifecycle-self-test");
+  fs.mkdirSync(outputRoot, {recursive: true});
+  const output = fs.mkdtempSync(path.join(outputRoot, "run-"));
+  const browser = await chromium.launch({headless: true});
+  try {
+    for (const viewport of [{name: "desktop", width: 1280, height: 800}, {name: "mobile", width: 375, height: 812}]) {
+      const page = await browser.newPage({viewport: {width: viewport.width, height: viewport.height}});
+      try {
+        await page.addInitScript(installStoryLifecycle, "requested");
+        await page.goto(`data:text/html,${encodeURIComponent(`<!doctype html><body class="sb-show-main" style="margin:0;background:white"><div id="storybook-root"><div>Closed</div></div><script>
+          const listeners = new Map();
+          const channel = {on(type, listener) { const items = listeners.get(type) || []; items.push(listener); listeners.set(type, items); }, emit(type, payload) { for (const listener of listeners.get(type) || []) listener(payload); }};
+          globalThis.__STORYBOOK_ADDONS_CHANNEL__ = channel;
+          const current = {id: "requested", renderId: 1, phase: "preparing"};
+          globalThis.__STORYBOOK_PREVIEW__ = {currentRender: current};
+          globalThis.phase = (newPhase) => { current.phase = newPhase; channel.emit("storyRenderPhaseChanged", {storyId: current.id, renderId: current.renderId, newPhase}); };
+          globalThis.finish = (status = "success") => { phase("finished"); channel.emit("storyFinished", {storyId: current.id, status, reporters: []}); };
+          phase("rendering"); phase("playing");
+          document.body.style.background = "#171717";
+          document.querySelector("#storybook-root").innerHTML = "<div>Open menu during delayed play</div>";
+        </script>`)}`);
+        // These are the old readiness conditions, deliberately true mid-play.
+        await page.waitForSelector("body.sb-show-main #storybook-root > *", {state: "visible"});
+        await page.locator(".sb-preparing-story").waitFor({state: "hidden"});
+        const during = await page.screenshot({path: path.join(output, `${viewport.name}.playing.png`)});
+        await assert.rejects(waitForStoryFinished(page, 100), /Timeout/u);
+        const timeoutReceipt = {};
+        const timeoutPath = path.join(output, `${viewport.name}.timeout.png`);
+        await retainFailureCapture(page, timeoutPath, timeoutReceipt);
+        assert.ok(timeoutReceipt.capturedAt);
+        assert.equal(comparePng(during, fs.readFileSync(timeoutPath), 0.001).matches, true);
+        await page.evaluate(() => { phase("completed"); phase("afterEach"); });
+        await assert.rejects(waitForStoryFinished(page, 100), /Timeout/u);
+        await page.evaluate(() => { phase("rendering"); finish(); });
+        await assert.rejects(waitForStoryFinished(page, 100), /Timeout/u);
+        await page.evaluate(() => {
+          document.body.style.background = "white";
+          document.querySelector("#storybook-root").innerHTML = "<div>Closed</div>";
+          phase("played"); finish();
+        });
+        await waitForStoryFinished(page, 1_000);
+        const after = await page.screenshot({path: path.join(output, `${viewport.name}.finished.png`)});
+        assert.equal(comparePng(during, after, 0.001).matches, false, "mid-play pixels must differ from final pixels");
+        assert.equal(comparePng(after, await page.screenshot(), 0.001).matches, true);
+        await page.evaluate(() => { phase("playing"); finish("error"); });
+        await assert.rejects(waitForStoryFinished(page, 1_000), /error status/u);
+        const failedReceipt = {};
+        const failedPath = path.join(output, `${viewport.name}.error.png`);
+        await retainFailureCapture(page, failedPath, failedReceipt, after);
+        assert.ok(failedReceipt.capturedAt);
+        assert.deepEqual(fs.readFileSync(failedPath), after, "rejected captured pixels must be retained unchanged");
+        fs.writeFileSync(path.join(output, `${viewport.name}.json`), JSON.stringify({
+          viewport, lifecycle: await page.evaluate(() => globalThis.__catchVisualLifecycle),
+        }, null, 2));
+      } finally {
+        await page.close();
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+  console.log(`Storybook lifecycle browser controls passed (desktop/mobile); evidence ${path.relative(fromRepo("."), output)}.`);
+}
+
 async function runSelfTest() {
+  runLifecycleSelfTest();
   const first = new PNG({width: 2, height: 1});
   first.data.set([10, 10, 10, 255, 20, 20, 20, 255]);
   const same = comparePng(PNG.sync.write(first), PNG.sync.write(first), 0);
@@ -586,7 +882,8 @@ Options:
   --check                        Compare against current-platform baselines (default).
   --threshold <ratio>            Maximum changed-pixel ratio (default 0.001).
   --concurrency <1|2>            Capture workers (default: admin 2, website/webui 1).
-  --self-test                    Run pixel-comparison and capture-scheduler proofs.
+  --self-test                    Run lifecycle, pixel-comparison and scheduler proofs.
+  --self-test-browser            Run isolated browser lifecycle/pixel controls.
 
 Per-story overrides live in tool/web/storybook_visual_thresholds.json:
 {"version": 1, "stories": {"<story-id>": {"surface": "admin|website|webui", "threshold": <ratio>, "reason": "...", "expires": "YYYY-MM-DD"}}}
