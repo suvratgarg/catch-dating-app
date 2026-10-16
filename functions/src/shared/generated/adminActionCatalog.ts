@@ -1131,6 +1131,15 @@ export const ADMIN_ACTION_CATALOG = {
     "roles": [
       "adminOwner"
     ]
+  },
+  "sales.partners.offer": {
+    "callable": "adminAssignSalesPartner",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
   }
 } as const;
 
