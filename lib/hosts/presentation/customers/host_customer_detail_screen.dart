@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -26,6 +27,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outr
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -69,12 +71,95 @@ class _HostCustomerDetailScreenState
   HostCustomerDetailView _selectedView = HostCustomerDetailView.overview;
   bool _openingConversation = false;
   bool _updatingCustomer = false;
+  Object? _removalOperation;
+  int _removalEpoch = 0;
+  GoRouter? _removalRouter;
+  Uri? _removalRoute;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(uidProvider, (previous, next) {
+      if (next.isLoading ||
+          next.hasError ||
+          previous?.asData?.value != next.asData?.value) {
+        _invalidateRemovalScope();
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final router = GoRouter.maybeOf(context);
+    if (identical(router, _removalRouter)) return;
+    _removalRouter?.routerDelegate.removeListener(_removalRouteChanged);
+    _removalRouter = router;
+    _removalRoute = router?.state.uri;
+    _invalidateRemovalScope();
+    router?.routerDelegate.addListener(_removalRouteChanged);
+  }
+
+  void _removalRouteChanged() {
+    final route = _removalRouter?.state.uri;
+    if (route == _removalRoute) return;
+    _removalRoute = route;
+    _invalidateRemovalScope();
+  }
+
+  @override
+  void didUpdateWidget(HostCustomerDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.organizerId != widget.organizerId ||
+        oldWidget.contactId != widget.contactId) {
+      _invalidateRemovalScope();
+    }
+  }
+
+  @override
+  void dispose() {
+    _invalidateRemovalScope();
+    _removalRouter?.routerDelegate.removeListener(_removalRouteChanged);
+    super.dispose();
+  }
+
+  void _invalidateRemovalScope() {
+    _removalEpoch++;
+    // Scope changes already rebuild or leave this surface. Release only the
+    // local confirmation owner; the old target's keyed mutation stays pending.
+    _removalOperation = null;
+  }
+
+  bool _ownsRemoval(int epoch, HostCustomerRemovalKey key) {
+    if (!mounted || epoch != _removalEpoch) return false;
+    final actor = ref.read(uidProvider);
+    return !actor.isLoading &&
+        !actor.hasError &&
+        actor.asData?.value == key.actorUid &&
+        ref.read(firebaseAuthProvider).currentUser?.uid == key.actorUid &&
+        widget.organizerId == key.organizerId &&
+        widget.contactId == key.contactId;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final removalEpoch = _removalEpoch;
     final currentUid = catchAsyncStateFromAsyncValue(
       ref.watch(uidProvider),
     ).value;
+    final removalPending =
+        currentUid != null &&
+        ref
+            .watch(
+              HostCustomersController.removeMutation((
+                actorUid: currentUid,
+                organizerId: widget.organizerId,
+                contactId: widget.contactId,
+              )),
+            )
+            .isPending;
+    final updatingCustomer =
+        _updatingCustomer || _removalOperation != null || removalPending;
     final detail = ref.watch(
       hostAudienceContactDetailProvider(widget.organizerId, widget.contactId),
     );
@@ -124,7 +209,7 @@ class _HostCustomerDetailScreenState
             CatchActionMenu<_HostCustomerRecordAction>(
               key: const ValueKey('host-customer-record-actions'),
               tooltip: context.l10n.hostCustomersMoreActions,
-              enabled: !_updatingCustomer && !_openingConversation,
+              enabled: !updatingCustomer && !_openingConversation,
               items: [
                 if (MediaQuery.textScalerOf(context).scale(1) >=
                         CatchRecordTokens.largeTextBreakpoint &&
@@ -156,7 +241,11 @@ class _HostCustomerDetailScreenState
                   communicationPlanState?.value,
                 ),
                 _HostCustomerRecordAction.logOutreach => _logOutreach(customer),
-                _HostCustomerRecordAction.remove => _removeCustomer(customer),
+                _HostCustomerRecordAction.remove => _removeCustomer(
+                  customer,
+                  actorUid: currentUid,
+                  epoch: removalEpoch,
+                ),
               }),
             ),
         ],
@@ -243,7 +332,7 @@ class _HostCustomerDetailScreenState
                       .recommendedRouteId !=
                   null,
               openingConversation: _openingConversation,
-              updatingCustomer: _updatingCustomer,
+              updatingCustomer: updatingCustomer,
               onSaveDetails: ({required displayName, phoneE164, email}) =>
                   _saveCustomerDetails(
                     customer,
@@ -445,45 +534,137 @@ class _HostCustomerDetailScreenState
     }
   }
 
-  Future<void> _removeCustomer(HostAudienceContactDetail customer) async {
-    if (_updatingCustomer) return;
-    final confirmed = await showCatchConfirmDialog(
-      copy: catchDialogCopy(context.l10n),
-      context: context,
-      title: context.l10n.hostsHostAudienceRemoveTitle,
-      message: context.l10n.hostsHostAudienceRemoveBody,
-      confirmLabel: context.l10n.hostsHostAudienceRemoveConfirm,
-      danger: true,
+  Future<void> _removeCustomer(
+    HostAudienceContactDetail customer, {
+    required String? actorUid,
+    required int epoch,
+  }) async {
+    if (_updatingCustomer || _removalOperation != null) return;
+    final actor = ref.read(uidProvider);
+    if (actor.isLoading ||
+        actor.hasError ||
+        actorUid == null ||
+        actor.asData?.value != actorUid) {
+      return;
+    }
+    final key = (
+      actorUid: actorUid,
+      organizerId: customer.organizerId,
+      contactId: customer.contactId,
     );
-    if (confirmed != true || !mounted) return;
-    setState(() => _updatingCustomer = true);
-    try {
-      await ref
-          .read(hostCustomersControllerProvider)
-          .mutateCustomer(
-            organizerId: customer.organizerId,
-            contactId: customer.contactId,
-            expectedRevision: customer.revision,
-            hidden: true,
-          );
-      if (!mounted) return;
-      ref.invalidate(hostCustomersDirectoryControllerProvider);
-      ref.invalidate(hostCrmSummaryProvider(widget.organizerId));
-      if (widget.onBack case final onBack?) {
-        onBack();
-      } else {
-        context.pop();
+    if (!_ownsRemoval(epoch, key)) return;
+    final mutation = HostCustomersController.removeMutation(key);
+    if (ref.read(mutation).isPending) return;
+    final operation = Object();
+    final onRemoved = widget.onBack;
+    final route = ModalRoute.of(context);
+    final router = _removalRouter;
+    final container = ProviderScope.containerOf(context, listen: false);
+    final auth = ref.read(firebaseAuthProvider);
+    var sameActor = true;
+    final actorLease = container.listen(uidProvider, (_, next) {
+      if (next.isLoading ||
+          next.hasError ||
+          next.asData?.value != key.actorUid) {
+        sameActor = false;
       }
-    } on Object catch (error) {
-      if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.club,
+    });
+    setState(() => _removalOperation = operation);
+    try {
+      final confirmed = await showCatchConfirmDialog(
+        copy: catchDialogCopy(context.l10n),
+        context: context,
+        title: context.l10n.hostsHostAudienceRemoveTitle,
+        message: context.l10n.hostsHostAudienceRemoveBody,
+        confirmLabel: context.l10n.hostsHostAudienceRemoveConfirm,
+        danger: true,
+      );
+      if (confirmed != true || !_ownsRemoval(epoch, key)) return;
+      if (ref.read(mutation).isPending) return;
+      try {
+        await mutation.run(
+          ref,
+          (tx) => tx
+              .get(hostCustomersControllerProvider)
+              .removeCustomer(key: key, expectedRevision: customer.revision),
+        );
+      } on Object catch (error) {
+        if (_ownsRemoval(epoch, key)) {
+          showCatchNoticeError(
+            context,
+            error,
+            errorContext: AppErrorContext.customer,
+          );
+        }
+        return;
+      }
+
+      // Acknowledged writes still invalidate their captured cache after route
+      // departure, but must not refresh data under a different signed-in actor.
+      if (!actorLease.closed && sameActor) {
+        final currentActor = actorLease.read();
+        if (!currentActor.isLoading &&
+            !currentActor.hasError &&
+            currentActor.asData?.value == key.actorUid &&
+            auth.currentUser?.uid == key.actorUid) {
+          container.invalidate(hostCustomersDirectoryControllerProvider);
+          container.invalidate(hostCrmSummaryProvider(key.organizerId));
+          container.invalidate(
+            hostCustomerSegmentCountProvider(
+              HostCustomerSegmentCountRequest(
+                organizerId: key.organizerId,
+                filter: HostCustomerFilter.newToOrganizer,
+              ),
+            ),
+          );
+          container.invalidate(
+            hostAudienceContactDetailProvider(key.organizerId, key.contactId),
+          );
+          container.invalidate(
+            hostAudienceContactHistoryProvider(key.organizerId, key.contactId),
+          );
+          container.invalidate(
+            hostCommunicationPlanProvider(key.organizerId, key.contactId),
+          );
+        }
+      }
+      if (!_ownsRemoval(epoch, key)) return;
+      showCatchNotice(
+        context,
+        context.l10n
+            .hostsHostTeamManagementSectionSuccessmessageDisplaynameRemoved(
+              displayName: customer.displayName,
+            ),
+        tone: CatchNoticeTone.success,
+      );
+      try {
+        if (onRemoved != null) {
+          onRemoved();
+        } else if (route?.isCurrent == true && router != null) {
+          if (router.canPop()) {
+            router.pop();
+          } else {
+            router.goNamed(
+              Routes.hostAudienceScreen.name,
+              queryParameters: {'organizerId': key.organizerId},
+            );
+          }
+        }
+      } on Object catch (error, stackTrace) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stackTrace,
+            library: 'Host customer removal',
+            context: ErrorDescription('navigating after acknowledged removal'),
+          ),
         );
       }
     } finally {
-      if (mounted) setState(() => _updatingCustomer = false);
+      actorLease.close();
+      if (mounted && identical(_removalOperation, operation)) {
+        setState(() => _removalOperation = null);
+      }
     }
   }
 

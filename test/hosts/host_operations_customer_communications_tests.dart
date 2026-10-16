@@ -44,6 +44,9 @@ void _registerHostOperationsCustomerCommunicationsTests() {
           contactId: 'contact-1',
         ),
         overrides: [
+          firebaseAuthProvider.overrideWithValue(
+            MockFirebaseAuth(mockUser: MockUser(uid: _hostUid), signedIn: true),
+          ),
           uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
           hostAudienceContactDetailProvider(
             'organizer-1',
@@ -363,8 +366,10 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Email app'), findsOneWidget);
-    expect(find.textContaining('Ananya Rao · ananya@example.com'),
-        findsOneWidget);
+    expect(
+      find.textContaining('Ananya Rao · ananya@example.com'),
+      findsOneWidget,
+    );
     final messageInput = tester.widget<TextField>(
       find.descendant(
         of: find.byKey(const ValueKey('host-customer-email-message')),
@@ -373,9 +378,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     );
     expect(messageInput.controller?.text, 'Hi Ananya Rao,');
 
-    await tester.tap(
-      find.byKey(const ValueKey('host-customer-confirm-email')),
-    );
+    await tester.tap(find.byKey(const ValueKey('host-customer-confirm-email')));
     await pumpFeatureUi(tester);
 
     expect(launchedUri?.scheme, 'mailto');
