@@ -645,7 +645,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.ok(toolJob);
   assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
-  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
@@ -1095,7 +1095,7 @@ test("capture freshness has a required Node-only lane independent of React rende
   const capture = workflow("capture-freshness-ci.yml");
   const react = workflow("react-surface-validation.yml");
   assert.match(ci, /capture_freshness: \$\{\{ steps.plan.outputs.capture_freshness \}\}/u);
-  assert.match(ci, /if: \$\{\{ needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
+  assert.match(ci, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
   for (const id of ["finalize-plan", "package-firebase", "required"]) {
     const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
     assert.match(job, /- capture-freshness\n/u, id);
