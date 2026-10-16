@@ -117,7 +117,13 @@ export const EventDetailReviews: Story = {
   },
   render: () => (
     <EventDetailRevealStory routeKey="reviews">
-      <EventDetailReviewsSection event={catchEventDetailFixture} />
+      <EventDetailReviewsSection event={{...catchEventDetailFixture, eventReviews: [{
+        id: "preview-verified-review", eventId: catchEventDetailFixture.eventId,
+        reviewerName: "Preview attendee", rating: 5,
+        comment: "A welcoming host and a lovely evening around the table.",
+        createdAt: "2026-07-20T10:00:00.000Z", verificationStatus: "verified",
+        source: "catchEvent", isAnonymous: false, ownerResponse: null,
+      }]}} />
     </EventDetailRevealStory>
   ),
 };
