@@ -2,6 +2,7 @@ import {eventOfferCopy} from "../../content/eventOffer";
 import {useCallback, useEffect, useId, useRef, useState, type FormEvent} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {beginPublicEventPhoneVerification, manageEventOfferCheckout,
+  signOutGuestUser,
   watchPublicFormAuthState, type User} from "../../firebase";
 import {openRazorpayCheckout} from "../../shared/payments/razorpayCheckout";
 import type {FormStatus} from "../../shared/forms/types";
@@ -207,6 +208,9 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
   };
   const changePhone = () => {
     if (busy.current) return;
+    if (user) {
+      void signOutGuestUser().catch(() => setStatus({message: eventOfferCopy.codeError, tone: "is-error"}));
+    }
     challenge.current?.clear(); challenge.current = null;
     setCode(""); setPhase("phone"); setStatus({message: "", tone: ""});
   };

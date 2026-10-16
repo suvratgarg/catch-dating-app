@@ -4158,6 +4158,58 @@
         ]
       },
       "notes": "Account-bound private sample continuation; claim review and private Forms preparation require explicit actions."
+    },
+    {
+      "id": "event_guest_entry",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical",
+        "event_booking"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/GuestEventEntry.tsx",
+      "exportName": "GuestEventEntry",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/GuestEventEntry.stories.tsx",
+        "exportName": "GuestEntry",
+        "states": [
+          "phone",
+          "status",
+          "unavailable"
+        ]
+      },
+      "notes": "Authenticated guest status and next actions use the canonical viewer contract; no consumer profile is required."
+    },
+    {
+      "id": "event_guest_entry_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical",
+        "event_booking"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/GuestEventEntry.tsx",
+      "exportName": "GuestEventEntryView",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/GuestEventEntry.stories.tsx",
+        "exportName": "GuestStatus",
+        "states": [
+          "phone",
+          "status",
+          "unavailable"
+        ]
+      },
+      "notes": "Authenticated guest status and next actions use the canonical viewer contract; no consumer profile is required."
     }
   ]
 }

@@ -85,20 +85,13 @@ export async function manageEventOfferCheckoutHandler(
     if (!await deps.enabled()) unavailable();
     const claimed = await deps.claim({db, uid, token: data.token,
       authTokenPhoneNumber: phone, nowMillis: deps.now});
-    const {source} = await db.runTransaction((tx) => deps.readRecipient({
-      db, tx, grantId: claimed.grantId, uid, nowMillis: deps.now()}));
-    const terms = source.offer.paymentSnapshot;
-    if (terms.collectionMode !== "catchCheckout" || terms.currency !== "INR" ||
-        typeof terms.expectedAmountMinor !== "number" ||
-        terms.expectedAmountMinor < 100) unavailable();
-    result.grant = {grantId: claimed.grantId, eventId: source.offer.eventId,
-      eventName: (source.event.name?.trim() || "Your event").slice(0, 200),
-      startTimeMillis: source.event.startTime.toMillis(),
-      amountPaise: terms.expectedAmountMinor, currency: "INR",
-      expiresAtMillis: claimed.expiresAtMillis,
-      cancellationPolicy: offerCancellationPolicy(source.event)};
+    result.grant = await currentGrant(db, uid, claimed.grantId, deps);
   } else if (data.action === "find") {
     result.payment = await findOwnedPayment(db, uid, data.grantId, deps);
+    if (!result.payment) {
+      if (!await deps.enabled()) unavailable();
+      result.grant = await currentGrant(db, uid, data.grantId, deps);
+    }
   } else {
     const paymentId = data.action === "prepare" ?
       offerPaymentId(data.grantId, uid, data.requestId) : data.paymentId;
@@ -179,6 +172,22 @@ async function findOwnedPayment(db: FirebaseFirestore.Firestore, uid: string,
   }
   return deps.project({db, paymentId: snap.id, payment,
     uid, nowMillis: deps.now()});
+}
+
+async function currentGrant(db: FirebaseFirestore.Firestore, uid: string,
+  grantId: string, deps: Deps): Promise<NonNullable<Response["grant"]>> {
+  const {source} = await db.runTransaction((tx) => deps.readRecipient({
+    db, tx, grantId: grantId, uid, nowMillis: deps.now()}));
+  const terms = source.offer.paymentSnapshot;
+  if (terms.collectionMode !== "catchCheckout" || terms.currency !== "INR" ||
+        typeof terms.expectedAmountMinor !== "number" ||
+        terms.expectedAmountMinor < 100) unavailable();
+  return {grantId: grantId, eventId: source.offer.eventId,
+    eventName: (source.event.name?.trim() || "Your event").slice(0, 200),
+    startTimeMillis: source.event.startTime.toMillis(),
+    amountPaise: terms.expectedAmountMinor, currency: "INR",
+    expiresAtMillis: source.offer.expiresAtMillis,
+    cancellationPolicy: offerCancellationPolicy(source.event)};
 }
 
 function unavailable(): never {

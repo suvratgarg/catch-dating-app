@@ -152431,6 +152431,14 @@ export const getEventViewerStateCallablePayloadSchema = {
           "type": "null"
         }
       ]
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "native",
+        "guest"
+      ],
+      "description": "Defaults to native. Guest entry observes app-free roster, application and checkout sources without requiring a consumer profile."
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -152541,7 +152549,8 @@ export const getEventViewerStateCallableResponseSchema = {
           "enum": [
             "none",
             "nativeParticipation",
-            "publicPaidRoster"
+            "publicPaidRoster",
+            "guestRoster"
           ]
         },
         "attendance": {
@@ -152706,6 +152715,137 @@ export const getEventViewerStateCallableResponseSchema = {
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "guest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "publicFormId",
+            "applicationStatus",
+            "offerGrantId",
+            "publicPaymentId",
+            "runtimeId",
+            "attendeeId",
+            "expiresAtMillis",
+            "offerPaymentId"
+          ],
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "registerFree",
+                "bookPaid",
+                "apply",
+                "applicationPending",
+                "applicationWaitlisted",
+                "declined",
+                "awaitingOffer",
+                "offer",
+                "registered",
+                "seatWaitlisted",
+                "recoverPayment",
+                "closed",
+                "unsupported",
+                "unavailable"
+              ]
+            },
+            "publicFormId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "applicationStatus": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "inReview",
+                    "approved",
+                    "waitlisted",
+                    "declined",
+                    "withdrawn"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "offerGrantId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "publicPaymentId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "runtimeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "attendeeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "offerPaymentId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
                 },
                 {
                   "type": "null"

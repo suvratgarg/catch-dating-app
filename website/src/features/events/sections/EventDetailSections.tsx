@@ -1,9 +1,8 @@
+import type {ReactNode} from "react";
 import {trackOrganizerProviderOutboundClick} from "../../organizers/observeOrganizerProviders";
 import {trackOrganizerAnalytics} from "../../organizers/analytics";
-import type {AppDownloadCtaGroupProps} from "../../../shared/ui/primitives";
 import {
   ActionGroup,
-  AppDownloadCtaGroup,
   ButtonLink,
   EventDetailActionPanel,
   EventDetailFactGrid,
@@ -32,11 +31,11 @@ import type {EventDetailRecord} from "../eventDetailModel";
 import {PublicEventRegistration} from "../PublicEventRegistration";
 
 export function EventDetailHeroSection({
-  appDownloadCtas,
   event,
+  guestEntry,
 }: {
-  appDownloadCtas: AppDownloadCtaGroupProps;
   event: EventDetailRecord;
+  guestEntry?: ReactNode;
 }) {
   const isExternal = event.supply === "external";
   const hasWebRegistration = event.registrationState === "webOtp";
@@ -155,7 +154,7 @@ export function EventDetailHeroSection({
               : eventDetailCopy.hero.webActionHeading
             : eventDetailCopy.hero.catchActionHeading}
       >
-        {event.registrationState === "closed" ? event.paidBookingAvailable ? <PublicEventRegistration eventId={event.eventId} mode="paid" allowNewBookings={false} /> : null : hasWebRegistration ? (
+        {!isExternal && guestEntry ? guestEntry : event.registrationState === "closed" ? event.paidBookingAvailable ? <PublicEventRegistration eventId={event.eventId} mode="paid" allowNewBookings={false} /> : null : hasWebRegistration ? (
           <PublicEventRegistration eventId={event.eventId} mode={event.registrationMode === "paid" ? "paid" : "free"} />
         ) : isExternal && event.sourceHref ? (
           <ActionGroup variant="flow">
@@ -170,11 +169,9 @@ export function EventDetailHeroSection({
             </ButtonLink>
           </ActionGroup>
         ) : (
-          <AppDownloadCtaGroup
-            {...appDownloadCtas}
-            reveal={false}
-            variant="compact"
-          />
+          <ButtonLink href={`/booking/${encodeURIComponent(event.eventId)}/`}>
+            {eventDetailCopy.hero.guestAction}
+          </ButtonLink>
         )}
       </EventDetailActionPanel>
     </EventDetailHeroLayout>
@@ -334,7 +331,7 @@ function registrationLabel(event: EventDetailRecord) {
       return eventDetailCopy.details.externalRegistration;
     case "webOtp":
       if (event.remainingCapacity === 0) {
-        return eventDetailCopy.details.webRegistrationWaitlist;
+        return event.registrationMode === "free" ? eventDetailCopy.details.webRegistrationWaitlist : eventDetailCopy.details.catchRegistrationFull;
       }
       return interpolateContent(eventDetailCopy.details.webRegistrationOpen, {
         count: String(event.remainingCapacity ?? 0),

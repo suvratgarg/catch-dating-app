@@ -5,14 +5,15 @@ export const eventDetailCopy = {
     organizerAction: "View organizer",
   },
   hero: {
-    catchEyebrow: "Catch event · app booking",
+    catchEyebrow: "Catch event",
     externalEyebrow: "Source-backed event · {source}",
     catchSupply: "Created and managed in Catch",
     externalSupply: "Published by {source}",
     byOrganizer: "Hosted by {organizer}",
-    catchActionHeading: "Booking stays in the Catch app",
+    catchActionHeading: "Your event access",
     catchActionBody:
-      "This website is read-only. Open Catch on iOS or Android to check live availability, join a waitlist, or book.",
+      "Continue with your phone to check your application, booking, or next step. No app download is needed.",
+    guestAction: "Check event access",
     webPaidHeading: "Your event registration",
     webPaidBody: "Verify your phone to book or manage your place. No app download is needed.",
     closedHeading: "Registration closed",
@@ -34,6 +35,7 @@ export const eventDetailCopy = {
       codeLabel: "6-digit OTP",
       codePlaceholder: "123456",
       sendCodeAction: "Send OTP",
+      registerAction: "Register",
       confirmAction: "Verify and register",
       sendingCodeAction: "Sending OTP...",
       registeringAction: "Registering...",
@@ -138,6 +140,7 @@ export const eventDetailCopy = {
 } as const;
 
 export const publicCheckoutCopy = {
+  eventAccess: "Prepare for your event",
   registrationClosed: "Registration closed",
   previousBookingLink: "Check the previous payment",
   bookingLink: "Open your booking page",
@@ -161,3 +164,30 @@ export const publicCheckoutCopy = {
   signedIn: (phone: string) => `Phone verified: ${phone}`,
   pay: (amount: string) => `Reserve a seat and pay ${amount}`,
 } as const;
+
+export const guestEventCopy = {
+  changeAccount: "Use another account",
+  loading: "Checking your event status…", phone: "Mobile number", code: "6-digit OTP",
+  continue: "Continue with phone", verify: "Verify phone", refresh: "Refresh status",
+  invalidPhone: "Enter your phone with its country code.",
+  invalidCode: "Check your verification code and try again.",
+  verificationFailed: "Phone verification could not start. Check your number and current account, then try again.",
+  unavailable: "Your event status is unavailable. Refresh before continuing.",
+  privacy: "Your verified number identifies your bookings and applications. No app download or dating profile is required. Marketing preferences are optional.",
+  apply: "Apply to attend", offer: "Review your offer", payment: "Manage booking and payment",
+  runtime: "Prepare for your event", help: "Get help",
+  status: {
+    apply: "This event requires an application before booking.",
+    applicationPending: "Your application is awaiting review. No seat has been reserved.",
+    applicationWaitlisted: "Your application is on the review waitlist. This is not a confirmed place or an event seat waitlist.",
+    declined: "Your application has not been approved for this event.",
+    awaitingOffer: "Your application is approved. The host must confirm your event offer or admission before you can continue. Approval does not reserve a seat.",
+    offer: "Your event offer is ready to review. Current eligibility and capacity are checked when you continue.",
+    registered: "Your place is confirmed. Venue check-in is a separate step when you arrive.",
+    seatWaitlisted: "You are on the event seat waitlist. Your place is not yet confirmed.",
+    recoverPayment: "A booking payment needs your attention. Continue the existing payment before starting another.",
+    closed: "New registration is closed. Existing payment receipts remain available below.",
+    unsupported: "This event requires a host-managed admission path that is not available for self-service booking here. Membership or application approval does not bypass its restrictions.",
+    unavailable: "The next step could not be verified. Contact the host or try again.",
+  },
+};

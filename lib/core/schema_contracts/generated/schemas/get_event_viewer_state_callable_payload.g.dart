@@ -40,6 +40,14 @@ const schemaGetEventViewerStateCallablePayloadSchema = <String, Object?>{
         },
       ],
     },
+    'surface': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'native',
+        'guest',
+      ],
+      'description': 'Defaults to native. Guest entry observes app-free roster, application and checkout sources without requiring a consumer profile.',
+    },
   },
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/get_event_viewer_state_payload.schema.json',

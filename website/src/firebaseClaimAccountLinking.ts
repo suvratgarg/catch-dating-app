@@ -36,7 +36,7 @@ export async function signInOrLinkClaimGoogle(auth: Auth, sdk?: AuthSdk): Promis
   } catch (error) {recovery(error);}
 }
 
-/** Sales-only path; public guest phone sign-in semantics remain separate. */
+/** Shared phone verification preserves an existing UID; conflicting accounts require recovery. */
 export async function beginClaimPhoneLink(auth: Auth, phone: string,
   verifier: ApplicationVerifier, sdk?: AuthSdk) {
   await auth.authStateReady();

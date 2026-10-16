@@ -161,7 +161,10 @@ promotion command creates only a blocked review receipt; it does not create an
 owned paid-admission readers in one read transaction. It keeps retained
 admission and attendance separate from present eligibility, never applies seat
 or identity plans, and returns unavailable for incomplete bounded sources.
-Consumer/website adapters are the next integration boundary.
+The website selects the guest adapter with `surface: guest`, observing owned
+roster/application/payment status without requiring a consumer profile. It never
+reserves inventory or grants approval; existing mutation owners revalidate each
+action. Native consumers retain their current adapter.
 
 ## Cloud Functions Inventory
 

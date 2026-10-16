@@ -52,7 +52,8 @@ export interface EventViewerStateSource {
     state: "notRequired" | "none" | "active" | "revoked" | "unavailable";
     revision: number | null; decisionId: string | null};
   review: "none" | "pending" | "approved";
-  admission: "none" | "nativeParticipation" | "publicPaidRoster";
+  admission: "none" | "nativeParticipation" | "publicPaidRoster" |
+    "guestRoster";
   attendance: "notRecorded" | "attended";
   waitlisted: boolean;
   /** Payment uses source evidence; a native pointer proves no payment. */

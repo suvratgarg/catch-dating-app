@@ -35,7 +35,7 @@ describe("Event Detail sections", () => {
     const event = externalEvent();
     render(
       <>
-        <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
+        <EventDetailHeroSection event={event} />
         <EventDetailFactsSection event={event} />
         <EventDetailProvenanceSection event={event} />
       </>
@@ -56,23 +56,24 @@ describe("Event Detail sections", () => {
     expect(screen.queryByRole("button", {name: /book|checkout|sign in/iu})).toBeNull();
   });
 
-  it("hands Catch booking to the app and renders only event-scoped reviews", () => {
+  it("hands Catch booking to the web guest journey and renders only event-scoped reviews", () => {
     const event = catchEvent();
     render(
       <>
-        <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
+        <EventDetailHeroSection event={event} />
         <EventDetailReviewsSection event={event} />
       </>
     );
 
-    expect(screen.getByText("Booking stays in the Catch app")).toBeTruthy();
+    expect(screen.getByText("Your event access")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Check event access"}).getAttribute("href")).toBe(`/booking/${event.eventId}/`);
     expect(screen.getAllByText("Scoped attendee")).toHaveLength(2);
     expect(screen.queryByText("Organizer-only reviewer")).toBeNull();
     expect(screen.queryByRole("link", {name: /book|checkout|sign in/iu})).toBeNull();
   });
 
   it("shows one closed-registration explanation without a booking action", () => {
-    render(<EventDetailHeroSection appDownloadCtas={appDownloadCtas}
+    render(<EventDetailHeroSection
       event={{...catchEvent(), registrationState: "closed"}} />);
     expect(screen.getAllByText("Registration is closed for this event.")).toHaveLength(1);
     expect(screen.queryByRole("link", {name: /app store|book|checkout/iu})).toBeNull();
@@ -81,7 +82,7 @@ describe("Event Detail sections", () => {
   it("shows claim and unavailable-review states only when their capabilities allow it", () => {
     const event = claimableExternalEvent();
     render(
-      <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
+      <EventDetailHeroSection event={event} />
     );
 
     expect(screen.getByRole("link", {name: "Claim this organizer listing"})
@@ -90,16 +91,6 @@ describe("Event Detail sections", () => {
     expect(screen.queryByText("No event-specific reviews yet")).toBeNull();
   });
 });
-
-const appDownloadCtas = {
-  items: [{
-    href: "https://apps.apple.com/app/catch",
-    kicker: "Download on the",
-    label: "App Store",
-    platform: "ios" as const,
-  }],
-  placement: "event-detail-test",
-};
 
 function readableListing(): HostListing {
   const listing = hostListings[0];

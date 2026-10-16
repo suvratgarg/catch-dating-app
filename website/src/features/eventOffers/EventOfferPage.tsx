@@ -71,6 +71,7 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
           </EventRuntimeActionGrid> : null}
           <FormStatus status={controller.status} />
           <EventRuntimeActionGrid>
+            {payment?.status === "admitted" && grant ? <ButtonLink href={`/booking/${encodeURIComponent(grant.eventId)}/`}>{text.confirmed}</ButtonLink> : null}
             {payment?.cancellationQuote && !cancellationReview ? <Button type="button" variant="ghost"
               onClick={() => void controller.reviewCancellation()} disabled={pending}>{text.cancelAdmission}</Button> : null}
             {!payment || payment.checkout ? <Button type="button" onClick={() => void controller.pay()}

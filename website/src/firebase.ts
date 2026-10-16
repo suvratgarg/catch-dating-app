@@ -1,3 +1,4 @@
+import type {GetEventViewerStateCallableResponse} from "../../functions/src/shared/generated/getEventViewerStateCallableResponse";
 export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
@@ -972,14 +973,15 @@ export async function beginPublicEventPhoneVerification(
   )) {
     throw new Error("Website phone verification is not configured for this build.");
   }
-  const {RecaptchaVerifier, signInWithPhoneNumber} = await import("firebase/auth");
+  const {RecaptchaVerifier} = await import("firebase/auth");
+  const {beginClaimPhoneLink} = await import("./firebaseClaimAccountLinking");
   const verifier = new RecaptchaVerifier(
     runtime.auth,
     recaptchaContainerId,
     {size: "invisible"}
   );
   try {
-    const confirmation = await signInWithPhoneNumber(
+    const confirmation = await beginClaimPhoneLink(
       runtime.auth,
       phoneNumber,
       verifier
@@ -1284,3 +1286,13 @@ export async function readPublicOrganizerTrackingSettings(
 }
 
 export type {ReadPublicOrganizerTrackingSettingsCallablePayload, PublicOrganizerTrackingSettingsCallableResponse};
+
+/** Auth-owned guest status; browser hints never supply the subject UID. */
+export async function getGuestEventViewerState(eventId: string): Promise<GetEventViewerStateCallableResponse> {
+  return invokeWebsiteCallable("getEventViewerState", {eventId, surface: "guest"},
+    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured,
+    "Event guest status");
+}
+
+/** Explicit account switching is shared by public guest surfaces. */
+export const signOutGuestUser = signOutClaimUser;

@@ -81464,11 +81464,17 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventViewerStateCallablePayloadSurface = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallablePayload.surface',
+    valueTypes: <String>['string'],
+    enumValues: <String>['native', 'guest'],
+  );
+
   static const getEventViewerStateCallableResponseViewerAdmission = CatchContractFieldConstraints(
     path: 'getEventViewerStateCallableResponse.viewer.admission',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['none', 'nativeParticipation', 'publicPaidRoster'],
+    enumValues: <String>['none', 'nativeParticipation', 'publicPaidRoster', 'guestRoster'],
   );
 
   static const getEventViewerStateCallableResponseViewerAttendance = CatchContractFieldConstraints(
@@ -81524,6 +81530,69 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['membershipRequired', 'inviteRequired', 'reviewRequired', 'full', 'pairCapacityUnavailable', 'generalCapacityUnavailable', 'cohortCapacityUnavailable', 'outOfRatioReviewRequired', 'balanceUnavailable', 'bookingDetailsRequired', 'runPreferencesRequired', 'ageRestricted', 'scheduleConflict', 'eventUnavailable', 'past', 'cancelled', 'unsupportedRoute'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestAction = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['registerFree', 'bookPaid', 'apply', 'applicationPending', 'applicationWaitlisted', 'declined', 'awaitingOffer', 'offer', 'registered', 'seatWaitlisted', 'recoverPayment', 'closed', 'unsupported', 'unavailable'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestApplicationStatus = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.applicationStatus',
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'inReview', 'approved', 'waitlisted', 'declined', 'withdrawn'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestOfferGrantId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.offerGrantId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestOfferPaymentId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.offerPaymentId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestPublicFormId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.publicFormId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestPublicPaymentId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.publicPaymentId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventViewerStateCallableResponseViewerGuestRuntimeId = CatchContractFieldConstraints(
+    path: 'getEventViewerStateCallableResponse.viewer.guest.runtimeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const getEventViewerStateCallableResponseViewerMembershipDecisionId = CatchContractFieldConstraints(
@@ -178229,6 +178298,7 @@ abstract final class CatchContractConstraints {
     'getEventViewerStateCallablePayload.eventId': getEventViewerStateCallablePayloadEventId,
     'getEventViewerStateCallablePayload.inviteCode': getEventViewerStateCallablePayloadInviteCode,
     'getEventViewerStateCallablePayload.publicPaymentId': getEventViewerStateCallablePayloadPublicPaymentId,
+    'getEventViewerStateCallablePayload.surface': getEventViewerStateCallablePayloadSurface,
     'getEventViewerStateCallableResponse.viewer.admission': getEventViewerStateCallableResponseViewerAdmission,
     'getEventViewerStateCallableResponse.viewer.attendance': getEventViewerStateCallableResponseViewerAttendance,
     'getEventViewerStateCallableResponse.viewer.basis.capacityRevision': getEventViewerStateCallableResponseViewerBasisCapacityRevision,
@@ -178238,6 +178308,15 @@ abstract final class CatchContractConstraints {
     'getEventViewerStateCallableResponse.viewer.eventId': getEventViewerStateCallableResponseViewerEventId,
     'getEventViewerStateCallableResponse.viewer.futureBooking.allowed': getEventViewerStateCallableResponseViewerFutureBookingAllowed,
     'getEventViewerStateCallableResponse.viewer.futureBooking.reason': getEventViewerStateCallableResponseViewerFutureBookingReason,
+    'getEventViewerStateCallableResponse.viewer.guest.action': getEventViewerStateCallableResponseViewerGuestAction,
+    'getEventViewerStateCallableResponse.viewer.guest.applicationStatus': getEventViewerStateCallableResponseViewerGuestApplicationStatus,
+    'getEventViewerStateCallableResponse.viewer.guest.attendeeId': getEventViewerStateCallableResponseViewerGuestAttendeeId,
+    'getEventViewerStateCallableResponse.viewer.guest.expiresAtMillis': getEventViewerStateCallableResponseViewerGuestExpiresAtMillis,
+    'getEventViewerStateCallableResponse.viewer.guest.offerGrantId': getEventViewerStateCallableResponseViewerGuestOfferGrantId,
+    'getEventViewerStateCallableResponse.viewer.guest.offerPaymentId': getEventViewerStateCallableResponseViewerGuestOfferPaymentId,
+    'getEventViewerStateCallableResponse.viewer.guest.publicFormId': getEventViewerStateCallableResponseViewerGuestPublicFormId,
+    'getEventViewerStateCallableResponse.viewer.guest.publicPaymentId': getEventViewerStateCallableResponseViewerGuestPublicPaymentId,
+    'getEventViewerStateCallableResponse.viewer.guest.runtimeId': getEventViewerStateCallableResponseViewerGuestRuntimeId,
     'getEventViewerStateCallableResponse.viewer.membership.decisionId': getEventViewerStateCallableResponseViewerMembershipDecisionId,
     'getEventViewerStateCallableResponse.viewer.membership.revision': getEventViewerStateCallableResponseViewerMembershipRevision,
     'getEventViewerStateCallableResponse.viewer.membership.state': getEventViewerStateCallableResponseViewerMembershipState,

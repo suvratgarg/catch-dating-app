@@ -1350,50 +1350,39 @@ history/profile and provider linking. These are product/recovery decisions, not
 delivered by sharing infrastructure. Local answers may precede verification when
 the existing form policy allows; current booking quote/history still require OTP.
 
-### Public event information and proposed dual entry
+### Public event guest entry
 
-`EventDetailRecord` currently projects title, summary, activityKind, date,
-startTime/endTime/timezone, location/locationDetails, accessibility, requirements,
-priceLabel, capacityLimit/remainingCapacity, listing/organiser, source attribution,
-reviews, isUpcoming, registrationState/mode and paidBookingAvailable. Event imagery
-and cancellation terms are not independently projected in this record; do not
-invent them. Static counts are informational, not a live seat promise.
+The public event page keeps informational listing data separate from the
+account-scoped `getEventViewerState` read. Its optional `surface: guest` adapter
+projects current linked attendees, native participation, application review,
+claimed offer recovery, public payment recovery and runtime entry. It requires a
+current verified Auth phone but no consumer profile. The generated response is
+shared with the website; the native adapter and its booking-readiness rules
+remain distinct. Guests never receive CRM notes, answers or invitation secrets.
 
-It has no public application form link, viewer application/membership/eligibility,
-current offer/grant/expiry or personalised payment recovery status. Manager-only
-application APIs cannot become consumer reads. Existing `/offer/` is the private
-recipient-bound approved-application checkout owner; public booking OTP explicitly
-denies manual-approval/membership/cohort/invite restrictions, and offer admission
-also denies unsupported partitioned admission. Membership approved is not event
-eligible, capacity reserved, payment captured or admission granted.
+The page routes to existing `/f/`, `/offer/`, `/booking/` and `/join/` owners.
+One current published event-targeted application form with a verified identity
+policy produces an application link. Ambiguous/unavailable linkage does not
+invent a destination. Review waitlists and seat waitlists are separate states;
+approval does not reserve seats. Existing account-owned payment recovery remains
+available after registration closes. Free registration and public paid checkout
+share publication, timing, price and restriction guards.
 
-Low-fidelity content/state structure for the next event-page increment:
+Shared phone verification links or reauthenticates an existing account instead
+of silently switching its UID. Explicit account switching signs out first.
+Guest queries are account-keyed, expire quickly and discard stale identity
+results. Free registration mutations live in a controller, separate from the
+form widgets. Public payment/offer controllers retain their own transaction and
+retry protocols while sharing authentication transport.
 
-1. Public event identity, summary, time, venue disclosure, host and source.
-2. Separate joining/policy action panel; identify only when the chosen action
-   needs it, keeping event information readable.
-3. Event facts/accessibility/requirements, host/provenance and genuine reviews.
-4. State projection from reviewed authority, never inferred from attendance:
-
-| State | Proposed content / existing owner |
-|---|---|
-| Signed out / checking | Public details plus actual joining route; suppress checkout while authority resolves. |
-| New guest | Application only with verified public form producer linkage; reuse `/f/`. |
-| Submitted / in review / application waitlisted | Authorised status/receipt, distinct from event seat waitlist; no checkout. |
-| Membership approved but event ineligible/restricted | Explain supported requirements safely; do not unlock public OTP booking. |
-| Approved + eligible + current recipient offer | Explicit review/checkout action using `/offer/`; payment requires a separate deliberate action, never background charging. |
-| Revoked / declined / withdrawn / expired | Safe unavailable state with permitted contact/retry; no stale browser approval recovery. |
-| Full / closed / past | No new booking, preserve existing receipt/refund recovery; unrestricted free event may keep server waitlist. |
-| Already booked / payment pending / failed / refund state | Exact UID-bound existing booking/payment controller; capture is separate from server admission proof. |
-| External event | Official source CTA and provenance; no Catch application/payment promise. |
-
-Next implementation needs (a) canonical public form/event producer linkage and
-(b) a narrowly scoped consumer event-entry projection with safe reasons,
-membership versus admission distinction, version/expiry and identity isolation.
-These require explicit contract/authority approval. No broad manager read,
-new grant, source-rule bypass, OTP or payment was attempted in consolidation.
-The safe layout increment can reuse EventDetailHeroLayout/ActionPanel/FactGrid
-and existing controllers after that structure is reviewed.
+Unsupported cohort, membership and pair-inventory admission remains explicitly
+host-managed. This pass does not add a membership review exemption, new guest
+quota reservation authority, free-offer self-acceptance, or automatic approval
+message delivery. Issued links retain their existing manual handoff; claimed
+paid offers can be recovered by authenticated non-secret reference. Those
+remaining capabilities require shared policy/writer integration, not frontend
+bypasses. Feature gates and provider/deployment readiness remain independent of
+source implementation. Event page visual redesign remains separate.
 
 ### Partner workspace in the React console
 

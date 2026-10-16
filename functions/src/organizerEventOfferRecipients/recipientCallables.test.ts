@@ -188,3 +188,18 @@ test("owned cancellation survives a disabled checkout gate", async () => {
   assert.equal(h.executions(), 0);
   assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 0);
 });
+
+test("claimed offer recovery can resume before a payment was created",
+  async () => {
+    const h = await harness();
+    const result = await manageEventOfferCheckoutHandler(request({
+      action: "find",
+      grantId: h.invitation.grantId}), h.deps);
+    assert.equal(result.payment, null);
+    assert.equal(result.grant?.grantId, h.invitation.grantId);
+    assert.equal(result.grant?.amountPaise, 10000);
+    assert.equal(h.executions(), 0);
+    await assert.rejects(manageEventOfferCheckoutHandler(request({
+      action: "find",
+      grantId: h.invitation.grantId}, "other"), h.deps));
+  });

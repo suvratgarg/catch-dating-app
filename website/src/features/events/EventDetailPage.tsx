@@ -1,9 +1,9 @@
+import {GuestEventEntry} from "./GuestEventEntry";
 import {observeOrganizerProviders} from "../organizers/observeOrganizerProviders";
 import {observeOrganizerPageView} from "../organizers/analytics";
 import {useEffect} from "react";
 import {eventDetailCopy} from "../../content/events";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
-import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {EventDetailRecord} from "./eventDetailModel";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {
@@ -18,9 +18,6 @@ import {
 } from "./sections/EventDetailSections";
 
 export function EventDetailPage({event}: {event: EventDetailRecord}) {
-  const appDownloadCtas = useAppDownloadCtas({
-    placement: `event-detail-${event.eventId}`,
-  });
   useEffect(() => observeOrganizerPageView(event.listing, "eventView", "event_detail", event.eventId), [event.listing, event.eventId]);
   useEffect(() => observeOrganizerProviders(event.listing, event.eventId), [event.listing, event.eventId]);
   const inviteToken = eventInviteTokenFromLocation();
@@ -48,8 +45,8 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
 
       <WebsitePageMain id="event-detail">
         <EventDetailHeroSection
-          appDownloadCtas={appDownloadCtas}
           event={event}
+          guestEntry={event.supply === "catchNative" ? <GuestEventEntry eventId={event.eventId} /> : undefined}
         />
         <EventDetailFactsSection event={event} />
         <EventDetailProvenanceSection event={event} />

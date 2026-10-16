@@ -1350,11 +1350,13 @@ const schemaSpecs = [
     name: "GetEventViewerStateCallablePayload",
     source: "callables/get_event_viewer_state_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getEventViewerStateCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/getEventViewerStateCallablePayload.ts"],
   },
   {
     name: "GetEventViewerStateCallableResponse",
     source: "callable_responses/get_event_viewer_state_response.schema.json",
     typeOutput: "functions/src/shared/generated/getEventViewerStateCallableResponse.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/getEventViewerStateCallableResponse.ts"],
   },
   {
     name: "ListParticipantActivityCallablePayload",

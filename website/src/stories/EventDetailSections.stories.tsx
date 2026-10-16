@@ -1,7 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {useRevealAnimations} from "../app/usePageLifecycle";
-import {useAppDownloadCtas} from "../features/marketing/useAppDownloadCtas";
 import {
   EventDetailFactsSection,
   EventDetailHeroSection,
@@ -141,12 +140,8 @@ export const EventDetailProvenance: Story = {
 
 function CatchHeroStory({webOtp = false}: {webOtp?: boolean}) {
   useRevealAnimations("event_detail", "hero-catch");
-  const appDownloadCtas = useAppDownloadCtas({
-    placement: "event-detail-story-catch",
-  });
   return (
     <EventDetailHeroSection
-      appDownloadCtas={appDownloadCtas}
       event={webOtp ? {
         ...catchEventDetailFixture,
         registrationState: "webOtp",
@@ -157,12 +152,8 @@ function CatchHeroStory({webOtp = false}: {webOtp?: boolean}) {
 
 function ExternalHeroStory() {
   useRevealAnimations("event_detail", "hero-external");
-  const appDownloadCtas = useAppDownloadCtas({
-    placement: "event-detail-story-external",
-  });
   return (
     <EventDetailHeroSection
-      appDownloadCtas={appDownloadCtas}
       event={externalEventDetailFixture}
     />
   );
