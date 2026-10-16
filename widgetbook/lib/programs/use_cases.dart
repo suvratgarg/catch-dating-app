@@ -403,7 +403,7 @@ Widget programTripsScreenStates(BuildContext context) {
         child: WidgetbookUtilityDeviceFrame(
           child: ProviderScope(
             overrides: _programOverrides(),
-            child: const ProgramTripsScreen(programId: _programId),
+            child: ProgramTripsScreen(programId: _programId, now: () => _now),
           ),
         ),
       ),
