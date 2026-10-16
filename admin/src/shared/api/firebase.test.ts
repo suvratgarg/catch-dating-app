@@ -84,6 +84,30 @@ describe("admin Firebase authentication", () => {
     );
   });
 
+  it("does not restore a cancelled challenge when an older SMS request finishes", async () => {
+    let resolve!: (value: typeof mocks.confirmation) => void;
+    mocks.signInWithPhoneNumber.mockReturnValueOnce(new Promise((done) => {resolve = done;}));
+    const request = requestPhoneSignInCode("+919000000000");
+    const rejected = expect(request).rejects.toThrow("Phone verification was cancelled");
+    resetPhoneSignIn();
+    resolve(mocks.confirmation);
+    await rejected;
+    await expect(confirmPhoneSignInCode("123456")).rejects.toThrow("Request a phone verification code");
+    expect(mocks.confirmation.confirm).not.toHaveBeenCalled();
+  });
+
+  it("an obsolete failure cannot clear a newer phone challenge", async () => {
+    let reject!: (error: Error) => void;
+    mocks.signInWithPhoneNumber.mockReturnValueOnce(new Promise((_done, fail) => {reject = fail;}));
+    const old = requestPhoneSignInCode("+919000000000");
+    const rejected = expect(old).rejects.toThrow("old request failed");
+    mocks.signInWithPhoneNumber.mockResolvedValueOnce(mocks.confirmation);
+    await requestPhoneSignInCode("+919000000001");
+    reject(new Error("old request failed")); await rejected;
+    await confirmPhoneSignInCode("123456");
+    expect(mocks.confirmation.confirm).toHaveBeenCalledWith("123456");
+  });
+
   it("clears pending phone verification before signing out", async () => {
     mocks.signInWithPhoneNumber.mockResolvedValue(mocks.confirmation);
     await requestPhoneSignInCode("+919000000000");
