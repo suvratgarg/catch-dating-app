@@ -4,10 +4,10 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: bash tool/git/bootstrap_worktree.sh [--target all|root|functions|flutter]
+Usage: bash tool/git/bootstrap_worktree.sh --target root|functions|flutter|all
 
 Install only the dependencies needed by a fresh Catch Git worktree.
-The default target is all, in this order:
+Select all explicitly only when all three families are needed, in this order:
   1. root npm workspace dependencies
   2. Firebase Functions npm dependencies
   3. Flutter/Dart packages
@@ -19,10 +19,9 @@ if [[ ${1:-} == "--help" || ${1:-} == "help" ]]; then
   exit 0
 fi
 
-target=all
 if [[ $# -eq 2 && $1 == "--target" ]]; then
   target=$2
-elif [[ $# -ne 0 ]]; then
+else
   usage >&2
   exit 64
 fi
