@@ -206,17 +206,12 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
 )
 Widget privateEventDetailsScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
-  final controller = PrivateEventDetailsController(
+  const scope = (
     userId: 'preview-host',
     organizerId: 'preview-club',
     eventId: 'preview-private-event',
-    readEvent: ({required organizerId, required eventId}) async =>
-        throw StateError('Preview does not read events'),
-    readDefaults: (_) async =>
-        throw StateError('Preview does not read defaults'),
-    write: (_) async => throw StateError('Preview does not submit details'),
   );
-  controller.event = const PrivateEventBasicSummary(
+  final event = const PrivateEventBasicSummary(
     eventId: 'preview-private-event',
     organizerId: 'preview-club',
     setupRevision: 1,
@@ -231,7 +226,7 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
     detailsConfigured: false,
     eventPreferences: null,
   );
-  controller.defaults = ManagerEventSetupDefaults(
+  final defaults = ManagerEventSetupDefaults(
     organizerId: 'preview-club',
     cityId: 'in-mh-mumbai',
     marketId: 'in-mh-mumbai',
@@ -250,14 +245,43 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'saved event with optional detail suggestions',
         child: WidgetbookHostDeviceFrame(
-          child: PrivateEventDetailsScreen(
-            controller: controller,
-            onBack: () => Navigator.of(context).maybePop(),
+          child: ProviderScope(
+            overrides: [
+              uidProvider.overrideWith((ref) => Stream.value(scope.userId)),
+              privateEventDetailsDependenciesProvider.overrideWithValue(
+                PrivateEventDetailsDependencies(
+                  readEvent: ({required organizerId, required eventId}) async =>
+                      event,
+                  readDefaults: (_) async => defaults,
+                  write: (_) async =>
+                      throw StateError('Preview does not submit details'),
+                ),
+              ),
+              privateEventDetailsControllerProvider(scope).overrideWith(
+                () => _PreviewPrivateEventDetailsController(event, defaults),
+              ),
+            ],
+            child: PrivateEventDetailsScreen(
+              scope: scope,
+              onBack: () => Navigator.of(context).maybePop(),
+            ),
           ),
         ),
       ),
     ],
   );
+}
+
+class _PreviewPrivateEventDetailsController
+    extends PrivateEventDetailsController {
+  _PreviewPrivateEventDetailsController(this._event, this._defaults);
+
+  final PrivateEventBasicSummary _event;
+  final ManagerEventSetupDefaults _defaults;
+
+  @override
+  PrivateEventDetailsState build(PrivateEventDetailsScope scope) =>
+      super.build(scope).copyWith(event: _event, defaults: _defaults);
 }
 
 @widgetbook.UseCase(
