@@ -18,6 +18,27 @@ import {SALES_PR543_RELEASE, SALES_SOURCE_CHECKPOINT, SALES_SOURCE_DELTA,
   runSalesPr543ReleaseCli, checkSalesCheckpointSource} from "./selective_backend_release.mjs";
 import "./sales_pr543_release.test.mjs";
 
+test("release policy imports without Functions analyzer dependencies", () => {
+  const releaseUrl = new URL("./selective_backend_release.mjs", import.meta.url).href;
+  const analyzerUrl = new URL("../firebase/function_binding_intent.mjs", import.meta.url).href;
+  const result = spawnSync(process.execPath, ["--input-type=module", "--eval", `
+    import assert from "node:assert/strict";
+    import {registerHooks} from "node:module";
+    registerHooks({resolve(specifier, context, nextResolve) {
+      if (specifier === "typescript") throw new Error("Functions analyzer unavailable");
+      return nextResolve(specifier, context);
+    }});
+    const release = await import(${JSON.stringify(releaseUrl)});
+    assert.ok(Object.isFrozen(release.SALES_SOURCE_GUARDED_PATHS));
+    assert.deepEqual(release.SALES_SOURCE_GUARDED_PATHS, ${JSON.stringify(SALES_SOURCE_GUARDED_PATHS)});
+    const analyzer = await import(${JSON.stringify(analyzerUrl)});
+    assert.throws(() => analyzer.discoverFunctionExportNames("export const handler = 1;"),
+      /Function binding intent is unresolved/);
+  `], {encoding: "utf8", timeout: 10000});
+  assert.ifError(result.error);
+  assert.equal(result.status, 0, result.stderr);
+});
+
 const salesSourceEvidence = () => ({sourceSha: SALES_PR543_RELEASE.sourceSha,
   currentSha: SALES_SOURCE_CHECKPOINT, sourceAncestor: true, checkpointAncestor: true,
   changedPaths: SALES_SOURCE_DELTA.map((row) => row.path), currentDifference: [],
