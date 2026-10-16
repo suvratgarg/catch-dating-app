@@ -1,7 +1,8 @@
 # Catch Claude Context
 
 Read [AGENTS.md](AGENTS.md) first and follow its routing, safety, and
-verification rules.
+verification rules. Reread them from the fresh task worktree after creation;
+an older primary checkout may not contain current lifecycle enforcement.
 
 Claude-specific notes:
 
@@ -12,6 +13,9 @@ Claude-specific notes:
   `docs/agent_operating_model.md#completion` at task closeout: `retire` reports,
   and explicitly admitted `retire --apply` removes only the proven disposable
   worktree through non-forced Git. The guard never runs checks, pushes, or
-  deletes branches or stale state.
+  deletes branches or stale state. Plain `finish` is not a claim-release shortcut:
+  use `finish --retain --reason <blocker-and-next-action>` for handoff, keep the
+  claim through acceptance, and complete reviewed dependency cleanup plus
+  `retire --apply` in the same closeout.
 - Use [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) only as an orientation map. The documents linked from [docs/README.md](docs/README.md) own detailed contracts.
 - Use [TESTS.md](TESTS.md) for test commands and [docs/release_operations.md](docs/release_operations.md) for release work.
