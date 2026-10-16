@@ -6,7 +6,10 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 
-const ts = createFunctionsRequire()("typescript");
+// Policy-only consumers do not install the Functions analyzer dependency family.
+// Load its pinned parser only when source inspection is actually requested.
+let ts;
+const loadTypeScript = () => { ts ??= createFunctionsRequire()("typescript"); };
 const helperNames = new Map([
   ["shared/callableOptions.ts", new Set(["appCheckCallableOptionsWithLimits",
     "appCheckCallableOptionsWithSecrets"])],
@@ -46,6 +49,7 @@ const unwrap = (node) => {
 /** Discover explicit authored exports without executing the source module. */
 export function discoverFunctionExportNames(indexSource) {
   try {
+    loadTypeScript();
     if (typeof indexSource !== "string" || indexSource.length > 2 * 1024 * 1024) fail();
     const ast = ts.createSourceFile("index.ts", indexSource, ts.ScriptTarget.Latest, true);
     if (ast.parseDiagnostics.length) fail();
@@ -79,6 +83,7 @@ export function discoverFunctionExportNames(indexSource) {
 export function collectFunctionBindingIntent({sourceRoot, environment, projectId,
   projectNumber, sourceSha, consumers}) {
   try {
+    loadTypeScript();
     if (!publicString(sourceSha, /^[0-9a-f]{40}$/u) ||
         !["dev", "staging", "prod"].includes(environment) ||
         !publicString(projectId, /^[a-z][a-z0-9-]{4,61}[a-z0-9]$/u) ||
