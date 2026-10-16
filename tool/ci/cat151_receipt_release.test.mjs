@@ -130,6 +130,25 @@ test('CAT151 caller scope predicate rejects mixed profiles and missing DEV evide
  const base={environment:'dev',control_plane_sha:'a'.repeat(40),dev_completion_artifact_id:'',dev_completion_artifact_digest:'',dev_completion_receipt_sha256:''};
  const accepts=v=>spawnSync('jq',['-e',predicate],{input:JSON.stringify(v),encoding:'utf8',env:{...process.env,GITHUB_SHA:'a'.repeat(40)}}).status===0;
  assert.equal(accepts(base),true);
+ // Run38936482759 exposed caller dispatch inputs in the reusable context.
+ // Exercise those actual shapes, including the omitted empty resume input.
+ const inherited={release_kind:'cat151-order-receipt',source_sha:RELEASE.sourceSha,
+  reason:'Deploy bounded receipts for the approved native TEST booking.',
+  confirm_four_functions_five_indexes:false,confirm_whatsapp_five:false,
+  confirm_sales_pr543:false,confirm_booking_functions:false,confirm_intake_pr596:false,
+  resume_delivery_attempt:'1'};
+ for(const stage of [base,{...base,environment:'prod',dev_completion_artifact_id:'123',dev_completion_artifact_digest:'b'.repeat(64),dev_completion_receipt_sha256:'c'.repeat(64)}]) {
+  assert.equal(accepts({...stage,...inherited}),true);
+  assert.equal(accepts({...stage,...inherited,resume_delivery_run_id:''}),true);
+  for(const patch of [{release_kind:'cat151-booking'},{source_sha:'0'.repeat(40)},
+   {confirm_booking_functions:true},{confirm_four_functions_five_indexes:true},
+   {confirm_whatsapp_five:true},{confirm_sales_pr543:true},{confirm_intake_pr596:true},
+   {confirm_booking_functions:'false'},{resume_delivery_attempt:'2'},
+   {resume_delivery_run_id:'123'},{reason:'short'},{reason:'line break\nforbidden'},
+   {reason:' '.repeat(20)},{reason:'x'.repeat(241)},{unknown_scope:true}]) {
+   assert.equal(accepts({...stage,...inherited,...patch}),false,JSON.stringify(patch));
+  }
+ }
  for(const patch of [{operator_release:true},{intake_pr596_release:true},{environment:'staging'},{environment:'prod'},{source_sha:'0'.repeat(40)},{resume_delivery_run_id:'123'},{dev_completion_artifact_id:'123'}])assert.equal(accepts({...base,...patch}),false);
  assert.equal(accepts({...base,environment:'prod',dev_completion_artifact_id:'123',dev_completion_artifact_digest:'b'.repeat(64),dev_completion_receipt_sha256:'c'.repeat(64)}),true);
 });
