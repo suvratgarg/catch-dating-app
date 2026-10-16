@@ -12,14 +12,101 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 import 'onboarding_test_helpers.dart';
 
+class _CountingDraftRepository extends FakeOnboardingDraftRepository {
+  int fetchCount = 0;
+
+  @override
+  Future<OnboardingDraft?> fetchDraft({required String uid}) {
+    fetchCount += 1;
+    return super.fetchDraft(uid: uid);
+  }
+}
+
 void main() {
   group('OnboardingController.initStep', () {
+    final failure = AsyncError<UserProfile?>(
+      StateError('profile unavailable'),
+      StackTrace.empty,
+    );
+    for (final (label, profile) in <(String, AsyncValue<UserProfile?>)>[
+      ('loading', const AsyncLoading()),
+      ('initial error', failure),
+      (
+        'cached absence with error',
+        failure.copyWithPrevious(const AsyncData(null)),
+      ),
+    ]) {
+      test(
+        '$label does not fetch a draft or initialize a new profile',
+        () async {
+          final repository = FakeAuthRepository()
+            ..currentUserValue = TestUser(
+              uid: 'runner-1',
+              phoneNumber: '+919876543210',
+            );
+          final draftRepository = _CountingDraftRepository();
+          final container = createOnboardingTestContainer(
+            overrides: [
+              authRepositoryProvider.overrideWithValue(repository),
+              uidProvider.overrideWithValue(const AsyncData('runner-1')),
+              watchUserProfileProvider.overrideWithValue(profile),
+              onboardingDraftRepositoryProvider.overrideWithValue(
+                draftRepository,
+              ),
+            ],
+          );
+          addTearDown(repository.dispose);
+          addTearDown(container.dispose);
+          final before = container.read(onboardingControllerProvider);
+
+          await container
+              .read(onboardingControllerProvider.notifier)
+              .initStep();
+
+          expect(draftRepository.fetchCount, 0);
+          expect(container.read(onboardingControllerProvider), before);
+        },
+      );
+    }
+
+    test(
+      'cached profile identity survives a failed refresh on entry',
+      () async {
+        final profile = buildUser().copyWith(profileComplete: false);
+        final draftRepository = _CountingDraftRepository();
+        final container = createOnboardingTestContainer(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData('runner-1')),
+            watchUserProfileProvider.overrideWithValue(
+              failure.copyWithPrevious(AsyncData(profile)),
+            ),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container
+            .read(onboardingControllerProvider.notifier)
+            .initStep(profileCompletionOnly: true);
+
+        final state = container.read(onboardingControllerProvider);
+        expect(state.step, OnboardingStep.photos);
+        expect(state.firstName, profile.firstName);
+        expect(state.dateOfBirth, profile.dateOfBirth);
+        expect(state.phoneVerified, isTrue);
+        expect(draftRepository.fetchCount, 0);
+      },
+    );
+
     test('starts on the welcome step for signed-out users', () async {
       final repository = FakeAuthRepository();
       final draftRepository = FakeOnboardingDraftRepository();

@@ -49,6 +49,175 @@ void main() {
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  group('profile-read recovery before protected routes', () {
+    const destination = '/payment-history?source=receipt';
+    final loading = Uri(
+      path: '/loading',
+      queryParameters: {'from': destination},
+    ).toString();
+    final failure = AsyncError<UserProfile?>(
+      StateError('profile unavailable'),
+      StackTrace.empty,
+    );
+
+    test(
+      'initial and cached-null failures retain the intended destination',
+      () {
+        for (final profile in [
+          failure,
+          failure.copyWithPrevious(const AsyncData<UserProfile?>(null)),
+          const AsyncLoading<UserProfile?>().copyWithPrevious(failure),
+        ]) {
+          for (final location in [
+            destination,
+            Uri(
+              path: '/onboarding',
+              queryParameters: {'from': destination},
+            ).toString(),
+          ]) {
+            expect(
+              _redirect(
+                uidAsync: const AsyncData(_testUid),
+                userProfileAsync: profile,
+                location: location,
+              ),
+              loading,
+            );
+          }
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: profile,
+              location: loading,
+            ),
+            isNull,
+          );
+        }
+      },
+    );
+
+    test('successful absence still enters onboarding with the same intent', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: const AsyncData(null),
+          location: loading,
+        ),
+        Uri(
+          path: '/onboarding',
+          queryParameters: {'from': destination},
+        ).toString(),
+      );
+    });
+
+    test('cached real profile remains usable after a failed refresh', () {
+      final profile = failure.copyWithPrevious(AsyncData(_socialReadyUser()));
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: profile,
+          location: destination,
+        ),
+        isNull,
+      );
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: profile,
+          location: loading,
+        ),
+        destination,
+      );
+    });
+
+    test('public browsing remains available during profile failure', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: failure,
+          location: Routes.exploreScreen.path,
+        ),
+        isNull,
+      );
+    });
+
+    test('Host routes remain independent of the Consumer profile', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: failure,
+          location: Routes.hostTodayScreen.path,
+        ),
+        isNull,
+      );
+    });
+
+    for (final intent in ['complete-profile', 'complete-run-preferences']) {
+      test(
+        '$intent survives error and retry when returning to own account',
+        () {
+          final onboarding = Uri(
+            path: '/onboarding',
+            queryParameters: {'intent': intent, 'from': '/you'},
+          ).toString();
+          final blocked = _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: failure,
+            location: onboarding,
+          )!;
+          final blockedUri = Uri.parse(blocked);
+          expect(blockedUri.path, '/loading');
+          expect(blockedUri.queryParameters, {
+            'intent': intent,
+            'from': '/you',
+          });
+          for (final profile in [
+            failure,
+            const AsyncLoading<UserProfile?>().copyWithPrevious(failure),
+          ]) {
+            expect(
+              _redirect(
+                uidAsync: const AsyncData(_testUid),
+                userProfileAsync: profile,
+                location: blocked,
+              ),
+              isNull,
+            );
+          }
+          final incomplete = _bookingReadyUser().copyWith(
+            activityPreferences: const ActivityPreferences(),
+            runPreferencesVersion: 0,
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: AsyncData(incomplete),
+              location: blocked,
+            ),
+            onboarding,
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: AsyncData(incomplete),
+              location: onboarding,
+            ),
+            isNull,
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: AsyncData(_socialReadyUser()),
+              location: onboarding,
+            ),
+            '/you',
+          );
+        },
+      );
+    }
+  });
+
   group('own account access before profile setup', () {
     for (final path in [
       '/you',

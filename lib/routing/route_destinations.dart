@@ -168,6 +168,13 @@ String? appRedirect({
   final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
   final onAuth = matchedLocation == Routes.authScreen.path;
   final isHostApp = AppConfig.appRole.isHost;
+  final pendingOnboardingIntent = onOnboarding || onLoading
+      ? switch (uri.queryParameters[_onboardingIntentQueryParam]) {
+          _completeProfileIntent => _completeProfileIntent,
+          _completeRunPreferencesIntent => _completeRunPreferencesIntent,
+          _ => null,
+        }
+      : null;
 
   final isWaitingOnAuth = uidAsync.isLoading;
   // Owning an account is independent of dating/booking readiness. These exact
@@ -176,7 +183,7 @@ String? appRedirect({
   if (!isHostApp && !isWaitingOnAuth && uidAsync.value != null) {
     if (_isOwnAccountRoute(matchedLocation)) return null;
     final isAccountResume =
-        onLoading ||
+        (onLoading && pendingOnboardingIntent == null) ||
         onStart ||
         onAuth ||
         (onOnboarding &&
@@ -186,23 +193,36 @@ String? appRedirect({
       if (_isOwnAccountRoute(Uri.parse(resume).path)) return resume;
     }
   }
-  final isWaitingOnProfile =
+  // Only a successful null read establishes that an account needs a profile.
+  // A failed refresh may retain a real profile, but cached null is not identity.
+  final isBlockedOnProfile =
       !isHostApp &&
       uidAsync.hasValue &&
       uidAsync.value != null &&
-      userProfileAsync.isLoading;
+      (userProfileAsync.isLoading ||
+          (userProfileAsync.hasError && userProfileAsync.value == null));
 
-  if (isWaitingOnAuth || isWaitingOnProfile) {
+  if (isWaitingOnAuth || isBlockedOnProfile) {
     if (!isHostApp &&
         isGuestPublicRoute(matchedLocation) &&
         !_isTransientRoute(matchedLocation)) {
       return null;
     }
     if (onLoading) return null;
-    return _locationWithFrom(
+    final loading = _locationWithFrom(
       Routes.loadingScreen.path,
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );
+    if (pendingOnboardingIntent == null) return loading;
+    final loadingUri = Uri.parse(loading);
+    return loadingUri
+        .replace(
+          queryParameters: {
+            ...loadingUri.queryParameters,
+            _onboardingIntentQueryParam: pendingOnboardingIntent,
+          },
+        )
+        .toString();
   }
 
   final uid = uidAsync.value;
@@ -241,6 +261,15 @@ String? appRedirect({
       return _resumeDestination(uri);
     }
     return null;
+  }
+
+  // Explicit completion flows can return to an otherwise ungated account
+  // route. Resume the requested flow before considering that final destination.
+  if (onLoading && pendingOnboardingIntent != null) {
+    final from = uri.queryParameters[_fromQueryParam];
+    return pendingOnboardingIntent == _completeProfileIntent
+        ? profileCompletionLocation(from: from)
+        : runPreferencesCompletionLocation(from: from);
   }
 
   final onProfileCompletionOnboarding =
