@@ -96,3 +96,237 @@ test("canonical rules command selects readiness exactly once in strict mode", ()
     assert.throws(() => assertSelected(broken));
   }
 });
+
+// Read authored tests, not compiled output or a second hand-maintained registry.
+// This only recognizes test registration and bounded emulator guard expressions;
+// it does not evaluate arbitrary test code or start an emulator.
+const ts = require("typescript");
+function emulatorGuardedTest(source, file = "fixture.test.ts") {
+  const ast = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true);
+  assert.equal(ast.parseDiagnostics.length, 0, `Cannot parse test source: ${file}`);
+  const tests = new Set();
+  const registrationNames = new Set(["test", "it", "describe"]);
+  const namespaces = new Set();
+  const bindings = new Map();
+  const walk = (node, visit) => {
+    visit(node);
+    ts.forEachChild(node, child => walk(child, visit));
+  };
+  const isTestModule = node => ts.isCallExpression(node) &&
+    node.expression.getText(ast) === "require" &&
+    node.arguments.length === 1 && ts.isStringLiteral(node.arguments[0]) &&
+    node.arguments[0].text === "node:test";
+  walk(ast, node => {
+    if (ts.isImportDeclaration(node) && node.moduleSpecifier.text === "node:test") {
+      const clause = node.importClause;
+      if (clause?.name) tests.add(clause.name.text);
+      const named = clause?.namedBindings;
+      if (named && ts.isNamespaceImport(named)) namespaces.add(named.name.text);
+      if (named && ts.isNamedImports(named)) {
+        for (const item of named.elements) {
+          if (registrationNames.has((item.propertyName ?? item.name).text)) tests.add(item.name.text);
+        }
+      }
+    }
+    if (!ts.isVariableDeclaration(node) || !node.initializer) return;
+    if (ts.isIdentifier(node.name)) {
+      const previous = bindings.get(node.name.text) ?? [];
+      bindings.set(node.name.text, [...previous, node.initializer]);
+      if (isTestModule(node.initializer)) {
+        tests.add(node.name.text); namespaces.add(node.name.text);
+      }
+    } else if (ts.isObjectBindingPattern(node.name) && isTestModule(node.initializer)) {
+      for (const item of node.name.elements) {
+        if (registrationNames.has((item.propertyName ?? item.name).getText(ast))) tests.add(item.name.getText(ast));
+      }
+    }
+  });
+  const unsupported = node => {
+    const line = ast.getLineAndCharacterOfPosition(node.getStart(ast)).line + 1;
+    throw new Error(`Unsupported test registration guard at ${file}:${line}: ${node.getText(ast)}`);
+  };
+  function emulatorDependent(node, visiting = new Set()) {
+    if (ts.isParenthesizedExpression(node) || ts.isNonNullExpression(node) ||
+        ts.isAsExpression(node)) return emulatorDependent(node.expression, visiting);
+    if (ts.isStringLiteral(node) || ts.isNumericLiteral(node) ||
+        [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword, ts.SyntaxKind.NullKeyword].includes(node.kind)) return false;
+    if (ts.isIdentifier(node)) {
+      if (node.text === "undefined") return false;
+      const values = bindings.get(node.text);
+      if (values?.length !== 1 || visiting.has(node.text)) return unsupported(node);
+      return emulatorDependent(values[0], new Set([...visiting, node.text]));
+    }
+    if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
+      if (ts.isPropertyAccessExpression(node) && node.name.text === "length") {
+        return emulatorDependent(node.expression, visiting);
+      }
+      if (node.expression.getText(ast) !== "process.env") return unsupported(node);
+      const key = ts.isPropertyAccessExpression(node) ? node.name.text :
+        ts.isStringLiteral(node.argumentExpression) ? node.argumentExpression.text : null;
+      if (key === null) return unsupported(node);
+      return ["FIRESTORE_EMULATOR_HOST", "FIREBASE_STORAGE_EMULATOR_HOST"].includes(key);
+    }
+    if (ts.isPrefixUnaryExpression(node)) return emulatorDependent(node.operand, visiting);
+    if (ts.isBinaryExpression(node)) {
+      const left = emulatorDependent(node.left, visiting);
+      const right = emulatorDependent(node.right, visiting);
+      return left || right;
+    }
+    if (ts.isConditionalExpression(node)) {
+      return [node.condition, node.whenTrue, node.whenFalse]
+        .map(part => emulatorDependent(part, visiting)).some(Boolean);
+    }
+    if (ts.isCallExpression(node) && (
+      ts.isIdentifier(node.expression) && node.expression.text === "Boolean" ||
+      ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === "test" &&
+        node.expression.expression.kind === ts.SyntaxKind.RegularExpressionLiteral
+    )) return node.arguments.map(arg => emulatorDependent(arg, visiting)).some(Boolean);
+    return unsupported(node);
+  }
+  function testCallee(node) {
+    if (ts.isIdentifier(node)) return tests.has(node.text);
+    if (!ts.isPropertyAccessExpression(node)) return false;
+    if (registrationNames.has(node.name.text) && (isTestModule(node.expression) ||
+        ts.isIdentifier(node.expression) && namespaces.has(node.expression.text))) return true;
+    return ["skip", "todo", "only"].includes(node.name.text) && testCallee(node.expression);
+  }
+  function referencesRegistration(node) {
+    let found = false;
+    walk(node, child => {
+      // A member name such as RegExp.test is not a reference to the imported
+      // test binding; the enclosing property expression is checked separately.
+      if (ts.isIdentifier(child) && ts.isPropertyAccessExpression(child.parent) &&
+          child.parent.name === child) return;
+      if (testCallee(child)) found = true;
+    });
+    return found;
+  }
+  let guarded = false;
+  walk(ast, node => {
+    // Direct imports/require aliases and wrappers calling those bindings are
+    // supported. Do not silently lose a conditionally aliased registration.
+    if (ts.isVariableDeclaration(node) && node.initializer &&
+        !isTestModule(node.initializer) && !ts.isArrowFunction(node.initializer) &&
+        !ts.isFunctionExpression(node.initializer) && referencesRegistration(node.initializer)) {
+      unsupported(node.initializer);
+    }
+    if (!ts.isCallExpression(node)) return;
+    if (!testCallee(node.expression)) {
+      if (referencesRegistration(node.expression)) unsupported(node.expression);
+      return;
+    }
+    const options = node.arguments[1];
+    if (options && ts.isObjectLiteralExpression(options)) {
+      for (const entry of options.properties) {
+        if (ts.isSpreadAssignment(entry) || entry.name && ts.isComputedPropertyName(entry.name)) unsupported(entry);
+        if (entry.name?.getText(ast).replace(/^['"]|['"]$/gu, "") !== "skip") continue;
+        if (!ts.isPropertyAssignment(entry)) unsupported(entry);
+        if (emulatorDependent(entry.initializer)) guarded = true;
+      }
+    } else if (options && !ts.isArrowFunction(options) && !ts.isFunctionExpression(options)) {
+      // The existing test wrapper forwards its callback as the third argument;
+      // a dynamic options object must not hide an emulator skip.
+      if (node.arguments.length >= 3) unsupported(options);
+    }
+    for (let parent = node.parent; parent && !ts.isFunctionLike(parent); parent = parent.parent) {
+      if (ts.isIfStatement(parent) && emulatorDependent(parent.expression)) guarded = true;
+      if (ts.isConditionalExpression(parent) && emulatorDependent(parent.condition)) guarded = true;
+      if (ts.isBinaryExpression(parent) &&
+          [ts.SyntaxKind.AmpersandAmpersandToken, ts.SyntaxKind.BarBarToken].includes(parent.operatorToken.kind) &&
+          emulatorDependent(parent.left)) guarded = true;
+    }
+  });
+  return guarded;
+}
+
+function emulatorTestInventory(root) {
+  const files = fs.globSync(["src/**/*.test.ts", "test/**/*.test.cjs"], {cwd: root}).sort();
+  assert.ok(files.length > 0, "No authored Functions tests found for emulator parity");
+  const required = files.filter(file => emulatorGuardedTest(
+    fs.readFileSync(path.join(root, file), "utf8"), file));
+  assert.ok(required.length > 0, "No emulator-guarded tests found for emulator parity");
+  return required.map(file => file.split(path.sep).join("/")
+    .replace(/^src\//u, "lib/").replace(/\.ts$/u, ".js"));
+}
+
+function assertEmulatorSelection(command, required) {
+  const prefix = "npm run build && node scripts/run-tests.cjs --require-emulators ";
+  assert.ok(command.startsWith(prefix), "Rules lane must build and run the strict driver");
+  const selected = command.slice(prefix.length).trim().split(/\s+/u);
+  assert.ok(selected.every(file => /^(?:lib|test)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+\.test\.(?:js|cjs)$/u.test(file)),
+    "Rules lane requires explicit local test paths");
+  assert.equal(new Set(selected).size, selected.length, "Rules lane must not repeat a test file");
+  const missing = required.filter(file => !selected.includes(file));
+  assert.deepEqual(missing, [], "Emulator-guarded tests missing from the strict rules lane");
+}
+
+test("canonical strict rules lane selects every authored emulator-guarded test", () => {
+  const root = path.resolve(__dirname, "..");
+  const required = emulatorTestInventory(root);
+  const command = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).scripts["test:rules"];
+  assertEmulatorSelection(command, required);
+  // Each source-discovered file is a real omission sentinel, including mixed
+  // unit/emulator files whose ordinary test run can otherwise pass with a skip.
+  for (const file of required) {
+    assert.throws(() => assertEmulatorSelection(command.replace(file, ""), required),
+      error => error instanceof assert.AssertionError && error.actual.includes(file));
+  }
+});
+
+test("emulator inventory follows direct, aliased and conditional registrations", () => {
+  for (const source of [
+    "import {test} from 'node:test'; test('case', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
+    "import test from 'node:test'; const host = process.env.FIRESTORE_EMULATOR_HOST ?? ''; const enabled = host.length > 0 && /localhost/.test(host); test('case', {skip: !enabled}, () => {});",
+    "const {test: nodeTest} = require('node:test'); const enabled = Boolean(process.env['FIREBASE_STORAGE_EMULATOR_HOST']); const test = (name, fn) => nodeTest(name, {skip: !enabled}, fn);",
+    "import * as tests from 'node:test'; if (process.env.FIRESTORE_EMULATOR_HOST) tests.test('case', () => {});",
+    "const test = require('node:test'); process.env.FIRESTORE_EMULATOR_HOST ? test('case', () => {}) : test.skip('case', () => {});",
+    "import {test as check} from 'node:test'; process.env.FIRESTORE_EMULATOR_HOST && check('case', () => {});",
+  ]) assert.equal(emulatorGuardedTest(source), true, source);
+});
+
+test("emulator inventory excludes comments, strings and offline environment controls", () => {
+  for (const source of [
+    "// test('case', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
+    "const example = `test('case', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});`;",
+    "import {test} from 'node:test'; test('offline', () => {process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:1';});",
+    "import {test} from 'node:test'; test('ordinary skip', {skip: true}, () => {});",
+    "const data = {skip: !process.env.FIRESTORE_EMULATOR_HOST};",
+  ]) assert.equal(emulatorGuardedTest(source), false, source);
+  for (const name of ["emulatorFirestore", "emulatorFirestoreTransactionRetry"]) {
+    const file = path.resolve(__dirname, `../src/shared/testing/${name}.test.ts`);
+    assert.equal(emulatorGuardedTest(fs.readFileSync(file, "utf8"), file), false);
+  }
+});
+
+test("unsupported registration guards fail explicitly instead of losing coverage", () => {
+  for (const registration of [
+    "test('case', {skip: !hasEmulator()}, () => {});",
+    "test('case', options, () => {});",
+    "test('case', {...options}, () => {});",
+    "test('case', {['skip']: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});",
+    "const enabled = true; function other() { const enabled = false; } test('case', {skip: enabled}, () => {});",
+    "const run = process.env.FIRESTORE_EMULATOR_HOST ? test : test.skip; run('case', () => {});",
+    "(process.env.FIRESTORE_EMULATOR_HOST ? test : test.skip)('case', () => {});",
+  ]) assert.throws(() => emulatorGuardedTest("import {test} from 'node:test'; " + registration),
+    /Unsupported test registration guard/u);
+});
+
+test("a newly authored emulator test requires selection without a registry edit", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-emulator-parity-"));
+  try {
+    fs.mkdirSync(path.join(root, "src/example"), {recursive: true});
+    fs.writeFileSync(path.join(root, "src/example/new.test.ts"),
+      "import {test} from 'node:test'; test('new integration', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});");
+    const required = emulatorTestInventory(root);
+    assert.deepEqual(required, ["lib/example/new.test.js"]);
+    const prefix = "npm run build && node scripts/run-tests.cjs --require-emulators ";
+    assert.throws(() => assertEmulatorSelection(prefix + "test/old.test.cjs", required),
+      error => error instanceof assert.AssertionError && error.actual.includes(required[0]));
+    assertEmulatorSelection(prefix + required[0], required);
+    assert.throws(() => assertEmulatorSelection(prefix + required[0] + " && echo passed", required),
+      /explicit local test paths/u);
+    assert.throws(() => emulatorTestInventory(path.join(root, "missing")));
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
