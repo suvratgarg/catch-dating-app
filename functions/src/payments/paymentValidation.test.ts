@@ -131,7 +131,9 @@ test("order receipts bound Unicode and long tokens at the boundary",
       ["é".repeat(30), 123],
       ["event-1", "token".repeat(100)],
     ] as const) {
-      const payload = buildOrderCreatePayload({...inputs, eventId, receiptToken});
+      const payload = buildOrderCreatePayload({
+        ...inputs, eventId, receiptToken,
+      });
       assert.ok(Buffer.byteLength(payload.receipt, "utf8") <= 40);
       assert.match(payload.receipt, /^[a-zA-Z0-9_-]+$/);
       assert.equal(payload.notes.eventId, eventId);
