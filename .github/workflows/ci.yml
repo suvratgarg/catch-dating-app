@@ -311,7 +311,7 @@ jobs:
       - run: flutter pub get --enforce-lockfile
       - name: Install selected contract generator dependencies
         if: ${{ needs.plan.outputs.contracts == 'true' }}
-        run: npm --prefix functions ci
+        run: npm --prefix functions ci --ignore-scripts
       - name: Execute complete source and generation preflight
         env:
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
