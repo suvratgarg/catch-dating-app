@@ -1,3 +1,5 @@
+import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
+import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
 import type {GetEventViewerStateCallableResponse} from "../../functions/src/shared/generated/getEventViewerStateCallableResponse";
 export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
@@ -1291,3 +1293,31 @@ export async function getGuestEventViewerState(eventId: string): Promise<GetEven
 
 /** Explicit account switching is shared by public guest surfaces. */
 export const signOutGuestUser = signOutClaimUser;
+
+
+export async function manageEventApprovalNotifications(
+  payload: ManageEventApprovalNotificationsCallablePayload
+): Promise<ManageEventApprovalNotificationsCallableResponse> {
+  return invokeWebsiteCallable("manageEventApprovalNotifications", payload,
+    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured,
+    "Application notifications");
+}
+
+/** Verification adds a contact to the current identity; it never signs in as another account. */
+export async function verifyGuestEmail(uid: string, email: string, eventId: string): Promise<void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime) throw new Error("Authentication unavailable");
+  const {verifyEmailOnCurrentAccount} = await import("./firebaseClaimAccountLinking");
+  await verifyEmailOnCurrentAccount(runtime.auth, uid, email,
+    new URL(`/events/${encodeURIComponent(eventId)}/`, window.location.origin).href);
+}
+
+export async function refreshGuestIdentity(uid: string): Promise<void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime) throw new Error("Authentication unavailable");
+  const user = runtime.auth.currentUser;
+  if (!user || user.uid !== uid) throw new Error("Account changed");
+  await user.reload();
+  if (runtime.auth.currentUser?.uid !== uid) throw new Error("Account changed");
+  await user.getIdToken(true);
+}

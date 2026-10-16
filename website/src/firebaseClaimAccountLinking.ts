@@ -119,3 +119,23 @@ export async function signInOrLinkEmailLink(auth: Auth, email: string,
     return result.user;
   } catch (error) {return recovery(error);}
 }
+
+/** Firebase's hosted verification action binds the email to the existing UID. */
+export async function verifyEmailOnCurrentAccount(auth: Auth, uid: string,
+  email: string, continueUrl: string, sdk?: AuthSdk): Promise<void> {
+  await auth.authStateReady();
+  const current = auth.currentUser;
+  if (!current || current.uid !== uid || !current.phoneNumber) {
+    throw new Error("Your account changed. Restart verification from the current account.");
+  }
+  if (current.email && current.email.toLowerCase() !== email.trim().toLowerCase()) {
+    throw new Error("Use the email already linked to this account, or recover the intended account before continuing.");
+  }
+  const api = sdk ?? await import("firebase/auth");
+  unchanged(auth, current);
+  try {
+    if (current.email) await api.sendEmailVerification(current, {url: continueUrl});
+    else await api.verifyBeforeUpdateEmail(current, email.trim(), {url: continueUrl});
+    unchanged(auth, current);
+  } catch (error) {recovery(error);}
+}

@@ -152513,6 +152513,2037 @@ export const claimParticipantFormProfileCallableResponseSchema = {
   }
 };
 
+export const eventApprovalPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_approval_notification_preferences.schema.json",
+  "title": "EventApprovalPreferenceDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "revision",
+    "choices",
+    "phoneE164",
+    "email",
+    "termsVersion",
+    "receiptId",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "choices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phoneUpdates",
+        "emailUpdates"
+      ],
+      "properties": {
+        "phoneUpdates": {
+          "type": "boolean"
+        },
+        "emailUpdates": {
+          "type": "boolean"
+        }
+      }
+    },
+    "phoneE164": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "email": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "termsVersion": {
+      "const": "event-approval-v1",
+      "type": "string"
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventApprovalNotificationPreferences",
+  "x-firestore-path": "eventApprovalNotificationPreferences/{id}",
+  "x-owner": "trusted event approval notification services"
+};
+
+export const eventApprovalNotificationReceiptDocumentSchema = {
+  "title": "EventApprovalNotificationReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "revision",
+    "choices",
+    "phoneE164",
+    "email",
+    "termsVersion",
+    "receiptId",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "choices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phoneUpdates",
+        "emailUpdates"
+      ],
+      "properties": {
+        "phoneUpdates": {
+          "type": "boolean"
+        },
+        "emailUpdates": {
+          "type": "boolean"
+        }
+      }
+    },
+    "phoneE164": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "email": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "termsVersion": {
+      "const": "event-approval-v1",
+      "type": "string"
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventApprovalNotificationReceipts",
+  "x-firestore-path": "eventApprovalNotificationReceipts/{id}",
+  "x-owner": "trusted event approval notification services"
+};
+
+export const eventApprovalNotificationSettingsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_approval_notification_settings.schema.json",
+  "title": "EventApprovalNotificationSettingsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "enabled",
+    "revision",
+    "whatsapp",
+    "sms",
+    "email",
+    "dailyPhoneLimit",
+    "monthlyPhoneLimit",
+    "dailyCostLimitMicros",
+    "monthlyCostLimitMicros"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "whatsapp": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "connectionId",
+            "templateId",
+            "maxCostMicros"
+          ],
+          "properties": {
+            "connectionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "maxCostMicros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sms": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "accountId",
+            "credentialVersion",
+            "senderId",
+            "mask",
+            "principalEntityId",
+            "dltTemplateId",
+            "approvedText",
+            "maxCostMicros"
+          ],
+          "properties": {
+            "accountId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "credentialVersion": {
+              "type": "string",
+              "maxLength": 300,
+              "pattern": "^projects/[A-Za-z0-9_-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$"
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "mask": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "principalEntityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "dltTemplateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedText": {
+              "const": "Your event application is approved. View your next steps: {eventUrl}",
+              "type": "string"
+            },
+            "maxCostMicros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "email": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "accountId",
+            "credentialVersion",
+            "from"
+          ],
+          "properties": {
+            "provider": {
+              "type": "string",
+              "const": "resend"
+            },
+            "accountId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "credentialVersion": {
+              "type": "string",
+              "maxLength": 300,
+              "pattern": "^projects/[A-Za-z0-9_-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$"
+            },
+            "from": {
+              "type": "string",
+              "format": "email",
+              "maxLength": 254
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dailyPhoneLimit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "monthlyPhoneLimit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "dailyCostLimitMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "monthlyCostLimitMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventApprovalNotificationSettings",
+  "x-firestore-path": "eventApprovalNotificationSettings/{id}",
+  "x-owner": "trusted event approval notification services"
+};
+
+export const eventApprovalNotificationBudgetDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_approval_notification_budgets.schema.json",
+  "title": "EventApprovalNotificationBudgetDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accountId",
+    "period",
+    "count",
+    "costMicros",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "period": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}(-[0-9]{2})?$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "costMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventApprovalNotificationBudgets",
+  "x-firestore-path": "eventApprovalNotificationBudgets/{id}",
+  "x-owner": "trusted event approval notification services"
+};
+
+export const eventApprovalNotificationMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_approval_notification_messages.schema.json",
+  "title": "EventApprovalNotificationMessageDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "messageId",
+    "revision",
+    "intent",
+    "lifecycle",
+    "attempts",
+    "deliveryConflict",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "intentId",
+        "revision",
+        "context",
+        "createdAt",
+        "expiresAt",
+        "lane",
+        "permittedRoutes",
+        "deliveryPolicy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "const": 1
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "applicationId",
+            "organizerId",
+            "eventId",
+            "uid",
+            "sourceResponseId",
+            "approvedAtMillis",
+            "approvalRevision"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "applicationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "approvalRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lane": {
+          "type": "string",
+          "enum": [
+            "phone",
+            "email"
+          ]
+        },
+        "permittedRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "approvalWhatsapp",
+              "approvalSms",
+              "approvalEmail"
+            ]
+          }
+        },
+        "deliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "const": 3
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "const": 1
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "const": 60
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "superseded",
+        "responded"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "attemptId",
+          "intentId",
+          "intentRevision",
+          "ordinal",
+          "createdAt",
+          "state",
+          "authorization",
+          "mode",
+          "context",
+          "binding"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "attemptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "intentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "intentRevision": {
+            "type": "integer",
+            "const": 1
+          },
+          "ordinal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "reconcileAfter"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "reserved",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reconcileAfter": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "reason",
+                  "reconcileAfter"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "unknown",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "timeout",
+                      "connectionLost",
+                      "workerInterrupted"
+                    ]
+                  },
+                  "reconcileAfter": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "delivered",
+                      "read"
+                    ]
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "classification",
+                  "evidenceId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "failed",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "classification": {
+                    "type": "string",
+                    "enum": [
+                      "technical",
+                      "policy",
+                      "suppressed",
+                      "invalidRecipient"
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "providerMessageId",
+                  "evidenceId"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "revoked",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "providerMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "evidenceId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "at",
+                  "reason"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "notDispatched",
+                    "type": "string"
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "superseded",
+                      "expired",
+                      "permissionRevoked",
+                      "reservationExpired",
+                      "permitExpired",
+                      "campaignEnded",
+                      "recipientWithdrawn"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "authorization": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "permissionRevision",
+              "checkedAt",
+              "validUntil",
+              "instructionRevision"
+            ],
+            "properties": {
+              "permissionRevision": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "checkedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "validUntil": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "instructionRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "mode": {
+            "type": "string",
+            "const": "live"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mode",
+              "applicationId",
+              "organizerId",
+              "eventId",
+              "uid",
+              "sourceResponseId",
+              "approvedAtMillis",
+              "approvalRevision"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "const": "live"
+              },
+              "applicationId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "sourceResponseId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "approvedAtMillis": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "approvalRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "binding": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "routeId",
+              "senderId",
+              "bindingRevision",
+              "recipientEndpointId",
+              "fallbackOwner"
+            ],
+            "properties": {
+              "routeId": {
+                "type": "string",
+                "enum": [
+                  "approvalWhatsapp",
+                  "approvalSms",
+                  "approvalEmail"
+                ]
+              },
+              "senderId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "bindingRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "recipientEndpointId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "fallbackOwner": {
+                "type": "string",
+                "const": "catch"
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "deliveryConflict": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "x-firestore-collection": "eventApprovalNotificationMessages",
+  "x-firestore-path": "eventApprovalNotificationMessages/{id}",
+  "x-owner": "trusted event approval notification services"
+};
+
+export const eventApprovalNotificationDispatchDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_approval_notification_dispatches.schema.json",
+  "title": "EventApprovalNotificationDispatchDocument",
+  "description": "Private immutable approval WhatsApp dispatch correlation, created atomically with its shared outbox claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventApprovalNotificationDispatches",
+  "x-firestore-path": "eventApprovalNotificationDispatches/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "trusted approval notification delivery worker",
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "messageId",
+    "context",
+    "senderId",
+    "bindingRevision",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "senderHash",
+    "recipientEndpointId",
+    "endpointHash",
+    "templateDocumentId",
+    "templateHash",
+    "payloadHash",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "applicationId",
+        "organizerId",
+        "eventId",
+        "uid",
+        "sourceResponseId",
+        "approvedAtMillis",
+        "approvalRevision"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "approvalRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$",
+      "description": "organizerSenderConnections document id that owned the send."
+    },
+    "bindingRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "senderHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the sender connection snapshot authorized at claim."
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of the E.164 destination; the raw number never appears here."
+    },
+    "templateDocumentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+    },
+    "templateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Content hash of the rendered template + variables; the status callback must carry the matching correlation."
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const eventApprovalNotificationIntentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "intentId",
+    "revision",
+    "context",
+    "createdAt",
+    "expiresAt",
+    "lane",
+    "permittedRoutes",
+    "deliveryPolicy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "const": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "applicationId",
+        "organizerId",
+        "eventId",
+        "uid",
+        "sourceResponseId",
+        "approvedAtMillis",
+        "approvalRevision"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "approvalRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lane": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "email"
+      ]
+    },
+    "permittedRoutes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "approvalWhatsapp",
+          "approvalSms",
+          "approvalEmail"
+        ]
+      }
+    },
+    "deliveryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxAttempts",
+        "maxAttemptsPerRoute",
+        "minimumRetrySeconds"
+      ],
+      "properties": {
+        "maxAttempts": {
+          "type": "integer",
+          "const": 3
+        },
+        "maxAttemptsPerRoute": {
+          "type": "integer",
+          "const": 1
+        },
+        "minimumRetrySeconds": {
+          "type": "integer",
+          "const": 60
+        }
+      }
+    }
+  },
+  "title": "EventApprovalNotificationIntent"
+};
+
+export const eventApprovalNotificationWorkSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/event_approval_notification_work.schema.json",
+  "title": "EventApprovalNotificationWork",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "messageId",
+    "intentHash",
+    "dueAt",
+    "evaluations",
+    "failures",
+    "lastMessageRevision"
+  ],
+  "properties": {
+    "kind": {
+      "const": "approvalNotification",
+      "type": "string"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "intentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "dueAt": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "evaluations": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "failures": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "lastMessageRevision": {
+      "type": "integer",
+      "minimum": -1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    }
+  }
+};
+
+export const eventApprovalNotificationAttemptSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "intentId",
+    "intentRevision",
+    "ordinal",
+    "createdAt",
+    "state",
+    "authorization",
+    "mode",
+    "context",
+    "binding"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "const": 1
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "reconcileAfter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reserved",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reconcileAfter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "reason",
+            "reconcileAfter"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unknown",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "timeout",
+                "connectionLost",
+                "workerInterrupted"
+              ]
+            },
+            "reconcileAfter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "accepted",
+                "delivered",
+                "read"
+              ]
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "classification",
+            "evidenceId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "failed",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "classification": {
+              "type": "string",
+              "enum": [
+                "technical",
+                "policy",
+                "suppressed",
+                "invalidRecipient"
+              ]
+            },
+            "evidenceId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "providerMessageId",
+            "evidenceId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "revoked",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "providerMessageId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "at",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "notDispatched",
+              "type": "string"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "superseded",
+                "expired",
+                "permissionRevoked",
+                "reservationExpired",
+                "permitExpired",
+                "campaignEnded",
+                "recipientWithdrawn"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "permissionRevision",
+        "checkedAt",
+        "validUntil",
+        "instructionRevision"
+      ],
+      "properties": {
+        "permissionRevision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "mode": {
+      "type": "string",
+      "const": "live"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "applicationId",
+        "organizerId",
+        "eventId",
+        "uid",
+        "sourceResponseId",
+        "approvedAtMillis",
+        "approvalRevision"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "approvalRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "senderId",
+        "bindingRevision",
+        "recipientEndpointId",
+        "fallbackOwner"
+      ],
+      "properties": {
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "approvalWhatsapp",
+            "approvalSms",
+            "approvalEmail"
+          ]
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "bindingRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "fallbackOwner": {
+          "type": "string",
+          "const": "catch"
+        }
+      }
+    }
+  },
+  "title": "EventApprovalNotificationAttempt"
+};
+
+export const manageEventApprovalNotificationsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_approval_notifications_payload.schema.json",
+  "title": "ManageEventApprovalNotificationsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "action",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "get",
+        "save"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "choices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phoneUpdates",
+        "emailUpdates"
+      ],
+      "properties": {
+        "phoneUpdates": {
+          "type": "boolean"
+        },
+        "emailUpdates": {
+          "type": "boolean"
+        }
+      }
+    },
+    "termsVersion": {
+      "type": "string",
+      "const": "event-approval-v1"
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  },
+  "x-callable-aliases": [
+    "manageEventApprovalNotifications"
+  ]
+};
+
+export const manageEventApprovalNotificationsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_approval_notifications_response.schema.json",
+  "title": "ManageEventApprovalNotificationsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "revision",
+    "choices",
+    "phoneVerified",
+    "emailVerified",
+    "available",
+    "terms"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "choices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phoneUpdates",
+        "emailUpdates"
+      ],
+      "properties": {
+        "phoneUpdates": {
+          "type": "boolean"
+        },
+        "emailUpdates": {
+          "type": "boolean"
+        }
+      }
+    },
+    "phoneVerified": {
+      "type": "boolean"
+    },
+    "emailVerified": {
+      "type": "boolean"
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "phone",
+        "email"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "const": "event-approval-v1"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    }
+  }
+};
+
 export const getEventViewerStateCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -174551,6 +176582,27 @@ export const organizerApplicationDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "approvalNotificationBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "approvedAtMillis"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Server-owned approval occurrence. Note-only review edits retain it; a new approval transition replaces it."
     },
     "reviewedAt": {
       "anyOf": [

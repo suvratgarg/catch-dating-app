@@ -192,3 +192,19 @@ export const guestEventCopy = {
     unavailable: "The next step could not be verified. Contact the host or try again.",
   },
 };
+
+
+export const approvalNotificationCopy = {
+  title: "Application updates (optional)",
+  explanation: "Choose how to hear when your application is approved. These choices do not affect admission or reserve a seat. You can return here to turn them off.",
+  unavailable: "Automatic updates are not available yet. Check your application status here.",
+  loading: "Loading notification choices…",
+  error: "Could not update your choices. Refresh and try again.",
+  saved: "Notification choices saved.",
+  save: "Save notification choices",
+  email: "Email address (optional)",
+  verify: "Verify email",
+  refresh: "Refresh verification and choices",
+  verificationSent: "Check your email for the verification link, then return here and refresh. Email updates remain off until you select and save them.",
+  verifyFirst: "Verify an email on this account to enable email updates.",
+} as const;

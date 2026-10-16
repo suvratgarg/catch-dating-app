@@ -30972,6 +30972,1452 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventApprovalNotificationAttemptAttemptId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.binding.recipientEndpointId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptBindingRouteId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approvalWhatsapp', 'approvalSms', 'approvalEmail'],
+  );
+
+  static const eventApprovalNotificationAttemptBindingSenderId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.binding.senderId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptContextApplicationId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptContextApprovalRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.approvalRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptContextApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptContextEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptContextMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptContextSourceResponseId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptContextUid = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.context.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptCreatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptIntentId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.intentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationAttemptIntentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationAttemptMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptOrdinal = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventApprovalNotificationAttemptSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationAttemptStateAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationAttemptStateClassification = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const eventApprovalNotificationAttemptStateEvidenceId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptStateKind = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationAttemptStateReason = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'campaignEnded', 'recipientWithdrawn'],
+  );
+
+  static const eventApprovalNotificationAttemptStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationAttempt.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationBudgetDocumentAccountId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationBudgetDocument.accountId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationBudgetDocumentCostMicros = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationBudgetDocument.costMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationBudgetDocumentCount = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationBudgetDocument.count',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationBudgetDocumentPeriod = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationBudgetDocument.period',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}(-[0-9]{2})?\$',
+  );
+
+  static const eventApprovalNotificationBudgetDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationBudgetDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextApplicationId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextApprovalRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.approvalRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextSourceResponseId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentContextUid = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.context.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.providerAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.providerPhoneNumberId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationDispatchDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationDispatchDocumentTemplateHash = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationDispatchDocument.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationIntentContextApplicationId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationIntentContextApprovalRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.approvalRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationIntentContextApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationIntentContextEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationIntentContextMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationIntentContextSourceResponseId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationIntentContextUid = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.context.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationIntentIntentId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.intentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationIntentLane = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.lane',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['phone', 'email'],
+  );
+
+  static const eventApprovalNotificationIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['approvalWhatsapp', 'approvalSms', 'approvalEmail'],
+    minItems: 1,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventApprovalNotificationIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approvalWhatsapp', 'approvalSms', 'approvalEmail'],
+  );
+
+  static const eventApprovalNotificationIntentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationIntent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttempts = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsAttemptId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.binding.recipientEndpointId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsBindingRouteId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approvalWhatsapp', 'approvalSms', 'approvalEmail'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsBindingSenderId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.binding.senderId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextApplicationId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextApprovalRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.approvalRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextSourceResponseId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsContextUid = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.context.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsIntentId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.intentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsIntentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsOrdinal = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateClassification = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateEvidenceId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.evidenceId',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateKind = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateReason = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'expired', 'permissionRevoked', 'reservationExpired', 'permitExpired', 'campaignEnded', 'recipientWithdrawn'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentAttemptsItemsStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.attempts.items.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentDeliveryConflict = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.deliveryConflict',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextApplicationId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextApprovalRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.approvalRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextMode = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextSourceResponseId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentContextUid = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.context.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentIntentId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.intentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentLane = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.lane',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['phone', 'email'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['approvalWhatsapp', 'approvalSms', 'approvalEmail'],
+    minItems: 1,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approvalWhatsapp', 'approvalSms', 'approvalEmail'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.intent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentLifecycle = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.lifecycle',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationMessageDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationMessageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventApprovalNotificationMessageDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationMessageDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationReceiptDocumentChoicesEmailUpdates = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.choices.emailUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventApprovalNotificationReceiptDocumentChoicesPhoneUpdates = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.choices.phoneUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventApprovalNotificationReceiptDocumentEmail = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.email',
+    maxLength: 254,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const eventApprovalNotificationReceiptDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationReceiptDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{6,14}\$',
+  );
+
+  static const eventApprovalNotificationReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationReceiptDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationReceiptDocumentUid = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationReceiptDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationReceiptDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentDailyCostLimitMicros = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.dailyCostLimitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentDailyPhoneLimit = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.dailyPhoneLimit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentEmailAccountId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.email.accountId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentEmailCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.email.credentialVersion',
+    maxLength: 300,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9_-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentEmailFrom = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.email.from',
+    maxLength: 254,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentEmailProvider = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.email.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationSettingsDocumentEnabled = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventApprovalNotificationSettingsDocumentMonthlyCostLimitMicros = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.monthlyCostLimitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentMonthlyPhoneLimit = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.monthlyPhoneLimit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsAccountId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.accountId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsApprovedText = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.approvedText',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.credentialVersion',
+    maxLength: 300,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9_-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsDltTemplateId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.dltTemplateId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsMask = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.mask',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsPrincipalEntityId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.principalEntityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentSmsSenderId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.sms.senderId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentWhatsappConnectionId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.whatsapp.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationSettingsDocumentWhatsappMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.whatsapp.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationSettingsDocumentWhatsappTemplateId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationSettingsDocument.whatsapp.templateId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalNotificationWorkDueAt = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalNotificationWorkEvaluations = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.evaluations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventApprovalNotificationWorkFailures = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.failures',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventApprovalNotificationWorkIntentHash = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationWorkKind = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalNotificationWorkLastMessageRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.lastMessageRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+  );
+
+  static const eventApprovalNotificationWorkMessageId = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventApprovalNotificationWorkReason = CatchContractFieldConstraints(
+    path: 'eventApprovalNotificationWork.reason',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalPreferenceDocumentChoicesEmailUpdates = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.choices.emailUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventApprovalPreferenceDocumentChoicesPhoneUpdates = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.choices.phoneUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventApprovalPreferenceDocumentEmail = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.email',
+    maxLength: 254,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const eventApprovalPreferenceDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalPreferenceDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalPreferenceDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{6,14}\$',
+  );
+
+  static const eventApprovalPreferenceDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalPreferenceDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventApprovalPreferenceDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventApprovalPreferenceDocumentUid = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventApprovalPreferenceDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'eventApprovalPreferenceDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssignmentFeatureConsentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventAssignmentFeatureConsentDocument.createdAt._nanoseconds',
     required: true,
@@ -97793,6 +99239,119 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const manageEventApprovalNotificationsCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['get', 'save'],
+  );
+
+  static const manageEventApprovalNotificationsCallablePayloadChoicesEmailUpdates = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.choices.emailUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallablePayloadChoicesPhoneUpdates = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.choices.phoneUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const manageEventApprovalNotificationsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventApprovalNotificationsCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.expectedUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventApprovalNotificationsCallablePayloadTermsVersion = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallablePayload.termsVersion',
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseAvailable = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseChoicesEmailUpdates = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.choices.emailUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseChoicesPhoneUpdates = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.choices.phoneUpdates',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseEmailVerified = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.emailVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const manageEventApprovalNotificationsCallableResponsePhoneVerified = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.phoneVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseTermsEmail = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.terms.email',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseTermsPhone = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.terms.phone',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageEventApprovalNotificationsCallableResponseTermsVersion = CatchContractFieldConstraints(
+    path: 'manageEventApprovalNotificationsCallableResponse.terms.version',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const manageEventChatMemberCallablePayloadAction = CatchContractFieldConstraints(
     path: 'manageEventChatMemberCallablePayload.action',
     required: true,
@@ -101293,6 +102852,22 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerApplicationDocumentApprovalNotificationBasisApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerApplicationDocument.approvalNotificationBasis.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerApplicationDocumentApprovalNotificationBasisRevision = CatchContractFieldConstraints(
+    path: 'organizerApplicationDocument.approvalNotificationBasis.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const organizerApplicationDocumentAssignedReviewerUid = CatchContractFieldConstraints(
@@ -171649,6 +173224,192 @@ abstract final class CatchContractConstraints {
     'duplicateOrganizerFormCallablePayload.requestId': duplicateOrganizerFormCallablePayloadRequestId,
     'duplicateOrganizerFormCallablePayload.sourceFormId': duplicateOrganizerFormCallablePayloadSourceFormId,
     'duplicateOrganizerFormCallablePayload.title': duplicateOrganizerFormCallablePayloadTitle,
+    'eventApprovalNotificationAttempt.attemptId': eventApprovalNotificationAttemptAttemptId,
+    'eventApprovalNotificationAttempt.authorization.checkedAt': eventApprovalNotificationAttemptAuthorizationCheckedAt,
+    'eventApprovalNotificationAttempt.authorization.instructionRevision': eventApprovalNotificationAttemptAuthorizationInstructionRevision,
+    'eventApprovalNotificationAttempt.authorization.permissionRevision': eventApprovalNotificationAttemptAuthorizationPermissionRevision,
+    'eventApprovalNotificationAttempt.authorization.validUntil': eventApprovalNotificationAttemptAuthorizationValidUntil,
+    'eventApprovalNotificationAttempt.binding.bindingRevision': eventApprovalNotificationAttemptBindingBindingRevision,
+    'eventApprovalNotificationAttempt.binding.fallbackOwner': eventApprovalNotificationAttemptBindingFallbackOwner,
+    'eventApprovalNotificationAttempt.binding.recipientEndpointId': eventApprovalNotificationAttemptBindingRecipientEndpointId,
+    'eventApprovalNotificationAttempt.binding.routeId': eventApprovalNotificationAttemptBindingRouteId,
+    'eventApprovalNotificationAttempt.binding.senderId': eventApprovalNotificationAttemptBindingSenderId,
+    'eventApprovalNotificationAttempt.context.applicationId': eventApprovalNotificationAttemptContextApplicationId,
+    'eventApprovalNotificationAttempt.context.approvalRevision': eventApprovalNotificationAttemptContextApprovalRevision,
+    'eventApprovalNotificationAttempt.context.approvedAtMillis': eventApprovalNotificationAttemptContextApprovedAtMillis,
+    'eventApprovalNotificationAttempt.context.eventId': eventApprovalNotificationAttemptContextEventId,
+    'eventApprovalNotificationAttempt.context.mode': eventApprovalNotificationAttemptContextMode,
+    'eventApprovalNotificationAttempt.context.organizerId': eventApprovalNotificationAttemptContextOrganizerId,
+    'eventApprovalNotificationAttempt.context.sourceResponseId': eventApprovalNotificationAttemptContextSourceResponseId,
+    'eventApprovalNotificationAttempt.context.uid': eventApprovalNotificationAttemptContextUid,
+    'eventApprovalNotificationAttempt.createdAt': eventApprovalNotificationAttemptCreatedAt,
+    'eventApprovalNotificationAttempt.intentId': eventApprovalNotificationAttemptIntentId,
+    'eventApprovalNotificationAttempt.intentRevision': eventApprovalNotificationAttemptIntentRevision,
+    'eventApprovalNotificationAttempt.mode': eventApprovalNotificationAttemptMode,
+    'eventApprovalNotificationAttempt.ordinal': eventApprovalNotificationAttemptOrdinal,
+    'eventApprovalNotificationAttempt.schemaVersion': eventApprovalNotificationAttemptSchemaVersion,
+    'eventApprovalNotificationAttempt.state.at': eventApprovalNotificationAttemptStateAt,
+    'eventApprovalNotificationAttempt.state.classification': eventApprovalNotificationAttemptStateClassification,
+    'eventApprovalNotificationAttempt.state.evidenceId': eventApprovalNotificationAttemptStateEvidenceId,
+    'eventApprovalNotificationAttempt.state.kind': eventApprovalNotificationAttemptStateKind,
+    'eventApprovalNotificationAttempt.state.providerMessageId': eventApprovalNotificationAttemptStateProviderMessageId,
+    'eventApprovalNotificationAttempt.state.reason': eventApprovalNotificationAttemptStateReason,
+    'eventApprovalNotificationAttempt.state.reconcileAfter': eventApprovalNotificationAttemptStateReconcileAfter,
+    'eventApprovalNotificationBudgetDocument.accountId': eventApprovalNotificationBudgetDocumentAccountId,
+    'eventApprovalNotificationBudgetDocument.costMicros': eventApprovalNotificationBudgetDocumentCostMicros,
+    'eventApprovalNotificationBudgetDocument.count': eventApprovalNotificationBudgetDocumentCount,
+    'eventApprovalNotificationBudgetDocument.period': eventApprovalNotificationBudgetDocumentPeriod,
+    'eventApprovalNotificationBudgetDocument.updatedAtMillis': eventApprovalNotificationBudgetDocumentUpdatedAtMillis,
+    'eventApprovalNotificationDispatchDocument.attemptId': eventApprovalNotificationDispatchDocumentAttemptId,
+    'eventApprovalNotificationDispatchDocument.bindingRevision': eventApprovalNotificationDispatchDocumentBindingRevision,
+    'eventApprovalNotificationDispatchDocument.context.applicationId': eventApprovalNotificationDispatchDocumentContextApplicationId,
+    'eventApprovalNotificationDispatchDocument.context.approvalRevision': eventApprovalNotificationDispatchDocumentContextApprovalRevision,
+    'eventApprovalNotificationDispatchDocument.context.approvedAtMillis': eventApprovalNotificationDispatchDocumentContextApprovedAtMillis,
+    'eventApprovalNotificationDispatchDocument.context.eventId': eventApprovalNotificationDispatchDocumentContextEventId,
+    'eventApprovalNotificationDispatchDocument.context.mode': eventApprovalNotificationDispatchDocumentContextMode,
+    'eventApprovalNotificationDispatchDocument.context.organizerId': eventApprovalNotificationDispatchDocumentContextOrganizerId,
+    'eventApprovalNotificationDispatchDocument.context.sourceResponseId': eventApprovalNotificationDispatchDocumentContextSourceResponseId,
+    'eventApprovalNotificationDispatchDocument.context.uid': eventApprovalNotificationDispatchDocumentContextUid,
+    'eventApprovalNotificationDispatchDocument.createdAt': eventApprovalNotificationDispatchDocumentCreatedAt,
+    'eventApprovalNotificationDispatchDocument.endpointHash': eventApprovalNotificationDispatchDocumentEndpointHash,
+    'eventApprovalNotificationDispatchDocument.messageId': eventApprovalNotificationDispatchDocumentMessageId,
+    'eventApprovalNotificationDispatchDocument.payloadHash': eventApprovalNotificationDispatchDocumentPayloadHash,
+    'eventApprovalNotificationDispatchDocument.providerAccountId': eventApprovalNotificationDispatchDocumentProviderAccountId,
+    'eventApprovalNotificationDispatchDocument.providerPhoneNumberId': eventApprovalNotificationDispatchDocumentProviderPhoneNumberId,
+    'eventApprovalNotificationDispatchDocument.recipientEndpointId': eventApprovalNotificationDispatchDocumentRecipientEndpointId,
+    'eventApprovalNotificationDispatchDocument.schemaVersion': eventApprovalNotificationDispatchDocumentSchemaVersion,
+    'eventApprovalNotificationDispatchDocument.senderHash': eventApprovalNotificationDispatchDocumentSenderHash,
+    'eventApprovalNotificationDispatchDocument.senderId': eventApprovalNotificationDispatchDocumentSenderId,
+    'eventApprovalNotificationDispatchDocument.templateDocumentId': eventApprovalNotificationDispatchDocumentTemplateDocumentId,
+    'eventApprovalNotificationDispatchDocument.templateHash': eventApprovalNotificationDispatchDocumentTemplateHash,
+    'eventApprovalNotificationIntent.context.applicationId': eventApprovalNotificationIntentContextApplicationId,
+    'eventApprovalNotificationIntent.context.approvalRevision': eventApprovalNotificationIntentContextApprovalRevision,
+    'eventApprovalNotificationIntent.context.approvedAtMillis': eventApprovalNotificationIntentContextApprovedAtMillis,
+    'eventApprovalNotificationIntent.context.eventId': eventApprovalNotificationIntentContextEventId,
+    'eventApprovalNotificationIntent.context.mode': eventApprovalNotificationIntentContextMode,
+    'eventApprovalNotificationIntent.context.organizerId': eventApprovalNotificationIntentContextOrganizerId,
+    'eventApprovalNotificationIntent.context.sourceResponseId': eventApprovalNotificationIntentContextSourceResponseId,
+    'eventApprovalNotificationIntent.context.uid': eventApprovalNotificationIntentContextUid,
+    'eventApprovalNotificationIntent.createdAt': eventApprovalNotificationIntentCreatedAt,
+    'eventApprovalNotificationIntent.deliveryPolicy.maxAttempts': eventApprovalNotificationIntentDeliveryPolicyMaxAttempts,
+    'eventApprovalNotificationIntent.deliveryPolicy.maxAttemptsPerRoute': eventApprovalNotificationIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'eventApprovalNotificationIntent.deliveryPolicy.minimumRetrySeconds': eventApprovalNotificationIntentDeliveryPolicyMinimumRetrySeconds,
+    'eventApprovalNotificationIntent.expiresAt': eventApprovalNotificationIntentExpiresAt,
+    'eventApprovalNotificationIntent.intentId': eventApprovalNotificationIntentIntentId,
+    'eventApprovalNotificationIntent.lane': eventApprovalNotificationIntentLane,
+    'eventApprovalNotificationIntent.permittedRoutes': eventApprovalNotificationIntentPermittedRoutes,
+    'eventApprovalNotificationIntent.permittedRoutes.items': eventApprovalNotificationIntentPermittedRoutesItems,
+    'eventApprovalNotificationIntent.revision': eventApprovalNotificationIntentRevision,
+    'eventApprovalNotificationIntent.schemaVersion': eventApprovalNotificationIntentSchemaVersion,
+    'eventApprovalNotificationMessageDocument.attempts': eventApprovalNotificationMessageDocumentAttempts,
+    'eventApprovalNotificationMessageDocument.attempts.items.attemptId': eventApprovalNotificationMessageDocumentAttemptsItemsAttemptId,
+    'eventApprovalNotificationMessageDocument.attempts.items.authorization.checkedAt': eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationCheckedAt,
+    'eventApprovalNotificationMessageDocument.attempts.items.authorization.instructionRevision': eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationInstructionRevision,
+    'eventApprovalNotificationMessageDocument.attempts.items.authorization.permissionRevision': eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationPermissionRevision,
+    'eventApprovalNotificationMessageDocument.attempts.items.authorization.validUntil': eventApprovalNotificationMessageDocumentAttemptsItemsAuthorizationValidUntil,
+    'eventApprovalNotificationMessageDocument.attempts.items.binding.bindingRevision': eventApprovalNotificationMessageDocumentAttemptsItemsBindingBindingRevision,
+    'eventApprovalNotificationMessageDocument.attempts.items.binding.fallbackOwner': eventApprovalNotificationMessageDocumentAttemptsItemsBindingFallbackOwner,
+    'eventApprovalNotificationMessageDocument.attempts.items.binding.recipientEndpointId': eventApprovalNotificationMessageDocumentAttemptsItemsBindingRecipientEndpointId,
+    'eventApprovalNotificationMessageDocument.attempts.items.binding.routeId': eventApprovalNotificationMessageDocumentAttemptsItemsBindingRouteId,
+    'eventApprovalNotificationMessageDocument.attempts.items.binding.senderId': eventApprovalNotificationMessageDocumentAttemptsItemsBindingSenderId,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.applicationId': eventApprovalNotificationMessageDocumentAttemptsItemsContextApplicationId,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.approvalRevision': eventApprovalNotificationMessageDocumentAttemptsItemsContextApprovalRevision,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.approvedAtMillis': eventApprovalNotificationMessageDocumentAttemptsItemsContextApprovedAtMillis,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.eventId': eventApprovalNotificationMessageDocumentAttemptsItemsContextEventId,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.mode': eventApprovalNotificationMessageDocumentAttemptsItemsContextMode,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.organizerId': eventApprovalNotificationMessageDocumentAttemptsItemsContextOrganizerId,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.sourceResponseId': eventApprovalNotificationMessageDocumentAttemptsItemsContextSourceResponseId,
+    'eventApprovalNotificationMessageDocument.attempts.items.context.uid': eventApprovalNotificationMessageDocumentAttemptsItemsContextUid,
+    'eventApprovalNotificationMessageDocument.attempts.items.createdAt': eventApprovalNotificationMessageDocumentAttemptsItemsCreatedAt,
+    'eventApprovalNotificationMessageDocument.attempts.items.intentId': eventApprovalNotificationMessageDocumentAttemptsItemsIntentId,
+    'eventApprovalNotificationMessageDocument.attempts.items.intentRevision': eventApprovalNotificationMessageDocumentAttemptsItemsIntentRevision,
+    'eventApprovalNotificationMessageDocument.attempts.items.mode': eventApprovalNotificationMessageDocumentAttemptsItemsMode,
+    'eventApprovalNotificationMessageDocument.attempts.items.ordinal': eventApprovalNotificationMessageDocumentAttemptsItemsOrdinal,
+    'eventApprovalNotificationMessageDocument.attempts.items.schemaVersion': eventApprovalNotificationMessageDocumentAttemptsItemsSchemaVersion,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.at': eventApprovalNotificationMessageDocumentAttemptsItemsStateAt,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.classification': eventApprovalNotificationMessageDocumentAttemptsItemsStateClassification,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.evidenceId': eventApprovalNotificationMessageDocumentAttemptsItemsStateEvidenceId,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.kind': eventApprovalNotificationMessageDocumentAttemptsItemsStateKind,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.providerMessageId': eventApprovalNotificationMessageDocumentAttemptsItemsStateProviderMessageId,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.reason': eventApprovalNotificationMessageDocumentAttemptsItemsStateReason,
+    'eventApprovalNotificationMessageDocument.attempts.items.state.reconcileAfter': eventApprovalNotificationMessageDocumentAttemptsItemsStateReconcileAfter,
+    'eventApprovalNotificationMessageDocument.createdAt': eventApprovalNotificationMessageDocumentCreatedAt,
+    'eventApprovalNotificationMessageDocument.deliveryConflict': eventApprovalNotificationMessageDocumentDeliveryConflict,
+    'eventApprovalNotificationMessageDocument.intent.context.applicationId': eventApprovalNotificationMessageDocumentIntentContextApplicationId,
+    'eventApprovalNotificationMessageDocument.intent.context.approvalRevision': eventApprovalNotificationMessageDocumentIntentContextApprovalRevision,
+    'eventApprovalNotificationMessageDocument.intent.context.approvedAtMillis': eventApprovalNotificationMessageDocumentIntentContextApprovedAtMillis,
+    'eventApprovalNotificationMessageDocument.intent.context.eventId': eventApprovalNotificationMessageDocumentIntentContextEventId,
+    'eventApprovalNotificationMessageDocument.intent.context.mode': eventApprovalNotificationMessageDocumentIntentContextMode,
+    'eventApprovalNotificationMessageDocument.intent.context.organizerId': eventApprovalNotificationMessageDocumentIntentContextOrganizerId,
+    'eventApprovalNotificationMessageDocument.intent.context.sourceResponseId': eventApprovalNotificationMessageDocumentIntentContextSourceResponseId,
+    'eventApprovalNotificationMessageDocument.intent.context.uid': eventApprovalNotificationMessageDocumentIntentContextUid,
+    'eventApprovalNotificationMessageDocument.intent.createdAt': eventApprovalNotificationMessageDocumentIntentCreatedAt,
+    'eventApprovalNotificationMessageDocument.intent.deliveryPolicy.maxAttempts': eventApprovalNotificationMessageDocumentIntentDeliveryPolicyMaxAttempts,
+    'eventApprovalNotificationMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute': eventApprovalNotificationMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'eventApprovalNotificationMessageDocument.intent.deliveryPolicy.minimumRetrySeconds': eventApprovalNotificationMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds,
+    'eventApprovalNotificationMessageDocument.intent.expiresAt': eventApprovalNotificationMessageDocumentIntentExpiresAt,
+    'eventApprovalNotificationMessageDocument.intent.intentId': eventApprovalNotificationMessageDocumentIntentIntentId,
+    'eventApprovalNotificationMessageDocument.intent.lane': eventApprovalNotificationMessageDocumentIntentLane,
+    'eventApprovalNotificationMessageDocument.intent.permittedRoutes': eventApprovalNotificationMessageDocumentIntentPermittedRoutes,
+    'eventApprovalNotificationMessageDocument.intent.permittedRoutes.items': eventApprovalNotificationMessageDocumentIntentPermittedRoutesItems,
+    'eventApprovalNotificationMessageDocument.intent.revision': eventApprovalNotificationMessageDocumentIntentRevision,
+    'eventApprovalNotificationMessageDocument.intent.schemaVersion': eventApprovalNotificationMessageDocumentIntentSchemaVersion,
+    'eventApprovalNotificationMessageDocument.lifecycle': eventApprovalNotificationMessageDocumentLifecycle,
+    'eventApprovalNotificationMessageDocument.messageId': eventApprovalNotificationMessageDocumentMessageId,
+    'eventApprovalNotificationMessageDocument.revision': eventApprovalNotificationMessageDocumentRevision,
+    'eventApprovalNotificationMessageDocument.schemaVersion': eventApprovalNotificationMessageDocumentSchemaVersion,
+    'eventApprovalNotificationMessageDocument.updatedAt': eventApprovalNotificationMessageDocumentUpdatedAt,
+    'eventApprovalNotificationReceiptDocument.choices.emailUpdates': eventApprovalNotificationReceiptDocumentChoicesEmailUpdates,
+    'eventApprovalNotificationReceiptDocument.choices.phoneUpdates': eventApprovalNotificationReceiptDocumentChoicesPhoneUpdates,
+    'eventApprovalNotificationReceiptDocument.email': eventApprovalNotificationReceiptDocumentEmail,
+    'eventApprovalNotificationReceiptDocument.eventId': eventApprovalNotificationReceiptDocumentEventId,
+    'eventApprovalNotificationReceiptDocument.organizerId': eventApprovalNotificationReceiptDocumentOrganizerId,
+    'eventApprovalNotificationReceiptDocument.phoneE164': eventApprovalNotificationReceiptDocumentPhoneE164,
+    'eventApprovalNotificationReceiptDocument.receiptId': eventApprovalNotificationReceiptDocumentReceiptId,
+    'eventApprovalNotificationReceiptDocument.revision': eventApprovalNotificationReceiptDocumentRevision,
+    'eventApprovalNotificationReceiptDocument.termsVersion': eventApprovalNotificationReceiptDocumentTermsVersion,
+    'eventApprovalNotificationReceiptDocument.uid': eventApprovalNotificationReceiptDocumentUid,
+    'eventApprovalNotificationReceiptDocument.updatedAtMillis': eventApprovalNotificationReceiptDocumentUpdatedAtMillis,
+    'eventApprovalNotificationSettingsDocument.dailyCostLimitMicros': eventApprovalNotificationSettingsDocumentDailyCostLimitMicros,
+    'eventApprovalNotificationSettingsDocument.dailyPhoneLimit': eventApprovalNotificationSettingsDocumentDailyPhoneLimit,
+    'eventApprovalNotificationSettingsDocument.email.accountId': eventApprovalNotificationSettingsDocumentEmailAccountId,
+    'eventApprovalNotificationSettingsDocument.email.credentialVersion': eventApprovalNotificationSettingsDocumentEmailCredentialVersion,
+    'eventApprovalNotificationSettingsDocument.email.from': eventApprovalNotificationSettingsDocumentEmailFrom,
+    'eventApprovalNotificationSettingsDocument.email.provider': eventApprovalNotificationSettingsDocumentEmailProvider,
+    'eventApprovalNotificationSettingsDocument.enabled': eventApprovalNotificationSettingsDocumentEnabled,
+    'eventApprovalNotificationSettingsDocument.monthlyCostLimitMicros': eventApprovalNotificationSettingsDocumentMonthlyCostLimitMicros,
+    'eventApprovalNotificationSettingsDocument.monthlyPhoneLimit': eventApprovalNotificationSettingsDocumentMonthlyPhoneLimit,
+    'eventApprovalNotificationSettingsDocument.revision': eventApprovalNotificationSettingsDocumentRevision,
+    'eventApprovalNotificationSettingsDocument.sms.accountId': eventApprovalNotificationSettingsDocumentSmsAccountId,
+    'eventApprovalNotificationSettingsDocument.sms.approvedText': eventApprovalNotificationSettingsDocumentSmsApprovedText,
+    'eventApprovalNotificationSettingsDocument.sms.credentialVersion': eventApprovalNotificationSettingsDocumentSmsCredentialVersion,
+    'eventApprovalNotificationSettingsDocument.sms.dltTemplateId': eventApprovalNotificationSettingsDocumentSmsDltTemplateId,
+    'eventApprovalNotificationSettingsDocument.sms.mask': eventApprovalNotificationSettingsDocumentSmsMask,
+    'eventApprovalNotificationSettingsDocument.sms.maxCostMicros': eventApprovalNotificationSettingsDocumentSmsMaxCostMicros,
+    'eventApprovalNotificationSettingsDocument.sms.principalEntityId': eventApprovalNotificationSettingsDocumentSmsPrincipalEntityId,
+    'eventApprovalNotificationSettingsDocument.sms.senderId': eventApprovalNotificationSettingsDocumentSmsSenderId,
+    'eventApprovalNotificationSettingsDocument.whatsapp.connectionId': eventApprovalNotificationSettingsDocumentWhatsappConnectionId,
+    'eventApprovalNotificationSettingsDocument.whatsapp.maxCostMicros': eventApprovalNotificationSettingsDocumentWhatsappMaxCostMicros,
+    'eventApprovalNotificationSettingsDocument.whatsapp.templateId': eventApprovalNotificationSettingsDocumentWhatsappTemplateId,
+    'eventApprovalNotificationWork.dueAt': eventApprovalNotificationWorkDueAt,
+    'eventApprovalNotificationWork.evaluations': eventApprovalNotificationWorkEvaluations,
+    'eventApprovalNotificationWork.failures': eventApprovalNotificationWorkFailures,
+    'eventApprovalNotificationWork.intentHash': eventApprovalNotificationWorkIntentHash,
+    'eventApprovalNotificationWork.kind': eventApprovalNotificationWorkKind,
+    'eventApprovalNotificationWork.lastMessageRevision': eventApprovalNotificationWorkLastMessageRevision,
+    'eventApprovalNotificationWork.messageId': eventApprovalNotificationWorkMessageId,
+    'eventApprovalNotificationWork.reason': eventApprovalNotificationWorkReason,
+    'eventApprovalPreferenceDocument.choices.emailUpdates': eventApprovalPreferenceDocumentChoicesEmailUpdates,
+    'eventApprovalPreferenceDocument.choices.phoneUpdates': eventApprovalPreferenceDocumentChoicesPhoneUpdates,
+    'eventApprovalPreferenceDocument.email': eventApprovalPreferenceDocumentEmail,
+    'eventApprovalPreferenceDocument.eventId': eventApprovalPreferenceDocumentEventId,
+    'eventApprovalPreferenceDocument.organizerId': eventApprovalPreferenceDocumentOrganizerId,
+    'eventApprovalPreferenceDocument.phoneE164': eventApprovalPreferenceDocumentPhoneE164,
+    'eventApprovalPreferenceDocument.receiptId': eventApprovalPreferenceDocumentReceiptId,
+    'eventApprovalPreferenceDocument.revision': eventApprovalPreferenceDocumentRevision,
+    'eventApprovalPreferenceDocument.termsVersion': eventApprovalPreferenceDocumentTermsVersion,
+    'eventApprovalPreferenceDocument.uid': eventApprovalPreferenceDocumentUid,
+    'eventApprovalPreferenceDocument.updatedAtMillis': eventApprovalPreferenceDocumentUpdatedAtMillis,
     'eventAssignmentFeatureConsentDocument.createdAt._nanoseconds': eventAssignmentFeatureConsentDocumentCreatedAtNanoseconds,
     'eventAssignmentFeatureConsentDocument.createdAt._seconds': eventAssignmentFeatureConsentDocumentCreatedAtSeconds,
     'eventAssignmentFeatureConsentDocument.eventId': eventAssignmentFeatureConsentDocumentEventId,
@@ -180643,6 +182404,23 @@ abstract final class CatchContractConstraints {
     'listSuvbotDemoActionsCallableResponse.actions.items.requiresText': listSuvbotDemoActionsCallableResponseActionsItemsRequiresText,
     'listTransportVendorsCallablePayload.organizerId': listTransportVendorsCallablePayloadOrganizerId,
     'listTransportVendorsCallablePayload.programId': listTransportVendorsCallablePayloadProgramId,
+    'manageEventApprovalNotificationsCallablePayload.action': manageEventApprovalNotificationsCallablePayloadAction,
+    'manageEventApprovalNotificationsCallablePayload.choices.emailUpdates': manageEventApprovalNotificationsCallablePayloadChoicesEmailUpdates,
+    'manageEventApprovalNotificationsCallablePayload.choices.phoneUpdates': manageEventApprovalNotificationsCallablePayloadChoicesPhoneUpdates,
+    'manageEventApprovalNotificationsCallablePayload.eventId': manageEventApprovalNotificationsCallablePayloadEventId,
+    'manageEventApprovalNotificationsCallablePayload.expectedRevision': manageEventApprovalNotificationsCallablePayloadExpectedRevision,
+    'manageEventApprovalNotificationsCallablePayload.expectedUid': manageEventApprovalNotificationsCallablePayloadExpectedUid,
+    'manageEventApprovalNotificationsCallablePayload.termsVersion': manageEventApprovalNotificationsCallablePayloadTermsVersion,
+    'manageEventApprovalNotificationsCallableResponse.available': manageEventApprovalNotificationsCallableResponseAvailable,
+    'manageEventApprovalNotificationsCallableResponse.choices.emailUpdates': manageEventApprovalNotificationsCallableResponseChoicesEmailUpdates,
+    'manageEventApprovalNotificationsCallableResponse.choices.phoneUpdates': manageEventApprovalNotificationsCallableResponseChoicesPhoneUpdates,
+    'manageEventApprovalNotificationsCallableResponse.emailVerified': manageEventApprovalNotificationsCallableResponseEmailVerified,
+    'manageEventApprovalNotificationsCallableResponse.eventId': manageEventApprovalNotificationsCallableResponseEventId,
+    'manageEventApprovalNotificationsCallableResponse.phoneVerified': manageEventApprovalNotificationsCallableResponsePhoneVerified,
+    'manageEventApprovalNotificationsCallableResponse.revision': manageEventApprovalNotificationsCallableResponseRevision,
+    'manageEventApprovalNotificationsCallableResponse.terms.email': manageEventApprovalNotificationsCallableResponseTermsEmail,
+    'manageEventApprovalNotificationsCallableResponse.terms.phone': manageEventApprovalNotificationsCallableResponseTermsPhone,
+    'manageEventApprovalNotificationsCallableResponse.terms.version': manageEventApprovalNotificationsCallableResponseTermsVersion,
     'manageEventChatMemberCallablePayload.action': manageEventChatMemberCallablePayloadAction,
     'manageEventChatMemberCallablePayload.eventId': manageEventChatMemberCallablePayloadEventId,
     'manageEventChatMemberCallablePayload.expectedRevision': manageEventChatMemberCallablePayloadExpectedRevision,
@@ -181123,6 +182901,8 @@ abstract final class CatchContractConstraints {
     'organizerApplicationAssetDocument.uploadedByUid': organizerApplicationAssetDocumentUploadedByUid,
     'organizerApplicationDocument.applicantDisplayName': organizerApplicationDocumentApplicantDisplayName,
     'organizerApplicationDocument.applicantDisplayNameNormalized': organizerApplicationDocumentApplicantDisplayNameNormalized,
+    'organizerApplicationDocument.approvalNotificationBasis.approvedAtMillis': organizerApplicationDocumentApprovalNotificationBasisApprovedAtMillis,
+    'organizerApplicationDocument.approvalNotificationBasis.revision': organizerApplicationDocumentApprovalNotificationBasisRevision,
     'organizerApplicationDocument.assignedReviewerUid': organizerApplicationDocumentAssignedReviewerUid,
     'organizerApplicationDocument.contactId': organizerApplicationDocumentContactId,
     'organizerApplicationDocument.formId': organizerApplicationDocumentFormId,

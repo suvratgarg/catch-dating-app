@@ -1,14 +1,21 @@
 import {Button, ButtonLink, TextField, FormStatus, EventRegistrationForm,
-  EventRegistrationPrivacy, ActionGroup} from "../../shared/ui/primitives";
-import {guestEventCopy as copy} from "../../content/events";
+  EventRegistrationPrivacy, ActionGroup, CheckboxField} from "../../shared/ui/primitives";
+import {guestEventCopy as copy, approvalNotificationCopy as notificationCopy} from "../../content/events";
 import {useGuestEventController} from "./useGuestEventController";
 import {PublicEventRegistration} from "./PublicEventRegistration";
 import type {GetEventViewerStateCallableResponse} from "../../shared/contracts/generated/getEventViewerStateCallableResponse";
 
+import {useApprovalNotificationsController} from "./useApprovalNotificationsController";
+import type {User} from "../../firebase";
+
 type Guest = NonNullable<GetEventViewerStateCallableResponse["viewer"]["guest"]>;
 export function GuestEventEntry({eventId}: {eventId: string}) {
   const controller = useGuestEventController(eventId);
-  return <GuestEventEntryView eventId={eventId} controller={controller} />;
+  return <>
+    <GuestEventEntryView eventId={eventId} controller={controller} />
+    {controller.user?.phoneNumber && controller.viewer?.guest?.applicationStatus ?
+      <ApprovalNotifications key={`${eventId}:${controller.user.uid}`} eventId={eventId} user={controller.user} /> : null}
+  </>;
 }
 export function GuestEventEntryView({eventId, controller: c}: {
   eventId: string; controller: ReturnType<typeof useGuestEventController>;
@@ -62,4 +69,35 @@ function GuestStatus({guest, eventId}: {guest: Guest; eventId: string}) {
         <ButtonLink href="/help/" variant="ghost">{copy.help}</ButtonLink> : null}
     </ActionGroup>
   </>;
+}
+
+function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
+  const c = useApprovalNotificationsController(eventId, user);
+  const copy = notificationCopy;
+  if (c.loading) return <p role="status">{copy.loading}</p>;
+  return <EventRegistrationForm onSubmit={c.save}>
+    <h3>{copy.title}</h3>
+    <p>{copy.explanation}</p>
+    {c.value && c.choices ? <>
+      {!c.value.available ? <p>{copy.unavailable}</p> : null}
+      <CheckboxField checked={c.choices.phoneUpdates}
+        disabled={c.pending || !c.value.phoneVerified && !c.choices.phoneUpdates}
+        onChange={(event) => c.choose("phoneUpdates", event.target.checked)}>{c.value.terms.phone}</CheckboxField>
+      <CheckboxField checked={c.choices.emailUpdates}
+        disabled={c.pending || !c.value.emailVerified && !c.choices.emailUpdates}
+        onChange={(event) => c.choose("emailUpdates", event.target.checked)}>{c.value.terms.email}</CheckboxField>
+      {!c.value.emailVerified ? <>
+        <p>{copy.verifyFirst}</p>
+        <TextField id={`${c.id}-email`} label={copy.email} type="email" autoComplete="email"
+          value={c.email} disabled={c.pending} readOnly={Boolean(user.email)}
+          onChange={(event) => c.setEmail(event.target.value)} />
+        <Button type="button" disabled={c.pending || !c.email.trim()}
+          onClick={() => void c.verify()}>{copy.verify}</Button>
+      </> : null}
+      <Button type="submit" formNoValidate loading={c.pending}>{copy.save}</Button>
+    </> : null}
+    <Button type="button" variant="ghost" disabled={c.pending}
+      onClick={() => void c.refresh()}>{copy.refresh}</Button>
+    <FormStatus status={{message: c.message || (c.error ? copy.error : ""), tone: ""}} />
+  </EventRegistrationForm>;
 }

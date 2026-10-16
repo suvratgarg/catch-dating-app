@@ -1347,6 +1347,63 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
   },
   {
+    name: "EventApprovalPreferenceDocument",
+    source: "firestore/event_approval_notification_preferences.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalPreferenceDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationReceiptDocument",
+    source: "firestore/event_approval_notification_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationReceiptDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationSettingsDocument",
+    source: "firestore/event_approval_notification_settings.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationSettingsDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationBudgetDocument",
+    source: "firestore/event_approval_notification_budgets.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationBudgetDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationMessageDocument",
+    source: "firestore/event_approval_notification_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationMessageDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationDispatchDocument",
+    source: "firestore/event_approval_notification_dispatches.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationDispatchDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationIntent",
+    source: "operations/event_approval_notification_intent.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationIntent.ts",
+  },
+  {
+    name: "EventApprovalNotificationWork",
+    source: "operations/event_approval_notification_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationWork.ts",
+  },
+  {
+    name: "EventApprovalNotificationAttempt",
+    source: "operations/event_approval_notification_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationAttempt.ts",
+  },
+  {
+    name: "ManageEventApprovalNotificationsCallablePayload",
+    source: "callables/manage_event_approval_notifications_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/manageEventApprovalNotificationsCallablePayload.ts"],
+  },
+  {
+    name: "ManageEventApprovalNotificationsCallableResponse",
+    source: "callable_responses/manage_event_approval_notifications_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/manageEventApprovalNotificationsCallableResponse.ts"],
+  },
+  {
     name: "GetEventViewerStateCallablePayload",
     source: "callables/get_event_viewer_state_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getEventViewerStateCallablePayload.ts",

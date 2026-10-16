@@ -1413,16 +1413,48 @@ As verified on 2026-10-16, Resend's free plan allows 3,000 emails per month and
 [provider pricing](https://resend.com/pricing) before activation; a free email
 plan does not make WhatsApp, SMS or infrastructure usage free.
 
-This is a transport implementation, not an activated approval workflow.
-Automatic approval delivery still needs the application source adapter, current
-recipient and permission checks, durable Operations scheduling and shared outbox
-integration, sender setup, and authenticated receipt reconciliation. The desired
-policy is two independent delivery obligations: WhatsApp with proven-failure SMS
-fallback, and email. Pending or unknown WhatsApp delivery must never trigger SMS
-merely because time elapsed. Existing attendee-only delivery authority cannot be
-used for pre-admission applicants, and marketing permission must not be treated
-as application-service permission. No bearer offer secret belongs in email;
-notifications should return guests to the authenticated event journey.
+`events/approvalNotifications` now adapts approved applications to shared
+Operations work items and `FirestoreDeliveryOutbox`. A stable approval occurrence
+creates independent phone and email obligations. Review-note edits do not create
+another occurrence. Every reservation and claim rechecks the current application,
+response access, event publication/timing, deletion guard, Auth identity, verified
+contact, immutable opt-in receipt, sender configuration and atomic budget. No
+attendee authority or marketing permission is invented for an applicant.
+
+The guest page exposes two optional, initially unchecked choices and can verify
+an email on the current phone account through Firebase's verification action.
+The preferences callable fences the expected UID against current authentication;
+private contact evidence is removed during account deletion. Event-specific
+permission can be withdrawn without changing admission. A newer WhatsApp STOP
+also suppresses the phone lane until fresh explicit opt-in.
+
+Phone delivery attempts WhatsApp first and permits SMS only after confirmed
+technical failure. Accepted/unknown outcomes cannot start fallback. The shared
+signature-verified WhatsApp ingress is correlated to an immutable dispatch proof.
+Email and SMS API acceptance completes the submission obligation, not proof of
+inbox/handset delivery. WhatsApp pending outcomes remain unresolved and become
+Operations review work after the receipt deadline; signed late receipts can wake
+reconciliation. Quotas, unavailable senders and exhausted attempts hold work for
+review; they never upgrade billing or authorize duplicate sends. Recovery is
+bounded to ten due jobs per scheduled invocation and 100 evaluations per job.
+All messages return guests to the authenticated event page without bearer offer
+secrets, and explicitly separate approval from booking where the channel permits.
+
+Activation requires trusted, server-only
+`eventApprovalNotificationSettings/{organizerId}` (absent/disabled by default),
+current managed WhatsApp connection and approved UTILITY template with an
+`eventUrl` variable, Gupshup/DLT sender credentials and exact approved SMS copy,
+and a verified Resend sender domain. Credentials use pinned Secret Manager
+versions. The email credential envelope is
+`catch.transactional-email-credential/v1` with `provider`, stable `accountId`
+and `apiKey`; replacing `TransactionalEmailProvider` is the transport seam.
+Daily/monthly email caps are shared by provider account (100/3,000); phone count
+and cost caps are explicit. Unknown or rejected attempts conservatively retain
+budget debits. Deploy Functions, rules/indexes and website together, then verify
+real opt-in, approval, WhatsApp status/fallback and email acceptance. No provider
+account, domain, credentials, activation, live sends or deployment is implied by
+source completion. Email bounce/delivery webhooks and SMS delivery reports are
+not currently consumed by this application adapter; status remains API acceptance.
 
 ### Partner workspace in the React console
 

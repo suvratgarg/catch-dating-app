@@ -6439,6 +6439,24 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "operationWorkItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "workflowId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "normalizedPayload.dueAt",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
