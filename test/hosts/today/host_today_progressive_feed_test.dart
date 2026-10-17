@@ -179,7 +179,24 @@ void main() {
             for (final source in [first, second, third]) {
               rig.completeOptional(source);
               completed.add(source);
-              await pumpFeatureUi(tester);
+              final historySettled = completed.contains(
+                _OptionalSource.history,
+              );
+              final attentionComplete =
+                  completed.contains(_OptionalSource.attention) &&
+                  completed.contains(_OptionalSource.attendance);
+              // Other sources may still animate their loading indicator.
+              // Wait for delivered state, not for the entire UI to settle.
+              await pumpUntilFound(
+                tester,
+                find.byWidgetPredicate(
+                  (widget) =>
+                      widget is HostTodayBody &&
+                      widget.state.hasPastEvents == historySettled &&
+                      widget.state.attentionCountIsComplete ==
+                          attentionComplete,
+                ),
+              );
               final state = rig.state(tester);
               expect(find.text(rig.event.title), findsOneWidget);
               expect(state.featuredEvent?.id, rig.event.id);
