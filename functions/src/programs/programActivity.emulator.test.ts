@@ -21,8 +21,6 @@ import {prepareProgramActivityChannel} from "./programActivityChannel";
 import {ACTIVITY_NOW, ACTIVITY_WINDOW, activityRequest} from
   "./programActivityFixture";
 
-const options = {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000};
-
 function latch() {
   let release!: () => void;
   const promise = new Promise<void>((resolve) => {
@@ -138,7 +136,7 @@ async function fixture() {
 }
 
 test("Firestore concurrent travel events deliver once per stable occurrence",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     try {
       const event: TravelLegEvent = {kind: "travelLegFlightStatusChanged",
@@ -174,7 +172,8 @@ test("Firestore concurrent travel events deliver once per stable occurrence",
     }
   });
 
-test("Firestore rechecks revocation after a real reservation", options,
+test("Firestore rechecks revocation after a real reservation",
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000},
   async () => {
     const h = await fixture();
     try {
@@ -201,7 +200,7 @@ test("Firestore rechecks revocation after a real reservation", options,
   });
 
 test("Firestore unknown receipt repairs after journal failure without resend",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     try {
       const sender = buildMomentRunnerDeps({firestore: () => h.db,
@@ -231,7 +230,7 @@ test("Firestore unknown receipt repairs after journal failure without resend",
   });
 
 test("Firestore terminalization cannot strand accepted journal evidence",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     const early = latch();
     const terminal = latch();
@@ -271,7 +270,7 @@ test("Firestore terminalization cannot strand accepted journal evidence",
   });
 
 test("Firestore pre-I/O expiry corrects unknown projection and safely retries",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     const claimed = latch();
     const resume = latch();
@@ -315,7 +314,7 @@ test("Firestore pre-I/O expiry corrects unknown projection and safely retries",
   });
 
 test("Firestore keeps an in-flight unknown journal repairable beyond expiry",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     const entered = latch();
     const provider = latch();
@@ -349,7 +348,7 @@ test("Firestore keeps an in-flight unknown journal repairable beyond expiry",
   });
 
 test("Firestore enforces three definitely-unsent attempts and no fourth",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     try {
       const intent = programActivityIntent(h.request);
@@ -381,7 +380,7 @@ test("Firestore enforces three definitely-unsent attempts and no fourth",
   });
 
 test("Firestore deferral cannot renew the original six-hour send window",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 30_000}, async () => {
     const h = await fixture();
     try {
       const intent = programActivityIntent(h.request);
