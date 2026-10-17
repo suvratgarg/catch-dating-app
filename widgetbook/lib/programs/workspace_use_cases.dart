@@ -589,7 +589,7 @@ Widget programGuestsFunctionRowStates(BuildContext context) {
               functionId: 'fn_sangeet',
               invited: status != 'notInvited',
               rsvpStatus: status == 'notInvited' ? 'attending' : status,
-              attendanceStatus: 'notCheckedIn',
+              attendanceStatus: 'expected',
             ),
           },
           pending: false,

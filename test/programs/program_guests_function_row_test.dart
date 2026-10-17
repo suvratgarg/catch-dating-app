@@ -24,7 +24,7 @@ ProgramFunctionGuestRow _join(String status, {bool invited = true}) =>
       functionId: _function.functionId,
       invited: invited,
       rsvpStatus: status,
-      attendanceStatus: 'notCheckedIn',
+      attendanceStatus: 'expected',
     );
 
 Future<void> _pumpRow(
