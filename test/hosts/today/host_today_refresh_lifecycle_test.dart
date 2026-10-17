@@ -328,6 +328,45 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final scope in ['actor', 'organizer', 'preferred organizer']) {
+    for (final returnToA in [false, true]) {
+      testWidgets('retained create callback rejects old $scope '
+          '${returnToA ? 'ABA' : 'A-B'} while current callback works', (
+        tester,
+      ) async {
+        final fixture = _Fixture();
+        await fixture.mount(tester);
+        final originalState = fixture.todayState(tester);
+        final oldCreate = tester
+            .widget<HostTodayBody>(find.byType(HostTodayBody))
+            .onCreateEvent;
+        await fixture.changeScope(tester, scope, toB: true);
+        if (returnToA) {
+          await fixture.changeScope(tester, scope, toB: false);
+        }
+        final readsBeforeChoice = List<_Read>.of(fixture.events.active);
+        oldCreate();
+        await pumpFeatureUi(tester);
+        fixture.expectRetained(tester, originalState);
+        expect(
+          find.byKey(const ValueKey('host-event-entry-createEvent')),
+          findsNothing,
+        );
+        expect(fixture.events.active, readsBeforeChoice);
+        await fixture.openCreateSheet(tester);
+        await tester.tap(
+          find.byKey(const ValueKey('host-event-entry-createEvent')),
+        );
+        await pumpFeatureUi(tester);
+        expect(find.text('Create destination'), findsOneWidget);
+        expect(
+          fixture.router.state.pathParameters['clubId'],
+          scope != 'actor' && !returnToA ? 'org-b' : 'org-a',
+        );
+      });
+    }
+  }
+
   for (final scope in ['actor', 'organizer']) {
     for (final returnToA in [false, true]) {
       testWidgets('held create choice rejects old $scope '
@@ -617,6 +656,12 @@ class _Fixture {
   }) async {
     if (scope == 'actor') {
       identities.add(toB ? 'actor-b' : 'actor-a');
+    } else if (scope == 'preferred organizer') {
+      expect(container.read(hostOrganizerSelectionProvider('actor-a')), isNull);
+      router.goNamed(
+        Routes.hostTodayScreen.name,
+        queryParameters: {'organizerId': toB ? 'org-b' : 'org-a'},
+      );
     } else {
       container
           .read(hostOrganizerSelectionProvider('actor-a').notifier)
@@ -633,7 +678,7 @@ class _Fixture {
     );
     expect(
       tester.widget<HostTodayBody>(find.byType(HostTodayBody)).organizer.id,
-      scope == 'organizer' && toB ? 'org-b' : 'org-a',
+      scope != 'actor' && toB ? 'org-b' : 'org-a',
     );
   }
 }

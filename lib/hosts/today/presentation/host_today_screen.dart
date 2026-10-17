@@ -101,10 +101,11 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
   @override
   void didUpdateWidget(HostTodayScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.now != widget.now) {
+    if (oldWidget.now != widget.now ||
+        oldWidget.initialOrganizerId != widget.initialOrganizerId) {
       _scopeEpoch += 1;
-      _resetClock();
     }
+    if (oldWidget.now != widget.now) _resetClock();
   }
 
   @override
@@ -189,8 +190,8 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
     Club organizer,
     HostEventEntryState state,
     HostTodayFeedRequest request,
+    int epoch,
   ) async {
-    final epoch = _scopeEpoch;
     if (!_ownsRequest(request, epoch) ||
         ModalRoute.of(context)?.isCurrent == false) {
       return;
@@ -253,6 +254,8 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
         : catchAsyncStateFromAsyncValue(
             ref.watch(hostOperableClubsProvider(uid)),
           );
+    if (uid != null) ref.watch(hostOrganizerSelectionProvider(uid));
+    final scopeEpoch = _scopeEpoch;
     final routeState = buildHostTodayRouteState(
       uid: uidState,
       organizers: organizersState,
@@ -298,7 +301,8 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
             onOpenEvent: _openEvent,
             onOpenAttention: _openAttention,
             onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
-            onCreateEvent: _showEventEntry,
+            onCreateEvent: (organizer, state, request) =>
+                _showEventEntry(organizer, state, request, scopeEpoch),
             onStartRehearsal: _startRehearsal,
             onStartEventRehearsal: _showRehearsalStart,
           ),
