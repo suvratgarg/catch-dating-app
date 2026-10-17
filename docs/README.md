@@ -141,6 +141,7 @@ durable owners above or closed in code.
 
 | Tracker | Why It Remains |
 |---|---|
+| [Event relationships, state integrity, and read architecture](plans/event_relationship_state_implementation_tracker.md) | Active implementation backlog for identity, organizer relationships, forms, admission, payments, attendance, reviews, typed contracts, repository boundaries, and measured Firestore cost/latency. Durable decisions remain in the existing data, backend, app, and web owners; retire this plan after the work is integrated. |
 | `ds_resync_audit_2026-06.md` | Active execution tracker for re-syncing `lib/` to the latest Catch design-system spec (event-detail vertical first). Holds the 2026-06-16 gap audit, owner decisions, and the dependency-ordered porting plan. **Supersedes the earlier rollout font/type language** (Archivo + system font + IBM Plex Mono; retired type studies removed from code). Delete once the port completes and durable findings migrate to `design_language.md`. |
 | `ui_elevation_implementation.md` | Remaining map-pin, emblem, pigment, photo-grade, and display-face decisions with links to current owners. Completed rollout instructions and stale code examples have been removed. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
