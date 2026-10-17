@@ -40,27 +40,184 @@ class HostTodayScreen extends ConsumerStatefulWidget {
   ConsumerState<HostTodayScreen> createState() => _HostTodayScreenState();
 }
 
-class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
+class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
+    with WidgetsBindingObserver {
   late DateTime _clockNow;
   late DateTime _sessionBoundary;
   Timer? _clockTimer;
+  GoRouter? _router;
+  late final ProviderSubscription<AsyncValue<String?>> _identity;
+  ProviderSubscription<String?>? _selection;
+  ProviderSubscription<AsyncValue<List<Club>>>? _organizers;
+  String? _observedAccount;
+  int _scopeEpoch = 0;
+  int _routeEpoch = 0;
+  bool _wasTodayIndex = false;
+  bool _refreshQueued = false;
+  ({HostTodayFeedRequest request, int epoch})? _pendingRefresh;
+  AppLifecycleState? _lifecycle;
+
+  bool get _isTodayIndex =>
+      _router?.state.name == Routes.hostTodayScreen.name &&
+      !_router!.state.uri.queryParameters.containsKey('eventId');
 
   @override
   void initState() {
     super.initState();
     _resetClock();
+    _lifecycle = WidgetsBinding.instance.lifecycleState;
+    WidgetsBinding.instance.addObserver(this);
+    _identity = ref.listenManual(uidProvider, (_, next) {
+      _scopeEpoch += 1;
+      final account = next.asData?.value;
+      if (_observedAccount == account) return;
+      _observedAccount = account;
+      _selection?.close();
+      _organizers?.close();
+      _selection = account == null
+          ? null
+          : ref.listenManual(hostOrganizerSelectionProvider(account), (_, _) {
+              _scopeEpoch += 1;
+            });
+      _organizers = account == null
+          ? null
+          : ref.listenManual(hostOperableClubsProvider(account), (_, _) {
+              _scopeEpoch += 1;
+            });
+    }, fireImmediately: true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final router = GoRouter.maybeOf(context);
+    if (identical(router, _router)) return;
+    _router?.routerDelegate.removeListener(_onRouteChanged);
+    _router = router;
+    _wasTodayIndex = _isTodayIndex;
+    router?.routerDelegate.addListener(_onRouteChanged);
   }
 
   @override
   void didUpdateWidget(HostTodayScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.now != widget.now) _resetClock();
+    if (oldWidget.now != widget.now) {
+      _scopeEpoch += 1;
+      _resetClock();
+    }
   }
 
   @override
   void dispose() {
     _clockTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _router?.routerDelegate.removeListener(_onRouteChanged);
+    _identity.close();
+    _selection?.close();
+    _organizers?.close();
     super.dispose();
+  }
+
+  void _onRouteChanged() {
+    _routeEpoch += 1;
+    final isToday = _isTodayIndex;
+    if (isToday && !_wasTodayIndex) _queueRefresh();
+    _wasTodayIndex = isToday;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final previous = _lifecycle;
+    _lifecycle = state;
+    final wasBackgrounded =
+        previous == AppLifecycleState.inactive ||
+        previous == AppLifecycleState.hidden ||
+        previous == AppLifecycleState.paused;
+    if (state == AppLifecycleState.resumed &&
+        wasBackgrounded &&
+        _isTodayIndex) {
+      _queueRefresh();
+    }
+  }
+
+  HostTodayFeedRequest? _currentRequest() {
+    if (!mounted) return null;
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null) return null;
+    final clubs = ref.read(hostOperableClubsProvider(uid)).asData?.value;
+    if (clubs == null) return null;
+    final selection = ref.read(hostOrganizerSelectionProvider(uid));
+    final organizer = resolveSelectedHostOrganizer(
+      clubs,
+      selectedOrganizerId: selection,
+      preferredOrganizerId: selection == null
+          ? widget.initialOrganizerId
+          : null,
+    );
+    if (organizer == null) return null;
+    return HostTodayFeedRequest(
+      organizerId: organizer.id,
+      accountId: uid,
+      sessionBoundary: _sessionBoundary,
+    );
+  }
+
+  bool _ownsRequest(HostTodayFeedRequest request, int epoch) =>
+      mounted && _scopeEpoch == epoch && _currentRequest() == request;
+
+  void _queueRefresh() {
+    final request = _currentRequest();
+    if (request == null) return;
+    _pendingRefresh = (request: request, epoch: _scopeEpoch);
+    if (_refreshQueued) return;
+    _refreshQueued = true;
+    scheduleMicrotask(() {
+      _refreshQueued = false;
+      final pending = _pendingRefresh;
+      _pendingRefresh = null;
+      if (pending == null ||
+          !_ownsRequest(pending.request, pending.epoch) ||
+          !_isTodayIndex ||
+          (_lifecycle != null && _lifecycle != AppLifecycleState.resumed)) {
+        return;
+      }
+      ref.invalidate(hostTodayFeedControllerProvider(pending.request));
+    });
+  }
+
+  Future<void> _showEventEntry(
+    Club organizer,
+    HostEventEntryState state,
+    HostTodayFeedRequest request,
+  ) async {
+    final epoch = _scopeEpoch;
+    if (!_ownsRequest(request, epoch) ||
+        ModalRoute.of(context)?.isCurrent == false) {
+      return;
+    }
+    final routeEpoch = _routeEpoch;
+    final intent = await showHostEventEntrySheet(
+      context: context,
+      state: state,
+    );
+    if (intent == null ||
+        !context.mounted ||
+        !_ownsRequest(request, epoch) ||
+        routeEpoch != _routeEpoch ||
+        ModalRoute.of(context)?.isCurrent == false) {
+      return;
+    }
+    await runHostEventEntryFlow(
+      context: context,
+      ref: ref,
+      club: organizer,
+      state: state,
+      selection: intent,
+      createdAt: _clockNow,
+      isCurrent: () => _ownsRequest(request, epoch),
+    );
+    // Route return owns feed refresh for creation and every other destination.
+    // A late continuation must not invalidate its captured, obsolete request.
   }
 
   void _resetClock() {
@@ -141,6 +298,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
             onOpenEvent: _openEvent,
             onOpenAttention: _openAttention,
             onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
+            onCreateEvent: _showEventEntry,
             onStartRehearsal: _startRehearsal,
             onStartEventRehearsal: _showRehearsalStart,
           ),
@@ -274,7 +432,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
   }
 }
 
-class HostTodayLoadedRoute extends ConsumerStatefulWidget {
+class HostTodayLoadedRoute extends ConsumerWidget {
   const HostTodayLoadedRoute({
     super.key,
     required this.routeState,
@@ -283,6 +441,7 @@ class HostTodayLoadedRoute extends ConsumerStatefulWidget {
     required this.onOpenEvent,
     required this.onOpenAttention,
     required this.onViewEvents,
+    required this.onCreateEvent,
     required this.onStartRehearsal,
     this.onStartEventRehearsal,
     this.initialOrganizerId,
@@ -295,168 +454,30 @@ class HostTodayLoadedRoute extends ConsumerStatefulWidget {
   final void Function(Club organizer, Event event) onOpenEvent;
   final void Function(Club organizer, HostAttentionItem item) onOpenAttention;
   final VoidCallback onViewEvents;
+  final void Function(
+    Club organizer,
+    HostEventEntryState state,
+    HostTodayFeedRequest request,
+  )
+  onCreateEvent;
   final ValueChanged<Club> onStartRehearsal;
   final void Function(Club organizer, Event event)? onStartEventRehearsal;
 
   @override
-  ConsumerState<HostTodayLoadedRoute> createState() =>
-      _HostTodayLoadedRouteState();
-}
-
-class _HostTodayLoadedRouteState extends ConsumerState<HostTodayLoadedRoute>
-    with WidgetsBindingObserver {
-  GoRouter? _router;
-  late final ProviderSubscription<AsyncValue<String?>> _identity;
-  ProviderSubscription<String?>? _selection;
-  ProviderSubscription<AsyncValue<List<Club>>>? _organizers;
-  String? _observedAccount;
-  int _scopeEpoch = 0;
-  int _routeEpoch = 0;
-  bool _wasTodayIndex = false;
-  bool _refreshQueued = false;
-  ({HostTodayFeedRequest request, int epoch})? _pendingRefresh;
-  AppLifecycleState? _lifecycle;
-
-  bool get _isTodayIndex =>
-      _router?.state.name == Routes.hostTodayScreen.name &&
-      !_router!.state.uri.queryParameters.containsKey('eventId');
-
-  @override
-  void initState() {
-    super.initState();
-    _lifecycle = WidgetsBinding.instance.lifecycleState;
-    WidgetsBinding.instance.addObserver(this);
-    _identity = ref.listenManual(uidProvider, (_, next) {
-      _scopeEpoch += 1;
-      final account = next.asData?.value;
-      if (_observedAccount == account) return;
-      _observedAccount = account;
-      _selection?.close();
-      _organizers?.close();
-      _selection = account == null
-          ? null
-          : ref.listenManual(hostOrganizerSelectionProvider(account), (_, _) {
-              _scopeEpoch += 1;
-            });
-      _organizers = account == null
-          ? null
-          : ref.listenManual(hostOperableClubsProvider(account), (_, _) {
-              _scopeEpoch += 1;
-            });
-    }, fireImmediately: true);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final router = GoRouter.maybeOf(context);
-    if (identical(router, _router)) return;
-    _router?.routerDelegate.removeListener(_onRouteChanged);
-    _router = router;
-    _wasTodayIndex = _isTodayIndex;
-    router?.routerDelegate.addListener(_onRouteChanged);
-  }
-
-  @override
-  void didUpdateWidget(HostTodayLoadedRoute oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.sessionBoundary != widget.sessionBoundary) {
-      _scopeEpoch += 1;
-    }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _router?.routerDelegate.removeListener(_onRouteChanged);
-    _identity.close();
-    _selection?.close();
-    _organizers?.close();
-    super.dispose();
-  }
-
-  void _onRouteChanged() {
-    _routeEpoch += 1;
-    final isToday = _isTodayIndex;
-    if (isToday && !_wasTodayIndex) _queueRefresh();
-    _wasTodayIndex = isToday;
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final previous = _lifecycle;
-    _lifecycle = state;
-    final wasBackgrounded =
-        previous == AppLifecycleState.inactive ||
-        previous == AppLifecycleState.hidden ||
-        previous == AppLifecycleState.paused;
-    if (state == AppLifecycleState.resumed &&
-        wasBackgrounded &&
-        _isTodayIndex) {
-      _queueRefresh();
-    }
-  }
-
-  HostTodayFeedRequest? _currentRequest() {
-    if (!mounted) return null;
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null) return null;
-    final clubs = ref.read(hostOperableClubsProvider(uid)).asData?.value;
-    if (clubs == null) return null;
-    final selection = ref.read(hostOrganizerSelectionProvider(uid));
-    final organizer = resolveSelectedHostOrganizer(
-      clubs,
-      selectedOrganizerId: selection,
-      preferredOrganizerId: selection == null
-          ? widget.initialOrganizerId
-          : null,
-    );
-    if (organizer == null) return null;
-    return HostTodayFeedRequest(
-      organizerId: organizer.id,
-      accountId: uid,
-      sessionBoundary: widget.sessionBoundary,
-    );
-  }
-
-  bool _ownsRequest(HostTodayFeedRequest request, int epoch) =>
-      mounted && _scopeEpoch == epoch && _currentRequest() == request;
-
-  void _queueRefresh() {
-    final request = _currentRequest();
-    if (request == null) return;
-    _pendingRefresh = (request: request, epoch: _scopeEpoch);
-    if (_refreshQueued) return;
-    _refreshQueued = true;
-    scheduleMicrotask(() {
-      _refreshQueued = false;
-      final pending = _pendingRefresh;
-      _pendingRefresh = null;
-      if (pending == null ||
-          !_ownsRequest(pending.request, pending.epoch) ||
-          !_isTodayIndex ||
-          (_lifecycle != null && _lifecycle != AppLifecycleState.resumed)) {
-        return;
-      }
-      ref.invalidate(hostTodayFeedControllerProvider(pending.request));
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final uid = widget.routeState.uid!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uid = routeState.uid!;
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final organizer = resolveSelectedHostOrganizer(
-      widget.routeState.organizers,
+      routeState.organizers,
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: selectedOrganizerId == null
-          ? widget.initialOrganizerId
+          ? initialOrganizerId
           : null,
     )!;
     final request = HostTodayFeedRequest(
       organizerId: organizer.id,
       accountId: uid,
-      sessionBoundary: widget.sessionBoundary,
+      sessionBoundary: sessionBoundary,
     );
     final feedState = catchAsyncStateFromAsyncValue(
       ref.watch(hostTodayFeedControllerProvider(request)),
@@ -470,17 +491,16 @@ class _HostTodayLoadedRouteState extends ConsumerState<HostTodayLoadedRoute>
     };
     final repeatSource = HostEventsWorkspaceState.fromEvents(
       events: feedState.value?.pastEvents ?? const <Event>[],
-      now: widget.clockNow,
+      now: clockNow,
     ).repeatSource;
     final entryState = HostEventEntryState.resolve(
       organizerId: organizer.id,
       drafts: drafts,
       repeatSource: repeatSource,
     );
-    final scopeEpoch = _scopeEpoch;
     final todayState = buildHostTodayState(
       feedState,
-      now: widget.clockNow,
+      now: clockNow,
       l10n: context.l10n,
     );
 
@@ -490,75 +510,24 @@ class _HostTodayLoadedRouteState extends ConsumerState<HostTodayLoadedRoute>
         organizerId: organizer.id,
       ),
       today: todayState,
-      now: widget.clockNow,
-      onCreateEvent: () => _showEventEntry(
-        context: context,
-        ref: ref,
-        organizer: organizer,
-        state: entryState,
-        request: request,
-        epoch: scopeEpoch,
-      ),
+      now: clockNow,
+      onCreateEvent: () => onCreateEvent(organizer, entryState, request),
       operationalSurface: HostTodayBody(
         organizer: organizer,
         state: todayState,
-        now: widget.clockNow,
+        now: clockNow,
         onRetry: () =>
             ref.read(hostTodayFeedControllerProvider(request).notifier).retry(),
-        onOpenEvent: (event) => widget.onOpenEvent(organizer, event),
-        onOpenAttention: (item) => widget.onOpenAttention(organizer, item),
-        onCreateEvent: () => _showEventEntry(
-          context: context,
-          ref: ref,
-          organizer: organizer,
-          state: entryState,
-          request: request,
-          epoch: scopeEpoch,
-        ),
-        onViewEvents: widget.onViewEvents,
-        onStartRehearsal: () => widget.onStartRehearsal(organizer),
-        onStartEventRehearsal: widget.onStartEventRehearsal == null
+        onOpenEvent: (event) => onOpenEvent(organizer, event),
+        onOpenAttention: (item) => onOpenAttention(organizer, item),
+        onCreateEvent: () => onCreateEvent(organizer, entryState, request),
+        onViewEvents: onViewEvents,
+        onStartRehearsal: () => onStartRehearsal(organizer),
+        onStartEventRehearsal: onStartEventRehearsal == null
             ? null
-            : (event) => widget.onStartEventRehearsal!(organizer, event),
+            : (event) => onStartEventRehearsal!(organizer, event),
       ),
     );
-  }
-
-  Future<void> _showEventEntry({
-    required BuildContext context,
-    required WidgetRef ref,
-    required Club organizer,
-    required HostEventEntryState state,
-    required HostTodayFeedRequest request,
-    required int epoch,
-  }) async {
-    if (!_ownsRequest(request, epoch) ||
-        ModalRoute.of(context)?.isCurrent == false) {
-      return;
-    }
-    final routeEpoch = _routeEpoch;
-    final intent = await showHostEventEntrySheet(
-      context: context,
-      state: state,
-    );
-    if (intent == null ||
-        !context.mounted ||
-        !_ownsRequest(request, epoch) ||
-        routeEpoch != _routeEpoch ||
-        ModalRoute.of(context)?.isCurrent == false) {
-      return;
-    }
-    await runHostEventEntryFlow(
-      context: context,
-      ref: ref,
-      club: organizer,
-      state: state,
-      selection: intent,
-      createdAt: widget.clockNow,
-      isCurrent: () => _ownsRequest(request, epoch),
-    );
-    // Route return owns feed refresh for creation and every other destination.
-    // A late continuation must not invalidate its captured, obsolete request.
   }
 }
 
