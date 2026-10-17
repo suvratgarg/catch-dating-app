@@ -32,6 +32,8 @@ import type {
 import type {ResolvedRecipient} from "./momentDocuments";
 import type {ConsentFacts, QuietHours} from "./momentPolicy";
 import type {MomentRunnerDeps} from "./momentRunner";
+import {deliverProgramActivity} from "../programs/programActivityDelivery";
+import type {ProgramFcmSender} from "../programs/programActivityChannel";
 import {deliverProgramReminder} from "../programs/programReminderDelivery";
 import {deliverAutomationMessage} from
   "../organizers/automationMomentDelivery";
@@ -74,6 +76,7 @@ const PREFERENCE_KEYS: ReadonlySet<string> = new Set([
 export function buildMomentRunnerDeps(
   overrides?: Partial<MomentRunnerDeps> & {
     sendNotification?: typeof sendFcmNotification;
+    sendProgramFcm?: ProgramFcmSender;
   },
 ): MomentRunnerDeps {
   const firestore = overrides?.firestore ?? (() => admin.firestore());
@@ -115,6 +118,11 @@ export function buildMomentRunnerDeps(
       credentials: tokenStore,
       now: () => Date.now(),
       ...params,
+    }),
+    deliverProgramActivity: (params) => deliverProgramActivity({
+      db: firestore(), now: overrides?.nowMillis ?? Date.now,
+      send: overrides?.sendProgramFcm ??
+        ((message) => admin.messaging().send(message)), ...params,
     }),
     deliverAutomationMessage: (params) => deliverAutomationMessage({
       db: firestore(),
