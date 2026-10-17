@@ -9,7 +9,6 @@ import {
   verifyOrganizerFormDomain,
 } from "./organizerFormDomainRegistry";
 
-const options = {skip: !process.env.FIRESTORE_EMULATOR_HOST};
 const projectId = "demo-catch-rules";
 const target = "domain-test-site.web.app";
 
@@ -56,7 +55,7 @@ async function fixture() {
 }
 
 test("Firestore reserves one domain generation under competing requests",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     try {
       const attempts = await Promise.allSettled([h.reserve(), h.reserve()]);
@@ -72,7 +71,7 @@ test("Firestore reserves one domain generation under competing requests",
   });
 
 test("Firestore atomically activates and idempotently resolves the exact form",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     try {
       const proof = await h.verified();
@@ -91,7 +90,7 @@ test("Firestore atomically activates and idempotently resolves the exact form",
   });
 
 test("Firestore concurrent revocation wins over activation of old evidence",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     try {
       const proof = await h.verified();
@@ -111,7 +110,7 @@ test("Firestore concurrent revocation wins over activation of old evidence",
 
 for (const change of ["manager", "unpublished", "reassigned"] as const) {
   test(`Firestore rejects ${change} after provider evidence was obtained`,
-    options, async () => {
+    {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
       const h = await fixture();
       try {
         const proof = await h.verified();
@@ -140,7 +139,7 @@ for (const change of ["manager", "unpublished", "reassigned"] as const) {
 }
 
 test("Firestore held DNS resolution cannot outlive committed revocation",
-  options, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     let release!: () => void;
     let lookup: ReturnType<typeof resolveOrganizerFormDomain> | undefined;
