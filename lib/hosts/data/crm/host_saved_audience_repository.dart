@@ -83,8 +83,17 @@ class HostSavedAudienceRepository {
     int limit = ReadLimitPolicy.historyPage,
     bool byName = true,
     bool? isStatic,
+    bool Function()? isCurrent,
   }) async {
+    void checkCurrent() {
+      if (isCurrent != null && !isCurrent()) {
+        throw StateError('Group directory was superseded.');
+      }
+    }
+
+    checkCurrent();
     final directory = await summaries?.directory(organizerId);
+    checkCurrent();
     if (directory?['groupSummaryVersion'] == 1) {
       final page = await summaries!.page(
         collection: 'hostGroupSummaries',
@@ -96,6 +105,7 @@ class HostSavedAudienceRepository {
         equalities: {'status': 'active', 'isStatic': ?isStatic},
         cursor: cursor,
       );
+      checkCurrent();
       return HostSavedAudienceSummaryPage(
         audiences: page.documents
             .map((doc) => HostSavedAudienceSummary.fromMap(doc['row'] as Map))
@@ -111,11 +121,13 @@ class HostSavedAudienceRepository {
     final cursors = <String>{};
     String? legacyCursor;
     do {
+      checkCurrent();
       final page = await listSavedAudiences(
         organizerId,
         cursor: legacyCursor,
         limit: ReadLimitPolicy.historyPage,
       );
+      checkCurrent();
       rows.addAll(page.audiences.map(HostSavedAudienceSummary.fromAudience));
       legacyCursor = page.nextCursor;
       if (legacyCursor != null &&
@@ -352,6 +364,7 @@ Future<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
   Ref ref,
   String organizerId,
 ) async {
+  final operationRef = ref;
   final repository = ref.watch(hostSavedAudienceRepositoryProvider);
   final audiences = <HostSavedAudienceSummary>[];
   final cursors = <String>{};
@@ -360,6 +373,7 @@ Future<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
     final page = await repository.listGroupSummaries(
       organizerId,
       cursor: cursor,
+      isCurrent: () => operationRef.mounted,
     );
     if (!ref.mounted) throw StateError('Group directory was disposed.');
     audiences.addAll(page.audiences);
@@ -382,7 +396,8 @@ class HostGroupDirectoryController extends _$HostGroupDirectoryController {
     bool byName = true,
     bool? isStatic,
   }) async {
-    ++_generation;
+    final generation = ++_generation;
+    final operationRef = ref;
     ref.onDispose(() => ++_generation);
     final page = await ref
         .watch(hostSavedAudienceRepositoryProvider)
@@ -391,11 +406,17 @@ class HostGroupDirectoryController extends _$HostGroupDirectoryController {
           byName: byName,
           isStatic: isStatic,
           limit: ReadLimitPolicy.directoryPage,
+          isCurrent: () => operationRef.mounted && generation == _generation,
         );
+    if (!operationRef.mounted || generation != _generation) {
+      throw StateError('Group directory was superseded.');
+    }
     return HostGroupDirectoryState(page: page);
   }
 
   Future<void> loadMore() async {
+    // A refresh can retain old data, but its cursor no longer owns this read.
+    if (!ref.mounted || state.isLoading || state.hasError) return;
     final current = state.asData?.value;
     if (current == null ||
         current.loadingMore ||
@@ -403,6 +424,7 @@ class HostGroupDirectoryController extends _$HostGroupDirectoryController {
       return;
     }
     final generation = _generation;
+    final operationRef = ref;
     state = AsyncData(
       HostGroupDirectoryState(page: current.page, loadingMore: true),
     );
@@ -415,8 +437,9 @@ class HostGroupDirectoryController extends _$HostGroupDirectoryController {
             isStatic: isStatic,
             cursor: current.page.nextCursor,
             limit: ReadLimitPolicy.directoryPage,
+            isCurrent: () => operationRef.mounted && generation == _generation,
           );
-      if (!ref.mounted || generation != _generation) return;
+      if (!operationRef.mounted || generation != _generation) return;
       final rows = {
         for (final row in current.page.audiences) row.audienceId: row,
         for (final row in page.audiences) row.audienceId: row,
@@ -430,7 +453,7 @@ class HostGroupDirectoryController extends _$HostGroupDirectoryController {
         ),
       );
     } on Object catch (error) {
-      if (!ref.mounted || generation != _generation) return;
+      if (!operationRef.mounted || generation != _generation) return;
       state = AsyncData(
         HostGroupDirectoryState(page: current.page, loadMoreError: error),
       );
