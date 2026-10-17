@@ -490,14 +490,17 @@ test("ordinary credential withholding expires without permanent starvation",
       {sendTemplate: async () => {
         sends++;
         return {providerMessageId: "must-not-send"};
-      }}, {accessBound: async () => {throw new Error("unavailable");}},
+      }}, {accessBound: async () => {
+        throw new Error("unavailable");
+      }},
       () => now);
     const mid = await w.enqueueRecipient({campaign: campaignOf(db) as never,
       campaignId: "camp-1", recipientId: "rec-1"});
     assert.deepEqual(await w.dispatch(mid),
       {kind: "withheld", reason: "resourceUnavailable"});
     now += 24 * 3_600_000;
-    assert.deepEqual(await w.dispatch(mid), {kind: "waiting", reason: "expired"});
+    assert.deepEqual(await w.dispatch(mid),
+      {kind: "waiting", reason: "expired"});
     assert.equal(recipientOf(db).status, "failed");
     assert.equal(sends, 0);
   });
