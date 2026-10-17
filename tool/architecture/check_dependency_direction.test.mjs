@@ -1,4 +1,9 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {spawnSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {scanDependencyDirection, scanFile} from "./check_dependency_direction.mjs";
 
@@ -373,7 +378,8 @@ test("manual provider baseline rejects same-count swaps and new symbols in an ex
   const expanded = scan("final oldProvider = Provider<int>((ref) => 1);\nfinal secondProvider = Provider<int>((ref) => 2);");
   assert.equal(expanded.baselineFindings.length, 1);
   assert.equal(expanded.findings[0].symbol, "secondProvider");
-  assert.equal(scan("final oldProvider = Provider<int>((ref) => 1);", [{rule: reviewed.rule, path: file}]).findings.length, 1);
+  assert.deepEqual(scan("final oldProvider = Provider<int>((ref) => 1);", [{rule: reviewed.rule, path: file}]).findings.map(finding => finding.rule),
+    ["manualProviderDeclaration", "staleBaselineAllowance"]);
 });
 
 test("prefixed manual provider families retain canonical builder identity", () => {
@@ -545,6 +551,41 @@ test("scanDependencyDirection fails closed when the repository view has no Dart"
     () => scanDependencyDirection({snapshot, baseline: {allowedFindings: []}}),
     /cannot pass without handwritten lib Dart files/u,
   );
+});
+
+test("dependency baseline cleanup rejects stale keys and reintroduced debt through the CLI", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-dependency-baseline-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const init = spawnSync("git", ["init", "--quiet", root], {encoding: "utf8"});
+  assert.equal(init.status, 0, init.stderr);
+  const relative = "lib/sample/data/owner.dart";
+  const source = path.join(root, relative);
+  const baseline = path.join(root, "baseline.json");
+  const declaration = "final oldProvider = Provider<int>((ref) => 1);\n";
+  const allowance = {rule: "manualProviderDeclaration", path: relative,
+    symbol: "oldProvider", operation: "Provider", status: "accepted-exception", rationale: "Reviewed exact provider."};
+  fs.mkdirSync(path.dirname(source), {recursive: true});
+  fs.writeFileSync(source, declaration);
+  fs.writeFileSync(baseline, JSON.stringify({allowedFindings: [allowance]}));
+  const check = (status, rule) => {
+    const before = [source, baseline].map(file => fs.readFileSync(file, "utf8"));
+    const result = spawnSync(process.execPath, [
+      fileURLToPath(new URL("./check_dependency_direction.mjs", import.meta.url)),
+      "--root", root, "--baseline", baseline, "--json",
+    ], {encoding: "utf8"});
+    assert.equal(result.status, status, result.stderr);
+    const report = JSON.parse(result.stdout);
+    assert.deepEqual(report.findings.map(finding => finding.rule), rule ? [rule] : []);
+    assert.deepEqual([source, baseline].map(file => fs.readFileSync(file, "utf8")), before);
+    return report;
+  };
+  assert.equal(check(0).baselineFindings.length, 1);
+  fs.writeFileSync(source, "class Owner {}\n");
+  assert.deepEqual(check(1, "staleBaselineAllowance").allFindings, []);
+  fs.writeFileSync(baseline, JSON.stringify({allowedFindings: []}));
+  check(0);
+  fs.writeFileSync(source, declaration);
+  check(1, "manualProviderDeclaration");
 });
 
 function createFixtureSnapshot(files, {onReadTexts = () => {}} = {}) {

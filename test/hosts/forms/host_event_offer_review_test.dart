@@ -1,16 +1,14 @@
 import 'dart:convert';
-
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import '../../test_pump_helpers.dart';
+import 'event_offer_controller_test_support.dart';
 
 void main() {
   testWidgets('Host must preview event-specific offer before commit', (
@@ -23,8 +21,10 @@ void main() {
       currentAccountId: () => 'host-one',
       gateway: gateway,
     );
-    final controller = HostEventOfferController(
-      gateway, outbox: outbox, accountId: 'host-one',
+    final controller = TestHostEventOfferController(
+      gateway,
+      outbox: outbox,
+      accountId: 'host-one',
     );
     addTearDown(controller.dispose);
     final draft = HostOfferBatchDraft(
@@ -46,7 +46,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: HostEventOfferReviewSection(
+          body: TestHostEventOfferReviewSection(
             controller: controller,
             draft: draft,
             eventTitle: 'Sunday run',
@@ -76,8 +76,14 @@ void main() {
     await pumpFeatureUi(tester);
     expect(gateway.commitCalls, 1);
     expect(find.text('Offer committed'), findsOneWidget);
-    expect(await outbox.pending(accountId: 'host-one',
-      organizerId: draft.organizerId, eventId: draft.eventId), isNull);
+    expect(
+      await outbox.pending(
+        accountId: 'host-one',
+        organizerId: draft.organizerId,
+        eventId: draft.eventId,
+      ),
+      isNull,
+    );
   });
 }
 
@@ -133,14 +139,30 @@ class _OfferGateway implements HostEventOfferGateway {
       organizerId: draft.organizerId,
       eventId: draft.eventId,
       requestId: requestId,
-      requestHash: sha256.convert(utf8.encode(jsonEncode([
-        [draft.organizerId, draft.eventId, draft.mode, [
-          for (final row in draft.rows)
-            [row.sourceKind.name, row.sourceId, row.contactId,
-              row.expiresAt.millisecondsSinceEpoch,
-              row.organizerPaymentLink?.toString()],
-        ]], preview.planDigest,
-      ]))).toString(),
+      requestHash: sha256
+          .convert(
+            utf8.encode(
+              jsonEncode([
+                [
+                  draft.organizerId,
+                  draft.eventId,
+                  draft.mode,
+                  [
+                    for (final row in draft.rows)
+                      [
+                        row.sourceKind.name,
+                        row.sourceId,
+                        row.contactId,
+                        row.expiresAt.millisecondsSinceEpoch,
+                        row.organizerPaymentLink?.toString(),
+                      ],
+                  ],
+                ],
+                preview.planDigest,
+              ]),
+            ),
+          )
+          .toString(),
       results: const [
         HostOfferPreviewRow(
           offerId: 'offer-one',

@@ -52,7 +52,8 @@ export interface EventViewerStateSource {
     state: "notRequired" | "none" | "active" | "revoked" | "unavailable";
     revision: number | null; decisionId: string | null};
   review: "none" | "pending" | "approved";
-  admission: "none" | "nativeParticipation" | "publicPaidRoster";
+  admission: "none" | "nativeParticipation" | "publicPaidRoster" |
+    "guestRoster";
   attendance: "notRecorded" | "attended";
   waitlisted: boolean;
   /** Payment uses source evidence; a native pointer proves no payment. */
@@ -166,7 +167,8 @@ export async function readEventViewerStateSource(params: {
     }
     // Retained admission and current entitlement are distinct even on failure.
     try {
-      if (requiresCommunityMembership(policy)) {
+      if (requiresCommunityMembership(policy) ||
+          policy.admission.approvedMembersSkipReview === true) {
         result.membership.state = "unavailable";
         const membership = await readCommunityMembership({db, tx,
           organizerId: result.organizerId, uid, nowMillis});

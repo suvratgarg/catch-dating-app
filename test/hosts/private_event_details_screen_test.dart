@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
@@ -5,21 +6,24 @@ import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_listing_section.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test_pump_helpers.dart';
+import 'private_event_details_test_support.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   for (final actionKind in [
     'duration',
+    'notes',
+    'custom-label',
     'map',
     'map-failure',
     'terms',
@@ -39,7 +43,7 @@ void main() {
       });
       final hash = List.filled(64, 'a').join();
       PrivateEventDetailsUpdateRequest? sent;
-      final controller = PrivateEventDetailsController(
+      final controller = createDetailsController(
         userId: 'host-1',
         organizerId: 'club-1',
         eventId: 'event-1',
@@ -51,20 +55,42 @@ void main() {
           throw StateError('Response lost');
         },
       );
-      controller.event = const PrivateEventBasicSummary(
+      controller.event = PrivateEventBasicSummary(
         eventId: 'event-1',
         organizerId: 'club-1',
         setupRevision: 2,
         name: 'Saturday mixer',
-        city: EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+        city: const EventSetupCity(
+          cityId: 'in-mh-mumbai',
+          marketId: 'in-mh-mumbai',
+        ),
         localDate: '2026-10-03',
         localStartTime: '19:00',
         timezone: 'Asia/Kolkata',
         startTimeMillis: 1791043800000,
         status: 'active',
-        setupDefaults: {},
+        setupDefaults: const {},
         detailsConfigured: false,
         eventPreferences: null,
+        eventDetails: actionKind == 'notes'
+            ? const PrivateEventDetailsSnapshot(
+                meetingLocation: EventMeetingLocation(
+                  name: 'Town Hall',
+                  latitude: 19.2,
+                  longitude: 72.9,
+                  notes: 'Side gate',
+                  address: 'Main Street',
+                ),
+              )
+            : actionKind == 'custom-label'
+            ? const PrivateEventDetailsSnapshot(
+                eventFormat: EventFormatSnapshot(
+                  activityKind: ActivityKind.openActivity,
+                  interactionModel: EventInteractionModel.openFormat,
+                  customActivityLabel: 'Board games',
+                ),
+              )
+            : const PrivateEventDetailsSnapshot(),
         canEditBasics: true,
       );
       controller.defaults = ManagerEventSetupDefaults(
@@ -109,34 +135,42 @@ void main() {
       }
       addTearDown(controller.dispose);
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CatchTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: MediaQuery(
-            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-            child: termsSelection
-                ? Scaffold(
-                    body: ListView(
-                      children: [
-                        HostPrivateEventListingSection(controller: controller),
-                      ],
+        UncontrolledProviderScope(
+          container: controller.container,
+          child: MaterialApp(
+            theme: CatchTheme.light,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: termsSelection
+                  ? Scaffold(
+                      body: ListView(
+                        children: [
+                          HostPrivateEventListingSection(
+                            state: controller.snapshot,
+                            controller: controller.notifier,
+                          ),
+                        ],
+                      ),
+                    )
+                  : PrivateEventDetailsScreen(
+                      scope: controller.scope,
+                      onBack: () {},
+                      pickLocation: (_) async {
+                        if (actionKind == 'map-failure') {
+                          throw StateError(
+                            'Picker diagnostic must stay private',
+                          );
+                        }
+                        return const EventMeetingLocation(
+                          name: 'Test Town Hall',
+                          latitude: 19.2,
+                          longitude: 72.9,
+                        );
+                      },
                     ),
-                  )
-                : PrivateEventDetailsScreen(
-                    controller: controller,
-                    onBack: () {},
-                    pickLocation: (_) async {
-                      if (actionKind == 'map-failure') {
-                        throw StateError('Picker diagnostic must stay private');
-                      }
-                      return const EventMeetingLocation(
-                        name: 'Test Town Hall',
-                        latitude: 19.2,
-                        longitude: 72.9,
-                      );
-                    },
-                  ),
+            ),
           ),
         ),
       );
@@ -185,6 +219,34 @@ void main() {
         expect(sent?.details.admissionTerms?.capacityLimit, 12);
         expect(sent?.details.admissionTerms?.cancellationPolicyId, 'standard');
         expect(controller.pending, isNotNull);
+        expect(tester.takeException(), isNull);
+        return;
+      }
+      if (actionKind == 'notes' || actionKind == 'custom-label') {
+        final field = find.byKey(
+          ValueKey(
+            actionKind == 'notes'
+                ? 'private-directions-2'
+                : 'private-format-label-2',
+          ),
+        );
+        await ensureCentered(tester, field);
+        await tester.tap(field);
+        await pumpFeatureUi(tester);
+        final input = find.descendant(
+          of: field,
+          matching: find.byType(EditableText),
+        );
+        await tester.enterText(input, '');
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await pumpFeatureUi(tester);
+        expect(sent, isNotNull);
+        if (actionKind == 'notes') {
+          expect(sent!.details.meetingLocation!.notes, isNull);
+          expect(sent!.details.meetingLocation!.address, 'Main Street');
+        } else {
+          expect(sent!.details.eventFormat!.value!.customActivityLabel, isNull);
+        }
         expect(tester.takeException(), isNull);
         return;
       }

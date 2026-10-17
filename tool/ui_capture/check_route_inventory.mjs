@@ -72,9 +72,10 @@ function listInventory() {
 }
 
 export function buildInventory({
-  routeContractSource = fs.readFileSync(routeContractPath, "utf8"),
-  routerSource = fs.readFileSync(routerPath, "utf8"),
-  imperativePageRoutes = extractImperativePageRouteInventory(),
+  repoRoot = fromRepo("."),
+  routeContractSource = fs.readFileSync(path.join(repoRoot, "lib/routing/route_contract.dart"), "utf8"),
+  routerSource = fs.readFileSync(path.join(repoRoot, "lib/routing/go_router.dart"), "utf8"),
+  imperativePageRoutes = extractImperativePageRouteInventory(repoRoot),
 } = {}) {
   const enumBlock = extractBalancedBlock(
     routeContractSource,
@@ -140,13 +141,13 @@ export function buildInventory({
   };
 }
 
-function extractImperativePageRouteInventory() {
+function extractImperativePageRouteInventory(repoRoot = fromRepo(".")) {
   const entries = [];
   for (const root of productionDartRoots) {
-    const absoluteRoot = fromRepo(root);
+    const absoluteRoot = path.join(repoRoot, root);
     if (!fs.existsSync(absoluteRoot)) continue;
     for (const absolutePath of dartFilesUnder(absoluteRoot)) {
-      const relativePath = relativeToRepo(absolutePath);
+      const relativePath = path.relative(repoRoot, absolutePath).split(path.sep).join("/");
       const source = fs.readFileSync(absolutePath, "utf8");
       validateRouteSourceForInventory(source, relativePath);
       const routes = extractImperativePageRoutesFromSource(source, relativePath);

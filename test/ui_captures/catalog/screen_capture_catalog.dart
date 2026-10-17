@@ -309,6 +309,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../clubs/clubs_test_helpers.dart' as club_test;
 import '../../events/events_test_helpers.dart';
 import '../../test_pump_helpers.dart';
+import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
 
@@ -15934,7 +15935,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       ..._audienceCaptureSources('org_1'),
       hostApplicationDetailProvider(
@@ -15956,7 +15957,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ..._audienceCaptureSources('org_1'),
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       hostApplicationDetailProvider(
         'org_1',
@@ -15977,7 +15978,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ..._audienceCaptureSources('org_1'),
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       hostApplicationDetailProvider(
         'org_1',
@@ -16000,7 +16001,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ..._audienceCaptureSources('org_1'),
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       hostApplicationDetailProvider(
         'org_1',

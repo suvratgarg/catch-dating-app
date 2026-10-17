@@ -214,6 +214,19 @@
               "type": "null"
             }
           ]
+        },
+        "itinerary": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/eventItineraryItem"
+          }
+        },
+        "eventPhotos": {
+          "type": "array",
+          "items": {
+            "$ref": "../embedded/uploaded_photo.schema.json"
+          }
         }
       }
     },

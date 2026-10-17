@@ -1,11 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import {createElement, Fragment} from "react";
+import {renderToStaticMarkup} from "react-dom/server";
 import {describe, expect, it} from "vitest";
 import {eventDetailCopy} from "../../content/events";
+import {interpolateContent} from "../../content/interpolate";
 import {
   buildPublicEventDetailRecords,
   getEventDetailForPath,
 } from "../events/eventDetailModel";
+import {EventDetailHeroSection, EventDetailFactsSection, EventDetailReviewsSection} from "../events/sections/EventDetailSections";
 import {hostListings} from "./data";
 import {
   listingClaimPresentationFor,
@@ -259,6 +263,12 @@ function verifyEventDetail(
   const eventId = `matrix-${supply}`;
   const eventListing = {
     ...listing,
+    reviews: [{
+      id: "matrix-event-review", eventId, reviewerName: "Matrix attendee",
+      rating: 5, comment: "A welcoming event.", createdAt: "2026-07-20T10:00:00.000Z",
+      verificationStatus: "verified", source: "catchEvent", isAnonymous: false,
+      ownerResponse: null,
+    }],
     catchEvents: supply === "catchNative" ? [{
       id: eventId,
       role: "hostEventSetup",
@@ -280,7 +290,7 @@ function verifyEventDetail(
     }] : [],
     externalEvents: supply === "external" ? [{
       id: eventId,
-      title: eventDetailCopy.hero.externalActionHeading,
+      title: interpolateContent(eventDetailCopy.hero.externalActionHeading, {source: "Luma"}),
       activityKind: "socialRun",
       availability: "read_only_external",
       startTime: "2099-01-01T10:00:00.000Z",
@@ -308,19 +318,34 @@ function verifyEventDetail(
   expect(Boolean(event)).toBe(readable);
   expect(expectations["event.details"].disposition)
     .toBe(readable ? "visibleReadOnly" : "hidden");
-  expect(expectations["event.appAction"].disposition)
-    .toBe(readable && supply === "catchNative" ? "visibleExternal" : "hidden");
+  expect(expectations["event.webGuestJourney"].disposition)
+    .toBe(readable && supply === "catchNative" ? "visibleWeb" : "hidden");
   expect(expectations["event.officialSource"].disposition)
     .toBe(readable && supply === "external" ? "visibleExternal" : "hidden");
   expect(expectations["organizer.openDetail"].disposition)
     .toBe(readable ? "visibleWeb" : "hidden");
-  expect(expectations["organizer.claim"].disposition)
-    .toBe(readable && policy.canRequestClaim ? "visibleWeb" : "hidden");
   expect(expectations["review.read"].disposition).toBe(
-    !readable
-      ? "hidden"
-      : policy.canReadPublicReviews
-        ? "visibleReadOnly"
-        : "visibleDisabled"
+    event && policy.canReadPublicReviews && event.eventReviews.length
+      ? "visibleReadOnly" : "hidden"
   );
+
+  // Exercise the same rendered sections as the page, so stale policy-only
+  // expectations cannot keep an obsolete booking or claim action green.
+  const root = document.createElement("div");
+  root.innerHTML = event ? renderToStaticMarkup(createElement(Fragment, null,
+    createElement(EventDetailHeroSection, {event}),
+    createElement(EventDetailFactsSection, {event}),
+    createElement(EventDetailReviewsSection, {event}),
+  )) : "";
+  expect(Boolean(root.querySelector(`a[href="/booking/${eventId}/"]`)))
+    .toBe(expectations["event.webGuestJourney"].disposition === "visibleWeb");
+  expect(Boolean(root.querySelector('a[href="https://luma.com/matrix-event"]')))
+    .toBe(expectations["event.officialSource"].disposition === "visibleExternal");
+  expect(root.querySelector('a[href^="/claim/"]')).toBeNull();
+  expect(Boolean(root.querySelector("#reviews")))
+    .toBe(expectations["review.read"].disposition === "visibleReadOnly");
+  if (event) {
+    expect(renderToStaticMarkup(createElement(EventDetailReviewsSection,
+      {event: {...event, eventReviews: []}}))).toBe("");
+  }
 }

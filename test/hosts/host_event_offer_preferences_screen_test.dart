@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
@@ -13,37 +12,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../test_pump_helpers.dart';
+import 'event_controller_test_support.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   final hash = List.filled(64, 'a').join();
 
-  EventOfferConfiguration offerConfiguration({int revision = 0}) =>
-      revision > 0
-          ? const EventOfferConfiguration(
-              organizerId: 'club-1',
-              eventId: 'event-1',
-              eventSourceRevision: 8,
-              startsAtMillis: 1791043800000,
-              nowMillis: 1790000000000,
-              suggestedExpiresAtMillis: null,
-              preferencesRevision: 1,
-              preferences: null,
-            )
-          : EventOfferConfiguration.fromResponse({
-              'organizerId': 'club-1',
-              'eventId': 'event-1',
-              'eventSourceRevision': 8,
-              'startsAtMillis': 1791043800000,
-              'nowMillis': 1790000000000,
-              'suggestedExpiresAtMillis': null,
-              'preferencesRevision': revision,
-              'preferences': null,
-              'paymentTerms': null,
-            });
+  EventOfferConfiguration offerConfiguration({int revision = 0}) => revision > 0
+      ? const EventOfferConfiguration(
+          organizerId: 'club-1',
+          eventId: 'event-1',
+          eventSourceRevision: 8,
+          startsAtMillis: 1791043800000,
+          nowMillis: 1790000000000,
+          suggestedExpiresAtMillis: null,
+          preferencesRevision: 1,
+          preferences: null,
+        )
+      : EventOfferConfiguration.fromResponse({
+          'organizerId': 'club-1',
+          'eventId': 'event-1',
+          'eventSourceRevision': 8,
+          'startsAtMillis': 1791043800000,
+          'nowMillis': 1790000000000,
+          'suggestedExpiresAtMillis': null,
+          'preferencesRevision': revision,
+          'preferences': null,
+          'paymentTerms': null,
+        });
 
   ManagerEventSetupDefaults defaults({
     ManagerEventSetupPreferences preferences =
@@ -61,25 +59,27 @@ void main() {
     reviewedDefaultsHash: hash,
   );
 
-  EventOfferPreferencesController offerController({
+  TestEventOfferPreferencesController offerController({
     int revision = 0,
     ManagerEventSetupPreferences? defaultPreferences,
     List<EventOfferPreferencesUpdateRequest>? writes,
     PreviewEventOfferPreferences? readPreview,
     String displayName = 'Saturday mixer',
   }) {
-    final controller = EventOfferPreferencesController(
+    final controller = TestEventOfferPreferencesController(
       userId: 'host-1',
       organizerId: 'club-1',
       eventId: 'event-1',
       displayName: displayName,
       readConfiguration: ({required organizerId, required eventId}) async =>
           offerConfiguration(
-            revision:
-                writes == null || writes.isEmpty ? revision : revision + 1,
+            revision: writes == null || writes.isEmpty
+                ? revision
+                : revision + 1,
           ),
-      readDefaults: (_) async =>
-          defaults(preferences: defaultPreferences ?? const ManagerEventSetupPreferences()),
+      readDefaults: (_) async => defaults(
+        preferences: defaultPreferences ?? const ManagerEventSetupPreferences(),
+      ),
       readPreview: readPreview,
       write: (request) async {
         writes?.add(request);
@@ -104,87 +104,74 @@ void main() {
     home: child,
   );
 
-  testWidgets('settings controller rebinds for organizer, event, and actor',
-      (tester) async {
+  testWidgets('settings provider rebinds for organizer, event, and actor', (
+    tester,
+  ) async {
     final accounts = StreamController<String?>();
     addTearDown(accounts.close);
     var organizerId = 'club-1';
     var eventId = 'event-1';
+    var uid = 'host-1';
     late StateSetter updateRoute;
     final bindings = <String>[];
-    await tester.pumpWidget(ProviderScope(
-      overrides: [uidProvider.overrideWith((ref) => accounts.stream)],
-      child: app(StatefulBuilder(builder: (context, setState) {
-        updateRoute = setState;
-        return HostEventOfferPreferencesScreen(
-          organizerId: organizerId, eventId: eventId, onBack: () {},
-          controllerForUser: (uid) {
-            bindings.add('$uid/$organizerId/$eventId');
-            return EventOfferPreferencesController(
-              userId: uid, organizerId: organizerId, eventId: eventId,
-              readConfiguration: ({required organizerId,
-                  required eventId}) async =>
-                  throw StateError('Fixture read unavailable'),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => accounts.stream),
+          eventOfferPreferencesDependenciesProvider.overrideWithValue(
+            EventOfferPreferencesDependencies(
+              readConfiguration:
+                  ({required organizerId, required eventId}) async {
+                    bindings.add('$uid/$organizerId/$eventId');
+                    throw StateError('Fixture read unavailable');
+                  },
               readDefaults: (_) async =>
                   throw StateError('Fixture read unavailable'),
               write: (_) async => throw StateError('No save'),
-            );
-          },
-        );
-      }),
-    )));
-    accounts.add('host-1');
+            ),
+          ),
+        ],
+        child: app(
+          StatefulBuilder(
+            builder: (context, setState) {
+              updateRoute = setState;
+              return HostEventOfferPreferencesScreen(
+                organizerId: organizerId,
+                eventId: eventId,
+                onBack: () {},
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(bindings, isEmpty);
+    accounts.add(uid);
     await pumpFeatureUi(tester);
     expect(bindings, ['host-1/club-1/event-1']);
-    updateRoute(() { organizerId = 'club-2'; eventId = 'event-2'; });
+    updateRoute(() {
+      organizerId = 'club-2';
+      eventId = 'event-2';
+    });
     await pumpFeatureUi(tester);
     expect(bindings.last, 'host-1/club-2/event-2');
-    accounts.add('host-2');
+    uid = 'host-2';
+    accounts.add(uid);
     await pumpFeatureUi(tester);
     expect(bindings.last, 'host-2/club-2/event-2');
     expect(bindings.length, 3);
-  });
-
-  testWidgets('waits for async manager identity before starting settings read',
-      (tester) async {
-    final accounts = StreamController<String?>();
-    addTearDown(accounts.close);
-    var created = 0;
-    final controller = EventOfferPreferencesController(
-      userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
-      readConfiguration: ({required organizerId, required eventId}) async =>
-          offerConfiguration(),
-      readDefaults: (_) async => defaults(),
-      write: (_) async => throw StateError('No save in this test'),
-    );
-    await tester.pumpWidget(ProviderScope(
-      overrides: [uidProvider.overrideWith((ref) => accounts.stream)],
-      child: app(HostEventOfferPreferencesScreen(
-        organizerId: 'club-1', eventId: 'event-1', onBack: () {},
-        controllerForUser: (uid) {
-          expect(uid, 'host-1');
-          created++;
-          return controller;
-        },
-      )),
-    ));
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(created, 0);
-    accounts.add('host-1');
-    await pumpFeatureUi(tester);
-    expect(created, 1);
-    expect(find.text('Offer payments'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('fresh event shows mode choices and lists save blockers',
-      (tester) async {
+  testWidgets('fresh event shows mode choices and lists save blockers', (
+    tester,
+  ) async {
     final controller = offerController();
     addTearDown(controller.dispose);
-    await tester.pumpWidget(app(HostEventOfferPreferencesScreen(
-      organizerId: 'club-1', eventId: 'event-1',
-      initialController: controller, onBack: () {},
-    )));
+    await tester.pumpWidget(
+      app(testOfferPreferencesScreen(controller: controller, onBack: () {})),
+    );
     await pumpFeatureUi(tester);
     expect(find.text('Free admission'), findsOneWidget);
     expect(find.text('Payment page link'), findsOneWidget);
@@ -212,41 +199,53 @@ void main() {
       var backed = false;
       final controller = offerController(writes: writes);
       addTearDown(controller.dispose);
-      await tester.pumpWidget(app(HostEventOfferPreferencesScreen(
-        organizerId: 'club-1', eventId: 'event-1',
-        initialController: controller, onBack: () => backed = true,
-      )));
+      await tester.pumpWidget(
+        app(
+          testOfferPreferencesScreen(
+            controller: controller,
+            onBack: () => backed = true,
+          ),
+        ),
+      );
       await pumpFeatureUi(tester);
 
-      await tester.tap(find.byKey(
-        const ValueKey('offer-payment-mode-reusablePage')));
+      await tester.tap(
+        find.byKey(const ValueKey('offer-payment-mode-reusablePage')),
+      );
       await pumpFeatureUi(tester);
-      expect(find.byKey(const ValueKey('offer-payment-amount')),
-          findsOneWidget);
-      expect(find.byKey(const ValueKey('offer-payment-page-url')),
-          findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('offer-payment-amount')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('offer-payment-page-url')),
+        findsOneWidget,
+      );
       expect(find.text('SET A TICKET PRICE'), findsOneWidget);
 
       await tester.enterText(
-          find.byKey(const ValueKey('offer-payment-amount')), '1200');
+        find.byKey(const ValueKey('offer-payment-amount')),
+        '1200',
+      );
       await pumpFeatureUi(tester);
       expect(find.text('ADD THE PAYMENT PAGE LINK'), findsOneWidget);
 
       await tester.enterText(
-          find.byKey(const ValueKey('offer-payment-page-url')),
-          'https://rzp.io/l/saturday-social');
+        find.byKey(const ValueKey('offer-payment-page-url')),
+        'https://rzp.io/l/saturday-social',
+      );
       await pumpFeatureUi(tester);
-      expect(
-          find.text('CONFIRM THE PAGE CAN BE REUSED'), findsOneWidget);
+      expect(find.text('CONFIRM THE PAGE CAN BE REUSED'), findsOneWidget);
 
-      final reuseField =
-          find.byKey(const ValueKey('offer-payment-page-reuse'));
+      final reuseField = find.byKey(const ValueKey('offer-payment-page-reuse'));
       await tester.ensureVisible(reuseField);
       await pumpFeatureUi(tester);
-      await tester.tap(find.descendant(
-        of: reuseField,
-        matching: find.byType(CatchToggleInput),
-      ));
+      await tester.tap(
+        find.descendant(
+          of: reuseField,
+          matching: find.byType(CatchToggleInput),
+        ),
+      );
       await pumpFeatureUi(tester);
       expect(find.text('SET OFFER VALIDITY'), findsOneWidget);
 
@@ -257,24 +256,29 @@ void main() {
       expect(find.text('CHOOSE HOW GUESTS PAY'), findsNothing);
       expect(find.textContaining('READY'), findsOneWidget);
 
-      await tester.tap(find.byKey(
-          const ValueKey('offer-payment-setup-save')));
+      await tester.tap(find.byKey(const ValueKey('offer-payment-setup-save')));
       await pumpFeatureUi(tester);
       expect(writes, hasLength(1));
       final intents = writes.single.intents;
       expect(intents.expectedAmountMinor.value, 120000);
-      expect(intents.collectionPreference.value,
-          EventCollectionPreference.reusablePage);
+      expect(
+        intents.collectionPreference.value,
+        EventCollectionPreference.reusablePage,
+      );
       expect(intents.offerValidityMinutes.value, 1440);
-      expect(intents.reusablePaymentPage.value?.url,
-          'https://rzp.io/l/saturday-social');
+      expect(
+        intents.reusablePaymentPage.value?.url,
+        'https://rzp.io/l/saturday-social',
+      );
       expect(intents.reusablePaymentPage.value?.reusableForEvents, isTrue);
       expect(backed, isTrue);
       expect(tester.takeException(), isNull);
-    });
+    },
+  );
 
-  testWidgets('free admission hides payment fields and records a free offer',
-      (tester) async {
+  testWidgets('free admission hides payment fields and records a free offer', (
+    tester,
+  ) async {
     final writes = <EventOfferPreferencesUpdateRequest>[];
     var backed = false;
     final controller = offerController(
@@ -287,45 +291,54 @@ void main() {
       ),
     );
     addTearDown(controller.dispose);
-    await tester.pumpWidget(app(HostEventOfferPreferencesScreen(
-      organizerId: 'club-1', eventId: 'event-1',
-      initialController: controller, onBack: () => backed = true,
-    )));
+    await tester.pumpWidget(
+      app(
+        testOfferPreferencesScreen(
+          controller: controller,
+          onBack: () => backed = true,
+        ),
+      ),
+    );
     await pumpFeatureUi(tester);
     // Organizer suggestions preselect manual collection on this event; the
     // mode picker collapses to the selected summary until "Change" re-opens it.
-    expect(find.byKey(const ValueKey('offer-payment-instructions')),
-        findsOneWidget);
-    expect(find.byKey(const ValueKey('offer-payment-mode-free')),
-        findsNothing);
+    expect(
+      find.byKey(const ValueKey('offer-payment-instructions')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('offer-payment-mode-free')), findsNothing);
 
-    await tester.tap(
-        find.byKey(const ValueKey('offer-payment-mode-change')));
+    await tester.tap(find.byKey(const ValueKey('offer-payment-mode-change')));
     await pumpFeatureUi(tester);
-    await tester.tap(
-        find.byKey(const ValueKey('offer-payment-mode-free')));
+    await tester.tap(find.byKey(const ValueKey('offer-payment-mode-free')));
     await pumpFeatureUi(tester);
     expect(find.byKey(const ValueKey('offer-payment-amount')), findsNothing);
-    expect(find.byKey(const ValueKey('offer-payment-instructions')),
-        findsNothing);
+    expect(
+      find.byKey(const ValueKey('offer-payment-instructions')),
+      findsNothing,
+    );
     expect(find.text('Nothing to confirm'), findsOneWidget);
     expect(find.textContaining('READY'), findsOneWidget);
 
-    await tester.tap(
-        find.byKey(const ValueKey('offer-payment-setup-save')));
+    await tester.tap(find.byKey(const ValueKey('offer-payment-setup-save')));
     await pumpFeatureUi(tester);
     expect(writes, hasLength(1));
     expect(writes.single.intents.expectedAmountMinor.value, 0);
-    expect(writes.single.intents.collectionPreference.mode,
-        EventSetupValueMode.clear);
-    expect(writes.single.intents.paymentInstructions.mode,
-        EventSetupValueMode.clear);
+    expect(
+      writes.single.intents.collectionPreference.mode,
+      EventSetupValueMode.clear,
+    );
+    expect(
+      writes.single.intents.paymentInstructions.mode,
+      EventSetupValueMode.clear,
+    );
     expect(backed, isTrue);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('published preferences remain scrollable at 360px and 2x text',
-      (tester) async {
+  testWidgets('published preferences remain scrollable at 360px and 2x text', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(720, 1280);
     tester.view.devicePixelRatio = 2;
     addTearDown(() {
@@ -339,13 +352,19 @@ void main() {
       ),
     );
     addTearDown(controller.dispose);
-    await tester.pumpWidget(ProviderScope(child: app(MediaQuery(
-      data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-      child: HostEventOfferPreferencesScreen(
-        organizerId: 'club-1', eventId: 'event-1',
-        initialController: controller, onBack: () {},
+    await tester.pumpWidget(
+      ProviderScope(
+        child: app(
+          MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: testOfferPreferencesScreen(
+              controller: controller,
+              onBack: () {},
+            ),
+          ),
+        ),
       ),
-    ))));
+    );
     await pumpFeatureUi(tester);
     expect(find.text('Offer payments'), findsOneWidget);
     final amount = find.byKey(const ValueKey('offer-payment-amount'));

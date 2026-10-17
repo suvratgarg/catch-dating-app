@@ -173,6 +173,7 @@ class CreateEventDraftSnapshot {
       interactionModel: interactionModel,
       paceName: paceName,
       routePlan: routePlan?.toJson(),
+      routePlanEnabled: routePlan != null,
       itinerary: itinerary,
       meetingPoint: meetingPoint,
       locationDetails: locationDetails,

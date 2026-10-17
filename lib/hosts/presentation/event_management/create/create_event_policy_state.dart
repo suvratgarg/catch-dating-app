@@ -7,10 +7,15 @@ enum EventAdmissionPreset {
   openCapacity,
   inviteOnly,
   requestToJoin,
+  requestToJoinMembersExempt,
   balancedSingles,
 }
 
 extension EventAdmissionPresetX on EventAdmissionPreset {
+  bool get requiresReview =>
+      this == EventAdmissionPreset.requestToJoin ||
+      this == EventAdmissionPreset.requestToJoinMembersExempt;
+
   String label(AppLocalizations l10n) => switch (this) {
     EventAdmissionPreset.openCapacity =>
       l10n.hostsCreateEventPolicyStateLabelOpen,
@@ -18,6 +23,8 @@ extension EventAdmissionPresetX on EventAdmissionPreset {
       l10n.hostsCreateEventPolicyStateLabelInvite,
     EventAdmissionPreset.requestToJoin =>
       l10n.hostsCreateEventPolicyStateLabelRequest,
+    EventAdmissionPreset.requestToJoinMembersExempt =>
+      l10n.hostsCreateEventPolicyStateLabelMembersSkipReview,
     EventAdmissionPreset.balancedSingles =>
       l10n.hostsCreateEventPolicyStateLabelBalanced,
   };
@@ -29,6 +36,8 @@ extension EventAdmissionPresetX on EventAdmissionPreset {
       l10n.hostsCreateEventPolicyStateTitleInviteOnly,
     EventAdmissionPreset.requestToJoin =>
       l10n.hostsCreateEventPolicyStateTitleRequestToJoin,
+    EventAdmissionPreset.requestToJoinMembersExempt =>
+      l10n.hostsCreateEventPolicyStateTitleMembersSkipReview,
     EventAdmissionPreset.balancedSingles =>
       l10n.hostsCreateEventPolicyStateTitleBalancedSingles,
   };
@@ -40,6 +49,8 @@ extension EventAdmissionPresetX on EventAdmissionPreset {
       l10n.hostsCreateEventPolicyStateDescriptionOnlyPeopleWithThe,
     EventAdmissionPreset.requestToJoin =>
       l10n.hostsCreateEventPolicyStateDescriptionPeopleRequestASpot,
+    EventAdmissionPreset.requestToJoinMembersExempt =>
+      l10n.hostsCreateEventPolicyStateDescriptionMembersSkipReview,
     EventAdmissionPreset.balancedSingles =>
       l10n.hostsCreateEventPolicyStateDescriptionStraightMenAndWomen,
   };
@@ -163,7 +174,8 @@ class CreateEventPolicyState {
       EventAdmissionPreset.openCapacity =>
         EventAdmissionDefaultPreset.openCapacity,
       EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
-      EventAdmissionPreset.requestToJoin =>
+      EventAdmissionPreset.requestToJoin ||
+      EventAdmissionPreset.requestToJoinMembersExempt =>
         EventAdmissionDefaultPreset.openCapacity,
       EventAdmissionPreset.balancedSingles =>
         EventAdmissionDefaultPreset.balancedSingles,
@@ -225,9 +237,11 @@ class CreateEventPolicyState {
       dynamicPricingMax: dynamicPricingMax,
       currencyCode: currencyCode,
     );
-    if (admissionPreset == EventAdmissionPreset.requestToJoin) {
+    if (admissionPreset.requiresReview) {
       final policy = EventPolicyBundle.requestToJoinEvent(
         capacityLimit: capacityLimit,
+        approvedMembersSkipReview:
+            admissionPreset == EventAdmissionPreset.requestToJoinMembersExempt,
         basePriceInPaise: basePriceInPaise,
         cancellationPolicy: defaults.cancellationPolicy,
       );

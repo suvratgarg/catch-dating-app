@@ -1,16 +1,13 @@
+import {useFreeEventRegistrationController} from "./useFreeEventRegistrationController";
 import {PublicPaidEventRegistration} from "./PublicPaidEventRegistration";
 import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
-import {type FormEvent, useEffect, useId, useRef, useState} from "react";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
 import {eventDetailCopy} from "../../content/events";
-import {
-  beginPublicEventPhoneVerification,
-  registerPublicEvent,
-  type PublicEventPhoneVerification,
-} from "../../firebase";
+
 import {
   Button,
+  ButtonLink,
   EventRegistrationConsent,
   EventRegistrationConsents,
   EventRegistrationForm,
@@ -18,7 +15,6 @@ import {
   FormStatus,
   TextField,
 } from "../../shared/ui/primitives";
-import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
 export function PublicEventRegistration({eventId, inviteToken, mode = "free", allowNewBookings = true}: {eventId: string; inviteToken?: string | null; mode?: "free" | "paid"; allowNewBookings?: boolean}) {
@@ -33,91 +29,11 @@ function FreeEventRegistration({
   eventId: string;
   inviteToken?: string | null;
 }) {
-  const reactId = useId();
-  const recaptchaContainerId = `event-registration-recaptcha-${reactId.replace(/:/gu, "")}`;
-  const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
-  const [displayName, setDisplayName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [code, setCode] = useState("");
-  const [whatsappUpdates, setWhatsappUpdates] = useState(false);
-  const [smsUpdates, setSmsUpdates] = useState(false);
-  const [stage, setStage] = useState<"details" | "code" | "success">("details");
-  const [registeredScope, setRegisteredScope] = useState<{eventId: string; attendeeId: string} | null>(null);
-  const [pending, setPending] = useState(false);
-  const [status, setStatus] = useState<FormStatusModel>({message: "", tone: ""});
+  const {reactId, recaptchaContainerId, displayName, setDisplayName,
+    phoneNumber, setPhoneNumber, code, setCode, whatsappUpdates, setWhatsappUpdates,
+    smsUpdates, setSmsUpdates, stage, registeredScope, pending, status,
+    verified, handleSubmit} = useFreeEventRegistrationController(eventId, inviteTokenOverride);
   const copy = eventDetailCopy.hero.webRegistration;
-  const inviteToken = inviteTokenOverride ?? eventInviteTokenFromLocation();
-
-  useEffect(() => () => verificationRef.current?.clear(), []);
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (pending || stage === "success") return;
-    const name = displayName.trim();
-    const phone = phoneNumber.replace(/[\s()-]/gu, "");
-    if (name.length < 1) {
-      setStatus({message: copy.missingName, tone: "is-error"});
-      return;
-    }
-    if (!/^\+[1-9][0-9]{7,14}$/u.test(phone)) {
-      setStatus({message: copy.invalidPhone, tone: "is-error"});
-      return;
-    }
-    if (stage === "code" && !/^[0-9]{6}$/u.test(code.trim())) {
-      setStatus({message: copy.invalidCode, tone: "is-error"});
-      return;
-    }
-
-    setPending(true);
-    setStatus({message: "", tone: ""});
-    try {
-      if (stage === "details") {
-        verificationRef.current?.clear();
-        verificationRef.current = await beginPublicEventPhoneVerification(
-          phone,
-          recaptchaContainerId
-        );
-        setStage("code");
-        setStatus({message: copy.codeSent, tone: "is-success"});
-        return;
-      }
-      const verification = verificationRef.current;
-      if (!verification) {
-        setStage("details");
-        throw new Error(copy.verificationExpired);
-      }
-      await verification.confirm(code.trim());
-      const response = await registerPublicEvent({
-        eventId,
-        displayName: name,
-        organizerUpdates: {
-          whatsapp: whatsappUpdates,
-          sms: smsUpdates,
-          termsVersion: "organizer-updates-v1",
-        },
-        inviteToken,
-      });
-      verificationRef.current?.clear();
-      verificationRef.current = null;
-      setStage("success");
-      setRegisteredScope(response.status === "waitlisted" ? null :
-        {eventId: response.eventId, attendeeId: response.attendeeId});
-      setStatus({
-        message: response.status === "alreadyRegistered" ?
-          copy.alreadyRegistered : response.status === "waitlisted" ?
-            copy.waitlisted : copy.success,
-        tone: "is-success",
-      });
-    } catch (error) {
-      if (["auth/code-expired", "auth/session-expired"].includes(errorCode(error))) {
-        verificationRef.current?.clear();
-        verificationRef.current = null;
-        setStage("details");
-      }
-      setStatus({message: registrationError(error), tone: "is-error"});
-    } finally {
-      setPending(false);
-    }
-  }
 
   return (
     <EventRegistrationForm onSubmit={handleSubmit}>
@@ -133,7 +49,7 @@ function FreeEventRegistration({
       />
       <TextField
         autoComplete="tel"
-        disabled={pending || stage !== "details"}
+        disabled={verified || pending || stage !== "details"}
         id={`${reactId}-event-registration-phone`}
         inputMode="tel"
         label={copy.phoneLabel}
@@ -180,12 +96,13 @@ function FreeEventRegistration({
             copy.sendingCodeAction : copy.registeringAction}
           type="submit"
         >
-          {stage === "details" ? copy.sendCodeAction : copy.confirmAction}
+          {stage === "details" ? verified ? copy.registerAction : copy.sendCodeAction : copy.confirmAction}
         </Button>
       ) : null}
       <FormStatus status={status} />
       {stage === "success" && registeredScope?.eventId === eventId ?
         <>
+          <ButtonLink href={`/booking/${encodeURIComponent(eventId)}/`}>{eventDetailCopy.hero.guestAction}</ButtonLink>
           <EventSmsPreferencePanel {...registeredScope} />
           <EventRcsPreferencesPanel {...registeredScope} />
           <EventWhatsappPreferencesPanel {...registeredScope} />
@@ -193,29 +110,4 @@ function FreeEventRegistration({
       <EventRegistrationPrivacy>{copy.privacy}</EventRegistrationPrivacy>
     </EventRegistrationForm>
   );
-}
-
-function registrationError(error: unknown): string {
-  const copy = eventDetailCopy.hero.webRegistration;
-  switch (errorCode(error)) {
-    case "auth/invalid-verification-code":
-      return copy.invalidCode;
-    case "auth/code-expired":
-    case "auth/session-expired":
-      return copy.verificationExpired;
-    case "auth/too-many-requests":
-    case "auth/quota-exceeded":
-    case "functions/resource-exhausted":
-      return copy.tooManyRequests;
-    case "functions/failed-precondition":
-    case "functions/not-found":
-      return copy.eventUnavailable;
-    default:
-      return copy.genericError;
-  }
-}
-
-function errorCode(error: unknown): string {
-  if (typeof error !== "object" || error === null || !("code" in error)) return "";
-  return typeof error.code === "string" ? error.code : "";
 }
