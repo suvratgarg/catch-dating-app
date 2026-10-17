@@ -306,3 +306,47 @@ test("paused pre-I/O claim can prove permit expiry and retry without duplicate",
     assert.equal(h.sends()[0][1].deliveryState, "accepted");
     assert.equal(activityItems(h.db)[0][1].readAt, permitUntil);
   });
+
+test("in-flight unknown journal cannot close before late SDK acceptance",
+  async () => {
+    const h = runnerHarness();
+    let enter!: () => void;
+    const entered = new Promise<void>((resolve) => {
+      enter = resolve;
+    });
+    let resume!: () => void;
+    const barrier = new Promise<void>((resolve) => {
+      resume = resolve;
+    });
+    const sender = buildMomentRunnerDeps({firestore: h.deps.firestore,
+      nowMillis: h.deps.nowMillis, pushCopyFor: h.deps.pushCopyFor,
+      sendProgramFcm: async (message) => {
+        h.messages.push(message); enter(); await barrier;
+        return "projects/test/messages/late-accepted";
+      }});
+    const a = dispatchMomentRun(sender, activityRequest.run.runId)
+      .then(() => null, (error: Error) => error);
+    await entered;
+    assert.equal(await h.dispatch(), "deferred");
+    assert.equal(h.sends()[0][1].deliveryState, "unknown");
+    h.clock.now += ACTIVITY_WINDOW + 1;
+    const afterExpiry = await h.dispatch();
+    const update = h.db.updateDoc.bind(h.db);
+    let fail = true;
+    h.db.updateDoc = (path, data) => {
+      if (fail && path.startsWith("organizerMomentSends/")) {
+        throw new Error("late journal unavailable");
+      }
+      update(path, data);
+    };
+    resume();
+    assert.match((await a)?.message ?? "", /late journal unavailable/);
+    assert.equal(activityRecord(h.db).attempts[0].state.kind, "accepted");
+    assert.equal(afterExpiry, "deferred");
+    assert.equal(h.db.getDoc(
+      `organizerMomentRuns/${activityRequest.run.runId}`)?.status, "planned");
+    fail = false;
+    await runMomentSweep(h.deps);
+    assert.equal(h.sends()[0][1].deliveryState, "accepted");
+    assert.equal(h.messages.length, 1);
+  });

@@ -14265,7 +14265,11 @@ export interface ProgramDeliveryMessageDocument {
           kind: "unknown";
           at: number;
           providerMessageId: string | null;
-          reason: "timeout" | "connectionLost" | "workerInterrupted";
+          reason:
+            | "timeout"
+            | "connectionLost"
+            | "workerInterrupted"
+            | "sdkOutcomeUnknown";
           reconcileAfter: number;
         }
       | {

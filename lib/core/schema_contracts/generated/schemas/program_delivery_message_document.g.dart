@@ -534,6 +534,7 @@ const schemaProgramDeliveryMessageDocumentSchema = <String, Object?>{
                       'timeout',
                       'connectionLost',
                       'workerInterrupted',
+                      'sdkOutcomeUnknown',
                     ],
                   },
                   'reconcileAfter': <String, Object?>{
@@ -921,6 +922,37 @@ const schemaProgramDeliveryMessageDocumentSchema = <String, Object?>{
                 'type': 'integer',
                 'minimum': 0,
                 'maximum': 9007199254740991,
+              },
+            },
+          },
+        },
+        'if': <String, Object?>{
+          'properties': <String, Object?>{
+            'state': <String, Object?>{
+              'properties': <String, Object?>{
+                'reason': <String, Object?>{
+                  'const': 'sdkOutcomeUnknown',
+                },
+              },
+              'required': <Object?>[
+                'reason',
+              ],
+            },
+          },
+          'required': <Object?>[
+            'state',
+          ],
+        },
+        'then': <String, Object?>{
+          'properties': <String, Object?>{
+            'binding': <String, Object?>{
+              'properties': <String, Object?>{
+                'routeId': <String, Object?>{
+                  'const': 'catchProgramActivity',
+                },
+                'provider': <String, Object?>{
+                  'const': 'fcm',
+                },
               },
             },
           },

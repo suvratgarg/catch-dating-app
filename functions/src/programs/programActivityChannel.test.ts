@@ -89,6 +89,9 @@ test("SDK failure stays unknown forever, including after the original window",
     assert.deepEqual(await deliver(), first);
     assert.equal(calls, 1);
     assert.equal(activityRecord(h.db).attempts.length, 1);
+    const state = activityRecord(h.db).attempts[0].state;
+    assert.equal(state.kind === "unknown" && state.reason,
+      "sdkOutcomeUnknown");
   });
 
 test("concurrent producers with changing copy share one committed intent",
@@ -320,3 +323,87 @@ for (const state of ["absent", "reserved", "unknown"] as const) {
     assert.equal(h.messages.length, 0);
   });
 }
+
+for (const change of ["accepted", "laterUnknown", "binding", "intent",
+  "otherAttempt", "closed", "conflict"] as const) {
+  test(`SDK settlement CAS preserves ${change} evidence`, async () => {
+    const h = reservedChannel();
+    await h.outbox.enqueue(h.intent);
+    const reserved = await h.outbox.reserve(h.messageId);
+    let expected: unknown;
+    const channel = prepareProgramActivityChannel(h.db as unknown as Firestore,
+      h.intent, async () => {
+        const record = structuredClone(activityRecord(h.db));
+        const attempt = record.attempts[0];
+        if (change === "accepted") {
+          attempt.state = {kind: "accepted", at: ACTIVITY_NOW,
+            providerMessageId: "projects/test/messages/proven"};
+        }
+        if (change === "laterUnknown" && attempt.state.kind === "unknown") {
+          attempt.state.reason = "connectionLost";
+        }
+        if (change === "binding") {
+          attempt.binding.recipientEndpointId = "new";
+        }
+        if (change === "intent") record.intent.title = "Changed source";
+        if (change === "otherAttempt") attempt.attemptId = "other-attempt";
+        if (change === "closed") record.lifecycle = "cancelled";
+        if (change === "conflict") record.deliveryConflict = true;
+        expected = record;
+        h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+        throw new Error("SDK settled without acceptance evidence");
+      }, () => h.clock.now);
+    assert.equal(channel.kind, "ready");
+    if (channel.kind !== "ready") throw new Error("Expected channel");
+    await channel.dispatchReserved(h.outbox, h.messageId,
+      reserved.record.attempts[0].attemptId);
+    assert.deepEqual(activityRecord(h.db), expected);
+  });
+}
+
+test("SDK settlement write failure leaves provisional unknown and no resend",
+  async () => {
+    const h = activityHarness();
+    const write = h.db.setDoc.bind(h.db);
+    h.db.setDoc = (path, data) => {
+      const attempts = data.attempts as Array<{state: {reason?: string}}>;
+      if (attempts?.some((attempt) =>
+        attempt.state.reason === "sdkOutcomeUnknown")) {
+        throw new Error("settlement unavailable");
+      }
+      write(path, data);
+    };
+    let calls = 0;
+    const deliver = () => deliverProgramActivity({...activityRequest,
+      db: h.db as unknown as Firestore, now: () => h.clock.now,
+      send: async () => {
+        calls++; return "";
+      }});
+    await assert.rejects(deliver(), /settlement unavailable/);
+    const state = activityRecord(h.db).attempts[0].state;
+    assert.equal(state.kind === "unknown" && state.reason, "workerInterrupted");
+    h.clock.now += ACTIVITY_WINDOW + 1;
+    assert.equal((await deliver()).kind, "sent");
+    assert.equal(calls, 1);
+  });
+
+test("stronger accepted receipt advances settled unknown without another send",
+  async () => {
+    const h = reservedChannel();
+    await h.outbox.enqueue(h.intent);
+    const reserved = await h.outbox.reserve(h.messageId);
+    const attempt = reserved.record.attempts[0];
+    const channel = prepareProgramActivityChannel(h.db as unknown as Firestore,
+      h.intent, async () => "", () => h.clock.now);
+    if (channel.kind !== "ready") throw new Error("Expected channel");
+    await channel.dispatchReserved(h.outbox, h.messageId, attempt.attemptId);
+    const state = activityRecord(h.db).attempts[0].state;
+    assert.equal(state.kind === "unknown" && state.reason,
+      "sdkOutcomeUnknown");
+    await h.outbox.recordReceipt(h.messageId, {attemptId: attempt.attemptId,
+      ...attempt.binding, providerEventId: "synthetic-confirmation",
+      receivedAt: ACTIVITY_NOW, state: {kind: "accepted", at: ACTIVITY_NOW,
+        providerMessageId: "projects/test/messages/proven"}});
+    assert.equal(activityRecord(h.db).attempts[0].state.kind, "accepted");
+    assert.equal(h.messages.length, 0);
+  });

@@ -185,7 +185,8 @@
               "enum": [
                 "timeout",
                 "connectionLost",
-                "workerInterrupted"
+                "workerInterrupted",
+                "sdkOutcomeUnknown"
               ]
             },
             "reconcileAfter": {
@@ -577,6 +578,25 @@
         },
         "authorization": {
           "$ref": "#/definitions/DispatchAuthorization"
+        }
+      },
+      "if": {
+        "properties": {
+          "state": {
+            "properties": {"reason": {"const": "sdkOutcomeUnknown"}},
+            "required": ["reason"]
+          }
+        },
+        "required": ["state"]
+      },
+      "then": {
+        "properties": {
+          "binding": {
+            "properties": {
+              "routeId": {"const": "catchProgramActivity"},
+              "provider": {"const": "fcm"}
+            }
+          }
         }
       }
     },

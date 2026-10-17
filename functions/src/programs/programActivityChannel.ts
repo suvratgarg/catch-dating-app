@@ -2,6 +2,8 @@ import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {Message} from "firebase-admin/messaging";
 import {operationContentHash} from "../operations/durableActions";
+import {runDeliveryTransaction, type DeliveryPermit} from
+  "../delivery/firestoreDeliveryOutbox";
 import {momentFromDocument, programMomentStaffDeadline,
   runFromDocument} from "../moments/momentDocuments";
 import {isTravelOccurrence} from "../moments/momentConditions";
@@ -17,7 +19,8 @@ import type {OrganizerProgramDocument, ProgramStaffGrantDocument,
   UserProfileDocument} from "../shared/generated/firestoreAdminTypes";
 import type {ProgramDeliveryMessageIntent as MessageIntent} from
   "../shared/generated/programDeliveryMessageIntent";
-import type {ProgramDeliveryFacts, ProviderBinding} from "./programDelivery";
+import {parseProgramDeliveryRecord, type DeliveryAttempt,
+  type ProgramDeliveryFacts, type ProviderBinding} from "./programDelivery";
 import type {PreparedProgramChannel, ProgramDeliveryOutbox,
   ProgramChannelDispatchResult} from "./programDeliveryWorker";
 
@@ -214,13 +217,17 @@ async function dispatchActivity(db: Firestore, intent: MessageIntent,
   }
   let providerMessageId: string;
   if (claim.resource.message) {
+    let unknown = false;
+    providerMessageId = "";
     try {
       providerMessageId = await send(claim.resource.message);
-      if (typeof providerMessageId !== "string" || !providerMessageId) {
-        return {kind: "submitted", outcome: {kind: "unknown"}};
-      }
+      unknown = typeof providerMessageId !== "string" || !providerMessageId;
     } catch {
       // SDK retries make a final error insufficient proof of a safe resend.
+      unknown = true;
+    }
+    if (unknown) {
+      await settleSdkUnknown(db, claim.permit, clock);
       return {kind: "submitted", outcome: {kind: "unknown"}};
     }
   } else {
@@ -239,4 +246,48 @@ async function dispatchActivity(db: Firestore, intent: MessageIntent,
     {kind: "submitted", outcome: {kind: "activityRecorded",
       reason: attempt.binding.routeId === "catchProgramActivity" ?
         attempt.binding.pushSuppressionReason! : "noEndpoint"}};
+}
+
+/** This worker observed the SDK promise settle, without acceptance evidence.
+ * A crash or failed receipt write remains workerInterrupted: expiry alone
+ * cannot prove no invocation remains in flight. Such runs stay planned for
+ * reconciliation, never another send, even beyond their original window.
+ */
+async function settleSdkUnknown(db: Firestore,
+  permit: DeliveryPermit<MessageIntent, DeliveryAttempt>,
+  clock: () => number): Promise<void> {
+  await runDeliveryTransaction(db, async (tx) => {
+    const ref = db.collection("programDeliveryMessages").doc(permit.messageId);
+    const snapshot = await tx.get(ref);
+    if (!snapshot.exists) {
+      throw new Error("Program activity record disappeared");
+    }
+    const record = parseProgramDeliveryRecord(snapshot.data());
+    const attempt = record.attempts.find((a) =>
+      a.attemptId === permit.attempt.attemptId);
+    if (record.messageId !== permit.messageId ||
+        record.lifecycle !== "active" || record.deliveryConflict ||
+        operationContentHash(record.intent) !==
+          operationContentHash(permit.intent) ||
+        !attempt || record.attempts.at(-1) !== attempt ||
+        attempt.mode !== "live" ||
+        attempt.binding.routeId !== "catchProgramActivity" ||
+        attempt.binding.provider !== "fcm" ||
+        attempt.state.kind !== "unknown" ||
+        attempt.state.reason !== "workerInterrupted" ||
+        operationContentHash(attempt) !==
+          operationContentHash(permit.attempt)) {
+      return;
+    }
+    const at = clock();
+    if (!Number.isSafeInteger(at) || at < record.updatedAt) {
+      throw new Error("Program activity settlement clock moved backwards");
+    }
+    const next = parseProgramDeliveryRecord({...record,
+      revision: record.revision + 1, updatedAt: at,
+      attempts: record.attempts.map((value) => value !== attempt ? value :
+        {...attempt, state: {...attempt.state, at,
+          reason: "sdkOutcomeUnknown", reconcileAfter: at}})});
+    tx.set(ref, next);
+  });
 }

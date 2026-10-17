@@ -531,7 +531,8 @@ export const programDeliveryMessageDocumentSchema: Record<string, unknown> = {
                     "enum": [
                       "timeout",
                       "connectionLost",
-                      "workerInterrupted"
+                      "workerInterrupted",
+                      "sdkOutcomeUnknown"
                     ]
                   },
                   "reconcileAfter": {
@@ -919,6 +920,37 @@ export const programDeliveryMessageDocumentSchema: Record<string, unknown> = {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "state": {
+              "properties": {
+                "reason": {
+                  "const": "sdkOutcomeUnknown"
+                }
+              },
+              "required": [
+                "reason"
+              ]
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "binding": {
+              "properties": {
+                "routeId": {
+                  "const": "catchProgramActivity"
+                },
+                "provider": {
+                  "const": "fcm"
+                }
               }
             }
           }

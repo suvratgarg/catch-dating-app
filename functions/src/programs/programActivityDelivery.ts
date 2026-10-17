@@ -269,6 +269,12 @@ export async function canCloseProgramActivityRun(tx: Transaction, db: Firestore,
       const record = parseProgramDeliveryRecord(doc.data());
       if (!record.intent.activity) continue;
       assertActivityRun(record, run, doc.id);
+      // A matching unknown projection is provisional until this worker has
+      // observed the SDK return. A slow call can accept even after expiry.
+      if (record.attempts.some((attempt) =>
+        attempt.binding.provider === "fcm" &&
+        attempt.state.kind === "unknown" &&
+        attempt.state.reason === "workerInterrupted")) return false;
       if (now < record.intent.expiresAt && record.attempts.some((attempt) =>
         attempt.state.kind === "reserved" ||
         attempt.state.kind === "unknown")) {

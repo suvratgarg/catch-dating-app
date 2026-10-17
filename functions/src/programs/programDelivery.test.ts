@@ -221,3 +221,24 @@ test("push suppression reasons are closed local-activity evidence only",
       /Invalid/);
     }
   });
+
+test("settled SDK unknown is restricted to the FCM activity binding",
+  async () => {
+    const source = facts();
+    source.routes.reverse();
+    const h = harness(source);
+    const record = await h.outbox.enqueue({...reminder(),
+      permittedRoutes: ["catchProgramActivity"]});
+    const reserved = await h.outbox.reserve(record.messageId);
+    const attempt = reserved.record.attempts[0];
+    const state = {kind: "unknown", at: attempt.createdAt,
+      reconcileAfter: attempt.createdAt, providerMessageId: null,
+      reason: "sdkOutcomeUnknown"};
+    assert.doesNotThrow(() => parseProgramDeliveryAttempt({...attempt, state,
+      binding: {...attempt.binding, provider: "fcm"}}));
+    for (const binding of [attempt.binding,
+      facts().routes[0].state.candidate.binding]) {
+      assert.throws(() => parseProgramDeliveryAttempt({...attempt,
+        state, binding}), /Invalid/);
+    }
+  });
