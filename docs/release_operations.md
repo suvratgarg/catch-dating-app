@@ -966,6 +966,13 @@ Rollback uses `--action revoke --generation <generation>` first, then
 `--action remove-origins --generation <generation> --site-key <public-key>`.
 Both retain the exact organizer/form and manager arguments and apply guards.
 Revocation immediately disables registry routing even if the form is unpublished.
+The CLI first verifies live project/Hosting metadata. If that API is unavailable,
+a currently authorized manager can use the deployed App Check-protected
+`manageOrganizerFormDomain` callable with `{action: "revoke", hostname,
+organizerId}`; it checks current manager authority and writes Firestore without
+Hosting API access. Confirm the callable result and registry state before
+resuming provider cleanup. Do not bypass authentication/App Check or claim a
+failed CLI command revoked routing.
 Origin removal preserves unrelated entries and reports inherited parent-domain,
 wildcard CORS and other same-host origins that can retain provider trust. Do not
 claim all provider trust is removed when `providerTrustRemoved` is false. Hosting
