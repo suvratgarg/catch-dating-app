@@ -521,6 +521,8 @@ export async function ingestTravelLegEvent(
   const db = deps.firestore();
   const now = deps.nowMillis();
   const snap = await db.collection(MOMENTS_COLLECTION)
+    .where("scopeKind", "==", "program")
+    .where("scopeId", "==", event.programId)
     .where("status", "==", "armed")
     .get();
   const scope: MomentScope = {kind: "program", programId: event.programId};
