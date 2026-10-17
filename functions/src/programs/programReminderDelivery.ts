@@ -4,7 +4,8 @@ import type {MetaWhatsappProvider, OrganizerTokenStore} from
 import type {ProgramDeliveryMessageIntent as MessageIntent} from
   "../shared/generated/programDeliveryMessageIntent";
 import {FirestoreDeliveryOutbox} from "../delivery/firestoreDeliveryOutbox";
-import {programDeliveryAdapter} from "./programDelivery";
+import {programDeliveryAdapter, programDeliveryMessageId} from
+  "./programDelivery";
 import {ProgramDeliveryWorker} from "./programDeliveryWorker";
 import type {AnchorFacts, MomentAction, MomentDefinition,
   RunRecord} from "../moments/momentModel";
@@ -119,8 +120,26 @@ export async function deliverProgramReminder(params: {
     async () => {
       throw new Error("Intent producer cannot reserve a dispatch");
     }, now);
-  const record = await outbox.enqueue(
-    programReminderIntent(moment, run, facts, recipient, action, now()));
+  const candidate = programReminderIntent(
+    moment, run, facts, recipient, action, now());
+  const messageId = programDeliveryMessageId(candidate);
+  // The first committed intent owns its recovery window. Only timestamps
+  // are reused: enqueue still rejects any changed immutable business data.
+  const withOriginalWindow = (existing: {intent: MessageIntent} | null) =>
+    existing ? {...candidate, createdAt: existing.intent.createdAt,
+      expiresAt: existing.intent.expiresAt} : candidate;
+  const existing = await outbox.get(messageId);
+  let record: Awaited<ReturnType<typeof outbox.enqueue>>;
+  try {
+    record = await outbox.enqueue(withOriginalWindow(existing));
+  } catch (error) {
+    // A concurrent first writer or an uncertain commit may have persisted
+    // the intent after our read. Recover once, only from committed truth;
+    // failed reads still reject and a missing record preserves the error.
+    const committed = await outbox.get(messageId);
+    if (committed === null) throw error;
+    record = await outbox.enqueue(withOriginalWindow(committed));
+  }
   const worker = new ProgramDeliveryWorker(db, provider, credentials, now);
   const result = await worker.dispatch(record.messageId);
   switch (result.kind) {
