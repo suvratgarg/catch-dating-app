@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_route_section.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
@@ -397,3 +399,20 @@ Widget swipeWindowBannerStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Walking and running route expectations',
+  type: EventDetailRouteSection,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailRouteSectionStates(BuildContext context) =>
+    WidgetbookEventDeviceFrame(
+      child: const SingleChildScrollView(
+        child: Column(
+          children: [
+            EventDetailRouteSection(plan: RouteEventPlan.hostedWalk),
+            EventDetailRouteSection(plan: RouteEventPlan.socialRun),
+          ],
+        ),
+      ),
+    );

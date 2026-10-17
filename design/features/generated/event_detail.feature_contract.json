@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:e43b3e5a4084bea24ef59378555db9a2b0aa4995d1bbfbdc1c80dc6b433e9957",
-  "resolvedDigest": "sha256:b73e7c51333577390fe236c8359e2e3584ab976194079f2d778371447f24a126",
+  "sourceDigest": "sha256:0e2e7f36bb2c78e50c341e15c4c3bbd835c7925f9a18a59c7599ef34321df36d",
+  "resolvedDigest": "sha256:25c87b9fcb36ab1f180d7a47f336fdc863efd526911aa06598c6af6c13665bfc",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -13,15 +13,15 @@
     "description": "Orchestrates Event Detail across the consumer app, public marketing projection, and exact-location route with explicit state, booking, registration handoff, navigation, directions, and evidence contracts."
   },
   "coverage": {
-    "surfaces": 3,
-    "states": 31,
-    "scenarios": 31,
-    "actionCases": 52,
-    "actions": 16,
-    "captures": 33,
-    "previews": 14,
-    "testFiles": 7,
-    "evidenceExceptions": 9
+    "surfaces": 2,
+    "states": 20,
+    "scenarios": 20,
+    "actionCases": 36,
+    "actions": 12,
+    "captures": 24,
+    "previews": 12,
+    "testFiles": 8,
+    "evidenceExceptions": 1
   },
   "surfaces": [
     {
@@ -1659,9 +1659,9 @@
         "id": "event_detail_canonical"
       },
       "actionScope": {
-        "included": "Public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow, plus event-scoped phone-OTP registration for explicitly published, open-admission Catch events.",
+        "included": "Public Event Detail entry into the authenticated web guest journey, server-resolved admission and booking paths, official external registration sources, and the canonical organizer page. Optional event content and verified event-specific reviews render only when present.",
         "excluded": [
-          "The marketing projection never creates a Consumer profile, performs profile-dependent approval, accepts payment, starts a Consumer chat, or writes an event review. Phone OTP establishes only the minimal authenticated identity needed for the operational attendee relationship.",
+          "Admission, capacity, eligibility and payment authority remain in the existing server-backed guest controllers and repositories. The page composes their sign-in, application, checkout and live-event entry states; organizer claiming belongs to the organizer page, and chat and review submission remain separate flows.",
           "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
         ]
       },
@@ -1699,7 +1699,9 @@
           "contracts/firestore/event_attendees.schema.json",
           "contracts/firestore/onboarding_drafts.schema.json",
           "contracts/firestore/organizer_communication_preferences.schema.json",
-          "contracts/public/website_host_listing_projection.schema.json"
+          "contracts/public/website_host_listing_projection.schema.json",
+          "contracts/callables/get_event_viewer_state_payload.schema.json",
+          "contracts/callable_responses/get_event_viewer_state_response.schema.json"
         ],
         "previewEvidence": {
           "catch-native": [
@@ -1723,12 +1725,16 @@
           "catch-native": [
             "website/src/features/events/eventDetailModel.test.ts",
             "website/src/features/events/sections/EventDetailSections.test.tsx",
-            "website/scripts/postbuild.test.mjs"
+            "website/scripts/postbuild.test.mjs",
+            "website/src/features/events/GuestEventEntry.test.tsx",
+            "website/src/features/events/useGuestEventController.test.tsx"
           ],
           "web-otp-registration": [
             "website/src/features/events/eventDetailModel.test.ts",
             "website/src/features/events/sections/EventDetailSections.test.tsx",
-            "website/scripts/postbuild.test.mjs"
+            "website/scripts/postbuild.test.mjs",
+            "website/src/features/events/GuestEventEntry.test.tsx",
+            "website/src/features/events/useGuestEventController.test.tsx"
           ],
           "external-source": [
             "website/src/features/events/eventDetailModel.test.ts",
@@ -1748,11 +1754,11 @@
       "coverage": {
         "states": 5,
         "scenarios": 5,
-        "actionCases": 10,
-        "actions": 5,
+        "actionCases": 7,
+        "actions": 4,
         "captures": 0,
         "previews": 6,
-        "testFiles": 3,
+        "testFiles": 5,
         "evidenceExceptions": 1
       },
       "dimensions": {
@@ -1784,13 +1790,6 @@
             "empty",
             "present"
           ]
-        },
-        "claim": {
-          "default": "hidden",
-          "values": [
-            "hidden",
-            "available"
-          ]
         }
       },
       "actions": [
@@ -1816,26 +1815,25 @@
               ]
             }
           ],
-          "description": "Verifies the guest phone number and creates or reuses the event-scoped operational attendee relationship without requiring Consumer profile onboarding.",
+          "description": "Completes eligible free registration through the existing controller after phone verification, reusing the event-scoped attendee relationship and enforcing the current server admission decision.",
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_catch_registration_handoff",
+          "id": "open_web_guest_journey",
           "owner": "event_detail_hero",
-          "codeValue": "appDownloadCtas",
+          "codeValue": "guestEntry",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "eventId",
-            "storeTarget"
+            "eventId"
           ],
           "outcomes": [
             {
               "kind": "side_effect",
-              "id": "event.web_catch_registration_handoff"
+              "id": "event.web_guest_journey_opened"
             }
           ],
-          "description": "Hands an eligible Catch-native event to the configured app-store destination without claiming the website performed a booking.",
+          "description": "Opens the web guest journey in the shared invitation dialog or booking route. The current verified identity and server viewer state resolve application, approval, booking recovery and live-event entry.",
           "implementationStatus": "implemented"
         },
         {
@@ -1860,7 +1858,7 @@
         {
           "id": "open_event_organizer",
           "owner": "event_detail_hero",
-          "codeValue": "listingPath",
+          "codeValue": "path",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -1877,28 +1875,6 @@
             }
           ],
           "description": "Navigates to the canonical public organizer projection that supplied the event.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_event_organizer_claim",
-          "owner": "event_detail_hero",
-          "codeValue": "claimHrefForListing",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "routeInstanceId",
-            "listingId",
-            "claimCapabilityVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "claim"
-              }
-            }
-          ],
-          "description": "Exposes the organizer claim flow only when the canonical listing policy declares an enabled claim capability.",
           "implementationStatus": "implemented"
         }
       ],
@@ -1924,8 +1900,7 @@
             "availability": "ready",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -1938,7 +1913,9 @@
             "tests": [
               "website/src/features/events/eventDetailModel.test.ts",
               "website/src/features/events/sections/EventDetailSections.test.tsx",
-              "website/scripts/postbuild.test.mjs"
+              "website/scripts/postbuild.test.mjs",
+              "website/src/features/events/GuestEventEntry.test.tsx",
+              "website/src/features/events/useGuestEventController.test.tsx"
             ]
           },
           "actionCases": [
@@ -1948,36 +1925,12 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_event_organizer"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "register_event_with_phone_otp",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
-                ]
-              }
-            },
-            {
-              "id": "claim_available",
-              "dimensions": {
-                "availability": "ready",
-                "supply": "catch_native",
-                "registration": "open",
-                "reviews": "empty",
-                "claim": "available"
-              },
-              "actions": {
-                "enabled": [
-                  "open_catch_registration_handoff",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1992,19 +1945,17 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "closed",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
+                  "open_web_guest_journey",
                   "open_event_organizer"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -2019,8 +1970,7 @@
             "availability": "ready",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -2033,7 +1983,9 @@
             "tests": [
               "website/src/features/events/eventDetailModel.test.ts",
               "website/src/features/events/sections/EventDetailSections.test.tsx",
-              "website/scripts/postbuild.test.mjs"
+              "website/scripts/postbuild.test.mjs",
+              "website/src/features/events/GuestEventEntry.test.tsx",
+              "website/src/features/events/useGuestEventController.test.tsx"
             ]
           },
           "actionCases": [
@@ -2043,8 +1995,7 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
@@ -2053,30 +2004,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "open_catch_registration_handoff",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
-                ]
-              }
-            },
-            {
-              "id": "claim_available",
-              "dimensions": {
-                "availability": "ready",
-                "supply": "catch_native",
-                "registration": "open",
-                "reviews": "empty",
-                "claim": "available"
-              },
-              "actions": {
-                "enabled": [
-                  "register_event_with_phone_otp",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_official_registration_source"
                 ]
               }
@@ -2092,8 +2020,7 @@
             "availability": "ready",
             "supply": "external",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -2116,8 +2043,7 @@
                 "availability": "ready",
                 "supply": "external",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
@@ -2127,30 +2053,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
-                  "open_event_organizer_claim"
-                ]
-              }
-            },
-            {
-              "id": "claim_available",
-              "dimensions": {
-                "availability": "ready",
-                "supply": "external",
-                "registration": "open",
-                "reviews": "empty",
-                "claim": "available"
-              },
-              "actions": {
-                "enabled": [
-                  "open_official_registration_source",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "register_event_with_phone_otp",
-                  "open_catch_registration_handoff"
+                  "open_web_guest_journey"
                 ]
               }
             },
@@ -2160,8 +2063,7 @@
                 "availability": "ready",
                 "supply": "external",
                 "registration": "closed",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
@@ -2170,9 +2072,8 @@
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
+                  "open_web_guest_journey",
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -2187,8 +2088,7 @@
             "availability": "ready",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "present",
-            "claim": "hidden"
+            "reviews": "present"
           },
           "evidence": {
             "captureIds": [],
@@ -2208,19 +2108,17 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "present",
-                "claim": "hidden"
+                "reviews": "present"
               },
               "actions": {
                 "enabled": [
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_event_organizer"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -2235,8 +2133,7 @@
             "availability": "missing",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -2253,18 +2150,16 @@
                 "availability": "missing",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_official_registration_source",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
+                  "open_event_organizer"
                 ]
               }
             }
@@ -2292,8 +2187,8 @@
                 "web-otp-registration",
                 "external-source",
                 "event-reviews",
-                "desktop-ticket-rail",
-                "mobile-single-column"
+                "desktop-invitation",
+                "mobile-sticky-action"
               ]
             }
           },
@@ -2331,7 +2226,7 @@
                 "provenance",
                 "event-media",
                 "organizer-panel",
-                "review-preview"
+                "optional-event-content"
               ]
             }
           },
@@ -2348,9 +2243,9 @@
                 "catch-native",
                 "web-otp-registration",
                 "external-source",
-                "desktop-ticket-rail",
-                "mobile-single-column",
-                "review-preview"
+                "desktop-invitation",
+                "mobile-sticky-action",
+                "optional-event-content"
               ]
             }
           },
@@ -2407,841 +2302,6 @@
           "event_detail_reviews_section/EventDetailReviews",
           "route_event_detail/EventDetailCatch",
           "shared_event_detail_shells/EventDetailShells"
-        ]
-      }
-    },
-    {
-      "id": "location_map_flutter",
-      "runtime": "flutter",
-      "authority": {
-        "registry": "flutter_screens",
-        "id": "screen.event.location_map"
-      },
-      "actionScope": {
-        "included": "Closing the exact-location projection, retrying its Event Detail read model, and launching walking directions for the event's canonical starting point.",
-        "excluded": [
-          "Map camera movement, network-tile loading, and marker rendering are presentation behavior rather than user decisions.",
-          "This read-only route does not search for, move, or persist event locations; LocationPickerScreen remains owned by host create/edit workflows."
-        ]
-      },
-      "bindings": {
-        "previewSources": [
-          "widgetbook/lib/utility/location_map.dart"
-        ],
-        "actionOwners": [
-          {
-            "id": "location_map_route",
-            "language": "dart",
-            "file": "lib/events/presentation/event_location_map_screen.dart",
-            "symbol": "EventLocationMapRouteScreen"
-          },
-          {
-            "id": "map_overlay",
-            "language": "dart",
-            "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
-            "symbol": "MapOverlayControls"
-          },
-          {
-            "id": "external_links",
-            "language": "dart",
-            "file": "lib/core/external_links.dart",
-            "symbol": "ExternalLinkController"
-          }
-        ],
-        "componentContracts": [
-          "catch.button",
-          "catch.error_state",
-          "catch.map_preview",
-          "catch.surface"
-        ],
-        "dataContracts": [
-          "contracts/firestore/events.schema.json"
-        ]
-      },
-      "coverage": {
-        "states": 11,
-        "scenarios": 11,
-        "actionCases": 13,
-        "actions": 3,
-        "captures": 9,
-        "previews": 2,
-        "testFiles": 1,
-        "evidenceExceptions": 8
-      },
-      "dimensions": {
-        "load": {
-          "default": "ready",
-          "values": [
-            "ready",
-            "loading",
-            "error",
-            "not_found"
-          ]
-        },
-        "location": {
-          "default": "exact",
-          "values": [
-            "exact",
-            "unavailable"
-          ]
-        },
-        "map_mode": {
-          "default": "network",
-          "values": [
-            "network",
-            "deterministic",
-            "masking_unresolved"
-          ]
-        },
-        "directions": {
-          "default": "idle",
-          "values": [
-            "idle",
-            "pending",
-            "failure"
-          ]
-        },
-        "accessibility": {
-          "default": "standard",
-          "values": [
-            "standard",
-            "text_scale_2",
-            "reduced_motion"
-          ]
-        },
-        "theme": {
-          "default": "standard",
-          "values": [
-            "standard",
-            "light_dark"
-          ]
-        }
-      },
-      "actions": [
-        {
-          "id": "close_location_map",
-          "owner": "map_overlay",
-          "codeValue": "maybePop",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "routeInstanceId"
-          ],
-          "outcomes": [
-            {
-              "kind": "side_effect",
-              "id": "navigation.route_popped"
-            }
-          ],
-          "description": "Closes the exact-location projection through its floating back control.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "retry_event_location",
-          "owner": "location_map_route",
-          "codeValue": "invalidate",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "eventId",
-            "eventLoadGeneration"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "route_loading",
-                "route_error",
-                "event_not_found",
-                "pinned_location"
-              ]
-            }
-          ],
-          "description": "Invalidates the shared Event Detail read model after an event-location load failure.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "get_directions",
-          "owner": "external_links",
-          "codeValue": "openExternal",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "routeInstanceId",
-            "eventId",
-            "directionsUri"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "directions_action"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "external_links.open_walking_directions"
-            }
-          ],
-          "description": "Requests the platform's external maps application with walking directions to the exact starting coordinate, disables duplicate launches while pending, and restores the action with visible feedback after false or thrown failures.",
-          "implementationStatus": "implemented"
-        }
-      ],
-      "evidenceExceptions": [
-        {
-          "stateIds": [
-            "route_error",
-            "event_not_found",
-            "network_tiles_disabled_capture",
-            "text_scale_2",
-            "reduced_motion",
-            "light_dark"
-          ],
-          "evidence": [
-            "tests"
-          ],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These Event Location Map states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
-        },
-        {
-          "stateIds": [
-            "map_masking"
-          ],
-          "evidence": [
-            "captures",
-            "tests"
-          ],
-          "debtId": "DP-EVENT-MAP-003",
-          "reason": "Map masking remains planned until a canonical standalone full-screen map reference defines dynamic-region masks."
-        }
-      ],
-      "scenarios": [
-        {
-          "id": "route_loading",
-          "stateId": "route_loading",
-          "kind": "loading",
-          "status": "captured",
-          "dimensions": {
-            "load": "loading",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_loading"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states"
-            ],
-            "tests": [
-              "test/events/events_widgets_test.dart"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "loading",
-              "dimensions": {
-                "load": "loading",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location",
-                  "get_directions"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "route_error",
-          "stateId": "route_error",
-          "kind": "error",
-          "status": "captured",
-          "dimensions": {
-            "load": "error",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_error"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "retry",
-              "dimensions": {
-                "load": "error",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "retry_event_location"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "get_directions"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "event_not_found",
-          "stateId": "event_not_found",
-          "kind": "empty",
-          "status": "captured",
-          "dimensions": {
-            "load": "not_found",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_not_found"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "missing",
-              "dimensions": {
-                "load": "not_found",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location",
-                  "get_directions"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "no_exact_coordinate",
-          "stateId": "no_exact_coordinate",
-          "kind": "empty",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "unavailable",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_no_coordinate"
-            ],
-            "previewIds": [
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": [
-              "test/events/events_widgets_test.dart"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "unavailable",
-              "dimensions": {
-                "load": "ready",
-                "location": "unavailable",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location",
-                  "get_directions"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "pinned_location",
-          "stateId": "pinned_location",
-          "kind": "populated",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states",
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": [
-              "test/events/events_widgets_test.dart"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "exact_location",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "directions_action",
-          "stateId": "directions_action",
-          "kind": "mutation",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_directions_pending",
-              "event_location_map_directions_failure"
-            ],
-            "previewIds": [
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": [
-              "test/events/events_widgets_test.dart"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "idle",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            },
-            {
-              "id": "pending",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "pending",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map"
-                ],
-                "disabled": [
-                  "get_directions"
-                ],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            },
-            {
-              "id": "failure",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "failure",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "network_tiles_disabled_capture",
-          "stateId": "network_tiles_disabled_capture",
-          "kind": "populated",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "deterministic",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map"
-            ],
-            "previewIds": [
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "exact_location",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "deterministic",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "map_masking",
-          "stateId": "map_masking",
-          "kind": "populated",
-          "status": "planned",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "masking_unresolved",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "exact_location",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "masking_unresolved",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "text_scale_2",
-          "stateId": "text_scale_2",
-          "kind": "accessibility",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "text_scale_2",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_text_scale_2"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states",
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "exact_location",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "text_scale_2",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "reduced_motion",
-          "stateId": "reduced_motion",
-          "kind": "accessibility",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "reduced_motion",
-            "theme": "standard"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map_reduced_motion"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states",
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "exact_location",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "reduced_motion",
-                "theme": "standard"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "light_dark",
-          "stateId": "light_dark",
-          "kind": "theme",
-          "status": "captured",
-          "dimensions": {
-            "load": "ready",
-            "location": "exact",
-            "map_mode": "network",
-            "directions": "idle",
-            "accessibility": "standard",
-            "theme": "light_dark"
-          },
-          "evidence": {
-            "captureIds": [
-              "event_location_map"
-            ],
-            "previewIds": [
-              "EventLocationMapRouteScreen/Route states",
-              "EventLocationMapScreen/Map states"
-            ],
-            "tests": []
-          },
-          "actionCases": [
-            {
-              "id": "exact_location",
-              "dimensions": {
-                "load": "ready",
-                "location": "exact",
-                "map_mode": "network",
-                "directions": "idle",
-                "accessibility": "standard",
-                "theme": "light_dark"
-              },
-              "actions": {
-                "enabled": [
-                  "close_location_map",
-                  "get_directions"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "retry_event_location"
-                ]
-              }
-            }
-          ]
-        }
-      ],
-      "resolved": {
-        "authority": {
-          "id": "screen.event.location_map",
-          "owner": "events",
-          "routes": [
-            {
-              "id": "eventLocationMapScreen",
-              "path": "/events/:eventId/location",
-              "role": "primary"
-            }
-          ]
-        },
-        "components": [
-          {
-            "id": "catch.button",
-            "kind": "primitive",
-            "dart": {
-              "symbol": "CatchButton",
-              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
-              "constructors": [
-                "CatchButton",
-                "CatchButton.command",
-                "CatchButton.selection",
-                "CatchButton.floating",
-                "CatchButton.text",
-                "CatchButton.sheet"
-              ]
-            }
-          },
-          {
-            "id": "catch.error_state",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchErrorState",
-              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
-              "constructors": [
-                "CatchErrorState"
-              ]
-            }
-          },
-          {
-            "id": "catch.map_preview",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchMapPreview",
-              "file": "lib/locations/shared/catch_map_preview.dart",
-              "constructors": [
-                "CatchMapPreview"
-              ]
-            }
-          },
-          {
-            "id": "catch.surface",
-            "kind": "primitive",
-            "dart": {
-              "symbol": "CatchSurface",
-              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
-              "constructors": [
-                "CatchSurface",
-                "CatchSurface.card",
-                "CatchSurface.tinted"
-              ]
-            }
-          }
-        ],
-        "previews": [
-          "EventLocationMapRouteScreen/Route states",
-          "EventLocationMapScreen/Map states"
         ]
       }
     }

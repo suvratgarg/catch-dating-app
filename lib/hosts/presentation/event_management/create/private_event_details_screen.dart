@@ -35,32 +35,11 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
   final Future<EventMeetingLocation?> Function(EventMeetingLocation?)?
   pickLocation;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final provider = privateEventDetailsControllerProvider(scope);
-    return _PrivateEventDetailsBody(
-      state: ref.watch(provider),
-      controller: ref.read(provider.notifier),
-      onBack: onBack,
-      pickLocation: pickLocation,
-    );
-  }
-}
-
-class _PrivateEventDetailsBody extends StatelessWidget {
-  const _PrivateEventDetailsBody({
-    required this.state,
-    required this.controller,
-    required this.onBack,
-    this.pickLocation,
-  });
-  final PrivateEventDetailsState state;
-  final PrivateEventDetailsController controller;
-  final VoidCallback onBack;
-  final Future<EventMeetingLocation?> Function(EventMeetingLocation?)?
-  pickLocation;
-
-  Future<void> _chooseLocation(BuildContext context) async {
+  Future<void> _chooseLocation(
+    BuildContext context,
+    PrivateEventDetailsState state,
+    PrivateEventDetailsController controller,
+  ) async {
     if (!state.canEdit) return;
     final current = state.event?.eventDetails.meetingLocation;
     try {
@@ -127,7 +106,10 @@ class _PrivateEventDetailsBody extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = privateEventDetailsControllerProvider(scope);
+    final state = ref.watch(provider);
+    final controller = ref.read(provider.notifier);
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
     final tokens = CatchTokens.of(context);
@@ -373,7 +355,13 @@ class _PrivateEventDetailsBody extends StatelessWidget {
                                   : l10n.hostsPrivateEventDetailLocationReady,
                               icon: CatchIcons.locationOnOutlined,
                               onTap: editable
-                                  ? () => unawaited(_chooseLocation(context))
+                                  ? () => unawaited(
+                                      _chooseLocation(
+                                        context,
+                                        state,
+                                        controller,
+                                      ),
+                                    )
                                   : null,
                             ),
                             CatchField.input(

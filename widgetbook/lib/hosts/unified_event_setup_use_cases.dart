@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_content_section.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
@@ -193,7 +194,21 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
   type: PrivateEventDetailsScreen,
   path: '[P1 product surfaces]/Host operations',
 )
-Widget privateEventDetailsScreenPreview(BuildContext context) {
+Widget privateEventDetailsScreenPreview(BuildContext context) =>
+    _privateEventDetailsPreview(context);
+
+@widgetbook.UseCase(
+  name: 'Optional itinerary and artwork',
+  type: PrivateEventContentSection,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget privateEventContentSectionPreview(BuildContext context) =>
+    _privateEventDetailsPreview(context, contentOnly: true);
+
+Widget _privateEventDetailsPreview(
+  BuildContext context, {
+  bool contentOnly = false,
+}) {
   final hash = List.filled(64, 'a').join();
   const scope = (
     userId: 'preview-host',
@@ -250,10 +265,26 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
                 () => _PreviewPrivateEventDetailsController(event, defaults),
               ),
             ],
-            child: PrivateEventDetailsScreen(
-              scope: scope,
-              onBack: () => Navigator.of(context).maybePop(),
-            ),
+            child: contentOnly
+                ? Consumer(
+                    builder: (context, ref, child) {
+                      final provider = privateEventDetailsControllerProvider(
+                        scope,
+                      );
+                      return Scaffold(
+                        body: SingleChildScrollView(
+                          child: PrivateEventContentSection(
+                            state: ref.watch(provider),
+                            controller: ref.read(provider.notifier),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : PrivateEventDetailsScreen(
+                    scope: scope,
+                    onBack: () => Navigator.of(context).maybePop(),
+                  ),
           ),
         ),
       ),

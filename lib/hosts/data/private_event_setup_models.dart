@@ -479,8 +479,7 @@ class PrivateEventBasicSummary {
 
 /// Callable timestamps are serialized maps; journals preserve that wire shape.
 UploadedPhoto privateEventPhotoFromJson(Map<String, dynamic> json) {
-  Object? timestamp(Object? value) {
-    if (value is! Map) return value;
+  DateTime timestamp(Map<dynamic, dynamic> value) {
     final seconds = value['_seconds'];
     final nanos = value['_nanoseconds'];
     if (seconds is! int || nanos is! int || nanos < 0 || nanos >= 1000000000) {
@@ -493,7 +492,11 @@ UploadedPhoto privateEventPhotoFromJson(Map<String, dynamic> json) {
 
   return UploadedPhoto.fromJson({
     ...json,
-    'createdAt': timestamp(json['createdAt']),
-    'updatedAt': timestamp(json['updatedAt']),
+    'createdAt': json['createdAt'] is Map
+        ? timestamp(json['createdAt'] as Map)
+        : json['createdAt'],
+    'updatedAt': json['updatedAt'] is Map
+        ? timestamp(json['updatedAt'] as Map)
+        : json['updatedAt'],
   });
 }

@@ -31911,10 +31911,10 @@
       }
     }
   },
-  "@hostsCreateEventPolicyStateLabelMembersSkipReview": {"description": "Admission preset label for member review exemption"},
+  "@hostsCreateEventPolicyStateLabelMembersSkipReview": {"description": "Admission preset label for member review exemption", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
   "hostsCreateEventPolicyStateLabelMembersSkipReview": "Members skip review",
-  "@hostsCreateEventPolicyStateTitleMembersSkipReview": {"description": "Admission preset title for member review exemption"},
+  "@hostsCreateEventPolicyStateTitleMembersSkipReview": {"description": "Admission preset title for member review exemption", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
   "hostsCreateEventPolicyStateTitleMembersSkipReview": "Members skip review",
-  "@hostsCreateEventPolicyStateDescriptionMembersSkipReview": {"description": "Explains that current approved members skip review but retain other booking requirements"},
+  "@hostsCreateEventPolicyStateDescriptionMembersSkipReview": {"description": "Explains that current approved members skip review but retain other booking requirements", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
   "hostsCreateEventPolicyStateDescriptionMembersSkipReview": "Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply."
 }

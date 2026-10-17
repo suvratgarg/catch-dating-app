@@ -4515,6 +4515,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventDetailRouteSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Walking and running route expectations',
+                builder: _widgetbook_workspace_events_catalog_social
+                    .eventDetailRouteSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailSocialSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10960,6 +10970,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .hostCustomerMessagingStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PrivateEventContentSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Optional itinerary and artwork',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventContentSectionPreview,
               ),
             ],
           ),
