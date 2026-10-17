@@ -98,8 +98,11 @@ dependency manifests and capture helpers. On main it reuses the same-source CI
 producer, including native-only changes whose React lane was skipped, then runs
 any missing React validation. Production packaging retains its separate
 read-only listing snapshot, environment checks and promotion authority. Recovery
-uses the already-built package and never rerenders. Manual review/export remains
-available below. Never manually stamp old PNGs.
+uses the already-built package and never rerenders. Manual Marketing Website validation also runs the existing Hosting packager on
+its actual built site and retains a separately named validation artifact with
+all 13 capture/manifest byte comparisons. It uses real run identity but has no
+production promotion authority and makes no live-listing calls. Manual
+review/export remains available below. Never manually stamp old PNGs.
 
 ## Fixture Boundary
 

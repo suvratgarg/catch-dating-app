@@ -125,6 +125,69 @@ jobs:
           CAPTURE_BINDING: ${{ inputs.capture_binding }}
         run: node tool/marketing/import_hosted_captures.mjs --check-dist
 
+      - name: Verify validation-only marketing Hosting package
+        if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build && github.event_name == 'workflow_dispatch' && github.workflow == 'Marketing Website' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CAPTURE_BINDING: ${{ inputs.capture_binding }}
+        run: |
+          set -euo pipefail
+          current_attempt="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT")"
+          workflow_id="$(jq -er \
+            --arg repository "$GITHUB_REPOSITORY" --arg sha "$GITHUB_SHA" \
+            --argjson id "$GITHUB_RUN_ID" --argjson attempt "$GITHUB_RUN_ATTEMPT" \
+            --argjson number "$GITHUB_RUN_NUMBER" '
+              select(.id == $id and .run_attempt == $attempt and .run_number == $number and
+                .head_sha == $sha and .event == "workflow_dispatch" and
+                (.path | split("@")[0]) == ".github/workflows/marketing-website.yml" and
+                .repository.full_name == $repository and .head_repository.full_name == $repository and
+                (.workflow_id | type == "number" and . > 0 and floor == .)) | .workflow_id
+            ' <<< "$current_attempt")"
+          test ! -e build/ci/marketing-hosting-validation
+          mkdir -p build/ci/marketing-hosting-validation/upload
+          package_args=(--surface marketing --source-sha "$GITHUB_SHA"
+            --ci-workflow-id "$workflow_id" --ci-run-number "$GITHUB_RUN_NUMBER"
+            --ci-run-id "$GITHUB_RUN_ID" --ci-run-attempt "$GITHUB_RUN_ATTEMPT")
+          node tool/ci/package_web_hosting.mjs prepare "${package_args[@]}" \
+            --stage-dir build/ci/marketing-hosting-validation/package
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import crypto from 'node:crypto';
+          import fs from 'node:fs';
+          import {canonicalInventory} from './tool/marketing/export_hosted_captures.mjs';
+          const captures = canonicalInventory(JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json', 'utf8')));
+          const paths = ['website/public/assets/app-screenshots/manifest.json', ...captures.map(c => c.websitePath)];
+          const files = paths.map(file => {
+            const built = fs.readFileSync(file.replace('website/public/', 'website/dist/'));
+            const packaged = fs.readFileSync(file.replace('website/public/', 'build/ci/marketing-hosting-validation/package/site/'));
+            assert.ok(packaged.equals(built), `Packaged capture differs: ${file}`);
+            return {path: file, bytes: built.length, sha256: crypto.createHash('sha256').update(built).digest('hex')};
+          });
+          assert.equal(files.length, 13);
+          fs.writeFileSync('build/ci/marketing-hosting-validation/upload/capture-package-proof.json',
+            JSON.stringify({validationOnly: true, captureBinding: JSON.parse(process.env.CAPTURE_BINDING), files}, null, 2) + '\n');
+          NODE
+          archive=build/ci/marketing-hosting-validation/upload/web-hosting-marketing.tar.gz
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            -czf "$archive" -C build/ci/marketing-hosting-validation/package .
+          provenance=build/ci/marketing-hosting-validation/upload/marketing-validation-provenance.json
+          node tool/ci/delivery_core.mjs manifest --artifact "$archive" \
+            --source-sha "$GITHUB_SHA" --ci-run-id "$GITHUB_RUN_ID" \
+            --ci-run-attempt "$GITHUB_RUN_ATTEMPT" --stages hosting-marketing --out "$provenance"
+          node tool/ci/delivery_core.mjs verify --manifest "$provenance" --artifact "$archive" \
+            --source-sha "$GITHUB_SHA" --ci-run-id "$GITHUB_RUN_ID" --ci-run-attempt "$GITHUB_RUN_ATTEMPT"
+          node tool/ci/package_web_hosting.mjs verify "${package_args[@]}" \
+            --package-dir build/ci/marketing-hosting-validation/package --provenance-manifest "$provenance"
+
+      - name: Retain validation-only marketing package proof
+        if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build && github.event_name == 'workflow_dispatch' && github.workflow == 'Marketing Website' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: marketing-hosting-validation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/marketing-hosting-validation/upload
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Build admin website
         if: ${{ inputs.surface == 'admin' && !inputs.skip_deployable_build }}
         run: npm run web:admin:build

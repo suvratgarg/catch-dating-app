@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import "./marketing_capture_package.test.mjs";
 import {fileURLToPath} from "node:url";
 import {matchesGlobPath as matchesGlob} from "../lib/path_glob.mjs";
 import {authorizePromotion, evaluatePromotionAuthorization, evaluatePromotionFreshness} from "./web_hosting_freshness.mjs";
