@@ -74,6 +74,9 @@ function fixture(t) {
   write("tool/demo/demo_seed/scenarios/sample.json", "{}");
   write("tool/demo/demo_seed/personas/sample.json", "{}");
   write("test/goldens/baseline.png", png);
+  write("website/src/generated/hostListings.json", "{}\n");
+  write("website/src/generated/hostListings.demo.json", "{}\n");
+  write("website/src/generated/other.ts", "export const authored = true;\n");
   write("docs/widget_catalog.md", "# Authored guidance\n<!-- BEGIN GENERATED WIDGET INVENTORY -->\nold rows\n<!-- END GENERATED WIDGET INVENTORY -->\nAuthored footer\n");
   write(".gitignore", "/artifacts/marketing/app-screenshots/raw/\n");
   const git = (...args) => {
@@ -602,6 +605,14 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
     f.write(file.path.replace("website/public/", "website/dist/"), files.get(file.path));
   }
   assert.equal(consumer.verifyBuiltCaptureBytes({binding}).verifiedFiles, 13);
+  for (const file of ["website/src/generated/hostListings.json", "website/src/generated/hostListings.demo.json"]) {
+    f.write(file, '{"generated":"read-only live listing projection"}\n');
+    assert.throws(() => consumer.importCaptureArchive({bytes: packed.stdout, binding}), /authored source differs/);
+    assert.equal(consumer.verifyBuiltCaptureBytes({binding}).verifiedFiles, 13);
+  }
+  f.write("website/src/generated/other.ts", "export const changed = true;\n");
+  assert.throws(() => consumer.verifyBuiltCaptureBytes({binding}), /authored source differs/);
+  f.git("restore", "--", "website/src/generated/other.ts");
   f.write(receipt.captures[0].websitePath.replace("website/public/", "website/dist/"), "different build bytes");
   assert.throws(() => consumer.verifyBuiltCaptureBytes({binding}), /Built website capture differs/);
 });

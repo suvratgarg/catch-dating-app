@@ -12,11 +12,11 @@ on:
         required: false
         type: boolean
         default: false
-      capture_freshness_in_ci:
-        description: The required same-run capture lane owns screenshot provenance and copies.
+      capture_binding:
+        description: Exact immutable capture artifact identity; required for marketing consumers.
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: ""
       skip_deployable_build:
         description: Skip the generic site build when the caller will build one exact production artifact.
         required: false
@@ -24,6 +24,7 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -34,6 +35,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Validate requested surface
         env:
@@ -53,6 +56,13 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Import verified exact-source marketing captures
+        if: ${{ inputs.surface == 'marketing' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CAPTURE_BINDING: ${{ inputs.capture_binding }}
+        run: node tool/marketing/import_hosted_captures.mjs --import
+
       - uses: ./.github/actions/setup-flutter
         if: ${{ inputs.surface == 'marketing' }}
 
@@ -71,14 +81,6 @@ jobs:
 
       - name: Check cross-stack component lexicon
         run: node tool/design/check_component_lexicon.mjs --surfaces-only
-
-      - name: Check marketing media
-        if: ${{ inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci }}
-        run: node tool/marketing/sync_website_media.mjs --check
-
-      - name: Check marketing screenshot design context
-        if: ${{ inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci }}
-        run: node tool/marketing/export_app_screenshots.mjs --check-design-json
 
       - name: Check public surface behavior matrix
         if: ${{ inputs.surface == 'marketing' }}
@@ -116,6 +118,12 @@ jobs:
       - name: Build marketing website
         if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build }}
         run: npm run web:marketing:build
+
+      - name: Verify built marketing capture bytes
+        if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build }}
+        env:
+          CAPTURE_BINDING: ${{ inputs.capture_binding }}
+        run: node tool/marketing/import_hosted_captures.mjs --check-dist
 
       - name: Build admin website
         if: ${{ inputs.surface == 'admin' && !inputs.skip_deployable_build }}

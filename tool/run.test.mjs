@@ -725,3 +725,49 @@ test("RSVP CJS helper requires exact registration while retaining its active own
   assert.equal(missing.status, 1);
   assert.ok(missing.stderr.includes(`Unmanaged tool script: ${helperPath}`));
 });
+
+test("capture preflight follows executable media checks and exact React delegation", context => {
+  const fixture = createRunnerFixture(context);
+  const graph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  graph.classifications = [];
+  graph.compileCodegen = [];
+  graph.operationProfiles = {fixture: {direct: {pr: {ciTargets: ["tools"]}}, affected: {}}};
+  graph.components = [
+    {id: "repo.harness", owner: "test", risk: "standard", pathType: "component",
+      operationProfile: "fixture", ownedPaths: {include: ["tool/run.mjs", "tool/harness/**"]}, dependsOn: [], alsoAffects: []},
+    {id: "fixture.tools", owner: "test", risk: "standard", pathType: "component",
+      operationProfile: "fixture", ownedPaths: {include: ["tool/check.mjs"]}, dependsOn: [], alsoAffects: []},
+  ];
+  fs.writeFileSync(path.join(fixture, "tool/harness/component_graph.json"), JSON.stringify(graph));
+  const outputPath = path.join(fixture, "capture-output");
+  const original = fixtureManifest();
+  const cases = [
+    ["marketing:hosted-capture-export", "node --test tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "node --check tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "node --test tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "dart analyze tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "node tool/marketing/export_app_screenshots.mjs --check", false, true],
+    ["marketing:app-screenshot-export", "node tool/marketing/export_app_screenshots.mjs --check-design-json", true, true],
+    ["marketing:app-media-sync", "node tool/marketing/sync_website_media.mjs --check", true, true],
+    ["marketing:website-build", "npm --prefix website run build", false, true],
+    ["marketing:website-build", "npm --prefix website run build", true, false],
+    ["marketing:website-build", "npm --prefix website run build -- --changed", true, true],
+    ["marketing:website-storybook", "npm --workspace catch-marketing run build:storybook", true, false],
+    ["marketing:website-storybook-a11y", "npm --workspace catch-marketing run test:storybook:a11y", false, true],
+    ["web:storybook-visuals", "node tool/web/check_storybook_visuals.mjs --self-test", false, false],
+    ["web:storybook-visuals", "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check", false, true],
+  ];
+  for (const [id, command, shared, expected] of cases) {
+    for (const full of [false, true]) {
+      const manifest = structuredClone(original);
+      manifest.tools.push({...manifest.tools[0], id, checks: [command]});
+      fs.writeFileSync(path.join(fixture, "tool/tools_manifest.json"), JSON.stringify(manifest));
+      if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      const result = run(["affected-tools", "--paths", "tool/check.mjs", "--github-output", outputPath,
+        ...(full ? ["--full"] : []), ...(shared ? ["--marketing-checks-in-react"] : [])], {cwd: fixture});
+      assert.equal(result.status, 0, `${id}: ${result.stderr}`);
+      assert.match(fs.readFileSync(outputPath, "utf8"), new RegExp(`^capture_required=${expected}$`, "m"), `${id}: ${command}, shared=${shared}, full=${full}`);
+      assert.doesNotMatch(result.stdout, /==>/u, "selection must never execute the selected checks");
+    }
+  }
+});

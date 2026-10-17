@@ -95,14 +95,22 @@ function sourceFiles() {
   return {manifestBytes, manifest, captures, generated, expectedNames: [manifestPath, ...generated, "capture-receipt.json"]};
 }
 
+const buildListingOutputs = new Set([
+  "website/src/generated/hostListings.json", "website/src/generated/hostListings.demo.json",
+]);
+
 export function verifyCaptureFiles({files, binding}) {
+  return verifyFiles({files, binding});
+}
+
+function verifyFiles({files, binding}, {built = false} = {}) {
   validateBinding(binding);
   const context = sourceFiles();
   assert.deepEqual([...files.keys()].sort(), [...context.expectedNames].sort(), "Incomplete capture file set.");
   assert.equal(execute("git", ["rev-parse", "HEAD"]).trim(), binding.sourceSha, "Capture source differs from consumer checkout.");
   assert.ok(!execute("git", ["ls-files", "-v", "-z"]).split("\0").some(entry => /^[a-zS] /u.test(entry)),
     "Capture consumption requires complete source without skip-worktree or assume-unchanged flags.");
-  const allowedChanges = new Set([...context.generated, "docs/widget_catalog.md", "tool/ui_capture/route_inventory.json"]);
+  const allowedChanges = new Set([...(built ? buildListingOutputs : []), ...context.generated, "docs/widget_catalog.md", "tool/ui_capture/route_inventory.json"]);
   const changed = execute("git", ["diff", "HEAD", "--name-only", "-z"]).split("\0").filter(Boolean);
   assert.deepEqual(changed.filter(file => !allowedChanges.has(file)), [], "Capture consumer authored source differs from its commit.");
   if (changed.includes("docs/widget_catalog.md")) {
@@ -238,7 +246,7 @@ export function verifyBuiltCaptureBytes({binding}) {
   const bytes = fs.readFileSync(fromRepo(savedArchive));
   assert.equal(digest(bytes), binding.artifactDigest, "Retained capture ZIP digest differs.");
   const files = readCaptureArchive(bytes, sourceFiles().expectedNames);
-  const context = verifyCaptureFiles({files, binding});
+  const context = verifyFiles({files, binding}, {built: true});
   for (const file of [websiteManifestPath, ...context.captures.map(c => c.websitePath)]) {
     const target = file.replace("website/public/", "website/dist/");
     assert.ok(fs.readFileSync(destination(target)).equals(files.get(file)), `Built website capture differs from verified input: ${file}`);

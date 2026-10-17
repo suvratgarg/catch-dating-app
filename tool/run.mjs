@@ -110,6 +110,33 @@ async function checkTools(args) {
   await runChecks(tools, {marketingChecksInReact});
 }
 
+function reactOwnsMarketingCheck({toolId, command}) {
+  return ((toolId === "marketing:website-build" &&
+        command === "npm --prefix website run build") ||
+      (toolId === "marketing:website-storybook" &&
+        command === "npm --workspace catch-marketing run build:storybook") ||
+      (toolId === "marketing:website-storybook-a11y" &&
+        command === "npm --workspace catch-marketing run test:storybook:a11y") ||
+      (toolId === "web:storybook-visuals" &&
+        command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"));
+}
+
+function captureInputsRequired(tools, marketingChecksInReact) {
+  const mediaConsumers = new Set([
+    "marketing:app-screenshot-export", "marketing:app-media-sync",
+    "marketing:website-build", "marketing:website-storybook",
+    "marketing:website-storybook-a11y", "web:storybook-visuals",
+  ]);
+  return uniqueToolChecks(tools.filter(tool => toolSupportsPlatform(tool))).some(check =>
+    mediaConsumers.has(check.toolId) &&
+    !(marketingChecksInReact && reactOwnsMarketingCheck(check)) &&
+    !check.command.startsWith("node --check ") &&
+    !check.command.startsWith("node --test ") &&
+    !check.command.startsWith("dart ") &&
+    !check.command.includes("--self-test") &&
+    !check.command.endsWith("run check:storybook-config"));
+}
+
 async function runChecks(tools, {marketingChecksInReact = false} = {}) {
   if (marketingChecksInReact && process.env.GITHUB_ACTIONS !== "true") {
     console.error("--marketing-checks-in-react requires the same-run CI marketing lane.");
@@ -128,16 +155,7 @@ async function runChecks(tools, {marketingChecksInReact = false} = {}) {
     // CI's required aggregate owns the parallel React result. Match both the
     // tool and exact command: an altered check must execute until its new
     // equivalence is established. Standalone runs retain builds and browser gates.
-    if (marketingChecksInReact && (
-      (toolId === "marketing:website-build" &&
-        command === "npm --prefix website run build") ||
-      (toolId === "marketing:website-storybook" &&
-        command === "npm --workspace catch-marketing run build:storybook") ||
-      (toolId === "marketing:website-storybook-a11y" &&
-        command === "npm --workspace catch-marketing run test:storybook:a11y") ||
-      (toolId === "web:storybook-visuals" &&
-        command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check")
-    )) {
+    if (marketingChecksInReact && reactOwnsMarketingCheck({toolId, command})) {
       console.log(`==> ${toolId}: provided by the required same-run React marketing lane.`);
       continue;
     }
@@ -202,10 +220,13 @@ async function affectedToolChecks(args) {
     }
     requireSelection(tools, {ids: plan.toolIds});
   }
+  const captureRequired = captureInputsRequired(
+    plan.mode === "full" ? selectTools(manifest) : tools, options.marketingChecksInReact);
+  const githubOutputs = () => `${formatAffectedToolGithubOutputs(plan)}capture_required=${captureRequired}\n`;
   if (!options.check) {
     fs.appendFileSync(
       options.githubOutput,
-      formatAffectedToolGithubOutputs(plan),
+      githubOutputs(),
       "utf8",
     );
     return;
@@ -213,7 +234,7 @@ async function affectedToolChecks(args) {
   if (options.githubOutput) {
     fs.appendFileSync(
       options.githubOutput,
-      formatAffectedToolGithubOutputs(plan),
+      githubOutputs(),
       "utf8",
     );
   }

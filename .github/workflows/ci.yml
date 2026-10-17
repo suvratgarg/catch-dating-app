@@ -343,8 +343,12 @@ jobs:
           retention-days: 7
 
   tools:
-    needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.tools == 'true' }}
+    needs: [plan, source-preflight, capture-freshness]
+    if: >-
+      ${{ !cancelled() && needs.source-preflight.result == 'success' &&
+          needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
+          needs.plan.outputs.tools == 'true' &&
+          (needs.capture-freshness.result == 'success' || needs.capture-freshness.result == 'skipped') }}
     uses: ./.github/workflows/tools-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
@@ -352,6 +356,7 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
+      capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
     secrets: inherit
 
   contracts:
@@ -400,18 +405,20 @@ jobs:
     secrets: inherit
 
   marketing:
-    needs: [plan, source-preflight]
+    needs: [plan, source-preflight, capture-freshness]
     if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.marketing == 'true' }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
-      capture_freshness_in_ci: true
+      capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
     secrets: inherit
 
   capture-freshness:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.capture_freshness == 'true' }}
-    uses: ./.github/workflows/capture-freshness-ci.yml
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') }}
+    uses: ./.github/workflows/marketing-captures.yml
+    with:
+      automatic_source_sha: ${{ needs.plan.outputs.source_sha }}
 
   operations:
     needs: [plan, source-preflight]

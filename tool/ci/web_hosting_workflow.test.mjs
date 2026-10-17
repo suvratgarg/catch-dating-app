@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {matchesGlobPath as matchesGlob} from "../lib/path_glob.mjs";
 import {authorizePromotion, evaluatePromotionAuthorization, evaluatePromotionFreshness} from "./web_hosting_freshness.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -832,7 +833,7 @@ test("automatic promotion labels recovery-only diagnostics not applicable while 
 
 function marketingJobCondition(name, {event = "push", cancelled = false,
   lookup = "success", validated = "true", validation = "skipped", recovery = "",
-  packaged = "success", ref = "refs/heads/main", ancestorsSucceeded = true,
+  captureBinding = "", captures = "success", packaged = "success", ref = "refs/heads/main", ancestorsSucceeded = true,
   source = caller("marketing")} = {}) {
   const job = source.split(`\n  ${name}:\n`)[1]?.split(/\n  [a-z-]+:\n/u)[0];
   assert.ok(job, `Missing ${name} job`);
@@ -845,8 +846,8 @@ function marketingJobCondition(name, {event = "push", cancelled = false,
   if (!/\b(?:always|cancelled|failure|success)\s*\(/u.test(body) && !ancestorsSucceeded) return false;
   return Function("github", "needs", "inputs", "cancelled", `return (${body});`)(
     {event_name: event, ref},
-    {"ci-validation": {result: lookup, outputs: {validated}}, validate: {result: validation},
-      package: {result: packaged}},
+    {"ci-validation": {result: lookup, outputs: {validated, capture_binding: captureBinding}}, validate: {result: validation},
+      captures: {result: captures}, package: {result: packaged}},
     {recovery_artifact_id: recovery}, () => cancelled);
 }
 
@@ -877,10 +878,10 @@ test("Marketing reuse callers retain equivalent source, toolchain, baseline and 
   const job = ci.split("\n  marketing:\n")[1].split("\n  capture-freshness:")[0];
   assert.match(job, /uses: \.\/\.github\/workflows\/react-surface-validation\.yml/u);
   assert.match(job, /surface: marketing\n/u);
-  assert.match(job, /capture_freshness_in_ci: true\n/u);
+  assert.match(job, /capture_binding: \$\{\{ needs.capture-freshness.outputs.capture_binding \}\}/u);
   assert.doesNotMatch(job, /update_visual_baselines:|skip_deployable_build:|ref:|environment:/u);
   const reusable = workflow("react-surface-validation.yml");
-  for (const input of ["update_visual_baselines", "skip_deployable_build", "capture_freshness_in_ci"]) {
+  for (const input of ["update_visual_baselines", "skip_deployable_build"]) {
     const contract = reusable.split(`      ${input}:\n`)[1].split(/\n      [a-z_]+:/u)[0];
     assert.match(contract, /default: false/u);
   }
@@ -889,7 +890,7 @@ test("Marketing reuse callers retain equivalent source, toolchain, baseline and 
   assert.doesNotMatch(lookup, /id-token:|secrets: inherit|ref:|environment:/u);
   assert.match(lookup, /node tool\/ci\/wait_main_marketing_validation\.mjs > marketing-validation\.json/u);
   assert.match(lookup, /retention-days: 7/u);
-  assert.match(caller("marketing"), /needs: \[ci-validation, validate\]/u);
+  assert.match(caller("marketing"), /needs: \[ci-validation, captures, validate\]/u);
 });
 
 test("Marketing promotion survives intentionally skipped duplicate validation and fails closed on unsuccessful packaging", () => {
@@ -909,4 +910,33 @@ test("Marketing promotion survives intentionally skipped duplicate validation an
   assert.notEqual(old, caller("marketing"), "known-bad control must remove the explicit status guard");
   assert.equal(marketingJobCondition("promote", {...reused, source: old}), false,
     "the old implicit success guard is a known-bad skipped-ancestor control");
+});
+
+test("standalone Marketing requires captures and recovery never renders", () => {
+  for (const captures of ["failure", "cancelled", "skipped", ""]) {
+    assert.equal(marketingJobCondition("validate", {validated: "false", captures}), false);
+  }
+  assert.equal(marketingJobCondition("captures", {validated: "true"}), false);
+  assert.equal(marketingJobCondition("captures", {validated: "false"}), true);
+  assert.equal(marketingJobCondition("captures", {event: "workflow_dispatch", lookup: "skipped"}), true);
+  assert.equal(marketingJobCondition("captures", {event: "workflow_dispatch", lookup: "skipped", recovery: "123"}), false);
+});
+
+test("standalone React reuses an existing native-only CI bundle without another producer", () => {
+  const reuse = {validated: "false", captures: "skipped", captureBinding: "immutable bundle"};
+  assert.equal(marketingJobCondition("captures", reuse), false);
+  assert.equal(marketingJobCondition("validate", reuse), true);
+  assert.equal(marketingJobCondition("validate", {...reuse, captures: "failure"}), false);
+});
+
+test("native capture inputs retain the Marketing main publication trigger", () => {
+  const trigger = caller("marketing").split("  push:\n")[1].split("  workflow_dispatch:\n")[0];
+  const patterns = [...trigger.matchAll(/^      - "([^"\n]+)"$/gmu)].map(match => match[1]);
+  for (const file of ["lib/hosts/programs/screen.dart", "apps/host/lib/main.dart", "test/ui_captures/fixture.dart",
+    "packages/catch_ui/lib/button.dart", "packages/catch_ui/assets/fonts/Archivo-Regular.ttf",
+    "pubspec.lock", "packages/catch_ui/pubspec.yaml", "tool/lib/repo_paths.mjs", "tool/ui_capture/run_captures.mjs"]) {
+    assert.ok(patterns.some(pattern => matchesGlob(file, pattern)), `${file} must publish refreshed website media`);
+  }
+  const recovery = caller("marketing").split("  recover:\n")[1];
+  assert.doesNotMatch(recovery, /capture_binding|marketing-captures|react-surface-validation/u);
 });

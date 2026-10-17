@@ -112,14 +112,29 @@ test("edited catalog prose and sparse source roots cannot be mistaken for derive
   assert.equal(f.read(routePath), "stale route inventory\n");
 });
 
-test("a committed new route is discovered without inventing a coverage decision", t => {
+test("a newly generated route still fails the actual authored capture coverage gate", t => {
   const f = fixture(t);
+  for (const file of ["tool/ui_capture/check_capture_coverage.mjs", "tool/lib/repo_paths.mjs"]) {
+    f.write(file, fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8"));
+  }
+  const decisions = JSON.stringify({routes: [{routeId: "home", status: "planned", priority: "P1", reason: "Explicit authored decision"}]});
+  f.write("tool/ui_capture/capture_coverage.json", decisions);
+  f.write("test/ui_captures/catalog/screen_capture_catalog.dart", "// No captured routes yet.\n");
+  f.write("tool/marketing/capture_manifest.json", JSON.stringify({captures: []}));
+  let sourceSha = f.commit();
+  materializeInventories({repoRoot: f.root, sourceSha});
+  const check = () => spawnSync(process.execPath, ["tool/ui_capture/check_capture_coverage.mjs", "--check"], {cwd: f.root, encoding: "utf8"});
+  const before = check();
+  assert.equal(before.status, 0, before.stderr);
   f.write("lib/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  detail('/detail'),\n  ;\n}\n");
   f.write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen()), GoRoute(path: Routes.detail.path, name: Routes.detail.name, builder: (_) => const DetailScreen())]); }\n");
-  const sourceSha = f.commit();
+  sourceSha = f.commit();
   materializeInventories({repoRoot: f.root, sourceSha});
   assert.deepEqual(JSON.parse(f.read(routePath)).routes.map(route => route.id), ["home", "detail"]);
-  assert.deepEqual(JSON.parse(f.read("authored-coverage.json")), {home: "explicitly planned"});
+  assert.equal(f.read("tool/ui_capture/capture_coverage.json"), decisions);
+  const after = check();
+  assert.equal(after.status, 1);
+  assert.match(after.stderr, /detail: missing capture coverage entry/u);
 });
 
 test("invalid authored widget identity prevents both writes even after route derivation succeeds", t => {
