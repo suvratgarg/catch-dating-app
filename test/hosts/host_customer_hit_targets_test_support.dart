@@ -151,6 +151,40 @@ Future<void> _dismissMenu(WidgetTester tester, String visibleItem) async {
   expect(find.text(visibleItem), findsNothing);
 }
 
+Future<void> _dismissPointerMenu(
+  WidgetTester tester,
+  String visibleItem,
+) async {
+  final panel = find.byWidgetPredicate(
+    (widget) => widget is CatchMenu<Object?> && widget.builder == null,
+  );
+  expect(panel, findsOneWidget);
+  // The app's top-left corner is outside both CRM menus. Dispatch a real
+  // outside pointer event; hardware Escape remains covered by keyboard cases.
+  const outside = Offset(1, 1);
+  expect(tester.getRect(panel).contains(outside), isFalse);
+  await tester.tapAt(outside);
+  await pumpFeatureUi(tester);
+  expect(find.text(visibleItem), findsNothing);
+}
+
+void _expectSearchContinuity(
+  WidgetTester tester,
+  Finder search,
+  TextEditingValue expectedValue,
+  Element originalElement,
+) {
+  expect(search, findsOneWidget);
+  final current = tester.widget<EditableText>(search);
+  final reason =
+      'Editor identity changed: ${!identical(tester.element(search), originalElement)}; '
+      'current focus: ${current.focusNode.hasFocus}; '
+      'current value: ${current.controller.value}; '
+      'primary focus: ${FocusManager.instance.primaryFocus}';
+  expect(current.focusNode.hasFocus, isTrue, reason: reason);
+  expect(current.controller.value, expectedValue, reason: reason);
+}
+
 Future<void> _showNotes(WidgetTester tester) async {
   await _tapCenter(
     tester,

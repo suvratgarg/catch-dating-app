@@ -29,6 +29,7 @@ import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +81,7 @@ void main() {
           await pumpFeatureUi(tester);
         }
         await _openIndexMenu(tester);
-        await _dismissMenu(tester, _copy.hostCustomersReviewDuplicates);
+        await _dismissPointerMenu(tester, _copy.hostCustomersReviewDuplicates);
         expect(tester.takeException(), isNull);
       });
     }
@@ -123,9 +124,9 @@ void main() {
         expect(detail.pixels, detailAfterDrag);
         _expectHeaderBounds(tester);
         await _openDetailMenu(tester);
-        await _dismissMenu(tester, _copy.hostCustomersLogOutreach);
+        await _dismissPointerMenu(tester, _copy.hostCustomersLogOutreach);
         await _openIndexMenu(tester);
-        await _dismissMenu(tester, _copy.hostCustomersReviewDuplicates);
+        await _dismissPointerMenu(tester, _copy.hostCustomersReviewDuplicates);
 
         harness.connectivity.add([ConnectivityResult.wifi]);
         await pumpFeatureUi(tester);
@@ -137,7 +138,7 @@ void main() {
         expect(index.pixels, indexAfterDrag);
         expect(detail.pixels, detailAfterDrag);
         await _openDetailMenu(tester);
-        await _dismissMenu(tester, _copy.hostCustomersLogOutreach);
+        await _dismissPointerMenu(tester, _copy.hostCustomersLogOutreach);
         expect(tester.takeException(), isNull);
       },
     );
@@ -192,10 +193,10 @@ void main() {
       expect(detailPosition.pixels, detailOffset);
       expect(indexPosition.pixels, indexOffset);
       await _openDetailMenu(tester);
-      await _dismissMenu(tester, _copy.hostCustomersLogOutreach);
+      await _dismissPointerMenu(tester, _copy.hostCustomersLogOutreach);
     }
     await _openIndexMenu(tester);
-    await _dismissMenu(tester, _copy.hostCustomersReviewDuplicates);
+    await _dismissPointerMenu(tester, _copy.hostCustomersReviewDuplicates);
     expect(tester.takeException(), isNull);
   });
 
@@ -228,15 +229,25 @@ void main() {
       expect(search, findsOneWidget);
       await tester.tap(search);
       await pumpFeatureUi(tester);
-      final editor = tester.widget<EditableText>(search);
+      await tester.enterText(search, 'Person');
+      await pumpFeatureUiFor(tester, CatchMotion.searchDebounce);
+      await pumpFeatureUi(tester);
+      const editingValue = TextEditingValue(
+        text: 'Person',
+        selection: TextSelection(baseOffset: 1, extentOffset: 4),
+      );
+      // Use the platform text-input path to select part of the entered query.
+      tester.testTextInput.updateEditingValue(editingValue);
+      await pumpFeatureUi(tester);
       final editorElement = tester.element(search);
-      expect(editor.focusNode.hasFocus, isTrue);
+      _expectSearchContinuity(tester, search, editingValue, editorElement);
       expect(horizontal.pixels, horizontalOffset);
       expect(detailPosition.pixels, detailOffset);
 
       harness.connectivity.add([ConnectivityResult.none]);
       await pumpFeatureUi(tester);
       expect(_offline, findsWidgets);
+      _expectSearchContinuity(tester, search, editingValue, editorElement);
       for (final configuration in [
         (width: 1400.0, scale: 2.0),
         (width: 1600.0, scale: 1.0),
@@ -245,8 +256,7 @@ void main() {
         tester.platformDispatcher.textScaleFactorTestValue =
             configuration.scale;
         await pumpFeatureUi(tester);
-        expect(tester.element(search), same(editorElement));
-        expect(editor.focusNode.hasFocus, isTrue);
+        _expectSearchContinuity(tester, search, editingValue, editorElement);
         expect(tester.state(_detail), same(detailState));
         expect(
           harness.router.state.uri.queryParameters['contactId'],
@@ -262,9 +272,9 @@ void main() {
       harness.connectivity.add([ConnectivityResult.wifi]);
       await pumpFeatureUi(tester);
       expect(_offline, findsNothing);
-      expect(editor.focusNode.hasFocus, isTrue);
+      _expectSearchContinuity(tester, search, editingValue, editorElement);
       await _openDetailMenu(tester);
-      await _dismissMenu(tester, _copy.hostCustomersLogOutreach);
+      await _dismissPointerMenu(tester, _copy.hostCustomersLogOutreach);
       expect(tester.takeException(), isNull);
     },
   );
