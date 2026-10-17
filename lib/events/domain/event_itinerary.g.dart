@@ -9,7 +9,7 @@ part of 'event_itinerary.dart';
 _EventItineraryItem _$EventItineraryItemFromJson(Map<String, dynamic> json) =>
     _EventItineraryItem(
       id: json['id'] as String,
-      kind: _itineraryKindFromJson(json['kind'] as String),
+      kind: $enumDecode(_$EventItineraryKindEnumMap, json['kind']),
       offsetMinutes: (json['offsetMinutes'] as num).toInt(),
       durationMinutes: (json['durationMinutes'] as num?)?.toInt(),
       title: json['title'] as String,
@@ -25,7 +25,7 @@ _EventItineraryItem _$EventItineraryItemFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$EventItineraryItemToJson(_EventItineraryItem instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'kind': _itineraryKindToJson(instance.kind),
+      'kind': _$EventItineraryKindEnumMap[instance.kind]!,
       'offsetMinutes': instance.offsetMinutes,
       'durationMinutes': instance.durationMinutes,
       'title': instance.title,
@@ -33,3 +33,12 @@ Map<String, dynamic> _$EventItineraryItemToJson(_EventItineraryItem instance) =>
       'location': instance.location?.toJson(),
       'routeDistanceMeters': instance.routeDistanceMeters,
     };
+
+const _$EventItineraryKindEnumMap = {
+  EventItineraryKind.gather: 'gather',
+  EventItineraryKind.activity: 'activity',
+  EventItineraryKind.stop: 'stop',
+  EventItineraryKind.breakTime: 'break',
+  EventItineraryKind.transition: 'transition',
+  EventItineraryKind.finish: 'finish',
+};

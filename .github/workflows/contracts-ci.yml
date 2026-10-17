@@ -35,6 +35,7 @@ jobs:
           node tool/contracts/generate_flutter_form_contract_inventory.mjs --check
           node --check tool/contracts/generated/schema_contract_validators.mjs
           node tool/contracts/generate_domain_classes.mjs --check
+          node --test tool/contracts/generate_domain_classes.test.mjs
 
       - name: Check schema/type boundaries
         run: node tool/contracts/check_schema_type_boundaries.mjs

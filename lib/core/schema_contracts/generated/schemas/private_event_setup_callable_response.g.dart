@@ -1401,6 +1401,298 @@ const schemaPrivateEventSetupCallableResponseSchema = <String, Object?>{
             },
           ],
         },
+        'itinerary': <String, Object?>{
+          'type': 'array',
+          'maxItems': 40,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'description': 'One public, event-local run-of-show entry. Offset is measured from the event start so rescheduling does not rewrite the itinerary.',
+            'required': <Object?>[
+              'id',
+              'kind',
+              'offsetMinutes',
+              'title',
+            ],
+            'properties': <String, Object?>{
+              'id': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 80,
+                'pattern': '^[A-Za-z0-9_-]+\$',
+              },
+              'kind': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'gather',
+                  'activity',
+                  'stop',
+                  'break',
+                  'transition',
+                  'finish',
+                ],
+              },
+              'offsetMinutes': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 1440,
+              },
+              'durationMinutes': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 1,
+                'maximum': 1440,
+              },
+              'title': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'description': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 500,
+              },
+              'location': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                    'required': <Object?>[
+                      'name',
+                      'latitude',
+                      'longitude',
+                    ],
+                    'properties': <String, Object?>{
+                      'name': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 240,
+                      },
+                      'address': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 500,
+                      },
+                      'placeId': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'minLength': 1,
+                        'maxLength': 256,
+                      },
+                      'latitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -90,
+                        'maximum': 90,
+                      },
+                      'longitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -180,
+                        'maximum': 180,
+                      },
+                      'notes': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 1000,
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'routeDistanceMeters': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 0,
+                'maximum': 1000000,
+              },
+            },
+          },
+        },
+        'eventPhotos': <String, Object?>{
+          'type': 'array',
+          'items': <String, Object?>{
+            'title': 'UploadedPhoto',
+            'description': 'Canonical uploaded image object for ordered media galleries, logos, and event photos.',
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'id',
+              'url',
+              'storagePath',
+              'thumbnailUrl',
+              'thumbnailStoragePath',
+              'position',
+              'createdAt',
+              'updatedAt',
+            ],
+            'properties': <String, Object?>{
+              'id': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+                'pattern': '^[A-Za-z0-9_-]+\$',
+              },
+              'url': <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+              'storagePath': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 512,
+                'pattern': '^[^/\\u0000][^\\u0000]*\$',
+              },
+              'thumbnailUrl': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'format': 'uri',
+                    'maxLength': 2048,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'thumbnailStoragePath': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 512,
+                    'pattern': '^[^/\\u0000][^\\u0000]*\$',
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'position': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'moderation': <String, Object?>{
+                'type': <Object?>[
+                  'object',
+                  'null',
+                ],
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'status',
+                ],
+                'properties': <String, Object?>{
+                  'status': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'pending',
+                      'approved',
+                      'rejected',
+                    ],
+                  },
+                  'reason': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 240,
+                  },
+                  'reviewedAt': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'object',
+                        'description': 'Serialized Firestore Timestamp fixture shape.',
+                        'x-firestore-type': 'timestamp',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          '_seconds',
+                          '_nanoseconds',
+                        ],
+                        'properties': <String, Object?>{
+                          '_seconds': <String, Object?>{
+                            'type': 'integer',
+                          },
+                          '_nanoseconds': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                            'maximum': 999999999,
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                },
+              },
+              'createdAt': <String, Object?>{
+                'type': 'object',
+                'description': 'Serialized Firestore Timestamp fixture shape.',
+                'x-firestore-type': 'timestamp',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  '_seconds',
+                  '_nanoseconds',
+                ],
+                'properties': <String, Object?>{
+                  '_seconds': <String, Object?>{
+                    'type': 'integer',
+                  },
+                  '_nanoseconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 999999999,
+                  },
+                },
+              },
+              'updatedAt': <String, Object?>{
+                'type': 'object',
+                'description': 'Serialized Firestore Timestamp fixture shape.',
+                'x-firestore-type': 'timestamp',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  '_seconds',
+                  '_nanoseconds',
+                ],
+                'properties': <String, Object?>{
+                  '_seconds': <String, Object?>{
+                    'type': 'integer',
+                  },
+                  '_nanoseconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 999999999,
+                  },
+                },
+              },
+            },
+            'definitions': <String, Object?>{
+              'storageObjectPath': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 512,
+                'pattern': '^[^/\\u0000][^\\u0000]*\$',
+              },
+            },
+          },
+        },
       },
     },
     'publicationReadiness': <String, Object?>{

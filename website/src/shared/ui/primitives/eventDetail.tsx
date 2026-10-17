@@ -1,3 +1,4 @@
+import {useEffect, useId, useRef, useState} from "react";
 import type {
   AnchorHTMLAttributes,
   CSSProperties,
@@ -5,81 +6,81 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import {PlainLink} from "./actions";
+import {Button, PlainLink} from "./actions";
 import {CheckboxField} from "./forms";
 import {classNames} from "./foundation";
 import {UiLabel} from "./layout";
 
-export function EventDetailHeroLayout({
-  activityToken,
-  children,
-  eyebrow,
-  facts,
-  media,
-  metaLine,
-  planLabel,
-  reviewPreview,
-  summary,
-  supplyLabel,
-  title,
-}: {
-  activityToken: string;
-  children: ReactNode;
-  eyebrow: ReactNode;
-  facts: Array<{label: ReactNode; value: ReactNode}>;
-  media: ReactNode;
-  metaLine: ReactNode;
-  planLabel: ReactNode;
-  reviewPreview: ReactNode;
-  summary: ReactNode;
-  supplyLabel: ReactNode;
-  title: ReactNode;
+export function EventDetailHeroLayout({activityToken, children, eyebrow, facts, media, host, title}: {
+  activityToken: string; children: ReactNode; eyebrow: ReactNode;
+  facts: Array<{label: ReactNode; value: ReactNode}>; media: ReactNode;
+  host: ReactNode; title: ReactNode;
 }) {
-  return (
-    <section
-      className="event-detail-hero"
-      aria-labelledby="event-detail-title"
-      style={{"--activity": activityToken} as CSSProperties}
-    >
-      <div className="event-detail-hero__inner">
-        <article className="event-detail-ticket" data-reveal>
-          {media}
-          <div className="event-detail-ticket__body">
-            <div className="event-detail-ticket__provenance">
-              <UiLabel>{eyebrow}</UiLabel>
-              <span>{supplyLabel}</span>
-            </div>
-            <h1 id="event-detail-title">{title}</h1>
-            <p className="event-detail-ticket__meta">{metaLine}</p>
-            <EventDetailHeroFacts items={facts} />
-            <div className="event-detail-ticket__plan">
-              <UiLabel>{planLabel}</UiLabel>
-              <p>{summary}</p>
-            </div>
-            {reviewPreview}
-          </div>
-        </article>
-        <div className="event-detail-hero__rail">{children}</div>
+  return <section className="event-detail-hero" aria-labelledby="event-detail-title"
+    style={{"--activity": activityToken} as CSSProperties}>
+    <div className="event-detail-hero__inner">
+      {media}
+      <div className="event-detail-ticket__body">
+        <UiLabel>{eyebrow}</UiLabel>
+        <h1 id="event-detail-title">{title}</h1>
+        <div className="event-detail-host-byline">{host}</div>
+        <EventDetailHeroFacts items={facts} />
+        {children}
       </div>
-    </section>
-  );
+    </div>
+  </section>;
 }
 
-export function EventDetailMedia({
-  alt,
-  src,
-  srcSet,
-}: {
-  alt: string;
-  src: string;
-  srcSet: string;
+export function EventDetailMedia({alt, src, fallback}: {
+  alt: string; src?: string | null; fallback: ReactNode;
 }) {
-  return (
-    <picture className="event-detail-media">
-      <source media="(max-width: 640px)" srcSet={srcSet} />
-      <img alt={alt} src={src} />
-    </picture>
-  );
+  const [failed, setFailed] = useState<string | null>(null);
+  return src && failed !== src ? <picture className="event-detail-media">
+    <img alt={alt} src={src} onError={() => setFailed(src)} />
+  </picture> : <div className="event-detail-media event-detail-media--typographic" aria-hidden="true">{fallback}</div>;
+}
+
+export function EventDetailBodyLayout({children, host}: {children: ReactNode; host: ReactNode}) {
+  return <div className="event-detail-body"><div>{children}</div><div>{host}</div></div>;
+}
+
+export function EventDetailItinerary({items}: {items: Array<{
+  id: string; time: string; title: string; description?: ReactNode; location?: ReactNode;
+}>}) {
+  return <ol className="event-detail-itinerary">{items.map((item) => <li key={item.id}>
+    <span>{item.time}</span><div><h3>{item.title}</h3>
+      {item.description ? <p>{item.description}</p> : null}
+      {item.location ? <p>{item.location}</p> : null}</div>
+  </li>)}</ol>;
+}
+
+/** One action model, two placements; only the mobile bar is fixed. */
+export function EventGuestActions({children, price, status}: {
+  children: ReactNode; price: string; status: string;
+}) {
+  return <>
+    <div className="event-guest-action">{children}<p role="status">{status}</p></div>
+    <div className="event-guest-mobile"><div><strong>{price}</strong><span>{status}</span></div>{children}</div>
+  </>;
+}
+
+export function EventGuestDialog({open, onClose, title, closeLabel, children}: {
+  open: boolean; onClose: () => void; title: string; closeLabel: string; children: ReactNode;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const id = useId();
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
+  return <dialog ref={ref} aria-labelledby={id} className="event-guest-dialog"
+    onCancel={(event) => {event.preventDefault(); onClose();}}>
+    <div className="event-guest-dialog__heading"><h2 id={id}>{title}</h2>
+      <Button variant="ghost" onClick={onClose}>{closeLabel}</Button></div>
+    {children}
+  </dialog>;
 }
 
 export function EventDetailOrganizerPanel({

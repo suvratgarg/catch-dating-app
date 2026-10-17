@@ -1,3 +1,5 @@
+import {matchesJsonSchema} from "../../shared/contracts/jsonSchema";
+import {publicEventDisplaySchemas as displaySchemas} from "../../shared/contracts/generated/publicEventDisplaySchemas";
 import type {HostListing} from "./types";
 
 type PublicCatchEvent = NonNullable<HostListing["catchEvents"]>[number];
@@ -42,7 +44,7 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
   const format = record(data.eventFormat);
   const activityKind = text(format?.activityKind);
   const currency = text(data.currency);
-  if (start === null || end === null || end <= start || !location ||
+  if (start === null || (data.endTime != null && (end === null || end <= start)) || !location ||
       !activityKind || !count(data.capacityLimit) || data.capacityLimit < 1 ||
       !count(data.bookedCount) || !count(data.priceInPaise) ||
       data.priceInPaise > 100_000_000 || !/^[A-Z]{3}$/u.test(currency)) return null;
@@ -74,11 +76,16 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
     return {organizerId, event: {
       id, role: "Hosted event", title: text(data.name).trim() || text(format?.customActivityLabel).trim() ||
         activityTitles[activityKind] || "Hosted event",
-      activityKind, timeline: end >= now ? "upcoming" : "past",
-      startTime: new Date(start).toISOString(), endTime: new Date(end).toISOString(),
-      timezone, date: `${dates.format(start)} – ${dates.format(end)}`,
+      activityKind, timeline: (end ?? start) >= now ? "upcoming" : "past",
+      startTime: new Date(start).toISOString(), endTime: end === null ? null : new Date(end).toISOString(),
+      timezone, date: end === null ? dates.format(start) : dates.formatRange(start, end),
       location, locationDetails: text(venue?.notes || data.locationDetails),
       summary: text(data.description), capacityLimit: data.capacityLimit,
+      photoUrl: publicPhotoUrl(data),
+      ...(matchesJsonSchema(data.meetingLocation, displaySchemas.meetingLocation)
+        ? {meetingLocation: data.meetingLocation as PublicCatchEvent["meetingLocation"]} : {}),
+      ...(matchesJsonSchema(data.itinerary, displaySchemas.itinerary)
+        ? {itinerary: data.itinerary as PublicCatchEvent["itinerary"]} : {}),
       bookedCount: data.bookedCount,
       checkedInCount: count(data.checkedInCount) ? data.checkedInCount : 0,
       waitlistedCount: count(data.waitlistedCount) ? data.waitlistedCount : 0,
@@ -105,4 +112,19 @@ export function projectPublicCatchEventSnapshot(snapshot: {
     const projected = projectLivePublicCatchEvent(document.id, document.data());
     return projected ? [projected] : [];
   });
+}
+
+/** Published artwork uses the ordered gallery, then the legacy cover. Never project storage metadata. */
+function publicPhotoUrl(data: Record<string, unknown>): string | null {
+  const gallery = Array.isArray(data.eventPhotos) ? data.eventPhotos.map(record) : [];
+  const withheldUrls = new Set(gallery.filter((photo) => photo?.moderation &&
+    record(photo.moderation)?.status !== "approved").map((photo) => photo?.url));
+  const photos = gallery.filter((photo): photo is Record<string, unknown> => Boolean(photo &&
+      count(photo.position) && (!photo.moderation || record(photo.moderation)?.status === "approved")))
+    .sort((a, b) => Number(a.position) - Number(b.position));
+  for (const candidate of [...photos.map((photo) => photo.url), data.photoUrl]) {
+    if (withheldUrls.has(candidate) || typeof candidate !== "string" || !matchesJsonSchema(candidate, displaySchemas.photoUrl)) continue;
+    try { const url = new URL(candidate); if (url.protocol === "https:" && !url.username && !url.password) return url.href; } catch { /* Omit malformed optional media. */ }
+  }
+  return null;
 }

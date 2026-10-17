@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.75.0
-updated: 2026-10-07
+version: 1.77.0
+updated: 2026-10-16
 owner: app_architecture
 status: active
 ---
@@ -4846,6 +4846,30 @@ lib/new_feature/
   presentation/new_feature_view_model.dart
   presentation/widgets/new_feature_body.dart
 ```
+
+Event setup and offer flows use generated auto-dispose provider families with
+immutable state. Private details, private preferences, published offer settings,
+and publication use user/organizer/event identity; manager defaults use
+user/organizer identity. The offer workspace adds the source response or query
+session and initial event identity; admission includes the response, contact,
+and offer. Controllers orchestrate repositories, exact-command journals and
+platform services. Screens watch snapshots and dispatch commands; local text,
+focus and expansion state remain widget-owned.
+
+Account changes permanently invalidate the old scope. Async continuations check
+both provider lifetime and request identity, and unresolved writes retain the
+original journal command for retry. The shared preferences command mixin reuses
+staging and preview behavior while private setup and published settings retain
+separate revision fences, journals and mutations.
+
+The offer workspace's route overrides the complete workspace provider families,
+so the route owns disposal even while its offer controller remains in the parent
+scope. Dependency updates refresh callbacks without resetting the reviewed
+command. Its listener on the separately owned form-query controller is a
+compatibility bridge, released through `ref.onDispose`; the workspace's own
+product state and offer-flow subscriptions are Riverpod-owned. Focused lifecycle
+tests cover closing the workspace during outstanding manager reads. The event
+controller architecture test rejects legacy notifier ownership in this slice.
 
 Add a controller only when there is a mutation or durable flow state.
 

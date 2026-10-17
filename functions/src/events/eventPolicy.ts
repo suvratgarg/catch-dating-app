@@ -64,6 +64,7 @@ export interface EventPolicyBundleDocument {
     inviteRequired?: boolean;
     membershipRequired?: boolean;
     manualApprovalRequired?: boolean;
+    approvedMembersSkipReview?: boolean;
     privateAccessPolicy?: {
       mode: EventPrivateAccessMode;
       inviteCodeHint: string | null;
@@ -142,6 +143,8 @@ export function normalizePolicy(policy: EventPolicyBundleDocument):
       membershipRequired: policy.admission?.membershipRequired === true,
       manualApprovalRequired:
         policy.admission?.manualApprovalRequired === true,
+      ...(policy.admission?.approvedMembersSkipReview === true ?
+        {approvedMembersSkipReview: true} : {}),
       privateAccessPolicy: normalizePrivateAccessPolicy(
         policy.admission?.privateAccessPolicy,
         policy.admission?.inviteRequired === true ||
@@ -444,7 +447,9 @@ export function signupPolicyDecision(params: SignupPolicyInput):
   if (admission.inviteRequired && params.hasValidInvite !== true) {
     return {allowed: false, reason: "inviteRequired"};
   }
-  if (admission.manualApprovalRequired && params.hasHostApproval !== true) {
+  if (admission.manualApprovalRequired && params.hasHostApproval !== true &&
+      !(admission.approvedMembersSkipReview === true &&
+        params.hasActiveCommunityMembership === true)) {
     return {allowed: false, reason: "reviewRequired"};
   }
 

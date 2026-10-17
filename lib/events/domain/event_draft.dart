@@ -49,6 +49,7 @@ abstract class EventDraft with _$EventDraft {
     String? interactionModel,
     String? paceName,
     Map<String, dynamic>? routePlan,
+    @JsonKey(includeIfNull: false) bool? routePlanEnabled,
     @Default([]) List<EventItineraryItem> itinerary,
     // Where step
     String? meetingPoint,
@@ -144,6 +145,7 @@ extension EventDraftX on EventDraft {
       eventSuccessDefaults == const EventSuccessDefaults();
 
   bool get _routePlanIsDefault {
+    if (routePlanEnabled == false) return false;
     if (routePlan == null) return true;
     final activity = ActivityKind.values.firstWhere(
       (value) => value.name == activityKind,

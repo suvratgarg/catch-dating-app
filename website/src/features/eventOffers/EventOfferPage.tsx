@@ -12,13 +12,13 @@ export function EventOfferPage({credential}: {credential: OfferCredential | null
   return <EventOfferView {...controller} />;
 }
 export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutController>) {
-  const {phase, pending, grant, payment, cancellationReview} = controller;
-  const policy = payment?.cancellationPolicy ?? grant?.cancellationPolicy;
-  const copy = cancellationReview ? {title: text.cancelTitle,
+  const {phase, pending, grant, payment, admission, cancellationReview} = controller;
+  const policy = payment?.cancellationPolicy ?? (grant?.amountPaise ? grant.cancellationPolicy : null);
+  const copy = admission ? {title: text.confirmed, body: text.eventAccess} : cancellationReview ? {title: text.cancelTitle,
     body: cancellationReview.refundAmountPaise > 0 ?
       offerCancellationRefund(formatOfferAmount(cancellationReview.refundAmountPaise)) : text.noRefund} : payment ? paymentCopy(payment) : {
     title: grant?.eventName ?? text.invitationTitle,
-    body: text.invitationBody,
+    body: grant?.freeAdmission ? text.freeInvitationBody : text.invitationBody,
   };
   return <EventRuntimeFrame brandLabel={text.brandLabel} brandWord={text.brandWord}
     eventTitle={grant?.eventName}>
@@ -56,8 +56,9 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
       </EventRuntimePanel> : <EventRuntimePanel kicker={cancellationReview ? text.cancellation : payment?.status === "admitted" ? text.confirmed : text.admission}
         title={copy.title} body={copy.body}>
         <EventRuntimeSectionStack>
-          <EventRuntimeModule title={payment?.status === "refunded" ? text.refund : text.bookingAmount}>
-            <p>{formatOfferAmount(payment?.amountPaise ?? grant!.amountPaise)}</p>
+          <EventRuntimeModule title={payment?.status === "refunded" ? text.refund : admission || grant?.freeAdmission ? text.invitationTitle : text.bookingAmount}>
+            {admission || grant?.amountPaise === 0 ? <p>{text.freeAmount}</p> :
+              <p>{formatOfferAmount(payment?.amountPaise ?? grant!.amountPaise)}</p>}
             {grant ? <p>{new Intl.DateTimeFormat("en-IN", {dateStyle: "full", timeStyle: "short"}).format(grant.startTimeMillis)}</p> : null}
             {payment?.mode === "test" ? <p role="status">{text.testMode}</p> : null}
             {payment?.checkout ? <p>{offerHoldEnds(new Intl.DateTimeFormat("en-IN", {timeStyle: "short"}).format(payment.expiresAtMillis))}</p> : null}
@@ -71,10 +72,12 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
           </EventRuntimeActionGrid> : null}
           <FormStatus status={controller.status} />
           <EventRuntimeActionGrid>
+            {(admission?.eventId || payment?.status === "admitted" && (payment.eventId || grant?.eventId)) ?
+              <ButtonLink href={`/booking/${encodeURIComponent(admission?.eventId ?? payment?.eventId ?? grant!.eventId)}/`}>{text.eventAccess}</ButtonLink> : null}
             {payment?.cancellationQuote && !cancellationReview ? <Button type="button" variant="ghost"
               onClick={() => void controller.reviewCancellation()} disabled={pending}>{text.cancelAdmission}</Button> : null}
-            {!payment || payment.checkout ? <Button type="button" onClick={() => void controller.pay()}
-              loading={pending} loadingLabel={text.checkingPayment}>{payment ? text.continueCheckout : text.reservePay}</Button> : null}
+            {!admission && (!payment || payment.checkout) ? <Button type="button" onClick={() => void controller.pay()}
+              loading={pending} loadingLabel={text.checkingPayment}>{grant?.freeAdmission ? text.acceptFree : payment ? text.continueCheckout : text.reservePay}</Button> : null}
             {payment && !cancellationReview && !["refunded", "cancelled"].includes(payment.status) ? <Button type="button"
               variant="ghost" onClick={() => void controller.check()} disabled={pending}>{text.refresh}</Button> : null}
             {payment?.status === "admitted" || payment?.status === "refunded" || payment?.status === "cancelled" || payment?.status === "reviewRequired" ?

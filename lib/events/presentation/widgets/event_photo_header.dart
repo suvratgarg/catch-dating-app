@@ -18,7 +18,7 @@ class EventPhotoHeader extends StatelessWidget {
       tag: eventPhotoHeroTag(event.id),
       transitionOnUserGestures: true,
       child: CatchEventThumbnail(
-        photoUrl: event.photoUrl,
+        photoUrl: event.primaryPhotoUrl,
         pace: event.pace,
         activityKind: event.activityKind,
       ),
