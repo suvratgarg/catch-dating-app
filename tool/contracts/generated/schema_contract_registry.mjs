@@ -197623,6 +197623,22 @@ export const organizerMomentRunDocumentSchema = {
     "anchorRevision",
     "status"
   ],
+  "if": {
+    "properties": {
+      "runId": {
+        "pattern": "^travel_v1_[a-f0-9]{64}$"
+      }
+    },
+    "required": [
+      "runId"
+    ]
+  },
+  "then": {
+    "required": [
+      "travelOccurrence",
+      "expiresAtMillis"
+    ]
+  },
   "properties": {
     "runId": {
       "type": "string",
@@ -197736,6 +197752,33 @@ export const organizerMomentRunDocumentSchema = {
         "null"
       ],
       "minimum": 0
+    },
+    "travelOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "momentRevision",
+        "occurredAtMillis",
+        "createdAtMillis"
+      ],
+      "properties": {
+        "momentRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Immutable first-ingestion Moment revision, CloudEvent instant and committed recovery-window origin; never renewed by due-time deferral."
     },
     "automation": {
       "type": [

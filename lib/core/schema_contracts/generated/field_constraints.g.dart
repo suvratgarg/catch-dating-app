@@ -120515,6 +120515,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMomentRunDocumentTravelOccurrenceCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelOccurrence.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentTravelOccurrenceMomentRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelOccurrence.momentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentTravelOccurrenceOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelOccurrence.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const organizerMomentRunDocumentTravelPlanHash = CatchContractFieldConstraints(
     path: 'organizerMomentRunDocument.travelPlanHash',
     valueTypes: <String>['string'],
@@ -185500,6 +185524,9 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.suppressed': organizerMomentRunDocumentSuppressed,
     'organizerMomentRunDocument.suppressedNoEndpoint': organizerMomentRunDocumentSuppressedNoEndpoint,
     'organizerMomentRunDocument.targetFunctionId': organizerMomentRunDocumentTargetFunctionId,
+    'organizerMomentRunDocument.travelOccurrence.createdAtMillis': organizerMomentRunDocumentTravelOccurrenceCreatedAtMillis,
+    'organizerMomentRunDocument.travelOccurrence.momentRevision': organizerMomentRunDocumentTravelOccurrenceMomentRevision,
+    'organizerMomentRunDocument.travelOccurrence.occurredAtMillis': organizerMomentRunDocumentTravelOccurrenceOccurredAtMillis,
     'organizerMomentRunDocument.travelPlanHash': organizerMomentRunDocumentTravelPlanHash,
     'organizerMomentSendDocument.actionKind': organizerMomentSendDocumentActionKind,
     'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,

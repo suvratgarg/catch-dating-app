@@ -15052,6 +15052,14 @@ export interface OrganizerMomentRunDocument {
   } | null;
   suppressedNoEndpoint?: number | null;
   /**
+   * Immutable first-ingestion Moment revision, CloudEvent instant and committed recovery-window origin; never renewed by due-time deferral.
+   */
+  travelOccurrence?: {
+    momentRevision: number;
+    occurredAtMillis: number;
+    createdAtMillis: number;
+  };
+  /**
    * Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in automationDeliveryMessages.
    */
   automation?: {

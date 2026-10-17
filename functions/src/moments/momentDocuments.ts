@@ -1,3 +1,5 @@
+import {validateOrganizerMomentRunDocument} from
+  "../shared/generated/validators/organizerMomentRunDocument";
 import type {Query, Firestore, Transaction} from "firebase-admin/firestore";
 import {
   requireMillis,
@@ -87,6 +89,16 @@ export function momentToDocument(
 }
 
 export function runFromDocument(data: Record<string, unknown>): RunRecord {
+  if (typeof data.runId === "string" &&
+      /^travel_v1_[a-f0-9]{64}$/.test(data.runId)) {
+    if (!validateOrganizerMomentRunDocument(data)) {
+      throw new Error("Invalid durable travel run");
+    }
+    const travel = readTravelOccurrence(data.travelOccurrence)!;
+    if (data.expiresAtMillis !== travel.createdAtMillis + 6 * 60 * 60_000) {
+      throw new Error("Invalid travel recovery window");
+    }
+  }
   const status = data.status;
   if (status !== "planned" && status !== "resolving" &&
       status !== "dispatched" && status !== "skipped" &&
@@ -112,9 +124,27 @@ export function runFromDocument(data: Record<string, unknown>): RunRecord {
       {targetFunctionId: data.targetFunctionId} : {}),
     ...(typeof data.subjectId === "string" ?
       {subjectId: data.subjectId} : {}),
+    ...(data.travelOccurrence !== undefined ?
+      {travelOccurrence: readTravelOccurrence(data.travelOccurrence)} : {}),
     ...(data.automation && typeof data.automation === "object" ?
       {automation: readRunAutomation(data.automation)} : {}),
   };
+}
+
+function readTravelOccurrence(value: unknown): RunRecord["travelOccurrence"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Invalid travel occurrence");
+  }
+  const data = value as Record<string, unknown>;
+  const keys = ["momentRevision", "occurredAtMillis", "createdAtMillis"];
+  if (Object.keys(data).length !== keys.length || keys.some((key) =>
+    !Number.isSafeInteger(data[key]) || (data[key] as number) < 0) ||
+    (data.createdAtMillis as number) < (data.occurredAtMillis as number)) {
+    throw new Error("Invalid travel occurrence");
+  }
+  return {momentRevision: data.momentRevision as number,
+    occurredAtMillis: data.occurredAtMillis as number,
+    createdAtMillis: data.createdAtMillis as number};
 }
 
 /** The occurrence binding written by the automation handoff; absent on

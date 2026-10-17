@@ -13,8 +13,11 @@ import {
   MOMENT_SENDS_COLLECTION,
   MOMENTS_COLLECTION,
   momentToDocument,
+  runFromDocument,
 } from "./momentDocuments";
 import type {MomentDefinition} from "./momentModel";
+import {validateOrganizerMomentRunDocument} from
+  "../shared/generated/validators/organizerMomentRunDocument";
 
 const ts = (millis: number) => admin.firestore.Timestamp.fromMillis(millis);
 
@@ -643,6 +646,7 @@ test("triggered moments fire on travel-leg events and dedupe", async () => {
     kind: "travelLegFlightStatusChanged" as const,
     legId: "leg-9", programId: "prog",
     previousFlightStatus: "delayed", flightStatus: "cancelled",
+    source: "programTravelLegs", eventId: "event-1",
     observedAtMillis: 2_100_000,
   };
   const first = await ingestTravelLegEvent(deps, event);
@@ -682,6 +686,7 @@ const flightEvent = {
   kind: "travelLegFlightStatusChanged" as const,
   legId: "leg-9", programId: "prog",
   previousFlightStatus: "delayed", flightStatus: "cancelled",
+  source: "programTravelLegs", eventId: "event-1",
   observedAtMillis: 2_100_000,
 };
 
@@ -753,7 +758,9 @@ test("travel ingestion preserves selected invalid-name rejection", async () => {
   db.updateDoc(`${MOMENTS_COLLECTION}/m_flight`, {name: null});
   const {deps} = makeDeps(db, flightEvent.observedAtMillis);
   await assert.rejects(ingestTravelLegEvent(deps, flightEvent),
-    /Moment document name must be non-empty/);
+    (error) => error instanceof AggregateError &&
+      error.errors.some((cause) => cause instanceof Error &&
+        cause.message === "Moment document name must be non-empty."));
   assert.equal((await db.collection(MOMENT_RUNS_COLLECTION).get()).size, 0);
 });
 
@@ -1076,4 +1083,97 @@ test("rsvpPendingOnly households drop out when the last member RSVPs",
     const data = run.data() as Record<string, unknown>;
     assert.equal(data.status, "dispatched");
     assert.equal(data.recipients, 0);
+  });
+
+test("travel ingestion attempts later moments after a selected decode fails",
+  async () => {
+    const db = new TravelQueryFirestore({});
+    seedFlight(db);
+    writeMoment(db, {...flightMoment, momentId: "bad"});
+    db.updateDoc(`${MOMENTS_COLLECTION}/bad`, {name: null});
+    writeMoment(db, flightMoment);
+    const {deps} = makeDeps(db, flightEvent.observedAtMillis);
+    await assert.rejects(ingestTravelLegEvent(deps, flightEvent),
+      /Travel moment ingestion incomplete/);
+    assert.deepEqual(db.momentQueries[0].ids, ["bad", "m_flight"]);
+    const runs = await db.collection(MOMENT_RUNS_COLLECTION).get();
+    assert.equal(runs.size, 1);
+    assert.equal(runs.docs[0].data()?.momentId, flightMoment.momentId);
+  });
+
+test("concurrent travel ingestion creates one run, later event creates another",
+  async () => {
+    const db = new FakeFirestore({});
+    seedFlight(db);
+    writeMoment(db, flightMoment);
+    const {deps} = makeDeps(db, flightEvent.observedAtMillis);
+    const results = await Promise.all([
+      ingestTravelLegEvent(deps, flightEvent),
+      ingestTravelLegEvent(deps, flightEvent),
+    ]);
+    assert.equal(results.reduce((n, result) => n + result.firedRuns, 0), 1);
+    await ingestTravelLegEvent(deps, {...flightEvent, eventId: "event-2"});
+    assert.equal((await db.collection(MOMENT_RUNS_COLLECTION).get()).size, 2);
+  });
+
+test("event replay after Moment edit cannot create another occurrence",
+  async () => {
+    const db = new FakeFirestore({});
+    seedFlight(db);
+    writeMoment(db, flightMoment);
+    const {deps} = makeDeps(db, flightEvent.observedAtMillis);
+    await ingestTravelLegEvent(deps, flightEvent);
+    const before = (await db.collection(MOMENT_RUNS_COLLECTION).get())
+      .docs[0].data();
+    writeMoment(db, {...flightMoment, revision: 2});
+    await ingestTravelLegEvent({...deps, nowMillis: () => 4_000_000},
+      flightEvent);
+    const runs = await db.collection(MOMENT_RUNS_COLLECTION).get();
+    assert.equal(runs.size, 1);
+    assert.deepEqual(runs.docs[0].data(), before);
+    assert.equal(validateOrganizerMomentRunDocument(before), true);
+    const missing = {...before};
+    delete missing.travelOccurrence;
+    assert.equal(validateOrganizerMomentRunDocument(missing), false);
+    assert.deepEqual(before?.travelOccurrence, {momentRevision: 1,
+      occurredAtMillis: 2_100_000, createdAtMillis: 2_100_000});
+  });
+
+for (const legacyTime of [2_100_000, 3_000_000, null]) {
+  test(`legacy wake ${legacyTime} holds history, permits later events`,
+    async () => {
+      const db = new FakeFirestore({});
+      seedFlight(db);
+      writeMoment(db, flightMoment);
+      db.setDoc(`${MOMENT_RUNS_COLLECTION}/m_flight_leg-9_cancelled`, {
+        runId: "m_flight_leg-9_cancelled", momentId: "m_flight",
+        status: "dispatched", dueAtMillis: legacyTime, anchorRevision: 0,
+      });
+      const {deps} = makeDeps(db, 4_000_000);
+      assert.deepEqual(await ingestTravelLegEvent(deps, flightEvent),
+        {firedRuns: 0});
+      const later = {...flightEvent, eventId: "later",
+        observedAtMillis: 4_000_000};
+      assert.deepEqual(await ingestTravelLegEvent(deps, later),
+        {firedRuns: legacyTime === null ? 0 : 1});
+    });
+}
+
+test("travel run decoding enforces immutable window despite due-time deferral",
+  () => {
+    const run = {runId: "travel_v1_" + "a".repeat(64), momentId: "m",
+      dueAtMillis: 9_000, anchorRevision: 0, status: "planned",
+      expiresAtMillis: 2_000 + 6 * 60 * 60_000,
+      travelOccurrence: {momentRevision: 1, occurredAtMillis: 1_000,
+        createdAtMillis: 2_000}};
+    const deferred = runFromDocument({...run, dueAtMillis: 99_000});
+    assert.equal(deferred.expiresAtMillis, run.expiresAtMillis);
+    assert.deepEqual(deferred.travelOccurrence, run.travelOccurrence);
+    for (const patch of [
+      {expiresAtMillis: undefined}, {expiresAtMillis: null},
+      {expiresAtMillis: 99_000 + 6 * 60 * 60_000},
+      {travelOccurrence: undefined}, {travelOccurrence: {}},
+      {travelOccurrence: {...run.travelOccurrence, momentRevision: -1}},
+      {travelOccurrence: {...run.travelOccurrence, createdAtMillis: 500}},
+    ]) assert.throws(() => runFromDocument({...run, ...patch}), /Invalid/);
   });

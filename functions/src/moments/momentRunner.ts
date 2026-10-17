@@ -13,6 +13,7 @@ import {FieldPath, type Firestore, type Query} from
 import {logger} from "firebase-functions";
 import {
   evaluateCondition,
+  isTravelOccurrence,
   type TravelLegEvent,
 } from "./momentConditions";
 import {
@@ -528,19 +529,57 @@ export async function ingestTravelLegEvent(
   const scope: MomentScope = {kind: "program", programId: event.programId};
   const facts = await loadAnchorFacts(db, scope);
   let firedRuns = 0;
+  const failures: unknown[] = [];
   for (const doc of snap.docs) {
-    const moment = momentFromDocument(doc.data());
-    if (moment === null || moment.initiation.kind !== "triggered") continue;
-    if (facts === null) continue;
-    const result = evaluateCondition(moment, event, facts, now);
-    if (result.kind !== "fire") continue;
-    const ref = db.collection(MOMENT_RUNS_COLLECTION).doc(result.run.runId);
-    const existing = await ref.get();
-    if (existing.exists) continue;
-    await ref.set({...result.run});
-    const outcome = await dispatchRun(db, deps, moment, result.run,
-      facts, now);
-    if (outcome === "fired") firedRuns += 1;
+    try {
+      const moment = momentFromDocument(doc.data());
+      if (moment === null || moment.initiation.kind !== "triggered") continue;
+      if (facts === null) continue;
+      const result = evaluateCondition(moment, event, facts, now);
+      if (result.kind !== "fire") continue;
+      const ref = db.collection(MOMENT_RUNS_COLLECTION).doc(result.run.runId);
+      const legacyState = event.kind === "travelLegReadinessChanged" ?
+        event.readiness : event.flightStatus;
+      const legacyRef = db.collection(MOMENT_RUNS_COLLECTION)
+        .doc(`${moment.momentId}_${event.legId}_${legacyState}`);
+      const run = await db.runTransaction(async (tx) => {
+        const [existing, legacy, current] = await Promise.all([
+          tx.get(ref), tx.get(legacyRef), tx.get(doc.ref),
+        ]);
+        if (existing.exists) return null;
+        if (legacy.exists) {
+          const observed = legacy.data()?.dueAtMillis;
+          // Old wake times may include deferral: this is conservative holding,
+          // not proof of exact replay. A later genuine event remains eligible.
+          if (!Number.isSafeInteger(observed) || observed < 0 ||
+              event.observedAtMillis <= observed) return null;
+        }
+        if (current.data()?.revision !== moment.revision ||
+            current.data()?.status !== "armed") {
+          throw new Error("Travel Moment changed before ingestion");
+        }
+        const createdAtMillis = deps.nowMillis();
+        if (!Number.isSafeInteger(createdAtMillis) ||
+            createdAtMillis < event.observedAtMillis) {
+          throw new Error("Invalid travel occurrence clock");
+        }
+        const created: RunRecord = {...result.run,
+          expiresAtMillis: createdAtMillis + 6 * 60 * 60_000,
+          travelOccurrence: {momentRevision: moment.revision,
+            occurredAtMillis: event.observedAtMillis, createdAtMillis}};
+        tx.create(ref, {...created});
+        return created;
+      });
+      if (!run) continue;
+      const outcome = await dispatchRun(db, deps, moment, run,
+        facts, now);
+      if (outcome === "fired") firedRuns += 1;
+    } catch (error) {
+      failures.push(error);
+    }
+  }
+  if (failures.length > 0) {
+    throw new AggregateError(failures, "Travel moment ingestion incomplete");
   }
   return {firedRuns};
 }
@@ -615,6 +654,12 @@ async function dispatchRun(
   now: number,
   travel?: TravelEstimateContext | null,
 ): Promise<DispatchOutcome> {
+  if (isTravelOccurrence(run.runId) &&
+      (!run.travelOccurrence ||
+       run.travelOccurrence.momentRevision !== moment.revision)) {
+    await markRun(db, run, "skipped", {reason: "travelMomentRevisionChanged"});
+    return "skipped";
+  }
   const disposition = resolveFireDisposition(run, moment, facts, now);
   if (disposition !== "dispatch") {
     await markRun(db, run, "skipped", {reason: disposition});
