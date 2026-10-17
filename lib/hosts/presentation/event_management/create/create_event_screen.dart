@@ -468,6 +468,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           _routePlan = RouteEventPlan.defaultForActivity(
                             activityKind,
                           );
+                          _itinerary = _itinerary
+                              .map(
+                                (item) =>
+                                    item.copyWith(routeDistanceMeters: null),
+                              )
+                              .toList();
                           if (!activityKind.isDistanceBased) {
                             _selectedPace = null;
                           }
@@ -491,8 +497,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         selectedPace: _selectedPace,
                         onPaceChanged: (p) => setState(() => _selectedPace = p),
                         routePlan: _routePlan,
-                        onRoutePlanChanged: (plan) =>
-                            setState(() => _routePlan = plan),
+                        onRoutePlanChanged: (plan) => setState(() {
+                          _routePlan = plan;
+                          if ((plan?.path.length ?? 0) < 2) {
+                            _itinerary = _itinerary
+                                .map(
+                                  (item) =>
+                                      item.copyWith(routeDistanceMeters: null),
+                                )
+                                .toList();
+                          }
+                        }),
                         itinerary: _itinerary,
                         onItineraryChanged: (items) =>
                             setState(() => _itinerary = items),

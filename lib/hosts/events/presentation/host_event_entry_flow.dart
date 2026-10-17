@@ -17,6 +17,7 @@ Future<void> runHostEventEntryFlow({
   required HostEventEntryState state,
   required HostEventEntrySelection selection,
   required DateTime createdAt,
+  bool Function()? isCurrent,
 }) async {
   switch (selection.intent) {
     case HostEventEntryIntent.resumeDraft:
@@ -27,6 +28,7 @@ Future<void> runHostEventEntryFlow({
         ref: ref,
         club: club,
         initialDraft: draft,
+        isCurrent: isCurrent,
       );
     case HostEventEntryIntent.repeatLastEvent:
       final source = state.repeatSource;
@@ -37,9 +39,15 @@ Future<void> runHostEventEntryFlow({
         club: club,
         event: source,
         createdAt: createdAt,
+        isCurrent: isCurrent,
       );
     case HostEventEntryIntent.createEvent:
-      await _openCreateEvent(context: context, ref: ref, club: club);
+      await _openCreateEvent(
+        context: context,
+        ref: ref,
+        club: club,
+        isCurrent: isCurrent,
+      );
     case HostEventEntryIntent.createProgram:
       if (state.organizerId != club.id || !context.mounted) return;
       await context.pushNamed(
@@ -54,6 +62,7 @@ Future<void> runHostEventEntryFlow({
         ref: ref,
         club: club,
         initialSavedEventId: eventId,
+        isCurrent: isCurrent,
       );
   }
 }
@@ -64,6 +73,7 @@ Future<void> _openCreateEvent({
   required Club club,
   EventDraft? initialDraft,
   String? initialSavedEventId,
+  bool Function()? isCurrent,
 }) async {
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
@@ -76,6 +86,7 @@ Future<void> _openCreateEvent({
       promptForDrafts: false,
     ),
   );
+  if (!context.mounted || isCurrent?.call() == false) return;
   ref.invalidate(clubEventDraftsProvider(clubId: club.id));
 }
 
@@ -85,6 +96,7 @@ Future<void> _openRepeatEvent({
   required Club club,
   required Event event,
   required DateTime createdAt,
+  bool Function()? isCurrent,
 }) async {
   final prefill = CreateEventPrefill.repeat(event: event, createdAt: createdAt);
   await context.pushNamed(
@@ -96,5 +108,6 @@ Future<void> _openRepeatEvent({
       promptForDrafts: false,
     ),
   );
+  if (!context.mounted || isCurrent?.call() == false) return;
   ref.invalidate(clubEventDraftsProvider(clubId: club.id));
 }

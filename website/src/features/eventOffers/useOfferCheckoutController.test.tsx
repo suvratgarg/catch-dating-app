@@ -193,3 +193,24 @@ it("shows a no-refund warning before cancellation and focuses the safe action", 
   await screen.findByRole("heading", {name: "Your place is cancelled"});
   expect(screen.queryByRole("button", {name: "Reserve a seat and pay"})).toBeNull();
 });
+
+it("accepts a free invitation without opening payment and links event access", async () => {
+  const freeAdmission = {expectedOfferGeneration: 1, expectedOfferRevision: 2, expectedLedgerRevision: 3};
+  api.call.mockImplementation(async (input) => input.action === "claim" ?
+    {grant: {...grant, amountPaise: 0, freeAdmission}, payment: null, serverTimeMillis: 1000} :
+    {grant: null, payment: null, admission: {eventId: "event1", attendeeId: "guest1"}, serverTimeMillis: 2000});
+  render(<EventOfferPage credential={credential} />, {wrapper});
+  const accept = await screen.findByRole("button", {name: "Accept invitation"});
+  expect(screen.queryByText(/Full cash refund/u)).toBeNull();
+  fireEvent.click(accept);
+  expect((await screen.findByRole("link", {name: "View your booking and event access"})).getAttribute("href"))
+    .toBe("/booking/event1/");
+  expect(api.open).not.toHaveBeenCalled();
+  expect(api.call.mock.calls.at(-1)?.[0]).toMatchObject({action: "acceptFree", grantId: grant.grantId, ...freeAdmission});
+});
+it("recovered paid receipts link event access without a current grant", async () => {
+  api.call.mockResolvedValue(response({...ready, eventId: "event1", status: "admitted", checkout: null}));
+  render(<EventOfferPage credential={{paymentId: ready.paymentId, instance: "recovered"}} />, {wrapper});
+  expect((await screen.findByRole("link", {name: "View your booking and event access"})).getAttribute("href"))
+    .toBe("/booking/event1/");
+});

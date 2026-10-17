@@ -3,60 +3,68 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_co
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Review and confirm are distinct actions; preview never admits a guest.
-class HostFormAdmissionSection extends StatefulWidget {
+class HostFormAdmissionSection extends ConsumerStatefulWidget {
   const HostFormAdmissionSection({
     super.key,
-    required this.createController,
+    required this.session,
     required this.onAdmitted,
   });
-  final HostFormAdmissionController Function() createController;
+  final HostFormAdmissionSession session;
   final Future<void> Function() onAdmitted;
 
   @override
-  State<HostFormAdmissionSection> createState() =>
+  ConsumerState<HostFormAdmissionSection> createState() =>
       _HostFormAdmissionSectionState();
 }
 
-class _HostFormAdmissionSectionState extends State<HostFormAdmissionSection> {
-  late final HostFormAdmissionController _controller;
+class _HostFormAdmissionSectionState
+    extends ConsumerState<HostFormAdmissionSection> {
+  HostFormAdmissionController get _controller =>
+      ref.read(hostFormAdmissionControllerProvider(widget.session).notifier);
+  HostFormAdmissionState get _snapshot =>
+      ref.read(hostFormAdmissionControllerProvider(widget.session));
   bool _notifiedAdmission = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.createController()..addListener(_changed);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _controller.review();
     });
   }
 
-  void _changed() {
-    if (mounted) setState(() {});
+  @override
+  void didUpdateWidget(covariant HostFormAdmissionSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.session == widget.session) return;
+    _notifiedAdmission = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controller.review();
+    });
   }
 
   Future<void> _confirm() async {
+    final session = widget.session;
     await _controller.confirm();
-    if (mounted && !_notifiedAdmission && _controller.receipt != null) {
+    if (mounted &&
+        widget.session == session &&
+        !_notifiedAdmission &&
+        _snapshot.receipt != null) {
       _notifiedAdmission = true;
       await widget.onAdmitted();
     }
   }
 
   @override
-  void dispose() {
-    _controller.removeListener(_changed);
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    ref.watch(hostFormAdmissionControllerProvider(widget.session));
     final l10n = context.l10n;
-    final preview = _controller.preview;
-    final pending = _controller.pending;
-    final done = _controller.receipt != null;
+    final preview = _snapshot.preview;
+    final pending = _snapshot.pending;
+    final done = _snapshot.receipt != null;
     return CatchSection.content(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,7 +90,7 @@ class _HostFormAdmissionSectionState extends State<HostFormAdmissionSection> {
             gapH8,
             CatchBanner.error(message: blocker),
           ],
-          if (_controller.error case final error?) ...[
+          if (_snapshot.error case final error?) ...[
             gapH8,
             CatchBanner.error(
               message: appErrorMessage(
@@ -102,10 +110,10 @@ class _HostFormAdmissionSectionState extends State<HostFormAdmissionSection> {
                   : preview?.canCommit == true
                   ? l10n.hostFormAdmissionConfirm
                   : l10n.hostFormAdmissionCheck,
-              status: _controller.busy
+              status: _snapshot.busy
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
-              onPressed: _controller.busy
+              onPressed: _snapshot.busy
                   ? null
                   : pending?.needsReview == true
                   ? _controller.reviewAgain

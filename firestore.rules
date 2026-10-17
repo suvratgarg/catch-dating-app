@@ -1551,6 +1551,26 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Approval notification authority and contact evidence are server-only.
+    match /eventApprovalNotificationMessages/{id} {
+      allow read, write: if false;
+    }
+    match /eventApprovalNotificationDispatches/{id} {
+      allow read, write: if false;
+    }
+    match /eventApprovalNotificationPreferences/{id} {
+      allow read, write: if false;
+    }
+    match /eventApprovalNotificationReceipts/{id} {
+      allow read, write: if false;
+    }
+    match /eventApprovalNotificationSettings/{id} {
+      allow read, write: if false;
+    }
+    match /eventApprovalNotificationBudgets/{id} {
+      allow read, write: if false;
+    }
+
     match /automationWhatsappDispatches/{attemptId} {
       allow read, write: if false;
     }

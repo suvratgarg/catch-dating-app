@@ -1,7 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {useRevealAnimations} from "../app/usePageLifecycle";
-import {useAppDownloadCtas} from "../features/marketing/useAppDownloadCtas";
 import {
   EventDetailFactsSection,
   EventDetailHeroSection,
@@ -43,7 +42,7 @@ export const EventDetailShells: Story = {
         "provenance",
         "event-media",
         "organizer-panel",
-        "review-preview",
+        "optional-event-content",
       ],
     },
   },
@@ -65,9 +64,9 @@ export const EventDetailHero: Story = {
         "catch-native",
         "web-otp-registration",
         "external-source",
-        "desktop-ticket-rail",
-        "mobile-single-column",
-        "review-preview",
+        "desktop-invitation",
+        "mobile-sticky-action",
+        "optional-event-content",
       ],
     },
   },
@@ -118,7 +117,13 @@ export const EventDetailReviews: Story = {
   },
   render: () => (
     <EventDetailRevealStory routeKey="reviews">
-      <EventDetailReviewsSection event={catchEventDetailFixture} />
+      <EventDetailReviewsSection event={{...catchEventDetailFixture, eventReviews: [{
+        id: "preview-verified-review", eventId: catchEventDetailFixture.eventId,
+        reviewerName: "Preview attendee", rating: 5,
+        comment: "A welcoming host and a lovely evening around the table.",
+        createdAt: "2026-07-20T10:00:00.000Z", verificationStatus: "verified",
+        source: "catchEvent", isAnonymous: false, ownerResponse: null,
+      }]}} />
     </EventDetailRevealStory>
   ),
 };
@@ -141,12 +146,8 @@ export const EventDetailProvenance: Story = {
 
 function CatchHeroStory({webOtp = false}: {webOtp?: boolean}) {
   useRevealAnimations("event_detail", "hero-catch");
-  const appDownloadCtas = useAppDownloadCtas({
-    placement: "event-detail-story-catch",
-  });
   return (
     <EventDetailHeroSection
-      appDownloadCtas={appDownloadCtas}
       event={webOtp ? {
         ...catchEventDetailFixture,
         registrationState: "webOtp",
@@ -157,12 +158,8 @@ function CatchHeroStory({webOtp = false}: {webOtp?: boolean}) {
 
 function ExternalHeroStory() {
   useRevealAnimations("event_detail", "hero-external");
-  const appDownloadCtas = useAppDownloadCtas({
-    placement: "event-detail-story-external",
-  });
   return (
     <EventDetailHeroSection
-      appDownloadCtas={appDownloadCtas}
       event={externalEventDetailFixture}
     />
   );

@@ -78,9 +78,10 @@ class CreateEventDraftRestoreState {
         fallback: activityKind.defaultInteractionModel,
       ),
       pace: paceFromName(draft.paceName),
-      routePlan:
-          RouteEventPlan.tryFromJson(draft.routePlan) ??
-          RouteEventPlan.defaultForActivity(activityKind),
+      routePlan: draft.routePlanEnabled == false
+          ? null
+          : RouteEventPlan.tryFromJson(draft.routePlan) ??
+                RouteEventPlan.defaultForActivity(activityKind),
       itinerary: draft.itinerary,
       meetingPointText: draft.meetingPoint,
       locationDetailsText: draft.locationDetails,
