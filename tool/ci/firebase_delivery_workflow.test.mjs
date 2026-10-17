@@ -89,7 +89,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
     const job = ciJob(ci, name);
     const condition = job.match(/^    if: (.*(?:\n      [^\n]*)*)/m)?.[1];
     if (name === "firestore-rules") {
-      assert.equal(condition, "${{ needs.plan.outputs.firestore_rules == 'true' }}");
+      assert.match(condition, /!cancelled\(\) && !failure\(\)/);
       assert.match(job, /^    needs: \[plan, source-preflight\]$/m);
     } else {
       assert.ok(condition?.includes(guard), `${name} must reject a reused planner before starting.`);
@@ -131,7 +131,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
         .replaceAll("needs.source-preflight", 'needs["source-preflight"]')
         .replaceAll("needs.capture-freshness", 'needs["capture-freshness"]');
       const context = {needs, github: {run_attempt: 2, event_name: "push", ref: "refs/heads/main"},
-        cancelled: () => false, contains: (values, value) => values.includes(value),
+        cancelled: () => false, failure: () => false, contains: (values, value) => values.includes(value),
         format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
         results: ["success", "skipped"]};
       assert.equal(vm.runInNewContext(expression, context), name === "firestore-rules" || producerAttempt === "2",
@@ -170,13 +170,44 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
   }
 });
 
+test("Rules caller explicitly preserves selection and prerequisite status before leaf refusal", () => {
+  const caller = ciJob(workflow("ci.yml"), "firestore-rules");
+  const expression = caller.match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
+    .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
+    .replaceAll("needs.source-preflight", 'needs["source-preflight"]');
+  // Evaluate the actual expression with explicit status inputs. This does not
+  // simulate GitHub's implicit status default or nested-rerun scheduling.
+  const evaluate = ({attempt = "2", selected = "true", plan = "success",
+    preflight = "success", cancelled = false, failedAncestor = false} = {}) =>
+    vm.runInNewContext(expression, {
+      needs: {plan: {result: plan, outputs: {producer_attempt: attempt,
+        ...(selected === null ? {} : {firestore_rules: selected})}},
+        "source-preflight": {result: preflight}},
+      github: {run_attempt: 2}, cancelled: () => cancelled, failure: () => failedAncestor,
+      format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
+    });
+  for (const attempt of ["2", "1", ""]) {
+    assert.equal(evaluate({attempt}), true, `Planner ${attempt || "missing"} reaches the leaf binding guard`);
+    for (const selected of ["false", "", null]) {
+      assert.equal(evaluate({attempt, selected}), false, `Unselected Rules: ${String(selected)}`);
+    }
+    for (const prerequisite of ["plan", "preflight"]) {
+      for (const result of ["failure", "cancelled", "skipped", ""]) {
+        assert.equal(evaluate({attempt, [prerequisite]: result}), false, `${prerequisite}: ${result || "missing"}`);
+      }
+    }
+    assert.equal(evaluate({attempt, cancelled: true}), false, "Canceled workflow stays stopped");
+    assert.equal(evaluate({attempt, failedAncestor: true}), false, "Failed ancestor stays blocked");
+  }
+});
+
 test("Rules retries forward the original plan and refuse before checkout", () => {
   const caller = ciJob(workflow("ci.yml"), "firestore-rules");
   assert.match(caller, /^    needs: \[plan, source-preflight\]$/m);
-  assert.match(caller, /^    if: \$\{\{ needs\.plan\.outputs\.firestore_rules == 'true' \}\}$/m);
+  assert.match(caller, /needs\.plan\.outputs\.firestore_rules == 'true'/);
   assert.match(caller, /ci_plan_attempt: \$\{\{ needs\.plan\.outputs\.producer_attempt \}\}/);
   assert.match(caller, /ci_plan_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/);
-  assert.doesNotMatch(caller, /always\(|cancelled\(|failure\(|success\(|github\.run_attempt|github\.sha/);
+  assert.doesNotMatch(caller, /always\(|success\(|github\.run_attempt|github\.sha/);
   const rules = workflow("firestore-rules-ci.yml");
   const inputs = rules.slice(rules.indexOf("  workflow_call:"), rules.indexOf("  workflow_dispatch:"));
   for (const name of ["ci_plan_attempt", "ci_plan_source_sha"]) {
