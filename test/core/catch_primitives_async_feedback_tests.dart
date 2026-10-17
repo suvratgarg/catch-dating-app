@@ -604,7 +604,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
           width: 180,
           padding: const EdgeInsets.all(16),
           tone: CatchSurfaceTone.raised,
-          borderColor: Colors.black,
+          borderRole: CatchBorderRole.boundary,
           onTap: () => tapped = true,
           child: const Text('Surface content'),
         ),

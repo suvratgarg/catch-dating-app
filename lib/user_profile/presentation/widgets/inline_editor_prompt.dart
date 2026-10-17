@@ -32,16 +32,12 @@ class ProfileInlinePromptEntryEditor extends ConsumerStatefulWidget {
     required this.onTap,
     required this.onSaved,
     required this.onCancel,
-    this.value,
     this.currentPromptId,
     this.isAddAffordance = false,
   });
 
   final IconData icon;
   final String label;
-
-  @Deprecated('Prompt empty display and input hints are primitive-owned.')
-  final String? value;
   final String currentAnswer;
   final String? currentPromptId;
   final List<ProfilePromptAnswer> currentPrompts;

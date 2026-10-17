@@ -91,7 +91,11 @@ class GuestWhoIsGoing extends StatelessWidget {
 
     return CatchSurface(
       backgroundColor: surfaceStyle?.surfaceBackground,
-      borderColor: surfaceStyle?.borderColor ?? t.line,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.separator,
+        color: surfaceStyle?.borderColor,
+      ),
       padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

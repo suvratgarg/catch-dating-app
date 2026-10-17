@@ -16,13 +16,12 @@ class ExploreEventsLoadingSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return SliverToBoxAdapter(
       child: Padding(
         padding: exploreEventsLoadingPadding,
         child: CatchSurface(
           clipBehavior: Clip.antiAlias,
-          borderColor: t.line,
+          borderRole: CatchBorderRole.separator,
           emphasis: CatchSurfaceEmphasis.subtle,
           child: CatchSkeleton.card(
             height: CatchLayout.exploreEventsSkeletonHeight,

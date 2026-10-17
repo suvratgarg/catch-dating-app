@@ -258,7 +258,7 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
             offset: Offset(0, slide),
             child: CatchSurface(
               backgroundColor: t.surface,
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               radius: CatchRadius.sm,
               padding: CatchInsets.contentDense,
               child: Row(

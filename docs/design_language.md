@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.32.1
-updated: 2026-09-23
+version: 1.33.0
+updated: 2026-10-18
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -462,7 +462,9 @@ fall back to the passive boundary role plus disabled opacity.
 
 `CatchSurface.borderRole` is the normal low-level adapter;
 `CatchSurface.borderSpec` is reserved for a role with a justified color
-override. Raw `borderColor`/`borderWidth` remain deprecated migration shims.
+override, or a `CatchStroke` width the role does not own (selection rings,
+badge cut-outs). `CatchSurface` has no raw `borderColor`/`borderWidth`; they
+were deleted once every caller moved to a role or spec.
 Higher-level controls (`CatchButton`, `CatchIconAction`, `CatchChip`,
 `CatchControlSurface`, `CatchChoiceTile`, search, tabs, and field sections) own
 their state-to-role mapping. Decorative `CustomPainter` illustration strokes

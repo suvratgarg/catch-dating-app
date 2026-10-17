@@ -337,7 +337,10 @@ class _ShellCatalog extends StatelessWidget {
                   style: CatchTextStyles.supporting(context, color: t.ink3),
                 ),
                 gapH20,
-                CatchSurface(borderColor: t.line, child: child),
+                CatchSurface(
+                  borderRole: CatchBorderRole.separator,
+                  child: child,
+                ),
               ],
             ),
           ),

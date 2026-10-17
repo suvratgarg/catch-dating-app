@@ -429,7 +429,6 @@ class PlaceSearchPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final isPending = stateText != null;
 
     return Column(
@@ -472,7 +471,7 @@ class PlaceSearchPanel extends StatelessWidget {
           CatchSurface(
             padding: EdgeInsets.zero,
             emphasis: CatchSurfaceEmphasis.floating,
-            borderColor: t.line,
+            borderRole: CatchBorderRole.separator,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 260),
               child: ListView.separated(
@@ -518,7 +517,6 @@ class PlaceSuggestionRow extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.transparent,
       radius: 0,
-      borderWidth: 0,
       onTap: onTap,
       padding: CatchInsets.listBody,
       child: Row(
@@ -594,7 +592,7 @@ class SelectedPointPanel extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.content,
       emphasis: CatchSurfaceEmphasis.floating,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       radius: CatchRadius.md,
       backgroundColor: t.surface.withValues(
         alpha: CatchOpacity.locationPickerPanelFill,

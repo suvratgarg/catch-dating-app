@@ -154,7 +154,7 @@ class EventSuccessConversationCueCard extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.sm,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.21.0
-updated: 2026-10-17
+version: 1.22.0
+updated: 2026-10-18
 owner: app_architecture
 status: active
 ---
@@ -1450,10 +1450,18 @@ Deviations and remaining 7b work:
   already matches the renamed `ActivityMapPin` and stays.
 - Still open: the React `CatchTable` in `@catch/web-ui` (Phase 7e) and the
   `CatchAsyncState` move above.
-- The analyzer plugin still lists `lib/core/widgets/event_activity_visuals.dart`
-  as a theme-independent art path. The backdrop now uses
-  `CatchTokens.editorialWhite` and needs no exemption, so that entry is dead;
-  remove it in the next plugin change.
+- Deleted after migration (2026-10-18): `CatchSurface.borderColor` and
+  `borderWidth`, deprecated since the border roles landed but never enforced
+  (Dart does not report a deprecated field through its `this.` constructor
+  parameter), had 145 callers in 107 files. The plain line colors became
+  `borderRole` (`separator`, `boundary`); custom pigments and wider strokes
+  became `borderSpec`; transparent and zero-width borders were removed. Both
+  golden suites rendered identically. Also deleted: the unused deprecated
+  `ProfileInlinePromptEntryEditor.value`, and the analyzer plugin's dead
+  art-path entries for `event_activity_visuals.dart` and `event_pins_map.dart`.
+  The lint harness's seeded event-detail probe still constructed the old
+  `EventActivityBackdrop`, so the thumbnail rule fired zero times; it now uses
+  `EventBackdropImage`.
 
 #### Phase 7b.2 — Naming sweep
 

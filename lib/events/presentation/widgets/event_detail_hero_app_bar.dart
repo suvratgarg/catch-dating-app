@@ -387,7 +387,11 @@ class HeroActivityBadge extends StatelessWidget {
       padding: CatchInsets.compactLabelContent,
       radius: CatchRadius.pill,
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
-      borderColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
+      borderSpec: CatchBorder.resolve(
+        d,
+        CatchBorderRole.boundary,
+        color: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -419,7 +423,6 @@ class HeroTimeChip extends StatelessWidget {
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.md,
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.subtleFill),
-      borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,

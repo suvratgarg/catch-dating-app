@@ -188,7 +188,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
           ),
         CatchSurface(
           backgroundColor: CatchTokens.of(context).raised,
-          borderColor: CatchTokens.of(context).line,
+          borderRole: CatchBorderRole.separator,
           padding: CatchInsets.content,
           child: AspectRatio(
             aspectRatio: CatchAspectRatio.roomMap,
@@ -546,7 +546,11 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
     );
     return CatchSurface(
       padding: CatchInsets.contentDense,
-      borderColor: needsAttention ? t.warning : t.line,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.separator,
+        color: needsAttention ? t.warning : t.line,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -667,8 +671,11 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
           height: CatchIcon.md,
           radius: CatchRadius.pill,
           backgroundColor: t.surface,
-          borderColor: color,
-          borderWidth: CatchStroke.underline,
+          borderSpec: CatchBorderSpec(
+            role: CatchBorderRole.boundary,
+            color: color,
+            width: CatchStroke.underline,
+          ),
           child: icon == null
               ? const SizedBox.shrink()
               : Icon(icon, size: CatchIcon.micro, color: color),
@@ -738,12 +745,15 @@ class _EventSuccessMapUnit extends StatelessWidget {
       child: CatchSurface(
         key: ValueKey<String>('event_success.room.unit.${unit.id}'),
         radius: CatchRadius.md,
-        borderColor: isTable && !selectedDestination && !alert && !invalid
-            ? Colors.transparent
-            : borderColor,
-        borderWidth: selectedDestination || alert
-            ? CatchStroke.underline
-            : CatchStroke.hairline,
+        borderSpec: isTable && !selectedDestination && !alert && !invalid
+            ? null
+            : CatchBorderSpec(
+                role: CatchBorderRole.boundary,
+                color: borderColor,
+                width: selectedDestination || alert
+                    ? CatchStroke.underline
+                    : CatchStroke.hairline,
+              ),
         backgroundColor: selectedDestination
             ? t.success.withValues(alpha: CatchOpacity.subtleFill)
             : alert
@@ -865,7 +875,11 @@ class _EventSuccessUnitShape extends StatelessWidget {
       backgroundColor: invalid
           ? t.raised.withValues(alpha: CatchOpacity.disabledControl)
           : t.surface,
-      borderColor: invalid ? t.ink3 : t.line2,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: invalid ? t.ink3 : t.line2,
+      ),
       child: const SizedBox.expand(),
     );
     if (shape != EventSuccessLayoutShape.round) return surface;
@@ -904,8 +918,11 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
         height: extent,
         radius: CatchRadius.pill,
         backgroundColor: t.surface,
-        borderColor: unavailable ? t.ink3 : t.line2,
-        borderWidth: CatchStroke.underline,
+        borderSpec: CatchBorderSpec(
+          role: CatchBorderRole.boundary,
+          color: unavailable ? t.ink3 : t.line2,
+          width: CatchStroke.underline,
+        ),
         child: unavailable
             ? Icon(
                 CatchIcons.blockRounded,

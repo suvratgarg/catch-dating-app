@@ -103,7 +103,7 @@ class ExploreFeedClubRow extends StatelessWidget {
     final card = CatchSurface.card(
       key: ValueKey<String>('explore-club-row-${club.id}'),
       onTap: onTap,
-      borderColor: t.line2,
+      borderRole: CatchBorderRole.boundary,
       padding: CatchInsets.content,
       child: Row(
         children: [

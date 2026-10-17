@@ -121,10 +121,9 @@ class HostPrivateAccessSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return CatchSurface(
       padding: CatchInsets.content,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       child: child,
     );
   }
@@ -468,7 +467,7 @@ class HostInviteLinkRow extends StatelessWidget {
       padding: CatchInsets.sectionItemBottomGap,
       child: CatchSurface(
         padding: CatchInsets.contentDense,
-        borderColor: t.line,
+        borderRole: CatchBorderRole.separator,
         child: CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostInviteLinkRowStackBreakpoint,
           compactBuilder: (context) => Column(

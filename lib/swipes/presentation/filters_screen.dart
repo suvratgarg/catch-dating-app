@@ -371,7 +371,7 @@ class FiltersSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       padding: CatchInsets.tileVerticalCompact,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -338,7 +338,7 @@ class ClubHeroModule extends StatelessWidget {
       child: CatchSurface(
         key: const ValueKey('club-detail-hero-masthead'),
         height: mediaHeight + captionExtent,
-        borderColor: t.line,
+        borderRole: CatchBorderRole.separator,
         radius: CatchLayout.posterRadius,
         backgroundColor: t.surface,
         padding: CatchInsets.tileContent,

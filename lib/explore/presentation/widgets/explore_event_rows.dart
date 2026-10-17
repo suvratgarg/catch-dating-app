@@ -76,7 +76,7 @@ class ExploreExternalEventRow extends StatelessWidget {
       explicitChildNodes: true,
       label: state.semanticLabel,
       child: CatchSurface.card(
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.content,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

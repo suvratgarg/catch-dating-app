@@ -548,7 +548,6 @@ class ProfileCaptionText extends StatelessWidget {
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,
       backgroundColor: dark.darkScrimFill,
-      borderWidth: 0,
       child: Text(
         text,
         style: CatchTextStyles.proseM(context, color: dark.ink),

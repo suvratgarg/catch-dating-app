@@ -326,7 +326,7 @@ class ReviewCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,7 +414,11 @@ class ReviewOwnerResponseBlock extends StatelessWidget {
       backgroundColor: t.accent.withValues(
         alpha: CatchOpacity.activityIconFill,
       ),
-      borderColor: t.accent.withValues(alpha: CatchOpacity.activityIconBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.accent.withValues(alpha: CatchOpacity.activityIconBorder),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

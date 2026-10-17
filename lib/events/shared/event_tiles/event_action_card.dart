@@ -57,11 +57,15 @@ class EventActionCard extends StatelessWidget {
     return CatchSurface(
       padding: EdgeInsets.zero,
       backgroundColor: backgroundColor ?? t.surface,
-      borderColor:
-          borderColor ??
-          (urgent
-              ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
-              : t.line2),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color:
+            borderColor ??
+            (urgent
+                ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
+                : t.line2),
+      ),
       radius: radius,
       emphasis: CatchSurfaceEmphasis.subtle,
       gradient: LinearGradient(

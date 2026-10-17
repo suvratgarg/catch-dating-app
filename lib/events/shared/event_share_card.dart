@@ -107,7 +107,7 @@ class EventShareCard extends StatelessWidget {
       aspectRatio: CatchLayout.richShareCardAspectRatio,
       child: CatchSurface(
         backgroundColor: t.ink,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         padding: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -132,8 +132,12 @@ class EventShareCard extends StatelessWidget {
                       backgroundColor: t.primaryInk.withValues(
                         alpha: CatchOpacity.scrimFill,
                       ),
-                      borderColor: visual.accent.withValues(
-                        alpha: CatchOpacity.subtleBorder,
+                      borderSpec: CatchBorder.resolve(
+                        t,
+                        CatchBorderRole.boundary,
+                        color: visual.accent.withValues(
+                          alpha: CatchOpacity.subtleBorder,
+                        ),
                       ),
                       radius: CatchRadius.pill,
                       padding: CatchInsets.compactLabelContent,
@@ -265,7 +269,11 @@ class EventSharePill extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       backgroundColor: t.primarySoft,
-      borderColor: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
+      ),
       radius: CatchRadius.pill,
       padding: CatchInsets.compactLabelContent,
       child: Text(label, style: CatchTextStyles.labelS(context, color: t.ink)),

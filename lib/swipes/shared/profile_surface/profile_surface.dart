@@ -165,7 +165,7 @@ class ProfileSurfaceHeroSkeleton extends StatelessWidget {
     return Padding(
       padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
       child: CatchSurface(
-        borderColor: t.line,
+        borderRole: CatchBorderRole.separator,
         radius: CatchLayout.personPolaroidRadius,
         emphasis: CatchSurfaceEmphasis.subtle,
         backgroundColor: t.surface,

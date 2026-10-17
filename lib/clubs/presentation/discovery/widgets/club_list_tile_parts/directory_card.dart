@@ -25,7 +25,7 @@ class ClubIndexRow extends StatelessWidget {
       label: context.l10n.clubsDirectoryCardLabelOpenNameClub(name: club.name),
       child: CatchSurface(
         onTap: onTap,
-        borderColor: t.line,
+        borderRole: CatchBorderRole.separator,
         emphasis: CatchSurfaceEmphasis.subtle,
         radius: CatchRadius.md,
         padding: CatchInsets.tileContentCompact,

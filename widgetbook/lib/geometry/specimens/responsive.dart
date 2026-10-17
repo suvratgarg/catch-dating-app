@@ -130,7 +130,6 @@ Widget _keyboardFocusTreatmentSample(
   required String label,
   required String description,
 }) {
-  final t = CatchTokens.of(context);
   return widgetbookGeometrySectionHeaderComparison(
     context,
     width: width,
@@ -138,7 +137,7 @@ Widget _keyboardFocusTreatmentSample(
     description: description,
     child: CatchSurface(
       tone: CatchSurfaceTone.raised,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
       child: CatchSectionList.inset(
@@ -276,7 +275,6 @@ Widget _mixedSectionPageSample(
   required ValueChanged<Set<String>> onHostSelectionChanged,
   required ValueChanged<Set<String>> onTimingSelectionChanged,
 }) {
-  final t = CatchTokens.of(context);
   return widgetbookGeometrySectionHeaderComparison(
     context,
     width: width,
@@ -284,7 +282,7 @@ Widget _mixedSectionPageSample(
     description: description,
     child: CatchSurface(
       tone: CatchSurfaceTone.raised,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
       child: CatchSectionList.inset(
@@ -430,7 +428,6 @@ Widget _scaledReviewViewport(
   required double viewportHeight,
   required Widget child,
 }) {
-  final t = CatchTokens.of(context);
   return LayoutBuilder(
     builder: (context, constraints) {
       final scale = constraints.maxWidth < viewportWidth
@@ -447,7 +444,7 @@ Widget _scaledReviewViewport(
             height: viewportHeight,
             child: CatchSurface(
               tone: CatchSurfaceTone.raised,
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               clipBehavior: Clip.antiAlias,
               child: child,
             ),

@@ -211,14 +211,13 @@ class ReviewHistoryItemSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
         gapH8,
         CatchSurface(
-          borderColor: t.line,
+          borderRole: CatchBorderRole.separator,
           padding: CatchInsets.tileContentCompact,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

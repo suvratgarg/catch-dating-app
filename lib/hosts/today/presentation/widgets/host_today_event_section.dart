@@ -114,7 +114,7 @@ class HostTodayEventSection extends StatelessWidget {
     return !contained
         ? content
         : CatchSurface(
-            borderColor: t.line,
+            borderRole: CatchBorderRole.separator,
             backgroundColor: t.surface,
             borderRadius: BorderRadius.circular(CatchRadius.md),
             clipBehavior: Clip.antiAlias,

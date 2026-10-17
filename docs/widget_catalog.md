@@ -203,8 +203,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchPageTabBar</code> | <code>packages/catch_ui/lib/src/components/catch_page_tab_bar.dart:16</code> | <code>TabBar</code> | <code>catch.chip.field</code> | Page-level peer navigation in the canonical scaled app-bar shell. Also called: <code>SegmentedTabs</code>, <code>TopTabs</code>, <code>PageTabs</code>, <code>TabStrip</code>. |
 | <code>CatchPolaroid</code> | <code>packages/catch_ui/lib/src/components/catch_polaroid.dart:14</code> | <code>Polaroid</code> | <code>catch.person_polaroid</code> | Canonical person material: a portrait-first instant photograph with a quiet handwritten-note lane rendered in Catch's editorial typography. Also called: <code>ProfileCard</code>, <code>PersonCard</code>, <code>PhotoCard</code>, <code>UserCard</code>. |
 | <code>CatchPoster</code> | <code>packages/catch_ui/lib/src/components/catch_poster.dart:17</code> | <code>Poster</code> | <code>catch.organizer_poster</code> | Canonical organizer material. Also called: <code>EditorialCard</code>, <code>MediaCard</code>, <code>FeatureCard</code>, <code>PosterCard</code>, <code>OrganizerPoster</code>. |
-| <code>CatchPosterHeader</code> | <code>packages/catch_ui/lib/src/components/catch_poster.dart:188</code> | <code>Header</code> | <code>catch.organizer_poster</code> | Poster copy: kicker, title with optional arrow, tagline, meta and footer. |
-| <code>CatchPosterImage</code> | <code>packages/catch_ui/lib/src/components/catch_poster.dart:164</code> | <code>Image</code> | <code>catch.organizer_poster</code> | Poster media framed with the poster radius and an optional overlay. |
+| <code>CatchPosterHeader</code> | <code>packages/catch_ui/lib/src/components/catch_poster.dart:192</code> | <code>Header</code> | <code>catch.organizer_poster</code> | Poster copy: kicker, title with optional arrow, tagline, meta and footer. |
+| <code>CatchPosterImage</code> | <code>packages/catch_ui/lib/src/components/catch_poster.dart:168</code> | <code>Image</code> | <code>catch.organizer_poster</code> | Poster media framed with the poster radius and an optional overlay. |
 | <code>CatchPrivacyBadge</code> | <code>packages/catch_ui/lib/src/components/catch_privacy_badge.dart:21</code> | <code>Badge</code> | <code>catch.badge</code> | Privacy/visibility adapter with caller-resolved labels and fixed mode-to-icon pairing in CatchBadge.privacy. Also called: <code>VisibilityBadge</code>, <code>PrivacyLabel</code>. |
 | <code>CatchRangeInput</code> | <code>packages/catch_ui/lib/src/components/catch_range_input.dart:12</code> | <code>Input</code> | <code>catch.range_slider</code> | Edits an ordered numeric interval through two independently movable ends. Also called: <code>RangeSlider</code>, <code>DualSlider</code>, <code>RangePicker</code>. |
 | <code>CatchRowSection</code> | <code>packages/catch_ui/lib/src/components/catch_row_section.dart:24</code> | <code>Section</code> | <code>catch.section</code> | Internal renderer for the typed Field collection recipes on CatchSection. |
@@ -324,7 +324,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventProfilePhotoField</code> | <code>lib/chats/presentation/widgets/event_profile_photo_field.dart:9</code> | — | — | An owned photo choice that stays disabled until its current preview decodes. |
 | <code>MediaMessageBody</code> | <code>lib/chats/presentation/widgets/message_bubble.dart:104</code> | — | — | No class documentation or registry summary. |
 | <code>MessageBubble</code> | <code>lib/chats/presentation/widgets/message_bubble.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>MatchTesterSheet</code> | <code>lib/chats/presentation/widgets/suvbot_action_bar.dart:419</code> | — | — | No class documentation or registry summary. |
+| <code>MatchTesterSheet</code> | <code>lib/chats/presentation/widgets/suvbot_action_bar.dart:418</code> | — | — | No class documentation or registry summary. |
 | <code>SuvbotActionBar</code> | <code>lib/chats/presentation/widgets/suvbot_action_bar.dart:23</code> | — | — | No class documentation or registry summary. |
 | <code>SuvbotResetActionRow</code> | <code>lib/chats/presentation/widgets/suvbot_action_bar.dart:333</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailReadOnlyPreviewSliver</code> | <code>lib/clubs/presentation/detail/club_detail_read_only_preview.dart:15</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialClub] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
@@ -377,7 +377,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventCard</code> | <code>lib/core/widgets/event_card.dart:13</code> | <code>Card</code> | <code>catch.event_card</code> | Production event card backed by the shared activity visual schema. Also called: <code>EventTicket</code>, <code>EventTile</code>, <code>EventListItem</code>, <code>EventPreviewCard</code>. |
 | <code>EventFallbackThumbnail</code> | <code>lib/core/widgets/event_thumbnail.dart:90</code> | <code>Thumbnail</code> | <code>catch.event_card</code> | Direct event-thumbnail activity fallback renderer for no-photo states. |
 | <code>EventThumbnail</code> | <code>lib/core/widgets/event_thumbnail.dart:17</code> | <code>Thumbnail</code> | <code>catch.event_card</code> | Shared image/fallback primitive for any event-card surface. |
-| <code>OrderedPhotoAddTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:716</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoAddTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:715</code> | — | — | No class documentation or registry summary. |
 | <code>OrderedPhotoPicker</code> | <code>lib/core/widgets/ordered_photo_picker.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>OrderedPhotoTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:477</code> | — | — | No class documentation or registry summary. |
 | <code>StartupBrandHeader</code> | <code>lib/core/widgets/splash_screen.dart:40</code> | <code>Header</code> | <code>catch.startup_loading_screen</code> | The shared role-specific brand anchor used by Host startup and auth. |
@@ -476,7 +476,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StageConversationCueCard</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart:581</code> | — | — | No class documentation or registry summary. |
 | <code>StageCueLine</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart:623</code> | — | — | No class documentation or registry summary. |
 | <code>StagePromptCard</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart:555</code> | — | — | No class documentation or registry summary. |
-| <code>StageSectionLabel</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart:700</code> | — | — | No class documentation or registry summary. |
+| <code>StageSectionLabel</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart:699</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionBouncyChip</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_motion_viewport.dart:91</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionBouncySurface</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_motion_viewport.dart:65</code> | — | — | Gives the wrapped widget a kinetic press response: scale down on tap-down, brief glow flare, then a spring-back to rest. Drop-in replacement for InkWell-style affordances on the stage where Material's ink ripple feels out of place against the gradient + motif backdrop. |
 | <code>CompanionStageMotifImage</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_motion_viewport.dart:3</code> | — | — | No class documentation or registry summary. |
@@ -493,22 +493,22 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CompanionPaperTicketRow</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart:340</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionPaperTicketText</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart:389</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionPrivacySection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart:501</code> | — | — | No class documentation or registry summary. |
-| <code>CompanionSelfCheckInSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart:535</code> | — | — | No class documentation or registry summary. |
+| <code>CompanionSelfCheckInSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart:534</code> | — | — | No class documentation or registry summary. |
 | <code>PeopleTokenRow</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_people_token_row.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CompatibilityQuestionnaireSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>QuestionProgressRail</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart:252</code> | — | — | No class documentation or registry summary. |
 | <code>RevealCinematicOverlay</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_reveal_cinematic.dart:8</code> | — | — | Server-clocked reveal cinematic composed from the same portable assets and deterministic geometry used by the guest-web runtime. |
 | <code>RotationSlotRow</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_rotation_slot_row.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionHeroSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:281</code> | — | — | No class documentation or registry summary. |
-| <code>CompanionMomentPageBody</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:416</code> | — | — | No class documentation or registry summary. |
+| <code>CompanionMomentPageBody</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:420</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionMomentViewport</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:93</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionPrivacyText</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:370</code> | — | — | No class documentation or registry summary. |
-| <code>CompanionStageActionSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:448</code> | — | — | No class documentation or registry summary. |
-| <code>CompanionStageBanner</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:467</code> | — | — | No class documentation or registry summary. |
+| <code>CompanionStageActionSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:452</code> | — | — | No class documentation or registry summary. |
+| <code>CompanionStageBanner</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:475</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionStageImage</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:360</code> | — | — | Animates a one-shot entry on first build, then breathes the glyph continuously so the hero element never reads as static between moments. |
 | <code>CompanionStageNavigationRow</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:223</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionStageScaffold</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>CompanionStageSurface</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:439</code> | — | — | Ambient stage card. The border alpha breathes on a 6s sine so the surface never reads as static — even when no content is changing. |
+| <code>CompanionStageSurface</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:443</code> | — | — | Ambient stage card. The border alpha breathes on a 6s sine so the surface never reads as static — even when no content is changing. |
 | <code>WingmanRequestSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssignmentFeatureChoicesPageBody</code> | <code>lib/event_success/presentation/event_assignment_feature_choices_page_body.dart:13</code> | — | — | The current session's private answer review and independent grant controls. |
 | <code>EventAssignmentFeatureSheet</code> | <code>lib/event_success/presentation/event_assignment_feature_sheet.dart:11</code> | — | — | The backend discovers only this verified respondent's answers. A separate matching decision is required for each answer; prior grants stay visible. |
@@ -631,11 +631,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CalendarAgendaSliverSection</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:288</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarDateHeader</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:428</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarDateHeaderSkeleton</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:483</code> | — | — | No class documentation or registry summary. |
-| <code>CalendarMonthGrid</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:653</code> | — | — | No class documentation or registry summary. |
-| <code>CalendarStatDivider</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:739</code> | — | — | No class documentation or registry summary. |
-| <code>CalendarStatSkeleton</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:593</code> | — | — | No class documentation or registry summary. |
+| <code>CalendarMonthGrid</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:651</code> | — | — | No class documentation or registry summary. |
+| <code>CalendarStatDivider</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:737</code> | — | — | No class documentation or registry summary. |
+| <code>CalendarStatSkeleton</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:591</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarStatsHeaderSkeleton</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:556</code> | — | — | No class documentation or registry summary. |
-| <code>CalendarWeekStrip</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:609</code> | — | — | No class documentation or registry summary. |
+| <code>CalendarWeekStrip</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:607</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarWeekStripSkeleton</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:495</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarStatsHeader</code> | <code>lib/events/presentation/calendar/calendar_stats_header.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>ChromelessMapScaffold</code> | <code>lib/events/presentation/event_location_map_screen.dart:179</code> | — | — | No class documentation or registry summary. |
@@ -644,43 +644,43 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventMapView</code> | <code>lib/events/presentation/event_map_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>MapPickerSearchRow</code> | <code>lib/events/presentation/location_picker_screen.dart:380</code> | — | — | No class documentation or registry summary. |
 | <code>PlaceSearchPanel</code> | <code>lib/events/presentation/location_picker_screen.dart:412</code> | — | — | No class documentation or registry summary. |
-| <code>PlaceSuggestionRow</code> | <code>lib/events/presentation/location_picker_screen.dart:500</code> | — | — | No class documentation or registry summary. |
-| <code>SelectedPointPanel</code> | <code>lib/events/presentation/location_picker_screen.dart:567</code> | — | — | No class documentation or registry summary. |
+| <code>PlaceSuggestionRow</code> | <code>lib/events/presentation/location_picker_screen.dart:499</code> | — | — | No class documentation or registry summary. |
+| <code>SelectedPointPanel</code> | <code>lib/events/presentation/location_picker_screen.dart:565</code> | — | — | No class documentation or registry summary. |
 | <code>SavedEventsAgendaSliver</code> | <code>lib/events/presentation/saved_events_screen.dart:144</code> | — | — | No class documentation or registry summary. |
 | <code>SavedEventsClubNamesErrorSliver</code> | <code>lib/events/presentation/saved_events_screen.dart:181</code> | — | — | No class documentation or registry summary. |
-| <code>EventCompanionEntry</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:279</code> | — | — | Provider-free companion prompt adapter for hidden, loading, error, and available Event Success plan states. |
+| <code>EventCompanionEntry</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:283</code> | — | — | Provider-free companion prompt adapter for hidden, loading, error, and available Event Success plan states. |
 | <code>EventDetailCalloutCard</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:207</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailHostsSection</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:340</code> | — | — | Compact host identity, with all affordances derived from available actions. |
-| <code>GuestBookCta</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:318</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailHostsSection</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:344</code> | — | — | Compact host identity, with all affordances derived from available actions. |
+| <code>GuestBookCta</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:322</code> | — | — | No class documentation or registry summary. |
 | <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:25</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
 | <code>EventCtaStatusLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:523</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailCta</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:80</code> | — | — | No class documentation or registry summary. |
 | <code>PriceLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:443</code> | — | — | No class documentation or registry summary. |
 | <code>WaitlistOfferLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:480</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:349</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
-| <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:316</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
+| <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:348</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
+| <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:315</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
 | <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:79</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
-| <code>EventDetailItinerary</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:129</code> | — | — | Timed event itinerary rail for route plan, meet, run, and post-event moments. |
-| <code>EventDetailMapCard</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:166</code> | — | — | Event detail map preview card with exact or morning-of pin states and optional route-owned tap action. |
-| <code>EventDetailMechanismList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:288</code> | — | — | How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics. |
-| <code>EventDetailPhotoStrip</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:487</code> | — | — | Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders. |
-| <code>EventDetailPhotoStripTile</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:549</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailItinerary</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:128</code> | — | — | Timed event itinerary rail for route plan, meet, run, and post-event moments. |
+| <code>EventDetailMapCard</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:165</code> | — | — | Event detail map preview card with exact or morning-of pin states and optional route-owned tap action. |
+| <code>EventDetailMechanismList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:287</code> | — | — | How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics. |
+| <code>EventDetailPhotoStrip</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:486</code> | — | — | Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders. |
+| <code>EventDetailPhotoStripTile</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:548</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailTicketStubBand</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:20</code> | — | — | Flush ticket fact band for when, where, pace, and activity facts below the hero. |
-| <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:665</code> | — | — | No class documentation or registry summary. |
-| <code>TicketStubCell</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:592</code> | — | — | No class documentation or registry summary. |
+| <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:664</code> | — | — | No class documentation or registry summary. |
+| <code>TicketStubCell</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:591</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHeroAppBar</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:12</code> | — | — | Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions. |
 | <code>EventDetailTicketHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:237</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailTicketSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:261</code> | — | — | No class documentation or registry summary. |
 | <code>EventPhotoHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:191</code> | — | — | No class documentation or registry summary. |
 | <code>HeroActivityBadge</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:376</code> | — | — | No class documentation or registry summary. |
-| <code>HeroTimeChip</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:410</code> | — | — | No class documentation or registry summary. |
+| <code>HeroTimeChip</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:414</code> | — | — | No class documentation or registry summary. |
 | <code>ItineraryRow</code> | <code>lib/events/presentation/widgets/event_detail_itinerary_row.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailCompanionSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:365</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHeroSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:52</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHintSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:225</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailHostsSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:403</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailHostsSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:407</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailItinerarySkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:258</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailLoadingCta</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:434</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailLoadingCta</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:438</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailMapSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:299</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailMechanismSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:311</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailPlanSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:205</code> | — | — | No class documentation or registry summary. |
@@ -698,19 +698,19 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventPinsMapPlaceholder</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:638</code> | — | — | No class documentation or registry summary. |
 | <code>MapOverlayControls</code> | <code>lib/events/presentation/widgets/map_overlay_controls.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>EmptyRosterMessage</code> | <code>lib/events/presentation/widgets/who_is_going.dart:185</code> | — | — | No class documentation or registry summary. |
-| <code>SwipeWindowBanner</code> | <code>lib/events/presentation/widgets/who_is_going.dart:242</code> | — | — | No class documentation or registry summary. |
+| <code>SwipeWindowBanner</code> | <code>lib/events/presentation/widgets/who_is_going.dart:246</code> | — | — | No class documentation or registry summary. |
 | <code>WhoIsGoing</code> | <code>lib/events/presentation/widgets/who_is_going.dart:34</code> | — | — | No class documentation or registry summary. |
 | <code>WhoIsGoingContent</code> | <code>lib/events/presentation/widgets/who_is_going.dart:80</code> | — | — | No class documentation or registry summary. |
-| <code>AgendaDayGroup</code> | <code>lib/events/shared/event_agenda_list.dart:253</code> | — | — | No class documentation or registry summary. |
+| <code>AgendaDayGroup</code> | <code>lib/events/shared/event_agenda_list.dart:252</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaSliverList</code> | <code>lib/events/shared/event_agenda_list.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaSliverSkeleton</code> | <code>lib/events/shared/event_agenda_list.dart:122</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaTileSkeleton</code> | <code>lib/events/shared/event_agenda_list.dart:159</code> | — | — | No class documentation or registry summary. |
 | <code>EventCheckInQrScanner</code> | <code>lib/events/shared/event_check_in_qr_scanner.dart:54</code> | — | — | No class documentation or registry summary. |
 | <code>EventShareCard</code> | <code>lib/events/shared/event_share_card.dart:90</code> | — | — | No class documentation or registry summary. |
-| <code>EventSharePill</code> | <code>lib/events/shared/event_share_card.dart:258</code> | — | — | No class documentation or registry summary. |
+| <code>EventSharePill</code> | <code>lib/events/shared/event_share_card.dart:262</code> | — | — | No class documentation or registry summary. |
 | <code>EventActionCard</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>EventActionCardActions</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:204</code> | — | — | No class documentation or registry summary. |
-| <code>EventActionCardHeader</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:165</code> | — | — | No class documentation or registry summary. |
+| <code>EventActionCardActions</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:208</code> | — | — | No class documentation or registry summary. |
+| <code>EventActionCardHeader</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:169</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaTile</code> | <code>lib/events/shared/event_tiles/event_agenda_tile.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>EventDateMarker</code> | <code>lib/events/shared/event_tiles/event_date_marker.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>MonthMarker</code> | <code>lib/events/shared/event_tiles/event_date_marker.dart:128</code> | — | — | No class documentation or registry summary. |
@@ -737,7 +737,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreEventTypeBrowseGrid</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>MoreActivityTypesRow</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:240</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreFeedContentSliver</code> | <code>lib/explore/presentation/widgets/explore_events_section.dart:147</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreEventsEmptySliver</code> | <code>lib/explore/presentation/widgets/explore_events_status_slivers.dart:36</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreEventsEmptySliver</code> | <code>lib/explore/presentation/widgets/explore_events_status_slivers.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreEventsLoadingSliver</code> | <code>lib/explore/presentation/widgets/explore_events_status_slivers.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreFeedSkeleton</code> | <code>lib/explore/presentation/widgets/explore_feed_skeleton.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreAppliedFilterChips</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:109</code> | — | — | Removable Explore filters that scroll beneath the pinned time-scope rail. |
@@ -745,7 +745,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreFilterSheet</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreDiscoveryCoverHeader</code> | <code>lib/explore/presentation/widgets/explore_header.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreScreenEmptyState</code> | <code>lib/explore/presentation/widgets/explore_screen_empty_state.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>FeaturedEventBody</code> | <code>lib/explore/presentation/widgets/featured_event_poster.dart:263</code> | — | — | No class documentation or registry summary. |
+| <code>FeaturedEventBody</code> | <code>lib/explore/presentation/widgets/featured_event_poster.dart:262</code> | — | — | No class documentation or registry summary. |
 | <code>FeaturedEventPoster</code> | <code>lib/explore/presentation/widgets/featured_event_poster.dart:18</code> | <code>Poster</code> | — | Design-system `CoverStory` (`components/explore/CoverStory`): the dark "wow" cover that opens Explore — tonight's headline event as a magazine cover. A near-black ground, an activity-pigment radial glow, a faint diagonal scrim, a giant ghosted activity glyph, a condensed Archivo headline, and a paper CTA + mono data block. Also serves as a neutral masthead (omit [activityKind] for the brand glow, set [showGhostGlyph] false, pass [body] for a hook line). Also called: <code>CoverStory</code>, <code>FeaturedEventHero</code>, <code>ExploreHero</code>, <code>FeaturedEventBanner</code>. |
 | <code>FeaturedEventTopBar</code> | <code>lib/explore/presentation/widgets/featured_event_poster.dart:165</code> | — | — | No class documentation or registry summary. |
 | <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart:19</code> | — | — | Explore recommendation card. |
@@ -955,19 +955,19 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventParticipantsPanel</code> | <code>lib/hosts/presentation/widgets/host_event_attendance_panel.dart:47</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventCheckInQrSection</code> | <code>lib/hosts/presentation/widgets/host_event_check_in_qr_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventLiveLocationControl</code> | <code>lib/hosts/presentation/widgets/host_event_live_location_control.dart:14</code> | — | — | No class documentation or registry summary. |
-| <code>HostActionRow</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:229</code> | — | — | No class documentation or registry summary. |
+| <code>HostActionRow</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:228</code> | — | — | No class documentation or registry summary. |
 | <code>HostCapacitySection</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:21</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventActionsSection</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:121</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventSummaryRow</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:432</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventSummarySection</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:378</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventActionsSection</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:120</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventSummaryRow</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:431</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventSummarySection</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:377</code> | — | — | No class documentation or registry summary. |
 | <code>HostFullCapacityBanner</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:90</code> | — | — | No class documentation or registry summary. |
-| <code>HostPublicRegistrationField</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:258</code> | — | — | No class documentation or registry summary. |
+| <code>HostPublicRegistrationField</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart:257</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventParticipantsSectionList</code> | <code>lib/hosts/presentation/widgets/host_event_participants_section_list.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostParticipationLifecycleSection</code> | <code>lib/hosts/presentation/widgets/host_event_participants_section_list.dart:110</code> | — | — | No class documentation or registry summary. |
-| <code>HostInviteLinkRow</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:368</code> | — | — | No class documentation or registry summary. |
-| <code>HostInviteLinksSection</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:247</code> | — | — | No class documentation or registry summary. |
+| <code>HostInviteLinkRow</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:367</code> | — | — | No class documentation or registry summary. |
+| <code>HostInviteLinksSection</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:246</code> | — | — | No class documentation or registry summary. |
 | <code>HostPrivateAccessAsyncBoundary</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:27</code> | — | — | No class documentation or registry summary. |
-| <code>HostPrivateAccessSection</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:133</code> | — | — | No class documentation or registry summary. |
+| <code>HostPrivateAccessSection</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:132</code> | — | — | No class documentation or registry summary. |
 | <code>HostPrivateAccessSurface</code> | <code>lib/hosts/presentation/widgets/host_event_private_access_section.dart:117</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventReviewsPanel</code> | <code>lib/hosts/presentation/widgets/host_event_reviews_panel.dart:17</code> | — | — | Host-owned review workspace for one event. |
 | <code>HostEventRosterPanel</code> | <code>lib/hosts/presentation/widgets/host_event_roster_drawer.dart:6</code> | — | — | Event roster content. The Host router owns its parent and pane placement. |
@@ -1016,7 +1016,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostWorkPageBody</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:121</code> | — | — | The resolved assignment picker, grouped by organizer. |
 | <code>PhotoGrid</code> | <code>lib/image_uploads/shared/photo_grid.dart:31</code> | — | — | A 3×2 grid of photo slots for displaying and editing a user's profile photos. |
 | <code>PhotoSlot</code> | <code>lib/image_uploads/shared/photo_slot.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>StripedPhotoPlaceholder</code> | <code>lib/image_uploads/shared/photo_slot.dart:252</code> | — | — | No class documentation or registry summary. |
+| <code>StripedPhotoPlaceholder</code> | <code>lib/image_uploads/shared/photo_slot.dart:250</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePhotoEditorPreview</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart:388</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessApplicationForm</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:171</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessChoiceSkeleton</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:137</code> | — | — | No class documentation or registry summary. |
@@ -1048,7 +1048,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentConfirmationHeadsUp</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:626</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentPendingCheckoutBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:130</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentPendingCheckoutController</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:71</code> | — | — | No class documentation or registry summary. |
-| <code>PaymentReferralBanner</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:655</code> | — | — | No class documentation or registry summary. |
+| <code>PaymentReferralBanner</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:654</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryList</code> | <code>lib/payments/presentation/payment_history_screen.dart:97</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryListController</code> | <code>lib/payments/presentation/payment_history_screen.dart:66</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistorySkeleton</code> | <code>lib/payments/presentation/payment_history_screen.dart:147</code> | — | — | No class documentation or registry summary. |
@@ -1117,7 +1117,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart:48</code> | — | — | Event-scoped reviews with write/edit CTA for attended attendees. |
 | <code>ReviewCard</code> | <code>lib/reviews/shared/reviews_section.dart:310</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewOwnerResponseBlock</code> | <code>lib/reviews/shared/reviews_section.dart:401</code> | — | — | No class documentation or registry summary. |
-| <code>ReviewResponseSheet</code> | <code>lib/reviews/shared/reviews_section.dart:460</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewResponseSheet</code> | <code>lib/reviews/shared/reviews_section.dart:464</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsPreviewSection</code> | <code>lib/reviews/shared/reviews_section.dart:142</code> | — | — | No class documentation or registry summary. |
 | <code>StarRating</code> | <code>lib/reviews/shared/star_rating.dart:7</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
 | <code>StarRatingPicker</code> | <code>lib/reviews/shared/star_rating.dart:37</code> | — | — | Tappable star row for picking a rating. |
@@ -1135,18 +1135,18 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:707</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapLoadingBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:277</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapReadyBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:135</code> | — | — | No class documentation or registry summary. |
-| <code>RecapHero</code> | <code>lib/swipes/presentation/event_recap_screen.dart:411</code> | — | — | No class documentation or registry summary. |
+| <code>RecapHero</code> | <code>lib/swipes/presentation/event_recap_screen.dart:410</code> | — | — | No class documentation or registry summary. |
 | <code>RecapHeroSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:317</code> | — | — | No class documentation or registry summary. |
-| <code>RecapProfilePhoto</code> | <code>lib/swipes/presentation/event_recap_screen.dart:602</code> | — | — | No class documentation or registry summary. |
-| <code>RecapStat</code> | <code>lib/swipes/presentation/event_recap_screen.dart:474</code> | — | — | No class documentation or registry summary. |
-| <code>RecapStatSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:350</code> | — | — | No class documentation or registry summary. |
+| <code>RecapProfilePhoto</code> | <code>lib/swipes/presentation/event_recap_screen.dart:603</code> | — | — | No class documentation or registry summary. |
+| <code>RecapStat</code> | <code>lib/swipes/presentation/event_recap_screen.dart:472</code> | — | — | No class documentation or registry summary. |
+| <code>RecapStatSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:349</code> | — | — | No class documentation or registry summary. |
 | <code>VibeGrid</code> | <code>lib/swipes/presentation/event_recap_screen.dart:214</code> | — | — | No class documentation or registry summary. |
-| <code>VibeGridSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:369</code> | — | — | No class documentation or registry summary. |
-| <code>VibeTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:512</code> | — | — | No class documentation or registry summary. |
+| <code>VibeGridSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:368</code> | — | — | No class documentation or registry summary. |
+| <code>VibeTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:510</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersContent</code> | <code>lib/swipes/presentation/filters_screen.dart:218</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersSection</code> | <code>lib/swipes/presentation/filters_screen.dart:363</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersValue</code> | <code>lib/swipes/presentation/filters_screen.dart:390</code> | — | — | No class documentation or registry summary. |
-| <code>CatchesBottomScrim</code> | <code>lib/swipes/presentation/swipe_screen.dart:438</code> | — | — | No class documentation or registry summary. |
+| <code>CatchesBottomScrim</code> | <code>lib/swipes/presentation/swipe_screen.dart:442</code> | — | — | No class documentation or registry summary. |
 | <code>CatchesPassButtonSkeleton</code> | <code>lib/swipes/presentation/swipe_screen.dart:348</code> | — | — | No class documentation or registry summary. |
 | <code>CatchesProfileReview</code> | <code>lib/swipes/presentation/swipe_screen.dart:219</code> | — | — | No class documentation or registry summary. |
 | <code>CatchesProfileReviewSkeleton</code> | <code>lib/swipes/presentation/swipe_screen.dart:173</code> | — | — | No class documentation or registry summary. |
@@ -1158,7 +1158,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProfileBody</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:21</code> | — | — | PHASE 2 — the flagship profile surface, in the locked editorial language: a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data, proseL reading text, hairlines over boxes. Color = activity (the kicker + reaction affordances borrow the meeting activity's pigment). |
 | <code>ProfileCaptionText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:539</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileCompatibilitySection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:288</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:562</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:561</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileFactsSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:444</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileHeader</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:121</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileKickerText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:270</code> | — | — | No class documentation or registry summary. |

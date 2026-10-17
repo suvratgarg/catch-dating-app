@@ -174,7 +174,7 @@ class _ProfileReactionCommentSheetState
           CatchSurface(
             radius: CatchRadius.md,
             backgroundColor: t.raised,
-            borderColor: t.line,
+            borderRole: CatchBorderRole.separator,
             padding: CatchInsets.contentDense,
             child: Text(
               widget.target.preview,

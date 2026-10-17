@@ -56,7 +56,7 @@ class CatchTable extends StatelessWidget {
       child: CatchSurface(
         radius: CatchRadius.md,
         backgroundColor: t.surface,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

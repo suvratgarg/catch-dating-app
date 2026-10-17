@@ -301,7 +301,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
 
     return CatchSurface(
       backgroundColor: t.surface,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(CatchRadius.heroCard),
       ),
@@ -564,7 +564,7 @@ class PaymentConfirmationBody extends StatelessWidget {
                         onTap: actions[index].onPressed,
                         padding: CatchInsets.content,
                         radius: CatchRadius.md,
-                        borderColor: t.line,
+                        borderRole: CatchBorderRole.separator,
                         backgroundColor: t.surface,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -633,7 +633,6 @@ class PaymentConfirmationHeadsUp extends StatelessWidget {
       tone: CatchSurfaceTone.primarySoft,
       padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
-      borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

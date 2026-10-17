@@ -5841,7 +5841,6 @@ class _HostChatReportFailureNoticeCapture extends StatelessWidget {
               child: CatchSurface(
                 emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
-                borderColor: Colors.transparent,
                 backgroundColor: t.ink,
                 padding: const EdgeInsets.symmetric(
                   horizontal: CatchSpacing.s4,
@@ -6379,7 +6378,6 @@ class _MatchChatFeedbackNoticeCapture extends StatelessWidget {
               child: CatchSurface(
                 emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
-                borderColor: Colors.transparent,
                 backgroundColor: t.ink,
                 padding: const EdgeInsets.symmetric(
                   horizontal: CatchSpacing.s4,

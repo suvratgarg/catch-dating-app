@@ -202,7 +202,11 @@ class EmptyRosterMessage extends StatelessWidget {
       padding: CatchInsets.content,
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
-      borderColor: surfaceStyle?.borderColor ?? t.line,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.separator,
+        color: surfaceStyle?.borderColor,
+      ),
       child: Row(
         children: [
           Icon(
@@ -262,7 +266,6 @@ class SwipeWindowBanner extends StatelessWidget {
           : CatchSurfaceTone.transparent,
       backgroundColor: surfaceStyle?.primarySoftColor,
       radius: CatchRadius.md,
-      borderWidth: 0,
       child: Row(
         children: [
           Icon(

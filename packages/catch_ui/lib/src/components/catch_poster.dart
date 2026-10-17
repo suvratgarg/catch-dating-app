@@ -73,7 +73,11 @@ class CatchPoster extends StatelessWidget {
         final poster = CatchSurface(
           key: const ValueKey('organizer-poster-canvas'),
           onTap: onTap,
-          borderColor: colors.border,
+          borderSpec: CatchBorder.resolve(
+            t,
+            CatchBorderRole.boundary,
+            color: colors.border,
+          ),
           radius: radius,
           emphasis: CatchSurfaceEmphasis.subtle,
           backgroundColor: colors.paper,

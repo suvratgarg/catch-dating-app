@@ -116,7 +116,7 @@ class UserAnalyticsEmptyState extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       padding: CatchInsets.content,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -167,7 +167,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
                       width: itemWidth,
                       child: CatchSurface(
                         padding: CatchInsets.content,
-                        borderColor: CatchTokens.of(context).line,
+                        borderRole: CatchBorderRole.separator,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -210,7 +210,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
           title: UserAnalyticsCopy.trendTitle(context.l10n),
           child: CatchSurface(
             padding: CatchInsets.content,
-            borderColor: CatchTokens.of(context).line,
+            borderRole: CatchBorderRole.separator,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -322,7 +322,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
       title: UserAnalyticsCopy.trendTitle(context.l10n),
       child: CatchSurface(
         padding: CatchInsets.content,
-        borderColor: CatchTokens.of(context).line,
+        borderRole: CatchBorderRole.separator,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

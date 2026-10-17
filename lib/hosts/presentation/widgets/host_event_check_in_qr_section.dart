@@ -63,7 +63,6 @@ class _HostEventCheckInQrSectionState
             data: (session) => CatchSurface(
               radius: CatchRadius.sm,
               backgroundColor: CatchTokens.editorialWhite,
-              borderWidth: 0,
               padding: CatchInsets.iconChipContent,
               child: QrImageView(
                 key: ValueKey('host_event_live_qr_${session.expiresAtMillis}'),

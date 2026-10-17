@@ -49,7 +49,11 @@ class ChatEventContextHeader extends StatelessWidget {
       child: CatchSurface(
         radius: CatchRadius.md,
         backgroundColor: visual?.soft ?? t.primarySoft,
-        borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
+        borderSpec: CatchBorder.resolve(
+          t,
+          CatchBorderRole.boundary,
+          color: accent.withValues(alpha: CatchOpacity.subtleBorder),
+        ),
         padding: CatchInsets.chatEventContextContent,
         child: Row(
           children: [

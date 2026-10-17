@@ -141,7 +141,7 @@ class StrictCoverageScaffold extends StatelessWidget {
             Text(componentName, style: CatchTextStyles.titleL(context)),
             gapH12,
             CatchSurface(
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               padding: CatchInsets.content,
               child: child,
             ),

@@ -223,10 +223,8 @@ class DashboardFocusLoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return CatchSurface(
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

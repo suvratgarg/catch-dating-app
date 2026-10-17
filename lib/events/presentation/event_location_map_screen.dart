@@ -130,7 +130,7 @@ class EventLocationMapLoadingBody extends StatelessWidget {
             child: CatchSurface(
               tone: CatchSurfaceTone.raised,
               emphasis: CatchSurfaceEmphasis.floating,
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               padding: CatchInsets.content,
               child: Column(
                 mainAxisSize: MainAxisSize.min,

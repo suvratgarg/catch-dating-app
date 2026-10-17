@@ -155,7 +155,11 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
     );
     return CatchSurface(
       padding: CatchInsets.compactControlContent,
-      borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.warning.withValues(alpha: CatchOpacity.warningFill),
+      ),
       radius: CatchRadius.md,
       backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
       child: CatchViewport.atWidth(

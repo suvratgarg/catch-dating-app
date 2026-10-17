@@ -390,7 +390,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSurface(
-          borderColor: t.line,
+          borderRole: CatchBorderRole.separator,
           padding: CatchInsets.cardContent,
           child: Column(
             children: [

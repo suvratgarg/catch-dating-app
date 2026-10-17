@@ -558,8 +558,6 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Padding(
       padding: CatchInsets.pageBody.copyWith(
         top: CatchSpacing.micro2,
@@ -570,11 +568,11 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: CatchSurface(
+          child: const CatchSurface(
             padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
-            borderColor: t.line,
-            child: const Row(
+            borderRole: CatchBorderRole.separator,
+            child: Row(
               children: [
                 Expanded(child: CalendarStatSkeleton()),
                 CalendarStatDivider(),

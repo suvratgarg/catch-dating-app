@@ -22,7 +22,11 @@ class EventActivityBadge extends StatelessWidget {
       height: size,
       radius: CatchRadius.pill,
       backgroundColor: visual.soft.withValues(alpha: CatchOpacity.scrimFill),
-      borderColor: visual.accent.withValues(alpha: CatchOpacity.mutedBorder),
+      borderSpec: CatchBorder.resolve(
+        CatchTokens.of(context),
+        CatchBorderRole.boundary,
+        color: visual.accent.withValues(alpha: CatchOpacity.mutedBorder),
+      ),
       child: Center(
         child: Icon(visual.icon, size: iconSize, color: visual.deep),
       ),

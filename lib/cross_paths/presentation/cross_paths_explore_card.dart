@@ -153,7 +153,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
       time: EventFormatters.time(event.startTime),
     );
     return CatchSurface.card(
-      borderColor: t.line2,
+      borderRole: CatchBorderRole.boundary,
       padding: compact ? CatchInsets.tileContentCompact : CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +273,6 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
       heightFactor: 0.94,
       child: CatchSurface(
         backgroundColor: t.bg,
-        borderWidth: 0,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(CatchLayout.sheetTopRadius),
         ),

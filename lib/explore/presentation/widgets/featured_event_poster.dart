@@ -227,7 +227,6 @@ class FeaturedEventTopBar extends StatelessWidget {
                       child: CatchSurface(
                         height: CatchIconAction.defaultSize,
                         radius: CatchRadius.sm,
-                        borderWidth: 0,
                         backgroundColor: Colors.transparent,
                         onTap: onLocation,
                         child: label,

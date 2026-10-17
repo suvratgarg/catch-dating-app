@@ -1160,12 +1160,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool _isThemeIndependentArtAllow(int offset) {
-    final isKnownArtPath =
-        path.endsWith(
-          '/packages/catch_ui/lib/src/primitives/catch_graded_image.dart',
-        ) ||
-        path.endsWith('/lib/core/widgets/event_activity_visuals.dart') ||
-        path.endsWith('/lib/events/presentation/widgets/event_pins_map.dart');
+    final isKnownArtPath = path.endsWith(
+      '/packages/catch_ui/lib/src/primitives/catch_graded_image.dart',
+    );
     return isKnownArtPath &&
         _lineForOffsetText(offset).contains('theme-independent art');
   }

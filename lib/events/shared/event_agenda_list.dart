@@ -161,9 +161,8 @@ class EventAgendaTileSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return CatchSurface(
-      borderColor: t.line2,
+      borderRole: CatchBorderRole.boundary,
       radius: CatchRadius.md,
       padding: EdgeInsets.zero,
       child: IntrinsicHeight(

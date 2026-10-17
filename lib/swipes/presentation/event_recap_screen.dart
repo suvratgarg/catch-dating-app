@@ -324,7 +324,6 @@ class RecapHeroSkeleton extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.contentRelaxed,
       backgroundColor: t.ink,
-      borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -420,7 +419,6 @@ class RecapHero extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.contentRelaxed,
       backgroundColor: t.ink,
-      borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -529,10 +527,13 @@ class VibeTile extends StatelessWidget {
           onTap: onTap,
           backgroundColor: t.surface,
           radius: CatchRadius.md,
-          borderColor: row.selected ? t.primary : t.line,
-          borderWidth: row.selected
-              ? CatchStroke.selection
-              : CatchStroke.hairline,
+          borderSpec: row.selected
+              ? CatchBorderSpec(
+                  role: CatchBorderRole.selected,
+                  color: t.primary,
+                  width: CatchStroke.selection,
+                )
+              : CatchBorder.resolve(t, CatchBorderRole.separator),
           duration: CatchMotion.micro,
           clipBehavior: Clip.antiAlias,
           padding: EdgeInsets.zero,

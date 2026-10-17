@@ -404,12 +404,10 @@ class _MessageFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return CatchSurface(
       width: WidgetbookPreviewLayout.wideContractWidth,
       tone: CatchSurfaceTone.surface,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
       child: child,
     );

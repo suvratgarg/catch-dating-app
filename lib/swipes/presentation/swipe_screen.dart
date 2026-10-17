@@ -400,8 +400,12 @@ class CatchesTopOverlay extends StatelessWidget {
                     backgroundColor: t.surface.withValues(
                       alpha: CatchOpacity.floatingChromeFill,
                     ),
-                    borderColor: t.line.withValues(
-                      alpha: CatchOpacity.floatingChromeBorder,
+                    borderSpec: CatchBorder.resolve(
+                      t,
+                      CatchBorderRole.separator,
+                      color: t.line.withValues(
+                        alpha: CatchOpacity.floatingChromeBorder,
+                      ),
                     ),
                     boxShadow: CatchElevation.card,
                     padding: CatchInsets.swipeRemainingCount,

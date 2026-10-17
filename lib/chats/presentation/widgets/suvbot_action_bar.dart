@@ -353,7 +353,6 @@ class SuvbotResetActionRow extends StatelessWidget {
       child: CatchSurface(
         tone: CatchSurfaceTone.transparent,
         radius: 0,
-        borderWidth: 0,
         onTap: pending ? null : onTap,
         padding: CatchInsets.suvbotActionRow,
         child: Row(

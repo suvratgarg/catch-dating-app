@@ -507,7 +507,11 @@ class _SurfaceSpec extends StatelessWidget {
     return CatchSurface(
       tone: tone,
       emphasis: emphasis,
-      borderColor: borderColor ?? t.line,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.separator,
+        color: borderColor,
+      ),
       onTap: onTap,
       width: MediaQuery.textScalerOf(context).scale(1) >= 2
           ? WidgetbookPreviewLayout.mediumComponentWidth

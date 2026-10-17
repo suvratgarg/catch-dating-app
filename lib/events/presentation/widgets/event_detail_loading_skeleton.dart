@@ -371,7 +371,11 @@ class EventDetailCompanionSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       backgroundColor: surfaceStyle.surfaceBackground,
-      borderColor: surfaceStyle.borderColor,
+      borderSpec: CatchBorder.resolve(
+        CatchTokens.of(context),
+        CatchBorderRole.separator,
+        color: surfaceStyle.borderColor,
+      ),
       padding: CatchInsets.tileContentCompact,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

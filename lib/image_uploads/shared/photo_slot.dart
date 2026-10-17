@@ -113,7 +113,6 @@ class PhotoSlot extends StatelessWidget {
         child: CatchSurface(
           borderRadius: borderRadius,
           tone: CatchSurfaceTone.raised,
-          borderWidth: 0,
           clipBehavior: Clip.antiAlias,
           child: Stack(
             fit: StackFit.expand,
@@ -174,7 +173,6 @@ class PhotoSlot extends StatelessWidget {
                     backgroundColor: CatchTokens.editorialBlack.withValues(
                       alpha: CatchOpacity.photoPromptScrim,
                     ),
-                    borderWidth: 0,
                     padding: CatchInsets.infoTileContent,
                     child: Text(
                       prompt!.displayPrompt,

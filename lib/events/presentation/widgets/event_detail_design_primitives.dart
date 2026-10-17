@@ -109,7 +109,6 @@ class EventDetailHintList extends StatelessWidget {
               height: CatchLayout.eventDetailHintDotExtent,
               radius: CatchRadius.pill,
               backgroundColor: activity.accent,
-              borderWidth: 0,
               child: const SizedBox.shrink(),
             ),
           ),

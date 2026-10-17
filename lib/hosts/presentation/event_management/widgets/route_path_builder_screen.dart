@@ -107,7 +107,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                 top: false,
                 child: CatchSurface(
                   backgroundColor: t.surface,
-                  borderColor: t.line,
+                  borderRole: CatchBorderRole.separator,
                   emphasis: CatchSurfaceEmphasis.floating,
                   padding: CatchInsets.content,
                   child: Column(

@@ -52,7 +52,7 @@ class ClubShareCard extends StatelessWidget {
       aspectRatio: CatchLayout.richShareCardAspectRatio,
       child: CatchSurface(
         backgroundColor: t.bg,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.content,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

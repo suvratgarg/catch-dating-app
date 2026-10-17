@@ -304,7 +304,7 @@ class QuestionProgressRail extends StatelessWidget {
                     : index < answeredCount
                     ? t.primarySoft
                     : t.surface,
-                borderColor: t.line,
+                borderRole: CatchBorderRole.separator,
                 child: Text(
                   context.l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireTextValue1(

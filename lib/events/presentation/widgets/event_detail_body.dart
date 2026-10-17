@@ -231,7 +231,11 @@ class EventDetailCalloutCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       backgroundColor: surfaceStyle.surfaceBackground,
-      borderColor: borderColor ?? surfaceStyle.borderColor,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.separator,
+        color: borderColor ?? surfaceStyle.borderColor,
+      ),
       padding: CatchInsets.tileContentCompact,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
