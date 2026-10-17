@@ -82,7 +82,7 @@
 }
 
 .product-module-card .ui-label {
-  color: var(--activity, var(--website-text-muted));
+  color: var(--website-copy-meta);
 }
 
 .product-module-card h3 {

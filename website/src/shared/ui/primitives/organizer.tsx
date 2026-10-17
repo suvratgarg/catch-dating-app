@@ -359,7 +359,7 @@ export function ListingStatusLedger({
   items: ListingStatusLedgerItem[];
 }) {
   return (
-    <dl className="listing-status-ledger" data-reveal>
+    <dl className="listing-status-ledger" data-reveal tabIndex={0}>
       {items.map((item, index) => (
         <div key={item.key ?? (typeof item.label === "string" ? item.label : index)}>
           <dt>{item.label}</dt>
