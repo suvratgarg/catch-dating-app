@@ -74,8 +74,8 @@ void main() {
             home: StatefulBuilder(
               builder: (context, setState) {
                 update = setState;
-                return Scaffold(
-                  appBar: CatchTopBar.screen(
+                return CatchScaffold.workspace(
+                  title: CatchTopBar.screen(
                     title: 'People',
                     leading: selector ? const _LeadingSelector() : null,
                     search: CatchTopBarSearch(
@@ -87,6 +87,7 @@ void main() {
                       tooltip: 'Search people',
                     ),
                   ),
+                  body: const SizedBox.shrink(),
                 );
               },
             ),
