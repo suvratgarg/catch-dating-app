@@ -769,12 +769,31 @@ node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned 
 node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --update
 ```
 
+## Exact-Source CI Inventories
+
+`node tool/ci/generated_inventories.mjs --source-sha <full-commit-sha>` derives
+route inventory and the widget catalog's generated region from a complete clean
+checkout of that exact commit. CI runs it before full source preflight, relevant
+Tools checks and Flutter resolved composition. Authored prose, classifications,
+coverage decisions and regression goldens remain inputs; generation cannot make
+missing semantic coverage pass. These first-phase outputs remain tracked for
+local consumers but need no routine CI refresh commit.
+
+In Actions, materialization also writes the ignored
+`build/ci/generated-inventories.json` receipt, binding both output hashes to the
+source tree, workflow and run attempt. Full-checkout Tools consumers pass
+`--generated-inventories-materialized`; the runner verifies the receipt and
+authored source before and after checks, and substitutes only the exact catalog
+and route inventory drift commands. Sparse index consumers and standalone
+commands keep their ordinary checks. Missing or changed proof fails; authored
+coverage decisions and semantic gates still execute.
+
 ## Marketing App Screenshot Context
 
 Marketing app screenshots are tracked by `tool/marketing/capture_manifest.json`.
 The `marketing-captures.yml` hosted macOS exporter accepts an exact source SHA
-through manual dispatch or an explicit `capture:requested` label event on an
-open same-repository PR into `main`. It uploads all 12 validated canonical
+through manual dispatch, an explicit `capture:requested` label event on an
+open same-repository PR into `main`, or an exact-source reusable CI call. It uploads all 12 validated canonical
 exports without committing or publishing. The producer renders only invalid or
 changed-input/font captures; reuse preserves the original PNG and render SHA,
 while the v2 receipt records verification against the selected source SHA.
@@ -784,6 +803,17 @@ admission and merge authority. See
 `docs/marketing_app_media_pipeline.md#hosted-export-cat159-enabling-slice`
 for controller integration, exact event/source selection and artifact receipts. Its focused
 wrapper/workflow checks run through `marketing:hosted-capture-export`.
+`tool/marketing/import_hosted_captures.mjs --import` requires `CAPTURE_BINDING`,
+`GITHUB_REPOSITORY`, `GITHUB_SHA` and read-only GitHub Actions access. It uses
+Node, `gh` and Python 3's standard ZIP reader to validate the complete artifact
+before replacing generated outputs. Consumers run it before dependency setup;
+`--check-dist` verifies actual website build bytes before Hosting packaging.
+Tools uses `--marketing-captures-imported` with the same run's binding to verify
+all 26 imported outputs before and after selected checks, then reuse only the
+three exact exporter/design-context/sync freshness commands. Missing or changed
+proof fails; standalone commands, syntax/unit checks and Dart framing checks
+still execute. Strict import precedes bootstrap; later proof tolerates only the
+standalone widget-dedupe analyzer's generated dependency cache and lockfile.
 The Figma/AI-friendly metadata shape is checked into
 `tool/marketing/app_screenshots_design_context.json` so downstream consumers do
 not depend on ad hoc stdout.

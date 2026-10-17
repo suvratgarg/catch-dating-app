@@ -108,7 +108,15 @@ export function stampCapture(capture, captureId, fontPath) {
 
 export function validateCapture(capture, captureId, {fontPath} = {}) {
   try {
-    const {width, height, chunks} = parsePng(fs.readFileSync(fromRepo(capture.sourcePath)));
+    return validateCaptureBytes(capture, captureId, fs.readFileSync(fromRepo(capture.sourcePath)), {fontPath});
+  } catch (error) { return [`${capture.id}: ${error.message}`]; }
+}
+
+// Artifact consumers must validate bytes before replacing any checkout file.
+// The recipe retains its canonical sourcePath for the exact-source input hash.
+export function validateCaptureBytes(capture, captureId, bytes, {fontPath} = {}) {
+  try {
+    const {width, height, chunks} = parsePng(bytes);
     assertFrame(capture, width, height);
     const records = chunks.filter(chunk => chunk.type === chunkType);
     if (records.length !== 1) throw new Error('Missing or duplicate render provenance; regenerate with the canonical exporter.');

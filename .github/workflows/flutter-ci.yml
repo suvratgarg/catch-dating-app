@@ -156,6 +156,9 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Derive exact-source route and widget inventories
+        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
+
       - uses: ./.github/actions/setup-flutter
 
       - name: Analyze every Dart and Flutter package
@@ -456,7 +459,7 @@ jobs:
           retention-days: 14
 
   app-package-tests:
-    name: Consumer & Host package tests
+    name: Catch UI, Consumer & Host package tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -466,6 +469,10 @@ jobs:
       - uses: ./.github/actions/setup-flutter
 
       - run: flutter pub get
+
+      - name: Catch UI package tests
+        working-directory: packages/catch_ui
+        run: flutter test --concurrency=1
 
       - name: Consumer package tests
         working-directory: apps/consumer
