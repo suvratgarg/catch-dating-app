@@ -211,8 +211,9 @@ ScrollPosition _workspaceHorizontalPosition(WidgetTester tester) {
   final scroll = find.byElementPredicate((element) {
     final widget = element.widget;
     if (widget is! SingleChildScrollView ||
-        widget.scrollDirection != Axis.horizontal)
+        widget.scrollDirection != Axis.horizontal) {
       return false;
+    }
     var belongsToWorkspace = false;
     element.visitAncestorElements((ancestor) {
       if (identical(ancestor, owner)) {
