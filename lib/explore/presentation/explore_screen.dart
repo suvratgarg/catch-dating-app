@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
@@ -106,7 +107,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
     final crossPathsSuggestions =
         crossPathsState.value ?? const <CrossPathsSuggestion>[];
-    final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
+    final recommendationsState = catchAsyncStateFromAsyncValue(
+      ref.watch(exploreRecommendationsProvider),
+    );
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
     final viewModelState = catchAsyncStateFromAsyncValue(viewModelAsync);
     ref.watch(exploreCityControllerProvider);
@@ -454,8 +457,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ],
             ExploreScreenBodyKind.content => buildExploreBodySlivers(
               context: context,
-              feedAsync: feedAsync,
-              recommendationsAsync: recommendationsAsync,
+              feedState: feedState,
+              recommendationsState: recommendationsState,
               clubsViewModel: bodyState.viewModel,
               filters: visibleFilters,
               searchQuery: query,
@@ -484,8 +487,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ExploreScreenBodyKind.contentWithoutClubs =>
               buildExploreBodySlivers(
                 context: context,
-                feedAsync: feedAsync,
-                recommendationsAsync: recommendationsAsync,
+                feedState: feedState,
+                recommendationsState: recommendationsState,
                 filters: visibleFilters,
                 searchQuery: query,
                 clubSectionError: bodyState.error,

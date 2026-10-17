@@ -1,11 +1,12 @@
 import 'dart:async';
-
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_form_admission_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';
 
@@ -53,23 +54,26 @@ class _AdmissionFixtureState extends State<_AdmissionFixture> {
     super.dispose();
   }
 
+  late final _gateway = _AdmissionGateway(widget.state);
+  late final _dependencies = HostFormAdmissionDependencies(
+    gateway: _gateway,
+    currentAccountId: () => 'manager_demo',
+    outbox: JournalHostFormAdmissionOutbox(
+      gateway: _gateway,
+      storage: () async => _storage,
+      currentAccountId: () => 'manager_demo',
+    ),
+  );
   @override
-  Widget build(BuildContext context) => HostFormAdmissionSection(
-    createController: () {
-      final gateway = _AdmissionGateway(widget.state);
-      return HostFormAdmissionController(
-        accountId: 'manager_demo',
-        scope: _scope,
-        gateway: gateway,
-        currentAccountId: () => 'manager_demo',
-        outbox: JournalHostFormAdmissionOutbox(
-          gateway: gateway,
-          storage: () async => _storage,
-          currentAccountId: () => 'manager_demo',
-        ),
-      );
-    },
-    onAdmitted: () async {},
+  Widget build(BuildContext context) => ProviderScope(
+    overrides: [
+      uidProvider.overrideWith((ref) => Stream.value('manager_demo')),
+      hostFormAdmissionDependenciesProvider.overrideWithValue(_dependencies),
+    ],
+    child: HostFormAdmissionSection(
+      session: hostFormAdmissionSession('manager_demo', _scope),
+      onAdmitted: () async {},
+    ),
   );
 }
 
@@ -93,7 +97,8 @@ class _AdmissionGateway implements HostFormAdmissionGateway {
         'canCommit': false,
         'blocker': {
           'code': 'unavailable',
-          'message': 'The remaining seats are reserved by current waitlist '
+          'message':
+              'The remaining seats are reserved by current waitlist '
               'offers. Check availability again after those offers expire.',
         },
       }, scope);

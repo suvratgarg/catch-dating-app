@@ -426,9 +426,7 @@ void main() {
   });
 
   group('EventDetailPhotoStrip', () {
-    testWidgets('renders canonical three-tile strip with placeholders', (
-      tester,
-    ) async {
+    testWidgets('renders supplied photos without empty slots', (tester) async {
       final event = buildEvent().copyWith(
         eventPhotos: [
           UploadedPhoto.fromUpload(
@@ -460,11 +458,11 @@ void main() {
       );
       expect(
         find.byKey(const ValueKey('event-photo-strip-tile-1')),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.byKey(const ValueKey('event-photo-strip-tile-2')),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.byKey(const ValueKey('event-photo-strip-image-0')),
@@ -472,11 +470,11 @@ void main() {
       );
       expect(
         find.byKey(const ValueKey('event-photo-strip-placeholder-1')),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.byKey(const ValueKey('event-photo-strip-placeholder-2')),
-        findsOneWidget,
+        findsNothing,
       );
     });
   });

@@ -5,6 +5,8 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import vm from "node:vm";
+import crypto from "node:crypto";
+import {pathToFileURL} from "node:url";
 import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {isAdmissionEvent} from "../ci/pr_ci_admission.mjs";
@@ -24,7 +26,7 @@ function evaluate(expression, options) {
     github: {event_name: options.eventName, event: options.event, repository: options.repository,
       sha: options.runSha, workflow_sha: options.workflowDefinitionSha, run_id: "123", run_attempt: "2"},
     env: {CAPTURE_SOURCE_SHA: options.sourceSha},
-    inputs: options.event.inputs ?? {}, cancelled: () => false,
+    inputs: {automatic_source_sha: "", ...options.event.inputs}, cancelled: () => false,
     contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
   }, {timeout: 1000});
 }
@@ -41,6 +43,11 @@ function fixture(t) {
   };
   for (const file of ["tool/lib/repo_paths.mjs", "tool/ui_capture/run_captures.mjs",
     "tool/marketing/export_app_screenshots.mjs", "tool/marketing/export_hosted_captures.mjs",
+    "tool/marketing/import_hosted_captures.mjs",
+    "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
+    "tool/design/component_concepts.mjs", "tool/design/lib/component_naming.mjs",
+    "tool/design/lib/new_widget_inventory_declarations.mjs", "tool/design/lib/production_widget_roots.mjs",
+    "design/components/catch.components.schema.json",
     "tool/marketing/lib/capture_provenance.mjs",
     "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
     write(file, fs.readFileSync(fromRepo(file)));
@@ -67,6 +74,10 @@ function fixture(t) {
   write("tool/demo/demo_seed/scenarios/sample.json", "{}");
   write("tool/demo/demo_seed/personas/sample.json", "{}");
   write("test/goldens/baseline.png", png);
+  write("website/src/generated/hostListings.json", "{}\n");
+  write("website/src/generated/hostListings.demo.json", "{}\n");
+  write("website/src/generated/other.ts", "export const authored = true;\n");
+  write("docs/widget_catalog.md", "# Authored guidance\n<!-- BEGIN GENERATED WIDGET INVENTORY -->\nold rows\n<!-- END GENERATED WIDGET INVENTORY -->\nAuthored footer\n");
   write(".gitignore", "/artifacts/marketing/app-screenshots/raw/\n");
   const git = (...args) => {
     const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
@@ -230,7 +241,7 @@ test("label request binds exact PR head, base controller and distinct workflow/e
   event.inputs = {source_sha: "e".repeat(40)};
   assert.deepEqual(resolveCaptureRequest(requestOptions(event)), {
     eventName: "pull_request", sourceSha: "a".repeat(40), workflowSha: "b".repeat(40),
-    workflowDefinitionSha: "d".repeat(40), eventSha: "c".repeat(40),
+    workflowDefinitionSha: "d".repeat(40), eventSha: "c".repeat(40), runHeadSha: "a".repeat(40),
     prNumber: 543, label: "capture:requested",
   });
   const manual = {...requestOptions({repository: {full_name: repository},
@@ -239,6 +250,59 @@ test("label request binds exact PR head, base controller and distinct workflow/e
   assert.equal(result.sourceSha, "e".repeat(40));
   assert.equal(result.workflowSha, manual.runSha);
   assert.equal(result.prNumber, undefined);
+});
+
+test("automatic CI captures bind the tested merge source instead of the PR head", () => {
+  const event = labelEvent();
+  event.action = "synchronize";
+  delete event.label;
+  const options = {...requestOptions(event), automaticSourceSha: "c".repeat(40),
+    workflowRef: `${repository}/.github/workflows/ci.yml@refs/pull/543/merge`};
+  const result = resolveCaptureRequest(options);
+  assert.equal(result.sourceSha, options.runSha);
+  assert.equal(result.workflowSha, options.runSha);
+  assert.notEqual(result.sourceSha, event.pull_request.head.sha);
+  assert.equal(result.mode, "automatic");
+  assert.equal(result.workflowRef, options.workflowRef);
+  assert.throws(() => resolveCaptureRequest({...options, automaticSourceSha: event.pull_request.head.sha}), /actual caller source SHA/);
+  for (const workflowRef of [undefined, `${repository}/.github/workflows/unknown.yml@refs/heads/main`,
+    `foreign/repo/.github/workflows/ci.yml@refs/heads/main`]) {
+    assert.throws(() => resolveCaptureRequest({...options, workflowRef}), /consumer workflow/);
+  }
+  for (const mutate of [e => {e.pull_request.head.repo.full_name = "fork/repo";},
+    e => {e.pull_request.state = "closed";}, e => {e.pull_request.base.ref = "develop";}]) {
+    const invalid = structuredClone(event); mutate(invalid);
+    assert.throws(() => resolveCaptureRequest({...options, event: invalid}), /same-repository/);
+  }
+});
+
+test("automatic main, merge-group and manual validation bind the caller event source", () => {
+  const base = {...requestOptions({repository: {full_name: repository}}),
+    automaticSourceSha: "c".repeat(40), workflowRef: `${repository}/.github/workflows/ci.yml@refs/heads/main`};
+  for (const eventName of ["schedule", "workflow_dispatch", "push", "merge_group"]) {
+    const event = {...base.event, after: base.runSha, merge_group: {head_sha: base.runSha}};
+    assert.equal(resolveCaptureRequest({...base, eventName, event}).sourceSha, base.runSha);
+  }
+  for (const eventName of ["push", "merge_group", "pull_request_target", "workflow_run"]) {
+    assert.throws(() => resolveCaptureRequest({...base, eventName}));
+  }
+});
+
+test("reusable producer exports one immutable binding and selects the caller SHA in its actual expressions", () => {
+  const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
+  const event = labelEvent();
+  event.inputs = {automatic_source_sha: "c".repeat(40)};
+  const options = requestOptions(event);
+  for (const variable of ["CAPTURE_SOURCE_SHA", "CAPTURE_WORKFLOW_SHA"]) {
+    const expression = source.match(new RegExp(`^      ${variable}: \\$\\{\\{ (.*) \\}\\}$`, "m"))?.[1];
+    assert.equal(evaluate(expression, options), options.runSha);
+  }
+  assert.match(source, /workflow_call:[\s\S]*automatic_source_sha:[\s\S]*required: true/u);
+  assert.match(source, /value: \$\{\{ jobs\.export\.outputs\.capture_binding \}\}/u);
+  assert.match(source, /capture_binding: \$\{\{ steps\.identity\.outputs\.capture_binding \}\}/u);
+  const identity = extractSteps(source).find(step => step.name === "Record exact artifact identity");
+  assert.match(identity.run, /artifactId: e\.ARTIFACT_ID, artifactDigest:/u);
+  assert.match(identity.run, /runId: e\.GITHUB_RUN_ID, runAttempt: e\.GITHUB_RUN_ATTEMPT/u);
 });
 
 test("unrelated, forked, closed, malformed and mutable capture requests are refused", () => {
@@ -460,4 +524,129 @@ test("a successful no-op framer cannot package an invalidated capture", t => {
   f.executable("dart", "process.exit(0);");
   assert.throws(() => exportHostedCaptures(f.options), /failed/);
   assert.ok(!fs.existsSync(f.options.outputDir));
+});
+
+test("actual exporter bundle verifies before import and survives unchanged into website dist", async t => {
+  const f = fixture(t);
+  const tree = f.git("rev-parse", "HEAD^{tree}");
+  const commit = (...parents) => f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid",
+    "commit-tree", tree, ...parents.flatMap(parent => ["-p", parent]), "-m", "synthetic tested merge fixture");
+  const prHead = commit(f.options.sourceSha);
+  const baseHead = f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid",
+    "commit-tree", tree, "-p", f.options.sourceSha, "-m", "advanced base fixture");
+  f.options.sourceSha = commit(baseHead, prHead);
+  f.git("reset", "--hard", f.options.sourceSha);
+  f.options.workflowSha = f.options.sourceSha;
+  f.options.request = {eventName: "pull_request", mode: "automatic", sourceSha: f.options.sourceSha,
+    workflowRef: `${f.options.repository}/.github/workflows/ci.yml@refs/pull/123/merge`,
+    workflowSha: f.options.sourceSha, workflowDefinitionSha: f.options.sourceSha, eventSha: f.options.sourceSha, runHeadSha: prHead};
+  const receipt = exportHostedCaptures(f.options);
+  const consumer = await import(pathToFileURL(path.join(f.root, "tool/marketing/import_hosted_captures.mjs")));
+  const packed = spawnSync("python3", ["-c", `import io, pathlib, sys, zipfile
+root = pathlib.Path(sys.argv[1])
+output = io.BytesIO()
+with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+    for file in sorted(root.rglob('*')):
+        if file.is_file(): archive.write(file, file.relative_to(root).as_posix())
+sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 64 * 1024 * 1024});
+  assert.equal(packed.status, 0, packed.stderr?.toString());
+  const binding = {repository: f.options.repository, sourceSha: receipt.sourceSha,
+    workflowRef: f.options.request.workflowRef,
+    workflowSha: receipt.workflowSha, workflowDefinitionSha: receipt.workflowDefinitionSha,
+    eventSha: receipt.request.eventSha, runHeadSha: receipt.request.runHeadSha, runId: receipt.runId, runAttempt: receipt.runAttempt,
+    artifactId: "100", artifactDigest: `sha256:${crypto.createHash("sha256").update(packed.stdout).digest("hex")}`};
+  const files = new Map([...receipt.files.map(file => [file.path, fs.readFileSync(path.join(f.options.outputDir, file.path))]),
+    ["capture-receipt.json", fs.readFileSync(path.join(f.options.outputDir, "capture-receipt.json"))]]);
+  assert.equal(consumer.verifyCaptureFiles({files, binding}).receipt.captures.length, 12);
+  assert.notEqual(binding.runHeadSha, binding.sourceSha, "GitHub's API head is distinct from the tested merge source");
+  const catalog = fs.readFileSync(path.join(f.root, "docs/widget_catalog.md"), "utf8");
+  f.write("docs/widget_catalog.md", catalog.replace("Authored guidance", "Changed policy"));
+  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Authored catalog guidance/);
+  f.write("docs/widget_catalog.md", catalog.replace("old rows", "fresh generated rows"));
+  assert.doesNotThrow(() => consumer.verifyCaptureFiles({files, binding}));
+  f.write("docs/widget_catalog.md", catalog);
+  f.git("update-index", "--assume-unchanged", "test/goldens/baseline.png");
+  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /assume-unchanged/);
+  f.git("update-index", "--no-assume-unchanged", "test/goldens/baseline.png");
+  fs.appendFileSync(path.join(f.root, ".git/info/exclude"), "\nwebsite/src/ignored.tsx\n");
+  f.write("website/src/ignored.tsx", "untracked website source");
+  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Untracked consumer source/);
+  fs.unlinkSync(path.join(f.root, "website/src/ignored.tsx"));
+  const generated = receipt.files.filter(file => file.path !== "tool/marketing/capture_manifest.json");
+  f.git("restore", "--", ...generated.map(file => file.path));
+  const original = generated.map(file => fs.readFileSync(path.join(f.root, file.path)));
+  for (const mutate of [
+    r => {r.sourceTree = "a".repeat(40);}, r => {r.workflowDefinitionSha = "b".repeat(40);},
+    r => {r.runAttempt = "99";}, r => {r.exporterSha256 = "0".repeat(64);},
+    r => {r.files.pop();}, r => {r.files[1] = r.files[0];},
+    r => {r.captures[0].verifiedSourceSha = "a".repeat(40);},
+    r => {r.captures[0].sourcePath = "../escape.png";},
+    r => {r.captures[0].provenance.nativeFontSha256 = "0".repeat(64);},
+    r => {r.toolchain.flutter.frameworkVersion = "wrong";},
+  ]) {
+    const changed = structuredClone(receipt); mutate(changed);
+    const tampered = new Map(files); tampered.set("capture-receipt.json", Buffer.from(JSON.stringify(changed)));
+    assert.throws(() => consumer.verifyCaptureFiles({files: tampered, binding}));
+    assert.deepEqual(generated.map(file => fs.readFileSync(path.join(f.root, file.path))), original);
+  }
+  const invalid = Buffer.from(packed.stdout); invalid[100] ^= 1;
+  assert.throws(() => consumer.importCaptureArchive({bytes: invalid, binding}), /digest differs/);
+  assert.deepEqual(generated.map(file => fs.readFileSync(path.join(f.root, file.path))), original);
+  f.write("build/ci/outside.zip", "do not modify");
+  const cachePath = path.join(f.root, "build/ci/imported-marketing-captures.zip");
+  fs.symlinkSync(path.join(f.root, "build/ci/outside.zip"), cachePath);
+  assert.throws(() => consumer.importCaptureArchive({bytes: packed.stdout, binding}), /symlink/);
+  assert.deepEqual(generated.map(file => fs.readFileSync(path.join(f.root, file.path))), original);
+  assert.equal(fs.readFileSync(path.join(f.root, "build/ci/outside.zip"), "utf8"), "do not modify");
+  fs.unlinkSync(cachePath);
+  consumer.importCaptureArchive({bytes: packed.stdout, binding});
+  for (const file of generated) assert.deepEqual(fs.readFileSync(path.join(f.root, file.path)), files.get(file.path));
+  assert.equal(consumer.verifyImportedCaptureBytes({binding}).verifiedFiles, 26);
+  const verifyCli = () => spawnSync(process.execPath, ["tool/marketing/import_hosted_captures.mjs", "--verify-imported"],
+    {cwd: f.root, encoding: "utf8", env: {...process.env, CAPTURE_BINDING: JSON.stringify(binding),
+      GITHUB_REPOSITORY: binding.repository, GITHUB_SHA: binding.sourceSha}});
+  const cliVerified = verifyCli();
+  assert.equal(cliVerified.status, 0, cliVerified.stderr);
+  assert.equal(JSON.parse(cliVerified.stdout).verifiedFiles, 26);
+  for (const file of generated) {
+    f.write(file.path, "mutated after import");
+    assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /Imported capture output differs/);
+    f.write(file.path, files.get(file.path));
+  }
+  f.write("tool/widget_dedupe/.dart_tool/package_config.json", "generated analyzer dependencies");
+  f.write("tool/widget_dedupe/pubspec.lock", "generated analyzer lock");
+  assert.throws(() => consumer.importCaptureArchive({bytes: packed.stdout, binding}), /Untracked consumer source/);
+  assert.equal(consumer.verifyImportedCaptureBytes({binding}).verifiedFiles, 26);
+  fs.appendFileSync(path.join(f.root, ".git/info/exclude"), "\ntool/widget_dedupe/adjacent.dart\n");
+  f.write("tool/widget_dedupe/adjacent.dart", "untracked authored source");
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /Untracked consumer source/);
+  fs.unlinkSync(path.join(f.root, "tool/widget_dedupe/adjacent.dart"));
+  fs.rmSync(path.join(f.root, "tool/widget_dedupe/.dart_tool"), {recursive: true});
+  fs.symlinkSync(path.join(f.root, "website/src"), path.join(f.root, "tool/widget_dedupe/.dart_tool"));
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /symlink|Untracked consumer source/);
+  fs.unlinkSync(path.join(f.root, "tool/widget_dedupe/.dart_tool"));
+  fs.rmSync(path.join(f.root, "tool/widget_dedupe"), {recursive: true});
+  f.write("lib/leaf.dart", "changed after import");
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /authored source differs/);
+  f.git("restore", "--", "lib/leaf.dart");
+  fs.writeFileSync(cachePath, invalid);
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /digest differs/);
+  const cliRefused = verifyCli();
+  assert.equal(cliRefused.status, 1);
+  assert.match(cliRefused.stderr, /digest differs/);
+  fs.writeFileSync(cachePath, packed.stdout);
+  for (const file of receipt.files.filter(file => file.path.startsWith("website/public/"))) {
+    f.write(file.path.replace("website/public/", "website/dist/"), files.get(file.path));
+  }
+  assert.equal(consumer.verifyBuiltCaptureBytes({binding}).verifiedFiles, 13);
+  for (const file of ["website/src/generated/hostListings.json", "website/src/generated/hostListings.demo.json"]) {
+    f.write(file, '{"generated":"read-only live listing projection"}\n');
+    assert.throws(() => consumer.importCaptureArchive({bytes: packed.stdout, binding}), /authored source differs/);
+    assert.equal(consumer.verifyBuiltCaptureBytes({binding}).verifiedFiles, 13);
+  }
+  f.write("website/src/generated/other.ts", "export const changed = true;\n");
+  assert.throws(() => consumer.verifyBuiltCaptureBytes({binding}), /authored source differs/);
+  f.git("restore", "--", "website/src/generated/other.ts");
+  f.write(receipt.captures[0].websitePath.replace("website/public/", "website/dist/"), "different build bytes");
+  assert.throws(() => consumer.verifyBuiltCaptureBytes({binding}), /Built website capture differs/);
 });

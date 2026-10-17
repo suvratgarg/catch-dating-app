@@ -3,8 +3,8 @@ import {act, cleanup, renderHook, waitFor, render, screen, fireEvent} from "@tes
 import {StrictMode, type PropsWithChildren} from "react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 import type {User} from "../../firebase";
-const api = vi.hoisted(() => ({call: vi.fn(), watch: vi.fn(), otp: vi.fn(), open: vi.fn()}));
-vi.mock("../../firebase", () => ({managePublicEventCheckout: api.call, watchPublicFormAuthState: api.watch, beginPublicEventPhoneVerification: api.otp}));
+const api = vi.hoisted(() => ({call: vi.fn(), watch: vi.fn(), otp: vi.fn(), open: vi.fn(), signOut: vi.fn()}));
+vi.mock("../../firebase", () => ({managePublicEventCheckout: api.call, watchPublicFormAuthState: api.watch, beginPublicEventPhoneVerification: api.otp, signOutGuestUser: api.signOut}));
 vi.mock("../../shared/payments/razorpayCheckout", () => ({openRazorpayCheckout: api.open}));
 vi.mock("../eventMessaging/EventSmsPreferencePanel", () => ({EventSmsPreferencePanel: () => null}));
 vi.mock("../eventMessaging/EventRcsPreferencesPanel", () => ({EventRcsPreferencesPanel: () => null}));
@@ -37,6 +37,7 @@ beforeEach(() => {
   api.watch.mockImplementation((callback) => {auth = callback; callback(initial); return vi.fn();});
   api.call.mockImplementation(async (input) => input.action === "find" ? response() :
     input.action === "quote" ? {...response(), quote} : input.action === "prepare" ? response(ready) : response(admitted, admission));
+  api.signOut.mockImplementation(async () => auth(null));
   api.open.mockResolvedValue({paymentId: "pay_one", signature: "a".repeat(64)});
 });
 afterEach(() => {cleanup(); client.clear(); vi.restoreAllMocks();});

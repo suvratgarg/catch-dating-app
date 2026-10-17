@@ -1,3 +1,7 @@
+import {normalizeEventItinerary, assertValidEventItinerary} from
+  "../event_itinerary";
+import {normalizeUploadedPhotosForFirestore} from
+  "../../shared/uploadedPhotoNormalization";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -164,6 +168,16 @@ export async function updatePrivateEventDetails(params: {
       set("distanceKm", command.details.distanceKm);
     }
     if (command.details.pace !== undefined) set("pace", command.details.pace);
+    if (command.details.itinerary !== undefined) {
+      set("itinerary", normalizeEventItinerary(command.details.itinerary));
+    }
+    if (command.details.eventPhotos !== undefined) {
+      const photos = normalizeUploadedPhotosForFirestore(
+        command.details.eventPhotos)
+        .map((photo, position) => ({...photo, position}));
+      set("eventPhotos", photos);
+      set("photoUrl", photos[0]?.url ?? null);
+    }
     const terms = command.details.admissionTerms;
     if (terms) {
       const termsPatch = eventListingTermsPatch(
@@ -245,6 +259,15 @@ export async function updatePrivateEventDetails(params: {
         assertPrivateEventBasicsEditable;
       await guard({tx, db, eventId: command.eventId, event});
     }
+    const startMillis = (event.startTime as unknown as
+      FirebaseFirestore.Timestamp).toMillis();
+    const endMillis = (next.endTime as FirebaseFirestore.Timestamp | undefined)
+      ?.toMillis() ?? startMillis + EVENT_MAX_DURATION_MINUTES * 60_000;
+    assertValidEventItinerary({
+      itinerary: next.itinerary as EventDocument["itinerary"],
+      startTimeMillis: startMillis, endTimeMillis: endMillis,
+      eventFormat: next.eventFormat as EventDocument["eventFormat"],
+    });
     if (!validateEventDocument(next)) {
       throw new HttpsError("invalid-argument", "Invalid event details.");
     }

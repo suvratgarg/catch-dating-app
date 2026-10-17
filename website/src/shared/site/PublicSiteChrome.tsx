@@ -1,6 +1,6 @@
 import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
 import {PlainLink} from "../ui/primitives";
-import {SiteHeader, type SiteNavItem} from "./SiteHeader";
+import {SiteHeader, type SiteNavItem, type SiteMenuCopy} from "./SiteHeader";
 import {SiteFooter} from "./SiteFooter";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
 
@@ -17,11 +17,15 @@ function contextualLinks(links: readonly SiteNavItem[]) {
   });
 }
 
-export function PublicSiteHeader({localNav = [], localActions = [], tone = "light"}: {
+export function PublicSiteHeader({localNav = [], localActions = [], tone = "light", audience = "public", guestMenuCopy}: {
+  guestMenuCopy?: SiteMenuCopy;
+  audience?: "public" | "guest";
   localNav?: readonly SiteNavItem[];
   localActions?: readonly SiteNavItem[];
   tone?: "light" | "dark";
 }) {
+  if (audience === "guest") return <SiteHeader brandHref="/" menuCopy={guestMenuCopy ?? publicSiteCopy.menu}
+    nav={[...localNav]} actions={localActions.map((item) => ({...item, variant: "secondary" as const}))} tone={tone} />;
   const links = contextualLinks([...localNav, ...localActions]);
   return <>
     <SiteHeader brandHref="/" menuCopy={publicSiteCopy.menu}
@@ -36,10 +40,13 @@ export function PublicSiteHeader({localNav = [], localActions = [], tone = "ligh
   </>;
 }
 
-export function PublicSiteFooter({body, links = []}: {
+export function PublicSiteFooter({body, links = [], audience = "public"}: {
+  audience?: "public" | "guest";
   body?: string;
   links?: readonly SiteNavItem[];
 }) {
+  if (audience === "guest") return <SiteFooter brandHref="/" body={body ?? publicSiteCopy.footerOperator}
+    links={[...siteFooterLegalLinks, ...contextualLinks(links)]} />;
   const related = contextualLinks(links);
   return <SiteFooter brandHref="/" body={publicSiteCopy.footerBody} links={globalFooterLinks}>
     <p className="site-footer__context">{publicSiteCopy.footerOperator}</p>

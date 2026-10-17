@@ -238,6 +238,27 @@ const schemaOrganizerApplicationDocumentSchema = <String, Object?>{
         },
       },
     },
+    'approvalNotificationBasis': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'approvedAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'approvedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+      },
+      'description': 'Server-owned approval occurrence. Note-only review edits retain it; a new approval transition replaces it.',
+    },
     'reviewedAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

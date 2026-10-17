@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.11.1
-updated: 2026-10-01
+version: 0.11.2
+updated: 2026-10-17
 owner: marketing_website
 status: active
 ---
@@ -484,10 +484,19 @@ The website is already split out of the old monolithic shell:
 - Feature folders exist under `website/src/features/**`.
 - `website/src/features/events/**` owns the generated event-detail route,
   event projection normalization, and event-scoped review filtering. It
-  composes organizer authority, review presentation, and app-download adapters
-  without introducing website booking, checkout, or sign-in state. The route
-  uses the shared event-detail primitives for a ticket plus organizer/action
-  rail at wide viewports and a single-column, app-aligned stack on mobile;
+  composes organizer authority and event-scoped review presentation with the
+  existing guest entry controller. The shared invitation primitives place event
+  artwork beside identity, host and essential facts on desktop, and stack them
+  with one persistent guest action on mobile. The inline and mobile actions
+  consume the same account-scoped server state. Phone verification and booking
+  retain their existing controllers inside an accessible dialog; polling never
+  replaces an active transaction controller. Optional description, itinerary,
+  requirements, accessibility and reviews are omitted when absent. Artwork comes
+  from the published event, with a typographic fallback; the illustrated dinner
+  poster is a synthetic Storybook fixture only. The public display contract
+  references canonical event media, meeting-location and itinerary definitions;
+  generated browser schemas validate those optional projections. The route
+  retains authorized `/join/` entry rather than recreating the live runtime;
   shared Catch tokens own its type, color, spacing, radius, and activity accent.
 - `website/src/styles/catch-language.css` is the single design-language layer,
   imported in `styles.css` immediately after `base.css`. It owns the motion

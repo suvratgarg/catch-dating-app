@@ -72,6 +72,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: read
 
 jobs:

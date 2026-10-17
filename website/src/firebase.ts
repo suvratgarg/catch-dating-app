@@ -1,3 +1,6 @@
+import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
+import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
+import type {GetEventViewerStateCallableResponse} from "../../functions/src/shared/generated/getEventViewerStateCallableResponse";
 export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
@@ -355,7 +358,7 @@ export type EventOfferCheckoutResponse = ManageEventOfferCheckoutCallableRespons
 export async function manageEventOfferCheckout(
   payload: ManageEventOfferCheckoutCallablePayload
 ): Promise<ManageEventOfferCheckoutCallableResponse> {
-  return invokeWebsiteCallable("manageEventOfferCheckout", payload,
+  return invokeWebsiteCallable("manageEventOfferCheckout", {...payload, includeEventAccess: true},
     publicFormsFirebaseConfigured, "Event invitation checkout");
 }
 
@@ -417,13 +420,8 @@ export async function completePublicFormEmailSignIn(
   if (!runtime || !publicFormsFirebaseConfigured) {
     throw new Error("Public forms are not configured for this build.");
   }
-  const {isSignInWithEmailLink, signInWithEmailLink} = await import(
-    "firebase/auth"
-  );
-  if (!isSignInWithEmailLink(runtime.auth, emailLink)) {
-    throw new Error("This email verification link is invalid or expired.");
-  }
-  return (await signInWithEmailLink(runtime.auth, email, emailLink)).user;
+  const {signInOrLinkEmailLink} = await import("./firebaseClaimAccountLinking");
+  return signInOrLinkEmailLink(runtime.auth, email, emailLink);
 }
 
 export interface EventRuntimeMission {
@@ -972,14 +970,15 @@ export async function beginPublicEventPhoneVerification(
   )) {
     throw new Error("Website phone verification is not configured for this build.");
   }
-  const {RecaptchaVerifier, signInWithPhoneNumber} = await import("firebase/auth");
+  const {RecaptchaVerifier} = await import("firebase/auth");
+  const {beginClaimPhoneLink} = await import("./firebaseClaimAccountLinking");
   const verifier = new RecaptchaVerifier(
     runtime.auth,
     recaptchaContainerId,
     {size: "invisible"}
   );
   try {
-    const confirmation = await signInWithPhoneNumber(
+    const confirmation = await beginClaimPhoneLink(
       runtime.auth,
       phoneNumber,
       verifier
@@ -1284,3 +1283,41 @@ export async function readPublicOrganizerTrackingSettings(
 }
 
 export type {ReadPublicOrganizerTrackingSettingsCallablePayload, PublicOrganizerTrackingSettingsCallableResponse};
+
+/** Auth-owned guest status; browser hints never supply the subject UID. */
+export async function getGuestEventViewerState(eventId: string): Promise<GetEventViewerStateCallableResponse> {
+  return invokeWebsiteCallable("getEventViewerState", {eventId, surface: "guest"},
+    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured,
+    "Event guest status");
+}
+
+/** Explicit account switching is shared by public guest surfaces. */
+export const signOutGuestUser = signOutClaimUser;
+
+
+export async function manageEventApprovalNotifications(
+  payload: ManageEventApprovalNotificationsCallablePayload
+): Promise<ManageEventApprovalNotificationsCallableResponse> {
+  return invokeWebsiteCallable("manageEventApprovalNotifications", payload,
+    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured,
+    "Application notifications");
+}
+
+/** Verification adds a contact to the current identity; it never signs in as another account. */
+export async function verifyGuestEmail(uid: string, email: string, eventId: string): Promise<void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime) throw new Error("Authentication unavailable");
+  const {verifyEmailOnCurrentAccount} = await import("./firebaseClaimAccountLinking");
+  await verifyEmailOnCurrentAccount(runtime.auth, uid, email,
+    new URL(`/events/${encodeURIComponent(eventId)}/`, window.location.origin).href);
+}
+
+export async function refreshGuestIdentity(uid: string): Promise<void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime) throw new Error("Authentication unavailable");
+  const user = runtime.auth.currentUser;
+  if (!user || user.uid !== uid) throw new Error("Account changed");
+  await user.reload();
+  if (runtime.auth.currentUser?.uid !== uid) throw new Error("Account changed");
+  await user.getIdToken(true);
+}

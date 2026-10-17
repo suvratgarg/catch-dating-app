@@ -5,11 +5,14 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {compareFunctionFingerprints, FUNCTION_FINGERPRINT_SCHEMA} from "../firebase/function_release_fingerprints.mjs";
-import {validateProvenanceManifest, provenanceDigest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
+import {createCheckpointState, validateProvenanceManifest, provenanceDigest, validateCheckpointState, resolveFirstIncompleteStage} from "./delivery_core.mjs";
 import {validateFunctionsDeployment, validateFunctionIdentity, readSuccessfulBaselineArchive,
   readMaterializedParamsSha256, liveFunctions, captureFunctionIdentities,
-  FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
-import {gcloudIndexList, inspectIndexReadiness} from "../firebase/wait_firestore_indexes_ready.mjs";
+  FUNCTIONS_DEPLOYMENT_SCHEMA, FUNCTIONS_DEPLOYMENT_FILE} from "./firebase_functions_checkpoint.mjs";
+import {gcloudIndexList, inspectIndexReadiness, indexSignature} from "../firebase/wait_firestore_indexes_ready.mjs";
+import {materializedNonSecretParams} from "../firebase/prepare_functions_params_for_deploy.mjs";
+import {validateCandidateBindings, parseSecretReference, selectReadinessRequirements} from "../firebase/check_environment_readiness.mjs";
+import readinessManifest from "../firebase/environment_readiness.json" with {type: "json"};
 import salesSourceGuardedPaths from "./sales_pr543_source_guard.json" with {type: "json"};
 
 export const SELECTIVE_RELEASE_SCHEMA = "catch.selective-backend-release/v1";
@@ -1184,7 +1187,9 @@ export function verifyIntakePreservation(before, after, {completed = false, para
     protectedResourcesUnchanged: true, completed, coverage: "one-selected-function-only"};
 }
 export function verifyIntakeParams(file, provenance, expectedBinding) {
-  const r = INTAKE_PR596_RELEASE;
+  return verifyProtectedParams(file, provenance, expectedBinding, INTAKE_PR596_RELEASE);
+}
+function verifyProtectedParams(file, provenance, expectedBinding, r) {
   assert.equal(provenance.version, 1); assert.equal(provenance.projectId, r.projectId);
   assert.equal(provenance.sourceSha, r.sourceSha); assert.match(provenance.paramsSha256, hashPattern);
   const materializedSha256 = readMaterializedParamsSha256(file, r.projectId);
@@ -1207,7 +1212,13 @@ export function completeIntakePr596Release({manifest, packagePlan, before, after
   assert.deepEqual(deployment.functions, [after.selected.identity], "Live serving identity differs from bound deployment proof.");
   return {...r, ...result, paramsBinding, deployment, snapshot: after};
 }
-export async function readIntakeSnapshot({run = spawnSync, request = fetch, listIndexes = gcloudIndexList} = {}) {
+export async function readIntakeSnapshot(options = {}) {
+  return readProtectedSnapshot(options);
+}
+export async function readCat165Snapshot(options = {}) {
+  return readProtectedSnapshot(options, true);
+}
+async function readProtectedSnapshot({run = spawnSync, request = fetch, listIndexes = gcloudIndexList} = {}, cat165 = false) {
   const project = INTAKE_PR596_RELEASE.projectId;
   const tokenResult = run("gcloud", ["auth", "print-access-token"], {encoding: "utf8", timeout: 30000, maxBuffer: 1024 * 1024});
   assert.ifError(tokenResult.error); assert.equal(tokenResult.status, 0, "Metadata authentication unavailable.");
@@ -1230,7 +1241,8 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
   // Hash complete metadata in memory; parameter values and tokens never enter receipts or logs.
   const functions = await pages(`https://cloudfunctions.googleapis.com/v2/projects/${project}/locations/-/functions`, "functions");
   assert.ok(functions.length > 0 && new Set(functions.map((fn) => fn.name)).size === functions.length);
-  let selected = null, cursor = 0;
+  let selected = cat165 ? [] : null, cursor = 0;
+  const selectedTargets = cat165 ? CAT165_RELEASE.targets : [INTAKE_PR596_RELEASE.target];
   await Promise.all(Array.from({length: 5}, async () => {
     while (cursor < functions.length) {
       const fn = functions[cursor++];
@@ -1247,15 +1259,36 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
       // Eventarc criteria have no evaluation order; retain every complete filter.
       if (Array.isArray(fn.eventTrigger?.eventFilters)) fn.eventTrigger.eventFilters.sort((a, b) =>
         JSON.stringify(canonical(a)).localeCompare(JSON.stringify(canonical(b))));
-      if (fn.name === intakeSelectedName) {
+      const target = `functions:${fn.name.split("/").at(-1)}`;
+      if (selectedTargets.includes(target)) {
+        assert.equal(fn.name, `projects/${project}/locations/asia-south1/functions/${target.slice(10)}`);
         const config = fn.serviceConfig;
-        selected = {identity: captureFunctionIdentities([fn], INTAKE_PR596_RELEASE.scope, [INTAKE_PR596_RELEASE.target])[0],
+        const record = {identity: captureFunctionIdentities([fn], INTAKE_PR596_RELEASE.scope, [target])[0],
           runtime: {runtime: fn.buildConfig.runtime, entryPoint: fn.buildConfig.entryPoint,
             serviceAccount: config.serviceAccountEmail, memory: config.availableMemory,
             maxInstances: config.maxInstanceCount, secretBindings: (config.secretEnvironmentVariables ?? []).length + (config.secretVolumes ?? []).length,
             paramsSha256: config.environmentVariables?.CATCH_DEPLOY_CONFIG_SHA256 ?? null},
           iamSha256: digest(fn.iam), publicInvoker: (fn.iam.bindings ?? []).some((binding) =>
             binding.role === "roles/run.invoker" && !binding.condition && binding.members?.includes("allUsers"))};
+        if (cat165) {
+          // Preserve provider flags, secret versions, routing and resource limits;
+          // only the source-bound configuration marker may change.
+          const environment = {...config.environmentVariables};
+          delete environment.CATCH_DEPLOY_CONFIG_SHA256;
+          const stableConfig = {...config, environmentVariables: environment};
+          for (const key of ["service", "revision", "uri", "gcfUri"]) delete stableConfig[key];
+          record.configurationSha256 = digest({service: stableConfig,
+            buildEnvironment: fn.buildConfig.environmentVariables ?? {}, eventTrigger: fn.eventTrigger ?? null});
+          assert.equal((config.secretVolumes ?? []).length, 0, "CAT165 cannot change secret volume bindings.");
+          record.secretReferences = (config.secretEnvironmentVariables ?? []).map((binding) => {
+            const reference = parseSecretReference(`projects/${binding.projectId}/secrets/${binding.secret}/versions/${binding.version}`,
+              project, "574779808785");
+            assert.ok(reference); assert.equal(binding.key, reference.secret);
+            return {key: binding.key, reference: reference.reference};
+          }).sort((a, b) => a.key.localeCompare(b.key));
+          record.parameterValuesSha256 = digest(materializedNonSecretParams.map((key) => [key, environment[key] ?? null]));
+          selected.push(record);
+        } else selected = record;
       }
     }
   }));
@@ -1267,15 +1300,27 @@ export async function readIntakeSnapshot({run = spawnSync, request = fetch, list
       fields.set(field.name, field);
     }
   }
+  const liveIndexes = listIndexes({projectId: project}).sort((a, b) => String(a.name).localeCompare(String(b.name)));
   const protectedResources = {
     extensions: digest(await pages(`https://firebaseextensions.googleapis.com/v1beta/projects/${project}/instances`, "instances")),
-    indexes: digest(listIndexes({projectId: project}).sort((a, b) => String(a.name).localeCompare(String(b.name)))),
+    indexes: digest(liveIndexes),
     fields: digest([...fields.values()].sort((a, b) => a.name.localeCompare(b.name))),
     rules: digest(await pages(`https://firebaserules.googleapis.com/v1/projects/${project}/releases`, "releases")),
     remoteConfig: digest(await get(`https://firebaseremoteconfig.googleapis.com/v1/projects/${project}/remoteConfig`)),
     projectIam: digest(await get(`https://cloudresourcemanager.googleapis.com/v1/projects/${project}:getIamPolicy`,
       {method: "POST", body: JSON.stringify({options: {requestedPolicyVersion: 3}})})),
   };
+  if (cat165) {
+    selected.sort((a, b) => a.identity.name.localeCompare(b.identity.name));
+    const wanted = indexSignature(CAT165_INDEX, {desired: true});
+    const added = liveIndexes.filter((index) => indexSignature(index) === wanted);
+    assert.ok(added.length <= 1, "Duplicate CAT165 index.");
+    protectedResources.indexes = digest(liveIndexes.filter((index) => indexSignature(index) !== wanted));
+    return cat165Snapshot({schema: "catch.cat165-metadata/v2", projectId: project,
+      reviewed: captureFunctionIdentities(functions, CAT165_RELEASE.scope, cat165ReviewedTargets()),
+      functions: functions.map((fn) => ({name: fn.name, sha256: digest(fn)})), protectedResources, selected,
+      index: added[0] ?? null});
+  }
   return intakeSnapshot({schema: "catch.intake-pr596-metadata/v1", projectId: project,
     functions: functions.map((fn) => ({name: fn.name, sha256: digest(fn)})), protectedResources, selected});
 }
@@ -1317,8 +1362,534 @@ export async function runIntakePr596ReleaseCli(argv, {readSnapshot = readIntakeS
   return result;
 }
 
+// Reviewed CAT165 projection, not an impact analyzer or full-source baseline.
+export const CAT165_RELEASE = Object.freeze({
+  sourceSha: "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a",
+  baseSha: "08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2",
+  sourceCiRunId: "38778849364", sourceCiRunAttempt: "1", artifactId: 11995458204,
+  artifactSha256: "543bf0e766acf2979a9c852daf7009fc8e4ad016f8b0eecab2dada770e484766",
+  packageSha256: "e33226c7df14645d174a38cbe794b07468822bc7cabacc3ea7ff86bd3a4023fb",
+  provenanceSha256: "42e260ac3103b398c0dfcdfd1859735faac7861a005d2a1214d1f7364cf6a377",
+  projectId: "catch-dating-app-64e51", scope: "firebase:prod:catch-dating-app-64e51",
+  targetsSha256: "e3504acd685e899c82a55ee0fc3126340c87ffaf31588d411ef6fab0ac7acecb",
+  targets: Object.freeze([
+    "functions:applyProgramFunctionInvitations",
+    "functions:archiveProgram",
+    "functions:armOrganizerMoment",
+    "functions:claimProgramStaffInvite",
+    "functions:createProgramWalkIn",
+    "functions:deleteProgramGuestGroup",
+    "functions:dispatchProgramTrip",
+    "functions:getOrganizerProgram",
+    "functions:getProgramArrivalsRoster",
+    "functions:getProgramAttendanceReport",
+    "functions:getProgramFunctionDoorView",
+    "functions:getProgramHotelInbound",
+    "functions:getProgramHotelRooms",
+    "functions:getProgramStakeholderCounts",
+    "functions:getProgramTransportPlan",
+    "functions:getProgramWorkAccess",
+    "functions:grantProgramStaff",
+    "functions:importProgramManifest",
+    "functions:importWeddingPhoneContacts",
+    "functions:inviteProgramStaff",
+    "functions:issueProgramHouseholdRsvpLink",
+    "functions:listMyHostAssignments",
+    "functions:listOrganizerMoments",
+    "functions:listOrganizerPrograms",
+    "functions:listProgramGuestGroups",
+    "functions:listProgramGuests",
+    "functions:listProgramHouseholds",
+    "functions:listProgramStaff",
+    "functions:listProgramStaffAttention",
+    "functions:listProgramTrips",
+    "functions:listTransportVendors",
+    "functions:manageProgramLodging",
+    "functions:markProgramTripArrived",
+    "functions:onOrganizerApplicationAutomated",
+    "functions:onOrganizerAttendanceAutomated",
+    "functions:onOrganizerFormResponseAutomated",
+    "functions:organizerMomentSweep",
+    "functions:pauseOrganizerMoment",
+    "functions:programTravelLegMoments",
+    "functions:recordProgramDoorJournal",
+    "functions:recordProgramFunctionRsvp",
+    "functions:refreshProgramTravelLeg",
+    "functions:resumeOrganizerMoment",
+    "functions:retryOrganizerAutomations",
+    "functions:revokeProgramStaff",
+    "functions:revokeProgramStaffInvite",
+    "functions:runOrganizerMoment",
+    "functions:setProgramTravelReadiness",
+    "functions:unarchiveProgram",
+    "functions:updateOrganizerProgram",
+    "functions:upsertOrganizerMoment",
+    "functions:upsertProgramFunction",
+    "functions:upsertProgramGuest",
+    "functions:upsertProgramGuestGroup",
+    "functions:upsertProgramHotel",
+    "functions:upsertProgramHousehold",
+    "functions:upsertProgramPickupPoint",
+    "functions:upsertProgramRoomBlock",
+    "functions:upsertProgramStay",
+    "functions:upsertProgramTravelLeg",
+    "functions:upsertProgramTravelParty",
+    "functions:voidProgramTrip"
+]),
+  deferredTargets: Object.freeze([
+    "functions:createOrganizerFormAutomation",
+    "functions:createOrganizerProgram",
+    "functions:flightAlertWebhook",
+    "functions:getProgramHouseholdRsvpView",
+    "functions:listOrganizerFormAutomationRuns",
+    "functions:onEventAssistanceWhatsappEventCreated",
+    "functions:programHouseholdItineraryIcs",
+    "functions:refreshProgramFlightStatuses",
+    "functions:setOrganizerFormAutomationState",
+    "functions:submitProgramHouseholdRsvp",
+    "functions:upsertTransportVendor"
+]),
+});
+// Historical evidence, not a fresh observation. See PR617#issuecomment-6203197509.
+// Programs build/bucket/object are explicitly observation-only; all fields are pinned.
+function freezeCat165Evidence(value) {
+  if (value && typeof value === "object") {
+    Object.values(value).forEach(freezeCat165Evidence); Object.freeze(value);
+  }
+  return value;
+}
+export const CAT165_PREDECESSORS = freezeCat165Evidence({
+  "schema": "catch.cat165-reviewed-serving-predecessors-handoff/v1",
+  "projectId": "catch-dating-app-64e51",
+  "region": "asia-south1",
+  "candidateSourceSha": "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a",
+  "selectedTargetsSha256": "e3504acd685e899c82a55ee0fc3126340c87ffaf31588d411ef6fab0ac7acecb",
+  "fullEvidenceSha256": "484611bfe433088f9f7cd11528851dd53d15f628b354e62e83f5f4249827c345",
+  "metadataObservation": {
+    "date": "2026-10-15",
+    "sha256": "89eebeb814fa515884c3afb4dc86ff3939d1d5b65e500dd4badfeb7dfcf07ca9",
+    "freshness": "Historical reviewed snapshot; compare against fresh metadata before any mutation"
+  },
+  "cohorts": {
+    "baseline647": {
+      "sourceSha": "647e39e4476693d6565318cb1d5c5223f3b781f7",
+      "receiptSha256": "9f411302df3f0c913157893ec7aba8dbf3a6172926311f085f617f316c8b2875",
+      "receiptProvenance": {
+        "manifestSha256": "87e65816dc0dce359cad193c1b72355cbc3414b266bd83a778235a5b3468efe1",
+        "sourceSha": "647e39e4476693d6565318cb1d5c5223f3b781f7",
+        "sourceCiRunId": "37206844099",
+        "sourceCiRunAttempt": "1",
+        "artifactSha256": "da0a4a1ccdc81727f7fa043b25f7ba8beac20e2f4fb48e435f09704ed9283cd3"
+      },
+      "receiptFieldCoverage": [
+        "revision",
+        "build",
+        "source.bucket",
+        "source.object",
+        "source.generation"
+      ]
+    },
+    "programs6f08": {
+      "sourceSha": "6f08e7b5606e28a00a715e35c7eb11e438bfdd16",
+      "receiptSha256": "7e2c713c18a0cbfa024cb2b0793ceb672c52405bd45410a107cb768da2c69c99",
+      "receiptProvenance": {
+        "schema": "catch.programs-exact-functions-operator-receipt/v1",
+        "result": "six-functions-deployed-and-selected-state-verified",
+        "verifiedAt": "2026-10-07T09:59:31.151Z",
+        "sourceSha": "6f08e7b5606e28a00a715e35c7eb11e438bfdd16",
+        "sourceCiRunId": 37595101537,
+        "sourceCiRunAttempt": 2,
+        "artifactId": 11472776152,
+        "artifactDigest": "sha256:db6423e8c79459bd7b6408c8d9b6421ab4e94cad73011db637ec0aa105aad782",
+        "backendArchiveSha256": "18d13bbfe83a3463060eaad0d8a2cf50499ed60d03943e64ca1d749aa53987f8"
+      },
+      "receiptFieldCoverage": [
+        "revision",
+        "source.generation"
+      ],
+      "observationOnlyFields": [
+        "build",
+        "source.bucket",
+        "source.object"
+      ]
+    },
+    "contacts137": {
+      "sourceSha": "137d74096c32ec884cfb358ae79b930f303cbb3e",
+      "receiptSha256": "db0c4febf7842b4c6b287e0079713d974cf379bcfcec73dec1ceb0c4522f114a",
+      "receiptProvenance": {
+        "sourceSha": "137d74096c32ec884cfb358ae79b930f303cbb3e",
+        "packageArtifactId": 11463329764,
+        "packageSha256": "59ac13ab78140132f345c07c4148a887d463e9f4b2a26ae207401ab5c3d00fc3",
+        "verifiedAt": "2026-10-07T08:00:12.349Z"
+      },
+      "receiptFieldCoverage": [
+        "revision",
+        "build",
+        "source.bucket",
+        "source.object",
+        "source.generation"
+      ]
+    }
+  },
+  "counts": {
+    "baseline647": {
+      "selected": 56,
+      "deferred": 10
+    },
+    "programs6f08": {
+      "selected": 5,
+      "deferred": 1
+    },
+    "contacts137": {
+      "selected": 1,
+      "deferred": 0
+    }
+  },
+  "mustRemainAbsent": [
+    "anonymizeDueProgramsSweep"
+  ],
+  "rows": [
+    {"function":"applyProgramFunctionInvitations","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/applyProgramFunctionInvitations","revision":"applyprogramfunctioninvitations-00005-qiz","build":"projects/574779808785/locations/asia-south1/builds/9404ebe8-e5da-4464-b7c6-bb55f6c5924e","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791133787820089","object":"applyProgramFunctionInvitations/function-source.zip"}}},
+    {"function":"archiveProgram","disposition":"selected","cohort":"programs6f08","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/archiveProgram","revision":"archiveprogram-00002-noc","build":"projects/574779808785/locations/asia-south1/builds/43b1e888-a192-4401-a749-378aad52f129","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791366814941466","object":"archiveProgram/function-source.zip"}}},
+    {"function":"armOrganizerMoment","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/armOrganizerMoment","revision":"armorganizermoment-00005-zex","build":"projects/574779808785/locations/asia-south1/builds/516c85bb-8c37-4b2d-86c5-06ef3a8fd100","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791133917965250","object":"armOrganizerMoment/function-source.zip"}}},
+    {"function":"claimProgramStaffInvite","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/claimProgramStaffInvite","revision":"claimprogramstaffinvite-00008-zew","build":"projects/574779808785/locations/asia-south1/builds/6eca2a3a-5421-4ab0-adfb-316257e09a7b","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791134049277256","object":"claimProgramStaffInvite/function-source.zip"}}},
+    {"function":"createOrganizerFormAutomation","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/createOrganizerFormAutomation","revision":"createorganizerformautomation-00030-voq","build":"projects/574779808785/locations/asia-south1/builds/b373c185-d036-46a3-87bf-b18ed62370bc","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791134438018955","object":"createOrganizerFormAutomation/function-source.zip"}}},
+    {"function":"createOrganizerProgram","disposition":"deferred","cohort":"programs6f08","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/createOrganizerProgram","revision":"createorganizerprogram-00010-buj","build":"projects/574779808785/locations/asia-south1/builds/43b1e888-a192-4401-a749-378aad52f129","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791366739312796","object":"createOrganizerProgram/function-source.zip"}}},
+    {"function":"createProgramWalkIn","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/createProgramWalkIn","revision":"createprogramwalkin-00003-den","build":"projects/574779808785/locations/asia-south1/builds/b373c185-d036-46a3-87bf-b18ed62370bc","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791134438750836","object":"createProgramWalkIn/function-source.zip"}}},
+    {"function":"deleteProgramGuestGroup","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/deleteProgramGuestGroup","revision":"deleteprogramguestgroup-00003-zay","build":"projects/574779808785/locations/asia-south1/builds/360b61a2-e615-4992-af3a-8bf8ba2a42ad","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791134697879977","object":"deleteProgramGuestGroup/function-source.zip"}}},
+    {"function":"dispatchProgramTrip","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/dispatchProgramTrip","revision":"dispatchprogramtrip-00008-vub","build":"projects/574779808785/locations/asia-south1/builds/360b61a2-e615-4992-af3a-8bf8ba2a42ad","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791134697873871","object":"dispatchProgramTrip/function-source.zip"}}},
+    {"function":"flightAlertWebhook","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/flightAlertWebhook","revision":"flightalertwebhook-00005-nom","build":"projects/574779808785/locations/asia-south1/builds/871d4f7d-ec18-44ab-8cca-8dab60f6c3c7","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791134830123205","object":"flightAlertWebhook/function-source.zip"}}},
+    {"function":"getOrganizerProgram","disposition":"selected","cohort":"programs6f08","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getOrganizerProgram","revision":"getorganizerprogram-00010-vos","build":"projects/574779808785/locations/asia-south1/builds/43b1e888-a192-4401-a749-378aad52f129","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791366815217655","object":"getOrganizerProgram/function-source.zip"}}},
+    {"function":"getProgramArrivalsRoster","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramArrivalsRoster","revision":"getprogramarrivalsroster-00008-moq","build":"projects/574779808785/locations/asia-south1/builds/f539484d-8a95-44a5-93cc-c148eb880821","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135737371119","object":"getProgramArrivalsRoster/function-source.zip"}}},
+    {"function":"getProgramAttendanceReport","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramAttendanceReport","revision":"getprogramattendancereport-00001-pib","build":"projects/574779808785/locations/asia-south1/builds/f539484d-8a95-44a5-93cc-c148eb880821","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135736387331","object":"getProgramAttendanceReport/function-source.zip"}}},
+    {"function":"getProgramFunctionDoorView","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramFunctionDoorView","revision":"getprogramfunctiondoorview-00003-gaj","build":"projects/574779808785/locations/asia-south1/builds/f539484d-8a95-44a5-93cc-c148eb880821","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135737607595","object":"getProgramFunctionDoorView/function-source.zip"}}},
+    {"function":"getProgramHotelInbound","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramHotelInbound","revision":"getprogramhotelinbound-00008-siz","build":"projects/574779808785/locations/asia-south1/builds/f539484d-8a95-44a5-93cc-c148eb880821","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135737769505","object":"getProgramHotelInbound/function-source.zip"}}},
+    {"function":"getProgramHotelRooms","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramHotelRooms","revision":"getprogramhotelrooms-00001-qed","build":"projects/574779808785/locations/asia-south1/builds/f539484d-8a95-44a5-93cc-c148eb880821","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135735205995","object":"getProgramHotelRooms/function-source.zip"}}},
+    {"function":"getProgramHouseholdRsvpView","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramHouseholdRsvpView","revision":"getprogramhouseholdrsvpview-00005-mug","build":"projects/574779808785/locations/asia-south1/builds/c140975e-16d9-4674-ba7e-43812e3c7563","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135874484525","object":"getProgramHouseholdRsvpView/function-source.zip"}}},
+    {"function":"getProgramStakeholderCounts","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramStakeholderCounts","revision":"getprogramstakeholdercounts-00001-huf","build":"projects/574779808785/locations/asia-south1/builds/c140975e-16d9-4674-ba7e-43812e3c7563","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135803514076","object":"getProgramStakeholderCounts/function-source.zip"}}},
+    {"function":"getProgramTransportPlan","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramTransportPlan","revision":"getprogramtransportplan-00008-quc","build":"projects/574779808785/locations/asia-south1/builds/c140975e-16d9-4674-ba7e-43812e3c7563","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135874342932","object":"getProgramTransportPlan/function-source.zip"}}},
+    {"function":"getProgramWorkAccess","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/getProgramWorkAccess","revision":"getprogramworkaccess-00008-giy","build":"projects/574779808785/locations/asia-south1/builds/c140975e-16d9-4674-ba7e-43812e3c7563","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135874702411","object":"getProgramWorkAccess/function-source.zip"}}},
+    {"function":"grantProgramStaff","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/grantProgramStaff","revision":"grantprogramstaff-00008-dal","build":"projects/574779808785/locations/asia-south1/builds/cef892a2-8511-47ac-9da3-671d9f5e7722","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135993928933","object":"grantProgramStaff/function-source.zip"}}},
+    {"function":"importProgramManifest","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/importProgramManifest","revision":"importprogrammanifest-00008-ten","build":"projects/574779808785/locations/asia-south1/builds/cef892a2-8511-47ac-9da3-671d9f5e7722","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135993938991","object":"importProgramManifest/function-source.zip"}}},
+    {"function":"importWeddingPhoneContacts","disposition":"selected","cohort":"contacts137","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/importWeddingPhoneContacts","revision":"importweddingphonecontacts-00001-yab","build":"projects/574779808785/locations/asia-south1/builds/156661f9-5318-4c96-8101-922c96e3b877","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791359767765765","object":"importWeddingPhoneContacts/function-source.zip"}}},
+    {"function":"inviteProgramStaff","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/inviteProgramStaff","revision":"inviteprogramstaff-00008-mec","build":"projects/574779808785/locations/asia-south1/builds/cef892a2-8511-47ac-9da3-671d9f5e7722","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135992840038","object":"inviteProgramStaff/function-source.zip"}}},
+    {"function":"issueProgramHouseholdRsvpLink","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/issueProgramHouseholdRsvpLink","revision":"issueprogramhouseholdrsvplink-00005-laf","build":"projects/574779808785/locations/asia-south1/builds/cef892a2-8511-47ac-9da3-671d9f5e7722","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791135994410210","object":"issueProgramHouseholdRsvpLink/function-source.zip"}}},
+    {"function":"listMyHostAssignments","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listMyHostAssignments","revision":"listmyhostassignments-00005-gob","build":"projects/574779808785/locations/asia-south1/builds/68b91447-bb0c-4e22-862a-c06faa977d62","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136254218168","object":"listMyHostAssignments/function-source.zip"}}},
+    {"function":"listOrganizerFormAutomationRuns","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listOrganizerFormAutomationRuns","revision":"listorganizerformautomationruns-00030-biq","build":"projects/574779808785/locations/asia-south1/builds/c1c1a32e-9360-4e37-9ce6-f4f61e18463f","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136373193813","object":"listOrganizerFormAutomationRuns/function-source.zip"}}},
+    {"function":"listOrganizerMoments","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listOrganizerMoments","revision":"listorganizermoments-00005-qur","build":"projects/574779808785/locations/asia-south1/builds/c1c1a32e-9360-4e37-9ce6-f4f61e18463f","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136374655033","object":"listOrganizerMoments/function-source.zip"}}},
+    {"function":"listOrganizerPrograms","disposition":"selected","cohort":"programs6f08","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listOrganizerPrograms","revision":"listorganizerprograms-00010-hoj","build":"projects/574779808785/locations/asia-south1/builds/43b1e888-a192-4401-a749-378aad52f129","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791366815004383","object":"listOrganizerPrograms/function-source.zip"}}},
+    {"function":"listProgramGuestGroups","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listProgramGuestGroups","revision":"listprogramguestgroups-00003-hik","build":"projects/574779808785/locations/asia-south1/builds/67b837af-cb33-4bc6-ba6c-735939d34679","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136501801404","object":"listProgramGuestGroups/function-source.zip"}}},
+    {"function":"listProgramGuests","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listProgramGuests","revision":"listprogramguests-00009-num","build":"projects/574779808785/locations/asia-south1/builds/67b837af-cb33-4bc6-ba6c-735939d34679","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136501560859","object":"listProgramGuests/function-source.zip"}}},
+    {"function":"listProgramHouseholds","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listProgramHouseholds","revision":"listprogramhouseholds-00009-sup","build":"projects/574779808785/locations/asia-south1/builds/67b837af-cb33-4bc6-ba6c-735939d34679","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136502949306","object":"listProgramHouseholds/function-source.zip"}}},
+    {"function":"listProgramStaff","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listProgramStaff","revision":"listprogramstaff-00008-kad","build":"projects/574779808785/locations/asia-south1/builds/67b837af-cb33-4bc6-ba6c-735939d34679","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136502976285","object":"listProgramStaff/function-source.zip"}}},
+    {"function":"listProgramStaffAttention","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listProgramStaffAttention","revision":"listprogramstaffattention-00001-veb","build":"projects/574779808785/locations/asia-south1/builds/5c91f7b9-8d44-4806-80ea-74561d708e41","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136568434637","object":"listProgramStaffAttention/function-source.zip"}}},
+    {"function":"listProgramTrips","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listProgramTrips","revision":"listprogramtrips-00008-bay","build":"projects/574779808785/locations/asia-south1/builds/5c91f7b9-8d44-4806-80ea-74561d708e41","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136631137189","object":"listProgramTrips/function-source.zip"}}},
+    {"function":"listTransportVendors","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/listTransportVendors","revision":"listtransportvendors-00008-wef","build":"projects/574779808785/locations/asia-south1/builds/5c91f7b9-8d44-4806-80ea-74561d708e41","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136631353959","object":"listTransportVendors/function-source.zip"}}},
+    {"function":"manageProgramLodging","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/manageProgramLodging","revision":"manageprogramlodging-00001-rum","build":"projects/574779808785/locations/asia-south1/builds/d4c1fa53-0d35-4665-81bf-0ac6b3cc90bc","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136697731288","object":"manageProgramLodging/function-source.zip"}}},
+    {"function":"markProgramTripArrived","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/markProgramTripArrived","revision":"markprogramtriparrived-00008-duy","build":"projects/574779808785/locations/asia-south1/builds/d4c1fa53-0d35-4665-81bf-0ac6b3cc90bc","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791136761978875","object":"markProgramTripArrived/function-source.zip"}}},
+    {"function":"onEventAssistanceWhatsappEventCreated","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/onEventAssistanceWhatsappEventCreated","revision":"oneventassistancewhatsappeventcreated-00010-cus","build":"projects/574779808785/locations/asia-south1/builds/e12d7a64-3a87-4400-92cd-aa010fe1349f","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137021504158","object":"onEventAssistanceWhatsappEventCreated/function-source.zip"}}},
+    {"function":"onOrganizerApplicationAutomated","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/onOrganizerApplicationAutomated","revision":"onorganizerapplicationautomated-00017-kes","build":"projects/574779808785/locations/asia-south1/builds/fad97569-07d1-4f4f-8fd5-57f08b2ed08d","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137325552942","object":"onOrganizerApplicationAutomated/function-source.zip"}}},
+    {"function":"onOrganizerAttendanceAutomated","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/onOrganizerAttendanceAutomated","revision":"onorganizerattendanceautomated-00017-hac","build":"projects/574779808785/locations/asia-south1/builds/fad97569-07d1-4f4f-8fd5-57f08b2ed08d","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137327679730","object":"onOrganizerAttendanceAutomated/function-source.zip"}}},
+    {"function":"onOrganizerFormResponseAutomated","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/onOrganizerFormResponseAutomated","revision":"onorganizerformresponseautomated-00030-kad","build":"projects/574779808785/locations/asia-south1/builds/fad97569-07d1-4f4f-8fd5-57f08b2ed08d","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137326812941","object":"onOrganizerFormResponseAutomated/function-source.zip"}}},
+    {"function":"organizerMomentSweep","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/organizerMomentSweep","revision":"organizermomentsweep-00006-dav","build":"projects/574779808785/locations/asia-south1/builds/cf59031d-af04-4228-b917-b33ac34aa147","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137459985770","object":"organizerMomentSweep/function-source.zip"}}},
+    {"function":"pauseOrganizerMoment","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/pauseOrganizerMoment","revision":"pauseorganizermoment-00005-cim","build":"projects/574779808785/locations/asia-south1/builds/cf59031d-af04-4228-b917-b33ac34aa147","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137460352774","object":"pauseOrganizerMoment/function-source.zip"}}},
+    {"function":"programHouseholdItineraryIcs","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/programHouseholdItineraryIcs","revision":"programhouseholditineraryics-00005-lum","build":"projects/574779808785/locations/asia-south1/builds/2e5b6319-4912-4418-a67c-24d337bd1c11","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137730546633","object":"programHouseholdItineraryIcs/function-source.zip"}}},
+    {"function":"programTravelLegMoments","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/programTravelLegMoments","revision":"programtravellegmoments-00005-deh","build":"projects/574779808785/locations/asia-south1/builds/2e5b6319-4912-4418-a67c-24d337bd1c11","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137729513883","object":"programTravelLegMoments/function-source.zip"}}},
+    {"function":"recordProgramDoorJournal","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/recordProgramDoorJournal","revision":"recordprogramdoorjournal-00005-xom","build":"projects/574779808785/locations/asia-south1/builds/0128c977-dbc9-4b7d-bc40-8fa9890a0a0b","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137982580584","object":"recordProgramDoorJournal/function-source.zip"}}},
+    {"function":"recordProgramFunctionRsvp","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/recordProgramFunctionRsvp","revision":"recordprogramfunctionrsvp-00005-xas","build":"projects/574779808785/locations/asia-south1/builds/0128c977-dbc9-4b7d-bc40-8fa9890a0a0b","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137982603172","object":"recordProgramFunctionRsvp/function-source.zip"}}},
+    {"function":"refreshProgramFlightStatuses","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/refreshProgramFlightStatuses","revision":"refreshprogramflightstatuses-00008-qup","build":"projects/574779808785/locations/asia-south1/builds/0128c977-dbc9-4b7d-bc40-8fa9890a0a0b","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791137982595750","object":"refreshProgramFlightStatuses/function-source.zip"}}},
+    {"function":"refreshProgramTravelLeg","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/refreshProgramTravelLeg","revision":"refreshprogramtravelleg-00008-nij","build":"projects/574779808785/locations/asia-south1/builds/b36e2cd6-f1a1-4d7b-8bc6-552a4574cc9b","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138124446215","object":"refreshProgramTravelLeg/function-source.zip"}}},
+    {"function":"resumeOrganizerMoment","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/resumeOrganizerMoment","revision":"resumeorganizermoment-00005-fid","build":"projects/574779808785/locations/asia-south1/builds/00c3023a-4ae8-4c24-a7c1-ca96811bc329","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138396840359","object":"resumeOrganizerMoment/function-source.zip"}}},
+    {"function":"retryOrganizerAutomations","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/retryOrganizerAutomations","revision":"retryorganizerautomations-00017-zus","build":"projects/574779808785/locations/asia-south1/builds/00c3023a-4ae8-4c24-a7c1-ca96811bc329","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138397065768","object":"retryOrganizerAutomations/function-source.zip"}}},
+    {"function":"revokeProgramStaff","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/revokeProgramStaff","revision":"revokeprogramstaff-00008-yiv","build":"projects/574779808785/locations/asia-south1/builds/00c3023a-4ae8-4c24-a7c1-ca96811bc329","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138396974106","object":"revokeProgramStaff/function-source.zip"}}},
+    {"function":"revokeProgramStaffInvite","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/revokeProgramStaffInvite","revision":"revokeprogramstaffinvite-00008-rov","build":"projects/574779808785/locations/asia-south1/builds/00c3023a-4ae8-4c24-a7c1-ca96811bc329","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138397100746","object":"revokeProgramStaffInvite/function-source.zip"}}},
+    {"function":"runOrganizerMoment","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/runOrganizerMoment","revision":"runorganizermoment-00005-zox","build":"projects/574779808785/locations/asia-south1/builds/ca760e70-5a37-43d2-9b2b-a2db6306cbf2","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138520916118","object":"runOrganizerMoment/function-source.zip"}}},
+    {"function":"setOrganizerFormAutomationState","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/setOrganizerFormAutomationState","revision":"setorganizerformautomationstate-00030-xec","build":"projects/574779808785/locations/asia-south1/builds/7ac580ed-3266-4b58-bc33-1a9be31e9dcf","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138779400775","object":"setOrganizerFormAutomationState/function-source.zip"}}},
+    {"function":"setProgramTravelReadiness","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/setProgramTravelReadiness","revision":"setprogramtravelreadiness-00008-qis","build":"projects/574779808785/locations/asia-south1/builds/7ac580ed-3266-4b58-bc33-1a9be31e9dcf","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791138779013119","object":"setProgramTravelReadiness/function-source.zip"}}},
+    {"function":"submitProgramHouseholdRsvp","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/submitProgramHouseholdRsvp","revision":"submitprogramhouseholdrsvp-00005-bef","build":"projects/574779808785/locations/asia-south1/builds/1686a5d2-788c-40e9-8237-fdccb6dcb172","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139047536505","object":"submitProgramHouseholdRsvp/function-source.zip"}}},
+    {"function":"unarchiveProgram","disposition":"selected","cohort":"programs6f08","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/unarchiveProgram","revision":"unarchiveprogram-00002-gup","build":"projects/574779808785/locations/asia-south1/builds/43b1e888-a192-4401-a749-378aad52f129","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791366815446658","object":"unarchiveProgram/function-source.zip"}}},
+    {"function":"updateOrganizerProgram","disposition":"selected","cohort":"programs6f08","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/updateOrganizerProgram","revision":"updateorganizerprogram-00010-qun","build":"projects/574779808785/locations/asia-south1/builds/43b1e888-a192-4401-a749-378aad52f129","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791366814781860","object":"updateOrganizerProgram/function-source.zip"}}},
+    {"function":"upsertOrganizerMoment","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertOrganizerMoment","revision":"upsertorganizermoment-00005-yin","build":"projects/574779808785/locations/asia-south1/builds/88d860ae-c0d0-4820-9733-f5f038d86ca7","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139434190511","object":"upsertOrganizerMoment/function-source.zip"}}},
+    {"function":"upsertProgramFunction","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramFunction","revision":"upsertprogramfunction-00008-zag","build":"projects/574779808785/locations/asia-south1/builds/88d860ae-c0d0-4820-9733-f5f038d86ca7","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139432600540","object":"upsertProgramFunction/function-source.zip"}}},
+    {"function":"upsertProgramGuest","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramGuest","revision":"upsertprogramguest-00009-sor","build":"projects/574779808785/locations/asia-south1/builds/88d860ae-c0d0-4820-9733-f5f038d86ca7","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139434164187","object":"upsertProgramGuest/function-source.zip"}}},
+    {"function":"upsertProgramGuestGroup","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramGuestGroup","revision":"upsertprogramguestgroup-00003-lay","build":"projects/574779808785/locations/asia-south1/builds/88d860ae-c0d0-4820-9733-f5f038d86ca7","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139433697784","object":"upsertProgramGuestGroup/function-source.zip"}}},
+    {"function":"upsertProgramHotel","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramHotel","revision":"upsertprogramhotel-00008-jol","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139558994577","object":"upsertProgramHotel/function-source.zip"}}},
+    {"function":"upsertProgramHousehold","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramHousehold","revision":"upsertprogramhousehold-00009-daj","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139560480225","object":"upsertProgramHousehold/function-source.zip"}}},
+    {"function":"upsertProgramPickupPoint","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramPickupPoint","revision":"upsertprogrampickuppoint-00008-qis","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139558978868","object":"upsertProgramPickupPoint/function-source.zip"}}},
+    {"function":"upsertProgramRoomBlock","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramRoomBlock","revision":"upsertprogramroomblock-00001-siy","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139559091652","object":"upsertProgramRoomBlock/function-source.zip"}}},
+    {"function":"upsertProgramStay","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramStay","revision":"upsertprogramstay-00001-leg","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139498203102","object":"upsertProgramStay/function-source.zip"}}},
+    {"function":"upsertProgramTravelLeg","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramTravelLeg","revision":"upsertprogramtravelleg-00008-raw","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139560306379","object":"upsertProgramTravelLeg/function-source.zip"}}},
+    {"function":"upsertProgramTravelParty","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertProgramTravelParty","revision":"upsertprogramtravelparty-00008-niw","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139560120549","object":"upsertProgramTravelParty/function-source.zip"}}},
+    {"function":"upsertTransportVendor","disposition":"deferred","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/upsertTransportVendor","revision":"upserttransportvendor-00008-wux","build":"projects/574779808785/locations/asia-south1/builds/d3f2e4e1-da33-4d65-b824-04093772b355","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139560100412","object":"upsertTransportVendor/function-source.zip"}}},
+    {"function":"voidProgramTrip","disposition":"selected","cohort":"baseline647","identity":{"name":"projects/catch-dating-app-64e51/locations/asia-south1/functions/voidProgramTrip","revision":"voidprogramtrip-00008-lay","build":"projects/574779808785/locations/asia-south1/builds/974b8480-03d2-43b9-a306-d72017ef1a47","source":{"bucket":"gcf-v2-sources-574779808785-asia-south1","generation":"1791139694941026","object":"voidProgramTrip/function-source.zip"}}}
+  ]
+});
+function cat165ReviewedTargets() {
+  return [...CAT165_RELEASE.targets, ...CAT165_RELEASE.deferredTargets].sort();
+}
+export function verifyCat165Predecessors(snapshot) {
+  cat165Snapshot(snapshot);
+  const evidence = CAT165_PREDECESSORS;
+  assert.equal(evidence.candidateSourceSha, CAT165_RELEASE.sourceSha);
+  assert.equal(evidence.selectedTargetsSha256, CAT165_RELEASE.targetsSha256);
+  assert.deepEqual(evidence.rows.map((row) => `functions:${row.function}`).sort(), cat165ReviewedTargets());
+  for (const disposition of ["selected", "deferred"]) {
+    assert.deepEqual(evidence.rows.filter((row) => row.disposition === disposition).map((row) => `functions:${row.function}`).sort(),
+      disposition === "selected" ? CAT165_RELEASE.targets : [...CAT165_RELEASE.deferredTargets].sort());
+  }
+  for (const row of evidence.rows) {
+    const observed = snapshot.reviewed.find((identity) => identity.name === row.identity.name);
+    assert.deepEqual({name: observed.name, revision: observed.revision, build: observed.build, source: observed.source},
+      row.identity, `CAT165 reviewed predecessor changed: ${row.function}. Investigate before mutation.`);
+  }
+  for (const name of evidence.mustRemainAbsent) {
+    assert.ok(!snapshot.functions.some((fn) => fn.name.split("/").at(-1) === name), "CAT165 dormant Function must remain absent.");
+  }
+  return {reviewedPredecessors: 73, evidenceSha256: evidence.fullEvidenceSha256};
+}
+export const CAT165_INDEX = Object.freeze({collectionGroup: "organizerPrograms", queryScope: "COLLECTION",
+  fields: Object.freeze([{fieldPath: "organizerId", order: "ASCENDING"},
+    {fieldPath: "createdBy", order: "ASCENDING"}, {fieldPath: "startsAt", order: "DESCENDING"}].map(Object.freeze))});
+export const CAT165_SOURCE_GUARDED_PATHS = Object.freeze([
+  ...INTAKE_SOURCE_GUARDED_PATHS, "operations", "contracts", "tool/ci/package_firebase_delivery.mjs",
+  "tool/firebase", "tool/deploy_firebase_targets.sh", "tool/firebase_with_env.sh", "tool/ci/toolchain.env",
+  "tool/ci/delivery_core.mjs", "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/backend_source_review.mjs",
+  "package.json", "package-lock.json",
+]);
+export function checkCat165GitCompatibility(currentSha, cwd = process.cwd()) {
+  assert.match(currentSha, shaPattern);
+  const git = (args) => {
+    const r = spawnSync("git", args, {cwd, encoding: "utf8", timeout: 10000, maxBuffer: 1024 * 1024});
+    assert.ifError(r.error); assert.equal(r.status, 0, "CAT165 source compatibility is unproven."); return r.stdout;
+  };
+  for (const sha of [CAT165_RELEASE.sourceSha, currentSha]) assert.equal(git(["rev-parse", "--verify", `${sha}^{commit}`]).trim(), sha);
+  git(["merge-base", "--is-ancestor", CAT165_RELEASE.sourceSha, currentSha]);
+  assert.equal(git(["diff", "--name-only", "--no-renames", CAT165_RELEASE.sourceSha, currentSha,
+    "--", ...CAT165_SOURCE_GUARDED_PATHS]), "", "CAT165 runtime, asset, lock or protected executor drift.");
+  return {sourceSha: CAT165_RELEASE.sourceSha, currentSha};
+}
+export function verifyCat165ArtifactMetadata(artifact) {
+  const r = CAT165_RELEASE;
+  assert.equal(artifact.id, r.artifactId); assert.equal(artifact.expired, false);
+  assert.equal(artifact.name, `firebase-delivery-${r.sourceSha}-1`);
+  assert.equal(artifact.digest, `sha256:${r.artifactSha256}`);
+  assert.equal(artifact.workflow_run?.id, Number(r.sourceCiRunId)); assert.equal(artifact.workflow_run?.head_sha, r.sourceSha);
+  return {artifactId: r.artifactId, artifactSha256: r.artifactSha256};
+}
+export function verifyCat165Provenance(raw) {
+  assert.equal(provenanceDigest(raw), CAT165_RELEASE.provenanceSha256);
+  return validateProvenanceManifest(raw);
+}
+export function prepareCat165Release({manifest: raw, packagePlan, indexes}) {
+  const r = CAT165_RELEASE, manifest = validateProvenanceManifest(raw);
+  assert.equal(bytesDigest(Buffer.from(r.targets.join("\n") + "\n")), r.targetsSha256);
+  assert.equal(r.targets.length, 62); targetList(r.targets);
+  assert.ok(!r.targets.some((t) => r.deferredTargets.includes(t) || t === "functions:anonymizeDueProgramsSweep"));
+  for (const value of [manifest, packagePlan]) {
+    assert.equal(value.sourceSha, r.sourceSha); assert.equal(value.sourceCiRunId, r.sourceCiRunId);
+    assert.equal(value.sourceCiRunAttempt, "1"); assert.deepEqual(value.stages, ["firestore-indexes", "functions"]);
+  }
+  assert.equal(manifest.artifact.name, "firebase-backend.tar.gz"); assert.equal(manifest.artifact.sha256, r.packageSha256);
+  assert.equal(packagePlan.schema, "catch.firebase-delivery-plan/v2"); assert.equal(packagePlan.baseSha, r.baseSha);
+  assert.deepEqual(packagePlan.deployGroups, ["firestore-indexes", "functions"]);
+  assert.equal(packagePlan.targets.length, 2); assert.equal(packagePlan.targets[0], "firestore:indexes");
+  const available = packagePlan.targets[1].split(","); targetList(available);
+  assert.ok(r.targets.every((target) => available.includes(target)), "Selected target absent from immutable package authority.");
+  assert.ok(Array.isArray(indexes?.indexes));
+  assert.equal(indexes.indexes.filter((index) => digest(index) === digest(CAT165_INDEX)).length, 1);
+  return {...structuredClone(packagePlan), targets: ["firestore:indexes", r.targets.join(",")],
+    selectedIndexes: {indexes: [structuredClone(CAT165_INDEX)], fieldOverrides: []},
+    impactedDeferredTargets: [...r.deferredTargets], coverage: "cat165-selected-only", privacyAcceptanceComplete: false};
+}
+function cat165Names() {
+  return CAT165_RELEASE.targets.map((target) => `projects/${CAT165_RELEASE.projectId}/locations/asia-south1/functions/${target.slice(10)}`);
+}
+function cat165Snapshot(value) {
+  exactKeys(value, ["schema", "projectId", "functions", "protectedResources", "selected", "reviewed", "index"]);
+  assert.equal(value.schema, "catch.cat165-metadata/v2"); assert.equal(value.projectId, CAT165_RELEASE.projectId);
+  assert.ok(Array.isArray(value.functions) && value.functions.length >= 62 && value.functions.length <= 3000);
+  const names = value.functions.map((row) => {
+    exactKeys(row, ["name", "sha256"]); assert.match(row.sha256, hashPattern);
+    assert.match(row.name, /^projects\/catch-dating-app-64e51\/locations\/[a-z0-9-]+\/functions\/[A-Za-z0-9_-]+$/); return row.name;
+  });
+  assert.equal(new Set(names).size, names.length); assert.deepEqual(names, [...names].sort((a,b) => a.localeCompare(b)));
+  exactKeys(value.protectedResources, ["extensions", "indexes", "fields", "rules", "remoteConfig", "projectIam"]);
+  for (const hash of Object.values(value.protectedResources)) assert.match(hash, hashPattern);
+  assert.ok(Array.isArray(value.reviewed)); assert.equal(value.reviewed.length, 73);
+  value.reviewed.forEach((identity, i) => {
+    validateFunctionIdentity(identity, {scope: CAT165_RELEASE.scope, target: cat165ReviewedTargets()[i]});
+    assert.ok(names.includes(identity.name), "Reviewed Function missing from live inventory.");
+  });
+  assert.equal(value.selected.length, 62);
+  value.selected.forEach((record, i) => {
+    exactKeys(record, ["identity", "runtime", "iamSha256", "publicInvoker", "configurationSha256", "parameterValuesSha256", "secretReferences"]);
+    validateFunctionIdentity(record.identity, {scope: CAT165_RELEASE.scope, target: CAT165_RELEASE.targets[i]});
+    assert.ok(names.includes(record.identity.name)); assert.match(record.iamSha256, hashPattern);
+    assert.deepEqual(record.identity, value.reviewed.find((identity) => identity.name === record.identity.name),
+      "Selected and reviewed identity projections disagree.");
+    assert.ok(Array.isArray(record.secretReferences));
+    assert.equal(record.secretReferences.length, record.runtime.secretBindings);
+    for (const binding of record.secretReferences) {
+      exactKeys(binding, ["key", "reference"]);
+      assert.equal(parseSecretReference(binding.reference, CAT165_RELEASE.projectId)?.secret, binding.key);
+    }
+    assert.equal(new Set(record.secretReferences.map((binding) => binding.key)).size, record.secretReferences.length);
+    assert.match(record.configurationSha256, hashPattern); assert.match(record.parameterValuesSha256, hashPattern); assert.equal(typeof record.publicInvoker, "boolean");
+    exactKeys(record.runtime, ["runtime", "entryPoint", "serviceAccount", "memory", "maxInstances", "secretBindings", "paramsSha256"]);
+    const eventOrSchedule = ["onOrganizerApplicationAutomated", "onOrganizerAttendanceAutomated",
+      "onOrganizerFormResponseAutomated", "organizerMomentSweep", "programTravelLegMoments", "retryOrganizerAutomations"];
+    if (!eventOrSchedule.includes(CAT165_RELEASE.targets[i].slice(10))) {
+      assert.equal(record.publicInvoker, true, "CAT165 callable IAM must already match the source public invoker policy.");
+    }
+  });
+  if (value.index !== null) {
+    assert.match(value.index.name ?? "", /^projects\/catch-dating-app-64e51\/databases\/\(default\)\/collectionGroups\/organizerPrograms\/indexes\/[A-Za-z0-9_-]+$/);
+    assert.equal(indexSignature(value.index), indexSignature(CAT165_INDEX, {desired: true}));
+  }
+  return value;
+}
+export function verifyCat165Preservation(before, after, {phase = "before", paramsSha256} = {}) {
+  verifyCat165Predecessors(before); cat165Snapshot(after); assert.ok(["before", "indexed", "completed"].includes(phase));
+  assert.equal(before.index, null, "One-time CAT165 profile requires the reviewed index to be absent before invocation.");
+  const selected = new Set(cat165Names());
+  const retained = (s) => s.functions.filter((f) => !selected.has(f.name));
+  assert.deepEqual(retained(after), retained(before), "An unselected Function or Extension changed.");
+  assert.deepEqual(after.reviewed.filter((fn) => !selected.has(fn.name)), before.reviewed.filter((fn) => !selected.has(fn.name)),
+    "A reviewed deferred serving identity changed.");
+  assert.deepEqual(after.protectedResources, before.protectedResources, "A retained index, field, rule, flag or IAM resource changed.");
+  if (phase === "before") assert.deepEqual(after, before, "Predeployment metadata drift.");
+  else {
+    assert.ok(after.index); assert.equal(after.index.state, "READY", "The exact additive index must be READY.");
+    if (phase === "indexed") {
+      assert.deepEqual(after.functions, before.functions); assert.deepEqual(after.selected, before.selected);
+    } else {
+      assert.match(paramsSha256, hashPattern);
+      after.selected.forEach((record, i) => {
+        const prior = before.selected[i];
+        assert.equal(record.iamSha256, prior.iamSha256, "Selected IAM policy changed.");
+        assert.equal(record.configurationSha256, prior.configurationSha256, "Provider flags, secret versions or selected configuration changed.");
+        assert.equal(record.runtime.runtime, "nodejs24"); assert.equal(record.runtime.entryPoint, CAT165_RELEASE.targets[i].slice(10));
+        assert.equal(record.runtime.paramsSha256, paramsSha256);
+        assert.notEqual(record.identity.build, prior.identity.build, "Selected build did not change.");
+        assert.notEqual(record.identity.revision, prior.identity.revision, "Selected serving revision did not change.");
+        assert.notDeepEqual(record.identity.source, prior.identity.source, "Selected uploaded source did not change.");
+      });
+    }
+  }
+  return {coverage: "cat165-selected-only", selectedTargets: [...CAT165_RELEASE.targets],
+    impactedDeferredTargets: [...CAT165_RELEASE.deferredTargets], retainedFunctions: retained(before).length,
+    protectedResourcesUnchanged: true, phase, privacyAcceptanceComplete: false,
+    legacyHouseholdBearerLimitation: "Previously minted household tokens retain access and consent submission until expiry."};
+}
+export function verifyCat165Params(file, provenance, expectedBinding) {
+  return verifyProtectedParams(file, provenance, expectedBinding, CAT165_RELEASE);
+}
+export function verifyCat165ParameterPreservation(before, contents) {
+  return safe(() => {
+    verifyCat165Predecessors(before);
+    const values = new Map();
+    for (const line of contents.trimEnd().split("\n")) {
+      const match = /^([A-Z][A-Z0-9_]*)=(.*)$/.exec(line); assert.ok(match); assert.ok(!values.has(match[1]));
+      const value = JSON.parse(match[2]); assert.equal(typeof value, "string"); values.set(match[1], value);
+    }
+    assert.deepEqual([...values.keys()].sort(), [...materializedNonSecretParams, "CATCH_DEPLOY_CONFIG_SHA256"].sort());
+    const expected = digest(materializedNonSecretParams.map((key) => [key, values.get(key)]));
+    assert.ok(before.selected.every((record) => record.parameterValuesSha256 === expected));
+    return {selectedParametersUnchanged: true};
+  });
+}
+export function verifyCat165BindingPreservation(before, candidate) {
+  return safe(() => {
+    verifyCat165Predecessors(before);
+    validateCandidateBindings(candidate, {environment: "prod", projectId: CAT165_RELEASE.projectId,
+      sourceSha: CAT165_RELEASE.sourceSha, manifest: readinessManifest});
+    assert.deepEqual(candidate.functions.map((fn) => `functions:${fn.consumer}`).sort(), CAT165_RELEASE.targets);
+    const requirements = selectReadinessRequirements({manifest: readinessManifest, environment: "prod", targets: CAT165_RELEASE.targets});
+    const expected = requirements.filter((requirement) => ["secret-version", "secret-reference"].includes(requirement.kind))
+      .flatMap((requirement) => requirement.requiredWhen.anyDeployTarget.filter((target) => CAT165_RELEASE.targets.includes(target))
+        .map((target) => `${requirement.id}:${target.slice(10)}`)).sort();
+    assert.deepEqual(candidate.bindings.map((binding) => `${binding.requirementId}:${binding.consumer}`).sort(), expected);
+    before.selected.forEach((record, i) => {
+      const consumer = CAT165_RELEASE.targets[i].slice(10);
+      assert.equal(candidate.functions.find((fn) => fn.consumer === consumer).serviceAccount, record.runtime.serviceAccount);
+      const proposed = candidate.bindings.filter((binding) => binding.consumer === consumer &&
+        requirements.some((requirement) => requirement.id === binding.requirementId && requirement.kind === "secret-version"))
+        .map((binding) => ({key: parseSecretReference(binding.reference, CAT165_RELEASE.projectId).secret, reference: binding.reference}))
+        .sort((a, b) => a.key.localeCompare(b.key));
+      assert.deepEqual(proposed, record.secretReferences, "CAT165 must not rebind any SecretParam version.");
+    });
+    return {selectedSecretVersionsUnchanged: true};
+  });
+}
+export function prepareCat165Deployment({manifest, snapshot, paramsBinding}) {
+  cat165Snapshot(snapshot);
+  const r = CAT165_RELEASE;
+  const deployment = {schema: FUNCTIONS_DEPLOYMENT_SCHEMA, scope: r.scope,
+    provenance: createCheckpointState(manifest, r.scope).provenance, baseSha: r.baseSha,
+    targets: [...r.targets], paramsSha256: paramsBinding.materializedSha256,
+    functions: snapshot.selected.map((record) => record.identity)};
+  return validateFunctionsDeployment(deployment, {manifest, scope: r.scope, baseSha: r.baseSha,
+    selectedTargets: r.targets, paramsSha256: paramsBinding.materializedSha256});
+}
+export function completeCat165Release({manifest, packagePlan, indexes, before, after, deployment, paramsBinding}) {
+  verifyCat165Provenance(manifest); prepareCat165Release({manifest, packagePlan, indexes});
+  const r = CAT165_RELEASE;
+  const result = verifyCat165Preservation(before, after, {phase: "completed", paramsSha256: paramsBinding.configurationSha256});
+  validateFunctionsDeployment(deployment, {manifest, scope: r.scope, baseSha: r.baseSha,
+    selectedTargets: r.targets, paramsSha256: paramsBinding.materializedSha256});
+  assert.deepEqual(deployment.functions, after.selected.map((record) => record.identity));
+  return {...r, ...result, paramsBinding, deployment, snapshot: after};
+}
+export async function runCat165ReleaseCli(argv, {readSnapshot = readCat165Snapshot} = {}) {
+  const [command, ...rest] = argv, args = salesOptions(rest), r = CAT165_RELEASE;
+  const commandKeys = {"cat165-source": ["current-main", "source-root"], "cat165-artifact": ["metadata"],
+    "cat165-provenance": ["manifest"], "cat165-archive": ["archive"],
+    "cat165-prepare": ["manifest", "package-plan", "indexes", "output", "selected-indexes"],
+    "cat165-before": ["output"], "cat165-verify-before": ["before"], "cat165-verify-indexed": ["before"],
+    "cat165-params": ["params-file", "provenance", "output"], "cat165-verify-params": ["params-file", "provenance", "binding"],
+    "cat165-targets": [], "cat165-verify-config": ["before", "params-file", "provenance", "binding", "candidate"],
+    "cat165-complete": ["before", "params-file", "params-provenance", "params-binding", "manifest", "package-plan", "indexes", "deployment-output", "output"]};
+  assert.ok(Object.hasOwn(commandKeys, command)); exactKeys(args, commandKeys[command]);
+  if (command === "cat165-targets") return {targets: r.targets, targetsSha256: r.targetsSha256};
+  if (command === "cat165-source") return checkCat165GitCompatibility(args["current-main"], args["source-root"]);
+  if (command === "cat165-artifact") return verifyCat165ArtifactMetadata(salesRead(args.metadata));
+  if (command === "cat165-provenance") {verifyCat165Provenance(salesRead(args.manifest)); return {provenanceVerified: true};}
+  if (command === "cat165-archive") {assert.equal(bytesDigest(fs.readFileSync(args.archive)), r.artifactSha256); return {archiveVerified: true};}
+  if (command === "cat165-prepare") {
+    const manifest = salesRead(args.manifest); verifyCat165Provenance(manifest);
+    const plan = prepareCat165Release({manifest, packagePlan: salesRead(args["package-plan"]), indexes: salesRead(args.indexes)});
+    salesWrite(args.output, plan); salesWrite(args["selected-indexes"], plan.selectedIndexes); return {targets: r.targets};
+  }
+  if (["cat165-params", "cat165-verify-params"].includes(command)) {
+    const binding = verifyCat165Params(args["params-file"], salesRead(args.provenance),
+      command === "cat165-verify-params" ? salesRead(args.binding) : undefined);
+    if (command === "cat165-params") salesWrite(args.output, binding); return {paramsBound: true};
+  }
+  if (command === "cat165-verify-config") {
+    const binding = verifyCat165Params(args["params-file"], salesRead(args.provenance), salesRead(args.binding));
+    const before = salesRead(args.before), candidate = salesRead(args.candidate);
+    assert.equal(candidate.paramsSha256, binding.configurationSha256);
+    verifyCat165BindingPreservation(before, candidate);
+    return verifyCat165ParameterPreservation(before, fs.readFileSync(args["params-file"], "utf8"));
+  }
+  const snapshot = await readSnapshot();
+  if (command === "cat165-before") {
+    const predecessors = verifyCat165Predecessors(snapshot);
+    assert.equal(snapshot.index, null); salesWrite(args.output, snapshot); return {captured: true, ...predecessors};
+  }
+  const before = salesRead(args.before);
+  if (command !== "cat165-complete") return verifyCat165Preservation(before, snapshot,
+    {phase: command === "cat165-verify-indexed" ? "indexed" : "before"});
+  const manifest = salesRead(args.manifest);
+  const paramsBinding = verifyCat165Params(args["params-file"], salesRead(args["params-provenance"]), salesRead(args["params-binding"]));
+  const deployment = prepareCat165Deployment({manifest, snapshot, paramsBinding});
+  const result = completeCat165Release({before, after: snapshot, manifest,
+    packagePlan: salesRead(args["package-plan"]), indexes: salesRead(args.indexes), deployment, paramsBinding});
+  salesWrite(args["deployment-output"], deployment); salesWrite(args.output, result); return result;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  (process.argv[2]?.startsWith("intake-") ? runIntakePr596ReleaseCli : runSalesPr543ReleaseCli)(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
+  (process.argv[2]?.startsWith("cat165-") ? runCat165ReleaseCli : process.argv[2]?.startsWith("intake-") ? runIntakePr596ReleaseCli : runSalesPr543ReleaseCli)(process.argv.slice(2)).then((result) => console.log(JSON.stringify(result))).catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
   });

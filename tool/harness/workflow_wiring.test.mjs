@@ -3,13 +3,16 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import {spawnSync} from "node:child_process";
+import {createHash} from "node:crypto";
 import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
 import "../ci/required_ci_policy.test.mjs";
+import "../ci/generated_inventories.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
+import {extractSteps} from "./lib/workflow_steps.mjs";
 
 const repositorySnapshot = createRepositorySnapshot();
 const graph = repositorySnapshot.readJson(
@@ -25,6 +28,118 @@ const workflow = (name) => repositorySnapshot.readText(
   {required: true},
 );
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
+
+function captureLabelFixture(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-label-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const step = extractSteps(workflow("flutter-ci.yml")).find(
+    (entry) => entry.name === "Label synthetic RSVP widget captures",
+  );
+  assert.ok(step?.run);
+  // Relocate only the existing absolute fixture roots; execute the real shell
+  // and Python labeler, including its relative nested roots and manifest.
+  const command = step.run.replaceAll("/tmp/catch-", `${root}/legacy/catch-`);
+  const output = path.join(root, "output");
+  const write = (relative, bytes = "synthetic pixels") => {
+    const file = path.join(root, relative);
+    fs.mkdirSync(path.dirname(file), {recursive: true});
+    fs.writeFileSync(file, bytes);
+    return file;
+  };
+  const run = () => spawnSync("bash", ["-e", "-c", command], {
+    cwd: root,
+    encoding: "utf8",
+    env: {...process.env, CAPTURE_OUTPUT_DIR: output, CAPTURE_SHARD_INDEX: "2",
+      GITHUB_SHA: "a".repeat(40), GITHUB_RUN_ID: "123", GITHUB_RUN_ATTEMPT: "4"},
+  });
+  return {root, output, write, run};
+}
+
+test("synthetic capture retention preserves nested themes and existing flat source labels", (t) => {
+  const fixture = captureLabelFixture(t);
+  fixture.write("artifacts/response-detail-review/after/response/light.png", "response light");
+  fixture.write("artifacts/response-detail-review/after/response/dark.png", "response dark");
+  fixture.write("artifacts/ui-captures/audience-person-review/person/light.png", "person light");
+  fixture.write("legacy/catch-event-chat-review/directory-loaded.png", "flat directory");
+  fixture.write("legacy/catch-event-chat-review/nested/ignored.png");
+  fixture.write("artifacts/ui-captures/audience-person-review/person/readme.txt");
+  const result = fixture.run();
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(fs.readFileSync(path.join(fixture.output, "manifest.json"), "utf8"));
+  assert.equal(manifest.sourceSha, "a".repeat(40));
+  assert.equal(manifest.runId, "123");
+  assert.equal(manifest.runAttempt, "4");
+  assert.equal(manifest.shardIndex, "2");
+  assert.match(manifest.label, /synthetic.*not live or visually reviewed/u);
+  assert.deepEqual(manifest.captures.map((entry) => entry.path).sort(), [
+    "audience-person-catalog/person/light.png",
+    "audience-response-catalog/response/dark.png",
+    "audience-response-catalog/response/light.png",
+    "event-chat/directory-loaded.png",
+  ]);
+  for (const entry of manifest.captures) {
+    const expectedSource = entry.path.startsWith("audience-person-")
+      ? "test/ui_captures/fixtures/host_audience_journey_fixture_test.dart"
+      : entry.path.startsWith("audience-response-")
+        ? "test/ui_captures/response_detail_preview_test.dart"
+        : "test/chats/event_chat_directory_widget_test.dart";
+    assert.equal(entry.sourceTest, expectedSource);
+    assert.equal(entry.sha256, createHash("sha256")
+      .update(fs.readFileSync(path.join(fixture.output, entry.path))).digest("hex"));
+  }
+});
+
+test("synthetic capture retention permits absent unselected groups", (t) => {
+  const fixture = captureLabelFixture(t);
+  const result = fixture.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.existsSync(fixture.output), false);
+});
+
+for (const position of ["root", "ancestor", "directory", "file"]) {
+  test(`synthetic capture retention refuses a nested ${position} symlink`, (t) => {
+    const fixture = captureLabelFixture(t);
+    const external = fixture.write("outside/light.png", "must not be retained");
+    const relative = {
+      root: "artifacts/ui-captures/audience-person-review",
+      ancestor: "artifacts/ui-captures",
+      directory: "artifacts/ui-captures/audience-person-review/person",
+      file: "artifacts/ui-captures/audience-person-review/person/light.png",
+    }[position];
+    const link = path.join(fixture.root, relative);
+    fs.mkdirSync(path.dirname(link), {recursive: true});
+    fs.symlinkSync(position === "file" ? external : path.dirname(external), link);
+    const result = fixture.run();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /Refusing symlink capture (?:root|entry)/u);
+    assert.equal(fs.existsSync(path.join(fixture.output, "manifest.json")), false);
+  });
+}
+
+test("complete CI consumers derive source inventories before their semantic checks", () => {
+  const selectedJob = (file, job) => {
+    const source = workflow(file);
+    const start = source.indexOf(`\n  ${job}:\n`);
+    assert.ok(start >= 0, `${file} has ${job}`);
+    const remaining = source.slice(start + 1);
+    const next = remaining.slice(1).search(/\n  [a-zA-Z0-9_-]+:\n/u);
+    return next < 0 ? remaining : remaining.slice(0, next + 1);
+  };
+  for (const [file, job, check] of [
+    ["ci.yml", "source-preflight", "Execute complete source and generation preflight"],
+    ["flutter-ci.yml", "analysis-gates", "Catch UI resolved composition contracts"],
+    ["tools-ci.yml", "affected-tools", "Check affected tools"],
+    ["tools-ci.yml", "tool-buckets", "Check tool categories"],
+  ]) {
+    const source = selectedJob(file, job);
+    const steps = extractSteps(source);
+    const generate = steps.findIndex(step => step.name === "Derive exact-source route and widget inventories");
+    const validate = steps.findIndex(step => step.name === check);
+    assert.ok(generate >= 0 && validate > generate, `${file}/${job} derives before ${check}`);
+    assert.match(steps[generate].run, /node tool\/ci\/generated_inventories\.mjs --source-sha "\$(?:SOURCE_SHA|GITHUB_SHA)"/u);
+    assert.doesNotMatch(steps[generate].run, /\|\| true|--allow|git (?:add|commit|push)/u);
+  }
+});
 const retiredUiWrapperNames = [
   "check_sizing.sh",
   "check_ui_allow_debt.sh",
@@ -171,22 +286,61 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   assert.match(coverageJob, /pattern: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\*/u);
 });
 
-test("Flutter CI runs Consumer and Host package tests as aggregate gates", () => {
+test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequentially", () => {
   const flutter = workflow("flutter-ci.yml");
-  assert.match(flutter, /^  app-package-tests:\n/mu);
-  assert.match(
-    flutter,
-    /working-directory: apps\/consumer\n        run: flutter test --concurrency=1/u,
+  const job = flutter.slice(
+    flutter.indexOf("  app-package-tests:"), flutter.indexOf("  widgetbook:"),
   );
-  assert.match(
-    flutter,
-    /working-directory: apps\/host\n        run: flutter test --concurrency=1/u,
-  );
+  assert.match(job, /^  app-package-tests:\n/mu);
+  assert.doesNotMatch(job, /continue-on-error:|\n    if:|strategy:/u);
+  const steps = extractSteps(`jobs:\n${job}`);
+  for (const [name, directory] of [
+    ["Catch UI package tests", "packages/catch_ui"],
+    ["Consumer package tests", "apps/consumer"],
+    ["Host package tests", "apps/host"],
+  ]) {
+    const matches = steps.filter((step) => step.name === name);
+    assert.equal(matches.length, 1, `${name} must run exactly once`);
+    const [step] = matches;
+    assert.equal(step.workingDirectory, directory);
+    // No filenames, tags or name filters: Flutter discovers the whole package,
+    // including nested and newly added test files.
+    assert.equal(step.run, "flutter test --concurrency=1");
+    assert.equal(step.runnable, true);
+    assert.doesNotMatch(namedStep(job, name), /continue-on-error:|\n        if:/u);
+  }
   assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
-  assert.match(
-    flutter,
-    /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u,
-  );
+
+  const aggregate = extractSteps(flutter)
+    .find((step) => step.name === "Check Flutter CI results");
+  assert.match(namedStep(flutter, "Check Flutter CI results"),
+    /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u);
+  const environment = {
+    ...process.env, TEST_PLAN_RESULT: "success", GATES_RESULT: "success",
+    APP_PACKAGES_RESULT: "success", COVERAGE_RESULT: "success",
+    TESTS_RESULT: "success", WIDGETBOOK_RESULT: "success",
+  };
+  for (const [result, expected] of [["success", 0], ["failure", 1], ["skipped", 1], ["cancelled", 1]]) {
+    const run = spawnSync("bash", ["-e", "-c", aggregate.run], {
+      env: {...environment, APP_PACKAGES_RESULT: result}, encoding: "utf8",
+    });
+    assert.equal(run.status, expected, `${result}: ${run.stderr}`);
+  }
+});
+
+test("Catch UI package source and test changes select the owning Flutter lane", () => {
+  for (const changedPath of [
+    "packages/catch_ui/lib/src/foundations/catch_theme.dart",
+    "packages/catch_ui/test/foundations_test.dart",
+    "packages/catch_ui/test/field_section_contract_test.dart",
+    "packages/catch_ui/test/forms/new_contract_test.dart",
+  ]) {
+    for (const mode of ["pr", "merge_group", "nightly"]) {
+      const plan = planAffected({graph, changedPaths: [changedPath], mode});
+      assert.equal(plan.complete, true, `${mode}: ${changedPath}`);
+      assert.ok(plan.operations.ciTargets.includes("flutter"), `${mode}: ${changedPath}`);
+    }
+  }
 });
 
 test("Flutter new-widget gate consumes the planner's exact reachable base", () => {
@@ -579,7 +733,7 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.match(fastJob, /needs: preflight/u);
   assert.match(
     fastJob,
-    /if: \$\{\{ needs\.preflight\.outputs\.tool_mode == 'full' \}\}/u,
+    /if: \$\{\{ needs\.preflight\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.preflight\.outputs\.tool_mode == 'full' \}\}/u,
   );
   assert.match(fastJob, /timeout-minutes: 3/u);
 
@@ -645,7 +799,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.ok(toolJob);
   assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
-  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
@@ -656,7 +810,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.match(aggregate, /select\(\.value.result != "success" and \.value.result != "skipped"\)/u);
   assert.doesNotMatch(marketingJob, /continue-on-error/u);
   assert.match(tools, /marketing_checks_in_react:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
-  assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 2);
+  assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 3);
   assert.match(namedStep(tools, "Check affected tools"), /--check "\$\{shared_flags\[@\]\}"/u);
   const bucket = namedStep(tools, "Check tool categories");
   assert.match(bucket, /category_flags\+=\(--category "\$category"\)/u);
@@ -1051,6 +1205,61 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
   }
 });
 
+test("Widgetbook first pass selects every package suite and preserves golden obligations", () => {
+  const source = workflow("visual-integration-ci.yml");
+  const steps = extractSteps(source.split("  goldens:\n")[1].split("  native-smoke:\n")[0]);
+  const first = steps.findIndex((step) => step.name === "Widgetbook package suites (pass 1)");
+  const second = steps.findIndex((step) => step.name === "Widgetbook corpus goldens (pass 2, determinism)");
+  assert.ok(first >= 0 && second > first, "whole package precedes primitive determinism pass");
+  assert.equal(steps[first].run, "(cd widgetbook && flutter test --concurrency=1 test)");
+  assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
+  assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
+  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (0.30% raster tolerance)"]) {
+    assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
+  }
+  assert.equal(steps.find((step) => step.name === "Flutter goldens (0.30% raster tolerance)").run,
+    "flutter test --concurrency=1 test/goldens");
+  const upload = namedStep(source, "Retain golden failure diffs");
+  assert.match(upload, /if: failure\(\)/u);
+  assert.match(upload, /uses: actions\/upload-artifact@/u);
+  assert.match(upload, /path: test\/goldens\/failures\//u);
+});
+
+for (const exitCode of [0, 37]) {
+  test(`Widgetbook workflow shell preserves working directory, arguments and exit ${exitCode}`, (t) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "widgetbook-workflow-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const packageRoot = path.join(root, "widgetbook");
+    const bin = path.join(root, "bin");
+    fs.mkdirSync(packageRoot);
+    fs.mkdirSync(bin);
+    const trace = path.join(root, "invocation.json");
+    // This executes the actual workflow shell, not Flutter discovery or rendering.
+    fs.writeFileSync(path.join(bin, "flutter"), `#!/usr/bin/env node
+require("node:fs").writeFileSync(process.env.TRACE, JSON.stringify({cwd: process.cwd(), args: process.argv.slice(2)}));
+process.exit(Number(process.env.FAKE_FLUTTER_EXIT));
+`, {mode: 0o755});
+    const steps = extractSteps(workflow("visual-integration-ci.yml"));
+    for (const [name, target, cwd] of [
+      ["Widgetbook package suites (pass 1)", "test", packageRoot],
+      ["Widgetbook corpus goldens (pass 2, determinism)", "test/primitive_goldens_test.dart", packageRoot],
+      ["Flutter goldens (0.30% raster tolerance)", "test/goldens", root],
+    ]) {
+      const step = steps.find((entry) => entry.name === name);
+      assert.ok(step?.run, name);
+      fs.rmSync(trace, {force: true});
+      const result = spawnSync("bash", ["-e", "-c", step.run], {cwd: root, encoding: "utf8",
+        env: {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+          TRACE: trace, FAKE_FLUTTER_EXIT: String(exitCode)},
+      });
+      assert.equal(result.status, exitCode, `${name}: ${result.stderr}`);
+      assert.deepEqual(JSON.parse(fs.readFileSync(trace, "utf8")), {
+        cwd: fs.realpathSync(cwd), args: ["test", "--concurrency=1", target],
+      });
+    }
+  });
+}
+
 test("headless journeys start independently of macOS rendering and native smoke", () => {
   const source = workflow("visual-integration-ci.yml");
   const headless = source.split("  headless-journeys:\n")[1]?.split("  goldens:\n")[0];
@@ -1062,7 +1271,7 @@ test("headless journeys start independently of macOS rendering and native smoke"
   const goldens = source.split("  goldens:\n")[1].split("  native-smoke:\n")[0];
   const native = source.split("  native-smoke:\n")[1];
   assert.match(goldens, /flutter test --concurrency=1 test\/goldens/u);
-  assert.match(goldens, /Widgetbook corpus goldens \(pass 1\)/u);
+  assert.match(goldens, /Widgetbook package suites \(pass 1\)/u);
   assert.match(goldens, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
   assert.match(goldens, /git diff --exit-code/u);
   assert.match(native, /bash tool\/test_app_shell_integration.sh macos smoke/u);
@@ -1090,22 +1299,79 @@ test("backend integration runs strict execution inside both emulators with a bou
   assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 
-test("capture freshness has a required Node-only lane independent of React rendering", () => {
+test("canonical native captures reach consumers before dependency setup and builds", () => {
   const ci = workflow("ci.yml");
   const capture = workflow("capture-freshness-ci.yml");
   const react = workflow("react-surface-validation.yml");
-  assert.match(ci, /capture_freshness: \$\{\{ steps.plan.outputs.capture_freshness \}\}/u);
-  assert.match(ci, /if: \$\{\{ needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
+  assert.match(capture, /uses: \.\/\.github\/workflows\/marketing-captures.yml/u);
+  assert.match(capture, /automatic_source_sha: \$\{\{ github.sha \}\}/u);
+  assert.match(capture, /value: \$\{\{ jobs.freshness.outputs.capture_binding \}\}/u);
+  assert.match(ci, /needs: \[plan, source-preflight, capture-freshness\]/u);
+  assert.match(ci, /capture_binding: \$\{\{ needs.capture-freshness.outputs.capture_binding \}\}/u);
+  assert.doesNotMatch(react, /capture_freshness_in_ci/u);
   for (const id of ["finalize-plan", "package-firebase", "required"]) {
     const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
     assert.match(job, /- capture-freshness\n/u, id);
   }
-  assert.match(capture, /node tool\/marketing\/sync_website_media.mjs --check/u);
-  assert.match(capture, /node tool\/marketing\/export_app_screenshots.mjs --check-design-json/u);
-  assert.doesNotMatch(capture, /npm ci|flutter pub get|setup-flutter|continue-on-error/u);
-  assert.match(ci, /surface: marketing\n      capture_freshness_in_ci: true/u);
-  assert.equal(react.match(/inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci/gu)?.length, 2);
-  assert.match(react, /capture_freshness_in_ci:[\s\S]*?default: false/u);
+  for (const file of ["react-surface-validation.yml", "_web-hosting-build.yml", "tools-ci.yml"]) {
+    const source = workflow(file);
+    const marker = "      - name: Import verified exact-source marketing captures";
+    const parts = source.split(marker).slice(1);
+    assert.equal(parts.length, file === "tools-ci.yml" ? 2 : 1, file);
+    for (const part of parts) {
+      assert.ok(part.indexOf("--import") < part.indexOf("npm ci"), file);
+      assert.match(part.split(/\n      - /u)[0], /CAPTURE_BINDING:/u);
+      assert.doesNotMatch(part.split(/\n      - /u)[0], /continue-on-error|\|\| true/u);
+    }
+  }
+  for (const file of ["react-surface-validation.yml", "_web-hosting-build.yml"]) {
+    const source = workflow(file);
+    assert.match(source, /run: node tool\/marketing\/import_hosted_captures.mjs --check-dist/u);
+    if (file === "_web-hosting-build.yml") assert.ok(source.indexOf("--check-dist") < source.indexOf("node tool/ci/package_web_hosting.mjs prepare"));
+  }
+});
+
+function captureJobCondition(file, id, context) {
+  const block = workflow(file).split(`\n  ${id}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0];
+  const raw = block.match(/^    if: (?:>-\n)?([\s\S]*?)(?=\n    (?:uses|runs-on):)/mu)?.[1].trim();
+  assert.ok(raw, `${file}/${id} condition`);
+  const expression = raw.replace(/^\$\{\{\s*|\s*\}\}$/gu, "").replace(/needs\.([\w-]+)/gu, 'needs["$1"]');
+  return vm.runInNewContext(expression, {cancelled: () => false, format: (_, value) => String(value), ...context});
+}
+
+test("capture consumer dependency expressions reject failed producers and stale plans without duplicate renders", () => {
+  const context = {github: {run_attempt: 2}, inputs: {capture_binding: ""}, needs: {
+    plan: {outputs: {producer_attempt: "2", capture_freshness: "true", marketing: "true", tools: "true"}},
+    "source-preflight": {result: "success"}, "capture-freshness": {result: "success"},
+    preflight: {result: "success", outputs: {producer_attempt: "2", tool_mode: "affected", capture_required: "true"}},
+    captures: {result: "success"}, "fast-gates": {result: "success"},
+  }};
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), true);
+  assert.equal(captureJobCondition("ci.yml", "tools", context), true);
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), true);
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), true);
+  context.inputs.capture_binding = "immutable binding";
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
+  context.needs.captures.result = "skipped";
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), true);
+  context.needs.captures.result = "failure";
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), false);
+  context.needs["capture-freshness"].result = "failure";
+  assert.equal(captureJobCondition("ci.yml", "tools", context), false);
+  context.needs.preflight.outputs.producer_attempt = "1";
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), false);
+  context.inputs.capture_binding = "";
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
+  context.needs.plan.outputs.producer_attempt = "1";
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), false);
+  context.needs.plan.outputs.producer_attempt = "2";
+  context.needs.plan.outputs.capture_freshness = "false";
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), true, "marketing still needs fresh bytes");
+  context.needs.plan.outputs.marketing = "false";
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), false);
+  context.needs.preflight.outputs.producer_attempt = "2";
+  context.needs.preflight.outputs.capture_required = "false";
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
 });
 
 test("cancelling admission or a validation run makes every aggregate job terminal", () => {
@@ -1208,4 +1474,37 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
     assert.match(job, /- source-preflight/u);
   }
   assert.match(ci.slice(ci.indexOf("  required:\n")), /source-preflight.*result/u);
+});
+
+test("Tools check shells independently request capture and inventory producer proofs", context => {
+  const source = workflow("tools-ci.yml");
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-tool-flags-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(root, "node"), `#!${process.execPath}\nconsole.log(JSON.stringify({args:process.argv.slice(2),binding:process.env.CAPTURE_BINDING}));\n`, {mode: 0o755});
+  for (const name of ["Check affected tools", "Check tool categories"]) {
+    const step = extractSteps(source).find(s => s.name === name);
+    const declaration = namedStep(source, name);
+    assert.match(declaration, /CAPTURE_BINDING: \$\{\{ inputs.capture_binding \|\| needs.captures.outputs.capture_binding \}\}/u);
+    assert.match(declaration, /CAPTURE_REQUIRED:/u);
+    if (name === "Check tool categories") {
+      assert.match(declaration, /matrix.name == 'marketing-design'/u);
+      assert.match(declaration, /INVENTORY_MATERIALIZED: "true"/u);
+    } else {
+      assert.match(declaration, /INVENTORY_MATERIALIZED: \$\{\{ needs.preflight.outputs.repository_view != 'index' \}\}/u);
+    }
+    for (const [required, inventory] of [["true", "true"], ["false", "true"], ["false", "false"], ["true", "false"]]) {
+      const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
+        ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
+        INVENTORY_MATERIALIZED: inventory, CAPTURE_REQUIRED: required, CAPTURE_BINDING: "exact-binding-sentinel", MARKETING_CHECKS_IN_REACT: "true",
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+      }});
+      assert.equal(result.status, 0, result.stderr);
+      const actual = JSON.parse(result.stdout);
+      assert.equal(actual.args.includes("--marketing-captures-imported"), required === "true");
+      assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
+      assert.ok(actual.args.includes("--marketing-checks-in-react"));
+      assert.equal(actual.binding, "exact-binding-sentinel");
+    }
+  }
+  assert.doesNotMatch(extractSteps(source).find(step => step.name === "Resolve affected tool checks").run, /--marketing-captures-imported|--generated-inventories-materialized/u);
 });

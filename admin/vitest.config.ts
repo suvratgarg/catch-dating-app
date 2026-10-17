@@ -20,7 +20,7 @@ export default mergeConfig(
             env: {
               VITE_ADMIN_DATA_MODE: "sample",
             },
-            include: ["src/**/*.test.{ts,tsx}"],
+            include: ["src/**/*.test.{ts,tsx}", ".storybook/preview.test.ts"],
             mockReset: true,
             restoreMocks: true,
           },
