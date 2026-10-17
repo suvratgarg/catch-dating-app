@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {parseCommonArgs} from "./cli_args.mjs";
+import {parseCommonArgs, parseRecomputeArgs} from "./cli_args.mjs";
 
 test("common arguments preserve command fields while accepting standard option syntax", () => {
   assert.deepEqual(
@@ -113,5 +113,52 @@ test("the fourteen common migration and intake commands retain the shared parser
       /parseCommonArgs.*cli_args\.mjs|cli_args\.mjs.*parseCommonArgs/su,
       path,
     );
+  }
+});
+
+test("recompute arguments preserve the six legacy fields and literal values", () => {
+  const empty = {env: null, project: null, emulatorHost: null,
+    apply: false, json: false, help: false};
+  assert.deepEqual(parseRecomputeArgs([]), empty);
+  for (const flag of ["--env", "--project", "--emulator-host"]) {
+    const field = {"--env": "env", "--project": "project", "--emulator-host": "emulatorHost"}[flag];
+    for (const value of ["-h", "-x", "-", "a=b", "  ", "项目"]) {
+      assert.deepEqual(parseRecomputeArgs([flag, value]), {...empty, [field]: value});
+    }
+    assert.equal(parseRecomputeArgs([flag, "first", flag, "last"])[field], "last");
+  }
+  assert.deepEqual(parseRecomputeArgs(["--apply", "--json", "-h", "--help"]),
+    {...empty, apply: true, json: true, help: true});
+  assert.equal(parseRecomputeArgs(["--emulator-host", "custom", "--emulator"]).emulatorHost,
+    "127.0.0.1:8080");
+  assert.equal(parseRecomputeArgs(["--emulator", "--emulator-host", "custom"]).emulatorHost,
+    "custom");
+});
+
+test("recompute arguments reject broader common syntax with legacy errors", () => {
+  for (const arg of ["--allow-prod", "--confirm-prod", "--env=dev", "--project=x",
+    "--emulator-host=x", "--apply=true", "--json=false", "--", "-hh", "value", "--unknown"]) {
+    for (const prefix of [[], ["--help"]]) {
+      assert.throws(() => parseRecomputeArgs([...prefix, arg]),
+        {message: `Unknown argument: ${arg}`});
+    }
+  }
+  for (const flag of ["--env", "--project", "--emulator-host"]) {
+    for (const tail of [[], [""], ["--apply"], ["--"]]) {
+      assert.throws(() => parseRecomputeArgs([flag, ...tail]),
+        {message: `${flag} requires a value.`});
+    }
+  }
+  // Narrowing the adapter must not narrow existing common-parser consumers.
+  assert.equal(parseCommonArgs(["--project=x", "--allow-prod", "-hh"]).allowProd, true);
+});
+
+test("all four recompute commands use the shared bounded parser", () => {
+  for (const name of ["club_host_profiles", "club_member_counts",
+    "event_aggregate_counts", "review_author_profiles"]) {
+    const source = fs.readFileSync(`tool/data/recompute_${name}.mjs`, "utf8");
+    assert.match(source, /import \{isMain, parseRecomputeArgs\} from "\.\.\/lib\/cli_args\.mjs"/u);
+    assert.match(source, /const args = parseRecomputeArgs\(argv\)/u);
+    assert.doesNotMatch(source, /function (?:parseArgs|requireValue)\(/u);
   }
 });
