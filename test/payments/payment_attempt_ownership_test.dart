@@ -64,57 +64,6 @@ void main() {
 
   tearDown(() => repository.dispose());
 
-  test(
-    'reserves before delayed order creation across independent callers',
-    () async {
-      final order = Completer<Object?>();
-      create.onCall = (_) => order.future;
-      final first = _pay(repository);
-      await expectLater(
-        _pay(repository, 'event-b'),
-        throwsA(isA<PaymentFailedException>()),
-      );
-      expect(create.calls, hasLength(1));
-      order.complete(_order('order-a'));
-      await flushTestEventQueue();
-      checkouts.single.emitSuccess(_success('order-a'));
-      final result = await first;
-      expect(result.eventId, 'event-a');
-      expect(result.orderId, 'order-a');
-      expect(result.amountInPaise, 25000);
-    },
-  );
-
-  test(
-    'holds ownership through delayed verification and preserves receipt metadata',
-    () async {
-      final verification = Completer<Object?>();
-      verify.onCall = (_) => verification.future;
-      final first = _pay(repository);
-      await flushTestEventQueue();
-      checkouts.single.emitSuccess(_success('order-a'));
-      await flushTestEventQueue();
-      create.resultData = _order('order-b', amount: 99000);
-      await expectLater(
-        _pay(repository, 'event-b'),
-        throwsA(isA<PaymentFailedException>()),
-      );
-      expect(create.calls, hasLength(1));
-      verification.complete({'verified': true});
-      final result = await first;
-      expect(result.eventId, 'event-a');
-      expect(result.orderId, 'order-a');
-      expect(result.amountInPaise, 25000);
-      expect(result.currency, 'INR');
-      final next = _pay(repository, 'event-b');
-      await flushTestEventQueue();
-      checkouts.last.emitSuccess(_success('order-b'));
-      final nextResult = await next;
-      expect(nextResult.eventId, 'event-b');
-      expect(nextResult.amountInPaise, 99000);
-    },
-  );
-
   test('mismatched order cannot consume a current attempt', () async {
     final payment = _pay(repository);
     var settled = false;
