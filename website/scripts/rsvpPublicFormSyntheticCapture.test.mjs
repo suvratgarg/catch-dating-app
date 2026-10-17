@@ -167,3 +167,18 @@ test("domain runner bytes must match the committed renderer snapshot", async (t)
   await writeFile(runner, "uncommitted fixture mutation");
   assert.throws(() => assertPinnedDomainRunner(root, runner), /exact committed source/);
 });
+
+
+test("missing and nonserializable payloads remain visible as rejected transport attempts", async () => {
+  const circular = {}; circular.self = circular;
+  const throwing = {toJSON() {throw new Error("Cannot serialize fixture payload");}};
+  for (const payload of [undefined, null, circular, 1n, throwing]) {
+    for (const [method, name] of [["getPublicOrganizerForm", "get"],
+      ["beginOrganizerFormResponse", "begin"], ["saveOrganizerFormResponseDraft", "save"],
+      ["submitOrganizerFormResponse", "submit"]]) {
+      const api = domainServiceFixture();
+      await assert.rejects(api[method](payload));
+      assert.deepEqual(api.calls, [{name, payload: null}]);
+    }
+  }
+});

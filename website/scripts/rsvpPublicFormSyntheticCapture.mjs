@@ -56,7 +56,14 @@ export function domainServiceFixture() {
   let draft = null;
   let receipt = null;
   const clone = (value) => JSON.parse(JSON.stringify(value));
-  const record = (name, payload) => calls.push({name, payload: clone(payload)});
+  const record = (name, payload) => {
+    // Even malformed inputs must remain observable in denied-host controls.
+    const attempt = {name, payload: null};
+    calls.push(attempt);
+    try {attempt.payload = clone(payload);} catch {
+      throw new Error("Malformed synthetic transport payload");
+    }
+  };
   const requirePublic = (payload) => {
     if (payload.publicFormId !== form.publicFormId || payload.sourceToken !== null) throw new Error("Wrong synthetic form owner");
   };
