@@ -1,17 +1,20 @@
 ---
 doc_id: component_contract_registry
-version: 1.6.0
-updated: 2026-09-03
+version: 1.7.0
+updated: 2026-10-17
 owner: ui_elevation_initiative
 status: active
 ---
 
 # Component Contract Registry
 
-`catch.components.json` is the cross-tool contract layer for Catch UI
-primitives. Flutter remains the implementation source of truth; this registry
-names the public component contract that Figma, Claude Design, future Code
-Connect templates, docs, and validators should agree on.
+`catch.components.json` is the cross-tool and cross-framework contract layer
+for Catch UI components. Each contract owns its component's behavior,
+accessibility, states, and API for every framework that implements it. The
+Flutter implementation in `packages/catch_ui` is the reference implementation,
+`@catch/web-ui` implements the same contracts for React, and Figma, Claude
+Design, future Code Connect templates, docs, and validators agree on the same
+contract (blueprint D11, ratified 2026-10-17).
 
 The registry deliberately describes component APIs, states, slots, token
 dependencies, handoff names, and concept identity. A top-level contract is not
@@ -39,6 +42,61 @@ from `dart.symbol` and requires that exact generated Widgetbook component, so
 the decision cannot be satisfied by prose. A `waiver` is only for a temporary
 gap with a named owner, a specific reason, and a review expiry.
 
+## Identity
+
+A component's identity is its `catch.*` id in this registry, and no other file
+assigns component identity. Every implementation, in Flutter or React, binds to
+that id. The React registries (`design/web-ui/components.json`,
+`design/admin/components.json`, `design/website/components.json`) own only
+their surface's routes, sections, and surface-specific components; blueprint
+Phase 7 points their shared entries at `catch.*` ids and merges the web-ui
+registry into this one. Cross-framework naming is binding in the Cross-Framework
+Names subsection of `docs/app_architecture.md`.
+
+## Parity Tiers
+
+Every component declares a `tier`. The L0–L6 ladder in
+`docs/app_architecture.md` says what a component may depend on; the tier says
+which frameworks must implement it and how closely they must match. One rule
+holds in every tier: **the same responsibility uses the same component on every
+surface.** Tiers only decide when the React implementation has to exist.
+
+| Tier | Implemented in | Rule |
+|---|---|---|
+| T0 Tokens | Generated for both from `design/tokens/catch.tokens.json` | Not a registry tier. No surface defines its own token values. |
+| `T1` Universal | Flutter and `@catch/web-ui`, now | Every surface that renders the responsibility uses it; no local substitutes. |
+| `T2` Product | Flutter now; React when a web surface first needs it | The first web need builds the React implementation in `@catch/web-ui`, never a local copy. |
+| `T3` Native-only | Flutter only | Mobile chrome, native maps, Riverpod adapters. A web need is a registry review that promotes the entry to T2, never a local port. |
+| `T4` Surface-specific | One surface | That surface's own responsibility, built from T0–T2 parts and never imported by another surface. Promote it when a second surface needs it. |
+
+`CatchIconTile` and `CatchControlSurface` are T1 but internal: they are matched
+through the T1 components that render them and are not exported to apps.
+
+`node tool/design/check_component_contracts.mjs` rejects a missing tier, a React
+surface mapping on a T3 or T4 entry, and a member whose tier is wider than its
+parent concept's.
+
+### What T1 and T2 implementations must match
+
+- The symbol name, recipes, and variant, size, tone, and status values.
+- The state set the contract lists: default, hover or pressed, focus,
+  disabled, loading, error.
+- Token bindings for color, type, radius, spacing, and motion.
+- Measured metrics within a tolerance: minimum height, padding, touch target,
+  radius.
+- Accessibility: role, label source, focus order, and the baseline above (text
+  scale 2.0, reduced motion, Light and Dark).
+- Copy ownership: callers pass resolved copy in both frameworks.
+
+They may differ in text rasterization, hover (web) versus press (touch)
+feedback, platform-native pickers, keyboards, and scroll physics, and in how
+motion is implemented as long as duration and curve tokens match.
+
+Blueprint Phase 7 makes this executable: each framework's catalog must cover
+every recipe and state, each entry has a screenshot baseline in its own
+framework, a generated side-by-side sheet joins the two catalogs on registry
+id, and metrics are asserted from the same contract values in both test suites.
+
 ## Files
 
 | File | Purpose |
@@ -50,8 +108,8 @@ gap with a named owner, a specific reason, and a review expiry.
 ## Workflow
 
 1. Add or change the Flutter primitive in `packages/catch_ui/lib/src`.
-2. Update the matching contract entry here, including props, states, slots, and
-   DTCG token references. Confirm its accessibility policy preserves primary
+2. Update the matching contract entry here, including its `tier`, props,
+   states, slots, and DTCG token references. Confirm its accessibility policy preserves primary
    meaning and actions at text scale 2.0 and does not depend on motion.
 3. Add or revise the governance decision. Prefer static enforcement when a
    misuse pattern is mechanically detectable; otherwise use executable

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.77.0
-updated: 2026-10-16
+version: 1.78.0
+updated: 2026-10-17
 owner: app_architecture
 status: active
 ---
@@ -113,6 +113,11 @@ in the shared package. Connectivity and rehearsal state remain app callers.
   `_screen|_controller|_view_model|_state|_repository|_service|_providers`
   or a role-noun widget suffix; one primary public widget per shared-library
   file.
+- Cross-framework: a registered concept keeps the same symbol and prop names
+  in Flutter and React (`CatchButton`, `variant`, `onPressed` in both); no
+  surface name (`Admin`, `Website`, ...) on a shared component. The registry
+  `tier` (T1–T4, `design/components/README.md`) decides which frameworks must
+  implement it.
 
 ### Migration Protocol v2 (a slice is done only when all five hold)
 
@@ -2739,6 +2744,50 @@ or implementation technique cannot justify a second shared implementation.
 - **State objects.** `<Surface>State` (provider-free), `<Surface>ViewModel`
   (provider-owned composition), `<Surface>Controller` (mutations/flows), as
   contracted elsewhere in this document.
+
+### Cross-Framework Names
+
+Ratified 2026-10-17 (blueprint D9–D14). The grammar above also governs React
+components in `@catch/web-ui` and the React surfaces; this subsection adds only
+what differs between frameworks. Component identity and parity tiers are owned
+by the component registry (`design/components/README.md`).
+
+- **One symbol.** A registered concept has the same public name in Dart and
+  TypeScript, derived from its `roleNoun` and `naming.useCase`: `CatchButton`
+  in `catch_ui` and `CatchButton` exported from `@catch/web-ui`. The `Catch`
+  prefix marks a catalog component at React call sites, as it does in Flutter.
+- **One API vocabulary.** Contract props, slots, states and enum values use the
+  registry names in both frameworks, callbacks included (`onPressed`, not
+  `onClick`). Enum axes become string-union props with the same name and
+  values (`variant="primary"`). A Flutter named constructor is a `recipe` prop
+  in React (`CatchBadge.live` is `recipe="live"`), typed as a discriminated
+  union so each recipe accepts only its own `constructorProps`.
+- **No surface names on shared components.** `Admin`, `Website`, `Marketing`,
+  `Host` and `Consumer` never appear in a T1–T3 symbol. Density or scale
+  differences are a prop or a scope, never a second component.
+- **One role-noun vocabulary.** React names use the closed list above. Common
+  React nouns map onto it: Card and Panel become Surface or Tile; Shell, Frame,
+  Workspace and Workbench become Scaffold or Layout; Grid and Stack become
+  Layout, or SectionList when they order sections; List becomes RowList or
+  SectionList; Toolbar and Topbar become TopBar or Header; Rail and Strip
+  become TabBar, StepFlow or Layout; Label, Eyebrow and Caption become Text.
+- **Surface-specific (T4) components** never use the `Catch` prefix and end in a
+  closed role noun (`<Feature><RoleNoun>`). A surface prefix (`AdminQueueRow`)
+  is allowed but carries no meaning: the folder scopes the component, and no
+  other surface imports it.
+- **Catalog ids.** Widgetbook and Storybook entries for a registered concept
+  are keyed `<registry id>/<recipe>-<state>` (for example
+  `catch.button/primary-loading`), so the two catalogs join on id.
+- **Files.** Shared React components live one primary public component per file
+  at `packages/web-ui/src/components/<Symbol>.tsx` and are exported only
+  through the package index. `*Control` exports are package internals, retired
+  as styled `Catch*` components replace them.
+- **Banned qualifiers** (`Custom`, `New`, `Modern`, `Legacy`, `Old`, version
+  qualifiers such as `V2`) apply in both frameworks.
+
+React exports that predate this subsection migrate under blueprint Phase 7,
+which also adds the executable checks. Until those checks land, reviewers
+apply the subsection to new and moved React code.
 
 ## Cross-Feature Behavior
 

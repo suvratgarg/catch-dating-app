@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.19.0
-updated: 2026-09-15
+version: 1.20.0
+updated: 2026-10-17
 owner: app_architecture
 status: active
 ---
@@ -16,6 +16,10 @@ state/controller bundling, and enforcement — and where does Catch deviate from
 that standard?* It then packages the deviations as a Codex delivery program
 whose completion criteria are mechanical, so migrations cannot silently finish
 incomplete.
+
+The 2026-10-17 cross-framework extension (D9–D14, Phase 7) applies the same
+program to the React surfaces (`website/`, `admin/`, `packages/web-ui`), so
+Flutter and React implement one component contract under one name.
 
 It is a point-in-time plan, not a parallel architecture document. Durable rules
 ratified here are folded into `docs/app_architecture.md` (and the widget
@@ -335,7 +339,8 @@ Re-verify these before executing any phase; date-stamped audits are snapshots.
 ## Part 3 — Target Decisions
 
 Each decision is final once the owner approves this spec; alternatives are
-recorded to prevent re-litigation. **Status: D1–D8 ratified by the owner on
+recorded to prevent re-litigation. **Status: D9–D14 (cross-framework extension) ratified by the owner on
+2026-10-17. D1–D8 ratified by the owner on
 2026-09-04, including the D3 catalog-charter amendment below.**
 
 ### D1. Extract `packages/catch_tokens` and `packages/catch_ui`
@@ -548,6 +553,65 @@ workflow (rule, manifest, owner-doc anchor, and probe removed together).
 Target: net negative check count for this program. New checks added: golden
 coverage, source-size ratchet, naming grammar, catalog generation drift —
 four in, more than four out.
+
+### Cross-framework extension (D9–D14, ratified 2026-10-17)
+
+Measured on 2026-10-17 against registry v4: five files assigned component
+identity (`catch.components.json` with 65 contracts, plus the web-ui, admin,
+website and shared-adoption registries); 10 of the 65 contracts had a React
+mapping, each carrying up to four names (`CatchButton`, `Button`,
+`AdminButton`, `ButtonControl`); 149 of admin's 235 "shared primitive" entries
+belong to a single feature family; 231 of 312 shared React exports end in a
+noun outside the closed role-noun list; and six Flutter concept names fell
+outside the grammar (`CatchEventCard`, `CatchCoverStory`,
+`CatchActivityMapPin`, `CatchMapPreview`, `CatchRosterTable`,
+`ChatInputBar`). D12 brings `CatchRosterTable` inside the spelling rule, but
+its API still names the roster domain concept. The ratified tier model (registry `tier`, T1–T4) is owned by
+`design/components/README.md`; the naming rules by the Cross-Framework Names
+subsection of `docs/app_architecture.md`.
+
+### D9. Strict cross-framework identity
+
+A registered concept has the same symbol and the same prop, slot, state, enum
+and callback names in Flutter and React: `CatchButton` with `variant`,
+`size` and `onPressed` in both. Flutter named constructors are a typed
+`recipe` prop in React. Rejected alternative: idiomatic React names
+(`Button`, `onClick`) with a per-concept mapping table, because the mapping is
+one more registry that drifts.
+
+### D10. `@catch/web-ui` ships styled components
+
+The shared React package moves from headless `*Control` components with
+per-surface styled adapters to styled `Catch*` components. Surface differences
+such as admin density are a prop or a scope. Adapters are deleted as each
+surface adopts the shared component. Rejected alternative: keep the headless
+split, because per-surface styling is where cross-surface visual drift lives.
+
+### D11. The registry contract owns behavior
+
+`sourceOfTruth.behavior` names the registry contract as the owner of behavior,
+accessibility, layout and state for every framework; Flutter is the reference
+implementation. Rejected alternative: Flutter code as the source of truth,
+which keeps React a permanent port.
+
+### D12. `Table` joins the role nouns
+
+`Table` is added now for a new T1 `catch.table` concept that serves admin's
+`DataTable` family and the host roster table. `Chart` and a desktop-navigation
+noun wait until a second surface needs them.
+
+### D13. Panel folds into Surface; metrics wait for the inventory
+
+`WEB-SHARED-PANEL-001` moves from `keep_surface_specific` to `planned`: panel
+and card containment become `CatchSurface` recipes. `WEB-SHARED-METRIC-001`
+stays separate until the Phase 7 inventory compares both anatomies against
+`CatchMetricSection`.
+
+### D14. The event page matches at screen level
+
+`catch.event_detail_sections` becomes a cross-framework screen contract: the
+web event page and the app's event detail render the same sections in the same
+order, because it is the one page both frameworks render for the same person.
 
 ## Part 4 — Delivery Program
 
@@ -1247,6 +1311,57 @@ through its production controller and host, and scaled preferred-size geometry
 through the production scaffold, top bar and tab rail. These direct previews
 cover empty/published notices and direct/nested header reservation at both themes
 and text scales. The remaining conformance and consolidation lanes stay open.
+
+### Phase 7 — Cross-framework conformance (React)
+
+Every slice obeys Migration Protocol v2. Phase 7b may start now; 7c–7f start in
+order, each after the owner closes the previous gate.
+
+**Phase 7a (landed 2026-10-17):** D9–D14 ratified; registry `tier` added to all
+65 contracts with a contract-check rule (missing tier, React mapping on T3/T4,
+member wider than its parent) and seeded tests; `Table` role noun; registry
+`sourceOfTruth.behavior` per D11; Cross-Framework Names in
+`docs/app_architecture.md`; tiers and parity invariants in
+`design/components/README.md`; ratified target in
+`docs/web_surface_architecture.md`; D13 recorded in the adoption tracker.
+
+**Phase 7b — Flutter names first.** Rename the five remaining off-grammar
+concepts (`CatchEventCard`, `CatchCoverStory`, `CatchActivityMapPin`,
+`CatchMapPreview`, `ChatInputBar`), re-home `CatchRosterRow` and `CatchRosterTable` as feature widgets (their
+APIs name the roster domain concept), and fill `level` and `roleNoun` for the
+nine concept entries that lack them. React copies Flutter names under D9, so
+this precedes any React naming. DoD: no registry concept outside
+`Catch[<UseCase>]<RoleNoun>`; old symbols deleted; workspace analyze green.
+
+**Phase 7c — One registry for React identity.** Replace the `surfaces` name
+map with per-framework implementation records (symbol and file), add
+`tsType` beside `dartType`, merge `design/web-ui/components.json` into the
+registry, and point admin and website registry entries for T1–T2
+responsibilities at `catch.*` ids. Reclassify the 149 admin feature-family
+entries from `shared-primitive` to feature components. DoD: one file assigns
+component identity; the lexicon, coverage and sync tools read the new records.
+
+**Phase 7d — Generated React inventory.** A deterministic scan of
+`website/`, `admin/` and `packages/web-ui` maps every exported component to
+a registry concept, a T4 owner, or deletion. It confirms or rejects the
+name-match duplicates found on 2026-10-17 (for example `AdminTag` and
+`TagList` against `CatchChip`, `StatusBanner` against `CatchBanner`) and
+settles D13's metric comparison. Inventory output stays in ignored local
+output, per AGENTS.md. DoD: zero unmapped exports.
+
+**Phase 7e — T1 in `@catch/web-ui`.** Build each T1 concept (plus
+`catch.table`) as a styled `Catch*` component under the Cross-Framework
+Names rules, then move admin and website onto it, deleting each adapter and
+`*Control` export in the same slice. DoD per concept: no surface-local
+substitute remains; the old adapter is deleted and both apps typecheck and
+build.
+
+**Phase 7f — Executable parity.** Catalog coverage (every recipe × state in
+both Widgetbook and Storybook, keyed by registry id); per-framework screenshot
+baselines; a generated side-by-side review sheet; contract metrics asserted in
+both test suites; a check that new React shared exports follow Cross-Framework
+Names; and the D14 event-page screen contract. T2 components are then built as
+web surfaces first need them. DoD: each check ships with a seeded failing probe.
 
 ### Work packet template (every Codex slice)
 
