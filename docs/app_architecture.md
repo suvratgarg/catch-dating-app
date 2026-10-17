@@ -113,6 +113,9 @@ in the shared package. Connectivity and rehearsal state remain app callers.
   `_screen|_controller|_view_model|_state|_repository|_service|_providers`
   or a role-noun widget suffix; one primary public widget per shared-library
   file.
+- Name a widget what an agent that has never seen it would write; record the
+  other likely names as registry `aliases` so the new-widget gate can point
+  at it.
 - Cross-framework: a registered concept keeps the same symbol and prop names
   in Flutter and React (`CatchButton`, `variant`, `onPressed` in both); no
   surface name (`Admin`, `Website`, ...) on a shared component. The registry
@@ -2663,7 +2666,50 @@ or implementation technique cannot justify a second shared implementation.
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
-  AsyncBoundary, Table.
+  AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
+  Preview, Dock, Map, Pin, Thumbnail.
+- **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
+  names, use the one an agent that has never seen the component would most
+  likely write. The role-noun list follows the nouns agents actually use: a
+  noun joins when agents use it (or it is the obvious name of a registered
+  component) and it names a responsibility no existing role covers; a synonym
+  of an existing role redirects to that role instead. Every registered
+  component and role noun records `aliases`, the other names an agent would
+  plausibly write. The generated catalog and context pack index them, and the
+  new-widget gate rejects a new widget whose name matches an existing
+  component's name or alias with a pointer to that component (blueprint Phase
+  7b delivers the alias data and gate).
+- **Nouns added 2026-10-17.** Card: one entity's bounded summary that usually
+  opens it, rendered through a material (Ticket, Poster, Polaroid) or Surface.
+  Body: the content composition of one screen or page below its chrome
+  (`CatchPageBody` still owns page insets). List: a vertical collection of
+  rows; it replaces RowList, which retires in Phase 7b. Step: one stage of a
+  multi-stage flow. Editor: edits one structured value made of several fields.
+  Rail: a single-line, horizontally scrolling collection. Picker: chooses a
+  value through a dedicated chooser such as a city, date or photo picker. Grid:
+  a two-dimensional arrangement of equal cells. Preview: a compact read-only
+  rendition of something shown in full elsewhere. Dock: persistent bottom
+  controls; `CatchDockSurface` becomes `CatchDock` in Phase 7b. Map: a map
+  view. Pin: a mark anchored to a map coordinate. Thumbnail: a small
+  representative image of one entity, with a fallback. `Workspace` joins
+  `Screen` as a route-level suffix.
+- **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
+  containment); Page is Step (a flow stage) or Body (a tab or pager page);
+  Content, Overview and View are Body; Strip and Carousel are Rail; Rows is
+  List; AppBar, Toolbar and Topbar are TopBar; InputBar and Composer are Input;
+  ActionBar and BottomBar are Dock; Line is Text or Row; Entry and Item are Row,
+  Tile or Card; Container, Box, Wrapper, Shell and Frame are Surface, Scaffold
+  or Layout; Modal and Popup are Dialog or Sheet; Toast and Snackbar are
+  Notice; Spinner and Loader are Indicator; Tag and Pill are Chip; Label,
+  Eyebrow and Caption are Text; Stack is Layout or SectionList; Sliver is the
+  role's `.sliver` named constructor; Controller is reserved for state
+  controllers, never a widget.
+- **Materials and bindings.** A domain-free visual material (`CatchTicket`,
+  `CatchPoster`, `CatchTable`) lives in the design system in both
+  frameworks. A feature binding maps domain data onto it under the name an
+  agent would write (`EventCard`, `ClubCard`, `ParticipantTable`), one per
+  framework with the same name. A new entity card binds an existing material;
+  it never draws its own geometry.
 - **Role selection.** Classify the public responsibility, not a child it
   happens to render. Menu owns commands/choices; Surface owns token-backed
   paint and containment; Input owns editing mechanics; Text owns display-only

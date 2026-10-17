@@ -124,7 +124,7 @@
         "TabScaffold", "Poster", "Polaroid", "Ticket", "Gap", "Inset", "Divider",
         "Avatar", "Photo", "Cover", "Stepper", "StepFlow", "Accordion", "Drawer",
         "Overlay", "Viewport", "Layout", "Action", "Menu", "Surface", "Input", "Text", "Image", "Scope", "AsyncBoundary",
-        "Table"
+        "Table", "Card", "Body", "List", "Step", "Editor", "Rail", "Picker", "Grid", "Preview", "Dock", "Map", "Pin", "Thumbnail"
       ]
     },
     "widgetNaming": {
