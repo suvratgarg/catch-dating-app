@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import preview from "../../.storybook/preview";
+import preview from "./preview";
 
 describe("Admin Storybook accessibility gate", () => {
   it("fails the browser suite on accessibility violations", () => {
