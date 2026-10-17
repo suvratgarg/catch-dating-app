@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'event_editor_preview.dart';
 
 const _field = HostResponseQueryField(
   questionId: 'city',
@@ -234,15 +234,18 @@ Widget responseQueryWorkspacePreview(BuildContext context) => _frame(
   path: '[P1 product surfaces]/Host operations/RSVP review',
 )
 Widget eventOfferReviewPreview(BuildContext context) => _frame(
-  HostEventOfferReviewSection(
-    controller: HostEventOfferController(_PreviewOfferGateway()),
-    draft: _draft,
-    eventTitle: 'Sunday run',
-    contactLabel: (_) => 'Maya',
-    eventStartsAt: DateTime.utc(2026, 10, 4),
-    now: () => DateTime.utc(2026, 9, 24),
-    commitRequestId: 'preview_request_001',
-    copy: _offerCopy,
+  eventOfferPreview(
+    _PreviewOfferGateway(),
+    HostEventOfferReviewSection(
+      scope: previewOfferScope,
+      draft: _draft,
+      eventTitle: 'Sunday run',
+      contactLabel: (_) => 'Maya',
+      eventStartsAt: DateTime.utc(2026, 10, 4),
+      now: () => DateTime.utc(2026, 9, 24),
+      commitRequestId: 'preview_request_001',
+      copy: _offerCopy,
+    ),
   ),
 );
 
@@ -252,13 +255,16 @@ Widget eventOfferReviewPreview(BuildContext context) => _frame(
   path: '[P1 product surfaces]/Host operations/RSVP review',
 )
 Widget manualPaymentReviewPreview(BuildContext context) => _frame(
-  HostManualPaymentReviewSection(
-    controller: HostEventOfferController(_PreviewOfferGateway()),
-    offer: _offer,
-    copy: _offerCopy,
-    referenceRequestId: 'preview_reference_001',
-    reviewRequestId: 'preview_review_001',
-    onUpdated: (_) {},
+  eventOfferPreview(
+    _PreviewOfferGateway(),
+    HostManualPaymentReviewSection(
+      scope: previewOfferScope,
+      offer: _offer,
+      copy: _offerCopy,
+      referenceRequestId: 'preview_reference_001',
+      reviewRequestId: 'preview_review_001',
+      onUpdated: (_) {},
+    ),
   ),
 );
 

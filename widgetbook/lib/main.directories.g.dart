@@ -4515,6 +4515,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventDetailRouteSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Walking and running route expectations',
+                builder: _widgetbook_workspace_events_catalog_social
+                    .eventDetailRouteSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailSocialSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10102,6 +10112,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailBodyStates,
                   ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading composition',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailLoadingStates,
+                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
@@ -10259,6 +10275,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRecordMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Available record commands',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerRecordMenuStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerRevenueBreakdown',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10310,6 +10337,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerTimelineStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerWhatsappHandoffSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'WhatsApp handoff draft',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerWhatsappHandoffSheetStates,
                   ),
                 ],
               ),
@@ -10964,6 +11002,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'PrivateEventContentSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Optional itinerary and artwork',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventContentSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PrivateEventCreateScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -11022,6 +11071,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostEventOfferWorkspaceBodySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Offer review ready',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferPrepared,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventOfferWorkspaceContentSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11063,12 +11123,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_event_offer_use_cases
                             .hostOfferTargetEmpty,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Offer review ready',
-                    builder:
-                        _widgetbook_workspace_hosts_host_event_offer_use_cases
-                            .hostOfferPrepared,
                   ),
                   _widgetbook.WidgetbookUseCase(
                     name: 'Offer target loading',

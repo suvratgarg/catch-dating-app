@@ -22,6 +22,79 @@ import {
 
 const scriptPath = fileURLToPath(new URL("./check_doc_metadata.mjs", import.meta.url));
 
+for (const mode of ["working tree", "ref", "base"]) {
+  test(`CLI ${mode} reads fail locally when a promised document blob is missing`, () => {
+    const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "catch-doc-promisor-"));
+    const repo = path.join(fixture, "repo");
+    const receipt = path.join(fixture, "remote-invoked");
+    const env = {
+      ...process.env,
+      PATH: `${fixture}${path.delimiter}${process.env.PATH}`,
+      GIT_CONFIG_GLOBAL: os.devNull,
+      GIT_CONFIG_NOSYSTEM: "1",
+      GIT_TERMINAL_PROMPT: "0",
+      GIT_NO_LAZY_FETCH: "0",
+      GIT_OPTIONAL_LOCKS: "1",
+      CATCH_DOC_TEST_RECEIPT: receipt,
+    };
+    const fixtureGit = (args) => execFileSync("git", args, {cwd: repo, env, encoding: "utf8"});
+    const args = mode === "ref" ? ["--ref", "HEAD"] : mode === "base" ? ["--base", "HEAD"] : [];
+    const run = () => spawnSync(process.execPath, [scriptPath, "--repo", repo, ...args, "--json"], {
+      env, encoding: "utf8", timeout: 10000,
+    });
+    try {
+      fs.mkdirSync(repo);
+      // This protocol can only leave a receipt and refuse; it has no network destination.
+      fs.writeFileSync(path.join(fixture, "git-remote-denydocs"),
+        '#!/bin/sh\nprintf invoked > "$CATCH_DOC_TEST_RECEIPT"\nexit 1\n', {mode: 0o755});
+      fixtureGit(["init", "-q"]);
+      fixtureGit(["config", "user.email", "test@example.com"]);
+      fixtureGit(["config", "user.name", "Catch Test"]);
+      fixtureGit(["config", "core.hooksPath", os.devNull]);
+      fixtureGit(["config", "commit.gpgSign", "false"]);
+      writeDoc(repo, "1.2.0", "active");
+      fixtureGit(["add", "."]);
+      fixtureGit(["commit", "-qm", "local document"]);
+      fixtureGit(["config", "remote.origin.url", "denydocs::fixture"]);
+      fixtureGit(["config", "remote.origin.promisor", "true"]);
+      fixtureGit(["config", "remote.origin.partialclonefilter", "blob:none"]);
+      const blob = fixtureGit(["rev-parse", "HEAD:docs/sample.md"]).trim();
+      const documentPath = path.join(repo, "docs/sample.md");
+      if (mode === "working tree") {
+        fixtureGit(["update-index", "--skip-worktree", "docs/sample.md"]);
+        fs.unlinkSync(documentPath);
+      }
+      const complete = run();
+      assert.equal(complete.status, 0, complete.stderr);
+      assert.equal(JSON.parse(complete.stdout).pass, true);
+      assert.equal(fs.existsSync(receipt), false);
+      const preservedPaths = [".git/index", ".git/config", ".git/HEAD"];
+      if (mode !== "working tree") preservedPaths.push("docs/sample.md");
+      const before = preservedPaths.map((relative) => fs.readFileSync(path.join(repo, relative)));
+      fs.unlinkSync(path.join(repo, ".git/objects", blob.slice(0, 2), blob.slice(2)));
+
+      // Prove the fixture would actually attempt retrieval without the production guard.
+      const control = spawnSync("git", ["show", "HEAD:docs/sample.md"], {
+        cwd: repo, env, encoding: "utf8", timeout: 10000,
+      });
+      assert.equal(control.status, 128, control.stderr);
+      assert.equal(fs.readFileSync(receipt, "utf8"), "invoked");
+      fs.unlinkSync(receipt);
+
+      const missing = run();
+      assert.equal(missing.status, 1, missing.stderr);
+      assert.match(missing.stderr, /bad object|unable to read|missing|invalid object/u);
+      assert.equal(fs.existsSync(receipt), false, "documentation reads must not invoke the promisor helper");
+      for (const [index, relative] of preservedPaths.entries()) {
+        assert.deepEqual(fs.readFileSync(path.join(repo, relative)), before[index], relative);
+      }
+      if (mode === "working tree") assert.equal(fs.existsSync(documentPath), false);
+    } finally {
+      fs.rmSync(fixture, {recursive: true, force: true});
+    }
+  });
+}
+
 test("source frontmatter is the sole governed Markdown authority", () => {
   const source = `---
 doc_id: release_operations

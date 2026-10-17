@@ -236,6 +236,27 @@ export const organizerApplicationDocumentSchema: Record<string, unknown> = {
         }
       }
     },
+    "approvalNotificationBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "approvedAtMillis"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Server-owned approval occurrence. Note-only review edits retain it; a new approval transition replaces it."
+    },
     "reviewedAt": {
       "anyOf": [
         {

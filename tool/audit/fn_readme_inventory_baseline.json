@@ -2,7 +2,7 @@
   "owner": "backend_operation_catalog",
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
   "version": 1,
-  "updated": "2026-07-02",
+  "updated": "2026-10-17",
   "description": "Current functions README inventory debt baseline. Normal scanner runs fail on exported functions not listed here.",
   "allowedFindings": [
     {
@@ -12,10 +12,6 @@
     {
       "rule": "missingReadmeFunction",
       "function": "adminDecideAccessApplication"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "adminDecideClubClaim"
     },
     {
       "rule": "missingReadmeFunction",
@@ -71,18 +67,6 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "createPublicClubReview"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "createStripeCheckoutSession"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "createStripeHostOnboardingLink"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "decideEventJoinRequest"
     },
     {
@@ -103,19 +87,11 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "generateClubLogoThumbnail"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "getHostAnalytics"
     },
     {
       "rule": "missingReadmeFunction",
       "function": "getUserAnalytics"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "listPublicClubReviews"
     },
     {
       "rule": "missingReadmeFunction",
@@ -155,19 +131,7 @@
     },
     {
       "rule": "missingReadmeFunction",
-      "function": "refreshStripeHostPaymentAccount"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "requestClubClaim"
-    },
-    {
-      "rule": "missingReadmeFunction",
       "function": "setReviewResponse"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "startClubHostConversation"
     },
     {
       "rule": "missingReadmeFunction",
@@ -184,10 +148,6 @@
     {
       "rule": "missingReadmeFunction",
       "function": "syncHostProfile"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "transferClubOwnership"
     }
   ]
 }

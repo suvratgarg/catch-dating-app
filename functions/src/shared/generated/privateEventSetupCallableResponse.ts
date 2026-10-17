@@ -4,6 +4,7 @@
 
 import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
 import type {EventPaymentTerms} from "./eventPaymentTerms";
+import type {UploadedPhoto} from "./uploadedPhoto";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
 
 export interface PrivateEventSetupCallableResponse {
@@ -183,6 +184,27 @@ export interface PrivateEventSetupCallableResponse {
     };
     distanceKm?: number | null;
     pace?: ("easy" | "moderate" | "fast" | "competitive") | null;
+    /**
+     * @maxItems 40
+     */
+    itinerary?: {
+      id: string;
+      kind: "gather" | "activity" | "stop" | "break" | "transition" | "finish";
+      offsetMinutes: number;
+      durationMinutes?: number | null;
+      title: string;
+      description?: string | null;
+      location?: {
+        name: string;
+        address?: string | null;
+        placeId?: string | null;
+        latitude: number;
+        longitude: number;
+        notes?: string | null;
+      } | null;
+      routeDistanceMeters?: number | null;
+    }[];
+    eventPhotos?: UploadedPhoto[];
   };
   publicationReadiness?: {
     canPublish: boolean;

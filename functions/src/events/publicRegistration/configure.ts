@@ -19,7 +19,7 @@ import {readRegistrationManager} from "./authority";
 import {canonicalJson} from "../eventSetupPreferences/resolve";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {
-  assertPublicRegistrationPolicy,
+  assertPublicRegistrationAvailability,
   registrationUnavailable,
 } from "./policy";
 
@@ -95,7 +95,7 @@ export async function configureEventRegistration(input: {
     }
     const now = (input.nowMillis ?? Date.now)();
     if (command.mode !== "closed") {
-      assertPublicRegistrationPolicy(event, organizer, command.mode, now);
+      assertPublicRegistrationAvailability(event, organizer, command.mode, now);
       if (
         command.mode === "paid" &&
         (await readSeatMigrationWriterFence({

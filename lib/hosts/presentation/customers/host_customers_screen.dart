@@ -402,9 +402,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 HostCustomersSummary(
                                   summary: summary,
                                   newCustomerCount: newCustomerCount,
-                                  onRetry: () => ref.invalidate(
-                                    hostCrmSummaryProvider(selectedClub.id),
-                                  ),
+                                  onRetry: () =>
+                                      _refreshPeopleCounts(selectedClub.id),
                                   selectedFilter:
                                       _manualTags.isEmpty &&
                                           effectiveFilters.length <= 1 &&
@@ -511,9 +510,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                       .loadMore()
                                 : null,
                             onRefreshCoverage: () {
-                              ref.invalidate(
-                                hostCrmSummaryProvider(selectedClub.id),
-                              );
+                              _refreshPeopleCounts(selectedClub.id);
                               ref.invalidate(
                                 hostCustomersDirectoryControllerProvider(
                                   request,
@@ -676,12 +673,24 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       queryParameters: {'organizerId': club.id},
     );
     if (!mounted || created == null) return;
-    ref.invalidate(hostCrmSummaryProvider(club.id));
+    _refreshPeopleCounts(club.id);
     ref.invalidate(hostCustomersDirectoryControllerProvider(request));
     _openCustomerById(
       club,
       created.contactId,
       displayName: created.displayName,
+    );
+  }
+
+  void _refreshPeopleCounts(String organizerId) {
+    ref.invalidate(hostCrmSummaryProvider(organizerId));
+    ref.invalidate(
+      hostCustomerSegmentCountProvider(
+        HostCustomerSegmentCountRequest(
+          organizerId: organizerId,
+          filter: HostCustomerFilter.newToOrganizer,
+        ),
+      ),
     );
   }
 

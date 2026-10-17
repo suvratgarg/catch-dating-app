@@ -20,6 +20,8 @@ const manualQueueOwners = new Set([
   "lib/hosts/presentation/inbox/host_sends_workspace.dart",
 ]);
 const permissionCollectionReviewers = new Set([
+  // Rechecks organizer withdrawals inside the approval delivery transaction.
+  "functions/src/events/approvalNotifications/facts.ts",
   "functions/src/events/eventAttendees.ts",
   "functions/src/organizers/campaignDeliveryWorker.ts",
   "functions/src/messaging/participantMessagingPreferences.ts",

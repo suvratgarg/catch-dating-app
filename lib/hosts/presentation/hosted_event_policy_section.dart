@@ -227,7 +227,8 @@ class HostedEventPolicySection extends StatelessWidget {
           contractValueBuilder: (preset) => switch (preset) {
             EventAdmissionPreset.openCapacity => 'open',
             EventAdmissionPreset.inviteOnly => 'inviteOnly',
-            EventAdmissionPreset.requestToJoin => 'manualApproval',
+            EventAdmissionPreset.requestToJoin ||
+            EventAdmissionPreset.requestToJoinMembersExempt => 'manualApproval',
             EventAdmissionPreset.balancedSingles => 'balancedRatio',
           },
           values: EventAdmissionPreset.values,

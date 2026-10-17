@@ -1,21 +1,21 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_domain_classes.mjs
+// Then run: dart run build_runner build
+//
+// Data shape emitted from contracts/shared/event_common.schema.json (#/definitions/eventMeetingLocation).
+// Derived behavior, if any, lives in a hand-written companion extension file.
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+// Hand-written derived behavior for this data shape lives in the
+// companion file below; it is re-exported so consumers of this file
+// keep seeing those getters/helpers/types unchanged.
+export 'event_meeting_location_extensions.dart';
 
 part 'event_meeting_location.freezed.dart';
 part 'event_meeting_location.g.dart';
 
-/// Canonical meeting-location object embedded in `events/{eventId}.meetingLocation`
-/// (and accepted by event callables). Mirrors the
-/// `eventMeetingLocation` definition in
-/// `contracts/shared/event_common.schema.json`.
-///
-/// The legacy meeting-point/string + scalar coordinate fields remain as
-/// synchronized mirrors for released-client compatibility. New writes use
-/// [EventMeetingLocation] as the canonical value, and the Event decoder may
-/// promote only a complete, valid legacy mirror pair.
 @freezed
 abstract class EventMeetingLocation with _$EventMeetingLocation {
-  const EventMeetingLocation._();
-
   const factory EventMeetingLocation({
     required String name,
     String? address,
@@ -27,42 +27,4 @@ abstract class EventMeetingLocation with _$EventMeetingLocation {
 
   factory EventMeetingLocation.fromJson(Map<String, dynamic> json) =>
       _$EventMeetingLocationFromJson(json);
-
-  /// Reconstructs a meeting location from legacy `meetingPoint` plus
-  /// `startingPoint{Lat,Lng}` fields. Returns null if the legacy record cannot
-  /// satisfy the required named exact-location invariant.
-  static EventMeetingLocation? legacy({
-    required String name,
-    required double? latitude,
-    required double? longitude,
-    String? notes,
-  }) {
-    final normalizedName = name.trim();
-    if (normalizedName.isEmpty || latitude == null || longitude == null) {
-      return null;
-    }
-    return EventMeetingLocation(
-      name: normalizedName,
-      latitude: latitude,
-      longitude: longitude,
-      notes: _trimToNull(notes),
-    );
-  }
-
-  EventMeetingLocation normalized() {
-    return EventMeetingLocation(
-      name: name.trim(),
-      address: _trimToNull(address),
-      placeId: _trimToNull(placeId),
-      latitude: latitude,
-      longitude: longitude,
-      notes: _trimToNull(notes),
-    );
-  }
-}
-
-String? _trimToNull(String? value) {
-  final normalized = value?.trim();
-  if (normalized == null || normalized.isEmpty) return null;
-  return normalized;
 }

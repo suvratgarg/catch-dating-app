@@ -1694,6 +1694,11 @@
           "path": "test/architecture/generated_provider_family_test.dart",
           "role": "ProviderContainer proof that equivalent query keys and generated override contracts remain stable across the reference adopters",
           "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_event_offer_workspace_state.dart",
+          "role": "URI-linked workspace notifier part: immutable Freezed state and scoped dependency contract for the generated workspace controller; not a provider-free UI projection",
+          "status": "aligned"
         }
       ],
       "exceptions": [

@@ -27,7 +27,10 @@ export const organizerMomentSweep = onSchedule(
       // replaced the legacy sendEventReminders cron), then plan/fire.
       await ensureEventDefaultMoments();
       const summary = await runMomentSweep(buildMomentRunnerDeps());
-      if (summary.runsFired + summary.runsCreated +
+      if (summary.momentsFailed + summary.runsFailed > 0) {
+        logger.warn("Moment sweep completed with isolated failures",
+          {...summary});
+      } else if (summary.runsFired + summary.runsCreated +
           summary.runsSuperseded + summary.runsSkipped +
           summary.runsDeferred > 0) {
         logger.info("Moment sweep completed", {...summary});
