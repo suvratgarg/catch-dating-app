@@ -30,6 +30,7 @@ class _PagedGroups extends HostSavedAudienceRepository {
     int limit = ReadLimitPolicy.historyPage,
     bool byName = true,
     bool? isStatic,
+    bool Function()? isCurrent,
   }) async {
     calls++;
     if (cursor != null) return continuation.future;
@@ -168,6 +169,7 @@ class _RefreshingGroups extends HostSavedAudienceRepository {
     int limit = ReadLimitPolicy.historyPage,
     bool byName = true,
     bool? isStatic,
+    bool Function()? isCurrent,
   }) {
     requests.add(cursor);
     if (requests.length == 1) {

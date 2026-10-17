@@ -7,6 +7,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   test('disposed exhaustive directory never requests the next page', () async {
     final repository = _Pages();
@@ -130,7 +132,7 @@ void main() {
       subscription.close();
       await container.pump();
       repository.releaseFirst();
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
       await container.pump();
       expect(repository.requests, [null]);
     },
@@ -178,7 +180,7 @@ void main() {
       subscription.close();
       await container.pump();
       repository.releaseFirst();
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
       await container.pump();
       expect(repository.requests, [null]);
     },
