@@ -204,13 +204,187 @@ void main() {
     expect(fixture.router.state.name, Routes.hostCreateEventScreen.name);
     expect(fixture.router.state.pathParameters['clubId'], 'org-a');
     expect(find.text('Create destination'), findsOneWidget);
+    final draftReadsBeforeReturn = fixture.draftReads.length;
     fixture.attention.version = 'created-elsewhere';
     fixture.router.pop();
     await pumpFeatureUi(tester);
     fixture.expectRetained(tester, originalState);
     expect(fixture.events.active, hasLength(2));
     expect(fixture.taskIds(tester), ['created-elsewhere']);
+    expect(fixture.draftReads, hasLength(draftReadsBeforeReturn + 1));
   });
+
+  testWidgets('detached-to-resumed notification does not refetch', (
+    tester,
+  ) async {
+    final fixture = _Fixture();
+    await fixture.mount(tester);
+    final originalState = fixture.todayState(tester);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.detached);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpFeatureUi(tester);
+    fixture.expectRetained(tester, originalState);
+    expect(fixture.events.active, hasLength(1));
+  });
+
+  testWidgets('duplicate route and resume notifications do not refetch', (
+    tester,
+  ) async {
+    final fixture = _Fixture();
+    await fixture.mount(tester);
+    final originalState = fixture.todayState(tester);
+    fixture.router.goNamed(Routes.hostTodayScreen.name);
+    await pumpFeatureUi(tester);
+    expect(fixture.events.active, hasLength(1));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpFeatureUi(tester);
+    expect(fixture.events.active, hasLength(2));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    fixture.router.goNamed(Routes.hostTodayScreen.name);
+    await pumpFeatureUi(tester);
+    fixture.expectRetained(tester, originalState);
+    expect(fixture.events.active, hasLength(2));
+  });
+
+  testWidgets(
+    'resume while another destination covers Today waits for return',
+    (tester) async {
+      final fixture = _Fixture();
+      await fixture.mount(tester);
+      final originalState = fixture.todayState(tester);
+      unawaited(
+        fixture.router.pushNamed<void>(
+          Routes.hostClubPaymentsScreen.name,
+          queryParameters: {'clubId': 'org-a'},
+        ),
+      );
+      await pumpFeatureUi(tester);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await pumpFeatureUi(tester);
+      expect(fixture.events.active, hasLength(1));
+      fixture.router.pop();
+      await pumpFeatureUi(tester);
+      fixture.expectRetained(tester, originalState);
+      expect(fixture.events.active, hasLength(2));
+    },
+  );
+
+  testWidgets('retry retires a pending evaluation of the same Today family', (
+    tester,
+  ) async {
+    final fixture = _Fixture();
+    final held = Completer<_EventPage>();
+    fixture.events.holdNextActive = held;
+    await fixture.mount(tester, loading: true);
+    final originalState = fixture.todayState(tester);
+    try {
+      tester.widget<HostTodayBody>(find.byType(HostTodayBody)).onRetry();
+      await pumpFeatureUi(tester);
+      expect(fixture.events.active, hasLength(2));
+      expect(fixture.events.history, hasLength(1));
+      held.complete(const _EventPage(items: [], hasMore: false));
+      await pumpFeatureUi(tester);
+      fixture.expectRetained(tester, originalState);
+      expect(fixture.display(tester).featuredEvent?.id, 'org-a-event');
+      expect(fixture.events.history, hasLength(1));
+      expect(fixture.attention.organizers, ['org-a']);
+      expect(fixture.outbox.accounts, ['actor-a']);
+    } finally {
+      if (!held.isCompleted) {
+        held.complete(const _EventPage(items: [], hasMore: false));
+        await pumpFeatureUi(tester);
+      }
+    }
+  });
+
+  testWidgets('leaving the workspace retires a held create continuation', (
+    tester,
+  ) async {
+    final fixture = _Fixture();
+    await fixture.mount(tester);
+    await fixture.retainDraftScopes(tester);
+    final originalState = fixture.todayState(tester);
+    await fixture.openCreateSheet(tester);
+    await tester.tap(
+      find.byKey(const ValueKey('host-event-entry-createEvent')),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('Create destination'), findsOneWidget);
+    final draftsBeforeExit = List<String>.of(fixture.draftReads);
+    // Remove the covered workspace while retaining the real pushed route,
+    // then complete that route after its initiating Today State is disposed.
+    fixture.workspaceVisible.value = false;
+    await pumpFeatureUi(tester);
+    expect(originalState.mounted, isFalse);
+    fixture.router.pop();
+    await pumpFeatureUi(tester);
+    expect(
+      find.byType(HostTodayLoadedRoute, skipOffstage: false),
+      findsNothing,
+    );
+    expect(fixture.draftReads, draftsBeforeExit);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final scope in ['actor', 'organizer']) {
+    for (final returnToA in [false, true]) {
+      testWidgets('held create choice rejects old $scope '
+          '${returnToA ? 'ABA' : 'A-B'} continuation', (tester) async {
+        final fixture = _Fixture();
+        await fixture.mount(tester);
+        final originalState = fixture.todayState(tester);
+        await fixture.openCreateSheet(tester);
+        await fixture.changeScope(tester, scope, toB: true);
+        if (returnToA) {
+          await fixture.changeScope(tester, scope, toB: false);
+        }
+        final readsBeforeChoice = List<_Read>.of(fixture.events.active);
+        await tester.tap(
+          find.byKey(const ValueKey('host-event-entry-createEvent')),
+        );
+        await pumpFeatureUi(tester);
+        fixture.expectRetained(tester, originalState);
+        expect(fixture.router.state.name, Routes.hostTodayScreen.name);
+        expect(find.text('Create destination'), findsNothing);
+        expect(fixture.events.active, readsBeforeChoice);
+      });
+
+      testWidgets('held create route refreshes only current $scope '
+          '${returnToA ? 'ABA' : 'A-B'} on return', (tester) async {
+        final fixture = _Fixture();
+        await fixture.mount(tester);
+        await fixture.retainDraftScopes(tester);
+        final originalState = fixture.todayState(tester);
+        await fixture.openCreateSheet(tester);
+        await tester.tap(
+          find.byKey(const ValueKey('host-event-entry-createEvent')),
+        );
+        await pumpFeatureUi(tester);
+        expect(find.text('Create destination'), findsOneWidget);
+        await fixture.changeScope(tester, scope, toB: true, covered: true);
+        if (returnToA) {
+          await fixture.changeScope(tester, scope, toB: false, covered: true);
+        }
+        final readsBeforeReturn = fixture.events.active.length;
+        final draftsBeforeReturn = List<String>.of(fixture.draftReads);
+        fixture.router.pop();
+        await pumpFeatureUi(tester);
+        fixture.expectRetained(tester, originalState);
+        expect(fixture.events.active, hasLength(readsBeforeReturn + 1));
+        expect(fixture.draftReads, draftsBeforeReturn);
+        expect(
+          fixture.events.active.last.organizerId,
+          scope == 'organizer' && !returnToA ? 'org-b' : 'org-a',
+        );
+        expect(
+          fixture.outbox.accounts.last,
+          scope == 'actor' && !returnToA ? 'actor-b' : 'actor-a',
+        );
+      });
+    }
+  }
 
   for (final scope in ['actor', 'organizer']) {
     for (final returnToA in [false, true]) {
@@ -272,8 +446,10 @@ void main() {
 }
 
 class _Fixture {
+  final workspaceVisible = ValueNotifier(true);
   final events = _Events();
   final attention = _Attention();
+  final draftReads = <String>[];
   final outbox = _OutboxStore();
   final identities = StreamController<String?>.broadcast();
   late GoRouter router;
@@ -297,7 +473,14 @@ class _Fixture {
         StatefulShellRoute.indexedStack(
           builder: (_, _, shell) {
             navigation = shell;
-            return Scaffold(body: shell);
+            return Scaffold(
+              body: ValueListenableBuilder<bool>(
+                valueListenable: workspaceVisible,
+                builder: (_, visible, child) =>
+                    visible ? child! : const SizedBox.shrink(),
+                child: shell,
+              ),
+            );
           },
           branches: [
             production.branches.first,
@@ -326,6 +509,7 @@ class _Fixture {
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
       router.dispose();
+      workspaceVisible.dispose();
       await identities.close();
     });
     await tester.pumpWidget(
@@ -347,7 +531,10 @@ class _Fixture {
               ]),
             ),
           for (final org in ['org-a', 'org-b']) ...[
-            clubEventDraftsProvider(clubId: org).overrideWith((_) async => []),
+            clubEventDraftsProvider(clubId: org).overrideWith((_) async {
+              draftReads.add(org);
+              return [];
+            }),
             fetchClubProvider(org).overrideWithValue(const AsyncData(null)),
             watchEventProvider(
               '$org-event',
@@ -402,10 +589,31 @@ class _Fixture {
     expect(tester.takeException(), isNull);
   }
 
+  Future<void> retainDraftScopes(WidgetTester tester) async {
+    for (final org in ['org-a', 'org-b']) {
+      final subscription = container.listen(
+        clubEventDraftsProvider(clubId: org),
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
+    }
+    await pumpFeatureUi(tester);
+  }
+
+  Future<void> openCreateSheet(WidgetTester tester) async {
+    tester.widget<HostTodayBody>(find.byType(HostTodayBody)).onCreateEvent();
+    await pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('host-event-entry-createEvent')),
+    );
+    await pumpFeatureUi(tester);
+  }
+
   Future<void> changeScope(
     WidgetTester tester,
     String scope, {
     required bool toB,
+    bool covered = false,
   }) async {
     if (scope == 'actor') {
       identities.add(toB ? 'actor-b' : 'actor-a');
@@ -415,6 +623,7 @@ class _Fixture {
           .select(toB ? 'org-b' : 'org-a');
     }
     await pumpFeatureUi(tester);
+    if (covered) return;
     final route = tester.widget<HostTodayLoadedRoute>(
       find.byType(HostTodayLoadedRoute),
     );
