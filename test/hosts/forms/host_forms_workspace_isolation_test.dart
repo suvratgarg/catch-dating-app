@@ -302,7 +302,7 @@ void main() {
     );
   });
 
-  for (final action in ['Archive', 'Delete draft']) {
+  for (final action in ['Archive form', 'Delete draft']) {
     testWidgets('$action requires current confirmation and dispatches once', (
       tester,
     ) async {
@@ -323,13 +323,13 @@ void main() {
       await tester.tap(confirm);
       await _frames(tester);
       expect(h.repo.mutations, [
-        action == 'Archive' ? 'lifecycle:a' : 'delete:a',
+        action == 'Archive form' ? 'lifecycle:a' : 'delete:a',
       ]);
       expect(tester.takeException(), isNull);
     });
   }
 
-  for (final action in ['Archive', 'Delete draft']) {
+  for (final action in ['Archive form', 'Delete draft']) {
     for (final change in ['organizerABA', 'actorABA', 'clubsABA', 'liveAuth']) {
       testWidgets('$action confirmation cannot dispatch after $change', (
         tester,
@@ -365,7 +365,7 @@ void main() {
           );
           final pending = Completer<HostFormEditor>();
           h.repo.duplicateResult = pending;
-          await _rowAction(tester, 'Duplicate');
+          await _rowAction(tester, 'Duplicate form');
           expect(h.repo.mutations, ['duplicate:a']);
           await h.change(tester, change);
           final uri = h.uri;
