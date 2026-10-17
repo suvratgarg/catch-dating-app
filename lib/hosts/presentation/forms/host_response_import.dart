@@ -13,7 +13,7 @@ extension _HostResponseImport on _HostFormsScreenState {
       final table = await ref
           .read(hostApplicationsControllerProvider)
           .pickImportFile();
-      if (table == null || !current()) return;
+      if (!mounted || table == null || !current()) return;
       final draft = buildHostApplicationImportDraft(table);
       final confirmed = await showCatchBottomSheet<bool>(
         context: context,
@@ -62,7 +62,7 @@ extension _HostResponseImport on _HostFormsScreenState {
           ),
         ),
       );
-      if (confirmed != true || !current()) return;
+      if (!mounted || confirmed != true || !current()) return;
       final imported = await ref
           .read(hostApplicationsControllerProvider)
           .importDraft(
@@ -72,10 +72,10 @@ extension _HostResponseImport on _HostFormsScreenState {
             consentVersion: 'host-applications-v1',
             retentionCopy: context.l10n.hostApplicationsRetentionCopy,
           );
-      if (!current()) return;
+      if (!mounted || !current()) return;
       ref.invalidate(hostApplicationsDirectoryControllerProvider);
       ref.invalidate(hostFormResponsesControllerProvider);
-      if (current()) {
+      if (mounted && current()) {
         _completeResponseImport();
         showCatchNotice(
           context,
@@ -86,15 +86,15 @@ extension _HostResponseImport on _HostFormsScreenState {
         );
       }
     } on HostApplicationImportException catch (error) {
-      if (current()) {
+      if (mounted && current()) {
         showCatchNotice(context, _applicationImportIssue(context, error));
       }
     } on HostRosterImportException catch (error) {
-      if (current()) {
+      if (mounted && current()) {
         showCatchNotice(context, _rosterImportIssue(context, error.issue));
       }
     } on Object catch (error) {
-      if (current()) {
+      if (mounted && current()) {
         showCatchNoticeError(
           context,
           error,

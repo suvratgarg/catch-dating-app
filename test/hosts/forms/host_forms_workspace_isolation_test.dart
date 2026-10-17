@@ -530,12 +530,23 @@ class _Harness {
         actors.add('host');
       case 'clubsABA':
         clubs.add([buildClub(id: 'b', ownerUserId: 'host')]);
-        await flushTestEventQueue();
+        await tester.idle();
+        final fallback = container.read(hostOperableClubsProvider('host'));
+        expect(fallback.isLoading, isFalse);
+        expect(fallback.hasError, isFalse);
+        expect(fallback.requireValue.map((club) => club.id), ['b']);
         clubs.add([
           buildClub(id: 'a', ownerUserId: 'host'),
           buildClub(id: 'b', ownerUserId: 'host'),
         ]);
-        await flushTestEventQueue(); // Both resolved changes before a frame.
+        await tester.idle();
+        final restored = container.read(hostOperableClubsProvider('host'));
+        expect(restored.isLoading, isFalse);
+        expect(restored.hasError, isFalse);
+        expect(
+          restored.requireValue.map((club) => club.id),
+          unorderedEquals(['a', 'b']),
+        ); // Both resolved changes are observed before a frame.
       case 'liveAuth':
         auth.uid = 'other'; // The observed UID deliberately remains host.
     }
@@ -639,7 +650,7 @@ class _Repository extends Fake implements HostFormsRepository {
   @override
   Future<HostFormPage> listForms(HostFormListRequest request) async {
     forms.add(request);
-    expect(request.limit, 25);
+    expectSync(request.limit, 25);
     if (request.organizerId == heldOrganizer) return heldForms!.future;
     return _page(request.organizerId);
   }
@@ -649,7 +660,7 @@ class _Repository extends Fake implements HostFormsRepository {
     HostFormResponseListRequest request,
   ) async {
     responses.add(request);
-    expect(request.limit, 25);
+    expectSync(request.limit, 25);
     final held = heldResponses[request.organizerId];
     if (held != null) return held.future;
     return HostFormResponsePage(
@@ -710,7 +721,7 @@ class _Importer extends Fake implements HostApplicationsController {
     required String retentionCopy,
   }) async {
     imports.add(organizerId);
-    expect(draft.rows, [
+    expectSync(draft.rows, [
       ['Asha Mehta'],
     ]);
     return nextAck == null ? _receipt : nextAck!.future;
