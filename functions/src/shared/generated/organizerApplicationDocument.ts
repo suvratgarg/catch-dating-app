@@ -47,6 +47,13 @@ export interface OrganizerApplicationDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Server-owned approval occurrence. Note-only review edits retain it; a new approval transition replaces it.
+   */
+  approvalNotificationBasis?: {
+    revision: number;
+    approvedAtMillis: number;
+  };
   reviewedAt: {
     _seconds: number;
     _nanoseconds: number;

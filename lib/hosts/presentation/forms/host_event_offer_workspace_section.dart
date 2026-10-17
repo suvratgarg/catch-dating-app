@@ -13,13 +13,15 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_que
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/experimental/scope.dart';
 
 part 'host_event_offer_workspace_copy.dart';
 
 /// One manager's reviewed query selection. No offer is prepared from a list
 /// label alone: every selected response is read again and the materialized
 /// query hash is rechecked after the event choice and an inline return.
-class HostEventOfferWorkspaceSection extends StatefulWidget {
+class HostEventOfferWorkspaceSection extends StatelessWidget {
   const HostEventOfferWorkspaceSection({
     super.key,
     required this.organizerId,
@@ -27,7 +29,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     this.queryController,
     this.responseId,
     this.recipientLabel,
-    required this.offerController,
+    required this.offerScope,
     required this.listOffers,
     required this.getOffer,
     required this.prepareHandoff,
@@ -44,7 +46,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     this.initialEventId,
     this.initialEventTarget,
     this.onCreateEvent,
-    this.createAdmissionController,
+    this.admissionSession,
     this.layoutBuilder,
   });
 
@@ -54,7 +56,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   final HostResponseQueryController? queryController;
   final String? responseId;
   final String? recipientLabel;
-  final HostEventOfferController offerController;
+  final HostEventOfferScope offerScope;
   final Future<Map<String, Object?>> Function({
     required String organizerId,
     required String eventId,
@@ -88,105 +90,94 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   /// selection is revalidated before any offer is drafted. Null keeps the
   /// create action hidden while private event setup stays release gated.
   final Future<void> Function()? onCreateEvent;
-  final HostFormAdmissionController Function(
+  final HostFormAdmissionSession Function(
     HostEventOffer offer,
     String responseId,
   )?
-  createAdmissionController;
+  admissionSession;
 
   @override
-  State<HostEventOfferWorkspaceSection> createState() =>
+  Widget build(BuildContext context) {
+    final scope = (
+      offers: offerScope,
+      query: queryController,
+      responseId: responseId,
+      initialEventId: initialEventId,
+      initialTargetId: initialEventTarget?.eventId,
+      initialTargetRevision: initialEventTarget?.setupRevision,
+    );
+    return ProviderScope(
+      overrides: [
+        // Own the entire family here so pending work is disposed with this
+        // route, including when dependencies are inherited from a parent.
+        hostEventOfferWorkspaceControllerProvider.overrideWith2(
+          (_) => HostEventOfferWorkspaceController(),
+        ),
+        hostEventOfferWorkspaceDependenciesProvider.overrideWith(
+          (ref, scope) => HostEventOfferWorkspaceDependencies(
+            organizerId: organizerId,
+            accountId: accountId,
+            queryController: queryController,
+            responseId: responseId,
+            offerScope: offerScope,
+            listOffers: listOffers,
+            getOffer: getOffer,
+            prepareHandoff: prepareHandoff,
+            copyMessage: copyMessage,
+            openHandoff: openHandoff,
+            targets: targets,
+            getResponseDetail: getResponseDetail,
+            isResponseReviewed: isResponseReviewed,
+            openResponseForConversion: openResponseForConversion,
+            openEventSettings: openEventSettings,
+            now: now,
+            initialEventId: initialEventId,
+            initialEventTarget: initialEventTarget,
+          ),
+        ),
+      ],
+      child: HostEventOfferWorkspaceBodySection(
+        key: ValueKey(scope),
+        workspace: this,
+        scope: scope,
+      ),
+    );
+  }
+}
+
+@Dependencies([HostEventOfferWorkspaceController])
+class HostEventOfferWorkspaceBodySection extends ConsumerStatefulWidget {
+  const HostEventOfferWorkspaceBodySection({
+    super.key,
+    required this.workspace,
+    required this.scope,
+  });
+  final HostEventOfferWorkspaceSection workspace;
+  final HostEventOfferWorkspaceScope scope;
+  @override
+  ConsumerState<HostEventOfferWorkspaceBodySection> createState() =>
       _HostEventOfferWorkspaceSectionState();
 }
 
 class _HostEventOfferWorkspaceSectionState
-    extends State<HostEventOfferWorkspaceSection> {
-  late HostEventOfferWorkspaceController _controller;
-
-  HostEventOfferWorkspaceController _createController() =>
-      HostEventOfferWorkspaceController(
-        organizerId: widget.organizerId,
-        accountId: widget.accountId,
-        queryController: widget.queryController,
-        responseId: widget.responseId,
-        offerController: widget.offerController,
-        listOffers: widget.listOffers,
-        getOffer: widget.getOffer,
-        prepareHandoff: widget.prepareHandoff,
-        copyMessage: widget.copyMessage,
-        openHandoff: widget.openHandoff,
-        targets: widget.targets,
-        getResponseDetail: widget.getResponseDetail,
-        isResponseReviewed: widget.isResponseReviewed,
-        openResponseForConversion: widget.openResponseForConversion,
-        openEventSettings: widget.openEventSettings,
-        now: widget.now,
-        initialEventId: widget.initialEventId,
-        initialEventTarget: widget.initialEventTarget,
-      );
-
-  void _changed() {
-    if (mounted) setState(() {});
-  }
-
-  void _initializeController() {
-    _controller = _createController()..addListener(_changed);
-    if (widget.initiallyReviewSelection) {
-      final controller = _controller;
+    extends ConsumerState<HostEventOfferWorkspaceBodySection> {
+  HostEventOfferWorkspaceController get _controller => ref.read(
+    hostEventOfferWorkspaceControllerProvider(widget.scope).notifier,
+  );
+  HostEventOfferWorkspaceState get _snapshot =>
+      ref.read(hostEventOfferWorkspaceControllerProvider(widget.scope));
+  @override
+  void initState() {
+    super.initState();
+    if (widget.workspace.initiallyReviewSelection) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && identical(controller, _controller)) controller.start();
+        if (mounted) _controller.start();
       });
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeController();
-  }
-
-  @override
-  void didUpdateWidget(covariant HostEventOfferWorkspaceSection oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.organizerId != widget.organizerId ||
-        oldWidget.accountId != widget.accountId ||
-        oldWidget.queryController != widget.queryController ||
-        oldWidget.responseId != widget.responseId ||
-        oldWidget.offerController != widget.offerController ||
-        oldWidget.initialEventId != widget.initialEventId ||
-        oldWidget.initialEventTarget?.eventId !=
-            widget.initialEventTarget?.eventId ||
-        oldWidget.initialEventTarget?.setupRevision !=
-            widget.initialEventTarget?.setupRevision) {
-      _controller.removeListener(_changed);
-      _controller.dispose();
-      _initializeController();
-    } else {
-      _controller.updateDependencies(
-        listOffers: widget.listOffers,
-        getOffer: widget.getOffer,
-        prepareHandoff: widget.prepareHandoff,
-        copyMessage: widget.copyMessage,
-        openHandoff: widget.openHandoff,
-        targets: widget.targets,
-        getResponseDetail: widget.getResponseDetail,
-        isResponseReviewed: widget.isResponseReviewed,
-        openResponseForConversion: widget.openResponseForConversion,
-        openEventSettings: widget.openEventSettings,
-        now: widget.now,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.removeListener(_changed);
-    _controller.dispose();
-    super.dispose();
-  }
-
   String? _amountLabel(BuildContext context) {
-    final terms = _controller.configuration?.paymentTerms;
+    final terms = _snapshot.configuration?.paymentTerms;
     final amount = terms?['expectedAmountMinor'];
     final currency = terms?['currency'];
     if (amount == 0) return context.l10n.hostEventOfferFree;
@@ -196,15 +187,16 @@ class _HostEventOfferWorkspaceSectionState
 
   @override
   Widget build(BuildContext context) {
-    final copy = widget.copy;
-    final selected = _controller.selectedOffer;
-    final event = _controller.event;
-    final configuration = _controller.configuration;
-    final draft = _controller.draft;
-    final commitRequestId = _controller.commitRequestId;
+    ref.watch(hostEventOfferWorkspaceControllerProvider(widget.scope));
+    final copy = widget.workspace.copy;
+    final selected = _snapshot.selectedOffer;
+    final event = _snapshot.event;
+    final configuration = _snapshot.configuration;
+    final draft = _snapshot.draft;
+    final commitRequestId = _snapshot.commitRequestId;
     if (event != null &&
-        !_controller.preparing &&
-        _controller.missingContacts.isEmpty &&
+        !_snapshot.preparing &&
+        _snapshot.missingContacts.isEmpty &&
         configuration != null &&
         configuration.suggestedExpiresAt != null &&
         selected == null &&
@@ -212,15 +204,16 @@ class _HostEventOfferWorkspaceSectionState
         commitRequestId != null) {
       return HostEventOfferReviewSection(
         layoutBuilder: (body, action) => HostEventOfferWorkspaceLayout(
-          layoutBuilder: widget.layoutBuilder,
+          layoutBuilder: widget.workspace.layoutBuilder,
           body: HostEventOfferWorkspaceContentSection(
             _controller,
-            widget,
+            _snapshot,
+            widget.workspace,
             review: body,
           ),
           action: action,
         ),
-        controller: widget.offerController,
+        scope: widget.workspace.offerScope,
         draft: draft,
         amountLabel: _amountLabel(context),
         showEvent: false,
@@ -228,7 +221,7 @@ class _HostEventOfferWorkspaceSectionState
             ? event.name!
             : copy.untitledEvent,
         contactLabel: (id) =>
-            _controller.details
+            _snapshot.details
                 .where((detail) => detail.contactId == id)
                 .firstOrNull
                 ?.response
@@ -236,7 +229,7 @@ class _HostEventOfferWorkspaceSectionState
                 .primaryLabel ??
             context.l10n.hostFormResponsesAnonymous,
         eventStartsAt: configuration.startsAt,
-        now: widget.now,
+        now: widget.workspace.now,
         commitRequestId: commitRequestId,
         copy: copy.review,
       );
@@ -252,10 +245,11 @@ class _HostEventOfferWorkspaceSectionState
         }.contains(selected.paymentSnapshot!.collectionMode)) {
       return HostManualPaymentReviewSection(
         layoutBuilder: (body, action) => HostEventOfferWorkspaceLayout(
-          layoutBuilder: widget.layoutBuilder,
+          layoutBuilder: widget.workspace.layoutBuilder,
           body: HostEventOfferWorkspaceContentSection(
             _controller,
-            widget,
+            _snapshot,
+            widget.workspace,
             manual: body,
           ),
           action: action,
@@ -264,29 +258,31 @@ class _HostEventOfferWorkspaceSectionState
           'offer-manual-${selected.offerId}-'
           '${selected.generation}-${selected.revision}',
         ),
-        controller: widget.offerController,
+        scope: widget.workspace.offerScope,
         offer: selected,
         copy: copy.review,
-        referenceRequestId: _controller.referenceRequestId!,
-        reviewRequestId: _controller.reviewRequestId!,
+        referenceRequestId: _snapshot.referenceRequestId!,
+        reviewRequestId: _snapshot.reviewRequestId!,
         onUpdated: _controller.manualUpdated,
       );
     }
     final personal =
-        _controller.selectedOffer == null &&
-        _controller.draft == null &&
-        _controller.personalMode &&
-        _controller.missingContacts.isEmpty &&
-        _controller.configuration?.suggestedExpiresAt != null;
+        _snapshot.selectedOffer == null &&
+        _snapshot.draft == null &&
+        _snapshot.personalMode &&
+        _snapshot.missingContacts.isEmpty &&
+        _snapshot.configuration?.suggestedExpiresAt != null;
     return HostEventOfferWorkspaceLayout(
-      layoutBuilder: widget.layoutBuilder,
-      body: HostEventOfferWorkspaceContentSection(_controller, widget),
+      layoutBuilder: widget.workspace.layoutBuilder,
+      body: HostEventOfferWorkspaceContentSection(
+        _controller,
+        _snapshot,
+        widget.workspace,
+      ),
       action: personal
           ? CatchDockSurface.pageAction(
               label: copy.review.preview,
-              onPressed: _controller.loading
-                  ? null
-                  : _controller.previewPersonal,
+              onPressed: _snapshot.loading ? null : _controller.previewPersonal,
             )
           : null,
     );
@@ -316,18 +312,20 @@ class HostEventOfferWorkspaceLayout extends StatelessWidget {
 class HostEventOfferWorkspaceContentSection extends StatelessWidget {
   const HostEventOfferWorkspaceContentSection(
     this.controller,
+    this.snapshot,
     this.workspace, {
     super.key,
     this.review,
     this.manual,
   });
   final HostEventOfferWorkspaceController controller;
+  final HostEventOfferWorkspaceState snapshot;
   final HostEventOfferWorkspaceSection workspace;
   final Widget? review;
   final Widget? manual;
 
   String _offerLabel(Map<String, Object?> offer) =>
-      controller.details
+      snapshot.details
           .where((detail) => detail.contactId == offer['contactId'])
           .firstOrNull
           ?.response
@@ -353,9 +351,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final copy = workspace.copy;
     final intent = workspace.queryController?.selectionIntent;
-    final selectedRow = controller.ids.length == 1
+    final selectedRow = snapshot.ids.length == 1
         ? workspace.queryController?.view.rows
-              .where((row) => row.responseId == controller.ids.single)
+              .where((row) => row.responseId == snapshot.ids.single)
               .firstOrNull
         : null;
     final recipient =
@@ -363,10 +361,10 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
             ?.trim();
     final contextLabel = recipient?.isNotEmpty == true
         ? copy.chooseForRecipient(recipient!)
-        : controller.ids.length > 1
-        ? copy.chooseForRecipients(controller.ids.length)
+        : snapshot.ids.length > 1
+        ? copy.chooseForRecipients(snapshot.ids.length)
         : copy.selectEvent;
-    final stageLabel = switch (controller.stage) {
+    final stageLabel = switch (snapshot.stage) {
       HostOfferWorkspaceStage.loadingEvents => copy.loadingEvents,
       HostOfferWorkspaceStage.preparingOffer => copy.preparingOffer,
       HostOfferWorkspaceStage.loadingOffer => copy.loadingOffer,
@@ -377,34 +375,34 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (!workspace.initiallyReviewSelection &&
-            controller.ids.isEmpty &&
+            snapshot.ids.isEmpty &&
             (intent != null || workspace.responseId != null) &&
             workspace.accountId != null)
           CatchSection.plain(
             child: CatchButton(
               label: copy.create,
-              onPressed: controller.loading ? null : controller.start,
+              onPressed: snapshot.loading ? null : controller.start,
             ),
           ),
-        if (controller.ids.isNotEmpty) ...[
+        if (snapshot.ids.isNotEmpty) ...[
           CatchSection.plain(
             child: Text(
               contextLabel,
               style: CatchTextStyles.sectionTitle(context),
             ),
           ),
-          if (controller.event == null) ...[
-            if (controller.events.isEmpty && !controller.loading)
+          if (snapshot.event == null) ...[
+            if (snapshot.events.isEmpty && !snapshot.loading)
               CatchSection.plain(
                 child: Text(
                   copy.emptyEvents,
                   style: CatchTextStyles.supporting(context),
                 ),
               ),
-            if (controller.events.isNotEmpty)
+            if (snapshot.events.isNotEmpty)
               CatchSection.fieldRows(
                 children: [
-                  for (final event in controller.events)
+                  for (final event in snapshot.events)
                     CatchField.nav(
                       emphasis: CatchFieldEmphasis.title,
                       key: ValueKey('offer-target-${event.eventId}'),
@@ -413,18 +411,18 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                           ? event.name!
                           : copy.untitledEvent,
                       body: _eventTimeLabel(event),
-                      onTap: controller.loading
+                      onTap: snapshot.loading
                           ? null
                           : () => controller.choose(event),
                     ),
                 ],
               ),
-            if (controller.nextEventCursor != null)
+            if (snapshot.nextEventCursor != null)
               CatchSection.plain(
                 child: CatchButton(
                   label: copy.loadMoreEvents,
                   variant: CatchButtonVariant.secondary,
-                  onPressed: controller.loading ? null : controller.loadEvents,
+                  onPressed: snapshot.loading ? null : controller.loadEvents,
                 ),
               ),
             if (workspace.onCreateEvent != null) gapH12,
@@ -435,30 +433,28 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   label: context.l10n.hostsHostEventsListLabelNewEvent,
                   fullWidth: true,
                   variant: CatchButtonVariant.secondary,
-                  onPressed: controller.loading
-                      ? null
-                      : workspace.onCreateEvent,
+                  onPressed: snapshot.loading ? null : workspace.onCreateEvent,
                 ),
               ),
           ],
-          if (controller.event != null) ...[
+          if (snapshot.event != null) ...[
             CatchSection.fieldRows(
               children: [
                 CatchField.nav(
                   emphasis: CatchFieldEmphasis.title,
                   copy: catchFieldCopy(context.l10n),
-                  title: controller.event!.name ?? copy.untitledEvent,
+                  title: snapshot.event!.name ?? copy.untitledEvent,
                   body:
-                      '${_eventTimeLabel(controller.event!)} · ${context.l10n.hostEventOfferChangeEvent}',
+                      '${_eventTimeLabel(snapshot.event!)} · ${context.l10n.hostEventOfferChangeEvent}',
                   onTap:
-                      controller.loading && !controller.canCancelPreparation ||
-                          controller.hasUnresolvedCommand
+                      snapshot.loading && !snapshot.canCancelPreparation ||
+                          snapshot.hasUnresolvedCommand
                       ? null
                       : controller.changeEvent,
                 ),
               ],
             ),
-            if (controller.missingContacts.isNotEmpty) ...[
+            if (snapshot.missingContacts.isNotEmpty) ...[
               CatchSection.plain(
                 child: Text(
                   copy.needsContact,
@@ -467,7 +463,7 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
               ),
               CatchSection.fieldRows(
                 children: [
-                  for (final detail in controller.missingContacts)
+                  for (final detail in snapshot.missingContacts)
                     CatchField.nav(
                       emphasis: CatchFieldEmphasis.title,
                       key: ValueKey(
@@ -478,7 +474,7 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                           detail.response.identity.primaryLabel ??
                           context.l10n.hostFormResponsesAnonymous,
                       body: copy.convertContact,
-                      onTap: controller.loading
+                      onTap: snapshot.loading
                           ? null
                           : () => controller.returnForConversion(
                               detail.response.responseId,
@@ -486,9 +482,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     ),
                 ],
               ),
-            ] else if (!controller.preparing &&
-                controller.configuration != null &&
-                controller.configuration!.suggestedExpiresAt == null)
+            ] else if (!snapshot.preparing &&
+                snapshot.configuration != null &&
+                snapshot.configuration!.suggestedExpiresAt == null)
               CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -499,27 +495,27 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     ),
                     CatchButton(
                       label: copy.openSettings,
-                      onPressed: controller.loading
+                      onPressed: snapshot.loading
                           ? null
                           : controller.openSettings,
                     ),
                   ],
                 ),
               )
-            else if (controller.selectedOffer == null &&
-                !controller.preparing &&
-                controller.draft != null &&
-                controller.commitRequestId != null)
+            else if (snapshot.selectedOffer == null &&
+                !snapshot.preparing &&
+                snapshot.draft != null &&
+                snapshot.commitRequestId != null)
               review!,
 
-            if (controller.selectedOffer == null &&
-                controller.draft == null &&
-                controller.personalMode &&
-                controller.missingContacts.isEmpty &&
-                controller.configuration?.suggestedExpiresAt != null) ...[
+            if (snapshot.selectedOffer == null &&
+                snapshot.draft == null &&
+                snapshot.personalMode &&
+                snapshot.missingContacts.isEmpty &&
+                snapshot.configuration?.suggestedExpiresAt != null) ...[
               CatchSection.fieldRows(
                 children: [
-                  for (final detail in controller.details)
+                  for (final detail in snapshot.details)
                     CatchField.input(
                       key: ValueKey('offer-link-${detail.response.responseId}'),
                       copy: catchFieldCopy(context.l10n),
@@ -536,13 +532,12 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                 ],
               ),
             ],
-            if (controller.offers.isNotEmpty &&
-                controller.selectedOffer == null)
+            if (snapshot.offers.isNotEmpty && snapshot.selectedOffer == null)
               CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (workspace.offerController.view.status ==
+                    if (snapshot.offerFlow.status ==
                         HostOfferFlowStatus.committed)
                       Text(
                         copy.issued,
@@ -552,7 +547,7 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                       copy.existing,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
-                    if (controller.offers.isEmpty)
+                    if (snapshot.offers.isEmpty)
                       Text(
                         copy.noOffers,
                         style: CatchTextStyles.supporting(context),
@@ -560,26 +555,25 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     CatchButton(
                       label: copy.refresh,
                       variant: CatchButtonVariant.secondary,
-                      onPressed: controller.loading
+                      onPressed: snapshot.loading
                           ? null
                           : controller.refreshOffers,
                     ),
-                    if (controller.nextOfferCursor != null)
+                    if (snapshot.nextOfferCursor != null)
                       CatchButton(
                         label: context.l10n.hostFormResponsesLoadMore,
                         variant: CatchButtonVariant.secondary,
-                        onPressed: controller.loading
+                        onPressed: snapshot.loading
                             ? null
                             : () => controller.fetchMoreOffers(),
                       ),
                   ],
                 ),
               ),
-            if (controller.offers.isNotEmpty &&
-                controller.selectedOffer == null)
+            if (snapshot.offers.isNotEmpty && snapshot.selectedOffer == null)
               CatchSection.fieldRows(
                 children: [
-                  for (final offer in controller.offers)
+                  for (final offer in snapshot.offers)
                     CatchField.nav(
                       emphasis: CatchFieldEmphasis.title,
                       key: ValueKey('offer-existing-${offer['offerId']}'),
@@ -588,20 +582,20 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                       body:
                           '${_offerStatus(offer['effectiveStatus'])} · '
                           '${copy.openExisting}',
-                      onTap: controller.loading
+                      onTap: snapshot.loading
                           ? null
                           : () => controller.selectExisting(offer),
                     ),
                 ],
               ),
-            if (controller.selectedOffer case final selected?) ...[
+            if (snapshot.selectedOffer case final selected?) ...[
               CatchSection.fieldRows(
                 children: [
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostEventOfferRecipient,
                     valueText:
-                        controller.details
+                        snapshot.details
                             .where((d) => d.contactId == selected.contactId)
                             .firstOrNull
                             ?.response
@@ -613,12 +607,12 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   ),
                 ],
               ),
-              if (controller.ids.length > 1)
+              if (snapshot.ids.length > 1)
                 CatchSection.plain(
                   child: CatchButton(
                     label: copy.existing,
                     variant: CatchButtonVariant.secondary,
-                    onPressed: controller.loading
+                    onPressed: snapshot.loading
                         ? null
                         : controller.closeExisting,
                   ),
@@ -629,19 +623,19 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     label: copy.handoffPrepare,
                     fullWidth: true,
                     variant: CatchButtonVariant.secondary,
-                    onPressed: controller.loading
+                    onPressed: snapshot.loading
                         ? null
                         : controller.prepareSelectedHandoff,
                   ),
                 ),
-              if (controller.handoff?.kind == 'blocked')
+              if (snapshot.handoff?.kind == 'blocked')
                 CatchSection.plain(
                   child: Text(
                     copy.handoffBlocked,
                     style: CatchTextStyles.supporting(context),
                   ),
                 ),
-              if (controller.handoff?.kind == 'prepared')
+              if (snapshot.handoff?.kind == 'prepared')
                 CatchSection.plain(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -651,7 +645,7 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                         style: CatchTextStyles.supporting(context),
                       ),
                       Text(
-                        controller.handoff!.editableText!,
+                        snapshot.handoff!.editableText!,
                         style: CatchTextStyles.supporting(context),
                       ),
                       Wrap(
@@ -659,26 +653,26 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                           CatchButton(
                             label: copy.openWhatsapp,
                             onPressed:
-                                controller.loading ||
-                                    controller.handoff!.whatsappUrl == null
+                                snapshot.loading ||
+                                    snapshot.handoff!.whatsappUrl == null
                                 ? null
                                 : controller.openPreparedWhatsapp,
                           ),
                           CatchButton(
                             label: copy.copyMessage,
                             variant: CatchButtonVariant.secondary,
-                            onPressed: controller.loading
+                            onPressed: snapshot.loading
                                 ? null
                                 : controller.copyPreparedHandoff,
                           ),
                         ],
                       ),
-                      if (controller.messageCopied)
+                      if (snapshot.messageCopied)
                         Text(
                           copy.messageCopied,
                           style: CatchTextStyles.supporting(context),
                         ),
-                      if (controller.handoffOpenFailed)
+                      if (snapshot.handoffOpenFailed)
                         Text(
                           copy.handoffOpenFailed,
                           style: CatchTextStyles.supporting(context),
@@ -686,17 +680,17 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                     ],
                   ),
                 ),
-              if (workspace.createAdmissionController != null &&
-                  controller.selectedResponseId != null &&
+              if (workspace.admissionSession != null &&
+                  snapshot.selectedResponseId != null &&
                   selected.effectiveStatus == HostOfferStatus.offered)
                 HostFormAdmissionSection(
                   key: ValueKey(
                     'admission-${workspace.accountId}-${selected.offerId}-'
                     '${selected.revision}-${selected.generation}',
                   ),
-                  createController: () => workspace.createAdmissionController!(
+                  session: workspace.admissionSession!(
                     selected,
-                    controller.selectedResponseId!,
+                    snapshot.selectedResponseId!,
                   ),
                   onAdmitted: controller.refreshOffers,
                 ),
@@ -716,31 +710,29 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
           CatchSection.plain(
             child: Text(stageLabel, style: CatchTextStyles.supporting(context)),
           ),
-        if (controller.preparing)
+        if (snapshot.preparing)
           CatchSection.plain(
             child: CatchButton(
               key: const ValueKey('offer-cancel-preparation'),
               label: copy.cancelPreparation,
               variant: CatchButtonVariant.secondary,
-              onPressed: controller.canCancelPreparation
+              onPressed: snapshot.canCancelPreparation
                   ? controller.cancelPreparation
                   : null,
             ),
           ),
-        if (controller.hasError || controller.selectionStale) ...[
+        if (snapshot.hasError || snapshot.selectionStale) ...[
           CatchSection.plain(
             child: Text(
-              controller.selectionStale
-                  ? copy.selectionChanged
-                  : copy.loadFailed,
+              snapshot.selectionStale ? copy.selectionChanged : copy.loadFailed,
               style: CatchTextStyles.supporting(context),
             ),
           ),
-          if (!controller.hasUnresolvedCommand)
+          if (!snapshot.hasUnresolvedCommand)
             CatchSection.plain(
               child: CatchButton(
                 label: context.l10n.sharedActionTryAgain,
-                onPressed: controller.loading ? null : controller.retry,
+                onPressed: snapshot.loading ? null : controller.retry,
               ),
             ),
         ],

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:e43b3e5a4084bea24ef59378555db9a2b0aa4995d1bbfbdc1c80dc6b433e9957",
-  "resolvedDigest": "sha256:b73e7c51333577390fe236c8359e2e3584ab976194079f2d778371447f24a126",
+  "sourceDigest": "sha256:3e0b623bcaa9d47f629cb119c5fc8940d0e030191d692ad5f7ca3a3cd3eac4ad",
+  "resolvedDigest": "sha256:ce9d342d048b1bbb3545d8846e0f4bb6b5b74a19144253e53bf9e6e7485c5303",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -16,11 +16,11 @@
     "surfaces": 3,
     "states": 31,
     "scenarios": 31,
-    "actionCases": 52,
-    "actions": 16,
+    "actionCases": 49,
+    "actions": 15,
     "captures": 33,
     "previews": 14,
-    "testFiles": 7,
+    "testFiles": 9,
     "evidenceExceptions": 9
   },
   "surfaces": [
@@ -1659,9 +1659,9 @@
         "id": "event_detail_canonical"
       },
       "actionScope": {
-        "included": "Public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow, plus event-scoped phone-OTP registration for explicitly published, open-admission Catch events.",
+        "included": "Public Event Detail entry into the authenticated web guest journey, server-resolved admission and booking paths, official external registration sources, and the canonical organizer page. Optional event content and verified event-specific reviews render only when present.",
         "excluded": [
-          "The marketing projection never creates a Consumer profile, performs profile-dependent approval, accepts payment, starts a Consumer chat, or writes an event review. Phone OTP establishes only the minimal authenticated identity needed for the operational attendee relationship.",
+          "Admission, capacity, eligibility and payment authority remain in the existing server-backed guest controllers and repositories. The page composes their sign-in, application, checkout and live-event entry states; organizer claiming belongs to the organizer page, and chat and review submission remain separate flows.",
           "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
         ]
       },
@@ -1699,7 +1699,9 @@
           "contracts/firestore/event_attendees.schema.json",
           "contracts/firestore/onboarding_drafts.schema.json",
           "contracts/firestore/organizer_communication_preferences.schema.json",
-          "contracts/public/website_host_listing_projection.schema.json"
+          "contracts/public/website_host_listing_projection.schema.json",
+          "contracts/callables/get_event_viewer_state_payload.schema.json",
+          "contracts/callable_responses/get_event_viewer_state_response.schema.json"
         ],
         "previewEvidence": {
           "catch-native": [
@@ -1723,12 +1725,16 @@
           "catch-native": [
             "website/src/features/events/eventDetailModel.test.ts",
             "website/src/features/events/sections/EventDetailSections.test.tsx",
-            "website/scripts/postbuild.test.mjs"
+            "website/scripts/postbuild.test.mjs",
+            "website/src/features/events/GuestEventEntry.test.tsx",
+            "website/src/features/events/useGuestEventController.test.tsx"
           ],
           "web-otp-registration": [
             "website/src/features/events/eventDetailModel.test.ts",
             "website/src/features/events/sections/EventDetailSections.test.tsx",
-            "website/scripts/postbuild.test.mjs"
+            "website/scripts/postbuild.test.mjs",
+            "website/src/features/events/GuestEventEntry.test.tsx",
+            "website/src/features/events/useGuestEventController.test.tsx"
           ],
           "external-source": [
             "website/src/features/events/eventDetailModel.test.ts",
@@ -1748,11 +1754,11 @@
       "coverage": {
         "states": 5,
         "scenarios": 5,
-        "actionCases": 10,
-        "actions": 5,
+        "actionCases": 7,
+        "actions": 4,
         "captures": 0,
         "previews": 6,
-        "testFiles": 3,
+        "testFiles": 5,
         "evidenceExceptions": 1
       },
       "dimensions": {
@@ -1784,13 +1790,6 @@
             "empty",
             "present"
           ]
-        },
-        "claim": {
-          "default": "hidden",
-          "values": [
-            "hidden",
-            "available"
-          ]
         }
       },
       "actions": [
@@ -1816,26 +1815,25 @@
               ]
             }
           ],
-          "description": "Verifies the guest phone number and creates or reuses the event-scoped operational attendee relationship without requiring Consumer profile onboarding.",
+          "description": "Completes eligible free registration through the existing controller after phone verification, reusing the event-scoped attendee relationship and enforcing the current server admission decision.",
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_catch_registration_handoff",
+          "id": "open_web_guest_journey",
           "owner": "event_detail_hero",
-          "codeValue": "appDownloadCtas",
+          "codeValue": "guestEntry",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "eventId",
-            "storeTarget"
+            "eventId"
           ],
           "outcomes": [
             {
               "kind": "side_effect",
-              "id": "event.web_catch_registration_handoff"
+              "id": "event.web_guest_journey_opened"
             }
           ],
-          "description": "Hands an eligible Catch-native event to the configured app-store destination without claiming the website performed a booking.",
+          "description": "Opens the web guest journey in the shared invitation dialog or booking route. The current verified identity and server viewer state resolve application, approval, booking recovery and live-event entry.",
           "implementationStatus": "implemented"
         },
         {
@@ -1860,7 +1858,7 @@
         {
           "id": "open_event_organizer",
           "owner": "event_detail_hero",
-          "codeValue": "listingPath",
+          "codeValue": "path",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -1877,28 +1875,6 @@
             }
           ],
           "description": "Navigates to the canonical public organizer projection that supplied the event.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_event_organizer_claim",
-          "owner": "event_detail_hero",
-          "codeValue": "claimHrefForListing",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "routeInstanceId",
-            "listingId",
-            "claimCapabilityVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "claim"
-              }
-            }
-          ],
-          "description": "Exposes the organizer claim flow only when the canonical listing policy declares an enabled claim capability.",
           "implementationStatus": "implemented"
         }
       ],
@@ -1924,8 +1900,7 @@
             "availability": "ready",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -1938,7 +1913,9 @@
             "tests": [
               "website/src/features/events/eventDetailModel.test.ts",
               "website/src/features/events/sections/EventDetailSections.test.tsx",
-              "website/scripts/postbuild.test.mjs"
+              "website/scripts/postbuild.test.mjs",
+              "website/src/features/events/GuestEventEntry.test.tsx",
+              "website/src/features/events/useGuestEventController.test.tsx"
             ]
           },
           "actionCases": [
@@ -1948,36 +1925,12 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_event_organizer"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "register_event_with_phone_otp",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
-                ]
-              }
-            },
-            {
-              "id": "claim_available",
-              "dimensions": {
-                "availability": "ready",
-                "supply": "catch_native",
-                "registration": "open",
-                "reviews": "empty",
-                "claim": "available"
-              },
-              "actions": {
-                "enabled": [
-                  "open_catch_registration_handoff",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -1992,19 +1945,17 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "closed",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
+                  "open_web_guest_journey",
                   "open_event_organizer"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -2019,8 +1970,7 @@
             "availability": "ready",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -2033,7 +1983,9 @@
             "tests": [
               "website/src/features/events/eventDetailModel.test.ts",
               "website/src/features/events/sections/EventDetailSections.test.tsx",
-              "website/scripts/postbuild.test.mjs"
+              "website/scripts/postbuild.test.mjs",
+              "website/src/features/events/GuestEventEntry.test.tsx",
+              "website/src/features/events/useGuestEventController.test.tsx"
             ]
           },
           "actionCases": [
@@ -2043,8 +1995,7 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
@@ -2053,30 +2004,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "open_catch_registration_handoff",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
-                ]
-              }
-            },
-            {
-              "id": "claim_available",
-              "dimensions": {
-                "availability": "ready",
-                "supply": "catch_native",
-                "registration": "open",
-                "reviews": "empty",
-                "claim": "available"
-              },
-              "actions": {
-                "enabled": [
-                  "register_event_with_phone_otp",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_official_registration_source"
                 ]
               }
@@ -2092,8 +2020,7 @@
             "availability": "ready",
             "supply": "external",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -2116,8 +2043,7 @@
                 "availability": "ready",
                 "supply": "external",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
@@ -2127,30 +2053,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
-                  "open_event_organizer_claim"
-                ]
-              }
-            },
-            {
-              "id": "claim_available",
-              "dimensions": {
-                "availability": "ready",
-                "supply": "external",
-                "registration": "open",
-                "reviews": "empty",
-                "claim": "available"
-              },
-              "actions": {
-                "enabled": [
-                  "open_official_registration_source",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "register_event_with_phone_otp",
-                  "open_catch_registration_handoff"
+                  "open_web_guest_journey"
                 ]
               }
             },
@@ -2160,8 +2063,7 @@
                 "availability": "ready",
                 "supply": "external",
                 "registration": "closed",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [
@@ -2170,9 +2072,8 @@
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
+                  "open_web_guest_journey",
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -2187,8 +2088,7 @@
             "availability": "ready",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "present",
-            "claim": "hidden"
+            "reviews": "present"
           },
           "evidence": {
             "captureIds": [],
@@ -2208,19 +2108,17 @@
                 "availability": "ready",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "present",
-                "claim": "hidden"
+                "reviews": "present"
               },
               "actions": {
                 "enabled": [
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_event_organizer"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_official_registration_source",
-                  "open_event_organizer_claim"
+                  "open_official_registration_source"
                 ]
               }
             }
@@ -2235,8 +2133,7 @@
             "availability": "missing",
             "supply": "catch_native",
             "registration": "open",
-            "reviews": "empty",
-            "claim": "hidden"
+            "reviews": "empty"
           },
           "evidence": {
             "captureIds": [],
@@ -2253,18 +2150,16 @@
                 "availability": "missing",
                 "supply": "catch_native",
                 "registration": "open",
-                "reviews": "empty",
-                "claim": "hidden"
+                "reviews": "empty"
               },
               "actions": {
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
                   "register_event_with_phone_otp",
-                  "open_catch_registration_handoff",
+                  "open_web_guest_journey",
                   "open_official_registration_source",
-                  "open_event_organizer",
-                  "open_event_organizer_claim"
+                  "open_event_organizer"
                 ]
               }
             }
@@ -2292,8 +2187,8 @@
                 "web-otp-registration",
                 "external-source",
                 "event-reviews",
-                "desktop-ticket-rail",
-                "mobile-single-column"
+                "desktop-invitation",
+                "mobile-sticky-action"
               ]
             }
           },
@@ -2331,7 +2226,7 @@
                 "provenance",
                 "event-media",
                 "organizer-panel",
-                "review-preview"
+                "optional-event-content"
               ]
             }
           },
@@ -2348,9 +2243,9 @@
                 "catch-native",
                 "web-otp-registration",
                 "external-source",
-                "desktop-ticket-rail",
-                "mobile-single-column",
-                "review-preview"
+                "desktop-invitation",
+                "mobile-sticky-action",
+                "optional-event-content"
               ]
             }
           },

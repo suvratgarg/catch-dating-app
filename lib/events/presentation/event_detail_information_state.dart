@@ -179,12 +179,20 @@ EventDetailInformationState eventDetailInformationStateFrom({
     EventDetailFactRow._(
       kind: EventDetailFactKind.cancellation,
       icon: EventDetailFactIcon.cancellation,
-      title: _isGuaranteedFree(policy.pricingPolicy)
+      title:
+          event.status == EventLifecycleStatus.cancelled &&
+              (event.cancellationReason?.trim().isNotEmpty ?? false)
+          ? l10n.eventsEventDetailScreenStateLabelEventCancelled
+          : _isGuaranteedFree(policy.pricingPolicy)
           ? l10n.eventsEventDetailInformationStateTitlePlansChange
           : l10n.eventsEventDetailOverviewSectionTitleTitleCancellation(
               title: policy.cancellationPolicy.title,
             ),
-      body: _isGuaranteedFree(policy.pricingPolicy)
+      body:
+          event.status == EventLifecycleStatus.cancelled &&
+              (event.cancellationReason?.trim().isNotEmpty ?? false)
+          ? event.cancellationReason!.trim()
+          : _isGuaranteedFree(policy.pricingPolicy)
           ? l10n.eventsEventDetailInformationStateBodyReleaseYourSpotEarly
           : policy.cancellationPolicy.attendeeSummary,
     ),

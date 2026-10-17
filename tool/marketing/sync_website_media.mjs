@@ -4,6 +4,7 @@ import {spawnSync} from "node:child_process";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import fs from "node:fs";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
@@ -14,6 +15,9 @@ const allowedStatuses = new Set(["active", "pending-fixture", "paused"]);
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 
+if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) runCli();
+
+function runCli() {
 if (command === "--help" || command === "-h" || command === "help") {
   printHelp();
 } else if (command === "--list" || command === "list") {
@@ -26,6 +30,7 @@ if (command === "--help" || command === "-h" || command === "help") {
   console.error(`Unknown command: ${command}`);
   printHelp();
   process.exit(64);
+}
 }
 
 function loadSourceManifest() {
@@ -94,7 +99,7 @@ function checkWebsiteMedia(manifest) {
   const actual = fs.readFileSync(websiteManifestPath, "utf8");
   if (actual !== expected) {
     fail("Marketing website media manifest is stale.", [
-      "Run node tool/marketing/sync_website_media.mjs --update and commit the result.",
+      "Materialize the verified exact-source capture artifact, or run node tool/marketing/sync_website_media.mjs --update after rendering current inputs.",
     ]);
   }
 
@@ -172,7 +177,7 @@ function validateSourceManifest(manifest) {
   return errors;
 }
 
-function buildWebsiteManifest(manifest) {
+export function buildWebsiteManifest(manifest) {
   const captures = manifest.captures
     .filter((capture) => capture.status !== "paused")
     .map((capture) => {

@@ -1,12 +1,16 @@
 import 'dart:math';
-
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+export 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+part 'event_offer_preferences_controller.g.dart';
 
 typedef ReadEventOfferConfiguration =
     Future<EventOfferConfiguration> Function({
@@ -20,228 +24,219 @@ typedef WriteEventOfferPreferences =
       EventOfferPreferencesUpdateRequest request,
     );
 
-/// Published and legacy events reuse the editor controls, but keep their
-/// source-revision fence and offer-specific receipt separate from private setup.
-class EventOfferPreferencesController extends EventPreferencesEditorController {
-  EventOfferPreferencesController({
-    required this.userId,
-    required this.organizerId,
-    required this.eventId,
+class EventOfferPreferencesDependencies {
+  const EventOfferPreferencesDependencies({
     required this.readConfiguration,
     required this.readDefaults,
     required this.write,
     this.readPreview,
     this.currentUserId,
-    this.displayName,
     this.journal = const EventOfferPreferencesJournal(),
   });
-
-  @override
-  final String userId;
-  @override
-  final String? Function()? currentUserId;
-  final String organizerId;
-  final String eventId;
   final ReadEventOfferConfiguration readConfiguration;
-  final ReadDefaultsForPublishedEvent readDefaults;
+  final Future<ManagerEventSetupDefaults> Function(String) readDefaults;
   final WriteEventOfferPreferences write;
-  @override
   final PreviewEventOfferPreferences? readPreview;
-  final String? displayName;
+  final String? Function()? currentUserId;
   final EventOfferPreferencesJournal journal;
+}
 
-  EventOfferConfiguration? configuration;
-  @override
-  ManagerEventSetupDefaults? defaults;
-  EventOfferPreferencesUpdateRequest? pending;
-  @override
-  Object? error;
-  @override
-  bool loading = false;
-  @override
-  bool saving = false;
-  bool _disposed = false;
+@riverpod
+EventOfferPreferencesDependencies eventOfferPreferencesDependencies(Ref ref) {
+  final functions = ref.watch(firebaseFunctionsProvider);
+  return EventOfferPreferencesDependencies(
+    readConfiguration: EventOfferPreferencesRepository(functions).get,
+    readDefaults: ManagerEventSetupDefaultsRepository(functions).get,
+    write: EventOfferPreferencesRepository(functions).configure,
+    readPreview: EventOfferPreferencesRepository(functions).preview,
+    currentUserId: () => ref.read(uidProvider).asData?.value,
+  );
+}
 
+@riverpod
+class EventOfferPreferencesController extends _$EventOfferPreferencesController
+    with EventPreferencesEditorController {
   @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
+  EventPreferencesEditorState build(EventEditorScope scope) {
+    final dependencies = ref.watch(eventOfferPreferencesDependenciesProvider);
+    bindActor();
+    return EventPreferencesEditorState(
+      published: true,
+      previewAvailable: dependencies.readPreview != null,
+    );
   }
 
   @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
+  EventEditorScope scopeIdentity() => scope;
   @override
-  String? get eventName => displayName;
+  String? Function()? actorReader() => _dependencies.currentUserId;
   @override
-  bool get hasLoadedEvent => configuration != null;
-  @override
-  bool get isPrivateEvent => false;
-  @override
-  PrivateEventPreferenceIntents get intents =>
-      configuration?.preferences?.intents ??
-      const PrivateEventPreferenceIntents();
-  @override
-  Map<String, Object?> get resolvedValues =>
-      configuration?.preferences?.resolvedValues ??
-      defaults?.preferences.toSparseJson() ??
-      const <String, Object?>{};
-  @override
-  bool get hasPending => pending != null;
-  @override
-  bool get canEdit =>
-      configuration != null &&
-      defaults != null &&
-      actorAvailable &&
-      pending == null &&
-      !loading &&
-      !saving &&
-      !previewing;
-
-  @override
+  PreviewEventOfferPreferences? previewReader() => _dependencies.readPreview;
+  EventOfferPreferencesDependencies get _dependencies =>
+      ref.read(eventOfferPreferencesDependenciesProvider);
+  String get _userId => scope.userId;
+  String get _organizerId => scope.organizerId;
+  String get _eventId => scope.eventId;
+  ReadEventOfferConfiguration get _readConfiguration =>
+      _dependencies.readConfiguration;
+  Future<ManagerEventSetupDefaults> Function(String) get _readDefaults =>
+      _dependencies.readDefaults;
+  WriteEventOfferPreferences get _write => _dependencies.write;
+  EventOfferPreferencesJournal get _journal => _dependencies.journal;
+  EventOfferPreferencesUpdateRequest? get _pending => state.offerPending;
+  set _pending(EventOfferPreferencesUpdateRequest? value) =>
+      updateEditor((s) => s.copyWith(offerPending: value));
+  EventOfferConfiguration? get _configuration => state.configuration;
+  set _configuration(EventOfferConfiguration? value) =>
+      updateEditor((s) => s.copyWith(configuration: value));
+  ManagerEventSetupDefaults? get _defaults => state.defaults;
+  set _defaults(ManagerEventSetupDefaults? value) =>
+      updateEditor((s) => s.copyWith(defaults: value));
+  bool get _loading => state.loading;
+  set _loading(bool value) => updateEditor((s) => s.copyWith(loading: value));
+  bool get _saving => state.saving;
+  set _saving(bool value) => updateEditor((s) => s.copyWith(saving: value));
+  set _error(Object? value) => updateEditor((s) => s.copyWith(error: value));
   Future<void> load() async {
+    if (!actorIsAvailable() || _loading || _saving) return;
     resetDraft();
-    loading = true;
-    error = null;
-    configuration = null;
-    defaults = null;
-    notifyListeners();
+    _loading = true;
+    _error = null;
+    _configuration = null;
+    _defaults = null;
     try {
-      pending = await journal.load(
-        userId: userId,
-        organizerId: organizerId,
-        eventId: eventId,
+      _pending = await _journal.load(
+        userId: _userId,
+        organizerId: _organizerId,
+        eventId: _eventId,
       );
+      if (!actorIsAvailable()) return;
       final results = await Future.wait<Object>([
-        readConfiguration(organizerId: organizerId, eventId: eventId),
-        readDefaults(organizerId),
+        _readConfiguration(organizerId: _organizerId, eventId: _eventId),
+        _readDefaults(_organizerId),
       ]);
+      if (!actorIsAvailable()) return;
       final nextConfiguration = results[0] as EventOfferConfiguration;
       final nextDefaults = results[1] as ManagerEventSetupDefaults;
-      if (nextConfiguration.eventId != eventId ||
-          nextConfiguration.organizerId != organizerId ||
-          nextDefaults.organizerId != organizerId) {
+      if (nextConfiguration.eventId != _eventId ||
+          nextConfiguration.organizerId != _organizerId ||
+          nextDefaults.organizerId != _organizerId) {
         throw const FormatException('Offer settings identity changed');
       }
-      configuration = nextConfiguration;
-      defaults = nextDefaults;
+      _configuration = nextConfiguration;
+      _defaults = nextDefaults;
     } catch (cause) {
-      error = cause;
+      _error = cause;
     } finally {
-      loading = false;
-      notifyListeners();
+      _loading = false;
     }
   }
 
   @override
-  EventOfferPreferencesUpdateRequest buildPreviewRequest(
+  EventOfferPreferencesUpdateRequest previewRequest(
     PrivateEventPreferenceIntents intents,
   ) => EventOfferPreferencesUpdateRequest(
-    expectedActorUid: userId,
-    organizerId: organizerId,
-    eventId: eventId,
+    expectedActorUid: _userId,
+    organizerId: _organizerId,
+    eventId: _eventId,
     requestId: _newOfferSettingsRequestId(),
-    expectedEventSourceRevision: configuration!.eventSourceRevision,
-    expectedPreferencesRevision: configuration!.preferencesRevision,
-    reviewedDefaultsHash: defaults!.preferencesHash,
+    expectedEventSourceRevision: _configuration!.eventSourceRevision,
+    expectedPreferencesRevision: _configuration!.preferencesRevision,
+    reviewedDefaultsHash: _defaults!.preferencesHash,
     intents: intents,
   );
 
   @override
   Future<void> save(PrivateEventPreferenceIntents intents) async {
-    if (!canEdit) return;
+    if (!canEditNow()) return;
     final request = EventOfferPreferencesUpdateRequest(
-      expectedActorUid: userId,
-      organizerId: organizerId,
-      eventId: eventId,
+      expectedActorUid: _userId,
+      organizerId: _organizerId,
+      eventId: _eventId,
       requestId: _newOfferSettingsRequestId(),
-      expectedEventSourceRevision: configuration!.eventSourceRevision,
-      expectedPreferencesRevision: configuration!.preferencesRevision,
-      reviewedDefaultsHash: defaults!.preferencesHash,
+      expectedEventSourceRevision: _configuration!.eventSourceRevision,
+      expectedPreferencesRevision: _configuration!.preferencesRevision,
+      reviewedDefaultsHash: _defaults!.preferencesHash,
       intents: intents,
     );
     if (!request.isValid) {
-      error = ArgumentError.value(intents, 'intents');
-      notifyListeners();
+      _error = ArgumentError.value(intents, 'intents');
       return;
     }
-    saving = true;
-    error = null;
-    notifyListeners();
+    _saving = true;
+    _error = null;
     try {
-      await journal.save(userId: userId, request: request);
-      pending = request;
-      notifyListeners();
+      await _journal.save(userId: _userId, request: request);
+      if (!actorIsAvailable()) return;
+      _pending = request;
       await _sendPending(request);
+      if (!actorIsAvailable()) return;
     } catch (cause) {
-      error = cause;
-      notifyListeners();
+      _error = cause;
     } finally {
-      saving = false;
-      notifyListeners();
+      _saving = false;
     }
   }
 
-  @override
   Future<void> retryPending() async {
-    if (pending == null || saving) return;
-    saving = true;
-    error = null;
-    notifyListeners();
+    if (!actorIsAvailable() || _pending == null || _saving || _loading) return;
+    _saving = true;
+    _error = null;
     try {
-      await _sendPending(pending!);
+      await _sendPending(_pending!);
+      if (!actorIsAvailable()) return;
     } catch (cause) {
       // A later denial cannot prove the original command was not applied.
-      error = cause;
-      notifyListeners();
+      _error = cause;
     } finally {
-      saving = false;
-      notifyListeners();
+      _saving = false;
     }
   }
 
   Future<void> _sendPending(EventOfferPreferencesUpdateRequest request) async {
-    if (!actorAvailable) {
+    if (!actorIsAvailable()) {
       throw const SignInRequiredException('apply event settings');
     }
     late final EventOfferPreferencesReceipt receipt;
     try {
-      receipt = await write(request);
+      receipt = await _write(request);
+      if (!actorIsAvailable()) return;
     } catch (cause) {
-      if (isDefinitiveEventPreferenceRejection(
-        cause,
-        requestId: request.requestId,
-        eventId: eventId,
-        organizerId: organizerId,
-      )) {
-        await journal.clear(userId: userId, request: request);
-        pending = null;
-        configuration = null;
-        defaults = null;
+      if (actorIsAvailable() &&
+          isDefinitiveEventPreferenceRejection(
+            cause,
+            requestId: request.requestId,
+            eventId: _eventId,
+            organizerId: _organizerId,
+          )) {
+        await _journal.clear(userId: _userId, request: request);
+        if (!actorIsAvailable()) return;
+        _pending = null;
+        _configuration = null;
+        _defaults = null;
         resetDraft();
       }
       rethrow;
     }
-    if (receipt.eventId != eventId ||
+    if (receipt.eventId != _eventId ||
         receipt.preferencesRevision <= request.expectedPreferencesRevision) {
       throw const FormatException('Invalid offer settings receipt');
     }
-    await journal.clear(userId: userId, request: request);
-    pending = null;
-    configuration = null;
-    configuration = await readConfiguration(
-      organizerId: organizerId,
-      eventId: eventId,
+    await _journal.clear(userId: _userId, request: request);
+    if (!actorIsAvailable()) return;
+    _pending = null;
+    _configuration = null;
+    _configuration = await _readConfiguration(
+      organizerId: _organizerId,
+      eventId: _eventId,
     );
-    if (configuration!.eventId != eventId ||
-        configuration!.organizerId != organizerId ||
-        configuration!.preferencesRevision < receipt.preferencesRevision) {
+    if (!actorIsAvailable()) return;
+    if (_configuration!.eventId != _eventId ||
+        _configuration!.organizerId != _organizerId ||
+        _configuration!.preferencesRevision < receipt.preferencesRevision) {
       throw const FormatException('Offer settings reread changed identity');
     }
-    error = null;
-    notifyListeners();
+    _error = null;
   }
 }
 

@@ -287,6 +287,7 @@ export 'callables/list_program_trips_callable_request.g.dart';
 export 'callables/list_public_club_reviews_callable_request.g.dart';
 export 'callables/list_public_organizer_reviews_callable_request.g.dart';
 export 'callables/list_transport_vendors_callable_request.g.dart';
+export 'callables/manage_event_approval_notifications_callable_request.g.dart';
 export 'callables/manage_host_roster_intake_callable_request.g.dart';
 export 'callables/manage_organizer_form_payment_connection_callable_request.g.dart';
 export 'callables/mark_event_attendance_callable_request.g.dart';

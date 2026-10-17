@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_content_section.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
@@ -9,7 +10,6 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_basics_section.dart';
@@ -28,8 +28,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
-
 import '../support/page_preview.dart';
+import 'event_editor_preview.dart';
 import 'operations/fixtures.dart';
 import 'operations/preview.dart';
 
@@ -136,17 +136,7 @@ Widget hostManagerEventSetupPreferencesSectionPreview(BuildContext context) =>
 )
 Widget privateEventPreferencesScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
-  final controller = PrivateEventPreferencesController(
-    userId: 'preview-host',
-    organizerId: 'preview-club',
-    eventId: 'preview-private-event',
-    readEvent: ({required organizerId, required eventId}) async =>
-        throw StateError('Preview does not read events'),
-    readDefaults: (_) async =>
-        throw StateError('Preview does not read defaults'),
-    write: (_) async => throw StateError('Preview does not submit settings'),
-  );
-  controller.event = PrivateEventBasicSummary(
+  final event = PrivateEventBasicSummary(
     eventId: 'preview-private-event',
     organizerId: 'preview-club',
     setupRevision: 1,
@@ -164,7 +154,7 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
     detailsConfigured: false,
     eventPreferences: null,
   );
-  controller.defaults = ManagerEventSetupDefaults(
+  final defaults = ManagerEventSetupDefaults(
     organizerId: 'preview-club',
     cityId: 'in-mh-mumbai',
     marketId: 'in-mh-mumbai',
@@ -189,8 +179,8 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'manager read; payment activation separate',
         child: WidgetbookHostDeviceFrame(
-          child: PrivateEventPreferencesScreen(
-            controller: controller,
+          child: eventPreferencesPreview(
+            EventPreferencesEditorState(event: event, defaults: defaults),
             onBack: () => Navigator.of(context).maybePop(),
           ),
         ),
@@ -204,19 +194,28 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
   type: PrivateEventDetailsScreen,
   path: '[P1 product surfaces]/Host operations',
 )
-Widget privateEventDetailsScreenPreview(BuildContext context) {
+Widget privateEventDetailsScreenPreview(BuildContext context) =>
+    _privateEventDetailsPreview(context);
+
+@widgetbook.UseCase(
+  name: 'Optional itinerary and artwork',
+  type: PrivateEventContentSection,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget privateEventContentSectionPreview(BuildContext context) =>
+    _privateEventDetailsPreview(context, contentOnly: true);
+
+Widget _privateEventDetailsPreview(
+  BuildContext context, {
+  bool contentOnly = false,
+}) {
   final hash = List.filled(64, 'a').join();
-  final controller = PrivateEventDetailsController(
+  const scope = (
     userId: 'preview-host',
     organizerId: 'preview-club',
     eventId: 'preview-private-event',
-    readEvent: ({required organizerId, required eventId}) async =>
-        throw StateError('Preview does not read events'),
-    readDefaults: (_) async =>
-        throw StateError('Preview does not read defaults'),
-    write: (_) async => throw StateError('Preview does not submit details'),
   );
-  controller.event = const PrivateEventBasicSummary(
+  final event = const PrivateEventBasicSummary(
     eventId: 'preview-private-event',
     organizerId: 'preview-club',
     setupRevision: 1,
@@ -231,7 +230,7 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
     detailsConfigured: false,
     eventPreferences: null,
   );
-  controller.defaults = ManagerEventSetupDefaults(
+  final defaults = ManagerEventSetupDefaults(
     organizerId: 'preview-club',
     cityId: 'in-mh-mumbai',
     marketId: 'in-mh-mumbai',
@@ -250,14 +249,59 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'saved event with optional detail suggestions',
         child: WidgetbookHostDeviceFrame(
-          child: PrivateEventDetailsScreen(
-            controller: controller,
-            onBack: () => Navigator.of(context).maybePop(),
+          child: ProviderScope(
+            overrides: [
+              uidProvider.overrideWith((ref) => Stream.value(scope.userId)),
+              privateEventDetailsDependenciesProvider.overrideWithValue(
+                PrivateEventDetailsDependencies(
+                  readEvent: ({required organizerId, required eventId}) async =>
+                      event,
+                  readDefaults: (_) async => defaults,
+                  write: (_) async =>
+                      throw StateError('Preview does not submit details'),
+                ),
+              ),
+              privateEventDetailsControllerProvider(scope).overrideWith(
+                () => _PreviewPrivateEventDetailsController(event, defaults),
+              ),
+            ],
+            child: contentOnly
+                ? Consumer(
+                    builder: (context, ref, child) {
+                      final provider = privateEventDetailsControllerProvider(
+                        scope,
+                      );
+                      return Scaffold(
+                        body: SingleChildScrollView(
+                          child: PrivateEventContentSection(
+                            state: ref.watch(provider),
+                            controller: ref.read(provider.notifier),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : PrivateEventDetailsScreen(
+                    scope: scope,
+                    onBack: () => Navigator.of(context).maybePop(),
+                  ),
           ),
         ),
       ),
     ],
   );
+}
+
+class _PreviewPrivateEventDetailsController
+    extends PrivateEventDetailsController {
+  _PreviewPrivateEventDetailsController(this._event, this._defaults);
+
+  final PrivateEventBasicSummary _event;
+  final ManagerEventSetupDefaults _defaults;
+
+  @override
+  PrivateEventDetailsState build(PrivateEventDetailsScope scope) =>
+      super.build(scope).copyWith(event: _event, defaults: _defaults);
 }
 
 @widgetbook.UseCase(
@@ -267,24 +311,13 @@ Widget privateEventDetailsScreenPreview(BuildContext context) {
 )
 Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
-  EventOfferPreferencesController controller({
+  EventPreferencesEditorState controller({
     required int preferencesRevision,
     PrivateEventPreferencesSnapshot? preferences,
     ManagerEventSetupPreferences defaultPreferences =
         const ManagerEventSetupPreferences(),
   }) {
-    final controller = EventOfferPreferencesController(
-      userId: 'preview-host',
-      organizerId: 'preview-club',
-      eventId: 'preview-published-event',
-      displayName: 'Saturday mixer',
-      readConfiguration: ({required organizerId, required eventId}) async =>
-          throw StateError('Preview does not read offer settings'),
-      readDefaults: (_) async =>
-          throw StateError('Preview does not read defaults'),
-      write: (_) async => throw StateError('Preview does not submit settings'),
-    );
-    controller.configuration = EventOfferConfiguration(
+    final configuration = EventOfferConfiguration(
       organizerId: 'preview-club',
       eventId: 'preview-published-event',
       eventSourceRevision: 8,
@@ -294,7 +327,7 @@ Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
       preferencesRevision: preferencesRevision,
       preferences: preferences,
     );
-    controller.defaults = ManagerEventSetupDefaults(
+    final defaults = ManagerEventSetupDefaults(
       organizerId: 'preview-club',
       cityId: 'in-mh-mumbai',
       marketId: 'in-mh-mumbai',
@@ -306,18 +339,21 @@ Widget hostEventOfferPreferencesScreenPreview(BuildContext context) {
       preferencesHash: hash,
       reviewedDefaultsHash: hash,
     );
-    return controller;
+    return EventPreferencesEditorState(
+      configuration: configuration,
+      defaults: defaults,
+      published: true,
+      displayName: 'Saturday mixer',
+    );
   }
 
-  Widget card(String label, EventOfferPreferencesController controller) =>
+  Widget card(String label, EventPreferencesEditorState controller) =>
       WidgetbookPageStateCard(
         label: label,
         child: WidgetbookHostDeviceFrame(
           child: ProviderScope(
-            child: HostEventOfferPreferencesScreen(
-              organizerId: 'preview-club',
-              eventId: 'preview-published-event',
-              initialController: controller,
+            child: eventPreferencesPreview(
+              controller,
               onBack: () => Navigator.of(context).maybePop(),
             ),
           ),
@@ -561,15 +597,6 @@ class _PublicationPreview extends StatefulWidget {
 }
 
 class _PublicationPreviewState extends State<_PublicationPreview> {
-  late final EventPublicationController controller = EventPublicationController(
-    userId: 'preview-host',
-    organizerId: 'preview-club',
-    eventId: 'preview-event',
-    currentUserId: () => 'preview-host',
-    read: ({required organizerId, required eventId}) async => event,
-    write: (_) async => throw StateError('Preview does not change publication'),
-  )..event = event;
-
   PrivateEventBasicSummary get event => PrivateEventBasicSummary(
     eventId: 'preview-event',
     organizerId: 'preview-club',
@@ -597,15 +624,9 @@ class _PublicationPreviewState extends State<_PublicationPreview> {
   );
 
   @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) => WidgetbookHostDeviceFrame(
-    child: EventPublicationScreen(
-      controller: controller,
+    child: eventPublicationPreview(
+      event,
       onBack: () => Navigator.of(context).maybePop(),
       onEditDetails: widget.published ? null : () {},
     ),
