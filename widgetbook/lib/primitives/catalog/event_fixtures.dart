@@ -21,7 +21,7 @@ Event widgetbookCatalogEvent({
   final start = startTime ?? widgetbookCatalogEventStart;
   const meetingPoint = 'Carter Road Jetty';
   final location = exactLocation
-      ? EventMeetingLocation.legacy(
+      ? eventMeetingLocationFromLegacy(
           name: meetingPoint,
           latitude: 19.0676,
           longitude: 72.8227,

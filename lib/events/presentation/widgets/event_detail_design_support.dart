@@ -61,7 +61,7 @@ List<TicketStubCellData> _ticketStubCells(Event event, AppLocalizations l10n) {
     TicketStubCellData(
       label: l10n.eventsEventDetailDesignPrimitivesLabelWhen,
       value: event.shortDateLabel,
-      detail: event.compactTimeRangeLabel,
+      detail: [event.compactTimeRangeLabel, ?event.eventTimezone].join(' · '),
       icon: CatchIcons.calendarAdd,
     ),
     TicketStubCellData(
@@ -71,11 +71,12 @@ List<TicketStubCellData> _ticketStubCells(Event event, AppLocalizations l10n) {
           ? null
           : locationDetail,
     ),
-    TicketStubCellData(
-      label: _levelLabelFor(event.activityKind, l10n),
-      value: event.pace.label,
-      detail: event.activitySummaryLabel,
-    ),
+    if (event.eventFormat.isDistanceBased)
+      TicketStubCellData(
+        label: l10n.eventsEventDetailDesignPrimitivesVisiblecopyPace,
+        value: event.pace.label,
+        detail: event.activitySummaryLabel,
+      ),
   ];
 }
 
@@ -99,26 +100,42 @@ List<String> _hintsFor(Event event, AppLocalizations l10n) {
   ];
 }
 
-List<ItineraryStep> _itineraryFor(Event event) {
+List<ItineraryStep> _itineraryFor(Event event, AppLocalizations l10n) {
   return event.itinerary
       .map(
         (entry) => ItineraryStep(
-          time: EventFormatters.time(entry.startsAt(event.startTime)),
+          time: EventFormatters.time(
+            event.localTime(entry.startsAt(event.startTime)),
+          ),
           title: entry.title,
-          detail: _itineraryDetail(entry.description, entry.location?.name),
+          detail: _itineraryDetail(entry, l10n),
         ),
       )
       .toList(growable: false);
 }
 
-String? _itineraryDetail(String? description, String? locationName) {
-  final location = locationName?.trim();
-  final detail = description?.trim();
-  final parts = <String>[
-    if (location != null && location.isNotEmpty) location,
-    if (detail != null && detail.isNotEmpty) detail,
-  ];
-  return parts.isEmpty ? null : parts.join(' · ');
+String _itineraryDetail(EventItineraryItem entry, AppLocalizations l10n) {
+  final kind = switch (entry.kind) {
+    EventItineraryKind.gather => l10n.hostsEventItineraryKindGather,
+    EventItineraryKind.activity => l10n.hostsEventItineraryKindActivity,
+    EventItineraryKind.stop => l10n.hostsEventItineraryKindStop,
+    EventItineraryKind.breakTime => l10n.hostsEventItineraryKindBreak,
+    EventItineraryKind.transition => l10n.hostsEventItineraryKindTransition,
+    EventItineraryKind.finish => l10n.hostsEventItineraryKindFinish,
+  };
+  return [
+    kind,
+    if (entry.durationMinutes case final duration?)
+      EventFormatters.durationMinutes(duration),
+    if (entry.routeDistanceMeters case final meters?)
+      l10n.eventsItineraryRouteDistance(
+        distance: EventFormatters.distanceKm(meters / 1000),
+      ),
+    if (entry.location?.name.trim() case final name? when name.isNotEmpty) name,
+    if (entry.description?.trim() case final description?
+        when description.isNotEmpty)
+      description,
+  ].join(' · ');
 }
 
 String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
@@ -137,30 +154,5 @@ String _interactionHint(EventInteractionModel model, AppLocalizations l10n) {
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostRunsThe,
     EventInteractionModel.openFormat =>
       l10n.eventsEventDetailDesignPrimitivesVisiblecopyTheHostShapesThe,
-  };
-}
-
-String _levelLabelFor(ActivityKind activityKind, AppLocalizations l10n) {
-  return switch (activityKind) {
-    ActivityKind.socialRun ||
-    ActivityKind.running ||
-    ActivityKind.walking ||
-    ActivityKind.cycling =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyPace,
-    ActivityKind.pickleball ||
-    ActivityKind.padel ||
-    ActivityKind.tennis ||
-    ActivityKind.badminton =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopySkill,
-    ActivityKind.spinClass ||
-    ActivityKind.yoga ||
-    ActivityKind.strengthTraining =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyIntensity,
-    ActivityKind.pubQuiz ||
-    ActivityKind.barCrawl ||
-    ActivityKind.dinner ||
-    ActivityKind.singlesMixer ||
-    ActivityKind.openActivity =>
-      l10n.eventsEventDetailDesignPrimitivesVisiblecopyEnergy,
   };
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.167.0
-updated: 2026-10-07
+version: 1.170.0
+updated: 2026-10-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -2067,6 +2067,79 @@ consumer. The Functions codebase and package remain the deployment artifact
 boundary; this module split enables narrower explicit targets, not separate
 Firebase packages.
 
+### Event Field Ownership And Optionality
+
+The event document is a lifecycle union, not a form specification. A private
+first save requires identity and a civil schedule; publication additionally
+requires a usable venue, duration, format and admission terms. A field omitted
+from the root `required` array can still be required by the published branch.
+Conversely, a required compatibility string such as `description` may be empty.
+Optional server metadata does not imply a new user input or a guest-facing row.
+
+This classification covers all top-level properties in `events.schema.json`.
+The complete create wizard and private setup are two entry points to the same
+values. Private setup supports saving incomplete events; the complete wizard
+requires publication-ready scheduling and admission values at creation.
+
+| Fields | Ownership / requirement | Entry point and detail behavior |
+|---|---|---|
+| `name` | Host; required for new events (legacy records may omit) | Event name; detail uses authored name, legacy title fallback only for old records. |
+| `clubId`, `organizerId` | Required organizer context | Organizer selection/route; resolved organizer identity, never raw ID inputs. |
+| `startTime` | Required schedule | Date/time; private flow resolves civil input through chosen timezone. Detail uses stored timezone when present; legacy records retain their existing clock interpretation. |
+| `endTime` | Required before publication | Duration/end time; private draft can clear it. No rich guest page for incomplete private records. |
+| `eventCityId`, `eventMarketId`, `eventLocalDate`, `eventLocalStartTime`, `eventTimezone` | Required progressive schedule context | City/timezone/date/time controls; market and instant derived. These progressive fields are not retroactively required on legacy events. |
+| `meetingPoint`, `meetingLocation`, `startingPointLat`, `startingPointLng` | Exact venue required before publication; compatibility mirrors derived | Map/place picker supplies canonical name and coordinates; private setup may hold a name-only draft. Detail/map show resolved venue. |
+| `sourceVenueId` | Optional saved-place provenance | Inherit saved venue; replaced custom location clears provenance. Host-only, no ID field on guest page. |
+| `locationDetails` | Optional nullable directions mirror | Optional directions; blank becomes null. Detail/map omit absent notes. |
+| `description` | Optional authored content; rich document requires a string | Both editors allow blank. Publication materializes omitted description as `''`; detail omits The Plan when blank instead of inventing authored copy. |
+| `eventPhotos`, `photoUrl` | Optional media; cover URL derived from ordered photos | Add/remove/reorder in both flows; empty list clears cover. Detail renders every supplied photo, no empty photo slots; first ordered photo is cover. Legacy `photoUrl` still works. |
+| `itinerary` | Optional ordered run of show | Shared editor in both flows; empty list clears. Detail omits empty itinerary and conditionally shows item metadata. |
+| `eventFormat` | Required before publication; preset with optional customization | Activity/interaction choices; optional custom label and route editor. Detail shows actual format and applicable route expectations. |
+| `distanceKm`, `pace` | Required for distance formats; compatibility defaults otherwise | Distance/pace controls only for distance activities. Non-distance compatibility `0/easy` must never become a skill/intensity/energy claim. |
+| `capacityLimit`, `priceInPaise`, `currency` | Required admission terms; currency contextual default | Capacity/price controls and market currency; detail shows availability and price. Private terms save together under seat reconciliation. |
+| `constraints`, `eventPolicy` | Policy defaults with optional overrides | Existing admission, waitlist, pricing, eligibility and cancellation controls/presets; detail explains effective policy. Advanced preset-managed values are not arbitrary free-form inputs. |
+| `eventOrigin`, `runtimeAccess` | Origin/access decision and derived runtime rules | Catch/external origin and external roster/source controls in full flow; private flow preserves its gated lifecycle. Source URL/ID are operational provenance, not guest marketing links. |
+| `status`, `cancelledAt`, `cancellationReason` | Lifecycle command; optional nullable reason/time | Cancellation flow, not create form. Cancellation reason appears only on a cancelled event when nonblank. |
+| `publicationState`, `publicRegistrationEnabled`, `publicRegistrationMode` | Separate lifecycle decisions | Visibility/registration actions, never inferred from content completion or price. Guest entry points obey effective state. |
+| `setupDefaults` | Derived provenance of accepted defaults | Explicit inherit choices; never edit raw source hashes or revisions. |
+| `setupRevision`, `publicRegistrationRevision`, `planChangeRevision`, `firstPublishedAt`, `createdAt`, `updatedAt` | Server-owned history/concurrency | No input; used by commands and relevant management status. |
+| `bookedCount`, `checkedInCount`, `waitlistedCount`, `genderCounts`, `cohortCounts`, `waitlistedCohortCounts` | Server-maintained aggregates | Render appropriate capacity/attendance information; never editable create fields. |
+| `crossPathsPairHeldCount`, `crossPathsPairConfirmedCount`, `crossPathsPairHeldCohortCounts`, `crossPathsDiscoveryEnabled` | Matching/discovery projections | Server-owned; no ordinary event input or raw guest display. |
+| `discoveryMarketId`, `discoveryCityName`, `discoveryActivityKind`, `discoveryGeoCell`, `discoveryHasOpenSpots`, `discoveryAvailability`, `discoveryOpenCohorts`, `discoveryWaitlistCohorts`, `discoveryInviteRequired`, `discoveryMembershipRequired`, `discoveryManualApprovalRequired`, `discoveryMinAge`, `discoveryMaxAge`, `adminSearch` | Derived search projections | Rebuilt from canonical fields; render canonical city/format/availability/policy, not projection duplicates. |
+| `synthetic`, `seedPrefix`, `scenario`, `demoOps`, `demoOpsId`, `demoOpsCommand` | Seed/demo tooling | No production form controls or ordinary guest rows. |
+
+Nested content follows the same classification:
+
+| Nested values | Entry / omission rule |
+|---|---|
+| `meetingLocation.name/latitude/longitude` | Required when a location exists; picker supplies coordinates. `address`, `placeId`, `notes` are optional. Address/notes render only when supplied; place ID is provider metadata. |
+| `itinerary[].id/kind/offsetMinutes/title` | Item ID generated; kind, relative start and title authored. Removing the item clears all its values. |
+| `itinerary[].durationMinutes/description/location/routeDistanceMeters` | Optional editor fields; omit absent detail. Route distance requires a concrete route path. Editing another item field preserves it; removing the path clears dependent distances. Location is an optional place selection. |
+| `eventFormat.version/activityKind/interactionModel` | Version generated; activity and interaction chosen or preset. |
+| `eventFormat.customActivityLabel` | Optional, blank omitted; if present 1–80 characters. Default activity label renders when absent. |
+| `eventFormat.defaultPlaybookId/defaultModuleIds/eventSuccessPrimitives` | Preset/Event Success workflow configuration; no raw identifiers or JSON inputs in create/detail. |
+| `eventFormat.activityDetails.routePlan` | Optional even for route presets; shared toggle adds/removes it. Movement, shape, group strategy, stop cadence/kinds have explicit controls and guest summary. |
+| `routePlan.path` | Optional path builder; absent path produces no route polyline. |
+| `routePlan.paceGroups` | Optional pace-group choices; guest labels/targets shown only when supplied. IDs/order generated; current choices set target presets. |
+| `routePlan.roleKinds/liveTrackingPolicy` | Host operations controls. Tracking defaults (staleness/retention) remain policy-owned; no guest location-sharing claim inferred. |
+| `eventPhotos[].id/storagePath/position/createdAt/updatedAt/thumbnailUrl/thumbnailStoragePath/moderation` | Upload/order pipeline metadata. Only photo selection/order is authored; no metadata form inputs. Optional thumbnails fall back to original image. |
+| `constraints.minAge/maxAge/maxMen/maxWomen` | Optional eligibility/cap overrides; unset means effective defaults, no empty requirement rows. |
+| `eventPolicy.admission/pricing/cancellation/settlement` | Preset-backed effective behavior, with existing controls for supported overrides. Cohort IDs, revision versions, pricing adjustments, waitlist windows, settlement and provider values remain policy-owned unless a dedicated editor exposes them. Detail renders policy meaning, never raw configuration keys. |
+| `eventOrigin.mode/bookingAuthority/rosterAuthority/provider/externalEventId/externalEventUrl/sourceExternalEventId/adapterVersion/connectedAt/connectedBy` and `runtimeAccess.enabled/publicRuntimeId/walkInPolicy/termsVersion` | External-origin/roster workflow or server ownership. Optional operational values can be skipped; absence does not create guest content. |
+
+Local create drafts also preserve an explicit route opt-out (`routePlanEnabled`);
+legacy drafts without that decision retain their preset fallback. Route paths
+and pace groups can be cleared independently of keeping the route plan.
+
+Private content patches distinguish omission (leave unchanged) from empty arrays
+(clear itinerary/photos). Venue/format/duration use existing set/clear/inherit
+intents. Media upload precedes the journaled attachment command; an uncertain
+attachment must retain its media so an exact retry cannot reference deleted
+objects. Route/format changes retain commitment checks. Publication rechecks the
+same itinerary/path/schedule rules as full creation. Deploy the expanded private
+request/response contract with the corresponding app reader before enabling this
+gated flow; older strict readers reject added response properties.
+
 ### Optional, Nullable, And Patch Fields
 
 Default DTO, view-model, and document fields to plain nullable values when
@@ -2108,6 +2181,26 @@ It does not own multi-document business behavior, ranking algorithms,
 notification fan-out, dynamic Auth/current-time checks, or full Firestore rules.
 Those stay in Functions, repositories, rules, and domain services, consuming
 generated constants/validators where useful.
+
+### Generated event domain projections
+
+`tool/contracts/generate_domain_classes.mjs` owns the Dart declarations for
+`Event`, `EventOrigin`, `EventRuntimeAccess`, `EventMeetingLocation`, and
+`EventItineraryItem`. The Event projection combines root requirements with the
+published/legacy schema branch. Private drafts continue to use their private
+setup response model; they are not decoded as a published Event. Projection
+specs retain explicit compatibility defaults, legacy nullable coordinate/counter
+mirrors, timestamp conversions, and the organizerId/clubId read fallback.
+Derived behavior lives in companion extensions. New persisted fields still need
+an explicit projection decision; generation does not expose every server field.
+
+The private-details command adapter retains set/clear/inherit intent and exact
+retry serialization. Scalar bounds come from generated field constraints, shared
+itinerary/location validation owns nested checks, and cross-field rules remain
+explicit. These presentation-neutral field constraints describe non-null input
+values, not the complete JSON Schema; optional typed values are skipped by the
+adapter, and server schema validation remains authoritative. Blank duration and
+venue inputs produce clear commands rather than invalid set values.
 
 ### Generated Dart Callable Request DTOs
 
@@ -3189,6 +3282,33 @@ re-verification is needed to withdraw account permission. The UI discards
 results after account changes. Campaign selection and send-time dispatch check
 marketing purpose; new form-originated managed WhatsApp delivery remains
 provider-disabled. Existing event-service permission paths are independent.
+
+### Event application approval notifications
+
+`eventApprovalNotificationPreferences` and immutable
+`eventApprovalNotificationReceipts` record a separate event-specific service
+choice for the current authenticated guest. Phone updates (WhatsApp with SMS
+fallback) and email updates start off and can be skipped independently.
+`manageEventApprovalNotifications` fences the expected UID and preference
+revision and requires current verified ownership of each selected endpoint.
+These receipts grant no marketing, attendee, admission or booking authority.
+Existing form choices do not implicitly enable this workflow.
+
+Dispatch rechecks current application approval, response access, organizer,
+event, account and receipt. A newer organizer event-operations withdrawal or
+sender-wide WhatsApp STOP suppresses the phone lane; a newer SMS withdrawal
+also blocks fallback. Marketing-only withdrawal does not stop approval updates.
+Only a fresh explicit event choice can supersede an older withdrawal. Email
+remains an independent choice. Raw endpoint preferences and receipts are removed
+on account deletion; deletion tombstones also fence late work.
+
+Server-only settings, budgets, messages and dispatch proofs use the shared
+Operations and delivery outbox. Disabled or missing settings cannot send.
+WhatsApp must fail technically with confirmed evidence before SMS becomes
+eligible; an uncertain outcome cannot trigger fallback. Email and SMS provider
+acceptance means submission, not delivery. Provider activation and the
+replaceable email transport are owned by the
+[web guest journey](web_surface_architecture.md).
 
 ### Private form profile preparation
 

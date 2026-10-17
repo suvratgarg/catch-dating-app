@@ -98,6 +98,15 @@ export function scanDependencyDirection({snapshot, baseline = emptyBaseline()}) 
       findings.push(finding);
     }
   }
+  const liveKeys = new Set(allFindings.map(findingKey));
+  for (const allowance of baseline.allowedFindings ?? []) {
+    if (liveKeys.has(findingKey(allowance))) continue;
+    findings.push({
+      rule: "staleBaselineAllowance",
+      path: allowance.path,
+      reason: `Remove obsolete baseline allowance: ${findingKey(allowance)}`,
+    });
+  }
 
   return {
     checkedFiles: files.length,
@@ -699,7 +708,7 @@ function printFindings(result) {
   for (const finding of result.findings) {
     console.error(`- ${finding.path}: ${finding.reason}`);
     const detail = finding.import == null ? "" : `: ${finding.import}`;
-    console.error(`  L${finding.line} ${finding.rule}${detail}`);
+    console.error(`  ${finding.line == null ? "" : `L${finding.line} `}${finding.rule}${detail}`);
   }
 }
 
@@ -727,9 +736,10 @@ Scans lib/**/*.dart for dependency-direction violations:
 - presentation widgets importing plugin/platform packages outside controllers
   and services.
 
-The baseline file ratchets existing debt. Normal runs fail only on findings not
-listed in tool/architecture/dependency_direction_baseline.json, except hard-gate
-rules such as barrelPresentationExport and untrackedStateAdapter.`);
+The baseline file ratchets existing debt. Normal runs fail on new findings and
+obsolete allowances in tool/architecture/dependency_direction_baseline.json.
+Hard-gate rules such as barrelPresentationExport and untrackedStateAdapter
+cannot be suppressed by the baseline.`);
 }
 
 function normalizePath(filePath) {

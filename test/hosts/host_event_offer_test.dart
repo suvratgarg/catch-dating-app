@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'forms/event_offer_controller_test_support.dart';
 
 void main() {
   final now = DateTime.utc(2026, 9, 24);
@@ -60,11 +60,17 @@ void main() {
     final offer = HostEventOffer.fromCallableData({
       'effectiveStatus': 'offered',
       'offer': {
-        'offerId': 'offer-1', 'organizerId': 'org', 'eventId': 'event-one',
-        'contactId': 'contact-kabir', 'applicationId': 'response-kabir',
-        'sourceKind': 'formResponse', 'status': 'offered',
-        'generation': 1, 'revision': 4,
-        'expiresAtMillis': now.add(const Duration(days: 1))
+        'offerId': 'offer-1',
+        'organizerId': 'org',
+        'eventId': 'event-one',
+        'contactId': 'contact-kabir',
+        'applicationId': 'response-kabir',
+        'sourceKind': 'formResponse',
+        'status': 'offered',
+        'generation': 1,
+        'revision': 4,
+        'expiresAtMillis': now
+            .add(const Duration(days: 1))
             .millisecondsSinceEpoch,
         'organizerPaymentLink': 'https://pay.example.test/kabir',
         'paymentSnapshot': {
@@ -77,7 +83,8 @@ void main() {
           'paymentInstructions': null,
           'messageTemplate': 'Hi {name}',
           'personalPaymentLink': 'https://pay.example.test/kabir',
-          'expiresAtMillis': now.add(const Duration(days: 1))
+          'expiresAtMillis': now
+              .add(const Duration(days: 1))
               .millisecondsSinceEpoch,
         },
         'manualPayment': {
@@ -96,8 +103,10 @@ void main() {
       },
     });
     expect(offer.paymentSnapshot?.eventPaymentRevision, 3);
-    expect(offer.paymentSnapshot?.personalPaymentLink?.host,
-        'pay.example.test');
+    expect(
+      offer.paymentSnapshot?.personalPaymentLink?.host,
+      'pay.example.test',
+    );
     expect(offer.manualPayment.attestedAmountMinor, 180000);
     expect(offer.isHostAttested, isTrue);
   });
@@ -112,8 +121,11 @@ void main() {
         currentAccountId: () => 'manager-one',
         gateway: gateway,
       );
-      final controller = HostEventOfferController(gateway,
-        outbox: outbox, accountId: 'manager-one');
+      final controller = TestHostEventOfferController(
+        gateway,
+        outbox: outbox,
+        accountId: 'manager-one',
+      );
       addTearDown(controller.dispose);
       final draft = HostOfferBatchDraft(
         organizerId: 'org',
@@ -134,11 +146,15 @@ void main() {
       expect(controller.view.status, HostOfferFlowStatus.failure);
       expect(controller.view.pendingRequestId, 'request_001');
       await expectLater(controller.commit('request_002'), throwsStateError);
-      final restarted = HostEventOfferController(gateway,
+      final restarted = TestHostEventOfferController(
+        gateway,
         outbox: JournalHostOfferCommitOutbox(
           storage: () async => storage,
-          currentAccountId: () => 'manager-one', gateway: gateway,
-        ), accountId: 'manager-one');
+          currentAccountId: () => 'manager-one',
+          gateway: gateway,
+        ),
+        accountId: 'manager-one',
+      );
       addTearDown(restarted.dispose);
       await restarted.recoverPending(organizerId: 'org', eventId: 'event-one');
       expect(restarted.view.pendingRequestId, 'request_001');
@@ -153,9 +169,11 @@ void main() {
     'reference and Host bank attestation cannot imply provider capture',
     () async {
       final gateway = _Gateway();
-      final controller = HostEventOfferController(gateway,
+      final controller = TestHostEventOfferController(
+        gateway,
         mutationOutbox: _FakeMutationOutbox(gateway),
-        accountId: 'manager-one');
+        accountId: 'manager-one',
+      );
       addTearDown(controller.dispose);
       final offered = _offer(HostManualPaymentStatus.none);
       expect(
@@ -204,8 +222,10 @@ void main() {
     final storage = MemoryCommandJournalStorage();
     final offer = _offer(HostManualPaymentStatus.none);
     final action = <String, Object?>{
-      'kind': 'recordEvidence', 'requestId': 'reference_001',
-      'expectedRevision': 2, 'expectedGeneration': 1,
+      'kind': 'recordEvidence',
+      'requestId': 'reference_001',
+      'expectedRevision': 2,
+      'expectedGeneration': 1,
       'evidenceReference': 'BANK-12345',
     };
     final sent = <Map<String, Object?>>[];
@@ -214,160 +234,279 @@ void main() {
       sent.add(payload);
       if (fail) throw StateError('uncertain transport result');
     }
+
     JournalHostOfferMutationOutbox makeOutbox() =>
         JournalHostOfferMutationOutbox(
           storage: () async => storage,
           currentAccountId: () => 'manager-one',
           write: write,
-          refresh: ({required organizerId, required eventId,
-              required contactId}) async => offer,
+          refresh:
+              ({
+                required organizerId,
+                required eventId,
+                required contactId,
+              }) async => offer,
         );
-    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
-      offer: offer, action: action), throwsStateError);
+    await expectLater(
+      makeOutbox().mutate(
+        accountId: 'manager-one',
+        offer: offer,
+        action: action,
+      ),
+      throwsStateError,
+    );
     fail = false;
-    final recovered = await makeOutbox().mutate(accountId: 'manager-one',
-      offer: offer, action: action);
+    final recovered = await makeOutbox().mutate(
+      accountId: 'manager-one',
+      offer: offer,
+      action: action,
+    );
     expect(recovered.offerId, offer.offerId);
     expect(sent, hasLength(2));
     expect(sent[1], sent[0]);
     expect((sent[1]['action']! as Map)['requestId'], 'reference_001');
   });
 
-  test('manual mutation recovery discovers original command after restart',
-      () async {
-    final storage = MemoryCommandJournalStorage();
-    final offer = _offer(HostManualPaymentStatus.none);
-    final sent = <Map<String, Object?>>[];
-    var fail = true;
-    JournalHostOfferMutationOutbox makeOutbox() =>
-        JournalHostOfferMutationOutbox(
-          storage: () async => storage,
-          currentAccountId: () => 'manager-one',
-          write: (payload) async {
-            sent.add(payload);
-            if (fail) throw StateError('lost acknowledgement');
+  test(
+    'manual mutation recovery discovers original command after restart',
+    () async {
+      final storage = MemoryCommandJournalStorage();
+      final offer = _offer(HostManualPaymentStatus.none);
+      final sent = <Map<String, Object?>>[];
+      var fail = true;
+      JournalHostOfferMutationOutbox makeOutbox() =>
+          JournalHostOfferMutationOutbox(
+            storage: () async => storage,
+            currentAccountId: () => 'manager-one',
+            write: (payload) async {
+              sent.add(payload);
+              if (fail) throw StateError('lost acknowledgement');
+            },
+            refresh:
+                ({
+                  required organizerId,
+                  required eventId,
+                  required contactId,
+                }) async => offer,
+          );
+      await expectLater(
+        makeOutbox().mutate(
+          accountId: 'manager-one',
+          offer: offer,
+          action: {
+            'kind': 'recordEvidence',
+            'requestId': 'reference_003',
+            'expectedRevision': 2,
+            'expectedGeneration': 1,
+            'evidenceReference': 'BANK-12345',
           },
-          refresh: ({required organizerId, required eventId,
-              required contactId}) async => offer,
-        );
-    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
-      offer: offer, action: {
-        'kind': 'recordEvidence', 'requestId': 'reference_003',
-        'expectedRevision': 2, 'expectedGeneration': 1,
-        'evidenceReference': 'BANK-12345',
-      }), throwsStateError);
-    final restarted = makeOutbox();
-    final pending = await restarted.pendingMutation(
-      accountId: 'manager-one', organizerId: 'org', eventId: 'event-one');
-    expect(pending?.requestId, 'reference_003');
-    expect(pending?.contactId, offer.contactId);
-    fail = false;
-    final replayed = await restarted.replayMutation(
-      accountId: 'manager-one', organizerId: 'org', eventId: 'event-one');
-    expect(replayed.offerId, offer.offerId);
-    expect(sent, hasLength(2));
-    expect(sent.last, sent.first);
-    expect(await restarted.pendingMutation(accountId: 'manager-one',
-      organizerId: 'org', eventId: 'event-one'), isNull);
-  });
+        ),
+        throwsStateError,
+      );
+      final restarted = makeOutbox();
+      final pending = await restarted.pendingMutation(
+        accountId: 'manager-one',
+        organizerId: 'org',
+        eventId: 'event-one',
+      );
+      expect(pending?.requestId, 'reference_003');
+      expect(pending?.contactId, offer.contactId);
+      fail = false;
+      final replayed = await restarted.replayMutation(
+        accountId: 'manager-one',
+        organizerId: 'org',
+        eventId: 'event-one',
+      );
+      expect(replayed.offerId, offer.offerId);
+      expect(sent, hasLength(2));
+      expect(sent.last, sent.first);
+      expect(
+        await restarted.pendingMutation(
+          accountId: 'manager-one',
+          organizerId: 'org',
+          eventId: 'event-one',
+        ),
+        isNull,
+      );
+    },
+  );
 
-  test('malformed batch receipt leaves saved operation for exact replay',
-      () async {
-    final storage = MemoryCommandJournalStorage();
-    final gateway = _Gateway()..malformedCommit = true;
-    final outbox = JournalHostOfferCommitOutbox(
-      storage: () async => storage,
-      currentAccountId: () => 'manager-one', gateway: gateway);
-    final draft = HostOfferBatchDraft(organizerId: 'org',
-      eventId: 'event-one', rows: [_row(eventId: 'event-one')]);
-    final preview = await gateway.preview(draft);
-    await expectLater(outbox.submit(accountId: 'manager-one',
-      draft: draft, preview: preview, requestId: 'request_003'),
-      throwsFormatException);
-    expect((await outbox.pending(accountId: 'manager-one',
-      organizerId: 'org', eventId: 'event-one'))?.requestId,
-      'request_003');
-    gateway.malformedCommit = false;
-    gateway.wrongHash = true;
-    await expectLater(outbox.submit(accountId: 'manager-one',
-      draft: draft, preview: preview, requestId: 'request_003'),
-      throwsFormatException);
-    expect((await outbox.pending(accountId: 'manager-one',
-      organizerId: 'org', eventId: 'event-one'))?.requestId,
-      'request_003');
-    gateway.wrongHash = false;
-    final receipt = await outbox.submit(accountId: 'manager-one',
-      draft: draft, preview: preview, requestId: 'request_003');
-    expect(receipt?.requestId, 'request_003');
-    expect(gateway.commitCalls,
-      ['request_003', 'request_003', 'request_003']);
-  });
+  test(
+    'malformed batch receipt leaves saved operation for exact replay',
+    () async {
+      final storage = MemoryCommandJournalStorage();
+      final gateway = _Gateway()..malformedCommit = true;
+      final outbox = JournalHostOfferCommitOutbox(
+        storage: () async => storage,
+        currentAccountId: () => 'manager-one',
+        gateway: gateway,
+      );
+      final draft = HostOfferBatchDraft(
+        organizerId: 'org',
+        eventId: 'event-one',
+        rows: [_row(eventId: 'event-one')],
+      );
+      final preview = await gateway.preview(draft);
+      await expectLater(
+        outbox.submit(
+          accountId: 'manager-one',
+          draft: draft,
+          preview: preview,
+          requestId: 'request_003',
+        ),
+        throwsFormatException,
+      );
+      expect(
+        (await outbox.pending(
+          accountId: 'manager-one',
+          organizerId: 'org',
+          eventId: 'event-one',
+        ))?.requestId,
+        'request_003',
+      );
+      gateway.malformedCommit = false;
+      gateway.wrongHash = true;
+      await expectLater(
+        outbox.submit(
+          accountId: 'manager-one',
+          draft: draft,
+          preview: preview,
+          requestId: 'request_003',
+        ),
+        throwsFormatException,
+      );
+      expect(
+        (await outbox.pending(
+          accountId: 'manager-one',
+          organizerId: 'org',
+          eventId: 'event-one',
+        ))?.requestId,
+        'request_003',
+      );
+      gateway.wrongHash = false;
+      final receipt = await outbox.submit(
+        accountId: 'manager-one',
+        draft: draft,
+        preview: preview,
+        requestId: 'request_003',
+      );
+      expect(receipt?.requestId, 'request_003');
+      expect(gateway.commitCalls, [
+        'request_003',
+        'request_003',
+        'request_003',
+      ]);
+    },
+  );
 
   test('manual write acknowledgement binds scope, action and result', () {
-    final id = 'applicationoffer_${sha256.convert(utf8.encode(
-      ['org', 'event-one', 'contact-kabir'].join('\u001f')))
-        .toString().substring(0, 40)}';
+    final id =
+        'applicationoffer_${sha256.convert(utf8.encode(['org', 'event-one', 'contact-kabir'].join('\u001f'))).toString().substring(0, 40)}';
     final payload = <String, Object?>{
       'row': {
-        'organizerId': 'org', 'eventId': 'event-one',
-        'contactId': 'contact-kabir', 'applicationId': 'response-kabir',
+        'organizerId': 'org',
+        'eventId': 'event-one',
+        'contactId': 'contact-kabir',
+        'applicationId': 'response-kabir',
         'sourceKind': 'formResponse',
       },
       'action': {
-        'kind': 'recordEvidence', 'requestId': 'reference_004',
-        'expectedRevision': 2, 'expectedGeneration': 1,
+        'kind': 'recordEvidence',
+        'requestId': 'reference_004',
+        'expectedRevision': 2,
+        'expectedGeneration': 1,
         'evidenceReference': 'BANK-12345',
       },
     };
-    final hash = sha256.convert(utf8.encode(jsonEncode([
-      id, 'recordEvidence', 'reference_004', 2, 1, 'BANK-12345',
-    ]))).toString();
+    final hash = sha256
+        .convert(
+          utf8.encode(
+            jsonEncode([
+              id,
+              'recordEvidence',
+              'reference_004',
+              2,
+              1,
+              'BANK-12345',
+            ]),
+          ),
+        )
+        .toString();
     final result = <String, Object?>{
       'offer': {
-        'offerId': id, 'organizerId': 'org', 'eventId': 'event-one',
-        'contactId': 'contact-kabir', 'applicationId': 'response-kabir',
-        'sourceKind': 'formResponse', 'generation': 1, 'revision': 3,
+        'offerId': id,
+        'organizerId': 'org',
+        'eventId': 'event-one',
+        'contactId': 'contact-kabir',
+        'applicationId': 'response-kabir',
+        'sourceKind': 'formResponse',
+        'generation': 1,
+        'revision': 3,
       },
       'receipt': {
-        'offerId': id, 'requestId': 'reference_004',
-        'requestHash': hash, 'resultingGeneration': 1,
+        'offerId': id,
+        'requestId': 'reference_004',
+        'requestHash': hash,
+        'resultingGeneration': 1,
         'resultingRevision': 3,
       },
       'replayed': false,
     };
-    expect(() => validateOfferMutationAcknowledgement(payload, result),
-      returnsNormally);
-    expect(() => validateOfferMutationAcknowledgement(payload, {
-      ...result, 'offer': {
-        ...(result['offer']! as Map), 'contactId': 'foreign',
-      },
-    }), throwsFormatException);
-    expect(() => validateOfferMutationAcknowledgement(payload, {
-      ...result, 'receipt': {
-        ...(result['receipt']! as Map), 'requestHash': List.filled(64, '0').join(),
-      },
-    }), throwsFormatException);
-    expect(() => validateOfferMutationAcknowledgement(payload, {
-      ...result, 'receipt': {
-        ...(result['receipt']! as Map), 'resultingGeneration': 2,
-      },
-    }), throwsFormatException);
-    expect(() => validateOfferMutationAcknowledgement(payload, {
-      ...result, 'replayed': true, 'offer': {
-        ...(result['offer']! as Map),
-        'applicationId': 'later-response',
-        'sourceKind': 'application', 'generation': 2, 'revision': 5,
-      },
-    }), returnsNormally);
-    expect(() => validateOfferMutationAcknowledgement(payload, {
-      ...result, 'offer': {
-        ...(result['offer']! as Map), 'applicationId': 'later-response',
-      },
-    }), throwsFormatException);
+    expect(
+      () => validateOfferMutationAcknowledgement(payload, result),
+      returnsNormally,
+    );
+    expect(
+      () => validateOfferMutationAcknowledgement(payload, {
+        ...result,
+        'offer': {...(result['offer']! as Map), 'contactId': 'foreign'},
+      }),
+      throwsFormatException,
+    );
+    expect(
+      () => validateOfferMutationAcknowledgement(payload, {
+        ...result,
+        'receipt': {
+          ...(result['receipt']! as Map),
+          'requestHash': List.filled(64, '0').join(),
+        },
+      }),
+      throwsFormatException,
+    );
+    expect(
+      () => validateOfferMutationAcknowledgement(payload, {
+        ...result,
+        'receipt': {...(result['receipt']! as Map), 'resultingGeneration': 2},
+      }),
+      throwsFormatException,
+    );
+    expect(
+      () => validateOfferMutationAcknowledgement(payload, {
+        ...result,
+        'replayed': true,
+        'offer': {
+          ...(result['offer']! as Map),
+          'applicationId': 'later-response',
+          'sourceKind': 'application',
+          'generation': 2,
+          'revision': 5,
+        },
+      }),
+      returnsNormally,
+    );
+    expect(
+      () => validateOfferMutationAcknowledgement(payload, {
+        ...result,
+        'offer': {
+          ...(result['offer']! as Map),
+          'applicationId': 'later-response',
+        },
+      }),
+      throwsFormatException,
+    );
   });
 
-  test('failed detail refresh never reissues acknowledged mutation',
-      () async {
+  test('failed detail refresh never reissues acknowledged mutation', () async {
     final storage = MemoryCommandJournalStorage();
     final offer = _offer(HostManualPaymentStatus.none);
     var writes = 0;
@@ -375,21 +514,40 @@ void main() {
         JournalHostOfferMutationOutbox(
           storage: () async => storage,
           currentAccountId: () => 'manager-one',
-          write: (_) async { writes++; },
-          refresh: ({required organizerId, required eventId,
-              required contactId}) async =>
-              throw StateError('detail unavailable'),
+          write: (_) async {
+            writes++;
+          },
+          refresh:
+              ({
+                required organizerId,
+                required eventId,
+                required contactId,
+              }) async => throw StateError('detail unavailable'),
         );
     final action = <String, Object?>{
-      'kind': 'recordEvidence', 'requestId': 'reference_002',
-      'expectedRevision': 2, 'expectedGeneration': 1,
+      'kind': 'recordEvidence',
+      'requestId': 'reference_002',
+      'expectedRevision': 2,
+      'expectedGeneration': 1,
       'evidenceReference': 'BANK-98765',
     };
-    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
-      offer: offer, action: action), throwsStateError);
+    await expectLater(
+      makeOutbox().mutate(
+        accountId: 'manager-one',
+        offer: offer,
+        action: action,
+      ),
+      throwsStateError,
+    );
     expect(writes, 1);
-    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
-      offer: offer, action: action), throwsA(isA<Exception>()));
+    await expectLater(
+      makeOutbox().mutate(
+        accountId: 'manager-one',
+        offer: offer,
+        action: action,
+      ),
+      throwsA(isA<Exception>()),
+    );
     expect(writes, 1);
   });
 }
@@ -471,15 +629,32 @@ class _Gateway implements HostEventOfferGateway {
       organizerId: malformedCommit ? 'foreign' : draft.organizerId,
       eventId: draft.eventId,
       requestId: requestId,
-      requestHash: wrongHash ? List.filled(64, 'a').join() :
-        sha256.convert(utf8.encode(jsonEncode([
-          [draft.organizerId, draft.eventId, draft.mode, [
-            for (final row in draft.rows)
-              [row.sourceKind.name, row.sourceId, row.contactId,
-                row.expiresAt.millisecondsSinceEpoch,
-                row.organizerPaymentLink?.toString()],
-          ]], preview.planDigest,
-        ]))).toString(),
+      requestHash: wrongHash
+          ? List.filled(64, 'a').join()
+          : sha256
+                .convert(
+                  utf8.encode(
+                    jsonEncode([
+                      [
+                        draft.organizerId,
+                        draft.eventId,
+                        draft.mode,
+                        [
+                          for (final row in draft.rows)
+                            [
+                              row.sourceKind.name,
+                              row.sourceId,
+                              row.contactId,
+                              row.expiresAt.millisecondsSinceEpoch,
+                              row.organizerPaymentLink?.toString(),
+                            ],
+                        ],
+                      ],
+                      preview.planDigest,
+                    ]),
+                  ),
+                )
+                .toString(),
       results: const [
         HostOfferPreviewRow(
           offerId: 'offer-kabir',
@@ -520,28 +695,39 @@ class _FakeMutationOutbox implements HostOfferMutationOutbox {
 
   @override
   Future<HostOfferPendingMutation?> pendingMutation({
-    required String accountId, required String organizerId,
-    required String eventId}) async => null;
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  }) async => null;
 
   @override
-  Future<HostEventOffer> replayMutation({required String accountId,
-    required String organizerId, required String eventId}) =>
-    throw UnimplementedError();
+  Future<HostEventOffer> replayMutation({
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  }) => throw UnimplementedError();
 
   @override
-  Future<HostEventOffer> mutate({required String accountId,
+  Future<HostEventOffer> mutate({
+    required String accountId,
     required HostEventOffer offer,
-    required Map<String, Object?> action}) {
+    required Map<String, Object?> action,
+  }) {
     if (action['kind'] == 'recordEvidence') {
-      return gateway.recordReference(offer: offer,
+      return gateway.recordReference(
+        offer: offer,
         reference: action['evidenceReference']! as String,
-        requestId: action['requestId']! as String);
+        requestId: action['requestId']! as String,
+      );
     }
-    return gateway.reviewReference(offer: offer,
+    return gateway.reviewReference(
+      offer: offer,
       decision: HostManualPaymentStatus.values.byName(
-        action['decision']! as String),
+        action['decision']! as String,
+      ),
       note: action['reviewNote']! as String,
       bankReceiptChecked: action['bankReceiptChecked']! as bool,
-      requestId: action['requestId']! as String);
+      requestId: action['requestId']! as String,
+    );
   }
 }

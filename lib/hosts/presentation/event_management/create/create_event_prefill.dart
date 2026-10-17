@@ -90,7 +90,11 @@ class CreateEventPrefill {
         maxWomen: _optionalIntText(
           admission.cohortCapacityLimits[EventCohortIds.womenInterestedInMen],
         ),
-        admissionPreset: _admissionPresetName(admission.format),
+        admissionPreset:
+            admission.approvedMembersSkipReview &&
+                admission.format == EventAdmissionFormat.manualApproval
+            ? 'requestToJoinMembersExempt'
+            : _admissionPresetName(admission.format),
         // Private invite secrets and uploaded photos are intentionally not
         // copied into a new event.
         dynamicPricingEnabled: policy.usesDemandPricing,
@@ -149,6 +153,7 @@ class CreateEventPrefill {
       ),
       EventAdmissionFormat.manualApproval =>
         EventPolicyBundle.requestToJoinEvent(
+          approvedMembersSkipReview: admission.approvedMembersSkipReview,
           capacityLimit: event.capacityLimit,
           basePriceInPaise: policy.basePriceInPaise,
           cancellationPolicy: policy.cancellationPolicy,

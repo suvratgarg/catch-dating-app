@@ -483,6 +483,17 @@ export {validateParticipantOrganizerCardDocument} from "./validators/participant
 export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
 export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateEventApprovalPreferenceDocument} from "./validators/eventApprovalPreferenceDocument";
+export {validateEventApprovalNotificationReceiptDocument} from "./validators/eventApprovalNotificationReceiptDocument";
+export {validateEventApprovalNotificationSettingsDocument} from "./validators/eventApprovalNotificationSettingsDocument";
+export {validateEventApprovalNotificationBudgetDocument} from "./validators/eventApprovalNotificationBudgetDocument";
+export {validateEventApprovalNotificationMessageDocument} from "./validators/eventApprovalNotificationMessageDocument";
+export {validateEventApprovalNotificationDispatchDocument} from "./validators/eventApprovalNotificationDispatchDocument";
+export {validateEventApprovalNotificationIntent} from "./validators/eventApprovalNotificationIntent";
+export {validateEventApprovalNotificationWork} from "./validators/eventApprovalNotificationWork";
+export {validateEventApprovalNotificationAttempt} from "./validators/eventApprovalNotificationAttempt";
+export {validateManageEventApprovalNotificationsCallablePayload} from "./validators/manageEventApprovalNotificationsInput";
+export {validateManageEventApprovalNotificationsCallableResponse} from "./validators/manageEventApprovalNotificationsOutput";
 export {validateGetEventViewerStateCallablePayload} from "./validators/getEventViewerStateInput";
 export {validateGetEventViewerStateCallableResponse} from "./validators/getEventViewerStateOutput";
 export {validateListParticipantActivityCallablePayload} from "./validators/listParticipantActivityInput";

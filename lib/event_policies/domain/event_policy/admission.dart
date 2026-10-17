@@ -247,6 +247,7 @@ class EventAdmissionPolicy {
     this.inviteRequired = false,
     this.membershipRequired = false,
     this.manualApprovalRequired = false,
+    this.approvedMembersSkipReview = false,
     this.privateAccessPolicy = const EventPrivateAccessPolicy.none(),
     this.cohortCapacityLimits = const {},
     this.balancedRatioPolicy,
@@ -278,11 +279,13 @@ class EventAdmissionPolicy {
 
   const EventAdmissionPolicy.manualApproval({
     required int capacityLimit,
+    bool approvedMembersSkipReview = false,
     EventWaitlistPolicy waitlistPolicy = const EventWaitlistPolicy.disabled(),
   }) : this(
          format: EventAdmissionFormat.manualApproval,
          capacityLimit: capacityLimit,
          manualApprovalRequired: true,
+         approvedMembersSkipReview: approvedMembersSkipReview,
          waitlistPolicy: waitlistPolicy,
        );
 
@@ -324,6 +327,7 @@ class EventAdmissionPolicy {
   final bool inviteRequired;
   final bool membershipRequired;
   final bool manualApprovalRequired;
+  final bool approvedMembersSkipReview;
   final EventPrivateAccessPolicy privateAccessPolicy;
   final Map<String, int> cohortCapacityLimits;
   final BalancedRatioPolicy? balancedRatioPolicy;
@@ -338,6 +342,7 @@ class EventAdmissionPolicy {
     inviteRequired: inviteRequired,
     membershipRequired: membershipRequired,
     manualApprovalRequired: manualApprovalRequired,
+    approvedMembersSkipReview: approvedMembersSkipReview,
     privateAccessPolicy: privateAccessPolicy,
     cohortCapacityLimits: cohortCapacityLimits,
     balancedRatioPolicy: balancedRatioPolicy,
@@ -358,6 +363,7 @@ class EventAdmissionPolicy {
       inviteRequired: _boolValue(json['inviteRequired']),
       membershipRequired: _boolValue(json['membershipRequired']),
       manualApprovalRequired: _boolValue(json['manualApprovalRequired']),
+      approvedMembersSkipReview: _boolValue(json['approvedMembersSkipReview']),
       privateAccessPolicy: _mapValue(json['privateAccessPolicy']) == null
           ? const EventPrivateAccessPolicy.none()
           : EventPrivateAccessPolicy.fromJson(
@@ -385,6 +391,7 @@ class EventAdmissionPolicy {
     'inviteRequired': inviteRequired,
     'membershipRequired': membershipRequired,
     'manualApprovalRequired': manualApprovalRequired,
+    if (approvedMembersSkipReview) 'approvedMembersSkipReview': true,
     'privateAccessPolicy': privateAccessPolicy.toJson(),
     'cohortCapacityLimits': cohortCapacityLimits,
     'balancedRatioPolicy': balancedRatioPolicy?.toJson(),

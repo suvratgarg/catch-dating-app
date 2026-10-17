@@ -290,7 +290,7 @@ class EventDetailTicketSurface extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             CatchEventThumbnail(
-              photoUrl: event.photoUrl,
+              photoUrl: event.primaryPhotoUrl,
               pace: event.pace,
               activityKind: event.activityKind,
               scrim: CatchMediaOverlayVariant.none,
@@ -425,7 +425,7 @@ class HeroTimeChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            EventFormatters.shortWeekday(event.startTime).toUpperCase(),
+            EventFormatters.shortWeekday(event.localStartTime).toUpperCase(),
             style: CatchTextStyles.monoLabel(
               context,
               color: d.ink.withValues(alpha: CatchOpacity.eventHeroMutedInk),
@@ -433,7 +433,7 @@ class HeroTimeChip extends StatelessWidget {
           ),
           gapH2,
           Text(
-            EventFormatters.time(event.startTime),
+            EventFormatters.time(event.localStartTime),
             style: CatchTextStyles.sectionTitle(
               context,
               color: d.ink,
