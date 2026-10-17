@@ -1,16 +1,20 @@
+import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_record_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_whatsapp_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -390,4 +394,55 @@ Widget hostCustomerActiveMergesSectionStates(BuildContext context) =>
         ],
         onUndo: (_) {},
       ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Loading composition',
+  type: HostCustomerDetailBody,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerDetailLoadingStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => CatchSkeleton.content(
+        child: HostCustomerDetailBody.loading(
+          organizerId: customer.organizerId,
+          contactId: customer.contactId,
+          displayName: customer.displayName,
+          manualTagLabel: context.l10n.hostCustomersManualTags,
+          noteBody: context.l10n.hostCustomersMemoryHelp,
+          currentUid: HostOperationsFixtures.hostUid,
+          selectedView: HostCustomerDetailView.overview,
+          onOpenMemory: () {},
+        ),
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Available record commands',
+  type: HostCustomerRecordMenu,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerRecordMenuStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (_) => HostCustomerRecordMenu(
+        enabled: true,
+        canMessage: true,
+        onMessage: () async {},
+        onLogOutreach: () async {},
+        onRemove: () async {},
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'WhatsApp handoff draft',
+  type: HostCustomerWhatsappHandoffSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerWhatsappHandoffSheetStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerWhatsappHandoffSheet(customer: customer),
     );

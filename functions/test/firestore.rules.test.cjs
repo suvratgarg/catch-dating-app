@@ -2281,6 +2281,18 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps approval notification contacts and authority server-only", async () => {
+      for (const suffix of ["Preferences", "Receipts", "Settings", "Budgets", "Messages", "Dispatches"]) {
+        const path = ["eventApprovalNotification" + suffix, "private-1"];
+        await seed(path, {uid: "runner-1", organizerId: "club-1"});
+        for (const db of [authedDb("host-1"), authedDb("runner-1"),
+          testEnv.unauthenticatedContext().firestore()]) {
+          await assertFails(getDoc(doc(db, ...path)));
+          await assertFails(setDoc(doc(db, ...path), {enabled: true}));
+        }
+      }
+    });
+
     it("keeps organizer communication preferences server-only", async () => {
       await seed(["organizerCommunicationPreferences", "club-1_runner-1"], {
         organizerId: "club-1",

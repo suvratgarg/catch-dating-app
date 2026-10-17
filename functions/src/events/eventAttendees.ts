@@ -1,3 +1,6 @@
+import {publicGuestMembership} from "./publicRegistration/authority";
+import {assertPublicRegistrationPolicy, publicRegistrationMode} from
+  "./publicRegistration/policy";
 import {heldSeatCount} from "./seatAuthority/seatAuthority";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {createHash} from "crypto";
@@ -876,21 +879,14 @@ export async function registerPublicEventHandler(
       return attendee.status === "registered" ||
         attendee.status === "checkedIn" ? count + 1 : count;
     }, 0) ?? 0;
-    assertPublicRegistrationEligibility({
-      organizerVisibility: organizer.appVisibility,
-      organizerPublishStatus: organizer.publicPage?.publishStatus,
-      eventStatus: event.status,
-      eventEndTimeMs: event.endTime.toMillis(),
-      publicRegistrationEnabled: event.publicRegistrationEnabled === true,
-      admissionFormat: policy.admission.format,
-      inviteRequired: policy.admission.inviteRequired === true,
-      membershipRequired: policy.admission.membershipRequired === true,
-      manualApprovalRequired:
-        policy.admission.manualApprovalRequired === true,
-      priceInPaise: policy.pricing.basePriceInPaise,
-    });
-
     const now = deps.timestamp();
+    assertPublicRegistrationPolicy(event, organizer, "free", now.toMillis(),
+      await publicGuestMembership({db, tx, event, uid,
+        nowMillis: now.toMillis()}));
+    if (publicRegistrationMode(event) !== "free") {
+      throw new HttpsError("failed-precondition",
+        "Registration must match the event's current terms.");
+    }
     const permissionReceipts = registrationReplay ? [] :
       publicRegistrationPermissionReceipts({
         existing: communicationPreferenceSnap.exists ?
@@ -1203,57 +1199,6 @@ function splitSupportedPhone(phoneE164: string): {
     }
   }
   return {countryCode: "", nationalNumber: phoneE164};
-}
-
-export function assertPublicRegistrationEligibility(params: {
-  organizerVisibility: string | undefined;
-  organizerPublishStatus: string | undefined;
-  eventStatus: string;
-  eventEndTimeMs: number;
-  publicRegistrationEnabled: boolean;
-  admissionFormat: string;
-  inviteRequired: boolean;
-  membershipRequired: boolean;
-  manualApprovalRequired: boolean;
-  priceInPaise: number;
-}): void {
-  if (
-    params.organizerVisibility !== "discoverable" ||
-    params.organizerPublishStatus !== "published"
-  ) {
-    throw new HttpsError(
-      "failed-precondition",
-      "This organizer has not published public registration."
-    );
-  }
-  if (params.eventStatus === "cancelled" ||
-      params.eventEndTimeMs <= Date.now()) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Registration is closed for this event."
-    );
-  }
-  if (!params.publicRegistrationEnabled) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Website registration is not enabled for this event."
-    );
-  }
-  if (params.priceInPaise > 0) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Website OTP registration cannot bypass payment for a paid event."
-    );
-  }
-  if (params.admissionFormat !== "open" ||
-      params.inviteRequired ||
-      params.membershipRequired ||
-      params.manualApprovalRequired) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Website OTP registration currently supports open-admission events."
-    );
-  }
 }
 
 export function publicRegistrationStatus(params: {

@@ -7610,16 +7610,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsEventDetailDesignPrimitivesVisiblecopyPace => 'Pace';
 
   @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopySkill => 'Skill';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyIntensity =>
-      'Intensity';
-
-  @override
-  String get eventsEventDetailDesignPrimitivesVisiblecopyEnergy => 'Energy';
-
-  @override
   String get eventsEventDetailDesignPrimitivesVisiblecopyOpenSignUp =>
       'Open sign-up';
 
@@ -8128,23 +8118,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clubsClubDetailBodyLabelEst => 'Established';
-
-  @override
-  String eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt({
-    required Object distanceKm,
-    required Object toLowerCase,
-    required Object toLowerCase2,
-    required Object locationName,
-  }) {
-    return 'A $distanceKm $toLowerCase at a $toLowerCase2 pace from $locationName.';
-  }
-
-  @override
-  String eventsEventDetailOverviewSectionVisiblecopyAHostedTolowercaseBuilt({
-    required Object toLowerCase,
-  }) {
-    return 'A hosted $toLowerCase built around a clear arrival, shared activity, and low-pressure follow-up.';
-  }
 
   @override
   String get eventsEventDetailOverviewSectionTitleAttendanceMatters =>
@@ -9531,9 +9504,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventDetailsStepVisiblecopyRequired => 'Required';
-
-  @override
-  String get hostsEventDetailsStepVisiblecopyTooShort => 'Too short';
 
   @override
   String get hostsEventDetailsStepVisiblecopyTooLong => 'Too long';
@@ -25202,4 +25172,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsTeamApprovalRequired => 'Owner approval required';
+
+  @override
+  String eventsItineraryRouteDistance({required String distance}) {
+    return 'At $distance on the route';
+  }
+
+  @override
+  String get hostsItineraryRouteDistance => 'Distance along route (meters)';
+
+  @override
+  String eventsRoutePaceGroup({required String label, required String pace}) {
+    return '$label · $pace/km';
+  }
+
+  @override
+  String get hostsCreateEventPolicyStateLabelMembersSkipReview =>
+      'Members skip review';
+
+  @override
+  String get hostsCreateEventPolicyStateTitleMembersSkipReview =>
+      'Members skip review';
+
+  @override
+  String get hostsCreateEventPolicyStateDescriptionMembersSkipReview =>
+      'Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.';
 }

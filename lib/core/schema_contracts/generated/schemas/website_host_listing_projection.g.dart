@@ -298,8 +298,10 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'minLength': 1,
           },
           'endTime': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
           },
           'timezone': <String, Object?>{
             'type': 'string',
@@ -318,6 +320,192 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           },
           'summary': <String, Object?>{
             'type': 'string',
+          },
+          'photoUrl': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+            'x-catch-ownership': 'callable-owned',
+          },
+          'meetingLocation': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+            'required': <Object?>[
+              'name',
+              'latitude',
+              'longitude',
+            ],
+            'properties': <String, Object?>{
+              'name': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'address': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 500,
+              },
+              'placeId': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 256,
+              },
+              'latitude': <String, Object?>{
+                'type': 'number',
+                'minimum': -90,
+                'maximum': 90,
+              },
+              'longitude': <String, Object?>{
+                'type': 'number',
+                'minimum': -180,
+                'maximum': 180,
+              },
+              'notes': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 1000,
+              },
+            },
+          },
+          'itinerary': <String, Object?>{
+            'type': 'array',
+            'maxItems': 40,
+            'items': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'description': 'One public, event-local run-of-show entry. Offset is measured from the event start so rescheduling does not rewrite the itinerary.',
+              'required': <Object?>[
+                'id',
+                'kind',
+                'offsetMinutes',
+                'title',
+              ],
+              'properties': <String, Object?>{
+                'id': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 80,
+                  'pattern': '^[A-Za-z0-9_-]+\$',
+                },
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'gather',
+                    'activity',
+                    'stop',
+                    'break',
+                    'transition',
+                    'finish',
+                  ],
+                },
+                'offsetMinutes': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 1440,
+                },
+                'durationMinutes': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 1,
+                  'maximum': 1440,
+                },
+                'title': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'description': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 500,
+                },
+                'location': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                      'required': <Object?>[
+                        'name',
+                        'latitude',
+                        'longitude',
+                      ],
+                      'properties': <String, Object?>{
+                        'name': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                        'address': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 500,
+                        },
+                        'placeId': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'minLength': 1,
+                          'maxLength': 256,
+                        },
+                        'latitude': <String, Object?>{
+                          'type': 'number',
+                          'minimum': -90,
+                          'maximum': 90,
+                        },
+                        'longitude': <String, Object?>{
+                          'type': 'number',
+                          'minimum': -180,
+                          'maximum': 180,
+                        },
+                        'notes': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 1000,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'routeDistanceMeters': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 0,
+                  'maximum': 1000000,
+                },
+              },
+            },
+            'x-catch-ownership': 'callable-owned',
           },
           'requirements': <String, Object?>{
             'type': 'string',
@@ -1283,8 +1471,10 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'minLength': 1,
         },
         'endTime': <String, Object?>{
-          'type': 'string',
-          'minLength': 1,
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
         },
         'timezone': <String, Object?>{
           'type': 'string',
@@ -1303,6 +1493,192 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         },
         'summary': <String, Object?>{
           'type': 'string',
+        },
+        'photoUrl': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'format': 'uri',
+              'maxLength': 2048,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+          'x-catch-ownership': 'callable-owned',
+        },
+        'meetingLocation': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+          'required': <Object?>[
+            'name',
+            'latitude',
+            'longitude',
+          ],
+          'properties': <String, Object?>{
+            'name': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'address': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 500,
+            },
+            'placeId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 256,
+            },
+            'latitude': <String, Object?>{
+              'type': 'number',
+              'minimum': -90,
+              'maximum': 90,
+            },
+            'longitude': <String, Object?>{
+              'type': 'number',
+              'minimum': -180,
+              'maximum': 180,
+            },
+            'notes': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
+            },
+          },
+        },
+        'itinerary': <String, Object?>{
+          'type': 'array',
+          'maxItems': 40,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'description': 'One public, event-local run-of-show entry. Offset is measured from the event start so rescheduling does not rewrite the itinerary.',
+            'required': <Object?>[
+              'id',
+              'kind',
+              'offsetMinutes',
+              'title',
+            ],
+            'properties': <String, Object?>{
+              'id': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 80,
+                'pattern': '^[A-Za-z0-9_-]+\$',
+              },
+              'kind': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'gather',
+                  'activity',
+                  'stop',
+                  'break',
+                  'transition',
+                  'finish',
+                ],
+              },
+              'offsetMinutes': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 1440,
+              },
+              'durationMinutes': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 1,
+                'maximum': 1440,
+              },
+              'title': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'description': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 500,
+              },
+              'location': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                    'required': <Object?>[
+                      'name',
+                      'latitude',
+                      'longitude',
+                    ],
+                    'properties': <String, Object?>{
+                      'name': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 240,
+                      },
+                      'address': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 500,
+                      },
+                      'placeId': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'minLength': 1,
+                        'maxLength': 256,
+                      },
+                      'latitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -90,
+                        'maximum': 90,
+                      },
+                      'longitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -180,
+                        'maximum': 180,
+                      },
+                      'notes': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 1000,
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'routeDistanceMeters': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 0,
+                'maximum': 1000000,
+              },
+            },
+          },
+          'x-catch-ownership': 'callable-owned',
         },
         'requirements': <String, Object?>{
           'type': 'string',

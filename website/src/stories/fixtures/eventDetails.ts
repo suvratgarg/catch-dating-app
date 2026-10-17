@@ -38,10 +38,22 @@ const records = buildPublicEventDetailRecords(
   Date.parse("2026-07-24T00:00:00.000Z")
 );
 
-export const catchEventDetailFixture = requireEvent(
-  "event-host-post-report",
-  records
-);
+export const catchEventDetailFixture: EventDetailRecord = {
+  ...requireEvent("event-host-post-report", records),
+  title: "A table for strangers.", activityKind: "dinner",
+  listing: {...appCreatedListing, city: "Mumbai", country: "India"},
+  photoUrl: "/assets/events/dinner-invitation-preview.png",
+  date: "Saturday, October 24, 2026 · 7:00–10:00 PM", timezone: "Asia/Kolkata",
+  startTime: "2026-10-24T13:30:00.000Z", endTime: "2026-10-24T16:30:00.000Z",
+  summary: "Good food. New faces. A few unexpected connections. Join us for a relaxed evening around one table, with a host to get the conversation started.",
+  location: "Bandra, Mumbai", locationDetails: "Exact address shared after booking",
+  priceLabel: "₹1,500", eventReviews: [],
+  itinerary: [
+    {id: "arrive", kind: "gather", offsetMinutes: 0, title: "Settle in", description: "Meet your host and find your place at the table."},
+    {id: "dinner", kind: "activity", offsetMinutes: 30, title: "Dinner & conversation"},
+    {id: "finish", kind: "finish", offsetMinutes: 180, title: "One last goodbye"},
+  ],
+};
 export const externalEventDetailFixture = requireEvent(
   "external-afterfly-takeoff-run-rave",
   records

@@ -1,3 +1,4 @@
+import {GuestEventEntry} from "./GuestEventEntry";
 import { useParams, useSearchParams } from "react-router";
 import { publicCheckoutCopy as copy } from "../../content/events";
 import {
@@ -24,7 +25,7 @@ export function PublicBookingPage() {
         body={copy.bookingBody}
       >
         {validPayment && /^[A-Za-z0-9_:-]{1,180}$/u.test(eventId) ? (
-          <PublicPaidEventRegistration
+          paymentId === null ? <GuestEventEntry eventId={eventId} /> : <PublicPaidEventRegistration
             key={`${eventId}:${paymentId ?? "latest"}`}
             initialPaymentId={paymentId}
             eventId={eventId}

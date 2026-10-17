@@ -150,7 +150,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                       CatchButton(
                         label: context.l10n.hostsRoutePathBuilderSave,
                         fullWidth: true,
-                        onPressed: coordinates.length < 2
+                        onPressed: coordinates.length == 1
                             ? null
                             : () => Navigator.of(
                                 context,

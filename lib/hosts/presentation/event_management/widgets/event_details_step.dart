@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -185,6 +186,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       contract: CatchContractConstraints
                           .createEventCallablePayloadEventFormatCustomActivityLabel,
                       controller: widget.customActivityLabelController,
+                      labelMode: CatchFieldLabelTextMode.optional,
                       inputHint: context
                           .l10n
                           .hostsEventDetailsStepPlaceholderSalsaNight,
@@ -193,17 +195,12 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       textInputAction: TextInputAction.next,
                       onValidate: (value) {
                         final normalized = value?.trim() ?? '';
-                        if (normalized.isEmpty) {
-                          return context
-                              .l10n
-                              .hostsEventDetailsStepVisiblecopyRequired;
-                        }
-                        if (normalized.length < 3) {
-                          return context
-                              .l10n
-                              .hostsEventDetailsStepVisiblecopyTooShort;
-                        }
-                        if (normalized.length > 64) {
+                        if (normalized.isNotEmpty &&
+                            !acceptsContractValue(
+                              CatchContractConstraints
+                                  .createEventCallablePayloadEventFormatCustomActivityLabel,
+                              normalized,
+                            )) {
                           return context
                               .l10n
                               .hostsEventDetailsStepVisiblecopyTooLong;
@@ -389,6 +386,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
               ),
               if (_showItinerary) ...[
                 if (widget.selectedActivityKind == ActivityKind.openActivity ||
+                    widget.selectedActivityKind.isDistanceBased ||
+                    widget.selectedActivityKind == ActivityKind.barCrawl ||
                     widget.routePlan != null)
                   RouteEventPlanEditor(
                     activityKind: widget.selectedActivityKind,
@@ -399,6 +398,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ),
                 EventItineraryEditor(
                   items: widget.itinerary,
+                  hasRoutePath: (widget.routePlan?.path.length ?? 0) >= 2,
                   onChanged: widget.onItineraryChanged,
                   defaultLocation: widget.defaultItineraryLocation,
                   onPickLocation: widget.onPickItineraryLocation,

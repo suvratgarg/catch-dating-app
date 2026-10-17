@@ -3,6 +3,7 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import {spawnSync} from "node:child_process";
+import {createHash} from "node:crypto";
 import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
@@ -27,6 +28,93 @@ const workflow = (name) => repositorySnapshot.readText(
   {required: true},
 );
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
+
+function captureLabelFixture(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-label-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const step = extractSteps(workflow("flutter-ci.yml")).find(
+    (entry) => entry.name === "Label synthetic RSVP widget captures",
+  );
+  assert.ok(step?.run);
+  // Relocate only the existing absolute fixture roots; execute the real shell
+  // and Python labeler, including its relative nested roots and manifest.
+  const command = step.run.replaceAll("/tmp/catch-", `${root}/legacy/catch-`);
+  const output = path.join(root, "output");
+  const write = (relative, bytes = "synthetic pixels") => {
+    const file = path.join(root, relative);
+    fs.mkdirSync(path.dirname(file), {recursive: true});
+    fs.writeFileSync(file, bytes);
+    return file;
+  };
+  const run = () => spawnSync("bash", ["-e", "-c", command], {
+    cwd: root,
+    encoding: "utf8",
+    env: {...process.env, CAPTURE_OUTPUT_DIR: output, CAPTURE_SHARD_INDEX: "2",
+      GITHUB_SHA: "a".repeat(40), GITHUB_RUN_ID: "123", GITHUB_RUN_ATTEMPT: "4"},
+  });
+  return {root, output, write, run};
+}
+
+test("synthetic capture retention preserves nested themes and existing flat source labels", (t) => {
+  const fixture = captureLabelFixture(t);
+  fixture.write("artifacts/response-detail-review/after/response/light.png", "response light");
+  fixture.write("artifacts/response-detail-review/after/response/dark.png", "response dark");
+  fixture.write("artifacts/ui-captures/audience-person-review/person/light.png", "person light");
+  fixture.write("legacy/catch-event-chat-review/directory-loaded.png", "flat directory");
+  fixture.write("legacy/catch-event-chat-review/nested/ignored.png");
+  fixture.write("artifacts/ui-captures/audience-person-review/person/readme.txt");
+  const result = fixture.run();
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(fs.readFileSync(path.join(fixture.output, "manifest.json"), "utf8"));
+  assert.equal(manifest.sourceSha, "a".repeat(40));
+  assert.equal(manifest.runId, "123");
+  assert.equal(manifest.runAttempt, "4");
+  assert.equal(manifest.shardIndex, "2");
+  assert.match(manifest.label, /synthetic.*not live or visually reviewed/u);
+  assert.deepEqual(manifest.captures.map((entry) => entry.path).sort(), [
+    "audience-person-catalog/person/light.png",
+    "audience-response-catalog/response/dark.png",
+    "audience-response-catalog/response/light.png",
+    "event-chat/directory-loaded.png",
+  ]);
+  for (const entry of manifest.captures) {
+    const expectedSource = entry.path.startsWith("audience-person-")
+      ? "test/ui_captures/fixtures/host_audience_journey_fixture_test.dart"
+      : entry.path.startsWith("audience-response-")
+        ? "test/ui_captures/response_detail_preview_test.dart"
+        : "test/chats/event_chat_directory_widget_test.dart";
+    assert.equal(entry.sourceTest, expectedSource);
+    assert.equal(entry.sha256, createHash("sha256")
+      .update(fs.readFileSync(path.join(fixture.output, entry.path))).digest("hex"));
+  }
+});
+
+test("synthetic capture retention permits absent unselected groups", (t) => {
+  const fixture = captureLabelFixture(t);
+  const result = fixture.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.existsSync(fixture.output), false);
+});
+
+for (const position of ["root", "ancestor", "directory", "file"]) {
+  test(`synthetic capture retention refuses a nested ${position} symlink`, (t) => {
+    const fixture = captureLabelFixture(t);
+    const external = fixture.write("outside/light.png", "must not be retained");
+    const relative = {
+      root: "artifacts/ui-captures/audience-person-review",
+      ancestor: "artifacts/ui-captures",
+      directory: "artifacts/ui-captures/audience-person-review/person",
+      file: "artifacts/ui-captures/audience-person-review/person/light.png",
+    }[position];
+    const link = path.join(fixture.root, relative);
+    fs.mkdirSync(path.dirname(link), {recursive: true});
+    fs.symlinkSync(position === "file" ? external : path.dirname(external), link);
+    const result = fixture.run();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /Refusing symlink capture (?:root|entry)/u);
+    assert.equal(fs.existsSync(path.join(fixture.output, "manifest.json")), false);
+  });
+}
 
 test("complete CI consumers derive source inventories before their semantic checks", () => {
   const selectedJob = (file, job) => {
@@ -1117,6 +1205,61 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
   }
 });
 
+test("Widgetbook first pass selects every package suite and preserves golden obligations", () => {
+  const source = workflow("visual-integration-ci.yml");
+  const steps = extractSteps(source.split("  goldens:\n")[1].split("  native-smoke:\n")[0]);
+  const first = steps.findIndex((step) => step.name === "Widgetbook package suites (pass 1)");
+  const second = steps.findIndex((step) => step.name === "Widgetbook corpus goldens (pass 2, determinism)");
+  assert.ok(first >= 0 && second > first, "whole package precedes primitive determinism pass");
+  assert.equal(steps[first].run, "(cd widgetbook && flutter test --concurrency=1 test)");
+  assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
+  assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
+  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (0.30% raster tolerance)"]) {
+    assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
+  }
+  assert.equal(steps.find((step) => step.name === "Flutter goldens (0.30% raster tolerance)").run,
+    "flutter test --concurrency=1 test/goldens");
+  const upload = namedStep(source, "Retain golden failure diffs");
+  assert.match(upload, /if: failure\(\)/u);
+  assert.match(upload, /uses: actions\/upload-artifact@/u);
+  assert.match(upload, /path: test\/goldens\/failures\//u);
+});
+
+for (const exitCode of [0, 37]) {
+  test(`Widgetbook workflow shell preserves working directory, arguments and exit ${exitCode}`, (t) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "widgetbook-workflow-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const packageRoot = path.join(root, "widgetbook");
+    const bin = path.join(root, "bin");
+    fs.mkdirSync(packageRoot);
+    fs.mkdirSync(bin);
+    const trace = path.join(root, "invocation.json");
+    // This executes the actual workflow shell, not Flutter discovery or rendering.
+    fs.writeFileSync(path.join(bin, "flutter"), `#!/usr/bin/env node
+require("node:fs").writeFileSync(process.env.TRACE, JSON.stringify({cwd: process.cwd(), args: process.argv.slice(2)}));
+process.exit(Number(process.env.FAKE_FLUTTER_EXIT));
+`, {mode: 0o755});
+    const steps = extractSteps(workflow("visual-integration-ci.yml"));
+    for (const [name, target, cwd] of [
+      ["Widgetbook package suites (pass 1)", "test", packageRoot],
+      ["Widgetbook corpus goldens (pass 2, determinism)", "test/primitive_goldens_test.dart", packageRoot],
+      ["Flutter goldens (0.30% raster tolerance)", "test/goldens", root],
+    ]) {
+      const step = steps.find((entry) => entry.name === name);
+      assert.ok(step?.run, name);
+      fs.rmSync(trace, {force: true});
+      const result = spawnSync("bash", ["-e", "-c", step.run], {cwd: root, encoding: "utf8",
+        env: {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+          TRACE: trace, FAKE_FLUTTER_EXIT: String(exitCode)},
+      });
+      assert.equal(result.status, exitCode, `${name}: ${result.stderr}`);
+      assert.deepEqual(JSON.parse(fs.readFileSync(trace, "utf8")), {
+        cwd: fs.realpathSync(cwd), args: ["test", "--concurrency=1", target],
+      });
+    }
+  });
+}
+
 test("headless journeys start independently of macOS rendering and native smoke", () => {
   const source = workflow("visual-integration-ci.yml");
   const headless = source.split("  headless-journeys:\n")[1]?.split("  goldens:\n")[0];
@@ -1128,7 +1271,7 @@ test("headless journeys start independently of macOS rendering and native smoke"
   const goldens = source.split("  goldens:\n")[1].split("  native-smoke:\n")[0];
   const native = source.split("  native-smoke:\n")[1];
   assert.match(goldens, /flutter test --concurrency=1 test\/goldens/u);
-  assert.match(goldens, /Widgetbook corpus goldens \(pass 1\)/u);
+  assert.match(goldens, /Widgetbook package suites \(pass 1\)/u);
   assert.match(goldens, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
   assert.match(goldens, /git diff --exit-code/u);
   assert.match(native, /bash tool\/test_app_shell_integration.sh macos smoke/u);

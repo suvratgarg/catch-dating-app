@@ -1,3 +1,5 @@
+import {normalizeEventItinerary, assertValidEventItinerary} from
+  "./event_itinerary";
 import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
 import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
 import {onCall, CallableRequest, HttpsError} from
@@ -1957,67 +1959,6 @@ function assertValidMergedRunUpdate(
   assertStandalonePublicRegistrationPolicy(event, fields);
 }
 
-function normalizeEventItinerary(
-  itinerary: CreateEventCallablePayload["itinerary"] |
-    EventHostUpdateFields["itinerary"]
-): NonNullable<EventDocument["itinerary"]> {
-  return (itinerary ?? []).map((entry) => ({
-    id: entry.id.trim(),
-    kind: entry.kind,
-    offsetMinutes: entry.offsetMinutes,
-    durationMinutes: entry.durationMinutes ?? null,
-    title: entry.title.trim(),
-    description: entry.description?.trim() || null,
-    location: entry.location ? normalizeMeetingLocation(entry.location) : null,
-    routeDistanceMeters: entry.routeDistanceMeters ?? null,
-  }));
-}
-
-function assertValidEventItinerary(params: {
-  itinerary?: CreateEventCallablePayload["itinerary"] |
-    EventHostUpdateFields["itinerary"];
-  startTimeMillis: number;
-  endTimeMillis: number;
-  eventFormat?: EventFormatSnapshot | null;
-}): void {
-  const itinerary = params.itinerary ?? [];
-  const eventDurationMinutes = Math.ceil(
-    (params.endTimeMillis - params.startTimeMillis) / 60000
-  );
-  const ids = new Set<string>();
-  let previousOffset = -1;
-  const routePlan = params.eventFormat?.activityDetails?.routePlan;
-  const hasRoutePath = Array.isArray(routePlan?.path) &&
-    routePlan.path.length >= 2;
-  for (const entry of itinerary) {
-    if (ids.has(entry.id)) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Event itinerary ids must be unique."
-      );
-    }
-    ids.add(entry.id);
-    if (entry.offsetMinutes < previousOffset) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Event itinerary offsets must be in ascending order."
-      );
-    }
-    if (entry.offsetMinutes > eventDurationMinutes) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Event itinerary entries must fit inside the event window."
-      );
-    }
-    if (entry.routeDistanceMeters != null && !hasRoutePath) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Route distance requires a concrete route path."
-      );
-    }
-    previousOffset = entry.offsetMinutes;
-  }
-}
 
 function assertStandalonePublicRegistrationPolicy(
   event: EventDocument,

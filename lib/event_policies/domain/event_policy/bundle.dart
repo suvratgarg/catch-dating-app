@@ -75,6 +75,7 @@ class EventPolicyBundle {
 
   factory EventPolicyBundle.requestToJoinEvent({
     required int capacityLimit,
+    bool approvedMembersSkipReview = false,
     required int basePriceInPaise,
     EventCancellationPolicy cancellationPolicy =
         const EventCancellationPolicy.standard(),
@@ -82,6 +83,7 @@ class EventPolicyBundle {
     return EventPolicyBundle(
       admissionPolicy: EventAdmissionPolicy.manualApproval(
         capacityLimit: capacityLimit,
+        approvedMembersSkipReview: approvedMembersSkipReview,
         waitlistPolicy: const EventWaitlistPolicy(
           mode: EventWaitlistMode.manualReview,
           offerWindow: Duration.zero,

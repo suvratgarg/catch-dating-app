@@ -373,8 +373,19 @@ jobs:
 
   firestore-rules:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.firestore_rules == 'true' }}
+    if: >-
+      !cancelled() && !failure() &&
+      needs.plan.result != 'failure' && needs.plan.result != 'cancelled' &&
+      needs.source-preflight.result != 'failure' && needs.source-preflight.result != 'cancelled' &&
+      (needs.plan.outputs.producer_attempt != format('{0}', github.run_attempt) ||
+       needs.plan.outputs.source_sha != github.sha ||
+       (needs.plan.result == 'success' &&
+        needs.source-preflight.result == 'success' &&
+        needs.plan.outputs.firestore_rules == 'true'))
     uses: ./.github/workflows/firestore-rules-ci.yml
+    with:
+      ci_plan_attempt: ${{ needs.plan.outputs.producer_attempt }}
+      ci_plan_source_sha: ${{ needs.plan.outputs.source_sha }}
     secrets: inherit
 
   flutter:
