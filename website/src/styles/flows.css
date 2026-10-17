@@ -308,7 +308,7 @@
 
 .claim-review-grid dt,
 .host-application__review dt {
-  color: var(--website-text-faint);
+  color: var(--website-copy-meta);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
   font-size: 10px;
   font-weight: 800;

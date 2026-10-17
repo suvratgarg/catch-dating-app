@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
+import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
@@ -79,6 +80,7 @@ export function checkEnforcementIntegrity({
   const toolsById = new Map(tools.map((tool) => [tool.id, tool]));
   const toolsByPath = new Map(tools.map((tool) => [tool.path, tool]));
   const boundToolIds = new Set();
+  const reachesNodeProof = nodeProofReachability(snapshot);
 
   for (const rule of rules) {
     if (!activeRuleStatuses.has(rule.status)) continue;
@@ -130,6 +132,15 @@ export function checkEnforcementIntegrity({
       }
     }
     validateToolMetadata({tool, snapshot, errors});
+    const proof = tool.vacuityProof;
+    if (proof?.type === "test" && proof.path?.endsWith(".test.mjs")) {
+      const owners = tool.status === "active" ? [tool] :
+        tools.filter(candidate => candidate.status === "active");
+      if (!reachesNodeProof(owners.flatMap(owner => owner.checks ?? []), proof.path)) {
+        errors.push(`${tool.id}: Node vacuity proof ${proof.path} has no executable active owner; ` +
+          "select it with an unfiltered node --test check or a statically importing suite.");
+      }
+    }
   }
 
   for (const relativePath of discoverArchitectureScripts(snapshot)) {
@@ -150,6 +161,62 @@ export function checkEnforcementIntegrity({
       .length,
     boundTools: boundToolIds.size,
     errors,
+  };
+}
+
+// The common direct-path case needs no parsing or subprocess. Shell composition,
+// filters and unrecognized flags cannot establish execution ownership.
+function nodeTestRoots(checks) {
+  return checks.flatMap(check => {
+    const match = /^node (?:--experimental-strip-types )?--test ([A-Za-z0-9_./ -]+)$/u.exec(check);
+    if (!match) return [];
+    const files = match[1].split(/ +/u);
+    return files.every(file => normalizedModulePath(file)) ? files : [];
+  });
+}
+
+function normalizedModulePath(file) {
+  return /^[A-Za-z0-9_][A-Za-z0-9_./-]*\.(?:mjs|js)$/u.test(file) &&
+    path.posix.normalize(file) === file && !file.startsWith("../");
+}
+
+function nodeProofReachability(snapshot) {
+  const imports = new Map();
+  return (checks, proof) => {
+    const pending = nodeTestRoots(checks);
+    if (pending.includes(proof) && snapshot.exists(proof)) return true;
+    const visited = new Set();
+    while (pending.length > 0 && visited.size < 256) {
+      const file = pending.shift();
+      if (visited.has(file)) continue;
+      visited.add(file);
+      if (!imports.has(file)) {
+        const source = snapshot.readText(file);
+        let dependencies = [];
+        if (source != null && Buffer.byteLength(source) <= 1024 * 1024) {
+          // Parse only: constructing SourceTextModule never links or evaluates
+          // repository code. Snapshot reads preserve sparse-checkout semantics.
+          const parsed = spawnSync(process.execPath, ["--experimental-vm-modules", "--input-type=module", "-e",
+            'import fs from "node:fs"; import vm from "node:vm"; ' +
+            'process.stdout.write(JSON.stringify(new vm.SourceTextModule(fs.readFileSync(0,"utf8")).dependencySpecifiers));',
+          ], {input: source, encoding: "utf8", timeout: 5000, maxBuffer: 1024 * 1024});
+          if (!parsed.error && parsed.status === 0) {
+            dependencies = JSON.parse(parsed.stdout).flatMap(specifier => {
+              if (!specifier.startsWith("./") && !specifier.startsWith("../")) return [];
+              if (/[\\?#%]/u.test(specifier)) return [];
+              const target = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier));
+              return normalizedModulePath(target) ? [target] : [];
+            });
+          }
+        }
+        imports.set(file, dependencies);
+      }
+      for (const dependency of imports.get(file)) {
+        if (dependency === proof && snapshot.exists(proof)) return true;
+        if (!visited.has(dependency)) pending.push(dependency);
+      }
+    }
+    return false;
   };
 }
 
