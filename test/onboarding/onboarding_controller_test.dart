@@ -29,23 +29,58 @@ class _CountingDraftRepository extends FakeOnboardingDraftRepository {
   }
 }
 
+// Capture real retained-error state, then dispose before returning the snapshot.
+Future<AsyncValue<UserProfile?>> _profileFailureAfterData(
+  UserProfile? previous,
+) async {
+  var pending = Completer<UserProfile?>();
+  final provider = FutureProvider<UserProfile?>((ref) => pending.future);
+  final container = ProviderContainer(retry: (_, _) => null);
+  try {
+    container.listen(provider, (_, _) {});
+    pending.complete(previous);
+    await container.read(provider.future);
+    pending = Completer<UserProfile?>();
+    container.invalidate(provider);
+    final failed = container.read(provider.future);
+    pending.completeError(StateError('profile unavailable'), StackTrace.empty);
+    await expectLater(failed, throwsStateError);
+    final snapshot = container.read(provider);
+    expect(
+      (
+        snapshot.hasValue,
+        snapshot.isLoading,
+        snapshot.hasError,
+        snapshot.value,
+      ),
+      (true, false, true, previous),
+    );
+    expect(snapshot.error, isStateError);
+    return snapshot;
+  } finally {
+    container.dispose();
+  }
+}
+
 void main() {
   group('OnboardingController.initStep', () {
     final failure = AsyncError<UserProfile?>(
       StateError('profile unavailable'),
       StackTrace.empty,
     );
-    for (final (label, profile) in <(String, AsyncValue<UserProfile?>)>[
-      ('loading', const AsyncLoading()),
-      ('initial error', failure),
-      (
-        'cached absence with error',
-        failure.copyWithPrevious(const AsyncData(null)),
-      ),
+    for (final label in [
+      'loading',
+      'initial error',
+      'cached absence with error',
     ]) {
       test(
         '$label does not fetch a draft or initialize a new profile',
         () async {
+          final profile = switch (label) {
+            'loading' => const AsyncLoading<UserProfile?>(),
+            'initial error' => failure,
+            _ => await _profileFailureAfterData(null),
+          };
           final repository = FakeAuthRepository()
             ..currentUserValue = TestUser(
               uid: 'runner-1',
@@ -80,13 +115,12 @@ void main() {
       'cached profile identity survives a failed refresh on entry',
       () async {
         final profile = buildUser().copyWith(profileComplete: false);
+        final retainedError = await _profileFailureAfterData(profile);
         final draftRepository = _CountingDraftRepository();
         final container = createOnboardingTestContainer(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData('runner-1')),
-            watchUserProfileProvider.overrideWithValue(
-              failure.copyWithPrevious(AsyncData(profile)),
-            ),
+            watchUserProfileProvider.overrideWithValue(retainedError),
             onboardingDraftRepositoryProvider.overrideWithValue(
               draftRepository,
             ),

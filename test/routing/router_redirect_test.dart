@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -44,6 +46,47 @@ String? _redirect({
   );
 }
 
+// Public provider transitions produce combined states without internal APIs.
+Future<AsyncValue<UserProfile?>> _profileFailure({
+  bool previousKnown = false,
+  UserProfile? previous,
+  bool retry = false,
+}) async {
+  var pending = Completer<UserProfile?>();
+  final provider = FutureProvider<UserProfile?>((ref) => pending.future);
+  final container = ProviderContainer(retry: (_, _) => null);
+  try {
+    container.listen(provider, (_, _) {});
+    if (previousKnown) {
+      pending.complete(previous);
+      await container.read(provider.future);
+      pending = Completer<UserProfile?>();
+      container.invalidate(provider);
+    }
+    final failed = container.read(provider.future);
+    pending.completeError(StateError('profile unavailable'), StackTrace.empty);
+    await expectLater(failed, throwsStateError);
+    if (retry) {
+      pending = Completer<UserProfile?>();
+      container.invalidate(provider);
+    }
+    final snapshot = container.read(provider);
+    expect(
+      (
+        snapshot.hasValue,
+        snapshot.isLoading,
+        snapshot.hasError,
+        snapshot.value,
+      ),
+      (previousKnown, retry, true, previous),
+    );
+    expect(snapshot.error, isStateError);
+    return snapshot;
+  } finally {
+    container.dispose();
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -62,11 +105,11 @@ void main() {
 
     test(
       'initial and cached-null failures retain the intended destination',
-      () {
+      () async {
         for (final profile in [
           failure,
-          failure.copyWithPrevious(const AsyncData<UserProfile?>(null)),
-          const AsyncLoading<UserProfile?>().copyWithPrevious(failure),
+          await _profileFailure(previousKnown: true),
+          await _profileFailure(retry: true),
         ]) {
           for (final location in [
             destination,
@@ -110,8 +153,11 @@ void main() {
       );
     });
 
-    test('cached real profile remains usable after a failed refresh', () {
-      final profile = failure.copyWithPrevious(AsyncData(_socialReadyUser()));
+    test('cached real profile remains usable after a failed refresh', () async {
+      final profile = await _profileFailure(
+        previousKnown: true,
+        previous: _socialReadyUser(),
+      );
       expect(
         _redirect(
           uidAsync: const AsyncData(_testUid),
@@ -156,7 +202,7 @@ void main() {
     for (final intent in ['complete-profile', 'complete-run-preferences']) {
       test(
         '$intent survives error and retry when returning to own account',
-        () {
+        () async {
           final onboarding = Uri(
             path: '/onboarding',
             queryParameters: {'intent': intent, 'from': '/you'},
@@ -172,10 +218,7 @@ void main() {
             'intent': intent,
             'from': '/you',
           });
-          for (final profile in [
-            failure,
-            const AsyncLoading<UserProfile?>().copyWithPrevious(failure),
-          ]) {
+          for (final profile in [failure, await _profileFailure(retry: true)]) {
             expect(
               _redirect(
                 uidAsync: const AsyncData(_testUid),
