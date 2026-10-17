@@ -402,15 +402,17 @@ void _registerExploreDiscoveryWidgetsTests() {
               builder: (context) => CustomScrollView(
                 slivers: buildExploreBodySlivers(
                   context: context,
-                  feedAsync: AsyncData(
-                    ExploreFeedViewModel(
-                      items: [
-                        ExploreEventItem(
-                          event: event,
-                          club: eventClub,
-                          status: EventTileStatus.open,
-                        ),
-                      ],
+                  feedState: catchAsyncStateFromAsyncValue(
+                    AsyncData(
+                      ExploreFeedViewModel(
+                        items: [
+                          ExploreEventItem(
+                            event: event,
+                            club: eventClub,
+                            status: EventTileStatus.open,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   clubsViewModel: ExploreViewModel(

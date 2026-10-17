@@ -3,7 +3,7 @@ import {resolveCname, resolveTxt} from "node:dns/promises";
 import type {firestore} from "firebase-admin";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {
-  activateFormDomain, hasCurrentDomainOwnership, normalizeCustomFormHost,
+  activateFormDomain, normalizeCustomFormHost,
   normalizeHostingTarget, parseOrganizerFormDomain, resolveCustomFormHost,
   revokeFormDomain, verifyFormDomain,
   type DomainProbe, type OrganizerFormDomain,
@@ -175,26 +175,34 @@ export async function resolveOrganizerFormDomain(
 ): Promise<{organizerId: string; publicFormId: string} | null> {
   const hostname = normalizeCustomFormHost(requestHost);
   if (!hostname) return null;
-  const domainSnap = await db.collection(COLLECTION).doc(hostname).get();
+  const domainRef = db.collection(COLLECTION).doc(hostname);
+  const domainSnap = await domainRef.get();
   const record = parseOrganizerFormDomain(domainSnap.data());
   if (!record || record.status !== "active") return null;
   const probe = typeof probeOrLoad === "function" ?
     await probeOrLoad() : probeOrLoad;
-  // A DNS probe timestamps completion. Capture now after it settles so normal
-  // network latency is not mistaken for a future-dated, untrusted probe.
-  const nowMillis = typeof nowOrClock === "function" ?
-    nowOrClock() : nowOrClock;
-  if (!hasCurrentDomainOwnership(record, probe, nowMillis)) {
-    return null;
-  }
-  const resolved = resolveCustomFormHost(hostname, record, probe, nowMillis);
-  if (!resolved) return null;
-  const formSnap = await db.collection("organizerForms")
-    .doc(resolved.formId).get();
-  if (!formSnap.exists ||
-      formSnap.get("organizerId") !== resolved.organizerId ||
-      formSnap.get("publicFormId") !== resolved.publicFormId ||
-      formSnap.get("status") !== "published") return null;
-  return {organizerId: resolved.organizerId,
-    publicFormId: resolved.publicFormId};
+  if (!probe) return null;
+  // DNS can outlive revocation or reassignment. Read the binding and form in
+  // one transaction, and never let this request switch reservation identity.
+  return db.runTransaction(async (tx) => {
+    const current = parseOrganizerFormDomain((await tx.get(domainRef)).data());
+    if (!current || current.status !== "active" ||
+        current.generation !== record.generation ||
+        current.organizerId !== record.organizerId ||
+        current.formId !== record.formId ||
+        current.publicFormId !== record.publicFormId) return null;
+    const formSnap = await tx.get(db.collection("organizerForms")
+      .doc(current.formId));
+    // Probe timestamps describe completion. Check time after DNS and reads,
+    // including any transaction retry, without treating network time as future.
+    const nowMillis = typeof nowOrClock === "function" ?
+      nowOrClock() : nowOrClock;
+    const resolved = resolveCustomFormHost(hostname, current, probe, nowMillis);
+    if (!resolved || !formSnap.exists ||
+        formSnap.get("organizerId") !== resolved.organizerId ||
+        formSnap.get("publicFormId") !== resolved.publicFormId ||
+        formSnap.get("status") !== "published") return null;
+    return {organizerId: resolved.organizerId,
+      publicFormId: resolved.publicFormId};
+  });
 }

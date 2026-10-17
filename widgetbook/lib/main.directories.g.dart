@@ -10206,6 +10206,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailBodyStates,
                   ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading composition',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailLoadingStates,
+                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
@@ -10363,6 +10369,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRecordMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Available record commands',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerRecordMenuStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerRevenueBreakdown',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10414,6 +10431,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerTimelineStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerWhatsappHandoffSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'WhatsApp handoff draft',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerWhatsappHandoffSheetStates,
                   ),
                 ],
               ),
