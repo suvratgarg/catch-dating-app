@@ -10,6 +10,7 @@ import "../ci/required_ci_policy.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
+import {extractSteps} from "./lib/workflow_steps.mjs";
 
 const repositorySnapshot = createRepositorySnapshot();
 const graph = repositorySnapshot.readJson(
@@ -171,22 +172,61 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   assert.match(coverageJob, /pattern: flutter-coverage-shard-\$\{\{ github.run_id \}\}-\$\{\{ github.sha \}\}-\*/u);
 });
 
-test("Flutter CI runs Consumer and Host package tests as aggregate gates", () => {
+test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequentially", () => {
   const flutter = workflow("flutter-ci.yml");
-  assert.match(flutter, /^  app-package-tests:\n/mu);
-  assert.match(
-    flutter,
-    /working-directory: apps\/consumer\n        run: flutter test --concurrency=1/u,
+  const job = flutter.slice(
+    flutter.indexOf("  app-package-tests:"), flutter.indexOf("  widgetbook:"),
   );
-  assert.match(
-    flutter,
-    /working-directory: apps\/host\n        run: flutter test --concurrency=1/u,
-  );
+  assert.match(job, /^  app-package-tests:\n/mu);
+  assert.doesNotMatch(job, /continue-on-error:|\n    if:|strategy:/u);
+  const steps = extractSteps(`jobs:\n${job}`);
+  for (const [name, directory] of [
+    ["Catch UI package tests", "packages/catch_ui"],
+    ["Consumer package tests", "apps/consumer"],
+    ["Host package tests", "apps/host"],
+  ]) {
+    const matches = steps.filter((step) => step.name === name);
+    assert.equal(matches.length, 1, `${name} must run exactly once`);
+    const [step] = matches;
+    assert.equal(step.workingDirectory, directory);
+    // No filenames, tags or name filters: Flutter discovers the whole package,
+    // including nested and newly added test files.
+    assert.equal(step.run, "flutter test --concurrency=1");
+    assert.equal(step.runnable, true);
+    assert.doesNotMatch(namedStep(job, name), /continue-on-error:|\n        if:/u);
+  }
   assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
-  assert.match(
-    flutter,
-    /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u,
-  );
+
+  const aggregate = extractSteps(flutter)
+    .find((step) => step.name === "Check Flutter CI results");
+  assert.match(namedStep(flutter, "Check Flutter CI results"),
+    /APP_PACKAGES_RESULT: \$\{\{ needs\['app-package-tests'\]\.result \}\}/u);
+  const environment = {
+    ...process.env, TEST_PLAN_RESULT: "success", GATES_RESULT: "success",
+    APP_PACKAGES_RESULT: "success", COVERAGE_RESULT: "success",
+    TESTS_RESULT: "success", WIDGETBOOK_RESULT: "success",
+  };
+  for (const [result, expected] of [["success", 0], ["failure", 1], ["skipped", 1], ["cancelled", 1]]) {
+    const run = spawnSync("bash", ["-e", "-c", aggregate.run], {
+      env: {...environment, APP_PACKAGES_RESULT: result}, encoding: "utf8",
+    });
+    assert.equal(run.status, expected, `${result}: ${run.stderr}`);
+  }
+});
+
+test("Catch UI package source and test changes select the owning Flutter lane", () => {
+  for (const changedPath of [
+    "packages/catch_ui/lib/src/foundations/catch_theme.dart",
+    "packages/catch_ui/test/foundations_test.dart",
+    "packages/catch_ui/test/field_section_contract_test.dart",
+    "packages/catch_ui/test/forms/new_contract_test.dart",
+  ]) {
+    for (const mode of ["pr", "merge_group", "nightly"]) {
+      const plan = planAffected({graph, changedPaths: [changedPath], mode});
+      assert.equal(plan.complete, true, `${mode}: ${changedPath}`);
+      assert.ok(plan.operations.ciTargets.includes("flutter"), `${mode}: ${changedPath}`);
+    }
+  }
 });
 
 test("Flutter new-widget gate consumes the planner's exact reachable base", () => {
@@ -645,7 +685,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.ok(toolJob);
   assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
-  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
@@ -1095,7 +1135,7 @@ test("capture freshness has a required Node-only lane independent of React rende
   const capture = workflow("capture-freshness-ci.yml");
   const react = workflow("react-surface-validation.yml");
   assert.match(ci, /capture_freshness: \$\{\{ steps.plan.outputs.capture_freshness \}\}/u);
-  assert.match(ci, /if: \$\{\{ needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
+  assert.match(ci, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
   for (const id of ["finalize-plan", "package-firebase", "required"]) {
     const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
     assert.match(job, /- capture-freshness\n/u, id);
