@@ -38,7 +38,7 @@ class SuvbotActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchDockSurface(
+    return CatchDock(
       child: actions.when(
         data: (items) {
           final t = CatchTokens.of(context);

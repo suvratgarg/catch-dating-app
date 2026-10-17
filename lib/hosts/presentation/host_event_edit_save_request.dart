@@ -60,7 +60,7 @@ class HostEventEditSaveRequest {
     final startTime = scheduleLocked ? event.startTime : selectedStartDateTime;
     final endTime = scheduleLocked
         ? event.endTime
-        : startTime.add(CatchBusinessRules.eventDuration(durationMinutes));
+        : startTime.add(BusinessRules.eventDuration(durationMinutes));
     final meetingLocation = EventMeetingLocation(
       name: meetingPoint.trim(),
       address: meetingLocationAddress,

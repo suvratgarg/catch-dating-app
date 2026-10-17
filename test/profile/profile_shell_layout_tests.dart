@@ -599,7 +599,7 @@ void _registerProfileShellLayoutTests() {
 
     expect(tester.widget<PreviewTab>(find.byType(PreviewTab)).bottomPadding, 0);
 
-    final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
+    final previewScrollView = find.byKey(ProfileBody.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
     final previewController = previewScroll.controller!;
     final tabBarBottom = tester.getBottomLeft(_profileOptionGroup()).dy;
@@ -645,7 +645,7 @@ void _registerProfileShellLayoutTests() {
     await tester.tap(find.text('Preview'));
     await pumpFeatureUi(tester);
 
-    final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
+    final previewScrollView = find.byKey(ProfileBody.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
 
     expect(find.text('Your profile').hitTestable(), findsOneWidget);
@@ -688,7 +688,7 @@ void _registerProfileShellLayoutTests() {
 
     expect(find.text('Your profile').hitTestable(), findsNothing);
 
-    final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
+    final previewScrollView = find.byKey(ProfileBody.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
     expect(previewScroll.controller!.offset, 0);
 

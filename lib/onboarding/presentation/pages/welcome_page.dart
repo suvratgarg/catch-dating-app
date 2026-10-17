@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
+import 'package:catch_dating_app/core/startup/startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
@@ -100,10 +100,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   bool _shouldRenderLandedImmediately(BuildContext context) {
     return !widget.playIntro ||
         MediaQuery.of(context).disableAnimations ||
-        (CatchStartupAnimationScope.maybeOf(
-              context,
-            )?.consumerWelcomeReelPlayed ??
-            false);
+        (StartupAnimationScope.maybeOf(context) ?? false);
   }
 
   void _skip() {

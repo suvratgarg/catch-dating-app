@@ -1,5 +1,5 @@
 import 'package:catch_ui/src/components/catch_field_copy.dart';
-import 'package:catch_ui/src/patterns/catch_form_row_list_mode.dart';
+import 'package:catch_ui/src/patterns/catch_form_list_mode.dart';
 import 'package:catch_ui/src/patterns/catch_form_save.dart';
 import 'package:flutter/foundation.dart';
 
@@ -18,6 +18,6 @@ class CatchFormRowScope<P> {
   final VoidCallback toggle;
   final VoidCallback collapse;
   final CatchFormSave<P> save;
-  final CatchFormRowListMode textCommitMode;
+  final CatchFormListMode textCommitMode;
   final CatchFieldCopy fieldCopy;
 }

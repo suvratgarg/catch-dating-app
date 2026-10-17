@@ -421,7 +421,7 @@ exercises the real `CatchCrossPathsCard` postcard/photo states.
 
 ### X4. Lexicon notes (ratification input, no code now)
 
-`CatchCoverStory` and `CatchCrossPathsCard` are feature widgets on the core
+`FeaturedEventPoster` and `CatchCrossPathsCard` are feature widgets on the core
 `Catch*` prefix — but CoverStory's doc claims design-system handoff lineage
 (`components/explore/CoverStory`), so the prefix rule needs a ratified
 carve-out or a rename. Also `Catches*` (the feature noun) colliding with

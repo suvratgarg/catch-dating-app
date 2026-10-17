@@ -146,7 +146,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _startTimeController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedStartTime;
-  int _durationMinutes = CatchBusinessRules.eventDefaultDurationMinutes;
+  int _durationMinutes = BusinessRules.eventDefaultDurationMinutes;
   String? _scheduleErrorText;
 
   // Step 1 — Where

@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.19.0
-updated: 2026-09-15
+version: 1.21.0
+updated: 2026-10-17
 owner: app_architecture
 status: active
 ---
@@ -16,6 +16,10 @@ state/controller bundling, and enforcement — and where does Catch deviate from
 that standard?* It then packages the deviations as a Codex delivery program
 whose completion criteria are mechanical, so migrations cannot silently finish
 incomplete.
+
+The 2026-10-17 cross-framework extension (D9–D14, Phase 7) applies the same
+program to the React surfaces (`website/`, `admin/`, `packages/web-ui`), so
+Flutter and React implement one component contract under one name.
 
 It is a point-in-time plan, not a parallel architecture document. Durable rules
 ratified here are folded into `docs/app_architecture.md` (and the widget
@@ -335,7 +339,8 @@ Re-verify these before executing any phase; date-stamped audits are snapshots.
 ## Part 3 — Target Decisions
 
 Each decision is final once the owner approves this spec; alternatives are
-recorded to prevent re-litigation. **Status: D1–D8 ratified by the owner on
+recorded to prevent re-litigation. **Status: D9–D15 (cross-framework extension and predicted names) ratified by
+the owner on 2026-10-17. D1–D8 ratified by the owner on
 2026-09-04, including the D3 catalog-charter amendment below.**
 
 ### D1. Extract `packages/catch_tokens` and `packages/catch_ui`
@@ -548,6 +553,99 @@ workflow (rule, manifest, owner-doc anchor, and probe removed together).
 Target: net negative check count for this program. New checks added: golden
 coverage, source-size ratchet, naming grammar, catalog generation drift —
 four in, more than four out.
+
+### Cross-framework extension (D9–D14, ratified 2026-10-17)
+
+Measured on 2026-10-17 against registry v4: five files assigned component
+identity (`catch.components.json` with 65 contracts, plus the web-ui, admin,
+website and shared-adoption registries); 10 of the 65 contracts had a React
+mapping, each carrying up to four names (`CatchButton`, `Button`,
+`AdminButton`, `ButtonControl`); 149 of admin's 235 "shared primitive" entries
+belong to a single feature family; 231 of 312 shared React exports end in a
+noun outside the closed role-noun list; and six Flutter concept names fell
+outside the grammar (`CatchEventCard`, `CatchCoverStory`,
+`CatchActivityMapPin`, `CatchMapPreview`, `CatchRosterTable`,
+`ChatInputBar`). D12 brings `CatchRosterTable` inside the spelling rule, but
+its API still names the roster domain concept. The ratified tier model (registry `tier`, T1–T4) is owned by
+`design/components/README.md`; the naming rules by the Cross-Framework Names
+subsection of `docs/app_architecture.md`.
+
+### D9. Strict cross-framework identity
+
+A registered concept has the same symbol and the same prop, slot, state, enum
+and callback names in Flutter and React: `CatchButton` with `variant`,
+`size` and `onPressed` in both. Flutter named constructors are a typed
+`recipe` prop in React. Rejected alternative: idiomatic React names
+(`Button`, `onClick`) with a per-concept mapping table, because the mapping is
+one more registry that drifts.
+
+### D10. `@catch/web-ui` ships styled components
+
+The shared React package moves from headless `*Control` components with
+per-surface styled adapters to styled `Catch*` components. Surface differences
+such as admin density are a prop or a scope. Adapters are deleted as each
+surface adopts the shared component. Rejected alternative: keep the headless
+split, because per-surface styling is where cross-surface visual drift lives.
+
+### D11. The registry contract owns behavior
+
+`sourceOfTruth.behavior` names the registry contract as the owner of behavior,
+accessibility, layout and state for every framework; Flutter is the reference
+implementation. Rejected alternative: Flutter code as the source of truth,
+which keeps React a permanent port.
+
+### D12. `Table` joins the role nouns
+
+`Table` is added now for a new T1 `catch.table` concept that serves admin's
+`DataTable` family and the host roster table. `Chart` and a desktop-navigation
+noun wait until a second surface needs them.
+
+### D13. Panel folds into Surface; metrics wait for the inventory
+
+`WEB-SHARED-PANEL-001` moves from `keep_surface_specific` to `planned`: panel
+and card containment become `CatchSurface` recipes. `WEB-SHARED-METRIC-001`
+stays separate until the Phase 7 inventory compares both anatomies against
+`CatchMetricSection`.
+
+### D14. The event page matches at screen level
+
+`catch.event_detail_sections` becomes a cross-framework screen contract: the
+web event page and the app's event detail render the same sections in the same
+order, because it is the one page both frameworks render for the same person.
+
+### D15. Predicted names, aliases and material/binding split
+
+Owner direction (2026-10-17): solve recreation at the root, even at higher
+up-front cost; name each widget what an agent unaware of it would write; close
+every gap found in the same pass. Measured the same day over 1,028 feature
+widgets: 337 (33%) failed the role-noun rule, and the nouns agents used most
+were Card (42 Flutter, 18 React), Body (59), List (19 Flutter, 23 React), Panel
+(16, 14), Step (15), Editor (12) and Grid (6, 25). A rejected name never pointed
+at the existing component, so agents renamed and rebuilt.
+
+- **Vocabulary follows evidence.** Card, Body, List, Step, Editor, Rail,
+  Picker, Grid, Preview, Dock, Map, Pin and Thumbnail join the role nouns;
+  RowList retires into List and `CatchDockSurface` becomes `CatchDock`;
+  Workspace joins Screen as a route-level suffix; synonyms such as Panel and
+  Content redirect to existing roles. The new nouns alone make 140 of the 337
+  failures valid.
+- **Aliases steer at creation time.** Registry components and role nouns
+  record the other names an agent would write; the catalog and context pack
+  index them, and the new-widget gate rejects a name that matches an existing
+  component's name or alias, naming the component to use.
+- **Materials and bindings.** Domain-free materials (`CatchTicket`,
+  `CatchPoster`, `CatchTable`) live in the design system in both
+  frameworks; thin feature bindings with predicted names (`EventCard`,
+  `ClubCard`, `ParticipantTable`) map domain data onto them. This resolves
+  the draft rename sheet's Q1 (split, rather than either keeping feature-shaped
+  T2 widgets or forcing domain types into the design system), Q2 (`Pin` and
+  `Map`) and Q3 (`ChatInput` stays chat-owned with aliases; it moves into the
+  design system only when a second, non-chat surface needs it).
+
+Rejected alternatives: keeping the closed list as-is (it rejects what agents
+write without steering them), and adding every noun agents use (Panel, Page,
+View and Content are synonyms of existing roles and would recreate the
+synonym problem the grammar removed).
 
 ## Part 4 — Delivery Program
 
@@ -1247,6 +1345,154 @@ through its production controller and host, and scaled preferred-size geometry
 through the production scaffold, top bar and tab rail. These direct previews
 cover empty/published notices and direct/nested header reservation at both themes
 and text scales. The remaining conformance and consolidation lanes stay open.
+
+### Phase 7 — Cross-framework conformance (React)
+
+Every slice obeys Migration Protocol v2. Phase 7b may start now; 7c–7f start in
+order, each after the owner closes the previous gate.
+
+**Phase 7a (landed 2026-10-17):** D9–D14 ratified; registry `tier` added to all
+65 contracts with a contract-check rule (missing tier, React mapping on T3/T4,
+member wider than its parent) and seeded tests; `Table` role noun; registry
+`sourceOfTruth.behavior` per D11; Cross-Framework Names in
+`docs/app_architecture.md`; tiers and parity invariants in
+`design/components/README.md`; ratified target in
+`docs/web_surface_architecture.md`; D13 recorded in the adoption tracker.
+
+**Phase 7b — Predictable Flutter names and the alias gate (D15).** React copies
+Flutter names under D9, so this precedes any React naming. Scope, all in one
+pass:
+
+| Registry id or area | Today | After |
+|---|---|---|
+| `catch.organizer_poster` | `CatchOrganizerPoster` (+ `OrganizerPosterLayout`/`Treatment`) | `CatchPoster` in `catch_ui` (L3) with `CatchPosterVariant` and `CatchPosterTone`; members become `ClubCard` and `ClubPlaceholderCover` |
+| `catch.event_card` | `CatchEventCard.ticket` | `EventCard` (L5 Card) rendering `CatchTicket` |
+| `catch.club_cover` | `CatchClubCover` | `ClubCover` (L5 Cover) |
+| `catch.map_preview` | `CatchMapPreview` | `MapPreview` (L5 Preview) |
+| `catch.cover_story` | `CatchCoverStory` | `FeaturedEventPoster` (L5 Poster), a `CatchPoster` binding if its anatomy matches |
+| `catch.chat_composer` | `ChatInputBar` (self-declared naming exception) | `ChatInput` (L5 Input); exception removed |
+| `catch.activity_map_pin` | `CatchActivityMapPin` | `ActivityMapPin` (L5 Pin) |
+| `catch.roster_table` / `roster_row` | `CatchRosterTable` / `CatchRosterRow` (+ cells, actions) | `ParticipantTable` rendering a new `CatchTable` (L3, T1) / `ParticipantRow`; cells become private; `ParticipantAction`, `ParticipantRowData` |
+| `lib/core/widgets` (12 widgets, all failing) | `CatchEventThumbnail`, `CatchEventThumbnailActivityFallback`, `EventActivityBackdrop`, `EventActivityStamp`, `CatchStartupLoadingScreen`, `CatchStartupBrandStage`, ... | `EventThumbnail`, `EventFallbackThumbnail`, `EventBackdropImage`, `EventActivityBadge`, `SplashScreen`, `StartupBrandHeader`; file suffixes fixed |
+| Other `Catch` prefixes outside the design system | `CatchAdaptiveTabScaffold`, `CatchCelebrationScreen`, `CatchStartupAnimationScope`, `CatchProfileView` | `AdaptiveTabScaffold`, `CelebrationScreen`, `StartupAnimationScope`, `ProfileBody` |
+| Map adapter (`lib/locations/shared`) | `CatchGoogleMap`, `CatchGoogleMapController`, `CatchMapMarker`, `CatchMapMarkerBitmap`, `CatchMapMarkerHue`, `CatchMapCircle`, `CatchMapPolyline`, `CatchMapCameraPosition`, `CatchMapType` | `LocationMap`, `LocationMapController`, `MapMarker`, `MapMarkerBitmap`, `MapMarkerHue`, `MapCircle`, `MapPolyline`, `MapCameraPosition`, `LocationMapType` |
+| Design-system vocabulary | `CatchFormRowList`, `CatchSectionRowList`, `CatchStepRowList`, `CatchFormStepRowList`, `CatchDockSurface` | `List` and `Dock` spellings; `CatchSectionRowList` is reviewed as a possible `CatchSection` recipe first, because `CatchSectionList` already exists |
+| Compositions | `ClubDetailDock`, `EventDetailBody`, `NotificationRow`, startup screen | level and role recorded (Dock, Body, Row, Screen) |
+
+Tooling in the same pass: registry `aliases` for components and role nouns,
+indexed by the catalog and context pack; a new-widget gate that rejects a name
+matching an existing component's name or alias and names the component to use;
+the feature-naming check extended to `lib/core/widgets`; the reserved-prefix
+test corrected from `startsWith("Catch")` to `^Catch[A-Z]` (it falsely
+flagged the seven `Catches*` swipe widgets) and enforced across `lib/core/**`
+except `lib/core/riverpod_ui`; `Workspace` accepted as a route-level suffix;
+and a decrease-only ratchet on the remaining feature-naming failures (197 after
+the new nouns).
+
+Bindings register as compositions, not concepts; `catch.event_card`'s members
+need new parents, including `CatchClockIndicator`, a `catch_ui` primitive
+registered under that app-level card. Layout constants named after old widgets
+(`activityMapPin*`, `organizerPosterRadius`) are renamed in the token source
+in the same pass. App bootstrap classes keep the product name, as the grammar
+already exempts them.
+
+DoD: every symbol in the table renamed with the old symbol deleted; no
+registry concept outside `Catch[<UseCase>]<RoleNoun>`; no `Catch[A-Z]` symbol
+outside `catch_ui`, `catch_tokens`, `lib/core/riverpod_ui` and app bootstrap;
+the alias gate, prefix test and ratchet each ship with a seeded failing probe
+(a new `EventTicket`, a new `ProfilePanel`, a new `CatchFoo` in a feature
+folder); workspace analyze green.
+
+**Phase 7b status (2026-10-18).** Landed on `codex/xf-component-naming-tiers`:
+the alias gate, redirects, prefix and coverage checks, and every rename in the
+table above. The gate also forced the widgets that moved with renamed files to
+conform: the profile surface (`ProfileSection`, `ProfileHeader`,
+`ProfileCompatibilitySection` and siblings, with the view models renamed to
+`*SectionData`), `FeaturedEventTopBar`, `FeaturedEventBody`,
+`ExploreClubTagList`, and the roster helpers `ParticipantRowAction`,
+`ParticipantDecisionButton` and `ParticipantStat`. `CatchPoster` gained
+registered anatomy (`CatchPosterImage`, `CatchPosterHeader`) in place of
+widget-returning helpers. Moving it into `catch_ui` put it under the text-scale
+2.0 golden, which exposed an existing overflow in the editorial layout; the copy
+now keeps its 42% share and grows past it at large text. Golden coverage now
+also counts public widgets in `lib/core/widgets`, which the prefix-only
+surface had dropped (254 surfaces, all covered). The ratchet fell from 338 to
+276 entries.
+
+Deviations and remaining 7b work:
+
+- `EventCard` and the other renamed `lib/core/widgets` files stay in
+  `lib/core/widgets`: it is a golden-source home, and moving them out would
+  remove their goldens. `catch.event_card` and `catch.startup_loading_screen`
+  stay concepts with a decision note so they can keep their registered members.
+- The `CatchAsyncState` family is the last stray prefix (three ratchet entries).
+  Moving it into `lib/core/riverpod_ui` touches
+  `lib/hosts/today/presentation/host_today_view_model.dart`, which another
+  active task holds; move it after that task lands.
+- The splash screen's Widgetbook catalog id still reads
+  `core.widgets.catch_startup_loading_screen` because `lib/l10n/app_en.arb`
+  references it and another active task holds that file.
+- Materials (2026-10-18): `CatchTable` (T1, with `CatchTableRow` and
+  `CatchTableScope`) is extracted from the participant table shell, and
+  `ParticipantTable` binds it through a shared `participantTableColumns`
+  layout; `CatchTicket.card` is the width-driven ticket recipe that owns the
+  notched outline, and `EventCard` binds it. Both extractions render
+  byte-identically to before at 440 and 900 px in light and dark. Compared with
+  `CatchPoster`, `FeaturedEventPoster` is a featured-item masthead (generated
+  art, chrome slot, call to action, data lines, content height), so it stays a
+  separate binding; the registry records the comparison. The roster insets
+  became `CatchInsets.table*`.
+- Layout constants follow their materials: `CatchLayout.poster*` and
+  `CatchAspectRatio.poster` (were `organizerPoster*`), `ticketNotch*` (were
+  `eventTicketNotch*`, now used by `CatchTicket.card`) and `ticketHero*` (were
+  the `eventDetailTicket*` values that size `CatchTicket.hero`; the
+  event-detail-only stub and title constants keep their names). `activityMapPin*`
+  already matches the renamed `ActivityMapPin` and stays.
+- Still open: the React `CatchTable` in `@catch/web-ui` (Phase 7e) and the
+  `CatchAsyncState` move above.
+- The analyzer plugin still lists `lib/core/widgets/event_activity_visuals.dart`
+  as a theme-independent art path. The backdrop now uses
+  `CatchTokens.editorialWhite` and needs no exemption, so that entry is dead;
+  remove it in the next plugin change.
+
+#### Phase 7b.2 — Naming sweep
+
+Rename the remaining feature-naming failures
+in feature-sized slices using the alias redirects, lowering the ratchet in each
+slice until it reaches zero. The ratchet lives in
+`design/components/widget_naming_baseline.json`, checked by
+`node tool/design/generate_widget_catalog.mjs --check`; `--write` only removes
+fixed entries.
+
+**Phase 7c — One registry for React identity.** Replace the `surfaces` name
+map with per-framework implementation records (symbol and file), add
+`tsType` beside `dartType`, merge `design/web-ui/components.json` into the
+registry, and point admin and website registry entries for T1–T2
+responsibilities at `catch.*` ids. Reclassify the 149 admin feature-family
+entries from `shared-primitive` to feature components. DoD: one file assigns
+component identity; the lexicon, coverage and sync tools read the new records.
+
+**Phase 7d — Generated React inventory.** A deterministic scan of
+`website/`, `admin/` and `packages/web-ui` maps every exported component to
+a registry concept, a T4 owner, or deletion. It confirms or rejects the
+name-match duplicates found on 2026-10-17 (for example `AdminTag` and
+`TagList` against `CatchChip`, `StatusBanner` against `CatchBanner`) and
+settles D13's metric comparison. Inventory output stays in ignored local
+output, per AGENTS.md. DoD: zero unmapped exports.
+
+**Phase 7e — T1 in `@catch/web-ui`.** Build each T1 concept (plus
+`catch.table`) as a styled `Catch*` component under the Cross-Framework
+Names rules, then move admin and website onto it, deleting each adapter and
+`*Control` export in the same slice. DoD per concept: no surface-local
+substitute remains; the old adapter is deleted and both apps typecheck and
+build.
+
+**Phase 7f — Executable parity.** Catalog coverage (every recipe × state in
+both Widgetbook and Storybook, keyed by registry id); per-framework screenshot
+baselines; a generated side-by-side review sheet; contract metrics asserted in
+both test suites; a check that new React shared exports follow Cross-Framework
+Names; and the D14 event-page screen contract. T2 components are then built as
+web surfaces first need them. DoD: each check ships with a seeded failing probe.
 
 ### Work packet template (every Codex slice)
 

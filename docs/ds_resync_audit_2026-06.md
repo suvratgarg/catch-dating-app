@@ -155,15 +155,15 @@ skin-in-place. Analyze-clean project-wide; explore (57) + clubs (62) + routing (
   restructure dropped "Hosted by X" → name + `OWNER ·`/`HOST ·` mono meta; tests still asserted the
   old copy — updated to the displayName + `textContaining('… · ')`).
 - **Explore refinements — LANDED (both, this batch).** (1) **CoverStory swap:** the feed's
-  `_ExploreHero` now renders the DS dark `CatchCoverStory` instead of `CatchEventSpotlightCard`. The
+  `_ExploreHero` now renders the DS dark `FeaturedEventPoster` instead of `CatchEventSpotlightCard`. The
   cover is **CTA-driven** ('View event' button) — no whole-card gesture, and the shared-element Hero
   "morph" was intentionally dropped (`_openCoverStoryEvent` opens `presentationMode: spotlightDark`,
   no `heroTag`, default page transition). `_openEvent` simplified (dead spotlight branch removed; rows
-  still open ticket). `CatchCoverStory` gained a `data2` second mono line (data=`time · price`,
+  still open ticket). `FeaturedEventPoster` gained a `data2` second mono line (data=`time · price`,
   data2=capacity) rendered in a `Flexible` ellipsizing block (an adversarial review caught that the
   original non-flex data column **overflowed** on phone widths/large text scale — the 800px test
   surface masked it; fixed + guarded with a 320px×1.6 probe test). Orphaned `_heroCountdownLabel`/
-  `_relativeCountdownLabel` deleted. Tests: `find.byType(CatchCoverStory)` findsOneWidget (single-event)
+  `_relativeCountdownLabel` deleted. Tests: `find.byType(FeaturedEventPoster)` findsOneWidget (single-event)
   / findsNothing (multi-day), plus a CTA→detail nav test asserting `spotlightDark`. The **map-sheet**
   selected-lead path (`buildExploreMapSheetLeadSlivers`) intentionally KEEPS `CatchEventSpotlightCard`.
   Owner QA: the cover is now CTA-only (no tap-anywhere) and opens without the card morph — confirm
@@ -191,13 +191,13 @@ onboarding (38) + auth (10) green:**
 
 **2026-06-16 — batch 6 (host-tools integration; analyze-clean, all affected suites green):**
 - **Roster primitives WIRED** into `host_event_attendance_panel.dart`. The panel's three
-  modes (setup / live / report) now render through `CatchRosterTiles` + `CatchRosterTable`
-  + `CatchRosterRow`; deleted 12 hand-rolled private widgets (`_RosterTableShell`,
+  modes (setup / live / report) now render through `CatchRosterTiles` + `ParticipantTable`
+  + `ParticipantRow`; deleted 12 hand-rolled private widgets (`_RosterTableShell`,
   `_TableEmptyState`, `_SetupReviewRow`, `_LiveRosterRow`, `_ReportRow`, `_DecisionControls`,
   `_DecisionIconAction`, `_ProfileButton`, `_WaitlistOfferButton`, `_CompactPersonIdentity`,
   `_NameMeta`, `_RosterDivider`), ~360 lines net removed. Report rows gained avatars + a
-  mono payment cell (DS-consistent). Extended `CatchRosterAction`: `buttonKey` (keeps the
-  per-attendee check-in test handle) and `CatchRosterDecideAction.onProfile` (preserves the
+  mono payment cell (DS-consistent). Extended `ParticipantAction`: `buttonKey` (keeps the
+  per-attendee check-in test handle) and `ParticipantDecideAction.onProfile` (preserves the
   request-row profile-peek as a third leading target; dims approve/decline while pending).
   Added `CatchIcons.eye`. The DS render uppercases mono filter/table labels + meta
   (`t-mono-label`/`t-badge` are `text-transform:uppercase`), so the widget tests were
@@ -238,7 +238,7 @@ screens after). New primitives, all analyze-clean:**
 - **`CatchCrossPathsCard`** (`lib/explore/presentation/widgets/`) — DS person-in-feed
   postcard + photo variants (the Explore leaf; `crossPaths*` tokens). Built but **not
   wired** (owner: omit CrossPaths from the feed until a crossed-paths data source exists).
-- **`CatchCoverStory`** (`lib/explore/presentation/widgets/`) — DS dark wow cover
+- **`FeaturedEventPoster`** (`lib/explore/presentation/widgets/`) — DS dark wow cover
   (activity radial glow, ghost glyph, condensed headline, paper CTA, optional
   location/search chrome; `coverStory*` tokens). Ready for the Explore feed header.
 
@@ -255,10 +255,10 @@ the DS Field floating caption with **zero call-site churn and no feature loss** 
 /keyboards/autofill/suffix/helper all intact) — verified across 250+ form tests + goldens.
 `CatchField`/`CatchSection` remain for read/nav/toggle rows + new fields.
 
-**Host roster primitives — built (`lib/hosts/presentation/widgets/catch_roster_board.dart`):**
-`CatchRosterTiles` (count-tile filter row), `CatchRosterRow` (avatar + condensed name +
+**Host roster primitives — built (`lib/hosts/presentation/widgets/participant_table.dart`):**
+`CatchRosterTiles` (count-tile filter row), `ParticipantRow` (avatar + condensed name +
 mono meta + signal badge + spec-driven action cell: button/decide/badge/text),
-`CatchRosterTable` (5/3/3 hairline shell + empty state). Faithful to the DS with the
+`ParticipantTable` (5/3/3 hairline shell + empty state). Faithful to the DS with the
 mono/`t-name` type fixes. Analyze-clean. **Wiring into `host_event_attendance_panel.dart`
 (1800 lines, no widget test) is the unverifiable integration step — needs app QA.**
 

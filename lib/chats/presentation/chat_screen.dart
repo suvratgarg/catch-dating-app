@@ -15,7 +15,7 @@ import 'package:catch_dating_app/chats/presentation/chat_thread_action_controlle
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
@@ -397,7 +397,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               ),
             if (routeState.showComposer)
-              ChatInputBar(
+              ChatInput(
                 controller: _textController,
                 sending: routeState.sendMessagePending,
                 onSend: chatState.composerDisabledReason == null ? _send : null,

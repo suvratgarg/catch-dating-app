@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.77.0
-updated: 2026-10-16
+version: 1.78.0
+updated: 2026-10-17
 owner: app_architecture
 status: active
 ---
@@ -113,6 +113,14 @@ in the shared package. Connectivity and rehearsal state remain app callers.
   `_screen|_controller|_view_model|_state|_repository|_service|_providers`
   or a role-noun widget suffix; one primary public widget per shared-library
   file.
+- Name a widget what an agent that has never seen it would write; record the
+  other likely names as registry `aliases` so the new-widget gate can point
+  at it.
+- Cross-framework: a registered concept keeps the same symbol and prop names
+  in Flutter and React (`CatchButton`, `variant`, `onPressed` in both); no
+  surface name (`Admin`, `Website`, ...) on a shared component. The registry
+  `tier` (T1–T4, `design/components/README.md`) decides which frameworks must
+  implement it.
 
 ### Migration Protocol v2 (a slice is done only when all five hold)
 
@@ -913,7 +921,7 @@ navigation remains available.
 
 <!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
 
-`CatchAdaptiveTabScaffold` is the single shell placement boundary. Consumer
+`AdaptiveTabScaffold` is the single shell placement boundary. Consumer
 destinations and compact Host destinations keep the existing platform-aware
 bottom bar. Authenticated Host destinations additionally provide a medium rail
 and expanded sidebar. The scaffold selects among those supplied widgets from
@@ -921,7 +929,7 @@ the available width and always publishes the resulting bottom obstruction
 through `CatchTabViewportScope`:
 
 ```dart
-CatchAdaptiveTabScaffold(
+AdaptiveTabScaffold(
   activeIndex: navigationShell.currentIndex,
   navigationBar: bottomNavigation,
   mediumSideNavigation: railNavigation,
@@ -1390,7 +1398,7 @@ the Preview slivers.
 | Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
-| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchDockSurface.primary`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
+| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchDock.primary`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
 
 ### Design Tooling And Component Contracts
 
@@ -1399,7 +1407,7 @@ Catch's UI system has separate sources of truth by layer:
 | Layer | Source of truth | Mirrors / consumers |
 |---|---|---|
 | Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
-| Flutter widget behavior | `lib/core/widgets/catch_*.dart` | Component contracts, goldens/captures, Figma Code Connect snippets |
+| Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/core/widgets/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
 | Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
 | Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
 
@@ -2575,8 +2583,10 @@ exist.
 
 Widgets have two normal homes:
 
-- `lib/core/widgets/**` for shared, branded, feature-neutral primitives and
-  compositions.
+- `lib/core/widgets/**` for shared, app-coupled widgets that cannot live in
+  `catch_ui` because they use app domain types or copy. They follow feature
+  naming (`<Feature><RoleNoun>`, never the `Catch` prefix) and are registered
+  in the component registry.
 - `lib/<feature>/presentation/widgets/**` for feature-owned UI that depends on
   feature domain/state language.
 
@@ -2652,13 +2662,56 @@ or implementation technique cannot justify a second shared implementation.
   consolidation review. Flags do not approve exceptions or establish conformance.
   App bootstrap classes and app-core adapters are not feature UI.
 - **Role nouns (closed; extend only via component-registry review):** Button,
-  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, RowList,
-  Chip, Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
+  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, Chip,
+  Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
-  AsyncBoundary.
+  AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
+  Preview, Dock, Map, Pin, Thumbnail.
+- **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
+  names, use the one an agent that has never seen the component would most
+  likely write. The role-noun list follows the nouns agents actually use: a
+  noun joins when agents use it (or it is the obvious name of a registered
+  component) and it names a responsibility no existing role covers; a synonym
+  of an existing role redirects to that role instead. Every registered
+  component and role noun records `aliases`, the other names an agent would
+  plausibly write. The generated catalog and context pack index them, and the
+  new-widget gate rejects a new widget whose name matches an existing
+  component's name or alias with a pointer to that component (blueprint Phase
+  7b delivers the alias data and gate).
+- **Nouns added 2026-10-17.** Card: one entity's bounded summary that usually
+  opens it, rendered through a material (Ticket, Poster, Polaroid) or Surface.
+  Body: the content composition of one screen or page below its chrome
+  (`CatchPageBody` still owns page insets). List: a vertical collection of
+  rows; it replaced RowList in Phase 7b. Step: one stage of a
+  multi-stage flow. Editor: edits one structured value made of several fields.
+  Rail: a single-line, horizontally scrolling collection. Picker: chooses a
+  value through a dedicated chooser such as a city, date or photo picker. Grid:
+  a two-dimensional arrangement of equal cells. Preview: a compact read-only
+  rendition of something shown in full elsewhere. Dock: persistent bottom
+  controls; `CatchDock` becomes `CatchDock` in Phase 7b. Map: a map
+  view. Pin: a mark anchored to a map coordinate. Thumbnail: a small
+  representative image of one entity, with a fallback. `Workspace` joins
+  `Screen` as a route-level suffix.
+- **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
+  containment); Page is Step (a flow stage) or Body (a tab or pager page);
+  Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
+  List; AppBar, Toolbar and Topbar are TopBar; InputBar and Composer are Input;
+  ActionBar and BottomBar are Dock; Line is Text or Row; Entry and Item are Row,
+  Tile or Card; Container, Box, Wrapper, Shell and Frame are Surface, Scaffold
+  or Layout; Modal and Popup are Dialog or Sheet; Toast and Snackbar are
+  Notice; Spinner and Loader are Indicator; Tag and Pill are Chip; Label,
+  Eyebrow and Caption are Text; Stack is Layout or SectionList; Sliver is the
+  role's `.sliver` named constructor; Controller is reserved for state
+  controllers, never a widget.
+- **Materials and bindings.** A domain-free visual material (`CatchTicket`,
+  `CatchPoster`, `CatchTable`) lives in the design system in both
+  frameworks. A feature binding maps domain data onto it under the name an
+  agent would write (`EventCard`, `ClubCard`, `ParticipantTable`), one per
+  framework with the same name. A new entity card binds an existing material;
+  it never draws its own geometry.
 - **Role selection.** Classify the public responsibility, not a child it
   happens to render. Menu owns commands/choices; Surface owns token-backed
   paint and containment; Input owns editing mechanics; Text owns display-only
@@ -2739,6 +2792,50 @@ or implementation technique cannot justify a second shared implementation.
 - **State objects.** `<Surface>State` (provider-free), `<Surface>ViewModel`
   (provider-owned composition), `<Surface>Controller` (mutations/flows), as
   contracted elsewhere in this document.
+
+### Cross-Framework Names
+
+Ratified 2026-10-17 (blueprint D9–D14). The grammar above also governs React
+components in `@catch/web-ui` and the React surfaces; this subsection adds only
+what differs between frameworks. Component identity and parity tiers are owned
+by the component registry (`design/components/README.md`).
+
+- **One symbol.** A registered concept has the same public name in Dart and
+  TypeScript, derived from its `roleNoun` and `naming.useCase`: `CatchButton`
+  in `catch_ui` and `CatchButton` exported from `@catch/web-ui`. The `Catch`
+  prefix marks a catalog component at React call sites, as it does in Flutter.
+- **One API vocabulary.** Contract props, slots, states and enum values use the
+  registry names in both frameworks, callbacks included (`onPressed`, not
+  `onClick`). Enum axes become string-union props with the same name and
+  values (`variant="primary"`). A Flutter named constructor is a `recipe` prop
+  in React (`CatchBadge.live` is `recipe="live"`), typed as a discriminated
+  union so each recipe accepts only its own `constructorProps`.
+- **No surface names on shared components.** `Admin`, `Website`, `Marketing`,
+  `Host` and `Consumer` never appear in a T1–T3 symbol. Density or scale
+  differences are a prop or a scope, never a second component.
+- **One role-noun vocabulary.** React names use the closed list above. Common
+  React nouns map onto it: Card and Panel become Surface or Tile; Shell, Frame,
+  Workspace and Workbench become Scaffold or Layout; Grid and Stack become
+  Layout, or SectionList when they order sections; List becomes RowList or
+  SectionList; Toolbar and Topbar become TopBar or Header; Rail and Strip
+  become TabBar, StepFlow or Layout; Label, Eyebrow and Caption become Text.
+- **Surface-specific (T4) components** never use the `Catch` prefix and end in a
+  closed role noun (`<Feature><RoleNoun>`). A surface prefix (`AdminQueueRow`)
+  is allowed but carries no meaning: the folder scopes the component, and no
+  other surface imports it.
+- **Catalog ids.** Widgetbook and Storybook entries for a registered concept
+  are keyed `<registry id>/<recipe>-<state>` (for example
+  `catch.button/primary-loading`), so the two catalogs join on id.
+- **Files.** Shared React components live one primary public component per file
+  at `packages/web-ui/src/components/<Symbol>.tsx` and are exported only
+  through the package index. `*Control` exports are package internals, retired
+  as styled `Catch*` components replace them.
+- **Banned qualifiers** (`Custom`, `New`, `Modern`, `Legacy`, `Old`, version
+  qualifiers such as `V2`) apply in both frameworks.
+
+React exports that predate this subsection migrate under blueprint Phase 7,
+which also adds the executable checks. Until those checks land, reviewers
+apply the subsection to new and moved React code.
 
 ## Cross-Feature Behavior
 
@@ -3100,7 +3197,7 @@ and initialization complete.
 - Consumer bootstrap preloads package metadata and overrides
   `appPackageInfoProvider` synchronously before mounting `ForceUpdateGate`.
   This prevents a second startup-loader frame after the reel.
-- `CatchStartupAnimationScope` records that the process-level reel played.
+- `StartupAnimationScope` records that the process-level reel played.
   Route-owned `WelcomePage` therefore renders its landed actions immediately
   instead of replaying the same animation after routing starts.
 - Reduced-motion settings and tap-to-skip land the reel immediately. The
@@ -3902,14 +3999,14 @@ Reference files:
 - `lib/clubs/shared/catch_organizer_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
-- `lib/swipes/shared/profile_surface/catch_profile_view.dart`
+- `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
 - `widgetbook/lib/clubs/catalog/poster.dart`
 - `widgetbook/lib/catches/catalog/profile_media.dart`
 
 Entity material is a presentation contract, not feature-local decoration:
 events use the ticket family, organizer identity uses
-`CatchOrganizerPoster`, and person identity uses `CatchPolaroid`.
+`CatchPoster`, and person identity uses `CatchPolaroid`.
 Feature widgets provide typed display copy, media, overlays, and callbacks;
 the canonical material owns shape, layout variants, treatment, and spacing.
 Do not duplicate a poster or polaroid canvas inside a screen.
@@ -3917,8 +4014,8 @@ Do not duplicate a poster or polaroid canvas inside a screen.
 The Organizer Detail reference composition is:
 
 ```dart
-child: CatchOrganizerPoster(
-  media: CatchClubCover(
+child: CatchPoster(
+  media: ClubCover(
     club: club,
     semanticLabel: context.l10n
         .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
@@ -4618,7 +4715,7 @@ class CalendarEventSummary {
 Reference files:
 
 - `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
-- `packages/catch_ui/lib/src/patterns/catch_form_row_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
+- `packages/catch_ui/lib/src/patterns/catch_form_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
@@ -4631,7 +4728,7 @@ Reference files:
 Use this pattern when multiple form surfaces need the same row mapping,
 single-expanded-field behavior, and per-field patch save loop. Feature state
 owns labels, values, validation policy, and typed patch factories. The shared
-`CatchFormRowList<P>` owns canonical `CatchField` composition, accordion
+`CatchFormList<P>` owns canonical `CatchField` composition, accordion
 wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
@@ -4648,9 +4745,9 @@ the form list. The list accepts `onSave` and `errorTextBuilder`; persistence
 and localized error interpretation remain caller-owned.
 
 Text commit behavior is a form-section policy, not descriptor styling.
-`CatchFormRowList<P>` defaults to `CatchFormRowListMode.explicit`, which
+`CatchFormList<P>` defaults to `CatchFormListMode.explicit`, which
 renders the canonical staged editor and Cancel/Done actions for every text row.
-An existing section may select `CatchFormRowListMode.onBlur` as one explicit
+An existing section may select `CatchFormListMode.onBlur` as one explicit
 compatibility decision while its product behavior is migrated. Do not add a
 per-row boolean: sibling rows in one form section must not drift between commit
 models.
@@ -4703,9 +4800,9 @@ boundary; descriptor migration may continue incrementally without reopening
 contract drift.
 
 ```dart
-CatchFormRowList<UpdateUserProfilePatch>(
+CatchFormList<UpdateUserProfilePatch>(
   title: context.l10n.userProfileProfileTabTitleAboutYou,
-  textCommitMode: CatchFormRowListMode.onBlur,
+  textCommitMode: CatchFormListMode.onBlur,
   rows: editState.aboutSectionRows,
   accordion: _fieldAccordion,
   onSave: _saveAboutPatch,

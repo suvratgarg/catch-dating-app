@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -13,15 +13,14 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Section dispatch states',
-  type: ProfileSectionView,
+  type: ProfileSection,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileSectionViewStates(BuildContext context) {
-  final section = widgetbookCatchesProfileSection<ProfileCompatibilitySection>(
-    context,
-  );
+  final section =
+      widgetbookCatchesProfileSection<ProfileCompatibilitySectionData>(context);
   return WidgetbookPageCatalogFrame(
-    title: 'ProfileSectionView',
+    title: 'ProfileSection',
     contractId: 'screen.catches.profile.section_view',
     children: [
       WidgetbookPageStateCard(
@@ -30,7 +29,7 @@ Widget profileSectionViewStates(BuildContext context) {
           height: WidgetbookPreviewLayout.stateViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileSectionView(section: section),
+            child: ProfileSection(section: section),
           ),
         ),
       ),
@@ -40,7 +39,7 @@ Widget profileSectionViewStates(BuildContext context) {
           height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileSectionView(
+            child: ProfileSection(
               section: section,
               onReact: widgetbookCatchesNoopReaction,
             ),
@@ -53,17 +52,17 @@ Widget profileSectionViewStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Section kicker states',
-  type: ProfileSectionKicker,
+  type: ProfileKickerText,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileSectionKickerStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ProfileSectionKicker',
+    title: 'ProfileKickerText',
     contractId: 'screen.catches.profile.section_kicker',
     children: [
       WidgetbookPageStateCard(
         label: 'mono label',
-        child: ProfileSectionKicker('Running rhythm'),
+        child: ProfileKickerText('Running rhythm'),
       ),
     ],
   );
@@ -71,12 +70,12 @@ Widget profileSectionKickerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Compatibility states',
-  type: ProfileCompatibility,
+  type: ProfileCompatibilitySection,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileCompatibilityStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ProfileCompatibility',
+    title: 'ProfileCompatibilitySection',
     contractId: 'screen.catches.profile.compatibility',
     children: [
       WidgetbookPageStateCard(
@@ -85,11 +84,11 @@ Widget profileCompatibilityStates(BuildContext context) {
           height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileCompatibility(
+            child: ProfileCompatibilitySection(
               section:
-                  widgetbookCatchesProfileSection<ProfileCompatibilitySection>(
-                    context,
-                  ),
+                  widgetbookCatchesProfileSection<
+                    ProfileCompatibilitySectionData
+                  >(context),
             ),
           ),
         ),
@@ -100,17 +99,17 @@ Widget profileCompatibilityStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Prompt states',
-  type: ProfilePrompt,
+  type: ProfilePromptSection,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profilePromptStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ProfilePrompt',
+    title: 'ProfilePromptSection',
     contractId: 'screen.catches.profile.prompt',
     children: [
       WidgetbookPageStateCard(
         label: 'prompt answer',
-        child: ProfilePrompt(
+        child: ProfilePromptSection(
           section: widgetbookCatchesProfileSection<ProfilePromptSectionData>(
             context,
           ),
@@ -122,12 +121,12 @@ Widget profilePromptStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Running states',
-  type: ProfileRunning,
+  type: ProfileRunningSection,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileRunningStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ProfileRunning',
+    title: 'ProfileRunningSection',
     contractId: 'screen.catches.profile.running',
     children: [
       WidgetbookPageStateCard(
@@ -136,10 +135,11 @@ Widget profileRunningStates(BuildContext context) {
           child: WidgetbookContentFrame(
             child: Padding(
               padding: CatchInsets.content,
-              child: ProfileRunning(
-                section: widgetbookCatchesProfileSection<ProfileRunningSection>(
-                  context,
-                ),
+              child: ProfileRunningSection(
+                section:
+                    widgetbookCatchesProfileSection<ProfileRunningSectionData>(
+                      context,
+                    ),
               ),
             ),
           ),
@@ -169,12 +169,12 @@ Widget runningStatStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Facts states',
-  type: ProfileFacts,
+  type: ProfileFactsSection,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileFactsStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ProfileFacts',
+    title: 'ProfileFactsSection',
     contractId: 'screen.catches.profile.facts',
     children: [
       WidgetbookPageStateCard(
@@ -183,8 +183,8 @@ Widget profileFactsStates(BuildContext context) {
           height: WidgetbookPreviewLayout.routeViewportHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: ProfileFacts(
-              section: widgetbookCatchesProfileSection<ProfileFactsSection>(
+            child: ProfileFactsSection(
+              section: widgetbookCatchesProfileSection<ProfileFactsSectionData>(
                 context,
               ),
             ),
@@ -197,18 +197,18 @@ Widget profileFactsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Rule states',
-  type: ProfileRule,
+  type: ProfileDivider,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileRuleStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookPageCatalogFrame(
-    title: 'ProfileRule',
+    title: 'ProfileDivider',
     contractId: 'screen.catches.profile.rule',
     children: [
       WidgetbookPageStateCard(
         label: 'hairline',
-        child: ProfileRule(color: t.line),
+        child: ProfileDivider(color: t.line),
       ),
     ],
   );

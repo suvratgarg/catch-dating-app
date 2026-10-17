@@ -7,9 +7,9 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -365,8 +365,8 @@ void main() {
 
       expect(initializationStarted, isTrue);
       expect(find.text('Home screen loaded'), findsOneWidget);
-      final scaffoldBefore = tester.widget<CatchAdaptiveTabScaffold>(
-        find.byType(CatchAdaptiveTabScaffold),
+      final scaffoldBefore = tester.widget<AdaptiveTabScaffold>(
+        find.byType(AdaptiveTabScaffold),
       );
       final shellElementBefore = tester.element(
         find.byType(StatefulNavigationShell),
@@ -376,9 +376,7 @@ void main() {
       await tester.pump();
 
       expect(
-        tester.widget<CatchAdaptiveTabScaffold>(
-          find.byType(CatchAdaptiveTabScaffold),
-        ),
+        tester.widget<AdaptiveTabScaffold>(find.byType(AdaptiveTabScaffold)),
         same(scaffoldBefore),
       );
       expect(

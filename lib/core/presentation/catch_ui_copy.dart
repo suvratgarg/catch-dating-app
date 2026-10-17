@@ -107,14 +107,14 @@ CatchDialogCopy catchDialogCopy(AppLocalizations l10n) => CatchDialogCopy(
 );
 
 /// Resolves form-review statuses at the app's localization boundary.
-String Function(CatchFormStepRowListStatus) catchFormStepStatusLabelBuilder(
+String Function(CatchFormStepListStatus) catchFormStepStatusLabelBuilder(
   AppLocalizations l10n,
 ) =>
     (status) => switch (status) {
-      CatchFormStepRowListStatus.complete => l10n.hostsWizardStatusComplete,
-      CatchFormStepRowListStatus.needsInformation =>
+      CatchFormStepListStatus.complete => l10n.hostsWizardStatusComplete,
+      CatchFormStepListStatus.needsInformation =>
         l10n.hostsWizardStatusNeedsInformation,
-      CatchFormStepRowListStatus.optional => l10n.hostsWizardStatusOptional,
+      CatchFormStepListStatus.optional => l10n.hostsWizardStatusOptional,
     };
 
 /// Formats a wizard counter without coupling shared headers to app copy.

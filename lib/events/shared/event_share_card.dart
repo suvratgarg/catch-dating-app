@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -117,7 +118,7 @@ class EventShareCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  EventActivityBackdrop(
+                  EventBackdropImage(
                     visual: visual,
                     dense: true,
                     iconAlignment: Alignment.centerRight,

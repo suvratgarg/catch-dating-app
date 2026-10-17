@@ -210,9 +210,9 @@ Examples:
 - `CatchMetricStrip`
 - `CatchMetricStrip`
 - `CatchPersonRow`
-- `CatchRosterRow`
+- `ParticipantRow`
 - `EventDetailHostCard`
-- `CatchCoverStory`
+- `FeaturedEventPoster`
 
 Rules:
 

@@ -3,8 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
-import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/clubs/shared/club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -311,8 +310,8 @@ class ClubHeroModule extends StatelessWidget {
       child: SizedBox(
         key: const ValueKey('club-detail-hero-poster-frame'),
         height: mediaHeight + captionExtent,
-        child: CatchOrganizerPoster(
-          media: CatchClubCover(
+        child: CatchPoster(
+          media: ClubCover(
             club: club,
             semanticLabel: context.l10n
                 .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
@@ -340,7 +339,7 @@ class ClubHeroModule extends StatelessWidget {
         key: const ValueKey('club-detail-hero-masthead'),
         height: mediaHeight + captionExtent,
         borderColor: t.line,
-        radius: CatchLayout.organizerPosterRadius,
+        radius: CatchLayout.posterRadius,
         backgroundColor: t.surface,
         padding: CatchInsets.tileContent,
         child: Column(

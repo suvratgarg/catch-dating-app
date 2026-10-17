@@ -451,7 +451,7 @@
           "routes": [
             "hostCreateEventScreen"
           ],
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "PaperCelebrationScaffold",
           "family": "step-flow",
           "expression": "CatchScaffold.stepFlow",
@@ -1603,7 +1603,7 @@
           "routes": [
             "paymentConfirmationScreen"
           ],
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1946,7 +1946,7 @@
     "MatchCelebrationDialog": {
       "owners": [
         {
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1959,7 +1959,7 @@
     "EventJoinedCelebrationScreen": {
       "owners": [
         {
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1972,7 +1972,7 @@
     "EventCheckInCelebrationScreen": {
       "owners": [
         {
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -3917,7 +3917,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -4642,7 +4642,7 @@
             "previewIds": [
               "ExploreFeedContentSliver/Feed states"
             ],
-            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreClubCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ExploreOrganizerPosterCard. The old standalone CrossPathsCard proposal remains retired."
+            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreClubCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ClubCard. The old standalone CrossPathsCard proposal remains retired."
           },
           {
             "id": "section.explore.cover_story",
@@ -4653,8 +4653,8 @@
               "CoverStory"
             ],
             "flutter": {
-              "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-              "symbol": "CatchCoverStory"
+              "file": "lib/explore/presentation/widgets/featured_event_poster.dart",
+              "symbol": "FeaturedEventPoster"
             },
             "currentOwner": "ExploreDiscoveryCoverHeader and ExploreCoverStoryState",
             "targetOwner": "registered Explore CoverStory compound",
@@ -4669,7 +4669,7 @@
               "without_cta"
             ],
             "previewIds": [
-              "CatchCoverStory/Contract states"
+              "FeaturedEventPoster/Contract states"
             ],
             "migration": "ExploreCoverStoryState now owns activity-independent cover copy and test-time clock behavior. CoverStory is promoted through the catch.cover_story component contract, with route-owned CTA/search callbacks staying outside the reusable visual contract."
           },
@@ -4803,7 +4803,7 @@
         {
           "id": "DS-EXPLORE-001",
           "status": "closed",
-          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
+          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ClubCard and the catch.organizer_poster family."
         },
         {
           "id": "DS-EXPLORE-002",
@@ -4837,7 +4837,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -6639,7 +6639,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -7236,7 +7236,7 @@
               "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
               "symbol": "ProfileReactionControls"
             },
-            "currentOwner": "ProfileSurface/CatchProfileView",
+            "currentOwner": "ProfileSurface/ProfileBody",
             "targetOwner": "registered reaction-control compound with comment-sheet states",
             "dependencies": [
               "catch.button",
@@ -7350,7 +7350,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -8432,7 +8432,7 @@
           "id": "keyboard_composer",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+          "source": "ChatInput uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatScreen/Route states"
@@ -8636,8 +8636,8 @@
               "SendAction"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-              "symbol": "ChatInputBar"
+              "file": "lib/chats/presentation/widgets/chat_input.dart",
+              "symbol": "ChatInput"
             },
             "currentOwner": "ChatScreen",
             "targetOwner": "provider-free chat composer section",
@@ -8899,7 +8899,7 @@
         {
           "id": "profile_self",
           "status": "captured",
-          "notes": "Deterministic CatchProfileView fixture tagged to profileScreen for flagship profile-surface review."
+          "notes": "Deterministic ProfileBody fixture tagged to profileScreen for flagship profile-surface review."
         },
         {
           "id": "profile_self_loading",
@@ -9129,7 +9129,7 @@
           "id": "preview_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "PreviewTab maps the current UserProfile into PublicProfile and renders ProfileSurface/CatchProfileView without reaction affordances.",
+          "source": "PreviewTab maps the current UserProfile into PublicProfile and renders ProfileSurface/ProfileBody without reaction affordances.",
           "captureIds": [
             "profile_self",
             "profile_self_preview_tab"
@@ -10122,7 +10122,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "Today and Events delegate to the shared pane header rhythm; selected event management or recap remains adjacent to its root on wide layouts."
       },
       "statePolicy": {
@@ -10895,7 +10895,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -12193,11 +12193,11 @@
               "Field"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/patterns/catch_form_row_list.dart",
-              "symbol": "CatchFormRowList"
+              "file": "packages/catch_ui/lib/src/patterns/catch_form_list.dart",
+              "symbol": "CatchFormList"
             },
             "currentOwner": "HostClubEditTab",
-            "targetOwner": "CatchFormRowList with Host-owned UpdateClubPatch descriptors",
+            "targetOwner": "CatchFormList with Host-owned UpdateClubPatch descriptors",
             "dependencies": [
               "catch.field",
               "catch.button",
@@ -13443,7 +13443,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -13897,7 +13897,7 @@
           "id": "club_fetch_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "Without an initial club extra, fetchClubProvider loading renders CatchStartupLoadingScreen.",
+          "source": "Without an initial club extra, fetchClubProvider loading renders SplashScreen.",
           "nextAction": "Compare route loading capture against a canonical loading reference if design exports one.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
@@ -17629,7 +17629,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The Inbox directory and conversation each own full-height pane chrome, using the same local-width viewport as other Host destinations."
       },
       "statePolicy": {
@@ -18981,8 +18981,8 @@
             "symbol": "ChatMessageList"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-            "symbol": "ChatInputBar"
+            "file": "lib/chats/presentation/widgets/chat_input.dart",
+            "symbol": "ChatInput"
           }
         ],
         "mutationOwners": [
@@ -19311,7 +19311,7 @@
           "id": "composer_enabled",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatInputBar is enabled for active non-blocked matches and sends trimmed text through ChatController.sendMessageMutation.",
+          "source": "ChatInput is enabled for active non-blocked matches and sends trimmed text through ChatController.sendMessageMutation.",
           "tests": [
             "test/chats/chat_screen_test.dart"
           ],
@@ -19356,7 +19356,7 @@
           "id": "send_message_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "ChatController.sendMessageMutation pending flows through ChatRouteState and drives the ChatInputBar send loading indicator while disabling duplicate sends.",
+          "source": "ChatController.sendMessageMutation pending flows through ChatRouteState and drives the ChatInput send loading indicator while disabling duplicate sends.",
           "nextAction": "Move send callback execution and draft retention into a typed action adapter/controller seam after keyboard-state captures exist.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -19680,10 +19680,10 @@
               "HostChatComposer"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-              "symbol": "ChatInputBar"
+              "file": "lib/chats/presentation/widgets/chat_input.dart",
+              "symbol": "ChatInput"
             },
-            "currentOwner": "ChatInputBar",
+            "currentOwner": "ChatInput",
             "targetOwner": "provider-free host chat composer section",
             "dependencies": [
               "catch.field",
@@ -20335,7 +20335,7 @@
           "id": "phone_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "While AuthController.step is AuthStep.phone, Consumer renders the standalone PhonePage and Host renders the shared CatchStartupBrandStage plus an inset HostAuthCard with one unified country/phone control and Send code action. At large text scales the country selector and phone input reflow vertically within that same control.",
+          "source": "While AuthController.step is AuthStep.phone, Consumer renders the standalone PhonePage and Host renders the shared StartupBrandHeader plus an inset HostAuthCard with one unified country/phone control and Send code action. At large text scales the country selector and phone input reflow vertically within that same control.",
           "previewIds": [
             "AuthScreen/Screen states",
             "PhonePage/Phone entry states"
@@ -20474,7 +20474,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "AuthScreen watches AuthController.step and projects one of two presentation adapters. Consumer keeps the standalone onboarding pages. HostAuthFlowFrame owns a startup-identical CatchStartupBrandStage and one scrollable brand/card column; AnimatedSwitcher replaces the top-aligned inset HostAuthCard content between PhonePage and inline OtpPage. The step widgets retain text controllers, validation, timers, mutation calls, and branded feedback, while provider-free view states own derived labels, masking, loading, cooldown, and action enablement.",
+        "currentLayout": "AuthScreen watches AuthController.step and projects one of two presentation adapters. Consumer keeps the standalone onboarding pages. HostAuthFlowFrame owns a startup-identical StartupBrandHeader and one scrollable brand/card column; AnimatedSwitcher replaces the top-aligned inset HostAuthCard content between PhonePage and inline OtpPage. The step widgets retain text controllers, validation, timers, mutation calls, and branded feedback, while provider-free view states own derived labels, masking, loading, cooldown, and action enablement.",
         "targetLayout": "Implemented: keep AuthController as the shared mutation owner, local text/timer lifecycle in the step widgets, and role-specific composition in AuthScreen. Preserve the Host startup/auth logo anchor and one-card inline transition while routing reusable display policy through AuthPhoneEntryViewState and AuthOtpEntryViewState.",
         "sections": [
           {
@@ -23215,7 +23215,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -23255,8 +23255,8 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
-            "symbol": "CatchDockSurface"
+            "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
+            "symbol": "CatchDock"
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
@@ -24473,8 +24473,8 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
-              "symbol": "CatchDockSurface"
+              "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
+              "symbol": "CatchDock"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",
@@ -24528,7 +24528,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {

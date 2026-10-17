@@ -101,17 +101,17 @@ Widget stepperFooterCatalogStates(BuildContext context) {
                 CatchFormStepReviewItem(
                   index: 0,
                   title: 'Event basics',
-                  status: CatchFormStepRowListStatus.complete,
+                  status: CatchFormStepListStatus.complete,
                 ),
                 CatchFormStepReviewItem(
                   index: 1,
                   title: 'Meeting location',
-                  status: CatchFormStepRowListStatus.needsInformation,
+                  status: CatchFormStepListStatus.needsInformation,
                 ),
                 CatchFormStepReviewItem(
                   index: 2,
                   title: 'Live event guide',
-                  status: CatchFormStepRowListStatus.optional,
+                  status: CatchFormStepListStatus.optional,
                 ),
               ],
               onStepSelected: (_) {},

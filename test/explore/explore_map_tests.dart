@@ -36,7 +36,7 @@ void _registerExploreMapTests() {
     );
     await _pumpClubUi(tester);
 
-    expect(find.byType(CatchCoverStory), findsNothing);
+    expect(find.byType(FeaturedEventPoster), findsNothing);
     expect(find.text(externalEvent.title), findsOneWidget);
     expect(find.text('READ-ONLY SUPPLY · NO CATCH BOOKING'), findsOneWidget);
     expect(find.text('Map'), findsOneWidget);

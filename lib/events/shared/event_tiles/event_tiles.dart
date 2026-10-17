@@ -1,4 +1,4 @@
-export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+export 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 export 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 export 'package:catch_dating_app/events/shared/event_price_copy.dart';
 

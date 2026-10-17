@@ -59,7 +59,7 @@ class EventBookingDock extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (error != null) CatchBanner.error(message: error),
-        CatchDockSurface.primary(
+        CatchDock.primary(
           label: label,
           onPressed: onPressed,
           leading: leadingContent,

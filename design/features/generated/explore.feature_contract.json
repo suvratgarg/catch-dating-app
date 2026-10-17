@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:5a2ab64075a2010378eb3e0511dce70bb91b335a43a1654a09b30adcf1cd7c56",
+  "resolvedDigest": "sha256:bc978610cde142c7acfce0d3f1c3b760ed5ab4e1bd940d390b2d400df48fa463",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1782,10 +1782,10 @@
             "id": "catch.cover_story",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchCoverStory",
-              "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+              "symbol": "FeaturedEventPoster",
+              "file": "lib/explore/presentation/widgets/featured_event_poster.dart",
               "constructors": [
-                "CatchCoverStory"
+                "FeaturedEventPoster"
               ]
             }
           },
@@ -1793,10 +1793,10 @@
             "id": "catch.event_card",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchEventCard",
-              "file": "lib/core/widgets/catch_event_activity_cards.dart",
+              "symbol": "EventCard",
+              "file": "lib/core/widgets/event_card.dart",
               "constructors": [
-                "CatchEventCard.ticket"
+                "EventCard"
               ]
             }
           },

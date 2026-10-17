@@ -121,14 +121,12 @@ class CreateEventStepRail extends StatelessWidget {
 
   String _statusLabel(
     BuildContext context,
-    CatchFormStepRowListStatus status,
+    CatchFormStepListStatus status,
   ) => switch (status) {
-    CatchFormStepRowListStatus.complete =>
-      context.l10n.hostsWizardStatusComplete,
-    CatchFormStepRowListStatus.needsInformation =>
+    CatchFormStepListStatus.complete => context.l10n.hostsWizardStatusComplete,
+    CatchFormStepListStatus.needsInformation =>
       context.l10n.hostsWizardStatusNeedsInformation,
-    CatchFormStepRowListStatus.optional =>
-      context.l10n.hostsWizardStatusOptional,
+    CatchFormStepListStatus.optional => context.l10n.hostsWizardStatusOptional,
   };
 }
 

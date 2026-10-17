@@ -169,7 +169,7 @@ class HostTodayEventMetricTile extends StatelessWidget {
   final String label;
   final String? supporting;
   final IconData? icon;
-  final CatchActivity? accent;
+  final ActivityStyle? accent;
   final Color? valueColor;
 
   @override

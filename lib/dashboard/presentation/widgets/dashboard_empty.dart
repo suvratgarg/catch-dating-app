@@ -30,7 +30,7 @@ class DashboardEmptySliverBody extends StatelessWidget {
                         context.l10n.dashboardDashboardEmptyTitleHowCatchWorks,
                     first: true,
                     bodyGap: CatchSpacing.s4,
-                    child: CatchStepRowList(
+                    child: CatchStepList(
                       steps: _howCatchWorksSteps(context.l10n),
                     ),
                   ),

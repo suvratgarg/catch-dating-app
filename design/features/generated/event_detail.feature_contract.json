@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:3e0b623bcaa9d47f629cb119c5fc8940d0e030191d692ad5f7ca3a3cd3eac4ad",
-  "resolvedDigest": "sha256:ce9d342d048b1bbb3545d8846e0f4bb6b5b74a19144253e53bf9e6e7485c5303",
+  "resolvedDigest": "sha256:86919b78112648ca603e3a56511e453fe865168a9a918ce4908183d9c6e3ddea",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -3113,10 +3113,10 @@
             "id": "catch.map_preview",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchMapPreview",
-              "file": "lib/locations/shared/catch_map_preview.dart",
+              "symbol": "MapPreview",
+              "file": "lib/locations/shared/map_preview.dart",
               "constructors": [
-                "CatchMapPreview"
+                "MapPreview"
               ]
             }
           },

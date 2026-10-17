@@ -8,6 +8,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -237,5 +238,17 @@ Event _eventAtMapCoordinate(Event event, int index) {
     ),
     startingPointLat: latitude,
     startingPointLng: longitude,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Interactive map',
+  type: LocationMap,
+  path: '[Events]/Map',
+)
+Widget locationMapState(BuildContext context) {
+  return SizedBox(
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
+    child: LocationMap(initialCenter: _mapCenter, initialZoom: 13),
   );
 }

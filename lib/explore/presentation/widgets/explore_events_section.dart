@@ -7,7 +7,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -15,7 +15,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 
@@ -276,11 +276,10 @@ class ExploreFeedContentSliver extends StatelessWidget {
                       item: item,
                       onExternalEventOpened: onExternalEventOpened,
                     ),
-                  ExploreMixedClubSpotlightCard(:final club) =>
-                    ExploreOrganizerPosterCard(
-                      club: club,
-                      onClubSelected: onClubSelected,
-                    ),
+                  ExploreMixedClubSpotlightCard(:final club) => ClubCard(
+                    club: club,
+                    onClubSelected: onClubSelected,
+                  ),
                   ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
                     club: club,
                     onClubSelected: onClubSelected,

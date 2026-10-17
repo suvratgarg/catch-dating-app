@@ -82,7 +82,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
       ),
       footer: current == null || !memberState.isSettledData
           ? null
-          : CatchDockSurface.primary(
+          : CatchDock.primary(
               buttonKey: const ValueKey('host-saved-audience-message'),
               label: context.l10n.hostAudienceOpenInbox,
               onPressed:

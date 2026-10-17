@@ -92,7 +92,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchMediaOverlay), findsNothing);
   });
 
-  testWidgets('CatchEventThumbnail composes fallback and scrim renderers', (
+  testWidgets('EventThumbnail composes fallback and scrim renderers', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -100,7 +100,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
         const SizedBox(
           width: 220,
           height: 140,
-          child: CatchEventThumbnail(
+          child: EventThumbnail(
             photoUrl: null,
             pace: PaceLevel.easy,
             activityKind: ActivityKind.socialRun,
@@ -109,7 +109,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    expect(find.byType(CatchEventThumbnailActivityFallback), findsOneWidget);
+    expect(find.byType(EventFallbackThumbnail), findsOneWidget);
     expect(find.byType(CatchMediaOverlay), findsOneWidget);
 
     await tester.pumpWidget(
@@ -117,7 +117,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
         const SizedBox(
           width: 220,
           height: 140,
-          child: CatchEventThumbnail(
+          child: EventThumbnail(
             photoUrl: null,
             pace: PaceLevel.easy,
             activityKind: ActivityKind.dinner,
@@ -127,7 +127,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    expect(find.byType(CatchEventThumbnailActivityFallback), findsOneWidget);
+    expect(find.byType(EventFallbackThumbnail), findsOneWidget);
     expect(find.byType(CatchMediaOverlay), findsNothing);
   });
 
@@ -223,10 +223,10 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchCountText), findsNothing);
   });
 
-  testWidgets('CatchStepRowList numbers instructional rows', (tester) async {
+  testWidgets('CatchStepList numbers instructional rows', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchStepRowList(
+        const CatchStepList(
           steps: [
             CatchStepRowData(title: 'Arrive', body: 'Check in with the host.'),
             CatchStepRowData(title: 'Meet', body: 'Start the first round.'),
@@ -566,22 +566,14 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(ListTile), findsNothing);
   });
 
-  testWidgets('CatchStartupLoadingScreen delays slow-boot spinner', (
-    tester,
-  ) async {
+  testWidgets('SplashScreen delays slow-boot spinner', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: const CatchStartupLoadingScreen(),
-      ),
+      MaterialApp(theme: AppTheme.light, home: const SplashScreen()),
     );
 
     expect(find.bySemanticsLabel('Catch'), findsOneWidget);
     final logo = tester.widget<Image>(_startupLogoFinder);
-    expect(
-      (logo.image as AssetImage).assetName,
-      CatchStartupLoadingScreen.lightIconAsset,
-    );
+    expect((logo.image as AssetImage).assetName, SplashScreen.lightIconAsset);
     expect(find.byType(CatchLoadingIndicator), findsNothing);
 
     await tester.pump(CatchMotion.startupIndicatorDelay);
@@ -590,21 +582,15 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchLoadingIndicator), findsOneWidget);
   });
 
-  testWidgets('CatchStartupLoadingScreen uses dark splash mark in dark mode', (
+  testWidgets('SplashScreen uses dark splash mark in dark mode', (
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.dark,
-        home: const CatchStartupLoadingScreen(),
-      ),
+      MaterialApp(theme: AppTheme.dark, home: const SplashScreen()),
     );
 
     final logo = tester.widget<Image>(_startupLogoFinder);
-    expect(
-      (logo.image as AssetImage).assetName,
-      CatchStartupLoadingScreen.darkIconAsset,
-    );
+    expect((logo.image as AssetImage).assetName, SplashScreen.darkIconAsset);
   });
 
   testWidgets('CatchSurface supports padding, fixed size, and tap handling', (

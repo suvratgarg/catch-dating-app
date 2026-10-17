@@ -83,7 +83,7 @@ may inherit the activity color of the event where the two people would cross pat
 ## 3. Activity color system — the only chroma (keep + refine)
 
 `event_activity_visuals.dart` already keys every `ActivityKind` to a color set + a
-`CustomPaint` pattern + a glyph (`EventActivityBackdrop`). This is the **correct answer
+`CustomPaint` pattern + a glyph (`EventBackdropImage`). This is the **correct answer
 to user-generated photography** — events are *art-first, photo-optional* — and it is
 the single most systematic asset in the app. **Keep it.** Three refinements:
 
@@ -332,11 +332,11 @@ tiers within one list.
   fixed `eventTicketMediaHeight = 136` → aspect-ratio/constraint (Dynamic Type); push
   the ticket-stub typography (serial/time treatment).
 - **Poster → organizers: canonical.** Organizers announce a recurring scene;
-  `CatchOrganizerPoster` is the shared material for Explore spotlight and Club
+  `CatchPoster` is the shared material for Explore spotlight and Club
   Detail identity. Its bounded recipe exposes four layouts (`editorial`,
   `photo`, `split`, `minimal`) and three treatments (`paper`, `ink`, `signal`).
   Consumer surfaces use `editorial` + `paper` until a persisted host recipe is
-  approved. Real cover photography or deterministic `OrganizerPosterArtwork`
+  approved. Real cover photography or deterministic `ClubPlaceholderCover`
   fills the media lane, while provenance/authority remains explicit overlay
   state rather than being implied by visual polish.
 - **Polaroid → people: canonical.** `CatchPolaroid` reserves the instant
@@ -507,12 +507,12 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   destructive feedback without a filled danger CTA. Resting chrome is neutral
   and outlined; hover, focus and press identify danger. Status belongs to the
   record badge rather than an action's resting fill.
-- Persistent control docking routes through `CatchDockSurface`. `pageAction`
+- Persistent control docking routes through `CatchDock`. `pageAction`
   is the borderless page-background recipe for one detail action. The scaffold
   reserves its measured height. The app-level `CatchNoticeOverlay` places
   transient notices in the top safe area without changing the route layout. The
   dock owns the page gutter and safe area; features do not wrap it in a card.
-- Other persistent control docking routes through `CatchDockSurface`. Its default
+- Other persistent control docking routes through `CatchDock`. Its default
   constructor hosts utility content; `primary` owns floating Cupertino or
   anchored Material action chrome. `primaryContent` reuses the same action body
   when its caller already supplies a surface. `CatchBottomActionOverlay` owns
@@ -694,7 +694,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   same horizontal plane and starting rhythm.
 - A typed form section owns one text-commit model for all of its sibling rows.
   Explicit confirmation with Cancel and Done is the default for new
-  `CatchFormRowList` sections. An existing surface may opt the complete section
+  `CatchFormList` sections. An existing surface may opt the complete section
   into on-blur commit while it awaits a reviewed product migration; individual
   row descriptors cannot mix policies or choose their own commit chrome.
   Consumer profile text rows now use this explicit default. Text editors keep

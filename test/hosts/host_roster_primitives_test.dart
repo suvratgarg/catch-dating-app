@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,14 +17,14 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const CatchRosterTable(
+        const ParticipantTable(
           columns: ['Guest', 'Status', 'Action'],
           rows: [
-            CatchRosterRow(
+            ParticipantRow(
               person: 'Taylor',
               meta: 'Booked',
               signal: 'Arrived',
-              action: CatchRosterTextAction('Paid'),
+              action: ParticipantTextAction('Paid'),
             ),
           ],
         ),
@@ -47,13 +47,13 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const CatchRosterTable(
+        const ParticipantTable(
           columns: ['Guest', 'Status', 'Action'],
           rows: [
-            CatchRosterRow(
+            ParticipantRow(
               person: 'Taylor',
               signal: 'Arrived',
-              action: CatchRosterTextAction('Paid'),
+              action: ParticipantTextAction('Paid'),
             ),
           ],
         ),

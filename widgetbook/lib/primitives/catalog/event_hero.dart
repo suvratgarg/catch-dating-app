@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
@@ -34,8 +35,8 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
             PhysicalShape(
               clipper: const CatchTicketShapeClipper(
                 cornerRadius: CatchRadius.lg,
-                notchRadius: CatchLayout.eventTicketNotchRadius,
-                notchDepth: CatchLayout.eventTicketNotchDepth,
+                notchRadius: CatchLayout.ticketNotchRadius,
+                notchDepth: CatchLayout.ticketNotchDepth,
                 notchCenterY: 86,
               ),
               color: t.surface,
@@ -45,7 +46,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
                 child: Column(
                   children: [
                     Expanded(
-                      child: EventActivityBackdrop(
+                      child: EventBackdropImage(
                         visual: eventActivityVisual(
                           ActivityKind.socialRun,
                           context: context,

@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/startup/startup_animation_scope.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -49,19 +51,19 @@ Widget catchLoadingIndicatorCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchStartupLoadingScreen,
+  type: SplashScreen,
   path: '[Core catalog]/Loading',
 )
 Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStartupLoadingScreen',
+    title: 'SplashScreen',
     catalogId: 'core.widgets.catch_startup_loading_screen',
     children: const [
       WidgetbookCatalogStateCard(
         label: 'boot surface before delayed spinner',
         child: WidgetbookCatalogPhoneFrame(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchStartupLoadingScreen(),
+          child: SplashScreen(),
         ),
       ),
     ],
@@ -374,6 +376,55 @@ Widget catchInlineErrorStateCatalogStates(BuildContext context) {
           ],
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: StartupBrandHeader,
+  path: '[Core catalog]/Loading',
+)
+Widget startupBrandHeaderCatalogStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'StartupBrandHeader',
+    catalogId: 'core.widgets.splash_screen.brand_header',
+    children: const [
+      WidgetbookCatalogStateCard(
+        label: 'consumer mark',
+        child: StartupBrandHeader(appRole: AppRole.consumer),
+      ),
+      WidgetbookCatalogStateCard(
+        label: 'host mark',
+        child: StartupBrandHeader(appRole: AppRole.host),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: StartupAnimationScope,
+  path: '[Core catalog]/Loading',
+)
+Widget startupAnimationScopeCatalogStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'StartupAnimationScope',
+    catalogId: 'core.startup.startup_animation_scope',
+    children: [
+      for (final played in const [false, true])
+        WidgetbookCatalogStateCard(
+          label: played ? 'welcome reel played' : 'welcome reel pending',
+          child: StartupAnimationScope(
+            consumerWelcomeReelPlayed: played,
+            child: Builder(
+              builder: (context) => CatchMetadataText(
+                'Reel played: ${StartupAnimationScope.maybeOf(context)}',
+                color: CatchTokens.of(context).ink2,
+              ),
+            ),
+          ),
+        ),
     ],
   );
 }

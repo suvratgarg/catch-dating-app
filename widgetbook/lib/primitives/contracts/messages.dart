@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -21,12 +21,12 @@ Widget catchPersonRowCopyContract(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: ChatInputBar,
+  type: ChatInput,
   path: '[Core primitives]/Product composites',
 )
 Widget chatInputBarContractStates(BuildContext context) {
   return const WidgetbookContractFrame(
-    title: 'ChatInputBar',
+    title: 'ChatInput',
     contractId: 'catch.chat_composer',
     states: [
       'empty-unfocused',
@@ -83,7 +83,7 @@ Widget chatInputBarContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Focused empty',
-  type: ChatInputBar,
+  type: ChatInput,
   path: '[Core primitives]/Product composites',
 )
 Widget chatInputBarFocusedEmpty(BuildContext context) {
@@ -97,7 +97,7 @@ Widget chatInputBarFocusedEmpty(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Focused draft',
-  type: ChatInputBar,
+  type: ChatInput,
   path: '[Core primitives]/Product composites',
 )
 Widget chatInputBarFocusedDraft(BuildContext context) {
@@ -493,7 +493,7 @@ class _ChatComposerContractPreviewState
 
   @override
   Widget build(BuildContext context) {
-    return ChatInputBar(
+    return ChatInput(
       controller: _controller,
       sending: widget.sending,
       sendingImage: widget.sendingImage,

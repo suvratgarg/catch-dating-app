@@ -84,7 +84,7 @@ class ExploreExternalEventRow extends StatelessWidget {
           children: [
             Row(
               children: [
-                EventActivityStamp(
+                EventActivityBadge(
                   visual: visual,
                   size: 26,
                   iconSize: CatchIcon.sm,

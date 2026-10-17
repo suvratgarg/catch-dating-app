@@ -399,7 +399,7 @@ Activity:
 - `CatchActivityArt`
 - `CatchPersonAvatar` activity variant
 - `CatchActivityChip`
-- `CatchActivityMapPin`
+- `ActivityMapPin`
 - `CatchDistanceRing`
 
 Data display:
@@ -417,8 +417,8 @@ Event cards:
 
 - `CatchEventSpotlightCard`
 - `CatchEventTicketCard`
-- `EventActivityBackdrop`
-- `EventActivityStamp`
+- `EventBackdropImage`
+- `EventActivityBadge`
 - `CatchTicketPerforatedDivider`
 
 Feedback:
@@ -457,12 +457,12 @@ Loading:
 - `CatchLoadingIndicator`
 - `CatchSkeleton`
 - `CatchSkeletonList`
-- `CatchStartupLoadingScreen`
+- `SplashScreen`
 
 Media:
 
 - `CatchDetailHeroBackdrop`
-- `CatchEventThumbnail`
+- `EventThumbnail`
 - `CatchGradedImage`
 
 Menus:
@@ -472,7 +472,7 @@ Menus:
 
 Moments:
 
-- `CatchCelebrationScreen`
+- `CelebrationScreen`
 
 Navigation:
 
@@ -620,7 +620,7 @@ state-by-state review before we call it aligned.
 | `Badge` | `CatchBadge` | direct prefix |
 | `Button` | `CatchButton` | direct prefix |
 | `Callout` | `CatchSurface.message` | direct prefix |
-| `Celebration` | `CatchCelebrationScreen` | alias |
+| `Celebration` | `CelebrationScreen` | alias |
 | `Chip` | `CatchChip` | direct prefix |
 | `CodeInput` | `CatchCodeInput` | direct prefix |
 | `DistanceRing` | `CatchDistanceRing` | direct prefix |
@@ -633,7 +633,7 @@ state-by-state review before we call it aligned.
 | `FieldGroup` | `CatchSection` | direct prefix |
 | `FieldRow` | `CatchField` | direct prefix |
 | `Kicker` | `CatchKicker` | direct prefix |
-| `MapPin` | `CatchActivityMapPin` | alias |
+| `MapPin` | `ActivityMapPin` | alias |
 | `Menu` | `CatchMenu` | direct prefix |
 | `OptionCard` | `CatchOptionCard` | direct prefix |
 | `OptionGroup` | `CatchOptionGroup` | direct prefix |
@@ -673,7 +673,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `BookingDock` | `EventBookingDock` | Source-backed Widgetbook entry added under `[Event detail]/Sections`; broad core catalog also exposes `EventDetailCta` dock states under `[Core catalog]/Event detail`. |
 | `ConfirmDialog` | `CatchConfirmDialog` | Source-backed Widgetbook entry added under `[P3 utility]/Settings`. |
 | `CountPill` | `CatchCountPill` | Source-backed Widgetbook entry added under `[Explore]/Sections`. |
-| `CoverStory` | `CatchCoverStory` | Source-backed Widgetbook entry added under `[Explore]/Sections`. |
+| `CoverStory` | `FeaturedEventPoster` | Source-backed Widgetbook entry added under `[Explore]/Sections`. |
 | `CrossPathsCard` | `CatchCrossPathsCard` | Source-backed Widgetbook entry added under `[Explore]/Sections`. |
 | `FieldGroup` | `CatchSection` | Merged into the formal `catch.section` contract under `[Core primitives]/Sections`; no separate field-group Widgetbook page remains. |
 | `HintList` | `EventDetailHintList` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
@@ -686,13 +686,13 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `PhotoStrip` | `EventDetailPhotoStrip` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 | `PrivacyBadge` | `CatchPrivacyBadge` | Formal `catch.privacy_badge` contract under `[Core primitives]/Status`; no duplicate catalog page remains. |
 | `ChatBubble` | `MessageBubble` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
-| `ChatComposer` | `ChatInputBar` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
+| `ChatComposer` | `ChatInput` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
 | `ChatListTile` | `ChatListTile` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
 | `ChatThreadHeader` | `ChatEventContextHeader` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
 | `CheckoutSheet` | `_CheckoutSheet` | Private source-backed candidate in `lib/payments/presentation/payment_confirmation_screen.dart`; currently covered through Payment Confirmation route states, not a standalone component entry. |
 | `ClubDock` | `CatchClubDock` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Club detail`; code comment explicitly maps the design-system `ClubDock`. |
 | `ClubHero` | `ClubHeroAppBar` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Club detail`; direct hero-vs-app-bar naming remains an alias decision. |
-| `ClubPolaroid` | `CatchOrganizerPoster` / `OrganizerPosterArtwork` | Deliberately remapped to the organizer-poster metaphor. The formal `catch.organizer_poster` contract and Widgetbook states cover editorial, photo, split, minimal, and fallback artwork; people now own the separate `CatchPolaroid` material. |
+| `ClubPolaroid` | `CatchPoster` / `ClubPlaceholderCover` | Deliberately remapped to the organizer-poster metaphor. The formal `catch.organizer_poster` contract and Widgetbook states cover editorial, photo, split, minimal, and fallback artwork; people now own the separate `CatchPolaroid` material. |
 | `ContactRow` | `_ContactRow` | Private source-backed candidate in `lib/clubs/presentation/detail/widgets/club_detail_body.dart`; reusable contract decision pending because the current widget is club-detail private. |
 | `ConflictSheet` | `BookingConflictSheet` | Source-backed Widgetbook entry added under `[Event Detail]/Sheets`; capacity/sold-out is not part of the current primitive API. |
 | `ConversationTopBar` | `CatchTopBar.identity` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
@@ -702,8 +702,8 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `ProfilePhoto` | `ProfilePhoto` / `ProfilePhotoEditorScreen` | Domain model and editor route exist; design component boundary likely belongs to photo slot/grid rather than the data model. |
 | `ProfilePrompt` | `ProfilePromptsPage` / profile inline prompt editors | Source-backed flow exists, but no standalone prompt-card primitive is currently exposed. |
 | `QuickActions` | `QuickActions` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Dashboard primitives`; direct component-contract decision still pending. |
-| `RosterRow` | `CatchRosterRow` | Formal `catch.roster_row` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
-| `RosterTable` | `CatchRosterTable` | Formal `catch.roster_table` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
+| `RosterRow` | `ParticipantRow` | Formal `catch.roster_row` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
+| `RosterTable` | `ParticipantTable` | Formal `catch.roster_table` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RosterTiles` | `CatchRosterTiles` | Formal `catch.roster_tiles` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RotationCard` | event-success live reveal widgets | Source-backed candidate in `lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart`; code comment explicitly maps the design-system `RotationCard` round list. |
 | `ScreenBody` | `CatchScreenBody` | Formal `catch.screen_body` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
@@ -766,7 +766,7 @@ model as separate primitives.
 - `CatchErrorBanner`
 - `CatchErrorState`
 - `CatchEventSpotlightCard`
-- `CatchEventThumbnail`
+- `EventThumbnail`
 - `CatchFormFieldLabel`
 - `CatchFrameworkErrorView`
 - `CatchGradedImage`
@@ -789,7 +789,7 @@ model as separate primitives.
 - `CatchSkeleton`
 - `CatchSkeletonList`
 - `CatchSliverHeader`
-- `CatchStartupLoadingScreen`
+- `SplashScreen`
 - `CatchStatColumn`
 - `CatchStepProgress`
 - `CatchSurface`
@@ -797,8 +797,8 @@ model as separate primitives.
 - `CatchTopBarMenuAction`
 - `CatchTopBarTabBar`
 - `CatchVerticalSection`
-- `EventActivityBackdrop`
-- `EventActivityStamp`
+- `EventBackdropImage`
+- `EventActivityBadge`
 - `CatchTicketPerforatedDivider`
 - `ProfileInfoTile`
 - `CatchViewport`

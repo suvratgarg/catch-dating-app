@@ -517,7 +517,7 @@ void _registerExploreClubDetailTests() {
       ),
     );
 
-    expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
+    expect(find.byType(ClubPlaceholderCover), findsOneWidget);
     expect(find.text('MM'), findsNothing);
     expect(find.text('Morning Miles'), findsOneWidget);
     expect(find.text('Bandra, Mumbai'), findsOneWidget);
@@ -659,7 +659,7 @@ void _registerExploreClubDetailTests() {
       ),
     );
 
-    expect(find.byType(OrganizerPosterArtwork), findsWidgets);
+    expect(find.byType(ClubPlaceholderCover), findsWidgets);
     expect(find.text('NC'), findsNothing);
     expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
     // Index rows use the area/city/member line as the mono meta row; the
