@@ -119,7 +119,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
   // Evaluate this workflow's existing boolean-expression subset, as the
   // cancellation wiring tests do. This is not a GitHub scheduler emulator.
   for (const producerAttempt of ["1", "2", ""]) {
-    const outputs = {producer_attempt: producerAttempt};
+    const outputs = {producer_attempt: producerAttempt, source_sha: "a".repeat(40)};
     for (const match of ci.matchAll(/needs\.plan\.outputs\.([a-z_]+) == 'true'/g)) outputs[match[1]] = "true";
     const needs = {plan: {result: "success", outputs}, "source-preflight": {result: "success"},
       "capture-freshness": {result: "success"}, "finalize-plan": {result: "success", outputs: {deploy_required: "true"}}};
@@ -130,7 +130,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
         .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]')
         .replaceAll("needs.source-preflight", 'needs["source-preflight"]')
         .replaceAll("needs.capture-freshness", 'needs["capture-freshness"]');
-      const context = {needs, github: {run_attempt: 2, event_name: "push", ref: "refs/heads/main"},
+      const context = {needs, github: {run_attempt: 2, sha: "a".repeat(40), event_name: "push", ref: "refs/heads/main"},
         cancelled: () => false, failure: () => false, contains: (values, value) => values.includes(value),
         format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
         results: ["success", "skipped"]};
@@ -138,7 +138,8 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
         `${name} planner attempt ${producerAttempt || "missing"}`);
       if (name === "firestore-rules") {
         outputs.firestore_rules = "false";
-        assert.equal(vm.runInNewContext(expression, context), false, "Unselected Rules stays skipped");
+        assert.equal(vm.runInNewContext(expression, context), producerAttempt !== "2",
+          "Only a fresh plan can skip unselected Rules; stale bindings must reach refusal");
         outputs.firestore_rules = "true";
       }
       if (name === "tools") {
@@ -170,34 +171,66 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
   }
 });
 
-test("Rules caller explicitly preserves selection and prerequisite status before leaf refusal", () => {
+test("Rules caller preserves fresh selection and routes unusable bindings to actual refusal", () => {
   const caller = ciJob(workflow("ci.yml"), "firestore-rules");
   const expression = caller.match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
     .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
     .replaceAll("needs.source-preflight", 'needs["source-preflight"]');
-  // Evaluate the actual expression with explicit status inputs. This does not
-  // simulate GitHub's implicit status default or nested-rerun scheduling.
-  const evaluate = ({attempt = "2", selected = "true", plan = "success",
+  const sha = "a".repeat(40);
+  // Actual expression + actual Bash guard; no GitHub scheduler simulation.
+  const evaluate = ({attempt = "2", source = sha, selected = "true", plan = "success",
     preflight = "success", cancelled = false, failedAncestor = false} = {}) =>
     vm.runInNewContext(expression, {
-      needs: {plan: {result: plan, outputs: {producer_attempt: attempt,
+      needs: {plan: {result: plan, outputs: {producer_attempt: attempt, source_sha: source,
         ...(selected === null ? {} : {firestore_rules: selected})}},
         "source-preflight": {result: preflight}},
-      github: {run_attempt: 2}, cancelled: () => cancelled, failure: () => failedAncestor,
+      github: {run_attempt: 2, sha}, cancelled: () => cancelled, failure: () => failedAncestor,
       format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
     });
-  for (const attempt of ["2", "1", ""]) {
-    assert.equal(evaluate({attempt}), true, `Planner ${attempt || "missing"} reaches the leaf binding guard`);
-    for (const selected of ["false", "", null]) {
-      assert.equal(evaluate({attempt, selected}), false, `Unselected Rules: ${String(selected)}`);
+  assert.equal(evaluate(), true, "Fresh full rerun2 with matching plan2 remains valid");
+  for (const selected of ["false", "", null]) {
+    assert.equal(evaluate({selected}), false, "Fresh unselected/missing selection stays skipped");
+  }
+  for (const prerequisite of ["plan", "preflight"]) {
+    for (const result of ["failure", "cancelled", "skipped", ""]) {
+      assert.equal(evaluate({[prerequisite]: result}), false, `Fresh ${prerequisite}: ${result || "missing"}`);
     }
-    for (const prerequisite of ["plan", "preflight"]) {
-      for (const result of ["failure", "cancelled", "skipped", ""]) {
-        assert.equal(evaluate({attempt, [prerequisite]: result}), false, `${prerequisite}: ${result || "missing"}`);
+  }
+  const gate = extractSteps(workflow("firestore-rules-ci.yml"))
+    .find((step) => step.name === "Require the originating CI plan");
+  const bindings = [
+    {attempt: "2", source: sha}, {attempt: "1", source: sha},
+    {attempt: "", source: sha}, {attempt: "2", source: ""},
+    {attempt: "2", source: "b".repeat(40)}, {attempt: "3", source: sha},
+    {attempt: "02", source: sha}, {attempt: "", source: ""},
+  ];
+  for (const [index, binding] of bindings.entries()) {
+    const fresh = index === 0;
+    if (!fresh) {
+      for (const selected of ["true", "false", "", null]) {
+        for (const plan of ["success", "skipped", ""]) {
+          for (const preflight of ["success", "skipped", ""]) {
+            assert.equal(evaluate({...binding, selected, plan, preflight}), true,
+              `Unusable binding ${JSON.stringify(binding)} must reach refusal despite selection/prerequisite metadata`);
+          }
+        }
       }
     }
-    assert.equal(evaluate({attempt, cancelled: true}), false, "Canceled workflow stays stopped");
-    assert.equal(evaluate({attempt, failedAncestor: true}), false, "Failed ancestor stays blocked");
+    for (const prerequisite of ["plan", "preflight"]) {
+      for (const result of ["failure", "cancelled"]) {
+        assert.equal(evaluate({...binding, [prerequisite]: result}), false, `${prerequisite}: ${result}`);
+      }
+    }
+    assert.equal(evaluate({...binding, cancelled: true}), false, "Canceled workflow stays stopped");
+    assert.equal(evaluate({...binding, failedAncestor: true}), false, "Failed ancestor stays blocked");
+    const result = spawnSync("bash", ["-c", gate.run], {encoding: "utf8", env: {
+      ...process.env, GITHUB_REPOSITORY: "owner/catch",
+      GITHUB_WORKFLOW_REF: "owner/catch/.github/workflows/ci.yml@refs/heads/main",
+      GITHUB_SHA: sha, GITHUB_RUN_ATTEMPT: "2",
+      CI_PLAN_ATTEMPT: binding.attempt, CI_PLAN_SOURCE_SHA: binding.source,
+    }});
+    assert.equal(result.status, fresh ? 0 : 64, result.stderr || JSON.stringify(binding));
+    if (!fresh) assert.match(result.stdout, /CI plan binding does not match this run/);
   }
 });
 
@@ -207,7 +240,8 @@ test("Rules retries forward the original plan and refuse before checkout", () =>
   assert.match(caller, /needs\.plan\.outputs\.firestore_rules == 'true'/);
   assert.match(caller, /ci_plan_attempt: \$\{\{ needs\.plan\.outputs\.producer_attempt \}\}/);
   assert.match(caller, /ci_plan_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/);
-  assert.doesNotMatch(caller, /always\(|success\(|github\.run_attempt|github\.sha/);
+  assert.doesNotMatch(caller, /always\(|success\(/);
+  assert.doesNotMatch(caller.slice(caller.indexOf("    with:")), /github\.run_attempt|github\.sha/);
   const rules = workflow("firestore-rules-ci.yml");
   const inputs = rules.slice(rules.indexOf("  workflow_call:"), rules.indexOf("  workflow_dispatch:"));
   for (const name of ["ci_plan_attempt", "ci_plan_source_sha"]) {
