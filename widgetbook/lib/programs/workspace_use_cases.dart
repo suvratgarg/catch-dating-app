@@ -488,24 +488,46 @@ Widget programGuestDeskScreenStates(BuildContext context) {
     title: 'ProgramGuestDeskScreen',
     contractId: 'screen.programs.guests',
     children: [
-      WidgetbookPageStateCard(
-        label: 'guestRelations desk',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: [
-              ..._workspaceOverrides(),
-              programWorkEntryProvider(_programId, null).overrideWithValue(
-                AsyncData((
-                  value: _deskAccess,
-                  snapshotAt: null,
-                  snapshotExpiresAt: null,
-                )),
-              ),
-            ],
-            child: const ProgramGuestDeskScreen(programId: _programId),
+      for (final scenario in [
+        (label: 'Expired guest relations duty', access: _deskAccess),
+        (
+          label: 'Manager access',
+          access: ProgramWorkAccess(
+            programId: _deskAccess.programId,
+            organizerId: _deskAccess.organizerId,
+            title: _deskAccess.title,
+            kind: _deskAccess.kind,
+            timezone: _deskAccess.timezone,
+            status: _deskAccess.status,
+            actorRole: ProgramActorRole.manager,
+            duties: const [],
+            grantExpiresAt: null,
+            capabilities: _deskAccess.capabilities,
+            pickupPoints: _deskAccess.pickupPoints,
+            hotels: _deskAccess.hotels,
+            functions: _deskAccess.functions,
+            vehicleClasses: _deskAccess.vehicleClasses,
           ),
         ),
-      ),
+      ])
+        WidgetbookPageStateCard(
+          label: scenario.label,
+          child: WidgetbookUtilityDeviceFrame(
+            child: ProviderScope(
+              overrides: [
+                ..._workspaceOverrides(),
+                programWorkEntryProvider(_programId, null).overrideWithValue(
+                  AsyncData((
+                    value: scenario.access,
+                    snapshotAt: null,
+                    snapshotExpiresAt: null,
+                  )),
+                ),
+              ],
+              child: const ProgramGuestDeskScreen(programId: _programId),
+            ),
+          ),
+        ),
     ],
   );
 }
@@ -550,17 +572,29 @@ Widget programGuestsFunctionRowStates(BuildContext context) {
     title: 'ProgramGuestsFunctionRow',
     catalogId: 'screen.programs.guests',
     children: [
-      ProgramGuestsFunctionRow(
-        guest: _guestPage.guests[0],
-        functions: _guestFunctions,
-        selectedFunction: _guestFunctions[0],
-        joinIndex: {
-          'g_rohan:fn_sangeet': _guestPage.functionGuests[0],
-          'g_rohan:fn_ceremony': _guestPage.functionGuests[2],
-        },
-        pending: false,
-        onRsvp: (_, _) {},
-      ),
+      for (final status in [
+        'attending',
+        'declined',
+        'maybe',
+        'pending',
+        'notInvited',
+      ])
+        ProgramGuestsFunctionRow(
+          guest: _guestPage.guests[0],
+          functions: _guestFunctions,
+          selectedFunction: _guestFunctions[0],
+          joinIndex: {
+            'g_rohan:fn_sangeet': ProgramFunctionGuestRow(
+              guestId: 'g_rohan',
+              functionId: 'fn_sangeet',
+              invited: status != 'notInvited',
+              rsvpStatus: status == 'notInvited' ? 'attending' : status,
+              attendanceStatus: 'notCheckedIn',
+            ),
+          },
+          pending: false,
+          onRsvp: (_, _) {},
+        ),
       ProgramGuestsFunctionRow(
         guest: _guestPage.guests[1],
         functions: _guestFunctions,
