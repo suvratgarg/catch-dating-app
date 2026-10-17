@@ -84,6 +84,10 @@ export interface ProgramDeliveryAttempt {
         bindingRevision: number;
         recipientEndpointId: string;
         fallbackOwner: "catch";
+        /**
+         * Frozen at reservation and claim for local activity only; never FCM submission evidence.
+         */
+        pushSuppressionReason?: "noEndpoint" | "preferenceOff";
       };
   authorization: {
     permissionRevision: string;

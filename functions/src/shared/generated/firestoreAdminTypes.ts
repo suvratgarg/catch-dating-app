@@ -14217,6 +14217,32 @@ export interface ProgramDeliveryMessageDocument {
         [k: string]: string;
       };
     };
+    /**
+     * Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.
+     */
+    activity?:
+      | {
+          appRole: "host";
+          audienceDuty: string;
+          /**
+           * @maxItems 200
+           */
+          scopeIds: string[] | null;
+          actionKind: "push";
+          notificationType: string;
+          preferenceKey: string;
+        }
+      | {
+          appRole: "host";
+          audienceDuty: string;
+          /**
+           * @maxItems 200
+           */
+          scopeIds: string[] | null;
+          actionKind: "staffAttention";
+          actionDuty: string;
+          severity: "info" | "warning" | "urgent";
+        };
   };
   lifecycle: "active" | "cancelled" | "superseded" | "responded";
   /**
@@ -14304,6 +14330,10 @@ export interface ProgramDeliveryMessageDocument {
           bindingRevision: number;
           recipientEndpointId: string;
           fallbackOwner: "catch";
+          /**
+           * Frozen at reservation and claim for local activity only; never FCM submission evidence.
+           */
+          pushSuppressionReason?: "noEndpoint" | "preferenceOff";
         };
     authorization: {
       permissionRevision: string;
@@ -15153,7 +15183,7 @@ export interface OrganizerMomentSendDocument {
    */
   deliveryMessageId?: string | null;
   /**
-   * Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery.
+   * Outbox evidence projected for this recipient. Unknown never implies confirmed delivery. notDispatched is a proven-unsent retry projection; the original run window and authority still apply.
    */
   deliveryState?:
     | "accepted"
@@ -15162,6 +15192,7 @@ export interface OrganizerMomentSendDocument {
     | "read"
     | "failed"
     | "revoked"
+    | "notDispatched"
     | null;
 }
 

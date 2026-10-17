@@ -446,6 +446,31 @@ const schemaProgramDeliveryAttemptSchema = <String, Object?>{
                 'catch',
               ],
             },
+            'pushSuppressionReason': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'noEndpoint',
+                'preferenceOff',
+              ],
+              'description': 'Frozen at reservation and claim for local activity only; never FCM submission evidence.',
+            },
+          },
+          'if': <String, Object?>{
+            'properties': <String, Object?>{
+              'provider': <String, Object?>{
+                'const': 'fcm',
+              },
+            },
+            'required': <Object?>[
+              'provider',
+            ],
+          },
+          'then': <String, Object?>{
+            'not': <String, Object?>{
+              'required': <Object?>[
+                'pushSuppressionReason',
+              ],
+            },
           },
         },
       ],

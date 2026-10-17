@@ -443,6 +443,31 @@ export const programDeliveryAttemptSchema: Record<string, unknown> = {
               "enum": [
                 "catch"
               ]
+            },
+            "pushSuppressionReason": {
+              "type": "string",
+              "enum": [
+                "noEndpoint",
+                "preferenceOff"
+              ],
+              "description": "Frozen at reservation and claim for local activity only; never FCM submission evidence."
+            }
+          },
+          "if": {
+            "properties": {
+              "provider": {
+                "const": "fcm"
+              }
+            },
+            "required": [
+              "provider"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "pushSuppressionReason"
+              ]
             }
           }
         }

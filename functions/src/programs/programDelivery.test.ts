@@ -9,6 +9,7 @@ import {FirestoreDeliveryOutbox} from
 import type {VerifiedCoreReceipt} from "../delivery/deliveryCore";
 import {
   LiveAttempt, MessageRecord, parseProgramDeliveryRecord,
+  parseProgramDeliveryIntent, parseProgramDeliveryAttempt,
   programDeliveryAdapter, programDeliveryMessageId, ProviderBinding,
 } from "./programDelivery";
 
@@ -167,4 +168,56 @@ test("program reminder records validate identity and revision fences",
     const stopped = await h.outbox.reserve(record.messageId);
     assert.deepEqual(stopped.decision,
       {kind: "stop", reason: "superseded"});
+  });
+
+
+test("only frozen staff activity permits empty push copy",
+  () => {
+    const activity = {actionKind: "push" as const, appRole: "host" as const,
+      audienceDuty: "airportGreeter", scopeIds: ["airport"],
+      notificationType: "organizerUpdate", preferenceKey: "eventStatusUpdates"};
+    const value = {...reminder(), recipient: {kind: "staff" as const,
+      recipientKey: "uid-1"},
+    permittedRoutes: ["catchProgramActivity" as const],
+    activity, body: ""};
+    assert.deepEqual(parseProgramDeliveryIntent(value), value);
+    for (const patch of [
+      {recipient: {kind: "guest", recipientKey: "guest-1"}},
+      {permittedRoutes: ["organizerProgramWhatsapp"]},
+      {activity: {...activity, appRole: "consumer"}},
+      {activity: {...activity, unexpected: true}},
+      {activity: {...activity, actionKind: "staffAttention"}},
+      {activity: undefined},
+    ]) {
+      assert.throws(() => parseProgramDeliveryIntent({...value, ...patch}),
+        /Invalid/);
+    }
+    assert.throws(() => parseProgramDeliveryIntent({...reminder(), body: ""}),
+      /Invalid/);
+    assert.deepEqual(parseProgramDeliveryIntent(reminder()), reminder());
+  });
+
+test("push suppression reasons are closed local-activity evidence only",
+  async () => {
+    const source = facts();
+    source.routes.reverse();
+    const h = harness(source);
+    const value = {...reminder(),
+      permittedRoutes: ["catchProgramActivity" as const]};
+    const record = await h.outbox.enqueue(value);
+    const reserved = await h.outbox.reserve(record.messageId);
+    const attempt = reserved.record.attempts[0];
+    const binding = {...attempt.binding, pushSuppressionReason: "noEndpoint"};
+    assert.doesNotThrow(() =>
+      parseProgramDeliveryAttempt({...attempt, binding}));
+    for (const bad of [
+      {...binding, pushSuppressionReason: "arbitrary"},
+      {...binding, provider: "fcm"},
+      {...facts().routes[0].state.candidate.binding,
+        pushSuppressionReason: "noEndpoint"},
+    ]) {
+      assert.throws(() =>
+        parseProgramDeliveryAttempt({...attempt, binding: bad}),
+      /Invalid/);
+    }
   });

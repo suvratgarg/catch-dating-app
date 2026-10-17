@@ -57,6 +57,10 @@ import type {
   TravelFacts,
 } from "./momentModel";
 import {scopeId} from "./momentModel";
+import {recoverProgramActivityJournals, canCloseProgramActivityRun,
+  canRetryProgramActivityJournal,
+  type ProgramActivityRequest, type ProgramActivityOutcome} from
+  "../programs/programActivityDelivery";
 import type {ProgramReminderOutcome}
   from "../programs/programReminderDelivery";
 import type {AutomationSendOutcome}
@@ -122,6 +126,9 @@ export interface MomentRunnerDeps {
     recipient: ResolvedRecipient;
     action: Extract<MomentAction, {kind: "sendTemplate"}>;
   }) => Promise<ProgramReminderOutcome>;
+  /** Versioned travel staff activity shares the durable send owner. */
+  deliverProgramActivity?: (params: ProgramActivityRequest) =>
+    Promise<ProgramActivityOutcome>;
   /** Organizer-scope automation sends dispatch the intent the handoff
    *  minted (run.automation.deliveryMessageId) through the shared
    *  delivery core; the seam maps the worker outcome for the journal. */
@@ -467,17 +474,21 @@ export async function runMomentSweep(
     try {
       const run = runFromDocument(doc.data());
       stage = "runDispatch";
+      await recoverProgramActivityJournals(db, run, (programId, at) =>
+        deps.localDayKey({kind: "program", programId}, at));
       const moment = byId.get(run.momentId) ??
         await loadMoment(db, run.momentId);
       if (moment === null) {
-        await markRun(db, run, "skipped", {reason: "missingMoment"});
-        summary.runsSkipped += 1;
+        if (await markRun(db, run, deps.nowMillis(), "skipped",
+          {reason: "missingMoment"})) summary.runsSkipped += 1;
+        else summary.runsDeferred += 1;
         continue;
       }
       const facts = await cachedFacts(db, caches, moment.scope);
       if (facts === null) {
-        await markRun(db, run, "skipped", {reason: "missingScopeFacts"});
-        summary.runsSkipped += 1;
+        if (await markRun(db, run, deps.nowMillis(), "skipped",
+          {reason: "missingScopeFacts"})) summary.runsSkipped += 1;
+        else summary.runsDeferred += 1;
         continue;
       }
       const outcome = await dispatchRun(db, deps, moment, run, facts, now,
@@ -598,16 +609,18 @@ export async function dispatchMomentRun(
   const snap = await db.collection(MOMENT_RUNS_COLLECTION).doc(runId).get();
   if (!snap.exists) return "notFound";
   const run = runFromDocument(snap.data()!);
+  await recoverProgramActivityJournals(db, run, (programId, at) =>
+    deps.localDayKey({kind: "program", programId}, at));
   if (run.status !== "planned") return "notPlanned";
   const moment = await loadMoment(db, run.momentId);
   if (moment === null) {
-    await markRun(db, run, "skipped", {reason: "missingMoment"});
-    return "skipped";
+    return await markRun(db, run, deps.nowMillis(), "skipped",
+      {reason: "missingMoment"}) ? "skipped" : "deferred";
   }
   const facts = await loadAnchorFacts(db, moment.scope);
   if (facts === null) {
-    await markRun(db, run, "skipped", {reason: "missingScopeFacts"});
-    return "skipped";
+    return await markRun(db, run, deps.nowMillis(), "skipped",
+      {reason: "missingScopeFacts"}) ? "skipped" : "deferred";
   }
   return dispatchRun(db, deps, moment, run, facts, deps.nowMillis());
 }
@@ -634,7 +647,8 @@ export async function runManualMoment(
   await ref.set({...planned.run});
   const facts = await loadAnchorFacts(db, moment.scope);
   if (facts === null) {
-    await markRun(db, planned.run, "skipped", {reason: "missingScopeFacts"});
+    await markRun(db, planned.run, deps.nowMillis(), "skipped",
+      {reason: "missingScopeFacts"});
     return {rejected: "missingScopeFacts"};
   }
   const outcome = await dispatchRun(db, deps, moment, planned.run,
@@ -657,13 +671,13 @@ async function dispatchRun(
   if (isTravelOccurrence(run.runId) &&
       (!run.travelOccurrence ||
        run.travelOccurrence.momentRevision !== moment.revision)) {
-    await markRun(db, run, "skipped", {reason: "travelMomentRevisionChanged"});
-    return "skipped";
+    return await markRun(db, run, deps.nowMillis(), "skipped",
+      {reason: "travelMomentRevisionChanged"}) ? "skipped" : "deferred";
   }
   const disposition = resolveFireDisposition(run, moment, facts, now);
   if (disposition !== "dispatch") {
-    await markRun(db, run, "skipped", {reason: disposition});
-    return "skipped";
+    return await markRun(db, run, deps.nowMillis(), "skipped",
+      {reason: disposition}) ? "skipped" : "deferred";
   }
   const quietEnd = await deps.quietEndMillis(moment.scope, now);
   if (quietEnd !== null) {
@@ -671,11 +685,11 @@ async function dispatchRun(
     // honest terminal state instead of parking the run.
     if (run.expiresAtMillis !== undefined &&
         quietEnd > run.expiresAtMillis) {
-      await markRun(db, run, "skipped", {reason: "expired"});
-      return "skipped";
+      return await markRun(db, run, deps.nowMillis(), "skipped",
+        {reason: "expired"}) ? "skipped" : "deferred";
     }
-    await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
-      .update({dueAtMillis: quietEnd});
+    await markRun(db, run, deps.nowMillis(), "planned",
+      {dueAtMillis: quietEnd});
     return "deferred";
   }
   const dailyCap = await deps.dailyCapFor(moment.scope);
@@ -700,9 +714,17 @@ async function dispatchRun(
     const sendRef = db.collection(MOMENT_SENDS_COLLECTION)
       .doc(`${run.runId}_${recipient.recipientKey}`);
     const prior = await sendRef.get();
-    if (prior.exists) {
+    const retryUnsent = prior.data()?.deliveryState === "notDispatched" &&
+      isTravelOccurrence(run.runId) && moment.scope.kind === "program" &&
+      await canRetryProgramActivityJournal(db, run, recipient.recipientKey,
+        prior.data()?.deliveryMessageId, moment.scope.programId,
+        facts.scope.organizerId ?? null, now);
+    if (prior.exists && !retryUnsent) {
       // Idempotent across sweep retries and replan races.
-      decisions.push({kind: "send"});
+      const recorded = prior.data();
+      decisions.push(recorded?.decision === "suppressed" ?
+        {kind: "suppress", reason: recorded.reason ?? "hostReview"} :
+        {kind: "send"});
       continue;
     }
     if (travel) {
@@ -727,16 +749,19 @@ async function dispatchRun(
       sentTodayForEndpoint: sentToday,
       dailyCap,
     });
-    decisions.push(decision);
+    const decisionIndex = decisions.push(decision) - 1;
     if (decision.kind === "defer") continue; // resolved run-level next pass
     if (decision.kind === "suppress") {
-      await sendRef.set({
-        momentId: moment.momentId,
-        recipientKey: recipient.recipientKey,
-        decision: "suppressed",
-        reason: decision.reason,
-        dayKey,
-        createdAtMillis: now,
+      await db.runTransaction(async (tx) => {
+        if ((await tx.get(sendRef)).exists) return;
+        tx.create(sendRef, {
+          momentId: moment.momentId,
+          recipientKey: recipient.recipientKey,
+          decision: "suppressed",
+          reason: decision.reason,
+          dayKey,
+          createdAtMillis: now,
+        });
       });
       continue;
     }
@@ -746,7 +771,7 @@ async function dispatchRun(
       // permit, provider ambiguity under arbitration, or a live business
       // delay that moved forward) re-fires the run; the recipient is
       // never journaled "sent".
-      decisions.push({kind: "defer", reason: "delivery"});
+      decisions[decisionIndex] = {kind: "defer", reason: "delivery"};
       if (outcome.notBefore !== undefined) {
         pendingDeliveryDue = pendingDeliveryDue === null ?
           outcome.notBefore :
@@ -755,38 +780,51 @@ async function dispatchRun(
       continue;
     }
     if (outcome.kind === "suppressed") {
-      decisions.push({kind: "suppress", reason: outcome.reason});
+      decisions[decisionIndex] = {kind: "suppress", reason: outcome.reason};
     }
-    await sendRef.set({
-      momentId: moment.momentId,
-      recipientKey: recipient.recipientKey,
-      decision: outcome.kind === "suppressed" ? "suppressed" : "sent",
-      ...(outcome.kind === "suppressed" ? {reason: outcome.reason} : {}),
-      dayKey,
-      createdAtMillis: now,
-      ...(run.automation ? {
-        runId: run.runId,
-        actionKind: "sendTemplate",
-        organizerId: facts.scope.organizerId ?? null,
-        scopeKind: moment.scope.kind,
-        scopeId: scopeId(moment.scope),
-        deliveryMessageId: run.automation.deliveryMessageId,
-        deliveryState: outcome.kind === "sent" ?
-          outcome.deliveryState ?? null : null,
-      } : {}),
-      // staffAttention sends double as the attention-projection source:
-      // the durable journal carries every field the organizer Today list
-      // needs without a second write path.
-      ...(moment.action.kind === "staffAttention" ? {
-        runId: run.runId,
-        actionKind: "staffAttention",
-        organizerId: facts.scope.organizerId ?? null,
-        scopeKind: moment.scope.kind,
-        scopeId: scopeId(moment.scope),
-        duty: moment.action.duty,
-        severity: moment.action.severity,
-        title: moment.action.titleTemplate,
-      } : {}),
+    if (isTravelOccurrence(run.runId) && outcome.deliveryMessageId) {
+      await recoverProgramActivityJournals(db, run, (programId, at) =>
+        deps.localDayKey({kind: "program", programId}, at));
+    }
+    await db.runTransaction(async (tx) => {
+      if ((await tx.get(sendRef)).exists) return;
+      tx.create(sendRef, {
+        momentId: moment.momentId,
+        recipientKey: recipient.recipientKey,
+        decision: outcome.kind === "suppressed" ? "suppressed" : "sent",
+        ...(outcome.kind === "suppressed" ? {reason: outcome.reason} : {}),
+        dayKey,
+        createdAtMillis: now,
+        ...(run.automation ? {
+          runId: run.runId,
+          actionKind: "sendTemplate",
+          organizerId: facts.scope.organizerId ?? null,
+          scopeKind: moment.scope.kind,
+          scopeId: scopeId(moment.scope),
+          deliveryMessageId: run.automation.deliveryMessageId,
+          deliveryState: outcome.kind === "sent" ?
+            outcome.deliveryState ?? null : null,
+        } : {}),
+        ...(outcome.deliveryMessageId && !run.automation ? {
+          deliveryMessageId: outcome.deliveryMessageId,
+          deliveryState: outcome.kind === "sent" ?
+            outcome.deliveryState ?? null : null,
+        } : {}),
+        // staffAttention sends double as the attention-projection source:
+        // the durable journal carries every field the organizer Today list
+        // needs without a second write path.
+        ...(moment.action.kind === "staffAttention" &&
+          (outcome.kind === "sent" || outcome.activityRecorded) ? {
+            runId: run.runId,
+            actionKind: "staffAttention",
+            organizerId: facts.scope.organizerId ?? null,
+            scopeKind: moment.scope.kind,
+            scopeId: scopeId(moment.scope),
+            duty: moment.action.duty,
+            severity: moment.action.severity,
+            title: moment.action.titleTemplate,
+          } : {}),
+      });
     });
   }
   if (decisions.some((d) => d.kind === "defer")) {
@@ -801,21 +839,20 @@ async function dispatchRun(
       // Withheld/deferred recipients outlive the send window: the run
       // expires; the durable delivery records stay reconcilable on their
       // own evidence trail.
-      await markRun(db, run, "skipped", {reason: "expired"});
-      return "skipped";
+      return await markRun(db, run, deps.nowMillis(), "skipped",
+        {reason: "expired"}) ? "skipped" : "deferred";
     }
-    await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
-      .update({dueAtMillis: retry});
+    await markRun(db, run, deps.nowMillis(), "planned", {dueAtMillis: retry});
     return "deferred";
   }
   const rollup = rollupPolicy(decisions);
-  await markRun(db, run, "dispatched", {
+  const closed = await markRun(db, run, deps.nowMillis(), "dispatched", {
     recipients: resolution.recipients.length,
     sent: rollup.send,
     suppressed: rollup.suppressed,
     suppressedNoEndpoint: resolution.suppressedNoEndpoint,
   });
-  return "fired";
+  return closed ? "fired" : "deferred";
 }
 
 type DeliverOutcome =
@@ -824,7 +861,8 @@ type DeliverOutcome =
     deliveryMessageId?: string;
     deliveryState?: "accepted" | "unknown" | "delivered" | "read" |
       "failed" | "revoked"}
-  | {kind: "suppressed"; reason: SuppressionReason}
+  | {kind: "suppressed"; reason: SuppressionReason;
+    deliveryMessageId?: string; activityRecorded?: true}
   /** Transient withholding — re-fire the run; `notBefore` wakes at a
    *  live due time the delivery layer re-derived. */
   | {kind: "retry"; reason: string; notBefore?: number};
@@ -837,6 +875,21 @@ async function deliver(
   recipient: ResolvedRecipient,
 ): Promise<DeliverOutcome> {
   const action: MomentAction = moment.action;
+  if (moment.scope.kind === "program" &&
+      moment.initiation.kind === "triggered" &&
+      moment.audience.kind === "staffDuty" &&
+      recipient.endpoint.kind === "uid" &&
+      (action.kind === "push" || action.kind === "staffAttention")) {
+    // Legacy runs cannot prove whether their old direct FCM call happened.
+    if (!isTravelOccurrence(run.runId) || !run.travelOccurrence ||
+        !deps.deliverProgramActivity) {
+      return {kind: "suppressed", reason: "hostReview"};
+    }
+    const copy = action.kind === "push" ?
+      await deps.pushCopyFor(moment, facts) :
+      {title: action.titleTemplate, body: action.titleTemplate};
+    return deps.deliverProgramActivity({moment, run, facts, recipient, copy});
+  }
   if (action.kind === "sendTemplate" &&
       recipient.endpoint.kind === "phone") {
     // Program-scoped template sends produce a durable intent and dispatch
@@ -913,11 +966,17 @@ async function countSendsToday(
 async function markRun(
   db: Firestore,
   run: RunRecord,
+  now: number,
   status: RunRecord["status"],
   extra: Record<string, unknown>,
-): Promise<void> {
-  await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId).update({
-    status,
-    ...extra,
+): Promise<boolean> {
+  const ref = db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId);
+  return db.runTransaction(async (tx) => {
+    const current = await tx.get(ref);
+    if (!current.exists || current.data()?.status !== "planned") return true;
+    if (status !== "planned" && !await canCloseProgramActivityRun(
+      tx, db, runFromDocument(current.data()!), now)) return false;
+    tx.update(ref, {status, ...extra});
+    return true;
   });
 }
