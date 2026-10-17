@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-10-07",
+  "updated": "2026-10-17",
   "owner": "app_architecture",
   "candidatePolicy": {
     "highFanOutUniqueDependencies": 8,
@@ -174,86 +174,6 @@
       "rationale": "HostClubDefaultsSaver is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
     },
     {
-      "id": "ownership-listenable:lib/hosts/presentation/event_management/create/event_offer_preferences_controller.dart#EventOfferPreferencesController:reactive-state",
-      "path": "lib/hosts/presentation/event_management/create/event_offer_preferences_controller.dart",
-      "symbol": "EventOfferPreferencesController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "EventOfferPreferencesController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/event_management/create/event_publication_controller.dart#EventPublicationController:reactive-state",
-      "path": "lib/hosts/presentation/event_management/create/event_publication_controller.dart",
-      "symbol": "EventPublicationController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "EventPublicationController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/event_management/create/private_event_details_controller.dart#PrivateEventDetailsController:reactive-state",
-      "path": "lib/hosts/presentation/event_management/create/private_event_details_controller.dart",
-      "symbol": "PrivateEventDetailsController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "PrivateEventDetailsController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/event_management/create/private_event_preferences_controller.dart#EventPreferencesEditorController:reactive-state",
-      "path": "lib/hosts/presentation/event_management/create/private_event_preferences_controller.dart",
-      "symbol": "EventPreferencesEditorController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "EventPreferencesEditorController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/event_management/create/private_event_preferences_controller.dart#PrivateEventPreferencesController:reactive-state",
-      "path": "lib/hosts/presentation/event_management/create/private_event_preferences_controller.dart",
-      "symbol": "PrivateEventPreferencesController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "PrivateEventPreferencesController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/forms/host_event_offer_controller.dart#HostEventOfferController:reactive-state",
-      "path": "lib/hosts/presentation/forms/host_event_offer_controller.dart",
-      "symbol": "HostEventOfferController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "HostEventOfferController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/forms/host_event_offer_workspace_controller.dart#HostEventOfferWorkspaceController:reactive-state",
-      "path": "lib/hosts/presentation/forms/host_event_offer_workspace_controller.dart",
-      "symbol": "HostEventOfferWorkspaceController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "HostEventOfferWorkspaceController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/forms/host_form_admission_controller.dart#HostFormAdmissionController:reactive-state",
-      "path": "lib/hosts/presentation/forms/host_form_admission_controller.dart",
-      "symbol": "HostFormAdmissionController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "HostFormAdmissionController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
       "id": "ownership-listenable:lib/hosts/presentation/forms/host_form_response_query_controller.dart#HostResponseQueryController:reactive-state",
       "path": "lib/hosts/presentation/forms/host_form_response_query_controller.dart",
       "symbol": "HostResponseQueryController",
@@ -282,16 +202,6 @@
       "status": "planned",
       "debtId": "CAT156",
       "rationale": "HostResponseExportController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
-    },
-    {
-      "id": "ownership-listenable:lib/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart#HostManagerEventSetupDefaultsController:reactive-state",
-      "path": "lib/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart",
-      "symbol": "HostManagerEventSetupDefaultsController",
-      "operation": "reactive-state",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "HostManagerEventSetupDefaultsController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees."
     },
     {
       "id": "ownership-listenable:lib/hosts/presentation/inbox/host_reply_drafts.dart#HostReplyDrafts:reactive-state",
@@ -333,116 +243,6 @@
       "rationale": "GoRouter requires a Listenable refresh bridge. This exact class bridges routing invalidation, owns no feature loaded/business state, and must retain listener cleanup; it is not a business controller migration."
     },
     {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart#_HostEventOfferPreferencesScreenState._bindSignedInManager:construct:EventOfferPreferencesRepository",
-      "path": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-      "symbol": "_HostEventOfferPreferencesScreenState._bindSignedInManager",
-      "operation": "construct:EventOfferPreferencesRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_HostEventOfferPreferencesScreenState._bindSignedInManager directly constructs EventOfferPreferencesRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart#_HostEventOfferPreferencesScreenState._bindSignedInManager:construct:ManagerEventSetupDefaultsRepository",
-      "path": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-      "symbol": "_HostEventOfferPreferencesScreenState._bindSignedInManager",
-      "operation": "construct:ManagerEventSetupDefaultsRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_HostEventOfferPreferencesScreenState._bindSignedInManager directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openDetails:construct:ManagerEventSetupDefaultsRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openDetails",
-      "operation": "construct:ManagerEventSetupDefaultsRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openDetails directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openDetails:construct:PrivateEventDetailsRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openDetails",
-      "operation": "construct:PrivateEventDetailsRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openDetails directly constructs PrivateEventDetailsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openDetails:construct:PrivateEventSetupRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openDetails",
-      "operation": "construct:PrivateEventSetupRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openDetails directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPreferences:construct:EventOfferPreferencesRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPreferences",
-      "operation": "construct:EventOfferPreferencesRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPreferences directly constructs EventOfferPreferencesRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPreferences:construct:ManagerEventSetupDefaultsRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPreferences",
-      "operation": "construct:ManagerEventSetupDefaultsRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPreferences directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPreferences:construct:PrivateEventPreferencesRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPreferences",
-      "operation": "construct:PrivateEventPreferencesRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPreferences directly constructs PrivateEventPreferencesRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPreferences:construct:PrivateEventSetupRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPreferences",
-      "operation": "construct:PrivateEventSetupRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPreferences directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPublication:construct:EventPublicationRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPublication",
-      "operation": "construct:EventPublicationRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPublication directly constructs EventPublicationRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPublication:construct:PrivateEventSetupRepository",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPublication",
-      "operation": "construct:PrivateEventSetupRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPublication directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
       "id": "ownership-repository-construction:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteStateView.build:construct:ManagerEventSetupDefaultsRepository",
       "path": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
       "symbol": "HostCreateEventRouteStateView.build",
@@ -481,16 +281,6 @@
       "status": "planned",
       "debtId": "CAT156",
       "rationale": "_HostResponseOfferScreenState._createEvent directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
-    },
-    {
-      "id": "ownership-repository-construction:lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart#_HostClubEventDefaultsScreenState._bindManager:construct:ManagerEventSetupDefaultsRepository",
-      "path": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
-      "symbol": "_HostClubEventDefaultsScreenState._bindManager",
-      "operation": "construct:ManagerEventSetupDefaultsRepository",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_HostClubEventDefaultsScreenState._bindManager directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
     },
     {
       "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart#_EventSuccessFeedbackFormState._submit:await:widget.onSubmitFeedback",
@@ -853,16 +643,6 @@
       "rationale": "Owns loaded merge candidate arrays, pagination cursor and a widget future; move loaded/continuation ownership while preserving deduplication and retry semantics."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_detail_screen.dart#_HostCustomerDetailScreenState._removeCustomer:await:hostCustomersControllerProvider.mutateCustomer",
-      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-      "symbol": "_HostCustomerDetailScreenState._removeCustomer",
-      "operation": "await:hostCustomersControllerProvider.mutateCustomer",
-      "maxCallsites": 1,
-      "status": "watch",
-      "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostCustomerDetailScreenState._removeCustomer (await:hostCustomersControllerProvider.mutateCustomer). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
-    },
-    {
       "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_detail_screen.dart#_HostCustomerDetailScreenState._setMessagingEnabled:await:hostCustomersControllerProvider.mutateCustomer",
       "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
       "symbol": "_HostCustomerDetailScreenState._setMessagingEnabled",
@@ -883,8 +663,8 @@
       "rationale": "Existing bounded review signal at _HostCustomerDetailScreenState._startConversation (await:hostCustomersControllerProvider.startConversation). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_detail_screen.dart#_HostWhatsappHandoffSheetState._open:await:externalLinkControllerProvider.openWhatsappHandoff",
-      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart#_HostWhatsappHandoffSheetState._open:await:externalLinkControllerProvider.openWhatsappHandoff",
+      "path": "lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart",
       "symbol": "_HostWhatsappHandoffSheetState._open",
       "operation": "await:externalLinkControllerProvider.openWhatsappHandoff",
       "maxCallsites": 1,
@@ -893,8 +673,8 @@
       "rationale": "Existing bounded review signal at _HostWhatsappHandoffSheetState._open (await:externalLinkControllerProvider.openWhatsappHandoff). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_detail_screen.dart#_HostWhatsappHandoffSheetState._open:await:hostAudienceControllerProvider.prepareManualSendTask",
-      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart#_HostWhatsappHandoffSheetState._open:await:hostAudienceControllerProvider.prepareManualSendTask",
+      "path": "lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart",
       "symbol": "_HostWhatsappHandoffSheetState._open",
       "operation": "await:hostAudienceControllerProvider.prepareManualSendTask",
       "maxCallsites": 1,
@@ -903,8 +683,8 @@
       "rationale": "Existing bounded review signal at _HostWhatsappHandoffSheetState._open (await:hostAudienceControllerProvider.prepareManualSendTask). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_detail_screen.dart#_HostWhatsappHandoffSheetState._open:await:hostAudienceControllerProvider.recordManualHandoffOpened",
-      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart#_HostWhatsappHandoffSheetState._open:await:hostAudienceControllerProvider.recordManualHandoffOpened",
+      "path": "lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart",
       "symbol": "_HostWhatsappHandoffSheetState._open",
       "operation": "await:hostAudienceControllerProvider.recordManualHandoffOpened",
       "maxCallsites": 1,
@@ -1583,46 +1363,6 @@
       "rationale": "Existing bounded review signal at _ProgramJournalRecoverySheetState._export (await:externalShareControllerProvider.shareJsonFile). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-backend:lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart#_HostEventOfferPreferencesScreenState._bindSignedInManager:read:firebaseFunctionsProvider",
-      "path": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
-      "symbol": "_HostEventOfferPreferencesScreenState._bindSignedInManager",
-      "operation": "read:firebaseFunctionsProvider",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_HostEventOfferPreferencesScreenState._bindSignedInManager reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
-    },
-    {
-      "id": "ownership-widget-backend:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openDetails:read:firebaseFunctionsProvider",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openDetails",
-      "operation": "read:firebaseFunctionsProvider",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openDetails reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
-    },
-    {
-      "id": "ownership-widget-backend:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPreferences:read:firebaseFunctionsProvider",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPreferences",
-      "operation": "read:firebaseFunctionsProvider",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPreferences reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
-    },
-    {
-      "id": "ownership-widget-backend:lib/hosts/presentation/event_management/create/private_event_create_body.dart#_PrivateEventCreateBody._openPublication:read:firebaseFunctionsProvider",
-      "path": "lib/hosts/presentation/event_management/create/private_event_create_body.dart",
-      "symbol": "_PrivateEventCreateBody._openPublication",
-      "operation": "read:firebaseFunctionsProvider",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_PrivateEventCreateBody._openPublication reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
-    },
-    {
       "id": "ownership-widget-backend:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteStateView.build:read:firebaseFunctionsProvider",
       "path": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
       "symbol": "HostCreateEventRouteStateView.build",
@@ -1653,16 +1393,6 @@
       "rationale": "_HostFormResponsesPanelState.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
     },
     {
-      "id": "ownership-widget-backend:lib/hosts/presentation/forms/host_response_offer_screen.dart#_HostResponseOfferScreenState._admission:read:firebaseFunctionsProvider",
-      "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "symbol": "_HostResponseOfferScreenState._admission",
-      "operation": "read:firebaseFunctionsProvider",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_HostResponseOfferScreenState._admission reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
-    },
-    {
       "id": "ownership-widget-backend:lib/hosts/presentation/forms/host_response_offer_screen.dart#_HostResponseOfferScreenState._createEvent:read:firebaseFunctionsProvider",
       "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
       "symbol": "_HostResponseOfferScreenState._createEvent",
@@ -1681,16 +1411,6 @@
       "status": "planned",
       "debtId": "CAT156",
       "rationale": "_HostResponseOfferScreenState.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
-    },
-    {
-      "id": "ownership-widget-backend:lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart#_HostClubEventDefaultsScreenState._bindManager:read:firebaseFunctionsProvider",
-      "path": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
-      "symbol": "_HostClubEventDefaultsScreenState._bindManager",
-      "operation": "read:firebaseFunctionsProvider",
-      "maxCallsites": 1,
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "_HostClubEventDefaultsScreenState._bindManager reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
     }
   ]
 }

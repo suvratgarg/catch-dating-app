@@ -52,7 +52,7 @@ final class HostTodayFeedControllerProvider
 }
 
 String _$hostTodayFeedControllerHash() =>
-    r'a52bd290cae2af69de1889ebfdf510e45f076d77';
+    r'd51d06520fec892b31c0ee8bb8d07a33a1eceef9';
 
 final class HostTodayFeedControllerFamily extends $Family
     with

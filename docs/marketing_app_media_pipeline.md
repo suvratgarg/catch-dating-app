@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.8.0
-updated: 2026-10-16
+version: 1.9.0
+updated: 2026-10-17
 owner: marketing_website
 status: active
 ---
@@ -10,8 +10,9 @@ status: active
 
 The website should not hand-author app screenshots. Marketing pages consume
 records generated from `tool/marketing/capture_manifest.json`, and the sync
-tool verifies whether the checked-in website assets still match the app capture
-source.
+tool verifies canonical image provenance and website copies. CI derives current
+outputs from its exact source before consuming them; tracked copies are not
+CI freshness authority.
 
 ## Capture Lifecycle
 
@@ -73,18 +74,38 @@ can conservatively invalidate multiple slots. Adding an asset to a declared
 directory also invalidates captures. No machine-specific font path or font
 bytes are distributed.
 
-This check proves the recorded render still matches its inputs and rejects
-stale committed copies; it does not perform a fresh render in Linux CI or
-automatically approve a visual change. Native-font rendering can use the manual hosted exporter below; review remains
-an explicit operation. The Marketing Website workflow also triggers on app
-source, test/capture support, local package source/assets, dependency manifests,
-synthetic scenario/persona inputs, and framed source PNGs. Its existing media
-check rejects stale inputs before packaging; it does not silently regenerate or
-accept golden baselines. The revision identifies the capture source commit;
-input hashes also cover edits made before capture and survive unrelated
-commits. Do not manually stamp old PNGs. Regenerate and inspect affected
-captures, then sync. Raw selected outputs are cleared before rendering to
-prevent accidentally reusing an earlier run.
+The canonical macOS producer renders invalidated inputs and verifies reusable
+images for the exact CI source. Required Marketing validation imports its
+immutable artifact before dependency setup, checks and builds. Tools derives
+capture need from selected executable checks, shares the caller's bundle when
+provided, and otherwise starts one producer. Only the affected consumer or the
+full marketing/design bucket imports images; other buckets retain their
+ordinary checks. After importing, Tools verifies all 26 current output bytes
+against the bound archive before and after its check run and reuses only the
+three exact freshness commands already owned by the producer. Syntax, unit,
+framing and authored semantic checks still run. Missing or invalid bindings fail before a build; old tracked
+images cannot substitute for a missing artifact.
+
+The importer checks the artifact ID, digest, repository, canonical workflow,
+source/controller commits, run and current attempt, then the bounded ZIP,
+authored manifest, receipt and every image/input/copy hash before replacing any
+output. It retains the verified ZIP in ignored build output. Postbuild checks
+compare all 12 website PNGs and their manifest with the exact imported bytes.
+The two independently generated organizer-listing projections are allowed only
+at this postbuild stage; authored changes still fail. Routine source changes
+need no generated screenshot commit. Automatic export does not update or accept
+regression goldens, approve visual changes, or establish live feature availability.
+
+Marketing Website triggers include app/test/local-package source and font assets,
+dependency manifests and capture helpers. On main it reuses the same-source CI
+producer, including native-only changes whose React lane was skipped, then runs
+any missing React validation. Production packaging retains its separate
+read-only listing snapshot, environment checks and promotion authority. Recovery
+uses the already-built package and never rerenders. Manual Marketing Website validation also runs the existing Hosting packager on
+its actual built site and retains a separately named validation artifact with
+all 13 capture/manifest byte comparisons. It uses real run identity but has no
+production promotion authority and makes no live-listing calls. Manual
+review/export remains available below. Never manually stamp old PNGs.
 
 ## Fixture Boundary
 
@@ -186,13 +207,17 @@ For a label request, checkout and receipt `workflowSha` identify the event's
 base commit, which owns the executed exporter/controller. The workflow
 definition still comes from GitHub's PR merge ref; `workflowDefinitionSha`
 records its separate commit and `request.eventSha` records the event merge SHA.
-The source is always the PR head, never that synthetic merge. The request
+For this explicit label mode the source is the PR head, never the synthetic
+merge. Automatic CI calls instead bind both source and controller to the actual
+tested event SHA, including a PR merge commit. GitHub's API run head remains the
+PR head in that case; `runHeadSha` records it separately and the importer verifies
+its parent relationship to the tested merge. The request
 validator repeats the label/open/main/same-repository checks, binds environment
 values to event JSON and verifies actual controller HEAD before source checkout.
 See [GitHub's PR event semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request).
 
-Only the exact `labeled` request starts a capture. Unrelated labels, forks,
-closed PRs, pushes and synchronize events do not render. Verify the published
+For the label entrypoint, only the exact `labeled` request starts a capture.
+Unrelated labels, forks and closed PRs do not grant a request. Verify the published
 product head before labeling and compare it again before artifact handoff.
 After a new source head or an intentional retry, remove and reapply the label
 to request a new run. Eligible jobs share a concurrency key by source SHA across
@@ -236,9 +261,16 @@ retain that identity together with the receipt when reviewing or handing off.
 SF font bytes, dependency caches and arbitrary checkout files are excluded.
 
 Tracked changes outside the declared media/design outputs fail packaging,
-including source and golden baseline changes. Existing CI freshness and real
-regression golden obligations remain independent and unchanged. This workflow
-only exports reviewable synthetic media: it does not commit it, import it into
-another branch, publish a website, or prove product/backend availability.
-Automatic producer/consumer wiring, screenshot promotion and generated widget
-or route inventory ownership remain the wider CAT159 follow-on.
+including source and golden baseline changes. Automatic reusable calls expose
+`capture_binding` with immutable artifact/source/run identity; they do not grant
+CI admission or merge/deployment authority. The producer and consumers preserve
+existing regression checks. Export alone does not publish a website or prove
+product/backend availability.
+
+CI also materializes the route inventory and only the generated region of the
+widget catalog in each complete source-preflight, Tools and Flutter analysis
+checkout using `tool/ci/generated_inventories.mjs`. It preserves authored catalog
+prose, component identities, fixtures, goldens and coverage decisions. A new route
+still requires its authored coverage decision. First-phase migration retains
+tracked outputs for existing local consumers; their eventual removal requires
+an owned handoff, not deletion of another task's files.

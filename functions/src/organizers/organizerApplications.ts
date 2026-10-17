@@ -795,6 +795,10 @@ export async function reviewOrganizerApplicationHandler(
       reviewStatus: data.reviewStatus, reviewNote: data.reviewNote,
       assignedReviewerUid: actorUid, contactId, revision,
       updatedAt: now, reviewedAt: now,
+      ...(data.reviewStatus === "approved" &&
+        application.reviewStatus !== "approved" ?
+        {approvalNotificationBasis: {revision,
+          approvedAtMillis: now.toMillis()}} : {}),
     });
     return {revision, contactId, reviewedAtMillis: now.toMillis()};
   });

@@ -77,6 +77,7 @@ class _SelectionRepository extends HostSavedAudienceRepository {
     int limit = ReadLimitPolicy.historyPage,
     bool byName = true,
     bool? isStatic,
+    bool Function()? isCurrent,
   }) async => HostSavedAudienceSummaryPage(
     audiences: ['a', 'b']
         .map((id) => HostSavedAudienceSummary.fromAudience(_audience(id)))

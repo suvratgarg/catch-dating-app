@@ -1,5 +1,9 @@
 // Private event invitation copy, shared by the page and payment controller.
 export const eventOfferCopy = {
+  acceptFree: "Accept invitation",
+  freeAmount: "Free admission",
+  freeInvitationBody: "You’ve been offered a free place. Accept your invitation to confirm it, subject to current availability.",
+  eventAccess: "View your booking and event access",
   "brandLabel": "Your invitation",
   "brandWord": "Catch",
   "invitationTitle": "Your event invitation",
