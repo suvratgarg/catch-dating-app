@@ -18,7 +18,7 @@
     "check:event-eligibility": "node --experimental-strip-types --test scripts/homeEventEligibility.test.mjs",
     "check:market-pack": "node --experimental-strip-types --test scripts/marketPack.test.mjs",
     "check:published-legal-content": "node --experimental-strip-types --test scripts/ownerGatedContent.test.mjs",
-    "check:deploy-contract": "node --test scripts/marketingDeployWorkflow.test.mjs",
+    "check:deploy-contract": "node --test scripts/marketingDeployWorkflow.test.mjs scripts/probeProduction.test.mjs",
     "check:postbuild-contract": "node --test scripts/postbuild.test.mjs",
     "check:storybook-config": "node --experimental-strip-types --test scripts/storybookConfig.test.mjs",
     "check:import-boundaries": "node ../tool/web/check_website_import_boundaries.mjs",

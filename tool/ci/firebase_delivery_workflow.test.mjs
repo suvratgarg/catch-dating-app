@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import vm from "node:vm";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -74,6 +75,140 @@ test("main CI starts validation immediately and serializes only proven publicati
   assert.match(required, /'\.\["finalize-plan"\]\.result'/);
   assert.match(required, /needs\.finalize-plan\.outputs\.deploy_required/);
   assert.match(required, /^      - finalize-plan$/m);
+});
+
+test("CI fences every plan consumer while Required CI can explain skipped retry work", () => {
+  const ci = workflow("ci.yml");
+  const guard = "needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt)";
+  const consumers = ["source-preflight", "tools", "contracts", "functions", "firestore-rules",
+    "flutter", "visual-integration", "admin", "marketing", "capture-freshness", "operations",
+    "docs-policy", "app-builds", "finalize-plan", "package-firebase"];
+  assert.deepEqual([...ci.slice(ci.indexOf("\njobs:\n")).matchAll(/^  ([a-z][a-z-]*):$/gm)].map((match) => match[1]),
+    ["admission", "plan", ...consumers, "required"], "New jobs need an explicit retry decision.");
+  for (const name of consumers) {
+    const job = ciJob(ci, name);
+    const condition = job.match(/^    if: (.*(?:\n      [^\n]*)*)/m)?.[1];
+    assert.ok(condition?.includes(guard), `${name} must reject a reused planner before starting.`);
+    if (["tools", "marketing"].includes(name)) {
+      assert.match(job, /^    needs: \[plan, source-preflight, capture-freshness\]$/m);
+    } else {
+      assert.match(job, /needs: (?:plan|\[plan, source-preflight\])|^      - plan$/m);
+    }
+  }
+  for (const name of ["docs-policy", "app-builds"]) {
+    const job = ciJob(ci, name);
+    assert.ok(job.includes(`${guard} &&\n      (needs.plan.outputs.`), "All OR selections must remain inside the attempt fence.");
+  }
+  for (const name of ["finalize-plan", "package-firebase"]) {
+    assert.match(ciJob(ci, name), /!cancelled\(\)/);
+    assert.match(ciJob(ci, name), /needs.plan.result == 'success'/);
+  }
+  const required = ciJob(ci, "required");
+  assert.match(required, /if: \$\{\{ !cancelled\(\)/);
+  assert.ok(!required.includes(guard), "Required CI must run after incompatible leaves skip.");
+  const steps = extractSteps(required).filter((step) => step.run || step.uses);
+  assert.equal(steps[0].name, "Refuse deferred PR validation");
+  assert.equal(steps[1].name, "Require this attempt's planner");
+  const plan = ciJob(ci, "plan");
+  assert.match(plan, /producer_attempt: \$\{\{ steps.plan.outputs.producer_attempt \}\}/);
+  // Evaluate this workflow's existing boolean-expression subset, as the
+  // cancellation wiring tests do. This is not a GitHub scheduler emulator.
+  for (const producerAttempt of ["1", "2", ""]) {
+    const outputs = {producer_attempt: producerAttempt};
+    for (const match of ci.matchAll(/needs\.plan\.outputs\.([a-z_]+) == 'true'/g)) outputs[match[1]] = "true";
+    const needs = {plan: {result: "success", outputs}, "source-preflight": {result: "success"},
+      "capture-freshness": {result: "success"}, "finalize-plan": {result: "success", outputs: {deploy_required: "true"}}};
+    for (const name of consumers) {
+      const expression = ciJob(ci, name).match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
+        .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
+        .replaceAll("needs.*.result", "results")
+        .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]')
+        .replaceAll("needs.source-preflight", 'needs["source-preflight"]')
+        .replaceAll("needs.capture-freshness", 'needs["capture-freshness"]');
+      const context = {needs, github: {run_attempt: 2, event_name: "push", ref: "refs/heads/main"},
+        cancelled: () => false, contains: (values, value) => values.includes(value),
+        format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
+        results: ["success", "skipped"]};
+      assert.equal(vm.runInNewContext(expression, context), producerAttempt === "2",
+        `${name} planner attempt ${producerAttempt || "missing"}`);
+      if (name === "tools") {
+        // Tools overrides implicit success(), so exercise its actual dependencies.
+        for (const result of ["failure", "cancelled", "skipped"]) {
+          needs["capture-freshness"].result = result;
+          assert.equal(vm.runInNewContext(expression, context),
+            producerAttempt === "2" && result === "skipped",
+            `${name} planner attempt ${producerAttempt || "missing"}, capture ${result}`);
+        }
+        needs["capture-freshness"].result = "success";
+        needs["source-preflight"].result = "failure";
+        assert.equal(vm.runInNewContext(expression, context), false, "Tools rejects failed preflight");
+        needs["source-preflight"].result = "success";
+        outputs.tools = "false";
+        assert.equal(vm.runInNewContext(expression, context), false, "Tools must be selected");
+        outputs.tools = "true";
+        context.cancelled = () => true;
+        assert.equal(vm.runInNewContext(expression, context), false, "Cancelled Tools must not run");
+        context.cancelled = () => false;
+      }
+      if (["finalize-plan", "package-firebase"].includes(name)) {
+        needs["finalize-plan"].result = "failure";
+        context.results = ["success", "failure"];
+        assert.equal(vm.runInNewContext(expression, context), false, `${name} preserves failed dependency refusal`);
+        needs["finalize-plan"].result = "success";
+      }
+    }
+  }
+});
+
+test("actual CI retry refusal accepts full reruns and stops incompatible attempts before further work", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-retry-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const ci = workflow("ci.yml");
+  const publish = ciJob(ci, "plan").match(/^          echo "producer_attempt=.*$/m)?.[0];
+  assert.ok(publish);
+  const output = path.join(directory, "output");
+  const producer = spawnSync("bash", ["-c", publish], {encoding: "utf8", env: {
+    ...process.env, GITHUB_OUTPUT: output, GITHUB_RUN_ATTEMPT: "1",
+  }});
+  assert.equal(producer.status, 0, producer.stderr);
+  assert.equal(fs.readFileSync(output, "utf8"), "producer_attempt=1\n");
+  const gate = extractSteps(ciJob(ci, "required")).find((step) => step.name === "Require this attempt's planner");
+  assert.ok(gate?.run);
+  assert.match(ciJob(ci, "required"), /PRODUCER_ATTEMPT: \$\{\{ needs.plan.outputs.producer_attempt \}\}/);
+  for (const [prior, current, compatible] of [
+    ["1", "1", true], ["2", "2", true], ["1", "2", false], ["2", "1", false],
+    ["", "2", false], ["2", "", false], ["0", "0", false], ["01", "01", false],
+    ["x", "x", false], ["2\n", "2", false],
+  ]) {
+    const execution = spawnSync("bash", ["-c", gate.run + '\nprintf "work-sentinel\\n"'], {
+      encoding: "utf8", env: {...process.env, PRODUCER_ATTEMPT: prior, GITHUB_RUN_ATTEMPT: current},
+    });
+    assert.equal(execution.status, compatible ? 0 : 64, `${prior}/${current}: ${execution.stderr}`);
+    assert.equal(execution.stdout.includes("work-sentinel"), compatible);
+    if (!compatible) assert.match(execution.stdout, /Re-run all jobs/);
+  }
+});
+
+test("current-attempt Required CI still distinguishes selected failure from unaffected skips", () => {
+  const steps = extractSteps(ciJob(workflow("ci.yml"), "required"));
+  const guard = steps.find((step) => step.name === "Require this attempt's planner")?.run;
+  assert.ok(guard);
+  const selected = steps.find((step) => step.name === "Require every selected lane").run;
+  const keys = ["admin", "capture_freshness", "contracts", "docs", "policy_docs", "firestore_rules",
+    "flutter", "functions", "marketing", "operations", "tools", "visual_integration",
+    "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke"];
+  for (const [chosen, result, success] of [
+    ["false", "skipped", true], ["true", "success", true], ["true", "skipped", false],
+    ["true", "failure", false], ["true", "cancelled", false], ["", "success", false],
+  ]) {
+    const needs = {plan: {result: "success", outputs: {...Object.fromEntries(keys.map((key) => [key, "false"])), functions: chosen}},
+      "source-preflight": {result: "success"}, functions: {result}, "finalize-plan": {result: "skipped"}};
+    const execution = spawnSync("bash", ["-c", guard + "\n" + selected], {encoding: "utf8", env: {
+      ...process.env, PRODUCER_ATTEMPT: "2", GITHUB_RUN_ATTEMPT: "2", NEEDS_JSON: JSON.stringify(needs),
+      EVENT_NAME: "pull_request", DEPLOY_REQUIRED: "false",
+    }});
+    assert.equal(execution.status === 0, success, `${chosen}/${result}: ${execution.stderr}`);
+  }
 });
 
 test("a successful main CI attempt must own its exact planner and backend artifacts", () => {
