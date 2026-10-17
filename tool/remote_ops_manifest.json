@@ -841,7 +841,7 @@
       "requiredChecks": [
         "node tool/run.mjs check firebase:form-domain-operator",
         "Build the exact reviewed Functions source before invoking the operator.",
-        "Review a read-only plan with exact environment, organizer, form, manager UID and reservation generation before --apply; production also requires --allow-prod.",
+        "Review the default read-only dry run with exact environment, organizer, form, manager UID and reservation generation before --apply; production also requires --allow-prod.",
         "Verify actual deployed website, Hosting TLS, DNS, App Check, upload and submission behavior on the client domain before onboarding acceptance."
       ],
       "notes": [
