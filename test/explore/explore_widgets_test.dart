@@ -420,61 +420,66 @@ Future<Map<String, CatchAsyncState<T>>> _exploreAsyncPhases<T>(
     overrides: [dependency.overrideWithValue(0)],
     retry: (_, _) => null,
   );
-  addTearDown(container.dispose);
-  container.listen(provider, (_, _) {});
-  final phases = <String, CatchAsyncState<T>>{
-    'initial loading': catchAsyncStateFromAsyncValue(container.read(provider)),
-  };
-  pending.complete(value);
-  await tester.pump();
-  phases['data'] = catchAsyncStateFromAsyncValue(container.read(provider));
-  pending = Completer<T>();
-  container.invalidate(provider);
-  phases['refresh'] = catchAsyncStateFromAsyncValue(container.read(provider));
-  pending.completeError(StateError('refresh failed'), StackTrace.empty);
-  await tester.pump();
-  phases['stale error'] = catchAsyncStateFromAsyncValue(
-    container.read(provider),
-  );
-  pending = Completer<T>();
-  container.invalidate(provider);
-  phases['stale retry'] = catchAsyncStateFromAsyncValue(
-    container.read(provider),
-  );
-  pending.complete(value);
-  await tester.pump();
-  pending = Completer<T>();
-  container.updateOverrides([dependency.overrideWithValue(1)]);
-  phases['reload'] = catchAsyncStateFromAsyncValue(container.read(provider));
-  pending.complete(value);
-  await tester.pump();
+  try {
+    container.listen(provider, (_, _) {});
+    final phases = <String, CatchAsyncState<T>>{
+      'initial loading': catchAsyncStateFromAsyncValue(
+        container.read(provider),
+      ),
+    };
+    pending.complete(value);
+    await tester.pump();
+    phases['data'] = catchAsyncStateFromAsyncValue(container.read(provider));
+    pending = Completer<T>();
+    container.invalidate(provider);
+    phases['refresh'] = catchAsyncStateFromAsyncValue(container.read(provider));
+    pending.completeError(StateError('refresh failed'), StackTrace.empty);
+    await tester.pump();
+    phases['stale error'] = catchAsyncStateFromAsyncValue(
+      container.read(provider),
+    );
+    pending = Completer<T>();
+    container.invalidate(provider);
+    phases['stale retry'] = catchAsyncStateFromAsyncValue(
+      container.read(provider),
+    );
+    pending.complete(value);
+    await tester.pump();
+    pending = Completer<T>();
+    container.updateOverrides([dependency.overrideWithValue(1)]);
+    phases['reload'] = catchAsyncStateFromAsyncValue(container.read(provider));
+    pending.complete(value);
+    await tester.pump();
 
-  final failedProvider = FutureProvider<T>((ref) => pending.future);
-  pending = Completer<T>();
-  container.listen(failedProvider, (_, _) {});
-  pending.completeError(StateError('initial failed'), StackTrace.empty);
-  await tester.pump();
-  phases['terminal error'] = catchAsyncStateFromAsyncValue(
-    container.read(failedProvider),
-  );
-  pending = Completer<T>();
-  container.invalidate(failedProvider);
-  phases['retry'] = catchAsyncStateFromAsyncValue(
-    container.read(failedProvider),
-  );
-  pending.complete(value);
-  await tester.pump();
-  expect(phases.map((name, state) => MapEntry(name, state.phase)), {
-    'initial loading': CatchAsyncPhase.initialLoading,
-    'data': CatchAsyncPhase.data,
-    'refresh': CatchAsyncPhase.refreshing,
-    'stale error': CatchAsyncPhase.staleDataWithError,
-    'stale retry': CatchAsyncPhase.staleDataWithError,
-    'reload': CatchAsyncPhase.refreshing,
-    'terminal error': CatchAsyncPhase.terminalError,
-    'retry': CatchAsyncPhase.retrying,
-  });
-  return phases;
+    final failedProvider = FutureProvider<T>((ref) => pending.future);
+    pending = Completer<T>();
+    container.listen(failedProvider, (_, _) {});
+    pending.completeError(StateError('initial failed'), StackTrace.empty);
+    await tester.pump();
+    phases['terminal error'] = catchAsyncStateFromAsyncValue(
+      container.read(failedProvider),
+    );
+    pending = Completer<T>();
+    container.invalidate(failedProvider);
+    phases['retry'] = catchAsyncStateFromAsyncValue(
+      container.read(failedProvider),
+    );
+    pending.complete(value);
+    await tester.pump();
+    expect(phases.map((name, state) => MapEntry(name, state.phase)), {
+      'initial loading': CatchAsyncPhase.initialLoading,
+      'data': CatchAsyncPhase.data,
+      'refresh': CatchAsyncPhase.refreshing,
+      'stale error': CatchAsyncPhase.staleDataWithError,
+      'stale retry': CatchAsyncPhase.staleDataWithError,
+      'reload': CatchAsyncPhase.refreshing,
+      'terminal error': CatchAsyncPhase.terminalError,
+      'retry': CatchAsyncPhase.retrying,
+    });
+    return phases;
+  } finally {
+    container.dispose();
+  }
 }
 
 void _registerExploreAsyncPhaseTests() {
