@@ -158,6 +158,53 @@ void main() {
     }
   });
 
+  for (final first in _OptionalSource.values) {
+    for (final second in _OptionalSource.values) {
+      if (first == second) continue;
+      final third = _OptionalSource.values.singleWhere(
+        (source) => source != first && source != second,
+      );
+      testWidgets(
+        'preserves progressive results in ${first.name}, ${second.name}, '
+        '${third.name} completion order',
+        (tester) async {
+          final rig = _Rig();
+          rig.completeActive();
+          await rig.mount(tester);
+          try {
+            await pumpUntilFound(tester, find.text(rig.event.title));
+            expect(rig.state(tester).attentionCountIsComplete, isFalse);
+            expect(rig.state(tester).hasPastEvents, isFalse);
+            final completed = <_OptionalSource>{};
+            for (final source in [first, second, third]) {
+              rig.completeOptional(source);
+              completed.add(source);
+              await pumpFeatureUi(tester);
+              final state = rig.state(tester);
+              expect(find.text(rig.event.title), findsOneWidget);
+              expect(state.featuredEvent?.id, rig.event.id);
+              expect(
+                state.hasPastEvents,
+                completed.contains(_OptionalSource.history),
+              );
+              expect(
+                state.attentionCountIsComplete,
+                completed.contains(_OptionalSource.attention) &&
+                    completed.contains(_OptionalSource.attendance),
+              );
+              expect(state.attentionIssues, isEmpty);
+              expect(isHostTodayQuiet(state), isFalse);
+              rig.expectOneBoundedReadPerSource();
+              expect(tester.takeException(), isNull);
+            }
+          } finally {
+            await rig.close(tester);
+          }
+        },
+      );
+    }
+  }
+
   testWidgets('active source failure never becomes a quiet empty feed', (
     tester,
   ) async {
