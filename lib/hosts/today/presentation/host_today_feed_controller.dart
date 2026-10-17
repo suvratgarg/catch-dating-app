@@ -74,19 +74,32 @@ class HostTodayFeedData {
 
 @riverpod
 class HostTodayFeedController extends _$HostTodayFeedController {
+  int _generation = 0;
+
   @override
   Future<HostTodayFeedData> build(HostTodayFeedRequest request) async {
-    final eventRepository = ref.watch(eventRepositoryProvider);
+    final evaluationRef = ref;
+    final generation = ++_generation;
+    evaluationRef.onDispose(() => _generation += 1);
+    void requireCurrentEvaluation() {
+      if (!evaluationRef.mounted || generation != _generation) {
+        throw StateError('Today feed evaluation was disposed.');
+      }
+    }
+
+    final eventRepository = evaluationRef.watch(eventRepositoryProvider);
     final activePage = await eventRepository.fetchActiveEventsPage(
       organizerId: request.organizerId,
       sessionBoundary: request.sessionBoundary,
     );
+    requireCurrentEvaluation();
     final attentionFuture = _captureOptional(
-      () =>
-          ref.read(hostAttentionRepositoryProvider).fetch(request.organizerId),
+      () => evaluationRef
+          .read(hostAttentionRepositoryProvider)
+          .fetch(request.organizerId),
     );
     final attendanceFuture = _captureOptional(
-      () => ref
+      () => evaluationRef
           .read(hostAttendanceOutboxProvider)
           .loadAll(accountId: request.accountId, now: request.sessionBoundary),
     );
@@ -99,6 +112,7 @@ class HostTodayFeedController extends _$HostTodayFeedController {
     final attention = await attentionFuture;
     final attendance = await attendanceFuture;
     final history = await historyFuture;
+    requireCurrentEvaluation();
     final projection = attention.value;
     final issues = <HostTodayAttentionIssue>[
       if (attention.error case final error?)
