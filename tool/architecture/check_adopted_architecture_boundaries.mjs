@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {scanDartSource} from "../lib/dart_source.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const defaultTrackerPath = fromRepo(
@@ -37,11 +38,11 @@ const forbiddenSourcePatterns = [
     label: "Riverpod widget/ref API",
   },
   {
-    pattern: /\bref\.(?:watch|read|listen|invalidate)\s*\(/u,
+    pattern: /\bref\s*\.\s*(?:watch|read|listen|invalidate)\s*\(/u,
     label: "Riverpod ref access",
   },
   {
-    pattern: /\b(?:GoRouter|GoRoute)\b|context\.(?:go|push|replace|pop)\s*\(/u,
+    pattern: /\b(?:GoRouter|GoRoute)\b|context\s*\.\s*(?:go|push|replace|pop)\s*\(/u,
     label: "route navigation API",
   },
 ];
@@ -106,7 +107,13 @@ export function collectAdoptedProviderFreePaths(tracker) {
       if (typeof adopter.path !== "string" || !adopter.path.endsWith(".dart")) {
         continue;
       }
-      if (!adopter.path.startsWith("lib/")) continue;
+      if (
+        path.posix.isAbsolute(adopter.path) || adopter.path.includes("\\") ||
+        adopter.path.split("/").some((segment) => ["", ".", ".."].includes(segment))
+      ) {
+        throw new Error(`Noncanonical provider-free adopter path: ${adopter.path}`);
+      }
+      if (!/^(?:lib\/|packages\/[^/]+\/lib\/)/u.test(adopter.path)) continue;
       paths.set(adopter.path, {
         path: adopter.path,
         patternId: pattern.id,
@@ -118,48 +125,50 @@ export function collectAdoptedProviderFreePaths(tracker) {
 }
 
 export function scanBoundaryFile({source}) {
-  return [...scanForbiddenImports(source), ...scanForbiddenSource(source)];
+  const scanned = scanDartSource(source);
+  return [
+    ...scanForbiddenImports(source, scanned),
+    ...scanForbiddenSource(source, scanned),
+  ];
 }
 
-export function scanForbiddenImports(source) {
+export function scanForbiddenImports(source, scanned = scanDartSource(source)) {
   const evidence = [];
-  for (const match of source.matchAll(/import\s+'([^']+)';/gu)) {
-    const uri = match[1];
-    const forbidden = forbiddenImports.find((entry) => entry.pattern.test(uri));
-    if (!forbidden) continue;
-    evidence.push({
-      type: "import",
-      label: forbidden.label,
-      line: lineForOffset(source, match.index ?? 0),
-      text: match[0],
-    });
+  for (const directive of scanned.imports) {
+    for (const {uri, offset} of directive.uris) {
+      const forbidden = forbiddenImports.find((entry) => entry.pattern.test(uri));
+      if (!forbidden) continue;
+      evidence.push({
+        type: "import",
+        label: forbidden.label,
+        ...locationForOffset(source, offset),
+        text: directive.text,
+      });
+    }
   }
   return evidence;
 }
 
-export function scanForbiddenSource(source) {
+export function scanForbiddenSource(source, scanned = scanDartSource(source)) {
   const evidence = [];
-  const importEnd = lastImportEnd(source);
-  const body = source.slice(importEnd);
   for (const forbidden of forbiddenSourcePatterns) {
-    const match = forbidden.pattern.exec(body);
+    const match = forbidden.pattern.exec(scanned.code);
     if (!match) continue;
     evidence.push({
       type: "source",
       label: forbidden.label,
-      line: lineForOffset(source, importEnd + match.index),
-      text: match[0],
+      ...locationForOffset(source, match.index),
+      text: source.slice(match.index, match.index + match[0].length),
     });
   }
   return evidence;
 }
 
-function lastImportEnd(source) {
-  let end = 0;
-  for (const match of source.matchAll(/import\s+'[^']+';\s*/gu)) {
-    end = Math.max(end, (match.index ?? 0) + match[0].length);
-  }
-  return end;
+function locationForOffset(source, offset) {
+  return {
+    line: lineForOffset(source, offset),
+    column: offset - source.lastIndexOf("\n", offset - 1),
+  };
 }
 
 function lineForOffset(source, offset) {

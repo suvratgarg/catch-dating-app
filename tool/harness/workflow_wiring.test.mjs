@@ -1205,6 +1205,61 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
   }
 });
 
+test("Widgetbook first pass selects every package suite and preserves golden obligations", () => {
+  const source = workflow("visual-integration-ci.yml");
+  const steps = extractSteps(source.split("  goldens:\n")[1].split("  native-smoke:\n")[0]);
+  const first = steps.findIndex((step) => step.name === "Widgetbook package suites (pass 1)");
+  const second = steps.findIndex((step) => step.name === "Widgetbook corpus goldens (pass 2, determinism)");
+  assert.ok(first >= 0 && second > first, "whole package precedes primitive determinism pass");
+  assert.equal(steps[first].run, "(cd widgetbook && flutter test --concurrency=1 test)");
+  assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
+  assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
+  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (0.30% raster tolerance)"]) {
+    assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
+  }
+  assert.equal(steps.find((step) => step.name === "Flutter goldens (0.30% raster tolerance)").run,
+    "flutter test --concurrency=1 test/goldens");
+  const upload = namedStep(source, "Retain golden failure diffs");
+  assert.match(upload, /if: failure\(\)/u);
+  assert.match(upload, /uses: actions\/upload-artifact@/u);
+  assert.match(upload, /path: test\/goldens\/failures\//u);
+});
+
+for (const exitCode of [0, 37]) {
+  test(`Widgetbook workflow shell preserves working directory, arguments and exit ${exitCode}`, (t) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "widgetbook-workflow-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const packageRoot = path.join(root, "widgetbook");
+    const bin = path.join(root, "bin");
+    fs.mkdirSync(packageRoot);
+    fs.mkdirSync(bin);
+    const trace = path.join(root, "invocation.json");
+    // This executes the actual workflow shell, not Flutter discovery or rendering.
+    fs.writeFileSync(path.join(bin, "flutter"), `#!/usr/bin/env node
+require("node:fs").writeFileSync(process.env.TRACE, JSON.stringify({cwd: process.cwd(), args: process.argv.slice(2)}));
+process.exit(Number(process.env.FAKE_FLUTTER_EXIT));
+`, {mode: 0o755});
+    const steps = extractSteps(workflow("visual-integration-ci.yml"));
+    for (const [name, target, cwd] of [
+      ["Widgetbook package suites (pass 1)", "test", packageRoot],
+      ["Widgetbook corpus goldens (pass 2, determinism)", "test/primitive_goldens_test.dart", packageRoot],
+      ["Flutter goldens (0.30% raster tolerance)", "test/goldens", root],
+    ]) {
+      const step = steps.find((entry) => entry.name === name);
+      assert.ok(step?.run, name);
+      fs.rmSync(trace, {force: true});
+      const result = spawnSync("bash", ["-e", "-c", step.run], {cwd: root, encoding: "utf8",
+        env: {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+          TRACE: trace, FAKE_FLUTTER_EXIT: String(exitCode)},
+      });
+      assert.equal(result.status, exitCode, `${name}: ${result.stderr}`);
+      assert.deepEqual(JSON.parse(fs.readFileSync(trace, "utf8")), {
+        cwd: fs.realpathSync(cwd), args: ["test", "--concurrency=1", target],
+      });
+    }
+  });
+}
+
 test("headless journeys start independently of macOS rendering and native smoke", () => {
   const source = workflow("visual-integration-ci.yml");
   const headless = source.split("  headless-journeys:\n")[1]?.split("  goldens:\n")[0];
@@ -1216,7 +1271,7 @@ test("headless journeys start independently of macOS rendering and native smoke"
   const goldens = source.split("  goldens:\n")[1].split("  native-smoke:\n")[0];
   const native = source.split("  native-smoke:\n")[1];
   assert.match(goldens, /flutter test --concurrency=1 test\/goldens/u);
-  assert.match(goldens, /Widgetbook corpus goldens \(pass 1\)/u);
+  assert.match(goldens, /Widgetbook package suites \(pass 1\)/u);
   assert.match(goldens, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
   assert.match(goldens, /git diff --exit-code/u);
   assert.match(native, /bash tool\/test_app_shell_integration.sh macos smoke/u);
