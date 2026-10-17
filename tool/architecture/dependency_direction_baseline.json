@@ -2,7 +2,7 @@
   "owner": "app_architecture",
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
   "version": 1,
-  "updated": "2026-10-07",
+  "updated": "2026-10-17",
   "description": "Reviewed dependency debt. Manual declarations are keyed by exact path, symbol and builder operation; the AST provider graph separately reviews reactive state ownership. Counts and file-wide exceptions do not admit new declarations.",
   "allowedFindings": [
     {
@@ -13,22 +13,12 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
       "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
       "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -83,10 +73,6 @@
       "status": "planned",
       "debtId": "CAT156",
       "rationale": "Existing Programs declaration reviewed as CAT156 migration debt; preserve value-equality scope, disposal, idempotency/journal and test overrides until its bounded codegen migration."
-    },
-    {
-      "rule": "multiRouteScreenFile",
-      "path": "lib/hosts/presentation/host_operations/host_insights_screen.dart"
     },
     {
       "rule": "widgetRefParameter",
