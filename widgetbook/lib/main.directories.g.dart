@@ -391,6 +391,8 @@ import 'package:widgetbook_workspace/primitives/catalog/menus.dart'
     as _widgetbook_workspace_primitives_catalog_menus;
 import 'package:widgetbook_workspace/primitives/catalog/sections.dart'
     as _widgetbook_workspace_primitives_catalog_sections;
+import 'package:widgetbook_workspace/primitives/catalog/table.dart'
+    as _widgetbook_workspace_primitives_catalog_table;
 import 'package:widgetbook_workspace/primitives/catalog/typography.dart'
     as _widgetbook_workspace_primitives_catalog_typography;
 import 'package:widgetbook_workspace/primitives/conditional_form_use_cases.dart'
@@ -447,6 +449,8 @@ import 'package:widgetbook_workspace/primitives/contracts/steps.dart'
     as _widgetbook_workspace_primitives_contracts_steps;
 import 'package:widgetbook_workspace/primitives/contracts/surfaces.dart'
     as _widgetbook_workspace_primitives_contracts_surfaces;
+import 'package:widgetbook_workspace/primitives/contracts/table.dart'
+    as _widgetbook_workspace_primitives_contracts_table;
 import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
     as _widgetbook_workspace_primitives_contracts_tabs;
 import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
@@ -1192,6 +1196,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchStatColumnCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTableRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_catalog_table
+                    .catchTableRowCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTableScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_catalog_table
+                    .catchTableScopeCatalogStates,
               ),
             ],
           ),
@@ -2699,6 +2723,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_analytics
                     .catchMetricStripCellContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTable',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_table
+                    .catchTableContractStates,
               ),
             ],
           ),

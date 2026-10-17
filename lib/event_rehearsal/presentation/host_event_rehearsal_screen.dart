@@ -675,7 +675,7 @@ class _RehearsalCoachDock extends StatelessWidget {
         onPressed: onToggle,
       );
       return CatchDock(
-        padding: CatchInsets.rosterRowContent,
+        padding: CatchInsets.tableRowContent,
         child: largeText
             ? Column(
                 mainAxisSize: MainAxisSize.min,
@@ -752,7 +752,7 @@ class _RehearsalCoachDock extends StatelessWidget {
       ],
     );
     return CatchDock(
-      padding: largeText ? CatchInsets.content : CatchInsets.rosterRowContent,
+      padding: largeText ? CatchInsets.content : CatchInsets.tableRowContent,
       child: largeText
           ? Column(
               mainAxisSize: MainAxisSize.min,

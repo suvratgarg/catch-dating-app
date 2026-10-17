@@ -131,8 +131,40 @@ Widget catchTicketContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'Ticket material',
     contractId: 'catch.ticket',
-    states: const ['compact', 'expanded', 'large-text'],
+    states: const ['compact', 'expanded', 'large-text', 'card'],
     children: [
+      WidgetbookContractStateCard(
+        label: 'card recipe',
+        child: SizedBox(
+          width: 340,
+          child: CatchTicket.card(
+            onTap: () {},
+            mediaBuilder: (context, _) => ColoredBox(
+              color: t.bg,
+              child: Center(
+                child: Text(
+                  'Card media',
+                  style: CatchTextStyles.labelM(context, color: t.ink),
+                ),
+              ),
+            ),
+            bodyBuilder: (context, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Card body',
+                  style: CatchTextStyles.labelM(context, color: t.ink),
+                ),
+                gapH8,
+                Text(
+                  'Width-driven ticket with a notched outline',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       for (final height in [359.0, 360.0])
         WidgetbookContractStateCard(
           label: '${height.toInt()} px hero',

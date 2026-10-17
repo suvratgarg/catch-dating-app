@@ -143,6 +143,7 @@ export 'src/components/catch_stepper_repeat_button.dart';
 export 'src/components/catch_tab_bar.dart';
 export 'src/components/catch_tab_bar_indicator.dart';
 export 'src/components/catch_tab_bar_item.dart';
+export 'src/components/catch_table.dart';
 export 'src/components/catch_ticket.dart';
 export 'src/components/catch_ticket_divider.dart';
 export 'src/components/catch_ticket_perforation_painter.dart';

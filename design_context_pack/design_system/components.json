@@ -11152,7 +11152,7 @@
         "GuestTable",
         "RosterBoard"
       ],
-      "summary": "Host-roster table shell with fixed identity/signal/action columns and built-in empty state.",
+      "summary": "Host participant table: binds roster rows into CatchTable and keeps a compact field list below the table breakpoint.",
       "dart": {
         "symbol": "ParticipantTable",
         "file": "lib/hosts/presentation/widgets/participant_table.dart",
@@ -13761,7 +13761,8 @@
           "catch.button"
         ],
         "notes": [
-          "This is an Explore editorial composition. Resolve live Explore header duplication before broadening the contract."
+          "This is an Explore editorial composition. Resolve live Explore header duplication before broadening the contract.",
+          "Compared with catch.organizer_poster on 2026-10-18 (blueprint Phase 7b): this is a featured-item masthead, not entity-card material. It generates its own art (activity glow, diagonal scrim, ghost glyph) instead of taking a media slot, adds a chrome slot, a filled call-to-action and right-aligned data lines, and sizes to content, so it stays a separate binding rather than a CatchPoster recipe."
         ]
       },
       "governance": {
@@ -14125,7 +14126,7 @@
         "EventListItem",
         "EventPreviewCard"
       ],
-      "summary": "Canonical ticket-style event card surface backed by shared activity visuals and event media atoms.",
+      "summary": "Event summary card: binds event media and metadata into the CatchTicket card recipe, which owns the ticket geometry.",
       "dart": {
         "symbol": "EventCard",
         "file": "lib/core/widgets/event_card.dart",
@@ -17536,12 +17537,13 @@
         "PerforatedCard",
         "TicketFrame"
       ],
-      "summary": "Presentation-neutral ticket geometry: adaptive hero slots, perforation and a notched outline.",
+      "summary": "Ticket material: a hero recipe for a bounded, collapsing surface and a width-driven card recipe that owns the notched outline, elevation, tap surface, activity-card media ratio, perforation and body inset.",
       "dart": {
         "symbol": "CatchTicket",
         "file": "packages/catch_ui/lib/src/components/catch_ticket.dart",
         "constructors": [
-          "CatchTicket.hero"
+          "CatchTicket.hero",
+          "CatchTicket.card"
         ]
       },
       "design": {
@@ -17579,12 +17581,20 @@
             "type": "color",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?",
+            "notes": "Card recipe only."
           }
         ],
         "states": [
           "compact",
           "expanded",
-          "large-text"
+          "large-text",
+          "card"
         ],
         "slots": [
           "mediaBuilder",
@@ -17932,6 +17942,190 @@
       },
       "level": "L4",
       "roleNoun": "Viewport",
+      "naming": {
+        "useCase": ""
+      }
+    },
+    {
+      "id": "catch.table",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchTable",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T1",
+      "aliases": [
+        "DataTable",
+        "DataGrid",
+        "ListTable",
+        "RecordTable"
+      ],
+      "summary": "Bordered data table with an uppercase header row, flex-weighted columns with start or end placement, divided rows and an empty builder below the header.",
+      "dart": {
+        "symbol": "CatchTable",
+        "file": "packages/catch_ui/lib/src/components/catch_table.dart",
+        "constructors": [
+          "CatchTable"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchTable"
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Table",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Table",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "columns",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchTableColumn>",
+            "notes": "Header label, flex share, start or end placement and optional label inset per column."
+          },
+          {
+            "name": "children",
+            "type": "list",
+            "required": false,
+            "dartType": "List<Widget>",
+            "default": "[]",
+            "notes": "CatchTableRow children laid out against the published columns."
+          },
+          {
+            "name": "emptyBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "WidgetBuilder?",
+            "notes": "Replaces the rows below the header when there is nothing to list."
+          }
+        ],
+        "states": [
+          "populated",
+          "empty",
+          "partial-columns",
+          "long-copy",
+          "end-placement",
+          "large-text"
+        ],
+        "slots": [
+          "children"
+        ],
+        "tokens": [
+          "space.s2",
+          "theme.light.color.line",
+          "theme.light.color.ink3"
+        ],
+        "dartRoles": [
+          "CatchTableColumn",
+          "CatchTablePlacement"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        },
+        "members": [
+          {
+            "id": "catch.table.row",
+            "symbol": "CatchTableRow",
+            "file": "packages/catch_ui/lib/src/components/catch_table.dart",
+            "summary": "One divided table row; each cell takes its column flex and placement from the enclosing table.",
+            "states": [
+              "default",
+              "end-placement",
+              "fewer-cells"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.table",
+              "parentConceptId": "catch.table",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.table"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "Table",
+              "comparedWith": [
+                "catch.table"
+              ],
+              "reason": "Lays cells out against the columns its table publishes; it is row anatomy of the Table concept, not a free-standing list row."
+            }
+          },
+          {
+            "id": "catch.table.scope",
+            "symbol": "CatchTableScope",
+            "file": "packages/catch_ui/lib/src/components/catch_table.dart",
+            "summary": "Publishes a table's columns to its rows.",
+            "states": [
+              "inside-table",
+              "outside-table"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.table",
+              "parentConceptId": "catch.table",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.table"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "Table",
+              "comparedWith": [
+                "catch.table"
+              ],
+              "reason": "Publishes the enclosing table's column contract to its rows; the table owns drawing and layout."
+            }
+          }
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.table",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.table",
+        "decisionRef": "contract-note:blueprint-d12-table-role-noun"
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Feature tables bind this material: map each record to a CatchTableRow of cells, and keep any compact (narrow-width) representation in the feature. ParticipantTable is the reference binding."
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Table",
       "naming": {
         "useCase": ""
       }

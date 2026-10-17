@@ -99,74 +99,56 @@ class ParticipantRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: t.line)),
-      ),
-      child: Padding(
-        padding: CatchInsets.rosterRowContent,
-        child: Row(
+    final row = CatchTableRow(
+      children: [
+        Row(
           children: [
+            CatchAvatar(
+              size: CatchLayout.rosterRowAvatarExtent,
+              name: person,
+              imageUrl: imageUrl,
+            ),
+            const SizedBox(width: CatchSpacing.micro10),
             Expanded(
-              flex: 5,
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchAvatar(
-                    size: CatchLayout.rosterRowAvatarExtent,
-                    name: person,
-                    imageUrl: imageUrl,
+                  Text(
+                    person,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.name(context),
                   ),
-                  const SizedBox(width: CatchSpacing.micro10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          person,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.name(context),
-                        ),
-                        if (meta != null && meta!.isNotEmpty) ...[
-                          const SizedBox(height: CatchSpacing.micro3),
-                          Text(
-                            meta!.toUpperCase(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.monoLabel(
-                              context,
-                              color: t.ink3,
-                            ).copyWith(fontSize: 8),
-                          ),
-                        ],
-                      ],
+                  if (meta != null && meta!.isNotEmpty) ...[
+                    const SizedBox(height: CatchSpacing.micro3),
+                    Text(
+                      meta!.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: t.ink3,
+                      ).copyWith(fontSize: 8),
                     ),
-                  ),
+                  ],
                 ],
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s2),
-            Expanded(
-              flex: 3,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: signal == null
-                    ? const SizedBox.shrink()
-                    : CatchBadge(label: signal!, tone: tone),
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s2),
-            Expanded(
-              flex: 3,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: ParticipantRowAction(action: action),
               ),
             ),
           ],
         ),
-      ),
+        if (signal case final label?)
+          CatchBadge(label: label, tone: tone)
+        else
+          const SizedBox.shrink(),
+        ParticipantRowAction(action: action),
+      ],
+    );
+    // Outside a table the row still lays out against the participant columns.
+    if (CatchTableScope.columnsOf(context).isNotEmpty) return row;
+    return CatchTableScope(
+      columns: participantTableColumns(const []),
+      child: row,
     );
   }
 }
@@ -281,6 +263,21 @@ class ParticipantDecisionButton extends StatelessWidget {
 /// Design-system `RosterTable` (`components/hosting/RosterBoard`): the hairline
 /// table shell — three mono column headers (identity / signal / action) at fixed
 /// 5/3/3 proportions, [ParticipantRow] children, and a built-in empty state.
+/// The participant table's columns: identity, signal and an end-placed action.
+List<CatchTableColumn> participantTableColumns(List<String> labels) => [
+  CatchTableColumn(
+    label: labels.isNotEmpty ? labels[0] : '',
+    flex: 5,
+    labelInset: CatchLayout.rosterHeaderIdentityInset,
+  ),
+  CatchTableColumn(label: labels.length > 1 ? labels[1] : '', flex: 3),
+  CatchTableColumn(
+    label: labels.length > 2 ? labels[2] : '',
+    flex: 3,
+    placement: CatchTablePlacement.end,
+  ),
+];
+
 class ParticipantTable extends StatelessWidget {
   const ParticipantTable({
     super.key,
@@ -300,11 +297,6 @@ class ParticipantTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final headerStyle = CatchTextStyles.monoLabel(
-      context,
-      color: t.ink3,
-    ).copyWith(fontSize: 8.5);
-
     return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.hostRosterTableCompactBreakpoint,
       compactBuilder: (context) {
@@ -352,95 +344,36 @@ class ParticipantTable extends StatelessWidget {
           ],
         );
       },
-      expandedBuilder: (context) => CatchSurface(
-        radius: CatchRadius.md,
-        backgroundColor: t.surface,
-        borderColor: t.line2,
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: CatchInsets.rosterHeaderContent,
-              child: Row(
+      expandedBuilder: (context) => CatchTable(
+        columns: participantTableColumns(columns),
+        emptyBuilder: showEmpty
+            ? (context) => Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Icon(CatchIcons.group, size: CatchIcon.md, color: t.ink3),
+                  const SizedBox(width: CatchSpacing.micro10),
                   Expanded(
-                    flex: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: CatchLayout.rosterHeaderIdentityInset,
-                      ),
-                      child: Text(
-                        columns.isNotEmpty ? columns[0].toUpperCase() : '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: headerStyle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: CatchSpacing.s2),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      columns.length > 1 ? columns[1].toUpperCase() : '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: headerStyle,
-                    ),
-                  ),
-                  const SizedBox(width: CatchSpacing.s2),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      columns.length > 2 ? columns[2].toUpperCase() : '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: headerStyle,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          emptyTitle ?? '',
+                          style: CatchTextStyles.name(context),
+                        ),
+                        if (emptyMessage != null) ...[
+                          const SizedBox(height: CatchSpacing.s1),
+                          Text(
+                            emptyMessage!,
+                            style: CatchTextStyles.supporting(context),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ),
-            if (showEmpty)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: t.line)),
-                ),
-                child: Padding(
-                  padding: CatchInsets.rosterEmptyContent,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(CatchIcons.group, size: CatchIcon.md, color: t.ink3),
-                      const SizedBox(width: CatchSpacing.micro10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              emptyTitle ?? '',
-                              style: CatchTextStyles.name(context),
-                            ),
-                            if (emptyMessage != null) ...[
-                              const SizedBox(height: CatchSpacing.s1),
-                              Text(
-                                emptyMessage!,
-                                style: CatchTextStyles.supporting(context),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               )
-            else
-              ...rows,
-          ],
-        ),
+            : null,
+        children: rows,
       ),
     );
   }

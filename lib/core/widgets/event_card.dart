@@ -47,159 +47,114 @@ class EventCard extends StatelessWidget {
     final status = statusLabel?.trim();
     final card = SizedBox(
       width: width,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final mediaHeight = constraints.hasBoundedWidth
-              ? constraints.maxWidth * 10 / 16
-              : 136.0; // fallback when unconstrained (should not happen)
-          final notchCenterY = CatchLayout.eventTicketNotchCenterY(mediaHeight);
-          return PhysicalShape(
-            clipper: CatchTicketShapeClipper(
-              cornerRadius: CatchRadius.lg,
-              notchRadius: CatchLayout.eventTicketNotchRadius,
-              notchDepth: CatchLayout.eventTicketNotchDepth,
-              notchCenterY: notchCenterY,
-            ),
-            clipBehavior: Clip.antiAlias,
-            color: t.surface,
-            elevation: CatchElevation.physicalTicket,
-            child: CatchSurface(
-              onTap: onTap,
-              padding: EdgeInsets.zero,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AspectRatio(
-                    aspectRatio: CatchAspectRatio.activityCard,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        EventBackdropImage(visual: visual),
-                        Positioned(
-                          left: CatchSpacing.s4,
-                          bottom: CatchSpacing.s4,
-                          child: Transform.rotate(
-                            angle: -0.08,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: t.accent,
-                                  width: CatchStroke.underline,
-                                ),
-                                color: t.primaryInk.withValues(
-                                  alpha: CatchOpacity.subtleFill,
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: CatchSpacing.s2,
-                                  vertical: CatchSpacing.s1,
-                                ),
-                                child: CatchMetadataText(
-                                  visual.label,
-                                  color: t.accent,
-                                  uppercase: true,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (status != null && status.isNotEmpty)
-                          Positioned(
-                            top: CatchSpacing.s3,
-                            right: CatchSpacing.s3,
-                            left: CatchSpacing.s3,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: CatchBadge.ticketStatus(
-                                label: status,
-                                color: visual.accent,
-                                emphasis: CatchBadgeEmphasis.strong,
-                              ),
-                            ),
-                          ),
-                      ],
+      child: CatchTicket.card(
+        onTap: onTap,
+        mediaBuilder: (context, _) => Stack(
+          fit: StackFit.expand,
+          children: [
+            EventBackdropImage(visual: visual),
+            Positioned(
+              left: CatchSpacing.s4,
+              bottom: CatchSpacing.s4,
+              child: Transform.rotate(
+                angle: -0.08,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: t.accent,
+                      width: CatchStroke.underline,
+                    ),
+                    color: t.primaryInk.withValues(
+                      alpha: CatchOpacity.subtleFill,
                     ),
                   ),
-                  const CatchTicketDivider(),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.s4,
-                      CatchSpacing.s3,
-                      CatchSpacing.s4,
-                      CatchSpacing.s4,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.s2,
+                      vertical: CatchSpacing.s1,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            CatchClockIndicator(
-                              accent: visual.accent,
-                              time:
-                                  clockTime ?? _parseClockTimeLabel(timeLabel),
-                              size: 38,
-                              ringColor: t.ink2,
-                              hourStrokeWidth: 2.2,
-                              minuteStrokeWidth: 1.7,
-                              hourLengthFactor: 0.52,
-                              minuteLengthFactor: 0.78,
-                              centerDotRadius: 2.2,
-                            ),
-                            gapW10,
-                            Expanded(
-                              child: CatchMetadataText(
-                                context.l10n
-                                    .coreCatchEventActivityCardsVisiblecopyTimelabelCountdownlabel(
-                                      timeLabel: timeLabel,
-                                      countdownLabel: countdownLabel,
-                                    ),
-                                color: t.primary,
-                              ),
-                            ),
-                            gapW8,
-                            Text(
-                              priceLabel,
-                              style: CatchTextStyles.labelL(
-                                context,
-                                color: t.ink,
-                              ),
-                            ),
-                          ],
-                        ),
-                        gapH10,
-                        Text(
-                          title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.eventDisplay(
-                            context,
-                            step: CatchTextStylesSize.s,
-                            height: 1.02,
-                          ),
-                        ),
-                        gapH6,
-                        Text(
-                          subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                        gapH12,
-                        CatchMetadataText(capacityLabel, color: t.ink2),
-                      ],
+                    child: CatchMetadataText(
+                      visual.label,
+                      color: t.accent,
+                      uppercase: true,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          );
-        },
+            if (status != null && status.isNotEmpty)
+              Positioned(
+                top: CatchSpacing.s3,
+                right: CatchSpacing.s3,
+                left: CatchSpacing.s3,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: CatchBadge.ticketStatus(
+                    label: status,
+                    color: visual.accent,
+                    emphasis: CatchBadgeEmphasis.strong,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        bodyBuilder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                CatchClockIndicator(
+                  accent: visual.accent,
+                  time: clockTime ?? _parseClockTimeLabel(timeLabel),
+                  size: 38,
+                  ringColor: t.ink2,
+                  hourStrokeWidth: 2.2,
+                  minuteStrokeWidth: 1.7,
+                  hourLengthFactor: 0.52,
+                  minuteLengthFactor: 0.78,
+                  centerDotRadius: 2.2,
+                ),
+                gapW10,
+                Expanded(
+                  child: CatchMetadataText(
+                    context.l10n
+                        .coreCatchEventActivityCardsVisiblecopyTimelabelCountdownlabel(
+                          timeLabel: timeLabel,
+                          countdownLabel: countdownLabel,
+                        ),
+                    color: t.primary,
+                  ),
+                ),
+                gapW8,
+                Text(
+                  priceLabel,
+                  style: CatchTextStyles.labelL(context, color: t.ink),
+                ),
+              ],
+            ),
+            gapH10,
+            Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.eventDisplay(
+                context,
+                step: CatchTextStylesSize.s,
+                height: 1.02,
+              ),
+            ),
+            gapH6,
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+            gapH12,
+            CatchMetadataText(capacityLabel, color: t.ink2),
+          ],
+        ),
       ),
     );
     return heroTag == null

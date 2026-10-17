@@ -1432,10 +1432,19 @@ Deviations and remaining 7b work:
 - The splash screen's Widgetbook catalog id still reads
   `core.widgets.catch_startup_loading_screen` because `lib/l10n/app_en.arb`
   references it and another active task holds that file.
-- Not yet done: extracting `CatchTable` from the participant table shell,
-  rendering `EventCard` through `CatchTicket`, comparing
-  `FeaturedEventPoster` with `CatchPoster`, and renaming the layout constants
-  named after old widgets. Each changes rendering, so each needs visual review.
+- Materials (2026-10-18): `CatchTable` (T1, with `CatchTableRow` and
+  `CatchTableScope`) is extracted from the participant table shell, and
+  `ParticipantTable` binds it through a shared `participantTableColumns`
+  layout; `CatchTicket.card` is the width-driven ticket recipe that owns the
+  notched outline, and `EventCard` binds it. Both extractions render
+  byte-identically to before at 440 and 900 px in light and dark. Compared with
+  `CatchPoster`, `FeaturedEventPoster` is a featured-item masthead (generated
+  art, chrome slot, call to action, data lines, content height), so it stays a
+  separate binding; the registry records the comparison. The roster insets
+  became `CatchInsets.table*`.
+- Still open: renaming the remaining layout constants named after old widgets
+  (`activityMapPin*`, `organizerPoster*`, `eventTicketNotch*`), and the React
+  `CatchTable` in `@catch/web-ui` (Phase 7e).
 - The analyzer plugin still lists `lib/core/widgets/event_activity_visuals.dart`
   as a theme-independent art path. The backdrop now uses
   `CatchTokens.editorialWhite` and needs no exemption, so that entry is dead;
