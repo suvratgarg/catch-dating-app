@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/clubs.dart'
     show ClubAvatarRail, buildClubDirectorySlivers;
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
@@ -14,8 +15,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/recommendations.da
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncData, AsyncError, AsyncLoading, AsyncValue;
 
 /// Returns the slivers that make up the Explore feed body — mixed event/club
 /// discovery feed, optional legacy club rails, and browse prompts — as a flat
@@ -25,8 +24,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
 /// continue to receive flat inline-header slivers, avoiding nested groups.
 List<Widget> buildExploreBodySlivers({
   required BuildContext context,
-  required AsyncValue<ExploreFeedViewModel> feedAsync,
-  AsyncValue<List<ExploreEventRecommendation>>? recommendationsAsync,
+  required CatchAsyncState<ExploreFeedViewModel> feedState,
+  CatchAsyncState<List<ExploreEventRecommendation>>? recommendationsState,
   required ExploreFilterSelection filters,
   required String searchQuery,
   VoidCallback? onRetryFeed,
@@ -51,12 +50,16 @@ List<Widget> buildExploreBodySlivers({
   DateTime? now,
 }) {
   final viewModel = clubsViewModel;
-  final feedValue = switch (feedAsync) {
-    AsyncData(:final value) => value,
+  final feedValue = switch (feedState) {
+    CatchAsyncState(
+      phase: CatchAsyncPhase.data || CatchAsyncPhase.refreshing,
+      :final value,
+    ) =>
+      value,
     _ => null,
   };
   final eventSlivers = buildExploreEventsSlivers(
-    feedAsync,
+    feedState,
     l10n: context.l10n,
     filters: filters,
     searchQuery: searchQuery,
@@ -105,27 +108,38 @@ List<Widget> buildExploreBodySlivers({
           ),
         ),
       ),
-    if (recommendationsAsync != null)
-      switch (recommendationsAsync) {
-        AsyncLoading() => const SliverToBoxAdapter(
-          child: Padding(
-            padding: CatchInsets.pageBody,
-            child: Recommendations.loading(),
-          ),
-        ),
-        AsyncError(:final error) => SliverToBoxAdapter(
-          child: Padding(
-            padding: CatchInsets.pageBody,
-            child: CatchLocalizedErrorState(
-              error,
-              context: AppErrorContext.explore,
-              onRetry: onRetryFeed,
-              mode: CatchErrorStateMode.compact,
+    if (recommendationsState != null)
+      switch (recommendationsState) {
+        CatchAsyncState(
+          phase: CatchAsyncPhase.initialLoading || CatchAsyncPhase.retrying,
+        ) =>
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: CatchInsets.pageBody,
+              child: Recommendations.loading(),
             ),
           ),
-        ),
-        AsyncData(:final value) =>
-          value.isEmpty
+        CatchAsyncState(
+          phase: CatchAsyncPhase.staleDataWithError ||
+              CatchAsyncPhase.terminalError,
+          :final error,
+        ) =>
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: CatchInsets.pageBody,
+              child: CatchLocalizedErrorState(
+                error!,
+                context: AppErrorContext.explore,
+                onRetry: onRetryFeed,
+                mode: CatchErrorStateMode.compact,
+              ),
+            ),
+          ),
+        CatchAsyncState(
+          phase: CatchAsyncPhase.data || CatchAsyncPhase.refreshing,
+          :final value,
+        ) =>
+          value == null || value.isEmpty
               ? const SliverToBoxAdapter(child: SizedBox.shrink())
               : SliverToBoxAdapter(
                   child: Padding(
