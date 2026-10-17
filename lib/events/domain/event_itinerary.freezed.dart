@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventItineraryItem {
 
- String get id;@JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson) EventItineraryKind get kind; int get offsetMinutes; int? get durationMinutes; String get title; String? get description; EventMeetingLocation? get location; int? get routeDistanceMeters;
+ String get id; EventItineraryKind get kind; int get offsetMinutes; int? get durationMinutes; String get title; String? get description; EventMeetingLocation? get location; int? get routeDistanceMeters;
 /// Create a copy of EventItineraryItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $EventItineraryItemCopyWith<$Res>  {
   factory $EventItineraryItemCopyWith(EventItineraryItem value, $Res Function(EventItineraryItem) _then) = _$EventItineraryItemCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson) EventItineraryKind kind, int offsetMinutes, int? durationMinutes, String title, String? description, EventMeetingLocation? location, int? routeDistanceMeters
+ String id, EventItineraryKind kind, int offsetMinutes, int? durationMinutes, String title, String? description, EventMeetingLocation? location, int? routeDistanceMeters
 });
 
 
@@ -172,7 +172,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson)  EventItineraryKind kind,  int offsetMinutes,  int? durationMinutes,  String title,  String? description,  EventMeetingLocation? location,  int? routeDistanceMeters)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  EventItineraryKind kind,  int offsetMinutes,  int? durationMinutes,  String title,  String? description,  EventMeetingLocation? location,  int? routeDistanceMeters)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventItineraryItem() when $default != null:
 return $default(_that.id,_that.kind,_that.offsetMinutes,_that.durationMinutes,_that.title,_that.description,_that.location,_that.routeDistanceMeters);case _:
@@ -193,7 +193,7 @@ return $default(_that.id,_that.kind,_that.offsetMinutes,_that.durationMinutes,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson)  EventItineraryKind kind,  int offsetMinutes,  int? durationMinutes,  String title,  String? description,  EventMeetingLocation? location,  int? routeDistanceMeters)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  EventItineraryKind kind,  int offsetMinutes,  int? durationMinutes,  String title,  String? description,  EventMeetingLocation? location,  int? routeDistanceMeters)  $default,) {final _that = this;
 switch (_that) {
 case _EventItineraryItem():
 return $default(_that.id,_that.kind,_that.offsetMinutes,_that.durationMinutes,_that.title,_that.description,_that.location,_that.routeDistanceMeters);case _:
@@ -213,7 +213,7 @@ return $default(_that.id,_that.kind,_that.offsetMinutes,_that.durationMinutes,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson)  EventItineraryKind kind,  int offsetMinutes,  int? durationMinutes,  String title,  String? description,  EventMeetingLocation? location,  int? routeDistanceMeters)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  EventItineraryKind kind,  int offsetMinutes,  int? durationMinutes,  String title,  String? description,  EventMeetingLocation? location,  int? routeDistanceMeters)?  $default,) {final _that = this;
 switch (_that) {
 case _EventItineraryItem() when $default != null:
 return $default(_that.id,_that.kind,_that.offsetMinutes,_that.durationMinutes,_that.title,_that.description,_that.location,_that.routeDistanceMeters);case _:
@@ -227,12 +227,12 @@ return $default(_that.id,_that.kind,_that.offsetMinutes,_that.durationMinutes,_t
 /// @nodoc
 @JsonSerializable()
 
-class _EventItineraryItem extends EventItineraryItem {
-  const _EventItineraryItem({required this.id, @JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson) required this.kind, required this.offsetMinutes, this.durationMinutes, required this.title, this.description, this.location, this.routeDistanceMeters}): super._();
+class _EventItineraryItem implements EventItineraryItem {
+  const _EventItineraryItem({required this.id, required this.kind, required this.offsetMinutes, this.durationMinutes, required this.title, this.description, this.location, this.routeDistanceMeters});
   factory _EventItineraryItem.fromJson(Map<String, dynamic> json) => _$EventItineraryItemFromJson(json);
 
 @override final  String id;
-@override@JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson) final  EventItineraryKind kind;
+@override final  EventItineraryKind kind;
 @override final  int offsetMinutes;
 @override final  int? durationMinutes;
 @override final  String title;
@@ -273,7 +273,7 @@ abstract mixin class _$EventItineraryItemCopyWith<$Res> implements $EventItinera
   factory _$EventItineraryItemCopyWith(_EventItineraryItem value, $Res Function(_EventItineraryItem) _then) = __$EventItineraryItemCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(fromJson: _itineraryKindFromJson, toJson: _itineraryKindToJson) EventItineraryKind kind, int offsetMinutes, int? durationMinutes, String title, String? description, EventMeetingLocation? location, int? routeDistanceMeters
+ String id, EventItineraryKind kind, int offsetMinutes, int? durationMinutes, String title, String? description, EventMeetingLocation? location, int? routeDistanceMeters
 });
 
 

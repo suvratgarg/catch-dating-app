@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
@@ -248,7 +250,12 @@ class CreateEventWizardReviewState {
     if (name.trim().isEmpty) return false;
     if (activityKind == ActivityKind.openActivity) {
       final label = customActivityLabel.trim();
-      return label.length >= 3 && label.length <= 64;
+      return label.isEmpty ||
+          acceptsContractValue(
+            CatchContractConstraints
+                .createEventCallablePayloadEventFormatCustomActivityLabel,
+            label,
+          );
     }
     if (!activityKind.isDistanceBased) return true;
     final parsedDistance = double.tryParse(distance.trim());

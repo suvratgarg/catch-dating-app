@@ -153,3 +153,13 @@ describe("canonical public chrome", () => {
     }
   );
 });
+
+it("guest chrome keeps event navigation and legal links without host claim prompts", () => {
+  render(<><PublicSiteHeader audience="guest" localNav={[{href: "/organizers/", label: "Organizers"}]}
+    localActions={[{href: "/organizers/host/", label: "View organizer"}]} />
+    <PublicSiteFooter audience="guest" body="Find your people." /></>);
+  expect(screen.queryByRole("link", {name: "Get started free"})).toBeNull();
+  expect(screen.queryByRole("link", {name: "Sign in for a claim"})).toBeNull();
+  expect(screen.getByRole("link", {name: "Privacy"})).toBeTruthy();
+  expect(screen.getByRole("navigation", {name: "Primary"}).textContent).toBe("Organizers");
+});
