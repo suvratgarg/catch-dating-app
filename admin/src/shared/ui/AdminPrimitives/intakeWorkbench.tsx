@@ -487,7 +487,7 @@ export function AdminIntakeReviewWorkbench({
             <div className="intake-batch-stage-control">{stageControl}</div>
           ) : null}
           {headerContext ? <div className="intake-batch-context">{headerContext}</div> : null}
-          <div aria-label="Intake queue metrics" className="intake-batch-metrics">
+          <div aria-label="Intake queue metrics" className="intake-batch-metrics" role="group" tabIndex={0}>
             <span><strong>{needsNow}</strong> Need now</span>
             <span><strong>{waiting}</strong> Waiting external</span>
             <span><strong>{resolved.size}</strong> Cleared</span>
@@ -668,14 +668,14 @@ export function AdminIntakeReviewWorkbench({
             <table className="intake-batch-table">
               <thead>
                 <tr>
-                  <th aria-label="Select" />
+                  <th scope="col"><span className="sr-only">Select</span></th>
                   <th>{titleColumnLabel}</th>
                   {queueColumns.map((column) => (
                     <th key={column.id} style={{width: column.width}}>
                       {column.label}
                     </th>
                   ))}
-                  <th aria-label="Review" />
+                  <th scope="col"><span className="sr-only">Review</span></th>
                 </tr>
               </thead>
               <tbody>
