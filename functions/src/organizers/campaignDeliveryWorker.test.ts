@@ -434,3 +434,70 @@ test("a failed status receipt mirrors the recipient row on recovery",
     assert.equal(sends, 1, "terminal campaign rows never resend");
   },
 );
+
+test("a disputed older attempt keeps latest unknown held beyond intent expiry",
+  async () => {
+    const db = new FakeFirestore(seedCrm());
+    let now = NOW_MS;
+    let sends = 0;
+    const w = worker(db, {sendTemplate: async () => {
+      sends++;
+      if (sends === 1) {
+        now += 180_000;
+        throw new MetaProviderError("expired before send", null, null,
+          "requestNotSent");
+      }
+      throw new MetaProviderError("timeout", null, null, "outcomeUnknown");
+    }}, () => now);
+    const mid = await w.enqueueRecipient({campaign: campaignOf(db) as never,
+      campaignId: "camp-1", recipientId: "rec-1"});
+    assert.deepEqual(await w.dispatch(mid),
+      {kind: "withheld", reason: "permitExpired"});
+    const firstDispatch = dispatchDoc(db);
+    assert.equal(recordOf(db).attempts[0].state.kind, "notDispatched");
+    now += 180_000;
+    assert.deepEqual(await w.dispatch(mid),
+      {kind: "submitted", outcome: {kind: "unknown"}});
+    const second = recordOf(db).attempts[1];
+    assert.equal(second.state.kind, "unknown");
+    assert.equal(recipientOf(db).leaseOwner, second.attemptId);
+    // Contradictory but correctly correlated provider evidence for the older
+    // proven-unsent attempt. The real ingress adapter sets the conflict flag.
+    const eventId = queuePair(db, firstDispatch, "delivered", now);
+    const store = new CampaignWhatsappDeliveryStore(
+      db as unknown as Firestore, () => now);
+    assert.deepEqual(await store.consumeQueued(eventId), {kind: "recorded",
+      messageId: mid, disposition: "conflictingEvidence"});
+    assert.equal(recordOf(db).deliveryConflict, true);
+    assert.equal(recordOf(db).attempts[0].state.kind, "delivered");
+    for (const elapsed of [60_000, 25 * 3_600_000, 48 * 3_600_000]) {
+      now = NOW_MS + elapsed + 360_000;
+      assert.deepEqual(await w.dispatch(mid),
+        {kind: "waiting", reason: "conflicted"});
+      assert.equal(recipientOf(db).status, "sending");
+      assert.equal(recipientOf(db).leaseOwner, second.attemptId);
+      assert.equal(recordOf(db).attempts[1].state.kind, "unknown");
+    }
+    assert.equal(sends, 2, "discovery must not authorize another send");
+  });
+
+test("ordinary credential withholding expires without permanent starvation",
+  async () => {
+    const db = new FakeFirestore(seedCrm());
+    let now = NOW_MS;
+    let sends = 0;
+    const w = new CampaignDeliveryWorker(db as unknown as Firestore,
+      {sendTemplate: async () => {
+        sends++;
+        return {providerMessageId: "must-not-send"};
+      }}, {accessBound: async () => {throw new Error("unavailable");}},
+      () => now);
+    const mid = await w.enqueueRecipient({campaign: campaignOf(db) as never,
+      campaignId: "camp-1", recipientId: "rec-1"});
+    assert.deepEqual(await w.dispatch(mid),
+      {kind: "withheld", reason: "resourceUnavailable"});
+    now += 24 * 3_600_000;
+    assert.deepEqual(await w.dispatch(mid), {kind: "waiting", reason: "expired"});
+    assert.equal(recipientOf(db).status, "failed");
+    assert.equal(sends, 0);
+  });
