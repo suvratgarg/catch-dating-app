@@ -107,7 +107,8 @@ void main() {
       await rig.mount(tester);
       try {
         rig.failOptional(held, StateError('${held.name} unavailable'));
-        await pumpUntilFound(tester, find.text(rig.event.title));
+        await pumpUntilFound(tester, find.byType(CatchLocalizedErrorState));
+        expect(find.text(rig.event.title), findsOneWidget);
         expect(rig.state(tester).featuredEvent?.id, rig.event.id);
         expect(isHostTodayQuiet(rig.state(tester)), isFalse);
         expect(find.byType(CatchLocalizedErrorState), findsWidgets);
@@ -168,7 +169,7 @@ void main() {
         'preserves progressive results in ${first.name}, ${second.name}, '
         '${third.name} completion order',
         (tester) async {
-          final rig = _Rig();
+          final rig = _Rig(withTasks: true);
           rig.completeActive();
           await rig.mount(tester);
           try {
@@ -193,6 +194,12 @@ void main() {
                   (widget) =>
                       widget is HostTodayBody &&
                       widget.state.hasPastEvents == historySettled &&
+                      widget.state.attentionItems.length ==
+                          completed
+                              .where(
+                                (source) => source != _OptionalSource.history,
+                              )
+                              .length &&
                       widget.state.attentionCountIsComplete ==
                           attentionComplete,
                 ),
@@ -210,6 +217,26 @@ void main() {
                     completed.contains(_OptionalSource.attendance),
               );
               expect(state.attentionIssues, isEmpty);
+              final items = rig.container
+                  .read(rig.provider)
+                  .requireValue
+                  .attentionItems;
+              expect(items.map((item) => item.id).toSet(), {
+                if (completed.contains(_OptionalSource.attention))
+                  'server-task',
+                if (completed.contains(_OptionalSource.attendance))
+                  'local-attendance-local-operation',
+              });
+              if (completed.contains(_OptionalSource.attendance)) {
+                final local = items.singleWhere(
+                  (item) => item.id.startsWith('local-'),
+                );
+                expect(
+                  local.policyVersion,
+                  completed.contains(_OptionalSource.attention) ? 7 : null,
+                );
+                expect(local.context.eventName, rig.event.title);
+              }
               expect(isHostTodayQuiet(state), isFalse);
               rig.expectOneBoundedReadPerSource();
               expect(tester.takeException(), isNull);
@@ -241,12 +268,266 @@ void main() {
       await rig.close(tester);
     }
   });
+
+  for (final beforeActive in [true, false]) {
+    testWidgets(
+      'same-turn optional payloads ${beforeActive ? 'before' : 'after'} active '
+      'survive the initial build publication',
+      (tester) async {
+        final rig = _Rig(withTasks: true);
+        final publications = <HostTodayFeedData>[];
+        final subscription = rig.container.listen(rig.provider, (_, next) {
+          if (next.asData?.value case final data?) publications.add(data);
+        });
+        try {
+          if (beforeActive) rig.completeOptionalExcept(null);
+          rig.completeActive();
+          await rig.mount(tester);
+          if (!beforeActive) rig.completeOptionalExcept(null);
+          await pumpUntilFound(tester, rig.settledBody);
+          await pumpFeatureUi(tester);
+          expect(publications.first.activeEvents, [rig.event]);
+          expect(publications.first.attentionPending, isTrue);
+          expect(publications.first.attendancePending, isTrue);
+          expect(publications.first.historyPending, isTrue);
+          final data = rig.container.read(rig.provider).requireValue;
+          expect(data.pastEvents, [rig.pastEvent]);
+          expect(data.attentionItems.map((item) => item.id).toSet(), {
+            'server-task',
+            'local-attendance-local-operation',
+          });
+          final local = data.attentionItems.singleWhere(
+            (item) => item.id == 'local-attendance-local-operation',
+          );
+          expect(local.context.eventName, rig.event.title);
+          expect(local.policyVersion, 7);
+          expect(data.attentionItems, hasLength(2));
+          expect(rig.state(tester).attentionCountIsComplete, isTrue);
+          rig.expectOneBoundedReadPerSource();
+          expect(tester.takeException(), isNull);
+        } finally {
+          subscription.close();
+          await rig.close(tester);
+        }
+      },
+    );
+  }
+
+  for (final held in _OptionalSource.values) {
+    for (final failOld in [false, true]) {
+      testWidgets('same-family retry ignores old ${held.name} '
+          '${failOld ? 'error' : 'success'}', (tester) async {
+        final rig = _Rig(withTasks: true);
+        rig.completeActive();
+        rig.completeOptionalExcept(held);
+        await rig.mount(tester);
+        try {
+          await pumpUntilFound(tester, find.text(rig.event.title));
+          final replacement = _Rig();
+          replacement.completeAll();
+          rig.nextRead = replacement;
+          rig.container.read(rig.provider.notifier).retry();
+          await pumpUntilFound(tester, rig.settledBody);
+          final current = rig.container.read(rig.provider).requireValue;
+          expect(current.attentionItems, isEmpty);
+          expect(current.attentionIssues, isEmpty);
+          expect(current.historyError, isNull);
+          if (failOld) {
+            rig.failOptional(held, StateError('obsolete optional failure'));
+          } else {
+            rig.completeOptional(held);
+          }
+          await pumpFeatureUi(tester);
+          expect(rig.container.read(rig.provider).requireValue, same(current));
+          for (final source in [
+            'active',
+            'attention',
+            'attendance',
+            'history',
+          ]) {
+            expect(rig.calls.where((call) => call == source), hasLength(2));
+          }
+          expect(tester.takeException(), isNull);
+        } finally {
+          await rig.close(tester);
+        }
+      });
+
+      testWidgets('disposed feed ignores held ${held.name} '
+          '${failOld ? 'error' : 'success'}', (tester) async {
+        final rig = _Rig();
+        rig.completeActive();
+        rig.completeOptionalExcept(held);
+        await rig.mount(tester);
+        await pumpUntilFound(tester, find.text(rig.event.title));
+        await tester.pumpWidget(const SizedBox.shrink());
+        rig.container.dispose();
+        if (failOld) {
+          rig.failOptional(held, StateError('disposed optional failure'));
+        } else {
+          rig.completeOptional(held);
+        }
+        await pumpFeatureUi(tester);
+        rig.expectOneBoundedReadPerSource();
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
+  for (final failOptional in [false, true]) {
+    testWidgets('active error remains terminal after late optional '
+        '${failOptional ? 'errors' : 'successes'}', (tester) async {
+      final rig = _Rig(withTasks: true);
+      await rig.mount(tester);
+      try {
+        final failure = StateError('required active source failed');
+        rig.active.completeError(failure);
+        await pumpUntilFound(
+          tester,
+          find.byType(CatchLocalizedSliverErrorState),
+        );
+        for (final source in _OptionalSource.values) {
+          if (failOptional) {
+            rig.failOptional(source, StateError('optional ${source.name}'));
+          } else {
+            rig.completeOptional(source);
+          }
+        }
+        await pumpFeatureUi(tester);
+        expect(rig.container.read(rig.provider).error, same(failure));
+        expect(rig.state(tester).status, HostTodayStatus.error);
+        expect(rig.state(tester).error, same(failure));
+        rig.expectOneBoundedReadPerSource();
+        expect(tester.takeException(), isNull);
+      } finally {
+        await rig.close(tester);
+      }
+    });
+  }
+
+  testWidgets('optional errors before active failure stay handled', (
+    tester,
+  ) async {
+    final rig = _Rig();
+    await rig.mount(tester);
+    try {
+      for (final source in _OptionalSource.values) {
+        rig.failOptional(source, StateError('early ${source.name} failure'));
+      }
+      await tester.pump();
+      expect(rig.state(tester).status, HostTodayStatus.loading);
+      expect(tester.takeException(), isNull);
+      final failure = StateError('required active source failed later');
+      rig.active.completeError(failure);
+      await pumpUntilFound(tester, find.byType(CatchLocalizedSliverErrorState));
+      expect(rig.state(tester).error, same(failure));
+      rig.expectOneBoundedReadPerSource();
+      expect(tester.takeException(), isNull);
+    } finally {
+      await rig.close(tester);
+    }
+  });
+
+  testWidgets(
+    'synchronous active failure still starts each independent read once',
+    (tester) async {
+      final failure = StateError('synchronous active failure');
+      final rig = _Rig(synchronousActiveError: failure);
+      await rig.mount(tester);
+      try {
+        await pumpUntilFound(
+          tester,
+          find.byType(CatchLocalizedSliverErrorState),
+        );
+        expect(rig.state(tester).error, same(failure));
+        rig.expectOneBoundedReadPerSource();
+        rig.completeOptionalExcept(null);
+        await pumpFeatureUi(tester);
+        expect(rig.container.read(rig.provider).error, same(failure));
+        expect(tester.takeException(), isNull);
+      } finally {
+        await rig.close(tester);
+      }
+    },
+  );
+
+  testWidgets('empty feed waits for history before restoring Focus', (
+    tester,
+  ) async {
+    final rig = _Rig(emptyActive: true);
+    rig.completeActive();
+    rig.completeOptionalExcept(_OptionalSource.history);
+    await rig.mount(tester);
+    try {
+      expect(rig.state(tester).status, HostTodayStatus.loading);
+      final pending = buildHostTodayPersonalizationState(
+        today: rig.state(tester),
+        preference: const HostTodayPreference.selected(HostTodayFocus.audience),
+        evidence: const HostTodayRoadmapEvidence(),
+      );
+      expect(pending.focus, HostTodayFocus.audience);
+      expect(pending.primaryAction, isNull);
+      expect(pending.showOrientation, isFalse);
+      rig.completeOptional(_OptionalSource.history);
+      await pumpUntilFound(tester, find.byType(HostTodayQuietState));
+      final settled = buildHostTodayPersonalizationState(
+        today: rig.state(tester),
+        preference: const HostTodayPreference.selected(HostTodayFocus.audience),
+        evidence: const HostTodayRoadmapEvidence(),
+      );
+      expect(settled.primaryAction, HostTodaySuggestedAction.openAudience);
+      rig.expectOneBoundedReadPerSource();
+    } finally {
+      await rig.close(tester);
+    }
+  });
+
+  testWidgets('empty history error exposes retry and can recover to quiet', (
+    tester,
+  ) async {
+    final rig = _Rig(emptyActive: true);
+    rig.completeActive();
+    rig.completeOptionalExcept(_OptionalSource.history);
+    await rig.mount(tester);
+    try {
+      final failure = StateError('history unavailable');
+      rig.failOptional(_OptionalSource.history, failure);
+      await pumpUntilFound(tester, find.byType(CatchLocalizedErrorState));
+      expect(rig.state(tester).historyError, same(failure));
+      expect(rig.state(tester).status, HostTodayStatus.content);
+      expect(isHostTodayQuiet(rig.state(tester)), isFalse);
+      final replacement = _Rig(emptyActive: true)..completeAll();
+      rig.nextRead = replacement;
+      final errorSurface = tester.widget<CatchLocalizedErrorState>(
+        find.byType(CatchLocalizedErrorState),
+      );
+      expect(errorSurface.onRetry, isNotNull);
+      errorSurface.onRetry!();
+      await pumpUntilFound(tester, find.byType(HostTodayQuietState));
+      expect(rig.state(tester).historyError, isNull);
+      expect(rig.state(tester).hasPastEvents, isTrue);
+      for (final source in ['active', 'attention', 'attendance', 'history']) {
+        expect(rig.calls.where((call) => call == source), hasLength(2));
+      }
+      expect(tester.takeException(), isNull);
+    } finally {
+      await rig.close(tester);
+    }
+  });
 }
 
 class _Rig {
-  _Rig({this.emptyActive = false});
+  _Rig({
+    this.emptyActive = false,
+    this.withTasks = false,
+    this.synchronousActiveError,
+  });
 
   final bool emptyActive;
+  final bool withTasks;
+  final Object? synchronousActiveError;
+  _Rig? nextRead;
+  _Rig get readSource => nextRead ?? this;
   final boundary = DateTime(2026, 10, 17, 12);
   late final event = buildEvent(
     id: 'available-event',
@@ -281,6 +562,13 @@ class _Rig {
   );
   HostTodayFeedControllerProvider get provider =>
       hostTodayFeedControllerProvider(request);
+
+  Finder get settledBody => find.byWidgetPredicate(
+    (widget) =>
+        widget is HostTodayBody &&
+        !widget.state.hasPendingSources &&
+        widget.state.status == HostTodayStatus.content,
+  );
 
   Future<void> mount(WidgetTester tester) async {
     await tester.pumpWidget(
@@ -362,10 +650,10 @@ class _Rig {
         attention.complete(
           HostAttentionProjection(
             organizerId: request.organizerId,
-            policyVersion: 1,
+            policyVersion: 7,
             generatedAt: boundary,
             horizonEndsAt: boundary.add(const Duration(days: 7)),
-            items: const [],
+            items: withTasks ? [_serverTask(this)] : const [],
             coverage: [
               for (final kind in HostAttentionKind.values)
                 HostAttentionCoverage(
@@ -379,7 +667,20 @@ class _Rig {
           ),
         );
       case _OptionalSource.attendance:
-        attendance.complete(const HostAttendanceOutboxSummary([]));
+        attendance.complete(
+          HostAttendanceOutboxSummary([
+            if (withTasks)
+              HostAttendanceOutboxEntry(
+                eventId: event.id,
+                attendeeId: 'attendee-105',
+                desiredCheckedIn: true,
+                expectedRevision: 1,
+                clientOperationId: 'local-operation',
+                createdAt: boundary.subtract(const Duration(hours: 1)),
+                status: HostAttendanceOutboxStatus.needsReview,
+              ),
+          ]),
+        );
       case _OptionalSource.history:
         history.complete(_EventPage(items: [pastEvent], hasMore: false));
     }
@@ -426,7 +727,8 @@ class _HeldEvents extends Fake implements EventRepository {
     expect(startAfter, isNull);
     expect(limit, ReadLimitPolicy.directoryPage);
     rig.calls.add('active');
-    return rig.active.future;
+    if (rig.readSource.synchronousActiveError case final error?) throw error;
+    return rig.readSource.active.future;
   }
 
   @override
@@ -441,7 +743,7 @@ class _HeldEvents extends Fake implements EventRepository {
     expect(startAfter, isNull);
     expect(limit, ReadLimitPolicy.directoryPage);
     rig.calls.add('history');
-    return rig.history.future;
+    return rig.readSource.history.future;
   }
 }
 
@@ -453,7 +755,7 @@ class _HeldAttention implements HostAttentionRepository {
   Future<HostAttentionProjection> fetch(String organizerId) {
     expect(organizerId, rig.request.organizerId);
     rig.calls.add('attention');
-    return rig.attention.future;
+    return rig.readSource.attention.future;
   }
 }
 
@@ -469,6 +771,33 @@ class _HeldAttendance extends Fake implements HostAttendanceOutbox {
     expect(accountId, rig.request.accountId);
     expect(now, rig.boundary);
     rig.calls.add('attendance');
-    return rig.attendance.future;
+    return rig.readSource.attendance.future;
   }
 }
+
+HostAttentionItem _serverTask(_Rig rig) => HostAttentionItem(
+  id: 'server-task',
+  kind: HostAttentionKind.eventWaitlistReview,
+  scope: HostAttentionScope.event,
+  sourceOwner: HostAttentionSourceOwner.events,
+  sourceId: rig.event.id,
+  sourceRevision: 'revision-1',
+  eventId: rig.event.id,
+  status: HostAttentionStatus.open,
+  consequence: HostAttentionConsequence.risksGuestExperience,
+  blocking: false,
+  urgency: HostAttentionUrgency.immediate,
+  destination: HostAttentionDestination(
+    route: HostAttentionDestinationRoute.hostEventManage,
+    section: 'guests',
+    eventId: rig.event.id,
+  ),
+  context: HostAttentionContext(eventName: rig.event.title, count: 3),
+  dedupeKey: 'eventWaitlistReview:${rig.event.id}',
+  policyVersion: 7,
+  resolutionVersion: 1,
+  assignedHostUid: null,
+  openedAt: rig.boundary,
+  dueAt: rig.boundary.add(const Duration(hours: 1)),
+  expiresAt: rig.boundary.add(const Duration(hours: 4)),
+);
