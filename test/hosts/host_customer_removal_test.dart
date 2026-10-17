@@ -634,11 +634,11 @@ VoidCallback _savedRemovalCallback(WidgetTester tester) {
   final remove = menu.items.singleWhere(
     (item) => item.label == _copy.hostsHostAudienceRemoveAction,
   );
-  // Read the callback dynamically so Dart retains its private enum parameter
-  // type instead of inserting a Function(dynamic) cast on the generic getter.
-  final dynamic typedMenu = menu;
-  final dynamic value = remove.value;
-  return () => typedMenu.onSelected(value);
+  // Erase the private enum only at this inspection boundary, then retain the
+  // original callback and value across later actor or organizer changes.
+  final callback = (menu as dynamic).onSelected as Function;
+  final Object? value = remove.value;
+  return () => Function.apply(callback, [value]);
 }
 
 Future<void> _openRemoval(WidgetTester tester) async {
