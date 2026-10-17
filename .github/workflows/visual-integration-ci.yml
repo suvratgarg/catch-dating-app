@@ -181,10 +181,10 @@ jobs:
       - name: Flutter goldens (0.30% raster tolerance)
         run: flutter test --concurrency=1 test/goldens
 
-      - name: Widgetbook corpus goldens (pass 1)
+      - name: Widgetbook package suites (pass 1)
         run: >-
           (cd widgetbook &&
-          flutter test --concurrency=1 test/primitive_goldens_test.dart)
+          flutter test --concurrency=1 test)
 
       - name: Widgetbook corpus goldens (pass 2, determinism)
         run: >-

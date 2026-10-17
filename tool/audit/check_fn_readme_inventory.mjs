@@ -46,6 +46,15 @@ export function scanFunctionReadmeInventory({
       findings.push(finding);
     }
   }
+  const liveKeys = new Set(allFindings.map(findingKey));
+  for (const allowance of baseline.allowedFindings ?? []) {
+    if (liveKeys.has(findingKey(allowance))) continue;
+    findings.push({
+      rule: "staleBaselineAllowance",
+      function: allowance.function,
+      reason: `Remove obsolete baseline allowance: ${findingKey(allowance)}`,
+    });
+  }
 
   return {
     exports,
@@ -167,7 +176,7 @@ function requireValue(argsList, index, flag) {
 
 function printFindings(result) {
   console.error(
-    `Functions README inventory check failed (${result.findings.length} new missing export(s); ${result.baselineFindings.length} baseline finding(s) acknowledged).`,
+    `Functions README inventory check failed (${result.findings.length} finding(s); ${result.baselineFindings.length} baseline finding(s) acknowledged).`,
   );
   for (const finding of result.findings) {
     console.error(`- ${finding.function}: ${finding.reason}`);
@@ -184,7 +193,7 @@ function runCli() {
 
 Diffs functions/src/index.ts exports against function names listed in
 functions/README.md. Existing omissions are ratcheted through
-tool/audit/fn_readme_inventory_baseline.json.`);
+tool/audit/fn_readme_inventory_baseline.json; obsolete allowances fail the check.`);
     return;
   }
 
