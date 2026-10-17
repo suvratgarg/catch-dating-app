@@ -601,6 +601,31 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   fs.unlinkSync(cachePath);
   consumer.importCaptureArchive({bytes: packed.stdout, binding});
   for (const file of generated) assert.deepEqual(fs.readFileSync(path.join(f.root, file.path)), files.get(file.path));
+  assert.equal(consumer.verifyImportedCaptureBytes({binding}).verifiedFiles, 26);
+  for (const file of generated) {
+    f.write(file.path, "mutated after import");
+    assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /Imported capture output differs/);
+    f.write(file.path, files.get(file.path));
+  }
+  f.write("tool/widget_dedupe/.dart_tool/package_config.json", "generated analyzer dependencies");
+  f.write("tool/widget_dedupe/pubspec.lock", "generated analyzer lock");
+  assert.throws(() => consumer.importCaptureArchive({bytes: packed.stdout, binding}), /Untracked consumer source/);
+  assert.equal(consumer.verifyImportedCaptureBytes({binding}).verifiedFiles, 26);
+  fs.appendFileSync(path.join(f.root, ".git/info/exclude"), "\ntool/widget_dedupe/adjacent.dart\n");
+  f.write("tool/widget_dedupe/adjacent.dart", "untracked authored source");
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /Untracked consumer source/);
+  fs.unlinkSync(path.join(f.root, "tool/widget_dedupe/adjacent.dart"));
+  fs.rmSync(path.join(f.root, "tool/widget_dedupe/.dart_tool"), {recursive: true});
+  fs.symlinkSync(path.join(f.root, "website/src"), path.join(f.root, "tool/widget_dedupe/.dart_tool"));
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /symlink|Untracked consumer source/);
+  fs.unlinkSync(path.join(f.root, "tool/widget_dedupe/.dart_tool"));
+  fs.rmSync(path.join(f.root, "tool/widget_dedupe"), {recursive: true});
+  f.write("lib/leaf.dart", "changed after import");
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /authored source differs/);
+  f.git("restore", "--", "lib/leaf.dart");
+  fs.writeFileSync(cachePath, invalid);
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /digest differs/);
+  fs.writeFileSync(cachePath, packed.stdout);
   for (const file of receipt.files.filter(file => file.path.startsWith("website/public/"))) {
     f.write(file.path.replace("website/public/", "website/dist/"), files.get(file.path));
   }

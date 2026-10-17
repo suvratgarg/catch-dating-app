@@ -1332,3 +1332,30 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
   }
   assert.match(ci.slice(ci.indexOf("  required:\n")), /source-preflight.*result/u);
 });
+
+test("Tools check shells request imported proof only for their capture consumers", context => {
+  const source = workflow("tools-ci.yml");
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-tool-flags-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(root, "node"), `#!${process.execPath}\nconsole.log(JSON.stringify({args:process.argv.slice(2),binding:process.env.CAPTURE_BINDING}));\n`, {mode: 0o755});
+  for (const name of ["Check affected tools", "Check tool categories"]) {
+    const step = extractSteps(source).find(s => s.name === name);
+    const declaration = namedStep(source, name);
+    assert.match(declaration, /CAPTURE_BINDING: \$\{\{ inputs.capture_binding \|\| needs.captures.outputs.capture_binding \}\}/u);
+    assert.match(declaration, /CAPTURE_REQUIRED:/u);
+    if (name === "Check tool categories") assert.match(declaration, /matrix.name == 'marketing-design'/u);
+    for (const required of ["true", "false"]) {
+      const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
+        ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
+        CAPTURE_REQUIRED: required, CAPTURE_BINDING: "exact-binding-sentinel", MARKETING_CHECKS_IN_REACT: "true",
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+      }});
+      assert.equal(result.status, 0, result.stderr);
+      const actual = JSON.parse(result.stdout);
+      assert.equal(actual.args.includes("--marketing-captures-imported"), required === "true");
+      assert.ok(actual.args.includes("--marketing-checks-in-react"));
+      assert.equal(actual.binding, "exact-binding-sentinel");
+    }
+  }
+  assert.doesNotMatch(extractSteps(source).find(step => step.name === "Resolve affected tool checks").run, /--marketing-captures-imported/u);
+});

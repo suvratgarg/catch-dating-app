@@ -80,7 +80,10 @@ immutable artifact before dependency setup, checks and builds. Tools derives
 capture need from selected executable checks, shares the caller's bundle when
 provided, and otherwise starts one producer. Only the affected consumer or the
 full marketing/design bucket imports images; other buckets retain their
-ordinary checks. Missing or invalid bindings fail before a build; old tracked
+ordinary checks. After importing, Tools verifies all 26 current output bytes
+against the bound archive before and after its check run and reuses only the
+three exact freshness commands already owned by the producer. Syntax, unit,
+framing and authored semantic checks still run. Missing or invalid bindings fail before a build; old tracked
 images cannot substitute for a missing artifact.
 
 The importer checks the artifact ID, digest, repository, canonical workflow,

@@ -251,11 +251,16 @@ jobs:
           COMMIT_WINDOW: ${{ inputs.commit_window || false }}
           MODE: ${{ inputs.mode }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
+          CAPTURE_REQUIRED: ${{ needs.preflight.outputs.capture_required }}
+          CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
         run: |
           set -euo pipefail
           shared_flags=()
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
+          fi
+          if [[ "$CAPTURE_REQUIRED" == "true" ]]; then
+            shared_flags+=(--marketing-captures-imported)
           fi
           window_flag=()
           if [[ "$COMMIT_WINDOW" == "true" ]]; then
@@ -405,11 +410,16 @@ jobs:
         env:
           CATEGORIES: ${{ matrix.categories }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
+          CAPTURE_REQUIRED: ${{ matrix.name == 'marketing-design' && needs.preflight.outputs.capture_required == 'true' }}
+          CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
         run: |
           set -euo pipefail
           shared_flags=()
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
+          fi
+          if [[ "$CAPTURE_REQUIRED" == "true" ]]; then
+            shared_flags+=(--marketing-captures-imported)
           fi
           category_flags=()
           for category in $CATEGORIES; do

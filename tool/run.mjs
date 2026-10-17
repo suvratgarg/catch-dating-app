@@ -75,7 +75,7 @@ function listTools(args) {
 }
 
 async function checkTools(args) {
-  const {categories, ids, manifestOnly, marketingChecksInReact} = parseCheckArgs(args);
+  const {categories, ids, manifestOnly, marketingChecksInReact, marketingCapturesImported} = parseCheckArgs(args);
   const manifest = loadManifest();
   const tools = categories.length === 0 ? selectTools(manifest, {ids}) :
     categories.flatMap((category) => selectTools(manifest, {category, ids}));
@@ -107,7 +107,7 @@ async function checkTools(args) {
     requireSelection(tools.filter((tool) => tool.category === category), {category, ids});
   }
   requireSelection(tools, {ids});
-  await runChecks(tools, {marketingChecksInReact});
+  await runChecks(tools, {marketingChecksInReact, marketingCapturesImported});
 }
 
 function reactOwnsMarketingCheck({toolId, command}) {
@@ -137,10 +137,36 @@ function captureInputsRequired(tools, marketingChecksInReact) {
     !check.command.endsWith("run check:storybook-config"));
 }
 
-async function runChecks(tools, {marketingChecksInReact = false} = {}) {
+function importedCaptureOwnsCheck({toolId, command}) {
+  return (toolId === "marketing:app-screenshot-export" &&
+    ["node tool/marketing/export_app_screenshots.mjs --check",
+      "node tool/marketing/export_app_screenshots.mjs --check-design-json"].includes(command)) ||
+    (toolId === "marketing:app-media-sync" &&
+      command === "node tool/marketing/sync_website_media.mjs --check");
+}
+
+async function runChecks(tools, {marketingChecksInReact = false, marketingCapturesImported = false} = {}) {
   if (marketingChecksInReact && process.env.GITHUB_ACTIONS !== "true") {
     console.error("--marketing-checks-in-react requires the same-run CI marketing lane.");
     process.exitCode = 64;
+    return;
+  }
+  const verifyCaptureProof = async () => {
+    if (!marketingCapturesImported) return;
+    const binding = JSON.parse(process.env.CAPTURE_BINDING);
+    const expected = {repository: "GITHUB_REPOSITORY", sourceSha: "GITHUB_SHA",
+      runId: "GITHUB_RUN_ID", runAttempt: "GITHUB_RUN_ATTEMPT",
+      workflowRef: "GITHUB_WORKFLOW_REF", workflowDefinitionSha: "GITHUB_WORKFLOW_SHA"};
+    if (process.env.GITHUB_ACTIONS !== "true" || Object.entries(expected).some(([key, variable]) =>
+      !process.env[variable] || binding[key] !== process.env[variable])) {
+      throw new Error("Imported capture checks require this CI source, repository, workflow, run and attempt.");
+    }
+    const {verifyImportedCaptureBytes} = await import("./marketing/import_hosted_captures.mjs");
+    verifyImportedCaptureBytes({binding});
+  };
+  try { await verifyCaptureProof(); } catch (error) {
+    console.error(`Cannot reuse imported capture checks: ${error.message}`);
+    process.exitCode = 1;
     return;
   }
   const compatible = tools.filter((tool) => {
@@ -159,6 +185,10 @@ async function runChecks(tools, {marketingChecksInReact = false} = {}) {
       console.log(`==> ${toolId}: provided by the required same-run React marketing lane.`);
       continue;
     }
+    if (marketingCapturesImported && importedCaptureOwnsCheck({toolId, command})) {
+      console.log(`==> ${toolId}: provided by the verified exact-source capture artifact.`);
+      continue;
+    }
     console.log(`==> ${toolId}: ${command}`);
     const result = spawnSync(command, {
       cwd: repoRoot,
@@ -169,6 +199,12 @@ async function runChecks(tools, {marketingChecksInReact = false} = {}) {
       process.exitCode = result.status ?? 1;
       return;
     }
+  }
+  // Selected checks must not invalidate evidence reused by this invocation.
+  try { await verifyCaptureProof(); } catch (error) {
+    console.error(`Imported capture checks were invalidated: ${error.message}`);
+    process.exitCode = 1;
+    return;
   }
   console.log("Tool checks passed.");
 }
@@ -251,7 +287,8 @@ async function affectedToolChecks(args) {
     process.exitCode = 1;
     return;
   }
-  await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact});
+  await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact,
+    marketingCapturesImported: options.marketingCapturesImported});
 }
 
 function runTool(args) {
@@ -451,7 +488,8 @@ function parseCheckArgs(args) {
     return true;
   });
   return {categories, ids, manifestOnly,
-    marketingChecksInReact: args.includes("--marketing-checks-in-react")};
+    marketingChecksInReact: args.includes("--marketing-checks-in-react"),
+    marketingCapturesImported: args.includes("--marketing-captures-imported")};
 }
 
 function parseAffectedToolArgs(args) {
@@ -470,6 +508,7 @@ function parseAffectedToolArgs(args) {
     full: args.includes("--full"),
     mode: valueAfter(args, "--mode") ?? "pr",
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
+    marketingCapturesImported: args.includes("--marketing-captures-imported"),
     githubOutput: valueAfter(args, "--github-output"),
   };
 }
@@ -499,6 +538,8 @@ Commands:
     [--github-output path]
   CI check execution may add --marketing-checks-in-react only when its required
     aggregate owns the same-run React marketing lane.
+  --marketing-captures-imported verifies CAPTURE_BINDING and all imported bytes
+    for this CI source/run/attempt before reusing the three freshness checks.
   run <tool-id> [args...]
 
 Examples:

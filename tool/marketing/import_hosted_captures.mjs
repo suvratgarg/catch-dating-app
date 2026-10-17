@@ -103,7 +103,7 @@ export function verifyCaptureFiles({files, binding}) {
   return verifyFiles({files, binding});
 }
 
-function verifyFiles({files, binding}, {built = false} = {}) {
+function verifyFiles({files, binding}, {built = false, toolChecks = false} = {}) {
   validateBinding(binding);
   const context = sourceFiles();
   assert.deepEqual([...files.keys()].sort(), [...context.expectedNames].sort(), "Incomplete capture file set.");
@@ -119,7 +119,17 @@ function verifyFiles({files, binding}, {built = false} = {}) {
   }
   const sourceRoots = ["lib", "website/src", "website/public", "admin/src", "tool", "test", "design", "contracts", "docs", "assets",
     ":(glob)apps/*/lib/**", ":(glob)packages/*/lib/**", ":(glob)packages/*/src/**"];
-  assert.equal(execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots]), "", "Untracked consumer source cannot enter the website build.");
+  const untracked = execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots]).split("\0").filter(Boolean);
+  // Tools bootstraps this standalone analyzer package after strict import.
+  // These are its only generated dependency outputs; authored files and every
+  // actual capture input remain checked against the source and capture hashes.
+  const bootstrapOutput = file => file.startsWith("tool/widget_dedupe/.dart_tool/") ||
+    file === "tool/widget_dedupe/pubspec.lock";
+  if (toolChecks) {
+    for (const file of untracked.filter(bootstrapOutput)) destination(file);
+  }
+  assert.deepEqual(untracked.filter(file => !(toolChecks && bootstrapOutput(file))), [],
+    "Untracked consumer source cannot enter the website build.");
   const receipt = JSON.parse(files.get("capture-receipt.json"));
   assert.equal(receipt.version, 2, "Unsupported capture receipt.");
   assert.equal(receipt.runUrl, `https://github.com/${binding.repository}/actions/runs/${binding.runId}/attempts/${binding.runAttempt}`, "Wrong capture run URL.");
@@ -240,6 +250,18 @@ export function importCaptureArchive({bytes, binding}) {
     if (fs.existsSync(temporaryArchive)) fs.unlinkSync(temporaryArchive);
   }
   return context.receipt;
+}
+
+export function verifyImportedCaptureBytes({binding}) {
+  const bytes = fs.readFileSync(destination(savedArchive));
+  assert.equal(digest(bytes), binding.artifactDigest, "Retained capture ZIP digest differs.");
+  const files = readCaptureArchive(bytes, sourceFiles().expectedNames);
+  const context = verifyFiles({files, binding}, {toolChecks: true});
+  for (const file of context.generated) {
+    assert.ok(fs.readFileSync(destination(file)).equals(files.get(file)),
+      `Imported capture output differs from verified artifact: ${file}`);
+  }
+  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: context.generated.length};
 }
 
 export function verifyBuiltCaptureBytes({binding}) {
