@@ -321,7 +321,7 @@ class _Fixture {
           eventRepositoryProvider.overrideWithValue(events),
           hostAttentionRepositoryProvider.overrideWithValue(attention),
           hostAttendanceOutboxProvider.overrideWithValue(
-            HostAttendanceOutbox(store: outbox, mutator: _NoMutations()),
+            HostAttendanceOutbox(outbox, _NoMutations()),
           ),
           privateEventSetupAvailableProvider.overrideWithValue(false),
           for (final actor in ['actor-a', 'actor-b'])
