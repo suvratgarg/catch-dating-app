@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {verifyArtifactMetadata} from "../marketing/import_hosted_captures.mjs";
 
 const workflowPath = ".github/workflows/ci.yml";
 const positive = value => Number.isSafeInteger(value) && value > 0;
@@ -31,6 +32,14 @@ export function inspectMarketingValidation({run, jobs, sourceSha}) {
     if (!job) return null;
     assert.ok(positive(job.id) && job.run_id === run.id && job.run_attempt === run.run_attempt &&
       job.head_sha === sourceSha, `Wrong source or attempt for ${name}.`);
+    if (job.conclusion === "success") {
+      const attemptStarted = Date.parse(run.run_started_at);
+      const jobStarted = Date.parse(job.started_at);
+      const jobCompleted = Date.parse(job.completed_at);
+      assert.ok(Number.isFinite(attemptStarted) && Number.isFinite(jobStarted) && Number.isFinite(jobCompleted) &&
+        jobStarted >= attemptStarted && jobCompleted >= jobStarted,
+      `${name} was not executed in this CI attempt. Use Re-run all jobs.`);
+    }
     if (job.status === "completed" && terminalFailures.has(job.conclusion)) {
       throw new Error(`${name} did not succeed (${job.conclusion}); repair CI before packaging.`);
     }
@@ -39,27 +48,53 @@ export function inspectMarketingValidation({run, jobs, sourceSha}) {
   const marketing = named("marketing / Validate marketing website");
   const skipped = named("marketing");
   assert.ok(!(marketing && skipped), "Marketing has conflicting executed and skipped job records.");
+  const capture = named("capture-freshness / Render and validate 12 canonical iPhone captures");
+  const captureSkipped = named("capture-freshness");
+  assert.ok(!(capture && captureSkipped), "Capture has conflicting executed and skipped job records.");
   if (marketing?.status === "completed") {
     assert.equal(marketing.conclusion, "success", "Marketing validation did not execute successfully.");
-    // The CI caller omits capture checks only because this same-run lane owns
-    // them. Preserve both validations before replacing the standalone caller.
-    const capture = named("capture-freshness / Check app capture provenance and website copies");
+    // Reuse only the actual canonical producer and its consuming React job.
+    // The artifact identity is resolved separately before publishing a binding.
     if (capture?.status === "completed") {
       assert.equal(capture.conclusion, "success", "Capture validation did not execute successfully.");
-      return {validated: true, jobIds: [marketing.id, capture.id]};
+      return {validated: true, captureProduced: true, jobIds: [marketing.id, capture.id]};
     }
   }
   if (skipped?.status === "completed") {
     assert.equal(skipped.conclusion, "skipped", "Unexpected standalone Marketing job result.");
-    // A skipped lane is never reused as evidence; run standalone validation.
-    return {validated: false, jobIds: []};
+    // Native-only changes can already have a fresh producer: reuse its bytes,
+    // but still execute the missing React validation in the website workflow.
+    if (capture?.status === "completed") {
+      assert.equal(capture.conclusion, "success", "Capture validation did not execute successfully.");
+      return {validated: false, captureProduced: true, jobIds: [capture.id]};
+    }
+    if (captureSkipped?.status === "completed") {
+      assert.equal(captureSkipped.conclusion, "skipped", "Unexpected standalone capture job result.");
+      return {validated: false, captureProduced: false, jobIds: []};
+    }
   }
   return null;
 }
 
+export function selectCaptureBinding({artifacts, run, canonical, repository, sourceSha}) {
+  assert.ok(Array.isArray(artifacts), "Missing canonical capture artifacts.");
+  const name = `canonical-marketing-${sourceSha}-${run.id}-${run.run_attempt}`;
+  const matches = artifacts.filter(artifact => artifact.name === name);
+  assert.equal(matches.length, 1, "The exact CI attempt must own one canonical capture artifact.");
+  const artifact = matches[0];
+  const binding = {repository, sourceSha,
+    workflowRef: `${repository}/${workflowPath}@refs/heads/main`,
+    workflowSha: sourceSha, workflowDefinitionSha: sourceSha,
+    eventSha: sourceSha, runHeadSha: sourceSha,
+    runId: String(run.id), runAttempt: String(run.run_attempt),
+    artifactId: String(artifact.id), artifactDigest: artifact.digest};
+  verifyArtifactMetadata({binding, artifact, repositoryId: run.repository.id, run, workflow: canonical});
+  return binding;
+}
+
 export async function waitMainMarketingValidation({repository, sourceSha, request = githubRequest,
   sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), now = Date.now,
-  maxWaitMs = 35 * 60 * 1000, onWait = message => process.stderr.write(`${message}\n`)}) {
+  maxWaitMs = 90 * 60 * 1000, onWait = message => process.stderr.write(`${message}\n`)}) {
   assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u);
   assert.match(sourceSha ?? "", /^[0-9a-f]{40}$/u);
   const canonical = await request(`repos/${repository}/actions/workflows/ci.yml`);
@@ -70,15 +105,26 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
     const run = selectSameSourceRun({runs: listing.workflow_runs, canonical, repository, sourceSha});
     if (run) {
       assert.ok(!terminalFailures.has(run.conclusion), `Canonical same-source CI ended ${run.conclusion}; no validation reuse.`);
+      const attempt = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}`);
+      assert.equal(attempt.id, run.id, "Wrong validation attempt run.");
+      assert.equal(attempt.run_attempt, run.run_attempt, "Wrong validation attempt.");
+      assert.equal(attempt.head_sha, sourceSha, "Wrong validation attempt source.");
+      assert.ok(Number.isFinite(Date.parse(attempt.run_started_at)), "Missing validation attempt start time.");
       const pages = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`, {paginate: true});
       assert.ok(Array.isArray(pages) && pages.length > 0 && pages.every(page => Array.isArray(page.jobs)), "Malformed same-attempt job pages.");
-      const decision = inspectMarketingValidation({run, jobs: pages.flatMap(page => page.jobs), sourceSha});
+      const decision = inspectMarketingValidation({run: {...run, run_started_at: attempt.run_started_at}, jobs: pages.flatMap(page => page.jobs), sourceSha});
       if (decision) {
+        let captureBinding;
+        if (decision.captureProduced) {
+          const artifactPages = await request(`repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`, {paginate: true});
+          assert.ok(Array.isArray(artifactPages) && artifactPages.length > 0 && artifactPages.every(page => Array.isArray(page.artifacts)), "Malformed capture artifact pages.");
+          captureBinding = selectCaptureBinding({artifacts: artifactPages.flatMap(page => page.artifacts), run, canonical, repository, sourceSha});
+        }
         const latest = await request(endpoint);
         const current = selectSameSourceRun({runs: latest.workflow_runs, canonical, repository, sourceSha});
         if (current?.id === run.id && current.run_attempt === run.run_attempt) {
           assert.ok(!terminalFailures.has(current.conclusion), "Validation attempt failed or was cancelled during inspection.");
-          return {...decision, sourceSha, sourceCiWorkflowId: canonical.id,
+          return {...decision, ...(captureBinding ? {captureBinding} : {}), sourceSha, sourceCiWorkflowId: canonical.id,
             sourceCiRunId: run.id, sourceCiRunAttempt: run.run_attempt,
             authority: decision.validated ? "same-source-marketing-and-capture-jobs" : "standalone-validation-required", node: process.version};
         }
@@ -105,7 +151,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     const result = await waitMainMarketingValidation({repository: process.env.GITHUB_REPOSITORY,
       sourceSha: process.env.GITHUB_SHA});
-    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `validated=${result.validated}\n`);
+    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `validated=${result.validated}\ncapture_binding=${result.captureBinding ? JSON.stringify(result.captureBinding) : ""}\n`);
     console.log(JSON.stringify(result, null, 2));
   } catch (error) {
     console.error(error.message);
