@@ -576,8 +576,9 @@ outside:
 
 test("marketing does not inherit Tools or fake SHA targets in the real orchestrator", () => {
   const mapping = deriveTargetWorkflows(fs.readFileSync(`${WORKFLOWS}/ci.yml`, "utf8"));
-  assert.deepEqual(mapping.get("marketing"), ["react-surface-validation.yml"]);
+  assert.deepEqual(mapping.get("marketing"), ["react-surface-validation.yml", "marketing-captures.yml"]);
   assert.equal(mapping.has("source_sha"), false);
+  assert.equal(mapping.has("producer_attempt"), false);
   assert.equal(mapping.has("base_sha"), false);
   for (const target of ["android", "ios", "web"]) {
     assert.ok(mapping.get(`flutter_build_${target}`).includes("app-build-matrix.yml"));
@@ -587,7 +588,7 @@ test("marketing does not inherit Tools or fake SHA targets in the real orchestra
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
   assert.deepEqual([...new Set([...report.gates, ...report.skipped].map(item => item.workflow))],
-    ["react-surface-validation.yml"]);
+    ["react-surface-validation.yml", "marketing-captures.yml"]);
   assert.ok(report.githubOnlyObligations.some(item => item.target === "marketing"));
 });
 
@@ -699,4 +700,34 @@ test("job runtime context is deferred before or after steps", () => {
       assert.ok(step.skipReason.includes(`job ${field.split(":")[0]}`));
     }
   }
+});
+
+
+test("target flags exclude retry metadata and quoted expression payloads", () => {
+  const mapping = deriveTargetWorkflows(`jobs:
+  guarded:
+    if: >-
+      !cancelled() &&
+      (needs.plan.outputs.producer_attempt != format('{0}', github.run_attempt) ||
+       needs.plan.outputs.source_sha != github.sha ||
+       needs.plan.outputs.firestore_rules == 'true') &&
+      contains('needs.plan.outputs.literal_fake == ''true''', 'true')
+    uses: ./.github/workflows/firestore-rules-ci.yml
+  capture:
+    if: needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true'
+    uses: ./.github/workflows/marketing-captures.yml
+  metadata:
+    if: needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.source_sha == github.sha
+    uses: ./.github/workflows/metadata.yml
+  nonselection:
+    if: needs.plan.outputs.false_fake == 'false' || needs.plan.outputs.inequality_fake != 'true' || contains(needs.plan.outputs.argument_fake, 'true')
+    uses: ./.github/workflows/nonselection.yml
+`);
+  assert.deepEqual([...mapping], [
+    ["firestore_rules", ["firestore-rules-ci.yml"]],
+    ["capture_freshness", ["marketing-captures.yml"]],
+    ["marketing", ["marketing-captures.yml"]],
+  ]);
+  assert.throws(() => deriveTargetWorkflows("jobs:\n  bad:\n    if: 'needs.plan.outputs.fake == true\n    uses: ./.github/workflows/fake.yml\n"),
+    /Unsupported ownership predicate string/u);
 });

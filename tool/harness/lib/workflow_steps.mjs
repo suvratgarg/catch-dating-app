@@ -166,7 +166,16 @@ export function deriveTargetWorkflows(orchestrator) {
     const uses = fields.map(row => /^uses:\s*\.\/\.github\/workflows\/([\w.-]+\.yml)$/u.exec(row.text)).find(Boolean);
     const workflow = uses ? uses[1] : fields.some(row => row.text === "steps:") ? "ci.yml" : null;
     if (!workflow) continue;
-    for (const [, target] of predicate.matchAll(/\bneeds\.plan\.outputs\.([a-z0-9_]+)\b/gu)) {
+    // Canonical planner flags are compared with the literal string 'true'.
+    // Keep quoted expression strings opaque so format/contains payloads and
+    // retry identity comparisons cannot become selectable target names.
+    const tokens = predicate.match(/'(?:[^']|'')*'|"(?:[^"\\]|\\.)*"|[A-Za-z_][A-Za-z0-9_.]*|==|!=|\S/gu) ?? [];
+    if (tokens.some(token => token === "'" || token === '"')) {
+      throw new Error(`Unsupported ownership predicate string at ${job.name}:${condition.line}`);
+    }
+    for (const [index, token] of tokens.entries()) {
+      const target = /^needs\.plan\.outputs\.([a-z0-9_]+)$/u.exec(token)?.[1];
+      if (!target || tokens[index + 1] !== "==" || tokens[index + 2] !== "'true'") continue;
       const workflows = mapping.get(target) ?? [];
       if (!workflows.includes(workflow)) workflows.push(workflow);
       mapping.set(target, workflows);
