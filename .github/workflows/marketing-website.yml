@@ -16,7 +16,21 @@ on:
       - "functions/package.json"
       - "functions/package-lock.json"
       - "website/**"
-      # Native capture-only changes are checked by the CI capture-freshness lane.
+      # Source capture inputs publish freshly rendered website media as well.
+      - "lib/**"
+      - "apps/*/lib/**"
+      - "packages/*/lib/**"
+      - "packages/*/assets/**"
+      - "test/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "packages/*/pubspec.yaml"
+      - "packages/*/pubspec.lock"
+      - "apps/*/pubspec.yaml"
+      - "apps/*/pubspec.lock"
+      - "tool/ui_capture/**"
+      - ".github/workflows/capture-freshness-ci.yml"
+      - ".github/workflows/marketing-captures.yml"
       - "assets/**"
       - "artifacts/marketing/app-screenshots/**"
       - "packages/web-config/**"
@@ -48,6 +62,7 @@ on:
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
+      - "tool/lib/repo_paths.mjs"
       - "tool/organizer_intake/**"
   workflow_dispatch:
     inputs:
@@ -82,6 +97,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -89,12 +105,13 @@ jobs:
     name: Resolve exact-main Marketing validation
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 95
     permissions:
       actions: read
       contents: read
     outputs:
       validated: ${{ steps.validation.outputs.validated }}
+      capture_binding: ${{ steps.validation.outputs.capture_binding }}
     steps:
       - uses: actions/checkout@v6
       - id: toolchain
@@ -115,23 +132,39 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  validate:
-    name: Validate marketing website
+  captures:
+    name: Produce standalone marketing captures
     needs: ci-validation
     if: >-
       ${{ !cancelled() &&
+          ((github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id == '') ||
+           (github.event_name == 'push' && needs.ci-validation.result == 'success' &&
+            needs.ci-validation.outputs.validated == 'false' &&
+            needs.ci-validation.outputs.capture_binding == '')) }}
+    uses: ./.github/workflows/marketing-captures.yml
+    with:
+      automatic_source_sha: ${{ github.sha }}
+
+  validate:
+    name: Validate marketing website
+    needs: [ci-validation, captures]
+    if: >-
+      ${{ !cancelled() &&
+          (needs.captures.result == 'success' ||
+           (needs.captures.result == 'skipped' && needs.ci-validation.outputs.capture_binding != '')) &&
           ((github.event_name == 'workflow_dispatch' && inputs.recovery_artifact_id == '') ||
            (github.event_name == 'push' && needs.ci-validation.result == 'success' &&
             needs.ci-validation.outputs.validated == 'false')) }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
+      capture_binding: ${{ needs.ci-validation.outputs.capture_binding || needs.captures.outputs.capture_binding }}
       update_visual_baselines: ${{ github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines }}
       skip_deployable_build: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
   package:
     name: Package exact marketing Hosting bytes
-    needs: [ci-validation, validate]
+    needs: [ci-validation, captures, validate]
     if: >-
       ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
           needs.ci-validation.result == 'success' &&
@@ -140,6 +173,7 @@ jobs:
     uses: ./.github/workflows/_web-hosting-build.yml
     with:
       surface: marketing
+      capture_binding: ${{ needs.ci-validation.outputs.capture_binding || needs.captures.outputs.capture_binding }}
     secrets: inherit
     permissions:
       actions: read

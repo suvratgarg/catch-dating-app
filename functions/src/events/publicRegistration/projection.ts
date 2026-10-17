@@ -12,6 +12,7 @@ import {eventGuestCancellationQuote} from
 import {
   assertCurrentPublicGuest,
   readPublicEventSource,
+  publicGuestMembership,
 } from "./authority";
 import {assertPublicRegistrationPolicy} from "./policy";
 import {readPublicPaidAdmission} from "./admissionProof";
@@ -75,7 +76,8 @@ export async function projectPublicPayment(input: {
           tx,
           eventId: p.eventId,
         });
-        assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis);
+        assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis,
+          await publicGuestMembership({db, tx, event, uid, nowMillis}));
         if (
           event.startTime.toMillis() ===
           p.cancellationPolicy.eventStartsAtMillis
