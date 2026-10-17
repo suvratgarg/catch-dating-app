@@ -752,8 +752,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:44</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:108</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentsEntryField</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_entry_field.dart:10</code> | — | — | Manage-screen entry into the event's organizer Moments workspace. |
-| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:33</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:163</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:34</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:180</code> | — | — | No class documentation or registry summary. |
 | <code>ClubBasicsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_details_step.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>ClubEventSuccessDefaultsStep</code> | <code>lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart:8</code> | — | — | No class documentation or registry summary. |
@@ -998,7 +998,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayFocusPageBody</code> | <code>lib/hosts/today/personalization/presentation/host_today_focus_page_body.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayPersonalizationSection</code> | <code>lib/hosts/today/personalization/presentation/host_today_personalization_section.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayPersonalizedLayout</code> | <code>lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart:23</code> | — | — | Owns quiet-day personalization only. The existing Today projection retains its complete loading, error, event and attention presentation unchanged. |
-| <code>HostTodayOrganizerEmptyState</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:405</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayOrganizerEmptyState</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:538</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayBody</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayHeader</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:77</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayQuietState</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:94</code> | — | — | No class documentation or registry summary. |
@@ -1261,7 +1261,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:25</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentEditScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart:6</code> | — | — | Creates or revises a moment through upsertOrganizerMoment. Revising an armed moment drops it back to draft with approval cleared — the backend owns that lifecycle; the form only submits the new definition. |
 | <code>OrganizerMomentsScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_screen.dart:20</code> | — | — | Moments for one event or program scope: the organizer's send rules with their approve-the-rule-once lifecycle (draft → armed → paused/done). |
-| <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:354</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
+| <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:371</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:5</code> | — | — | Compatibility entry for saved application URLs; all detail UI has one owner. |
 | <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |
@@ -1306,7 +1306,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostMessagingSetupScreen</code> | <code>lib/hosts/presentation/inbox/host_messaging_setup_screen.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>HostNewMessageScreen</code> | <code>lib/hosts/presentation/inbox/host_new_message_screen.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayFocusScreen</code> | <code>lib/hosts/today/personalization/presentation/host_today_focus_screen.dart:22</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayLoadedRoute</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:277</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayLoadedRoute</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:439</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayScreen</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>HostWorkScreen</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:25</code> | — | — | Unified entry point for restricted Host staff. |
 | <code>ProfilePhotoEditorScreen</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart:22</code> | — | — | No class documentation or registry summary. |

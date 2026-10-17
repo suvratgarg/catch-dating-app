@@ -77,7 +77,7 @@ test("main CI starts validation immediately and serializes only proven publicati
   assert.match(required, /^      - finalize-plan$/m);
 });
 
-test("CI fences every plan consumer while Required CI can explain skipped retry work", () => {
+test("CI fences plan consumers and sends Rules retries to executable refusal", () => {
   const ci = workflow("ci.yml");
   const guard = "needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt)";
   const consumers = ["source-preflight", "tools", "contracts", "functions", "firestore-rules",
@@ -88,7 +88,12 @@ test("CI fences every plan consumer while Required CI can explain skipped retry 
   for (const name of consumers) {
     const job = ciJob(ci, name);
     const condition = job.match(/^    if: (.*(?:\n      [^\n]*)*)/m)?.[1];
-    assert.ok(condition?.includes(guard), `${name} must reject a reused planner before starting.`);
+    if (name === "firestore-rules") {
+      assert.match(condition, /!cancelled\(\) && !failure\(\)/);
+      assert.match(job, /^    needs: \[plan, source-preflight\]$/m);
+    } else {
+      assert.ok(condition?.includes(guard), `${name} must reject a reused planner before starting.`);
+    }
     if (["tools", "marketing"].includes(name)) {
       assert.match(job, /^    needs: \[plan, source-preflight, capture-freshness\]$/m);
     } else {
@@ -114,7 +119,7 @@ test("CI fences every plan consumer while Required CI can explain skipped retry 
   // Evaluate this workflow's existing boolean-expression subset, as the
   // cancellation wiring tests do. This is not a GitHub scheduler emulator.
   for (const producerAttempt of ["1", "2", ""]) {
-    const outputs = {producer_attempt: producerAttempt};
+    const outputs = {producer_attempt: producerAttempt, source_sha: "a".repeat(40)};
     for (const match of ci.matchAll(/needs\.plan\.outputs\.([a-z_]+) == 'true'/g)) outputs[match[1]] = "true";
     const needs = {plan: {result: "success", outputs}, "source-preflight": {result: "success"},
       "capture-freshness": {result: "success"}, "finalize-plan": {result: "success", outputs: {deploy_required: "true"}}};
@@ -125,12 +130,18 @@ test("CI fences every plan consumer while Required CI can explain skipped retry 
         .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]')
         .replaceAll("needs.source-preflight", 'needs["source-preflight"]')
         .replaceAll("needs.capture-freshness", 'needs["capture-freshness"]');
-      const context = {needs, github: {run_attempt: 2, event_name: "push", ref: "refs/heads/main"},
-        cancelled: () => false, contains: (values, value) => values.includes(value),
+      const context = {needs, github: {run_attempt: 2, sha: "a".repeat(40), event_name: "push", ref: "refs/heads/main"},
+        cancelled: () => false, failure: () => false, contains: (values, value) => values.includes(value),
         format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
         results: ["success", "skipped"]};
-      assert.equal(vm.runInNewContext(expression, context), producerAttempt === "2",
+      assert.equal(vm.runInNewContext(expression, context), name === "firestore-rules" || producerAttempt === "2",
         `${name} planner attempt ${producerAttempt || "missing"}`);
+      if (name === "firestore-rules") {
+        outputs.firestore_rules = "false";
+        assert.equal(vm.runInNewContext(expression, context), producerAttempt !== "2",
+          "Only a fresh plan can skip unselected Rules; stale bindings must reach refusal");
+        outputs.firestore_rules = "true";
+      }
       if (name === "tools") {
         // Tools overrides implicit success(), so exercise its actual dependencies.
         for (const result of ["failure", "cancelled", "skipped"]) {
@@ -158,6 +169,174 @@ test("CI fences every plan consumer while Required CI can explain skipped retry 
       }
     }
   }
+});
+
+test("Rules caller preserves fresh selection and routes unusable bindings to actual refusal", () => {
+  const caller = ciJob(workflow("ci.yml"), "firestore-rules");
+  const expression = caller.match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
+    .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
+    .replaceAll("needs.source-preflight", 'needs["source-preflight"]');
+  const sha = "a".repeat(40);
+  // Actual expression + actual Bash guard; no GitHub scheduler simulation.
+  const evaluate = ({attempt = "2", source = sha, selected = "true", plan = "success",
+    preflight = "success", cancelled = false, failedAncestor = false} = {}) =>
+    vm.runInNewContext(expression, {
+      needs: {plan: {result: plan, outputs: {producer_attempt: attempt, source_sha: source,
+        ...(selected === null ? {} : {firestore_rules: selected})}},
+        "source-preflight": {result: preflight}},
+      github: {run_attempt: 2, sha}, cancelled: () => cancelled, failure: () => failedAncestor,
+      format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
+    });
+  assert.equal(evaluate(), true, "Fresh full rerun2 with matching plan2 remains valid");
+  for (const selected of ["false", "", null]) {
+    assert.equal(evaluate({selected}), false, "Fresh unselected/missing selection stays skipped");
+  }
+  for (const prerequisite of ["plan", "preflight"]) {
+    for (const result of ["failure", "cancelled", "skipped", ""]) {
+      assert.equal(evaluate({[prerequisite]: result}), false, `Fresh ${prerequisite}: ${result || "missing"}`);
+    }
+  }
+  const gate = extractSteps(workflow("firestore-rules-ci.yml"))
+    .find((step) => step.name === "Require the originating CI plan");
+  const bindings = [
+    {attempt: "2", source: sha}, {attempt: "1", source: sha},
+    {attempt: "", source: sha}, {attempt: "2", source: ""},
+    {attempt: "2", source: "b".repeat(40)}, {attempt: "3", source: sha},
+    {attempt: "02", source: sha}, {attempt: "", source: ""},
+  ];
+  for (const [index, binding] of bindings.entries()) {
+    const fresh = index === 0;
+    if (!fresh) {
+      for (const selected of ["true", "false", "", null]) {
+        for (const plan of ["success", "skipped", ""]) {
+          for (const preflight of ["success", "skipped", ""]) {
+            assert.equal(evaluate({...binding, selected, plan, preflight}), true,
+              `Unusable binding ${JSON.stringify(binding)} must reach refusal despite selection/prerequisite metadata`);
+          }
+        }
+      }
+    }
+    for (const prerequisite of ["plan", "preflight"]) {
+      for (const result of ["failure", "cancelled"]) {
+        assert.equal(evaluate({...binding, [prerequisite]: result}), false, `${prerequisite}: ${result}`);
+      }
+    }
+    assert.equal(evaluate({...binding, cancelled: true}), false, "Canceled workflow stays stopped");
+    assert.equal(evaluate({...binding, failedAncestor: true}), false, "Failed ancestor stays blocked");
+    const result = spawnSync("bash", ["-c", gate.run], {encoding: "utf8", env: {
+      ...process.env, GITHUB_REPOSITORY: "owner/catch",
+      GITHUB_WORKFLOW_REF: "owner/catch/.github/workflows/ci.yml@refs/heads/main",
+      GITHUB_SHA: sha, GITHUB_RUN_ATTEMPT: "2",
+      CI_PLAN_ATTEMPT: binding.attempt, CI_PLAN_SOURCE_SHA: binding.source,
+    }});
+    assert.equal(result.status, fresh ? 0 : 64, result.stderr || JSON.stringify(binding));
+    if (!fresh) assert.match(result.stdout, /CI plan binding does not match this run/);
+  }
+});
+
+test("Rules retries forward the original plan and refuse before checkout", () => {
+  const caller = ciJob(workflow("ci.yml"), "firestore-rules");
+  assert.match(caller, /^    needs: \[plan, source-preflight\]$/m);
+  assert.match(caller, /needs\.plan\.outputs\.firestore_rules == 'true'/);
+  assert.match(caller, /ci_plan_attempt: \$\{\{ needs\.plan\.outputs\.producer_attempt \}\}/);
+  assert.match(caller, /ci_plan_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/);
+  assert.doesNotMatch(caller, /always\(|success\(/);
+  assert.doesNotMatch(caller.slice(caller.indexOf("    with:")), /github\.run_attempt|github\.sha/);
+  const rules = workflow("firestore-rules-ci.yml");
+  const inputs = rules.slice(rules.indexOf("  workflow_call:"), rules.indexOf("  workflow_dispatch:"));
+  for (const name of ["ci_plan_attempt", "ci_plan_source_sha"]) {
+    assert.match(inputs, new RegExp(`${name}:\\n        type: string\\n        required: false`));
+  }
+  assert.doesNotMatch(inputs, /default:/);
+  // extractSteps intentionally omits unnamed action steps and their ids.
+  const beforeCheckout = rules.slice(rules.indexOf("    steps:"), rules.indexOf("      - uses: actions/checkout@"));
+  assert.match(beforeCheckout, /^    steps:\n      - name: Require the originating CI plan\n        id: ci-plan\n        shell: bash\n/);
+  assert.equal((beforeCheckout.match(/^      - /gm) ?? []).length, 1);
+  assert.match(beforeCheckout, /CI_PLAN_ATTEMPT: \$\{\{ inputs\.ci_plan_attempt \}\}/);
+  assert.match(beforeCheckout, /CI_PLAN_SOURCE_SHA: \$\{\{ inputs\.ci_plan_source_sha \}\}/);
+  assert.doesNotMatch(beforeCheckout, /continue-on-error/);
+  const gate = extractSteps(rules).find((step) => step.name === "Require the originating CI plan");
+  assert.ok(gate?.run);
+  assert.doesNotMatch(gate.run, /\$\{\{/);
+  assert.equal(gate.if, null, "The leaf refusal itself must not be skipped.");
+});
+
+test("actual Rules guard preserves independent callers and rejects stale plan bindings", () => {
+  const gate = extractSteps(workflow("firestore-rules-ci.yml"))
+    .find((step) => step.name === "Require the originating CI plan");
+  assert.ok(gate?.run);
+  const sha = "a".repeat(40);
+  const root = "owner/catch/.github/workflows/";
+  const environment = {
+    ...process.env, GITHUB_REPOSITORY: "owner/catch", GITHUB_WORKFLOW_REF: `${root}ci.yml@refs/heads/main`,
+    GITHUB_RUN_ATTEMPT: "1", GITHUB_SHA: sha, CI_PLAN_ATTEMPT: "1", CI_PLAN_SOURCE_SHA: sha,
+    GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_WORKFLOW: "Arbitrary display name",
+    // These are not authoritative: PR merge source must remain GITHUB_SHA.
+    PR_HEAD_SHA: "b".repeat(40), WORKFLOW_CONTROLLER_SHA: "c".repeat(40),
+  };
+  const cases = [
+    ["first attempt", {}, true],
+    ["fresh full retry", {CI_PLAN_ATTEMPT: "2", GITHUB_RUN_ATTEMPT: "2"}, true],
+    ["PR merge source", {GITHUB_WORKFLOW_REF: `${root}ci.yml@refs/pull/123/merge`}, true],
+    ["tag ref", {GITHUB_WORKFLOW_REF: `${root}ci.yml@refs/tags/release@2`}, true],
+    ["old producer", {GITHUB_RUN_ATTEMPT: "2"}, false],
+    ["future producer", {CI_PLAN_ATTEMPT: "2"}, false],
+    ["manual CI missing pair", {CI_PLAN_ATTEMPT: "", CI_PLAN_SOURCE_SHA: ""}, false],
+    ["wrong source", {CI_PLAN_SOURCE_SHA: "b".repeat(40)}, false],
+    ["missing repository", {GITHUB_REPOSITORY: ""}, false],
+    ["foreign repository", {GITHUB_WORKFLOW_REF: `other/catch/.github/workflows/ci.yml@refs/heads/main`}, false],
+  ];
+  for (const value of ["", "0", "01", "-1", "1.5", "x", "1\n"]) {
+    cases.push([`invalid producer ${JSON.stringify(value)}`, {CI_PLAN_ATTEMPT: value}, false]);
+    cases.push([`invalid current ${JSON.stringify(value)}`, {GITHUB_RUN_ATTEMPT: value}, false]);
+    cases.push([`equally invalid attempts ${JSON.stringify(value)}`, {CI_PLAN_ATTEMPT: value, GITHUB_RUN_ATTEMPT: value}, false]);
+  }
+  for (const value of ["", "A".repeat(40), "a".repeat(39), "a".repeat(41), `${sha}\n`, "x".repeat(40)]) {
+    cases.push([`invalid producer source ${JSON.stringify(value)}`, {CI_PLAN_SOURCE_SHA: value}, false]);
+    cases.push([`equally invalid source ${JSON.stringify(value)}`, {CI_PLAN_SOURCE_SHA: value, GITHUB_SHA: value}, false]);
+  }
+  for (const ref of ["", "ci.yml", `${root}ci.yml@`, `${root}ci.yml@main`,
+    `${root}ci.yml@refs/heads/`, `${root}ci.yml@refs/pull/0/merge`, `${root}ci.yml@refs/heads/main\n`]) {
+    cases.push([`invalid root cannot bypass ${JSON.stringify(ref)}`,
+      {GITHUB_WORKFLOW_REF: ref, CI_PLAN_ATTEMPT: "", CI_PLAN_SOURCE_SHA: ""}, false]);
+  }
+  for (const name of ["firestore-rules-ci.yml", "backend-staging.yml", "_backend-rebaseline.yml", "ci.yml-backup.yml"]) {
+    const caller = {GITHUB_WORKFLOW_REF: `${root}${name}@refs/heads/main`};
+    cases.push([`${name} independent`, {...caller, CI_PLAN_ATTEMPT: "", CI_PLAN_SOURCE_SHA: ""}, true]);
+    cases.push([`${name} supplied valid pair`, caller, true]);
+    cases.push([`${name} partial pair`, {...caller, CI_PLAN_SOURCE_SHA: ""}, false]);
+    cases.push([`${name} stale supplied pair`, {...caller, GITHUB_RUN_ATTEMPT: "2"}, false]);
+    cases.push([`${name} wrong supplied source`, {...caller, CI_PLAN_SOURCE_SHA: "b".repeat(40)}, false]);
+  }
+  for (const [name, patch, accepted] of cases) {
+    const execution = spawnSync("bash", ["-c", gate.run + '\nprintf "next-step-sentinel\\n"'], {
+      encoding: "utf8", timeout: 5000, env: {...environment, ...patch},
+    });
+    assert.equal(execution.status, accepted ? 0 : 64, `${name}: ${execution.stderr}\n${execution.stdout}`);
+    assert.equal(execution.stdout.includes("next-step-sentinel"), accepted, name);
+    if (!accepted) assert.match(execution.stdout, /Re-run all jobs/, name);
+  }
+});
+
+test("Rules receipts survive test failure but cannot run after plan refusal", () => {
+  const rules = workflow("firestore-rules-ci.yml");
+  const steps = extractSteps(rules);
+  const upload = steps.find((step) => step.name === "Retain selected and executed backend tests");
+  assert.equal(upload?.uses, "actions/upload-artifact@v7");
+  assert.match(upload.if, /always\(\)/);
+  const expression = upload.if.replaceAll("steps.ci-plan", 'steps["ci-plan"]');
+  for (const outcome of ["success", "failure", "skipped", "cancelled"]) {
+    for (const laterTestResult of ["success", "failure"]) {
+      const actual = vm.runInNewContext(expression, {
+        always: () => true, success: () => laterTestResult === "success",
+        failure: () => laterTestResult === "failure", steps: {"ci-plan": {outcome}},
+      });
+      assert.equal(actual, outcome === "success", `${outcome}/${laterTestResult}`);
+    }
+  }
+  assert.match(rules, /name: backend-integration-execution-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}-\$\{\{ github.sha \}\}/);
+  assert.match(rules, /path: build\/ci\/backend-integration-execution.json\n          if-no-files-found: error/);
+  assert.equal(steps.filter((step) => step.if && /always\(|failure\(|!cancelled\(/.test(step.if)).length, 1);
 });
 
 test("actual CI retry refusal accepts full reruns and stops incompatible attempts before further work", (context) => {
