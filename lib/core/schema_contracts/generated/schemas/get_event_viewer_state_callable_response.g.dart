@@ -104,6 +104,7 @@ const schemaGetEventViewerStateCallableResponseSchema = <String, Object?>{
             'none',
             'nativeParticipation',
             'publicPaidRoster',
+            'guestRoster',
           ],
         },
         'attendance': <String, Object?>{
@@ -268,6 +269,137 @@ const schemaGetEventViewerStateCallableResponseSchema = <String, Object?>{
                   'type': 'integer',
                   'minimum': 0,
                   'maximum': 9007199254740991,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        'guest': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'action',
+            'publicFormId',
+            'applicationStatus',
+            'offerGrantId',
+            'publicPaymentId',
+            'runtimeId',
+            'attendeeId',
+            'expiresAtMillis',
+            'offerPaymentId',
+          ],
+          'properties': <String, Object?>{
+            'action': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'registerFree',
+                'bookPaid',
+                'apply',
+                'applicationPending',
+                'applicationWaitlisted',
+                'declined',
+                'awaitingOffer',
+                'offer',
+                'registered',
+                'seatWaitlisted',
+                'recoverPayment',
+                'closed',
+                'unsupported',
+                'unavailable',
+              ],
+            },
+            'publicFormId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'applicationStatus': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'submitted',
+                    'inReview',
+                    'approved',
+                    'waitlisted',
+                    'declined',
+                    'withdrawn',
+                  ],
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'offerGrantId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'publicPaymentId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'runtimeId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'attendeeId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'expiresAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'offerPaymentId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
                 },
                 <String, Object?>{
                   'type': 'null',

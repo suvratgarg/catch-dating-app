@@ -1,3 +1,4 @@
+import {assertValidEventItinerary} from "../event_itinerary";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument, OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
@@ -40,9 +41,16 @@ export function preparePublishedEventPatch(params: {
     throw new HttpsError("failed-precondition",
       "Publishing needs a future active event and visible organizer.");
   }
-  const configured = requireConfiguredEvent(event);
+  const configured = requireConfiguredEvent({
+    ...event, description: event.description ?? "",
+  });
+  assertValidEventItinerary({itinerary: configured.itinerary,
+    startTimeMillis: configured.startTime.toMillis(),
+    endTimeMillis: configured.endTime.toMillis(),
+    eventFormat: configured.eventFormat});
   const patch: Partial<EventDocument> = {
     ...publicationRegistrationPatch(event),
+    ...(event.description === undefined ? {description: ""} : {}),
     ...eventDiscoveryProjection({event: configured,
       clubLocationMarketId: event.eventMarketId}),
     ...(event.firstPublishedAt === undefined ?
@@ -75,7 +83,6 @@ export function eventPublicationReadiness(params:
   if (!isEventTimeRange(event)) missing.push("duration");
   if (!event.meetingLocation || !event.meetingPoint) missing.push("venue");
   if (!event.eventFormat) missing.push("format");
-  if (typeof event.description !== "string") missing.push("description");
   if (!isEventPolicyTerms(event)) missing.push("admissionTerms");
   if (event.distanceKm === undefined || event.pace === undefined) {
     missing.push("distancePace");
@@ -90,7 +97,9 @@ export function eventPublicationReadiness(params:
     return {canPublish: true, missing: []};
   } catch (error) {
     if (!(error instanceof HttpsError) ||
-        error.code !== "failed-precondition") throw error;
+        !["failed-precondition", "invalid-argument"].includes(error.code)) {
+      throw error;
+    }
     return {canPublish: false, missing: ["contract"]};
   }
 }

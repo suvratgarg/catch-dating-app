@@ -12150,24 +12150,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Skill'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopySkill;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Intensity'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyIntensity;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Energy'**
-  String get eventsEventDetailDesignPrimitivesVisiblecopyEnergy;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
   /// **'Open sign-up'**
   String get eventsEventDetailDesignPrimitivesVisiblecopyOpenSignUp;
 
@@ -12922,25 +12904,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Established'**
   String get clubsClubDetailBodyLabelEst;
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A {distanceKm} {toLowerCase} at a {toLowerCase2} pace from {locationName}.'**
-  String eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt({
-    required Object distanceKm,
-    required Object toLowerCase,
-    required Object toLowerCase2,
-    required Object locationName,
-  });
-
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'A hosted {toLowerCase} built around a clear arrival, shared activity, and low-pressure follow-up.'**
-  String eventsEventDetailOverviewSectionVisiblecopyAHostedTolowercaseBuilt({
-    required Object toLowerCase,
-  });
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
   ///
@@ -15000,12 +14963,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Required'**
   String get hostsEventDetailsStepVisiblecopyRequired;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Too short'**
-  String get hostsEventDetailsStepVisiblecopyTooShort;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
   ///
@@ -40659,6 +40616,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Owner approval required'**
   String get programsTeamApprovalRequired;
+
+  /// At {distance} on the route
+  ///
+  /// In en, this message translates to:
+  /// **'At {distance} on the route'**
+  String eventsItineraryRouteDistance({required String distance});
+
+  /// Distance along route (meters)
+  ///
+  /// In en, this message translates to:
+  /// **'Distance along route (meters)'**
+  String get hostsItineraryRouteDistance;
+
+  /// Route pace group and optional target pace
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {pace}/km'**
+  String eventsRoutePaceGroup({required String label, required String pace});
+
+  /// Admission preset label for member review exemption
+  ///
+  /// In en, this message translates to:
+  /// **'Members skip review'**
+  String get hostsCreateEventPolicyStateLabelMembersSkipReview;
+
+  /// Admission preset title for member review exemption
+  ///
+  /// In en, this message translates to:
+  /// **'Members skip review'**
+  String get hostsCreateEventPolicyStateTitleMembersSkipReview;
+
+  /// Explains that current approved members skip review but retain other booking requirements
+  ///
+  /// In en, this message translates to:
+  /// **'Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.'**
+  String get hostsCreateEventPolicyStateDescriptionMembersSkipReview;
 }
 
 class _AppLocalizationsDelegate

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {spawnSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {
   extractDocumentedFunctionNames,
@@ -83,6 +85,41 @@ test("scanFunctionReadmeInventory ratchets baseline findings", () => {
   assert.deepEqual(result.findings.map((finding) => finding.function), [
     "deleteEvent",
   ]);
+});
+
+test("README baseline cleanup rejects resolved, removed and reintroduced omissions through the CLI", (t) => {
+  const allowance = {rule: "missingReadmeFunction", function: "createEvent"};
+  const root = createFixture({
+    "functions/src/index.ts": "export {createEvent} from './events';\n",
+    "functions/README.md": "# Functions\n",
+    "baseline.json": JSON.stringify({allowedFindings: [allowance]}),
+  });
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const readme = path.join(root, "functions/README.md");
+  const baseline = path.join(root, "baseline.json");
+  const index = path.join(root, "functions/src/index.ts");
+  const check = (status, rule) => {
+    const before = [readme, baseline, index].map(file => fs.readFileSync(file, "utf8"));
+    const result = spawnSync(process.execPath, [
+      fileURLToPath(new URL("./check_fn_readme_inventory.mjs", import.meta.url)),
+      "--root", root, "--baseline", baseline, "--json",
+    ], {encoding: "utf8"});
+    assert.equal(result.status, status, result.stderr);
+    const report = JSON.parse(result.stdout);
+    assert.deepEqual(report.findings.map(finding => finding.rule), rule ? [rule] : []);
+    assert.deepEqual([readme, baseline, index].map(file => fs.readFileSync(file, "utf8")), before);
+    return report;
+  };
+  assert.equal(check(0).baselineFindings.length, 1);
+  fs.writeFileSync(readme, "| `createEvent` | documented |\n");
+  assert.deepEqual(check(1, "staleBaselineAllowance").allFindings, []);
+  fs.writeFileSync(index, "// Export was removed.\n");
+  check(1, "staleBaselineAllowance");
+  fs.writeFileSync(baseline, JSON.stringify({allowedFindings: []}));
+  check(0);
+  fs.writeFileSync(index, "export {createEvent} from './events';\n");
+  fs.writeFileSync(readme, "# Functions\n");
+  check(1, "missingReadmeFunction");
 });
 
 function createFixture(files) {

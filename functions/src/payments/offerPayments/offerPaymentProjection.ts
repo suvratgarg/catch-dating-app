@@ -62,7 +62,8 @@ export async function projectOfferPayment(input: {
       cancellationQuote = null;
     }
   }
-  return {paymentId, status: payment.status, amountPaise: payment.amountPaise,
+  return {paymentId, eventId: payment.eventId, status: payment.status,
+    amountPaise: payment.amountPaise,
     currency: "INR", mode: payment.routing.selection.mode,
     refundedAmountPaise: payment.refundedAmountPaise,
     cancellationReason: payment.cancellation?.reason ?? null,

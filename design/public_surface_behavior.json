@@ -6079,7 +6079,7 @@
       "id": "web.eventDetail",
       "platform": "web",
       "coverageKind": "matrix",
-      "coverageRationale": "The generated web Event Detail family is read-only. Catch-native events expose an app-download handoff, external events expose only their official registration source, event reviews require an exact eventId match, and organizer provenance remains independent from event supply.",
+      "coverageRationale": "Public event details expose the server-owned web guest journey for Catch events and the official registration source for external events. Optional content and unavailable reviews are absent; verified reviews are scoped to the event. Organizer claims remain on the organizer page.",
       "routeIds": [
         "event_detail_canonical"
       ],
@@ -6118,9 +6118,9 @@
           "description": "Read-only schedule, timezone, location disclosure, price, registration status, requirements, accessibility, and freshness."
         },
         {
-          "id": "event.appAction",
+          "id": "event.webGuestJourney",
           "kind": "action",
-          "description": "Catch-native registration handoff to the app stores."
+          "description": "Enter the web guest journey for sign-in, admission, booking recovery and live-event access."
         },
         {
           "id": "event.officialSource",
@@ -6133,14 +6133,9 @@
           "description": "Open the organizer profile that owns the event route."
         },
         {
-          "id": "organizer.claim",
-          "kind": "action",
-          "description": "Claim the organizer behind an eligible source-attributed event."
-        },
-        {
           "id": "review.read",
           "kind": "content",
-          "description": "Read only reviews whose eventId exactly matches the event route."
+          "description": "Render verified event-scoped reviews only when reading is enabled and matching reviews exist."
         }
       ],
       "configurations": [
@@ -6167,10 +6162,6 @@
             "event.details": {
               "disposition": "visibleReadOnly"
             },
-            "event.appAction": {
-              "disposition": "visibleExternal",
-              "variant": "app-download"
-            },
             "event.officialSource": {
               "disposition": "hidden"
             },
@@ -6178,12 +6169,13 @@
               "disposition": "visibleWeb",
               "target": "/organizers/:slug/"
             },
-            "organizer.claim": {
-              "disposition": "hidden"
-            },
             "review.read": {
               "disposition": "visibleReadOnly",
               "variant": "event-scoped"
+            },
+            "event.webGuestJourney": {
+              "disposition": "visibleWeb",
+              "target": "/booking/:eventId/"
             }
           },
           "implementationStatus": "verified",
@@ -6214,9 +6206,6 @@
             "event.details": {
               "disposition": "visibleReadOnly"
             },
-            "event.appAction": {
-              "disposition": "hidden"
-            },
             "event.officialSource": {
               "disposition": "visibleExternal",
               "target": ":sourceUrl"
@@ -6225,13 +6214,11 @@
               "disposition": "visibleWeb",
               "target": "/organizers/:slug/"
             },
-            "organizer.claim": {
-              "disposition": "visibleWeb",
-              "target": "/claim/?listing=:id"
-            },
             "review.read": {
-              "disposition": "visibleDisabled",
-              "variant": "event-reviews-unavailable"
+              "disposition": "hidden"
+            },
+            "event.webGuestJourney": {
+              "disposition": "hidden"
             }
           },
           "implementationStatus": "verified",
@@ -6262,19 +6249,16 @@
             "event.details": {
               "disposition": "hidden"
             },
-            "event.appAction": {
-              "disposition": "hidden"
-            },
             "event.officialSource": {
               "disposition": "hidden"
             },
             "organizer.openDetail": {
               "disposition": "hidden"
             },
-            "organizer.claim": {
+            "review.read": {
               "disposition": "hidden"
             },
-            "review.read": {
+            "event.webGuestJourney": {
               "disposition": "hidden"
             }
           },
@@ -6297,7 +6281,8 @@
           "path": "website/src/features/events/sections/EventDetailSections.test.tsx",
           "contains": [
             "keeps external events read-only and sends registration to the source",
-            "hands Catch booking to the app and renders only event-scoped reviews"
+            "hands Catch booking to the web guest journey and renders only event-scoped reviews",
+            "omits absent optional content and unrelated reviews"
           ]
         }
       ],
