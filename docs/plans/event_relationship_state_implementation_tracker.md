@@ -490,4 +490,3 @@ verification.
 - [PostgreSQL constraints](https://www.postgresql.org/docs/18/ddl-constraints.html):
   relational enforcement is a potential alternative, not a reason to skip
   domain invariants, authorization or idempotency.
-
