@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.35
-updated: 2026-10-16
+version: 2.7.36
+updated: 2026-10-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -381,7 +381,7 @@ Preserve these contracts when narrowing work:
 | App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
 | Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
 | Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
-| Capture provenance and website image copies; marketing website | Conservative Flutter source/test/asset/package and capture-tool inputs select capture freshness; website/shared React inputs still select full React validation | Pinned Node-only Ubuntu lane runs source-stamp/input-hash, PNG/copy and derived metadata checks; selected lane must succeed in finalization and Required CI | Regenerate through the real capture tool after reviewing changed inputs; do not restamp or copy stale images |
+| Capture provenance and website image copies; marketing website | Conservative Flutter source/test/asset/package and capture-tool inputs select capture freshness; website/shared React inputs still select full React validation | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before checks/builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
 | Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
 
 Whole-product widget similarity is advisory and has no product acceptance
@@ -446,27 +446,29 @@ default to executing their own browser checks. No result crosses source commits
 or CI attempts, and altered commands lose the omission until their equivalence
 is verified again.
 
-On a Marketing main push, `ci.yml` owns React validation and its separate
-capture-freshness lane. `marketing-website.yml` waits up to 35 minutes for those
-two successful jobs on the exact source SHA, canonical workflow, repository,
-run and attempt. It records their job IDs in a seven-day artifact and omits its
-duplicate React invocation. It does not wait for unrelated lanes. Missing,
-failed, cancelled or ambiguous evidence blocks packaging; inspect the linked
-same-source CI jobs, repair the failure and rerun the source workflow. Only an
-explicitly skipped Marketing lane requests standalone React validation. Manual
-validation still executes the complete reusable validation workflow. Source,
-workflow and toolchain changes invalidate reuse across commits; dependency
-caches are not execution evidence.
+On a Marketing main push, `ci.yml` owns React validation and its canonical
+native capture producer. `marketing-website.yml` waits up to 90 minutes for the
+exact source/workflow/run/attempt. It verifies executed-job timestamps against
+the attempt start and selects only the exact attempt's capture artifact by name,
+ID and digest. Rehydrated old job results cannot authorize a new attempt. The
+consumer independently verifies the artifact and its bytes again before import.
+Missing, failed, cancelled or ambiguous evidence blocks packaging.
 
-Native app source and test changes select capture freshness through the impact
-graph without triggering a Marketing production build. Actual website, shared
-web UI, media and production snapshot inputs retain their validation and release
-triggers. Reused validation authorizes only the next packaging step: the release
-workflow still materializes read-only live organizer listings, checks production
-environment inputs, builds exact production bytes and verifies artifact hashes,
-promotion authorization and readback. A PR bundle never supplies production
-bytes. The check contract is enforced by `ci:main-marketing-validation` and
-`ci:web-hosting-delivery-workflow`; no cross-SHA validation reuse is supported.
+An explicitly skipped Marketing lane requires standalone React validation. If
+that same CI attempt produced captures for a native-only change, its exact bundle
+is reused; otherwise standalone validation requests the existing producer once.
+Manual validation uses the same path. Native source, fixture, package/font and
+capture helper changes trigger Marketing Website so refreshed media can reach
+its existing main release path. No source or attempt crosses this boundary.
+
+Production packaging still materializes read-only live organizer listings,
+validates production environment inputs and builds exact production bytes. It
+compares the built image and manifest bytes with the verified capture bundle
+before the existing Hosting package inventory and promotion checks. Recovery
+promotes an existing package without regeneration. A PR bundle never supplies
+production bytes. The contracts remain `ci:main-marketing-validation` and
+`ci:web-hosting-delivery-workflow`.
+
 
 Flutter reuses design parity and handoff checks only when the actual required
 Tools plan owns their complete registered checks. Standalone Flutter runs default

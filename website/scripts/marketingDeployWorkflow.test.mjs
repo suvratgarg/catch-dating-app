@@ -125,26 +125,33 @@ test("production snapshot materializes organizer projections before its one uncr
 });
 
 
-test("capture-only native edits validate in CI without triggering a production Marketing build", () => {
+test("native capture inputs publish exact-source media through the canonical producer and verifier", () => {
   const ci = fs.readFileSync(path.join(repoRoot, ".github/workflows/ci.yml"), "utf8");
-  const capture = fs.readFileSync(path.join(repoRoot, ".github/workflows/capture-freshness-ci.yml"), "utf8");
+  const capture = fs.readFileSync(path.join(repoRoot, ".github/workflows/marketing-captures.yml"), "utf8");
   const graph = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/harness/component_graph.json"), "utf8"));
   for (const input of ["lib/**", "test/**", "pubspec.yaml", "pubspec.lock",
     "packages/*/pubspec.yaml", "packages/*/lib/**", "packages/*/assets/**", "tool/ui_capture/**"]) {
-    assert.ok(!workflow.includes(`      - "${input}"`), `Capture-only input must not deploy: ${input}`);
+    assert.ok(workflow.includes(`      - "${input}"`), `Capture input must refresh published media: ${input}`);
     const changedPath = input.replace("packages/*", "packages/catch_ui").replace("**", "example.dart");
     const plan = planAffected({changedPaths: [changedPath], graph, mode: "main"});
     assert.ok(plan.complete, `Uncovered capture input: ${changedPath}`);
     assert.ok(plan.operations.ciTargets.includes("capture_freshness"), `Missing capture obligation: ${changedPath}`);
   }
-  assert.match(ci, /uses: \.\/\.github\/workflows\/capture-freshness-ci\.yml/u);
-  assert.match(capture, /run: node tool\/marketing\/sync_website_media\.mjs --check/u);
-  assert.match(capture, /run: node tool\/marketing\/export_app_screenshots\.mjs --check-design-json/u);
-  assert.doesNotMatch(capture, /continue-on-error|--update|--update-goldens/u);
-  const mediaStep = surfaceValidationWorkflow.split(/\n      - /u)
-    .find(step => step.startsWith("name: Check marketing media\n"));
-  assert.match(mediaStep, /!inputs\.capture_freshness_in_ci/u);
-  assert.match(mediaStep, /run: node tool\/marketing\/sync_website_media\.mjs --check/u);
+  const producer = ci.slice(ci.indexOf("\n  capture-freshness:"), ci.indexOf("\n  operations:"));
+  assert.match(producer, /uses: \.\/\.github\/workflows\/marketing-captures\.yml/u);
+  assert.match(producer, /automatic_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/u);
+  assert.match(capture, /run: node tool\/marketing\/export_hosted_captures\.mjs/u);
+  assert.doesNotMatch(capture, /continue-on-error|--update-goldens/u);
+  assert.doesNotMatch(surfaceValidationWorkflow, /capture_freshness_in_ci/u);
+  const importStep = surfaceValidationWorkflow.split(/\n      - /u)
+    .find(step => step.startsWith("name: Import verified exact-source marketing captures\n"));
+  assert.match(importStep, /CAPTURE_BINDING: \$\{\{ inputs\.capture_binding \}\}/u);
+  assert.match(importStep, /run: node tool\/marketing\/import_hosted_captures\.mjs --import/u);
+  const verifyStep = surfaceValidationWorkflow.split(/\n      - /u)
+    .find(step => step.startsWith("name: Verify built marketing capture bytes\n"));
+  assert.match(verifyStep, /run: node tool\/marketing\/import_hosted_captures\.mjs --check-dist/u);
+  assert.ok(surfaceValidationWorkflow.indexOf(importStep) < surfaceValidationWorkflow.indexOf("      - run: npm ci"));
+  assert.ok(surfaceValidationWorkflow.indexOf(verifyStep) > surfaceValidationWorkflow.indexOf("      - name: Build marketing website"));
 });
 
 
