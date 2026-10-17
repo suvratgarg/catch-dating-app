@@ -47,13 +47,13 @@ class CatchTicket extends StatelessWidget {
           final t = CatchTokens.of(context);
           final mediaHeight = constraints.hasBoundedWidth
               ? constraints.maxWidth / CatchAspectRatio.activityCard
-              : CatchLayout.eventDetailTicketVisualMinHeight;
+              : CatchLayout.ticketHeroVisualMinHeight;
           return PhysicalShape(
             clipper: CatchTicketShapeClipper(
               cornerRadius: CatchRadius.lg,
-              notchRadius: CatchLayout.eventTicketNotchRadius,
-              notchDepth: CatchLayout.eventTicketNotchDepth,
-              notchCenterY: CatchLayout.eventTicketNotchCenterY(mediaHeight),
+              notchRadius: CatchLayout.ticketNotchRadius,
+              notchDepth: CatchLayout.ticketNotchDepth,
+              notchCenterY: CatchLayout.ticketNotchCenterY(mediaHeight),
             ),
             clipBehavior: Clip.antiAlias,
             color: t.surface,
@@ -90,15 +90,15 @@ class CatchTicket extends StatelessWidget {
       builder: (context, constraints) {
         final compact =
             constraints.maxHeight <
-            CatchLayout.eventDetailTicketCompactHeightThreshold;
+            CatchLayout.ticketHeroCompactHeightThreshold;
         final visualHeight =
             (constraints.maxHeight *
                     (compact
-                        ? CatchLayout.eventDetailTicketVisualCompactRatio
-                        : CatchLayout.eventDetailTicketVisualExpandedRatio))
+                        ? CatchLayout.ticketHeroVisualCompactRatio
+                        : CatchLayout.ticketHeroVisualExpandedRatio))
                 .clamp(
-                  CatchLayout.eventDetailTicketVisualMinHeight,
-                  CatchLayout.eventDetailTicketVisualMaxHeight,
+                  CatchLayout.ticketHeroVisualMinHeight,
+                  CatchLayout.ticketHeroVisualMaxHeight,
                 )
                 .toDouble();
         final bodyPadding = compact

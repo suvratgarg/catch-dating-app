@@ -13,8 +13,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 const double _dateRailWidth = CatchLayout.eventDateRailWidth;
-const double _ticketNotchRadius = CatchLayout.eventTicketNotchRadius;
-const double _ticketNotchDepth = CatchLayout.eventTicketNotchDepth;
+const double _ticketNotchRadius = CatchLayout.ticketNotchRadius;
+const double _ticketNotchDepth = CatchLayout.ticketNotchDepth;
 
 enum EventDateRailCardStripPosition { single, first, middle, last }
 

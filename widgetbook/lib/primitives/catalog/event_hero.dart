@@ -35,8 +35,8 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
             PhysicalShape(
               clipper: const CatchTicketShapeClipper(
                 cornerRadius: CatchRadius.lg,
-                notchRadius: CatchLayout.eventTicketNotchRadius,
-                notchDepth: CatchLayout.eventTicketNotchDepth,
+                notchRadius: CatchLayout.ticketNotchRadius,
+                notchDepth: CatchLayout.ticketNotchDepth,
                 notchCenterY: 86,
               ),
               color: t.surface,

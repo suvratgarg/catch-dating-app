@@ -35,7 +35,7 @@ class ClubIndexRow extends StatelessWidget {
               padding: CatchInsets.mediaFrameContent,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(
-                  CatchLayout.organizerPosterMediaRadius,
+                  CatchLayout.posterMediaRadius,
                 ),
                 child: SizedBox.square(
                   dimension: CatchSpacing.s16,

@@ -1442,9 +1442,14 @@ Deviations and remaining 7b work:
   art, chrome slot, call to action, data lines, content height), so it stays a
   separate binding; the registry records the comparison. The roster insets
   became `CatchInsets.table*`.
-- Still open: renaming the remaining layout constants named after old widgets
-  (`activityMapPin*`, `organizerPoster*`, `eventTicketNotch*`), and the React
-  `CatchTable` in `@catch/web-ui` (Phase 7e).
+- Layout constants follow their materials: `CatchLayout.poster*` and
+  `CatchAspectRatio.poster` (were `organizerPoster*`), `ticketNotch*` (were
+  `eventTicketNotch*`, now used by `CatchTicket.card`) and `ticketHero*` (were
+  the `eventDetailTicket*` values that size `CatchTicket.hero`; the
+  event-detail-only stub and title constants keep their names). `activityMapPin*`
+  already matches the renamed `ActivityMapPin` and stays.
+- Still open: the React `CatchTable` in `@catch/web-ui` (Phase 7e) and the
+  `CatchAsyncState` move above.
 - The analyzer plugin still lists `lib/core/widgets/event_activity_visuals.dart`
   as a theme-independent art path. The backdrop now uses
   `CatchTokens.editorialWhite` and needs no exemption, so that entry is dead;

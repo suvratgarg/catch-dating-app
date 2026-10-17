@@ -339,7 +339,7 @@ class ClubHeroModule extends StatelessWidget {
         key: const ValueKey('club-detail-hero-masthead'),
         height: mediaHeight + captionExtent,
         borderColor: t.line,
-        radius: CatchLayout.organizerPosterRadius,
+        radius: CatchLayout.posterRadius,
         backgroundColor: t.surface,
         padding: CatchInsets.tileContent,
         child: Column(

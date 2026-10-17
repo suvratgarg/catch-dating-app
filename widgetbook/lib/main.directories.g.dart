@@ -1040,7 +1040,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Poster artwork states',
                 builder: _widgetbook_workspace_clubs_catalog_poster
-                    .organizerPosterArtworkStates,
+                    .clubPlaceholderCoverStates,
               ),
             ],
           ),

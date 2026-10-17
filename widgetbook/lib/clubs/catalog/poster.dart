@@ -76,7 +76,7 @@ Widget catchOrganizerPosterStates(BuildContext context) {
   type: ClubPlaceholderCover,
   path: '[Club Discovery]/Cards',
 )
-Widget organizerPosterArtworkStates(BuildContext context) {
+Widget clubPlaceholderCoverStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
     title: 'ClubPlaceholderCover',
     catalogId: 'card.organizer.poster_artwork',

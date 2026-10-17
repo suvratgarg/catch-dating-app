@@ -27,7 +27,7 @@ class CatchPoster extends StatelessWidget {
     this.onTap,
     this.variant = CatchPosterVariant.editorial,
     this.tone = CatchPosterTone.paper,
-    this.radius = CatchLayout.organizerPosterRadius,
+    this.radius = CatchLayout.posterRadius,
     this.titleMaxLines = 1,
     this.showArrow = true,
   });
@@ -139,7 +139,7 @@ class CatchPoster extends StatelessWidget {
                 children: [
                   Expanded(child: header),
                   SizedBox(
-                    height: CatchLayout.organizerPosterMinimalMediaHeight,
+                    height: CatchLayout.posterMinimalMediaHeight,
                     child: image,
                   ),
                 ],
@@ -151,10 +151,7 @@ class CatchPoster extends StatelessWidget {
         if (constraints.hasBoundedHeight && constraints.maxHeight.isFinite) {
           return SizedBox(height: constraints.maxHeight, child: poster);
         }
-        return AspectRatio(
-          aspectRatio: CatchAspectRatio.organizerPoster,
-          child: poster,
-        );
+        return AspectRatio(aspectRatio: CatchAspectRatio.poster, child: poster);
       },
     );
   }
@@ -180,7 +177,7 @@ class CatchPosterImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(
-        radius ?? CatchLayout.organizerPosterMediaRadius,
+        radius ?? CatchLayout.posterMediaRadius,
       ),
       child: Stack(fit: StackFit.expand, children: [media, ?mediaOverlay]),
     );
