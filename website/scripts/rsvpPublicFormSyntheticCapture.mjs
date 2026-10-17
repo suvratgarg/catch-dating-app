@@ -64,29 +64,27 @@ export function domainServiceFixture() {
     if (!draft || payload.draftId !== draft.draftId || payload.draftToken !== draft.draftToken ||
         payload.expectedRevision !== draft.revision) throw new Error("Wrong synthetic draft or revision");
   };
-  const unexpected = () => {throw new Error("Unexpected provider operation in anonymous synthetic scenario");};
+  const unexpected = () => {record("unexpected", null); throw new Error("Unexpected provider operation in anonymous synthetic scenario");};
   return {
     calls,
-    async getPublicOrganizerForm(payload) {requirePublic(payload); record("get", payload); return clone(form);},
+    async getPublicOrganizerForm(payload) {record("get", payload); requirePublic(payload); return clone(form);},
     watchPublicFormAuthState(listener) {record("auth", null); listener(null); return () => {};},
     async beginOrganizerFormResponse(payload) {
-      requirePublic(payload);
+      record("begin", payload); requirePublic(payload);
       if (typeof payload.requestId !== "string" || !payload.requestId) throw new Error("Missing synthetic start identity");
-      record("begin", payload);
       draft ??= {draftId: "bound-draft", draftToken: "synthetic-draft-token", revision: 1,
         form, identityKind: "anonymous", answers: {}, consentAccepted: false, expiresAtMillis: 2_000_000_000_000};
       return clone(draft);
     },
     async saveOrganizerFormResponseDraft(payload) {
-      requireDraft(payload); record("save", payload);
+      record("save", payload); requireDraft(payload);
       draft = {...draft, answers: clone(payload.answers), consentAccepted: payload.consentAccepted, revision: draft.revision + 1};
       return {draftId: draft.draftId, revision: draft.revision, expiresAtMillis: draft.expiresAtMillis};
     },
     async submitOrganizerFormResponse(payload) {
-      requireDraft(payload);
+      record("submit", payload); requireDraft(payload);
       if (draft.consentAccepted !== true || draft.answers.name !== "Synthetic respondent" ||
           typeof payload.requestId !== "string" || !payload.requestId) throw new Error("Synthetic submission lacks reviewed answer/consent");
-      record("submit", payload);
       receipt ??= {responseId: "bound-response", formId: form.formId, versionId: form.versionId,
         status: "submitted", submittedAtMillis: 1_800_000_000_000,
         withdrawalToken: "synthetic-withdrawal-token", completion: form.definition.completion};
@@ -149,6 +147,9 @@ async function exerciseDomain(page, name, release, lookupStarted) {
   await page.getByRole("button", {name: "Submit response"}).click();
   await page.getByRole("heading", {name: "Synthetic response received"}).waitFor();
   const calls = await page.evaluate(() => window.__domainCalls);
+  if (calls.filter((call) => call.name === "get").length !== 1 ||
+      calls.filter((call) => call.name === "begin").length !== 1 ||
+      calls.some((call) => call.name === "unexpected")) throw new Error("Unexpected synthetic service attempts");
   const submits = calls.filter((call) => call.name === "submit");
   const saves = calls.filter((call) => call.name === "save");
   if (submits.length !== 1 || !saves.length ||

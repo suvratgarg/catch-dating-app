@@ -127,9 +127,14 @@ test("anonymous synthetic service refuses wrong owners, stale revisions and miss
   assert.equal(receipt.formId, "bound-form");
   assert.equal(receipt.versionId, "bound-version");
   assert.equal(receipt.status, "submitted");
-  assert.equal(api.calls.filter((call) => call.name === "submit").length, 1);
+  assert.equal(api.calls.filter((call) => call.name === "submit").length, 3);
+  assert.equal(api.calls[0].name, "get");
+  assert.equal(api.calls[0].payload.publicFormId, "other");
+  assert.equal(api.calls[1].name, "begin");
+  assert.equal(api.calls[1].payload.sourceToken, "other");
   assert.throws(() => api.prepareOrganizerFormPayment({}), /Unexpected provider operation/);
   assert.throws(() => api.beginPublicEventPhoneVerification({}), /Unexpected provider operation/);
+  assert.equal(api.calls.filter((call) => call.name === "unexpected").length, 2);
   assert.deepEqual(domainServiceFixture().calls, []);
 });
 
