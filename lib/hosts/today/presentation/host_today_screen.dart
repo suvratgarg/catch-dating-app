@@ -202,7 +202,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen>
       state: state,
     );
     if (intent == null ||
-        !context.mounted ||
+        !mounted ||
         !_ownsRequest(request, epoch) ||
         routeEpoch != _routeEpoch ||
         ModalRoute.of(context)?.isCurrent == false) {
