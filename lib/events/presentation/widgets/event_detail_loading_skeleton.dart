@@ -436,7 +436,7 @@ class EventDetailLoadingCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchDockSurface.primary(
+    return CatchDock.primary(
       label: context.l10n.eventsEventDetailScreenStateLabelBookEvent,
       onPressed: null,
       isLoading: true,

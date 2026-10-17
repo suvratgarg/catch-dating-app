@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -65,24 +65,24 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: CatchGoogleMap(
+              child: LocationMap(
                 initialCenter: coordinates.isEmpty
                     ? widget.initialCenter
                     : coordinates.first,
                 initialZoom: coordinates.isEmpty ? 14 : 15,
                 mapType: widget.enableNetworkTiles
-                    ? CatchMapType.normal
-                    : CatchMapType.none,
+                    ? LocationMapType.normal
+                    : LocationMapType.none,
                 markers: {
                   for (var index = 0; index < coordinates.length; index++)
-                    CatchMapMarker(
+                    MapMarker(
                       id: 'route-point-$index',
                       position: coordinates[index],
                       hue: index == 0
-                          ? CatchMapMarkerHue.green
+                          ? MapMarkerHue.green
                           : index == coordinates.length - 1
-                          ? CatchMapMarkerHue.orange
-                          : CatchMapMarkerHue.azure,
+                          ? MapMarkerHue.orange
+                          : MapMarkerHue.azure,
                       infoTitle: context.l10n.hostsRoutePathBuilderPoint(
                         index: index + 1,
                       ),
@@ -90,7 +90,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                 },
                 polylines: {
                   if (coordinates.length >= 2)
-                    CatchMapPolyline(
+                    MapPolyline(
                       id: 'route-builder-path',
                       points: coordinates,
                       color: t.primary,

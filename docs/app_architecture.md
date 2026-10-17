@@ -921,7 +921,7 @@ navigation remains available.
 
 <!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
 
-`CatchAdaptiveTabScaffold` is the single shell placement boundary. Consumer
+`AdaptiveTabScaffold` is the single shell placement boundary. Consumer
 destinations and compact Host destinations keep the existing platform-aware
 bottom bar. Authenticated Host destinations additionally provide a medium rail
 and expanded sidebar. The scaffold selects among those supplied widgets from
@@ -929,7 +929,7 @@ the available width and always publishes the resulting bottom obstruction
 through `CatchTabViewportScope`:
 
 ```dart
-CatchAdaptiveTabScaffold(
+AdaptiveTabScaffold(
   activeIndex: navigationShell.currentIndex,
   navigationBar: bottomNavigation,
   mediumSideNavigation: railNavigation,
@@ -1398,7 +1398,7 @@ the Preview slivers.
 | Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
-| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchDockSurface.primary`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
+| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchDock.primary`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
 
 ### Design Tooling And Component Contracts
 
@@ -2662,8 +2662,8 @@ or implementation technique cannot justify a second shared implementation.
   consolidation review. Flags do not approve exceptions or establish conformance.
   App bootstrap classes and app-core adapters are not feature UI.
 - **Role nouns (closed; extend only via component-registry review):** Button,
-  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, RowList,
-  Chip, Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
+  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, Chip,
+  Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
@@ -2685,19 +2685,19 @@ or implementation technique cannot justify a second shared implementation.
   opens it, rendered through a material (Ticket, Poster, Polaroid) or Surface.
   Body: the content composition of one screen or page below its chrome
   (`CatchPageBody` still owns page insets). List: a vertical collection of
-  rows; it replaces RowList, which retires in Phase 7b. Step: one stage of a
+  rows; it replaced RowList in Phase 7b. Step: one stage of a
   multi-stage flow. Editor: edits one structured value made of several fields.
   Rail: a single-line, horizontally scrolling collection. Picker: chooses a
   value through a dedicated chooser such as a city, date or photo picker. Grid:
   a two-dimensional arrangement of equal cells. Preview: a compact read-only
   rendition of something shown in full elsewhere. Dock: persistent bottom
-  controls; `CatchDockSurface` becomes `CatchDock` in Phase 7b. Map: a map
+  controls; `CatchDock` becomes `CatchDock` in Phase 7b. Map: a map
   view. Pin: a mark anchored to a map coordinate. Thumbnail: a small
   representative image of one entity, with a fallback. `Workspace` joins
   `Screen` as a route-level suffix.
 - **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
   containment); Page is Step (a flow stage) or Body (a tab or pager page);
-  Content, Overview and View are Body; Strip and Carousel are Rail; Rows is
+  Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
   List; AppBar, Toolbar and Topbar are TopBar; InputBar and Composer are Input;
   ActionBar and BottomBar are Dock; Line is Text or Row; Entry and Item are Row,
   Tile or Card; Container, Box, Wrapper, Shell and Frame are Surface, Scaffold
@@ -3197,7 +3197,7 @@ and initialization complete.
 - Consumer bootstrap preloads package metadata and overrides
   `appPackageInfoProvider` synchronously before mounting `ForceUpdateGate`.
   This prevents a second startup-loader frame after the reel.
-- `CatchStartupAnimationScope` records that the process-level reel played.
+- `StartupAnimationScope` records that the process-level reel played.
   Route-owned `WelcomePage` therefore renders its landed actions immediately
   instead of replaying the same animation after routing starts.
 - Reduced-motion settings and tap-to-skip land the reel immediately. The
@@ -3999,14 +3999,14 @@ Reference files:
 - `lib/clubs/shared/catch_organizer_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
-- `lib/swipes/shared/profile_surface/catch_profile_view.dart`
+- `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
 - `widgetbook/lib/clubs/catalog/poster.dart`
 - `widgetbook/lib/catches/catalog/profile_media.dart`
 
 Entity material is a presentation contract, not feature-local decoration:
 events use the ticket family, organizer identity uses
-`CatchOrganizerPoster`, and person identity uses `CatchPolaroid`.
+`CatchPoster`, and person identity uses `CatchPolaroid`.
 Feature widgets provide typed display copy, media, overlays, and callbacks;
 the canonical material owns shape, layout variants, treatment, and spacing.
 Do not duplicate a poster or polaroid canvas inside a screen.
@@ -4014,8 +4014,8 @@ Do not duplicate a poster or polaroid canvas inside a screen.
 The Organizer Detail reference composition is:
 
 ```dart
-child: CatchOrganizerPoster(
-  media: CatchClubCover(
+child: CatchPoster(
+  media: ClubCover(
     club: club,
     semanticLabel: context.l10n
         .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
@@ -4715,7 +4715,7 @@ class CalendarEventSummary {
 Reference files:
 
 - `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
-- `packages/catch_ui/lib/src/patterns/catch_form_row_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
+- `packages/catch_ui/lib/src/patterns/catch_form_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
@@ -4728,7 +4728,7 @@ Reference files:
 Use this pattern when multiple form surfaces need the same row mapping,
 single-expanded-field behavior, and per-field patch save loop. Feature state
 owns labels, values, validation policy, and typed patch factories. The shared
-`CatchFormRowList<P>` owns canonical `CatchField` composition, accordion
+`CatchFormList<P>` owns canonical `CatchField` composition, accordion
 wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
@@ -4745,9 +4745,9 @@ the form list. The list accepts `onSave` and `errorTextBuilder`; persistence
 and localized error interpretation remain caller-owned.
 
 Text commit behavior is a form-section policy, not descriptor styling.
-`CatchFormRowList<P>` defaults to `CatchFormRowListMode.explicit`, which
+`CatchFormList<P>` defaults to `CatchFormListMode.explicit`, which
 renders the canonical staged editor and Cancel/Done actions for every text row.
-An existing section may select `CatchFormRowListMode.onBlur` as one explicit
+An existing section may select `CatchFormListMode.onBlur` as one explicit
 compatibility decision while its product behavior is migrated. Do not add a
 per-row boolean: sibling rows in one form section must not drift between commit
 models.
@@ -4800,9 +4800,9 @@ boundary; descriptor migration may continue incrementally without reopening
 contract drift.
 
 ```dart
-CatchFormRowList<UpdateUserProfilePatch>(
+CatchFormList<UpdateUserProfilePatch>(
   title: context.l10n.userProfileProfileTabTitleAboutYou,
-  textCommitMode: CatchFormRowListMode.onBlur,
+  textCommitMode: CatchFormListMode.onBlur,
   rows: editState.aboutSectionRows,
   accordion: _fieldAccordion,
   onSave: _saveAboutPatch,

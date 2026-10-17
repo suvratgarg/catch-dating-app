@@ -9,7 +9,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart'
     show PlaceAutocompleteSuggestion;
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   String? _selectedLabel;
   String? _selectedAddress;
   String? _selectedPlaceId;
-  CatchGoogleMapController? _mapController;
+  LocationMapController? _mapController;
   Timer? _searchDebounce;
   String _sessionToken = _newSessionToken();
   var _suggestions = <PlaceAutocompleteSuggestion>[];
@@ -133,20 +133,20 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     final hasInitialCameraHint =
         widget.initialLocation != null || widget.initialCenter != null;
     final mapLayer = widget.usePlatformMapView
-        ? CatchGoogleMap(
+        ? LocationMap(
             initialCenter: initialCameraTarget,
             initialZoom: hasInitialCameraHint ? 15 : 12,
             markers: {
               if (_selected != null)
-                CatchMapMarker(
+                MapMarker(
                   id: 'selected-starting-point',
                   position: _selected!,
-                  hue: CatchMapMarkerHue.orange,
+                  hue: MapMarkerHue.orange,
                 ),
             },
             mapType: widget.loadMapTiles
-                ? CatchMapType.normal
-                : CatchMapType.none,
+                ? LocationMapType.normal
+                : LocationMapType.none,
             onMapCreated: (controller) => _mapController = controller,
             onTap: _setSelectedPoint,
           )

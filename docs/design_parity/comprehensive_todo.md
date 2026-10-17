@@ -620,13 +620,13 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   overlay, `lib/public_profile/presentation/public_profile_screen.dart`
   report/block overlay over rendered content,
   `lib/chats/presentation/widgets/suvbot_action_bar.dart`,
-  `lib/chats/presentation/widgets/chat_input_bar.dart`, and
+  `lib/chats/presentation/widgets/chat_input.dart`, and
   `lib/chats/presentation/widgets/message_bubble.dart` inline action/media
   progress, `lib/events/presentation/location_picker_screen.dart` search
   suffix progress, `lib/clubs/presentation/detail/widgets/catch_club_dock.dart`
   and `lib/clubs/presentation/detail/widgets/membership_button.dart`
   notification-toggle progress, Settings delete/sign-out mutation progress,
-  `lib/core/widgets/catch_startup_loading_screen.dart` startup loading, and
+  `lib/core/widgets/splash_screen.dart` startup loading, and
   `lib/core/riverpod_ui/catch_async_value_view.dart` core async primitive defaults.
 
 ### Reference Export Queue
@@ -1251,20 +1251,20 @@ tests, captures, Widgetbook, Git, and CI.
     `CatchScreenBody`, and `CatchSectionStack`, closing those Claude primitive
     inventory rows from "source candidate but no standalone entry."
   - Host roster primitives now expose source-backed standalone Widgetbook
-    review pages for `CatchRosterTiles`, `CatchRosterRow`, and
-    `CatchRosterTable` under `[Core catalog]/Host operations`, closing those
+    review pages for `CatchRosterTiles`, `ParticipantRow`, and
+    `ParticipantTable` under `[Core catalog]/Host operations`, closing those
     Claude primitive inventory rows from "source candidate but no standalone
     entry."
   - The Claude-vs-Widgetbook inventory now treats source-backed generated
     entries as represented rather than missing. Existing generated entries for
-    `CatchCountPill`, `CatchCoverStory`, `CatchClubCover`, `CatchIndexRow`,
+    `CatchCountPill`, `FeaturedEventPoster`, `ClubCover`, `CatchIndexRow`,
     `EventBookingDock`, `EventDetailHintList`, `EventDetailHostCard`,
     `EventDetailItinerary`, `EventDetailMapCard`,
     `EventDetailMechanismList`, `EventDetailPhotoStrip`,
     `EventDetailTicketStubBand`, `NotificationRow`, and `CatchConfirmDialog`
     are recorded as represented; remaining unresolved rows stay in the
     no-clear-match bucket for future product/API decisions.
-  - `CatchRosterTiles`, `CatchRosterRow`, and `CatchRosterTable` are now formal
+  - `CatchRosterTiles`, `ParticipantRow`, and `ParticipantTable` are now formal
     component contracts (`catch.roster_tiles`, `catch.roster_row`, and
     `catch.roster_table`) with matching contract-state Widgetbook previews.
   - `CatchSection`, `CatchJourneySteps`, `CatchPrivacyBadge`,
@@ -1275,7 +1275,7 @@ tests, captures, Widgetbook, Git, and CI.
   - Dashboard, messaging, and event-detail sheet sections now have standalone
     source-backed Widgetbook review entries for `QuickActions`,
     `DashboardStrideSection`, `RecommendCard`, `CatchTopBar.identity`,
-    `ChatEventContextHeader`, `MessageBubble`, `ChatInputBar`,
+    `ChatEventContextHeader`, `MessageBubble`, `ChatInput`,
     `ChatListTile`, and `BookingConflictSheet`.
   - The inventory now classifies additional source-backed Claude aliases that
     are not yet standalone/formal contracts: `CheckoutSheet`, `ClubDock`,

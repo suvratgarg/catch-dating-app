@@ -229,7 +229,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               ],
             ),
           ),
-          CatchFormRowList<UpdateUserProfilePatch>(
+          CatchFormList<UpdateUserProfilePatch>(
             fieldCopy: catchFieldCopy(context.l10n),
             title: context.l10n.userProfileProfileTabTitleAboutYou,
             rows: editState.aboutSectionRows,

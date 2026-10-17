@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/formatters/catch_count_copy.dart';
+import 'package:catch_dating_app/core/formatters/count_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -215,7 +215,7 @@ class ActivityTypeRow extends StatelessWidget {
       semanticLabel: context.l10n
           .exploreExploreEventTypeBrowseGridLabelLabelCountlabel(
             label: visual.label,
-            countLabel: CatchCountCopy.events(context.l10n, entry.count),
+            countLabel: CountCopy.events(context.l10n, entry.count),
           ),
       title: visual.label,
       titleStyle: CatchTextStyles.titleL(context, color: foreground),

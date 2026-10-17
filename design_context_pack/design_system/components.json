@@ -207,6 +207,9 @@
       "Dialog",
       "Menu"
     ],
+    "RowList": [
+      "List"
+    ],
     "Rows": [
       "List"
     ],
@@ -3644,8 +3647,8 @@
           },
           {
             "id": "catch.field.form_row_list",
-            "symbol": "CatchFormRowList",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_list.dart",
+            "symbol": "CatchFormList",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_list.dart",
             "summary": "Typed descriptor rendering, accordion state and per-field patch-save orchestration.",
             "states": [
               "ready",
@@ -3661,14 +3664,14 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L4",
-            "roleNoun": "RowList",
+            "roleNoun": "List",
             "naming": {
               "useCase": "Form",
               "comparedWith": [
                 "catch.field",
                 "catch.journey_steps"
               ],
-              "reason": "Maps typed field descriptors to editors inside one section, owns accordion lifecycle and coordinates per-field patch saves. StepRowList presents ordered instructions without editing or persistence."
+              "reason": "Maps typed field descriptors to editors inside one section, owns accordion lifecycle and coordinates per-field patch saves. StepList presents ordered instructions without editing or persistence."
             }
           },
           {
@@ -5047,8 +5050,8 @@
         "members": [
           {
             "id": "catch.section.body",
-            "symbol": "CatchSectionRowList",
-            "file": "packages/catch_ui/lib/src/components/catch_section_row_list.dart",
+            "symbol": "CatchSectionBody",
+            "file": "packages/catch_ui/lib/src/components/catch_section_body.dart",
             "summary": "Section child stack with content, divided-field and contained-field separator placement. Direct field geometry supplies exact text-lane insets; unknown adapters preserve the canonical fallback. Header and surface chrome remain Section-owned.",
             "states": [
               "content",
@@ -5067,15 +5070,13 @@
               "decisionRef": "contract-family:catch.section"
             },
             "level": "L3",
-            "roleNoun": "RowList",
+            "roleNoun": "Body",
             "naming": {
               "useCase": "Section",
               "comparedWith": [
-                "catch.section",
-                "catch.field.form_row_list",
-                "catch.journey_steps"
+                "catch.section"
               ],
-              "reason": "Section anatomy stacks supplied rows and owns separator placement, including direct-field text-lane alignment and adapter fallback. It does not edit values, coordinate saves or present numbered instructions. The parent Section owns headers, perimeter and field interaction geometry; FormRowList and StepRowList own their distinct editing and instructional contracts."
+              "reason": "Section anatomy below the header: stacks the supplied rows and owns separator placement, including direct-field text-lane alignment and adapter fallback. The parent Section owns headers, perimeter and field interaction geometry."
             }
           },
           {
@@ -5930,16 +5931,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchStartupLoadingScreen",
+      "name": "SplashScreen",
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "LaunchScreen",
+        "StartupScreen",
+        "StartupLoadingScreen",
+        "AppLoadingScreen"
+      ],
       "summary": "Branded app-start composition with the Catch logo and a delayed bounded loading indicator.",
       "dart": {
-        "symbol": "CatchStartupLoadingScreen",
-        "file": "lib/core/widgets/catch_startup_loading_screen.dart",
+        "symbol": "SplashScreen",
+        "file": "lib/core/widgets/splash_screen.dart",
         "constructors": [
-          "CatchStartupLoadingScreen"
+          "SplashScreen"
         ]
       },
       "design": {
@@ -5972,8 +5979,8 @@
           "theme.light.color.ink"
         ],
         "dartRoles": [
-          "CatchStartupLoadingScreen.lightIconAsset",
-          "CatchStartupLoadingScreen.darkIconAsset",
+          "SplashScreen.lightIconAsset",
+          "SplashScreen.darkIconAsset",
           "CatchLoadingIndicator",
           "CatchMotion.startupIndicatorDelay"
         ],
@@ -5990,7 +5997,28 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.startup_loading_screen.brand_header",
+            "symbol": "StartupBrandHeader",
+            "file": "lib/core/widgets/splash_screen.dart",
+            "summary": "Role-specific brand mark shared by Host startup and auth, kept identical so navigation only replaces the content below it.",
+            "states": [
+              "consumer",
+              "host"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.startup_loading_screen",
+              "parentConceptId": "catch.startup_loading_screen",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.startup_loading_screen"
+            },
+            "level": "L5",
+            "roleNoun": "Header"
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
@@ -6011,11 +6039,12 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "composition",
-        "decisionRef": "pattern-family:loading-concept-decompression"
+        "conceptRole": "concept",
+        "decisionRef": "pattern-family:loading-concept-decompression",
+        "conceptId": "catch.startup_loading_screen"
       },
       "surfaces": {
-        "flutter": "CatchStartupLoadingScreen"
+        "flutter": "SplashScreen"
       }
     },
     {
@@ -9584,7 +9613,7 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchStepRowList",
+      "name": "CatchStepList",
       "status": "active",
       "kind": "composite",
       "tier": "T2",
@@ -9596,10 +9625,10 @@
       ],
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
       "dart": {
-        "symbol": "CatchStepRowList",
-        "file": "packages/catch_ui/lib/src/components/catch_step_row_list.dart",
+        "symbol": "CatchStepList",
+        "file": "packages/catch_ui/lib/src/components/catch_step_list.dart",
         "constructors": [
-          "CatchStepRowList"
+          "CatchStepList"
         ]
       },
       "design": {
@@ -9694,17 +9723,17 @@
         "conceptId": "catch.journey_steps"
       },
       "surfaces": {
-        "flutter": "CatchStepRowList"
+        "flutter": "CatchStepList"
       },
       "level": "L3",
-      "roleNoun": "RowList",
+      "roleNoun": "List",
       "naming": {
         "useCase": "Step",
         "comparedWith": [
           "catch.field.form_row_list",
           "catch.screen_body.form_step_overview"
         ],
-        "reason": "Presents a passive ordered instruction sequence with numbered rows and a connecting trace. FormRowList edits typed values with accordion and save orchestration; neither its editing state nor StepHeader current-step progress belongs in this instructional list. FormStepRowList resumes completed or incomplete form sections using navigation fields and status badges."
+        "reason": "Presents a passive ordered instruction sequence with numbered rows and a connecting trace. FormList edits typed values with accordion and save orchestration; neither its editing state nor StepHeader current-step progress belongs in this instructional list. FormStepList resumes completed or incomplete form sections using navigation fields and status badges."
       }
     },
     {
@@ -9995,8 +10024,8 @@
           },
           {
             "id": "catch.screen_body.form_step_overview",
-            "symbol": "CatchFormStepRowList",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_row_list.dart",
+            "symbol": "CatchFormStepList",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_list.dart",
             "summary": "Resumable form navigator with caller-resolved status labels and caller-owned step selection.",
             "states": [
               "complete",
@@ -10011,14 +10040,14 @@
               "decisionRef": "pattern-family:form-review-navigation-roles"
             },
             "level": "L4",
-            "roleNoun": "RowList",
+            "roleNoun": "List",
             "naming": {
               "useCase": "FormStep",
               "comparedWith": [
                 "catch.field.form_row_list",
                 "catch.journey_steps"
               ],
-              "reason": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormRowList edits values and coordinates patch saves; StepRowList presents passive numbered instructions without navigation or completion status."
+              "reason": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormList edits values and coordinates patch saves; StepList presents passive numbered instructions without navigation or completion status."
             }
           },
           {
@@ -10239,8 +10268,8 @@
           },
           {
             "id": "catch.screen_body.form_step_status",
-            "symbol": "CatchFormStepRowListStatus",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_row_list_status.dart",
+            "symbol": "CatchFormStepListStatus",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_list_status.dart",
             "summary": "Complete, needs-information and optional review statuses.",
             "states": [
               "complete",
@@ -10941,16 +10970,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchRosterRow",
+      "name": "ParticipantRow",
       "status": "active",
       "kind": "composite",
       "tier": "T4",
+      "aliases": [
+        "RosterRow",
+        "AttendeeRow",
+        "GuestRow"
+      ],
       "summary": "Host-roster participant row with identity, signal badge, and typed action cell.",
       "dart": {
-        "symbol": "CatchRosterRow",
-        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "symbol": "ParticipantRow",
+        "file": "lib/hosts/presentation/widgets/participant_table.dart",
         "constructors": [
-          "CatchRosterRow"
+          "ParticipantRow"
         ]
       },
       "design": {
@@ -11016,7 +11050,7 @@
             "name": "action",
             "type": "object",
             "required": false,
-            "dartType": "CatchRosterAction?"
+            "dartType": "ParticipantAction?"
           }
         ],
         "states": [
@@ -11032,7 +11066,7 @@
           {
             "name": "action",
             "kind": "typed-action-cell",
-            "notes": "Use CatchRosterButtonAction, CatchRosterDecideAction, CatchRosterBadgeAction, or CatchRosterTextAction."
+            "notes": "Use ParticipantButtonAction, ParticipantDecideAction, ParticipantBadgeAction, or ParticipantTextAction."
           }
         ],
         "tokens": [
@@ -11093,12 +11127,14 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.roster_row"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "surfaces": {
-        "flutter": "CatchRosterRow"
-      }
+        "flutter": "ParticipantRow"
+      },
+      "level": "L5",
+      "roleNoun": "Row"
     },
     {
       "id": "catch.roster_table",
@@ -11106,16 +11142,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchRosterTable",
+      "name": "ParticipantTable",
       "status": "active",
       "kind": "composite",
       "tier": "T4",
+      "aliases": [
+        "RosterTable",
+        "AttendeeTable",
+        "GuestTable",
+        "RosterBoard"
+      ],
       "summary": "Host-roster table shell with fixed identity/signal/action columns and built-in empty state.",
       "dart": {
-        "symbol": "CatchRosterTable",
-        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+        "symbol": "ParticipantTable",
+        "file": "lib/hosts/presentation/widgets/participant_table.dart",
         "constructors": [
-          "CatchRosterTable"
+          "ParticipantTable"
         ]
       },
       "design": {
@@ -11147,7 +11189,7 @@
             "type": "list",
             "required": false,
             "default": "[]",
-            "dartType": "List<CatchRosterRow>"
+            "dartType": "List<ParticipantRow>"
           },
           {
             "name": "showEmpty",
@@ -11179,7 +11221,7 @@
           {
             "name": "rows",
             "kind": "roster-row-list",
-            "notes": "Rows should be CatchRosterRow instances so the fixed 5/3/3 column contract holds."
+            "notes": "Rows should be ParticipantRow instances so the fixed 5/3/3 column contract holds."
           }
         ],
         "tokens": [
@@ -11197,7 +11239,7 @@
           "theme.light.color.ink3"
         ],
         "dartRoles": [
-          "CatchRosterRow",
+          "ParticipantRow",
           "CatchTextStyles.monoLabel",
           "CatchTextStyles.name",
           "CatchTextStyles.bodyS",
@@ -11237,12 +11279,14 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.roster_table"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "surfaces": {
-        "flutter": "CatchRosterTable"
-      }
+        "flutter": "ParticipantTable"
+      },
+      "level": "L5",
+      "roleNoun": "Table"
     },
     {
       "id": "catch.network_image",
@@ -13539,7 +13583,9 @@
       },
       "surfaces": {
         "flutter": "ClubDetailDock"
-      }
+      },
+      "level": "L5",
+      "roleNoun": "Dock"
     },
     {
       "id": "catch.cover_story",
@@ -13547,16 +13593,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchCoverStory",
+      "name": "FeaturedEventPoster",
       "status": "active",
       "kind": "composite",
       "tier": "T4",
+      "aliases": [
+        "CoverStory",
+        "FeaturedEventHero",
+        "ExploreHero",
+        "FeaturedEventBanner"
+      ],
       "summary": "Explore cover/masthead composition with dark editorial ground, activity glow, optional chrome, CTA, and data lines.",
       "dart": {
-        "symbol": "CatchCoverStory",
-        "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+        "symbol": "FeaturedEventPoster",
+        "file": "lib/explore/presentation/widgets/featured_event_poster.dart",
         "constructors": [
-          "CatchCoverStory"
+          "FeaturedEventPoster"
         ]
       },
       "design": {
@@ -13722,12 +13774,14 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.cover_story"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "surfaces": {
-        "flutter": "CatchCoverStory"
-      }
+        "flutter": "FeaturedEventPoster"
+      },
+      "level": "L5",
+      "roleNoun": "Poster"
     },
     {
       "id": "catch.person_avatar",
@@ -14061,16 +14115,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchEventCard",
+      "name": "EventCard",
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "EventTicket",
+        "EventTile",
+        "EventListItem",
+        "EventPreviewCard"
+      ],
       "summary": "Canonical ticket-style event card surface backed by shared activity visuals and event media atoms.",
       "dart": {
-        "symbol": "CatchEventCard",
-        "file": "lib/core/widgets/catch_event_activity_cards.dart",
+        "symbol": "EventCard",
+        "file": "lib/core/widgets/event_card.dart",
         "constructors": [
-          "CatchEventCard.ticket"
+          "EventCard"
         ]
       },
       "design": {
@@ -14204,7 +14264,7 @@
         "dartRoles": [
           "ActivityKind",
           "EventActivityVisualSpec",
-          "EventActivityBackdrop",
+          "EventBackdropImage",
           "CatchClockIndicator",
           "CatchBadge.ticketStatus",
           "CatchTicketDivider",
@@ -14214,8 +14274,8 @@
         "members": [
           {
             "id": "catch.event_card.thumbnail",
-            "symbol": "CatchEventThumbnail",
-            "file": "lib/core/widgets/catch_event_thumbnail.dart",
+            "symbol": "EventThumbnail",
+            "file": "lib/core/widgets/event_thumbnail.dart",
             "summary": "Event media member that renders uploaded event imagery with the global photo grade or falls back to activity artwork and configurable scrims.",
             "states": [
               "photo",
@@ -14230,12 +14290,14 @@
               "parentConceptId": "catch.event_card",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.event_card"
-            }
+            },
+            "level": "L5",
+            "roleNoun": "Thumbnail"
           },
           {
             "id": "catch.event_card.activity_backdrop",
-            "symbol": "EventActivityBackdrop",
-            "file": "lib/core/widgets/event_activity_visuals.dart",
+            "symbol": "EventBackdropImage",
+            "file": "lib/core/widgets/event_backdrop_image.dart",
             "summary": "Shared activity artwork backdrop used by event cards, thumbnails, and no-photo event media states.",
             "states": [
               "dense",
@@ -14248,12 +14310,14 @@
               "parentConceptId": "catch.event_card",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.event_card"
-            }
+            },
+            "level": "L5",
+            "roleNoun": "Image"
           },
           {
             "id": "catch.event_card.activity_stamp",
-            "symbol": "EventActivityStamp",
-            "file": "lib/core/widgets/event_visual_atoms.dart",
+            "symbol": "EventActivityBadge",
+            "file": "lib/core/widgets/event_activity_badge.dart",
             "summary": "Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions.",
             "states": [
               "default",
@@ -14266,7 +14330,9 @@
               "parentConceptId": "catch.event_card",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.event_card"
-            }
+            },
+            "level": "L5",
+            "roleNoun": "Badge"
           },
           {
             "id": "catch.event_card.clock_mark",
@@ -14339,8 +14405,8 @@
           },
           {
             "id": "catch.event_card.event_thumbnail.activity_fallback",
-            "symbol": "CatchEventThumbnailActivityFallback",
-            "file": "lib/core/widgets/catch_event_thumbnail.dart",
+            "symbol": "EventFallbackThumbnail",
+            "file": "lib/core/widgets/event_thumbnail.dart",
             "summary": "Direct event-thumbnail activity fallback renderer for no-photo states.",
             "states": [
               "run",
@@ -14353,7 +14419,9 @@
               "parentConceptId": "catch.event_card",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.event_card"
-            }
+            },
+            "level": "L5",
+            "roleNoun": "Thumbnail"
           }
         ],
         "accessibility": {
@@ -14378,7 +14446,7 @@
         ],
         "notes": [
           "Ticket, spotlight, and compact are named constructors on one event card API, not separate public card classes.",
-          "CatchEventThumbnail is an event-card media member rather than a competing product concept.",
+          "EventThumbnail is an event-card media member rather than a competing product concept.",
           "Use activity visuals for no-photo event states so cards, thumbnails, map sheets, and detail headers share event-type color semantics."
         ]
       },
@@ -14393,11 +14461,14 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.event_card"
+        "conceptId": "catch.event_card",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "surfaces": {
-        "flutter": "CatchEventCard"
-      }
+        "flutter": "EventCard"
+      },
+      "level": "L5",
+      "roleNoun": "Card"
     },
     {
       "id": "catch.graded_image",
@@ -14499,7 +14570,7 @@
         ],
         "notes": [
           "Use this for the global Catch image treatment across event, profile, club, and upload surfaces.",
-          "Do not fork event-specific image grading; event media should compose this primitive through CatchEventThumbnail."
+          "Do not fork event-specific image grading; event media should compose this primitive through EventThumbnail."
         ]
       },
       "governance": {
@@ -14700,16 +14771,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchActivityMapPin",
+      "name": "ActivityMapPin",
       "status": "active",
       "kind": "primitive",
       "tier": "T3",
+      "aliases": [
+        "MapPin",
+        "EventMapPin",
+        "LocationPin"
+      ],
       "summary": "Canonical activity-colored map pin for resting and selected map marks with optional uppercased selected-state flag text.",
       "dart": {
-        "symbol": "CatchActivityMapPin",
-        "file": "lib/core/widgets/catch_activity_map_pin.dart",
+        "symbol": "ActivityMapPin",
+        "file": "lib/core/widgets/activity_map_pin.dart",
         "constructors": [
-          "CatchActivityMapPin"
+          "ActivityMapPin"
         ]
       },
       "design": {
@@ -14832,12 +14908,14 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.activity_map_pin"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "surfaces": {
-        "flutter": "CatchActivityMapPin"
-      }
+        "flutter": "ActivityMapPin"
+      },
+      "level": "L5",
+      "roleNoun": "Pin"
     },
     {
       "id": "catch.event_detail_sections",
@@ -15297,7 +15375,9 @@
       },
       "surfaces": {
         "flutter": "EventDetailBody"
-      }
+      },
+      "level": "L6",
+      "roleNoun": "Body"
     },
     {
       "id": "catch.notification_row",
@@ -15462,7 +15542,9 @@
       },
       "surfaces": {
         "flutter": "NotificationRow"
-      }
+      },
+      "level": "L5",
+      "roleNoun": "Row"
     },
     {
       "id": "catch.chat_composer",
@@ -15474,10 +15556,16 @@
         "vehicle": "plugin",
         "probeSeed": "ref.watch(exampleRepositoryProvider)"
       },
-      "name": "ChatInputBar",
+      "name": "ChatInput",
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "ChatInputBar",
+        "MessageInput",
+        "MessageComposer",
+        "ChatComposer"
+      ],
       "summary": "Canonical floating chat composer with a multiline field and matching 44px image/send actions; derives focus and sendability locally and keeps unrelated controls usable during pending operations.",
       "design": {
         "figma": {
@@ -15624,20 +15712,21 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.chat_composer",
-        "decisionRef": "naming-exception:legacy-feature-api-chat-input-bar"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "dart": {
-        "symbol": "ChatInputBar",
-        "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
+        "symbol": "ChatInput",
+        "file": "lib/chats/presentation/widgets/chat_input.dart",
         "constructors": [
-          "ChatInputBar"
+          "ChatInput"
         ]
       },
       "surfaces": {
-        "flutter": "ChatInputBar"
-      }
+        "flutter": "ChatInput"
+      },
+      "level": "L5",
+      "roleNoun": "Input"
     },
     {
       "id": "catch.bottom_action",
@@ -15645,7 +15734,7 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchDockSurface",
+      "name": "CatchDock",
       "status": "active",
       "kind": "composite",
       "tier": "T3",
@@ -15912,25 +16001,21 @@
         "conceptId": "catch.bottom_action"
       },
       "dart": {
-        "symbol": "CatchDockSurface",
-        "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
+        "symbol": "CatchDock",
+        "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
         "constructors": [
-          "CatchDockSurface",
-          "CatchDockSurface.primary",
-          "CatchDockSurface.primaryContent"
+          "CatchDock",
+          "CatchDock.primary",
+          "CatchDock.primaryContent"
         ]
       },
       "surfaces": {
-        "flutter": "CatchDockSurface"
+        "flutter": "CatchDock"
       },
       "level": "L3",
-      "roleNoun": "Surface",
+      "roleNoun": "Dock",
       "naming": {
-        "useCase": "Dock",
-        "comparedWith": [
-          "catch.surface"
-        ],
-        "reason": "Persistent control docking owns safe-area geometry and shared utility/primary-action chrome. The Surface primitive owns paint only; Sheet owns modal content and header layout. Utility and primary actions use one dock renderer with named recipes, while already-framed primary content reuses the same action body."
+        "useCase": ""
       }
     },
     {
@@ -15939,10 +16024,16 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchMapPreview",
+      "name": "MapPreview",
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "LocationPreview",
+        "StaticMap",
+        "MiniMap",
+        "MapThumbnail"
+      ],
       "summary": "Read-only, attribution-safe Google Maps viewport for compact location previews with one exact marker and a deterministic no-network fallback.",
       "design": {
         "figma": {
@@ -15979,7 +16070,7 @@
             "type": "enum",
             "required": false,
             "default": "orange",
-            "dartType": "CatchMapMarkerHue",
+            "dartType": "MapMarkerHue",
             "values": [
               "azure",
               "green",
@@ -16017,9 +16108,9 @@
           "theme.light.color.ink3"
         ],
         "dartRoles": [
-          "CatchGoogleMap",
-          "CatchMapMarker",
-          "CatchMapMarkerHue",
+          "LocationMap",
+          "MapMarker",
+          "MapMarkerHue",
           "LocationCoordinate"
         ],
         "goldens": [],
@@ -16040,7 +16131,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use CatchMapPreview inside compact cards; it disables gestures and controls, preserves Google attribution space, and enables Android lite mode automatically.",
+          "Use MapPreview inside compact cards; it disables gestures and controls, preserves Google attribution space, and enables Android lite mode automatically.",
           "Use enableNetworkTiles=false only for deterministic tests, Widgetbook, captures, or offline review; production call sites default to real Google tiles."
         ]
       },
@@ -16054,19 +16145,21 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.map_preview"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "dart": {
-        "symbol": "CatchMapPreview",
-        "file": "lib/locations/shared/catch_map_preview.dart",
+        "symbol": "MapPreview",
+        "file": "lib/locations/shared/map_preview.dart",
         "constructors": [
-          "CatchMapPreview"
+          "MapPreview"
         ]
       },
       "surfaces": {
-        "flutter": "CatchMapPreview"
-      }
+        "flutter": "MapPreview"
+      },
+      "level": "L5",
+      "roleNoun": "Preview"
     },
     {
       "id": "catch.meta_row",
@@ -16416,16 +16509,23 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchOrganizerPoster",
+      "name": "CatchPoster",
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "EditorialCard",
+        "MediaCard",
+        "FeatureCard",
+        "PosterCard",
+        "OrganizerPoster"
+      ],
       "summary": "Canonical organizer material with editorial, photo, split, and minimal layouts plus paper, ink, and signal treatments.",
       "dart": {
-        "symbol": "CatchOrganizerPoster",
-        "file": "lib/clubs/shared/catch_organizer_poster.dart",
+        "symbol": "CatchPoster",
+        "file": "packages/catch_ui/lib/src/components/catch_poster.dart",
         "constructors": [
-          "CatchOrganizerPoster"
+          "CatchPoster"
         ]
       },
       "design": {
@@ -16495,11 +16595,11 @@
             "dartType": "VoidCallback?"
           },
           {
-            "name": "layout",
+            "name": "variant",
             "type": "enum",
             "required": false,
             "default": "editorial",
-            "dartType": "OrganizerPosterLayout",
+            "dartType": "CatchPosterVariant",
             "values": [
               "editorial",
               "photo",
@@ -16508,11 +16608,11 @@
             ]
           },
           {
-            "name": "treatment",
+            "name": "tone",
             "type": "enum",
             "required": false,
             "default": "paper",
-            "dartType": "OrganizerPosterTreatment",
+            "dartType": "CatchPosterTone",
             "values": [
               "paper",
               "ink",
@@ -16561,18 +16661,18 @@
           "theme.light.color.ink"
         ],
         "dartRoles": [
-          "OrganizerPosterLayout",
-          "OrganizerPosterTreatment",
-          "OrganizerPosterArtwork",
-          "CatchClubCover",
+          "CatchPosterVariant",
+          "CatchPosterTone",
+          "ClubPlaceholderCover",
+          "ClubCover",
           "CatchSurface"
         ],
         "goldens": [],
         "members": [
           {
             "id": "catch.organizer_poster.artwork",
-            "symbol": "OrganizerPosterArtwork",
-            "file": "lib/clubs/shared/catch_organizer_poster.dart",
+            "symbol": "ClubPlaceholderCover",
+            "file": "lib/clubs/shared/club_placeholder_cover.dart",
             "summary": "Deterministic no-photo organizer artwork used by poster and compact cover states.",
             "states": [
               "standard",
@@ -16584,12 +16684,14 @@
               "parentConceptId": "catch.organizer_poster",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.organizer_poster"
-            }
+            },
+            "level": "L5",
+            "roleNoun": "Cover"
           },
           {
             "id": "catch.organizer_poster.explore",
-            "symbol": "ExploreOrganizerPosterCard",
-            "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
+            "symbol": "ClubCard",
+            "file": "lib/explore/presentation/widgets/club_card.dart",
             "summary": "Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster.",
             "states": [
               "photo",
@@ -16603,6 +16705,64 @@
               "parentConceptId": "catch.organizer_poster",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.organizer_poster"
+            },
+            "level": "L5",
+            "roleNoun": "Card"
+          },
+          {
+            "id": "catch.organizer_poster.image",
+            "symbol": "CatchPosterImage",
+            "file": "packages/catch_ui/lib/src/components/catch_poster.dart",
+            "summary": "Poster media framed with the poster radius and an optional overlay; the photo and split layouts use it square.",
+            "states": [
+              "rounded",
+              "square",
+              "with-overlay"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.organizer_poster",
+              "parentConceptId": "catch.organizer_poster",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.organizer_poster"
+            },
+            "level": "L3",
+            "roleNoun": "Image",
+            "naming": {
+              "useCase": "Poster",
+              "comparedWith": [
+                "catch.organizer_poster"
+              ],
+              "reason": "Frames supplied poster media with the poster radius and overlay; it is image anatomy of the Poster concept and does not load or grade a source."
+            }
+          },
+          {
+            "id": "catch.organizer_poster.header",
+            "symbol": "CatchPosterHeader",
+            "file": "packages/catch_ui/lib/src/components/catch_poster.dart",
+            "summary": "Poster copy with kicker, title and optional arrow, tagline, meta and footer, in regular, compact, roomy and on-photo modes.",
+            "states": [
+              "regular",
+              "compact",
+              "roomy",
+              "on-photo",
+              "with-footer"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.organizer_poster",
+              "parentConceptId": "catch.organizer_poster",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.organizer_poster"
+            },
+            "level": "L3",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "Poster",
+              "comparedWith": [
+                "catch.organizer_poster"
+              ],
+              "reason": "Owns the poster heading assembly and its tone-resolved colors; it is heading anatomy of the Poster concept, not a general section heading."
             }
           }
         ],
@@ -16644,7 +16804,12 @@
         "conceptId": "catch.organizer_poster"
       },
       "surfaces": {
-        "flutter": "CatchOrganizerPoster"
+        "flutter": "CatchPoster"
+      },
+      "level": "L3",
+      "roleNoun": "Poster",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -16765,7 +16930,7 @@
           "theme.light.color.ink"
         ],
         "dartRoles": [
-          "ProfileHeroWidget",
+          "ProfileHeader",
           "ProfilePhoto",
           "CatchSurface"
         ],
@@ -16821,16 +16986,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchClubCover",
+      "name": "ClubCover",
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "ClubCoverImage",
+        "ClubImage",
+        "ClubPhoto"
+      ],
       "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
       "dart": {
-        "symbol": "CatchClubCover",
-        "file": "lib/clubs/shared/catch_club_cover.dart",
+        "symbol": "ClubCover",
+        "file": "lib/clubs/shared/club_cover.dart",
         "constructors": [
-          "CatchClubCover"
+          "ClubCover"
         ]
       },
       "design": {
@@ -16887,7 +17057,7 @@
           "Club.primaryClubPhotoUrl",
           "CatchGradedImage",
           "CatchNetworkImage",
-          "OrganizerPosterArtwork"
+          "ClubPlaceholderCover"
         ],
         "goldens": [],
         "accessibility": {
@@ -16920,12 +17090,14 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.club_cover"
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "surfaces": {
-        "flutter": "CatchClubCover"
-      }
+        "flutter": "ClubCover"
+      },
+      "level": "L5",
+      "roleNoun": "Cover"
     },
     {
       "id": "catch.motion_viewport",

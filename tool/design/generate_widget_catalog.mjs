@@ -154,9 +154,10 @@ export function namingFindings({declarations, symbolDeclarations}) {
   return [...findings.values()].sort((a, b) => compare(a.file, b.file) || compare(a.name, b.name));
 }
 
+// Debt is keyed by symbol so moving a file never turns carried debt into new debt.
 export function namingRatchetProblems({findings, baseline, redirects = {}}) {
-  const allowed = new Map((baseline?.allowedFindings ?? []).map((entry) => [`${entry.file}::${entry.name}`, entry]));
-  const current = new Map(findings.map((finding) => [`${finding.file}::${finding.name}`, finding]));
+  const allowed = new Map((baseline?.allowedFindings ?? []).map((entry) => [entry.name, entry]));
+  const current = new Map(findings.map((finding) => [finding.name, finding]));
   const problems = [];
   for (const [key, finding] of current) {
     const added = finding.issues.filter((issue) => !(allowed.get(key)?.issues ?? []).includes(issue));
@@ -176,11 +177,11 @@ export function namingRatchetProblems({findings, baseline, redirects = {}}) {
 
 /** Write mode only removes fixed debt; it never admits a new finding. */
 export function prunedNamingBaseline({findings, baseline}) {
-  const current = new Map(findings.map((finding) => [`${finding.file}::${finding.name}`, finding]));
+  const current = new Map(findings.map((finding) => [finding.name, finding]));
   const allowedFindings = (baseline?.allowedFindings ?? []).flatMap((entry) => {
-    const finding = current.get(`${entry.file}::${entry.name}`);
+    const finding = current.get(entry.name);
     const issues = entry.issues.filter((issue) => finding?.issues.includes(issue));
-    return issues.length > 0 ? [{...entry, issues}] : [];
+    return issues.length > 0 ? [{...entry, file: finding.file, issues}] : [];
   });
   return {...baseline, allowedFindings};
 }

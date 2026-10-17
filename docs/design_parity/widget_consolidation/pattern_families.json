@@ -561,7 +561,7 @@
           "target": "CatchAsyncBoundary"
         },
         {
-          "symbol": "CatchStartupLoadingScreen",
+          "symbol": "SplashScreen",
           "disposition": "register",
           "preview": "required",
           "rationale": "App-start screen composition that uses the indicator but should not become another primitive concept."
@@ -2546,7 +2546,7 @@
       "priority": "P1",
       "status": "approved",
       "targetContract": "catch.journey_steps",
-      "qualityReference": "CatchStepRowList",
+      "qualityReference": "CatchStepList",
       "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
       "acceptedVisualDelta": [
         "Preserve normal-size production instruction rows, trace geometry, typography and accent. At large text, measure the scaled number column so two-digit indices stay on one line and reflow supporting copy in the remaining space.",
@@ -2554,13 +2554,13 @@
       ],
       "members": [
         {
-          "symbol": "CatchStepRowList",
+          "symbol": "CatchStepList",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Passive numbered instructions use the Step RowList responsibility; the concrete input and behavior differ from FormRowList."
         },
         {
-          "symbol": "CatchFormRowList",
+          "symbol": "CatchFormList",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Typed editor selection, accordion state and patch saves remain field-owned orchestration, not an instruction list."
@@ -2574,7 +2574,7 @@
         {
           "symbol": "CatchJourneySteps",
           "disposition": "unify",
-          "target": "CatchStepRowList",
+          "target": "CatchStepList",
           "preview": "not-applicable",
           "rationale": "Rename the preserved instructional sequence to the deterministic role; retain its stable contract identity."
         },
@@ -2802,7 +2802,7 @@
       "priority": "P1",
       "status": "approved",
       "targetContract": "catch.bottom_action",
-      "qualityReference": "CatchDockSurface",
+      "qualityReference": "CatchDock",
       "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
       "acceptedVisualDelta": [
         "Preserve production paint, button and content geometry, iOS floating chrome, Android anchored chrome, utility safe-area ownership and embedded action-body behavior.",
@@ -2811,7 +2811,7 @@
       ],
       "members": [
         {
-          "symbol": "CatchDockSurface",
+          "symbol": "CatchDock",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Shared dock paint and action contents; typed named recipes preserve the meaning of each caller."
@@ -2819,21 +2819,21 @@
         {
           "symbol": "CatchBottomDock",
           "disposition": "unify",
-          "target": "CatchDockSurface",
+          "target": "CatchDock",
           "preview": "not-applicable",
           "rationale": "Utility chrome belongs to the default required-child recipe."
         },
         {
           "symbol": "CatchBottomAction",
           "disposition": "unify",
-          "target": "CatchDockSurface.primary",
+          "target": "CatchDock.primary",
           "preview": "not-applicable",
           "rationale": "The primary action is a dock recipe with automatic platform chrome, not a separate surface implementation."
         },
         {
           "symbol": "CatchBottomActionContent",
           "disposition": "unify",
-          "target": "CatchDockSurface.primaryContent",
+          "target": "CatchDock.primaryContent",
           "preview": "not-applicable",
           "rationale": "One existing production caller supplies its own surface; reuse the exact primary body without exposing another renderer class."
         },
@@ -3111,7 +3111,7 @@
       ],
       "members": [
         {
-          "symbol": "CatchFormRowList",
+          "symbol": "CatchFormList",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Owns section composition, accordion lifetime, commit policy and caller save delegation."
@@ -3646,28 +3646,21 @@
     {
       "id": "section-row-list-anatomy",
       "title": "Section-owned row and separator layout",
-      "intent": "Name the existing section anatomy by its row-list responsibility while retaining one separator renderer.",
+      "intent": "Name the existing section anatomy by its responsibility while retaining one separator renderer. Superseded naming: the 2026-09-09 review chose RowList; blueprint D15 (2026-10-18) retired RowList, defined Body as the content composition below chrome, and kept CatchSectionList for ordered sections, so the canonical name is CatchSectionBody.",
       "priority": "P1",
       "status": "approved",
       "targetContract": "catch.section",
-      "qualityReference": "CatchSectionRowList",
-      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "qualityReference": "CatchSectionBody",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review; renamed under owner-ratified blueprint D15 on 2026-10-18",
       "acceptedVisualDelta": [
         "No visual change. Preserve content and field separator placement, direct-field inference, adapter fallback, empty lists and direct-child precedence."
       ],
       "members": [
         {
-          "symbol": "CatchSectionRowList",
+          "symbol": "CatchSectionBody",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "The parent Section composes this row-stack anatomy and retains headers, perimeter and field interaction scope. Editing/save orchestration and numbered instruction rendering belong to the distinct FormRowList and StepRowList."
-        },
-        {
-          "symbol": "CatchSectionBody",
-          "disposition": "unify",
-          "target": "CatchSectionRowList",
-          "preview": "not-applicable",
-          "rationale": "Replace the vague Body role with the reviewed Section RowList identity. The renderer and all enum modes remain unchanged."
+          "rationale": "The parent Section composes this row-stack anatomy below its header and retains headers, perimeter and field interaction scope. Editing/save orchestration and numbered instruction rendering belong to the distinct CatchFormList and CatchStepList."
         }
       ]
     },
@@ -3754,7 +3747,7 @@
       ],
       "members": [
         {
-          "symbol": "CatchFormStepRowList",
+          "symbol": "CatchFormStepList",
           "disposition": "register",
           "preview": "required",
           "rationale": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormRowList edits values and coordinates patch saves; StepRowList presents passive numbered instructions without navigation or completion status."
@@ -3768,7 +3761,7 @@
         {
           "symbol": "CatchFormStepOverview",
           "disposition": "unify",
-          "target": "CatchFormStepRowList",
+          "target": "CatchFormStepList",
           "preview": "not-applicable",
           "rationale": "Replace the vague Overview role with the reviewed FormStep RowList identity. Preserve the same navigation-field renderer, status labels, callbacks and sheet result."
         },

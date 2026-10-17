@@ -16,7 +16,7 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
@@ -51,8 +51,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
@@ -124,7 +124,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
@@ -273,7 +273,7 @@ import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
@@ -6500,21 +6500,21 @@ class _ChatComposerStatesCaptureState
           child: Column(
             children: [
               const Spacer(),
-              ChatInputBar(
+              ChatInput(
                 controller: _readyController,
                 sending: false,
                 onSend: () {},
                 onSendImage: () {},
               ),
               const SizedBox(height: 12),
-              ChatInputBar(
+              ChatInput(
                 controller: _sendingController,
                 sending: true,
                 onSend: () {},
                 onSendImage: () {},
               ),
               const SizedBox(height: 12),
-              ChatInputBar(
+              ChatInput(
                 controller: _imagePendingController,
                 sending: false,
                 sendingImage: true,
@@ -6522,7 +6522,7 @@ class _ChatComposerStatesCaptureState
                 onSendImage: () {},
               ),
               const SizedBox(height: 12),
-              ChatInputBar(
+              ChatInput(
                 controller: _disabledController,
                 sending: false,
                 disabledReason: 'This chat is closed.',
@@ -8393,8 +8393,8 @@ final _authAustraliaProviderOverrides = <Object>[
 ];
 
 const _authHostBrandImages = <ImageProvider<Object>>[
-  AssetImage(CatchStartupLoadingScreen.hostLightIconAsset),
-  AssetImage(CatchStartupLoadingScreen.hostDarkIconAsset),
+  AssetImage(SplashScreen.hostLightIconAsset),
+  AssetImage(SplashScreen.hostDarkIconAsset),
   AssetImage('flags/in.png', package: 'country_code_picker'),
   AssetImage('flags/au.png', package: 'country_code_picker'),
 ];
@@ -9149,7 +9149,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     precache: <ImageProvider<Object>>[_profileHeroImage],
     builder: (context) =>
-        CatchProfileView(data: _profileFixture, onReact: (target, comment) {}),
+        ProfileBody(data: _profileFixture, onReact: (target, comment) {}),
   ),
   ScreenCaptureEntry(
     id: 'profile_self_loading',
@@ -11950,7 +11950,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       child: SizedBox(
         width: double.infinity,
         height: CatchLayout.exploreDiscoveryCoverHeight,
-        child: CatchCoverStory(
+        child: FeaturedEventPoster(
           activityKind: ActivityKind.walking,
           kicker: 'Bright activity backdrop',
           title: 'Thursday Evening Walk',
@@ -17472,8 +17472,8 @@ final _profileFixture = ProfileView(
   kicker: 'Was at - Sundowner 5K',
   kickerActivity: ActivityKind.socialRun,
   metaLine: 'Designer - Bandra',
-  sections: <ProfileSection>[
-    ProfileCompatibilitySection(
+  sections: <ProfileSectionData>[
+    ProfileCompatibilitySectionData(
       title: 'Why you might click',
       reasons: const <String>[
         'You both run at dawn around Bandra',
@@ -17497,7 +17497,7 @@ final _profileFixture = ProfileView(
         'A perfect Sunday',
       ),
     ),
-    ProfileRunningSection(
+    ProfileRunningSectionData(
       pace: '5:20-6:00 /km',
       distance: '5K, 10K',
       reasons: const <String>['Headspace miles'],
@@ -17513,12 +17513,12 @@ final _profileFixture = ProfileView(
         'Running rhythm',
       ),
     ),
-    ProfilePhotoSection(
+    ProfilePhotoSectionData(
       image: _profileHeroImage,
       caption: 'Sunday sea-face crew',
       reaction: _target('photo-2', SwipeReactionTargetType.photo, 'Photo 2'),
     ),
-    ProfileFactsSection(
+    ProfileFactsSectionData(
       title: 'Details',
       facts: <ProfileFact>[
         ProfileFact(

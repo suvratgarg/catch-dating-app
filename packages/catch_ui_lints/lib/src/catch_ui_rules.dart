@@ -219,7 +219,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const eventDetailPrefersPhotoThumbnail = LintCode(
     'catch_event_detail_prefers_photo_thumbnail',
-    'Event detail visuals must use CatchEventThumbnail so photos lead when available and activity artwork is only the fallback.',
+    'Event detail visuals must use EventThumbnail so photos lead when available and activity artwork is only the fallback.',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -861,7 +861,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (!_isShellImplementationPath &&
-        (typeName == 'CatchAdaptiveTabScaffold' ||
+        (typeName == 'AdaptiveTabScaffold' ||
             (typeName == 'Scaffold' && _scaffoldOwnsTabNavigation(node)))) {
       _reportAtNode(node, CatchUiLayoutRules.shellOwnsTabScaffold);
     }
@@ -889,7 +889,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _checkEdgeInsetsSpacing(node);
     }
 
-    if (isEventDetailPath && typeName == 'EventActivityBackdrop') {
+    if (isEventDetailPath && typeName == 'EventBackdropImage') {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchUiLayoutRules.eventDetailPrefersPhotoThumbnail,
@@ -1226,7 +1226,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final bottomNavigation = _namedArgument(node, 'bottomNavigationBar');
     if (bottomNavigation == null) return false;
     return RegExp(
-      r'\b(?:BottomNavigationBar|NavigationBar|CupertinoTabBar|CatchTabBar|CatchAdaptiveTabScaffold)\s*\(',
+      r'\b(?:BottomNavigationBar|NavigationBar|CupertinoTabBar|CatchTabBar|AdaptiveTabScaffold)\s*\(',
     ).hasMatch(bottomNavigation.toSource());
   }
 

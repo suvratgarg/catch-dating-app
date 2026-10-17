@@ -1403,6 +1403,44 @@ the alias gate, prefix test and ratchet each ship with a seeded failing probe
 (a new `EventTicket`, a new `ProfilePanel`, a new `CatchFoo` in a feature
 folder); workspace analyze green.
 
+**Phase 7b status (2026-10-18).** Landed on `codex/xf-component-naming-tiers`:
+the alias gate, redirects, prefix and coverage checks, and every rename in the
+table above. The gate also forced the widgets that moved with renamed files to
+conform: the profile surface (`ProfileSection`, `ProfileHeader`,
+`ProfileCompatibilitySection` and siblings, with the view models renamed to
+`*SectionData`), `FeaturedEventTopBar`, `FeaturedEventBody`,
+`ExploreClubTagList`, and the roster helpers `ParticipantRowAction`,
+`ParticipantDecisionButton` and `ParticipantStat`. `CatchPoster` gained
+registered anatomy (`CatchPosterImage`, `CatchPosterHeader`) in place of
+widget-returning helpers. Moving it into `catch_ui` put it under the text-scale
+2.0 golden, which exposed an existing overflow in the editorial layout; the copy
+now keeps its 42% share and grows past it at large text. Golden coverage now
+also counts public widgets in `lib/core/widgets`, which the prefix-only
+surface had dropped (254 surfaces, all covered). The ratchet fell from 338 to
+276 entries.
+
+Deviations and remaining 7b work:
+
+- `EventCard` and the other renamed `lib/core/widgets` files stay in
+  `lib/core/widgets`: it is a golden-source home, and moving them out would
+  remove their goldens. `catch.event_card` and `catch.startup_loading_screen`
+  stay concepts with a decision note so they can keep their registered members.
+- The `CatchAsyncState` family is the last stray prefix (three ratchet entries).
+  Moving it into `lib/core/riverpod_ui` touches
+  `lib/hosts/today/presentation/host_today_view_model.dart`, which another
+  active task holds; move it after that task lands.
+- The splash screen's Widgetbook catalog id still reads
+  `core.widgets.catch_startup_loading_screen` because `lib/l10n/app_en.arb`
+  references it and another active task holds that file.
+- Not yet done: extracting `CatchTable` from the participant table shell,
+  rendering `EventCard` through `CatchTicket`, comparing
+  `FeaturedEventPoster` with `CatchPoster`, and renaming the layout constants
+  named after old widgets. Each changes rendering, so each needs visual review.
+- The analyzer plugin still lists `lib/core/widgets/event_activity_visuals.dart`
+  as a theme-independent art path. The backdrop now uses
+  `CatchTokens.editorialWhite` and needs no exemption, so that entry is dead;
+  remove it in the next plugin change.
+
 #### Phase 7b.2 — Naming sweep
 
 Rename the remaining feature-naming failures

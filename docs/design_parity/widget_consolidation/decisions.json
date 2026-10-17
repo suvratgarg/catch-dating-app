@@ -2820,7 +2820,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already sharing internals: both public celebration entry points delegate to CatchCelebrationScreen with different moment kinds, details, payment/supplemental data, and action copy.",
+      "rationale": "K3 already sharing internals: both public celebration entry points delegate to CelebrationScreen with different moment kinds, details, payment/supplemental data, and action copy.",
       "decidedBy": "codex-rule:K3",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -3163,7 +3163,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: the celebration detail rows belong to separate deterministic surface owners, CatchCelebrationScreen for standalone immersive moments and PaperCelebrationScaffold for step-flow confirmations; merging would add mode and layout-family styling knobs without simplifying callers.",
+      "rationale": "K4 churn threshold: the celebration detail rows belong to separate deterministic surface owners, CelebrationScreen for standalone immersive moments and PaperCelebrationScaffold for step-flow confirmations; merging would add mode and layout-family styling knobs without simplifying callers.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -5047,7 +5047,7 @@
           "action": "keep"
         },
         {
-          "name": "CatchStartupLoadingScreen",
+          "name": "SplashScreen",
           "action": "keep"
         },
         {
@@ -5422,7 +5422,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CatchRosterActionCell",
+          "name": "ParticipantRowAction",
           "action": "keep"
         },
         {
@@ -5449,7 +5449,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): mode-dispatching sheet lead (list/summary) vs single selected-event card adapter over CatchEventCard.",
+      "rationale": "Name-family review (batch 2): mode-dispatching sheet lead (list/summary) vs single selected-event card adapter over EventCard.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5910,11 +5910,11 @@
       "status": "executed-parity-handoff"
     },
     {
-      "clusterId": "handoff-1A2: CatchEventCard.spotlight variant",
+      "clusterId": "handoff-1A2: EventCard.spotlight variant",
       "decision": "delete",
       "members": [
         {
-          "name": "CatchEventCard",
+          "name": "EventCard",
           "action": "keep",
           "note": "spotlight named constructor deleted; ticket variant stays (DS EventTicket)"
         }
@@ -5925,11 +5925,11 @@
       "status": "executed-parity-handoff"
     },
     {
-      "clusterId": "handoff-1A3: CatchEventCard.compact variant",
+      "clusterId": "handoff-1A3: EventCard.compact variant",
       "decision": "delete",
       "members": [
         {
-          "name": "CatchEventCard",
+          "name": "EventCard",
           "action": "keep",
           "note": "compact named constructor deleted; condensed map role belongs to the DateTicket"
         }
@@ -6510,7 +6510,7 @@
           "note": "catch.async_value"
         },
         {
-          "name": "CatchStartupLoadingScreen",
+          "name": "SplashScreen",
           "action": "register-composition"
         }
       ],
@@ -6568,7 +6568,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CatchClubCover",
+          "name": "ClubCover",
           "action": "keep"
         },
         {
@@ -6576,7 +6576,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. CatchClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
+      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. ClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
       "date": "2026-07-19",
       "status": "recorded-concept-reconciliation"
@@ -7682,7 +7682,7 @@
       "clusterId": "pattern-family:step-instructions-and-progress",
       "patternFamilyId": "step-instructions-and-progress",
       "decision": "keep-distinct-and-retire-unused",
-      "canonicalSymbol": "CatchStepRowList",
+      "canonicalSymbol": "CatchStepList",
       "members": [
         {
           "name": "CatchJourneySteps",
@@ -7697,7 +7697,7 @@
           "action": "delete"
         },
         {
-          "name": "CatchFormRowList",
+          "name": "CatchFormList",
           "action": "keep"
         },
         {
@@ -7806,7 +7806,7 @@
       "clusterId": "pattern-family:persistent-dock-and-primary-action",
       "patternFamilyId": "persistent-dock-and-primary-action",
       "decision": "absorb-into-existing",
-      "canonicalSymbol": "CatchDockSurface",
+      "canonicalSymbol": "CatchDock",
       "members": [
         {
           "name": "CatchBottomDock",
@@ -8286,10 +8286,10 @@
       "clusterId": "pattern-family:section-row-list-anatomy",
       "patternFamilyId": "section-row-list-anatomy",
       "decision": "absorb-into-existing",
-      "canonicalSymbol": "CatchSectionRowList",
+      "canonicalSymbol": "CatchSectionBody",
       "members": [
         {
-          "name": "CatchSectionRowList",
+          "name": "CatchSectionBody",
           "action": "keep"
         },
         {
@@ -8361,7 +8361,7 @@
           "action": "keep"
         },
         {
-          "name": "CatchFormStepRowList",
+          "name": "CatchFormStepList",
           "action": "keep"
         },
         {

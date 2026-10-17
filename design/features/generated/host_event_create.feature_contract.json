@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-15",
   "sourceDigest": "sha256:3bea06be5e17cda80fffaff6a1e320236220a5ff99084b71c5b0c11d7eaba8c8",
-  "resolvedDigest": "sha256:8a8e4112b4604a958eba6f8486b9d2728e1eeaf509875d8d4c8633a73a8fbd10",
+  "resolvedDigest": "sha256:3d56cc89b38064a1e2b4754d69438b60811f36fa8ae228df72d52d2dd0eb2349",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4551,10 +4551,10 @@
             "id": "catch.map_preview",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchMapPreview",
-              "file": "lib/locations/shared/catch_map_preview.dart",
+              "symbol": "MapPreview",
+              "file": "lib/locations/shared/map_preview.dart",
               "constructors": [
-                "CatchMapPreview"
+                "MapPreview"
               ]
             }
           },

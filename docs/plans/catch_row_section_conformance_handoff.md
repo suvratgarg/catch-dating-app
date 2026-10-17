@@ -59,7 +59,7 @@ The old public PersonRow, RecordRow, and RowPressSurface exports are removed.
 | Today | Shell -> root scroll -> SectionList.panes(body:, trailing:) -> event spotlight, attention rows, bounded upcoming preview and actions. Each pane publishes its own interaction width. | Today projects operational evidence; unknown task totals remain partial, and checked-in people are not relabelled as attendees. |
 | Messaging | Shell -> Inbox/Sends views -> scope and audience controls -> adaptive person collection/detail. Inbox rows use ConversationLayout; New message pushes a person directory, then explicit available routes. Sends has one sealed history/intent/compose/report state. | Controllers own paging, recipient authorization and send operations. Person projection joins only verified organizer-scoped identities; drafts include person, scope and route. |
 
-`CatchFormRowList` remains the package-owned adapter for schema-driven editing.
+`CatchFormList` remains the package-owned adapter for schema-driven editing.
 Native text inputs, transcript bubbles, draggable spatial items, metric groups,
 media and true multi-column tables retain their specialized owners. This does
 not authorize a second ordinary interactive row shell. Menu, accordion and
@@ -349,7 +349,7 @@ render/state helpers; passive layouts are immutable configuration values.
 | `.dependentFieldRows` checkpoint | `.dependentRows(...)` or named dependent-group entry | One controlling Field and attached region. Choose one integration, not parallel families. |
 | Generic `.plain/.contained(child:)` | Explicit content-section recipe | Preserve real prose/media/metric uses; forbid ordinary row lists through this escape hatch. |
 | `title/count/trailing` loose header props | `CatchSectionHeaderData(title:, count:, action:)` | Header anatomy and rule owned once; plural actions only when there is a real requirement. |
-| `CatchFormRowList<P>` | Consider `CatchFormSection<P>` when separating its coordinator | It renders one section and binds descriptors. Defer a cosmetic rename if no responsibility changes; keep a separate coordinator for state shared across sections. |
+| `CatchFormList<P>` | Consider `CatchFormSection<P>` when separating its coordinator | It renders one section and binds descriptors. Defer a cosmetic rename if no responsibility changes; keep a separate coordinator for state shared across sections. |
 | `CatchFormCustomRow.build -> Widget` | Typed layout/editor extension slots | Cannot replace Field with an arbitrary widget. |
 | `CatchAccordionController` | Keep | Extraction already renamed the controller; do not reintroduce `CatchFieldAccordion`. |
 | `CatchFieldLanes.single/divided/custom` | Internal renderer or narrow transparent adapters | Do not permit nested lane scopes to redefine the enclosing section's geometry. |
@@ -739,7 +739,7 @@ separate scroll controllers and the shared public sliver renderer for Preview.
 
 ### Edit
 
-Identity and Contact already use typed `CatchFormRowList<UpdateClubPatch>`
+Identity and Contact already use typed `CatchFormList<UpdateClubPatch>`
 descriptors and a shared `CatchAccordionController`. Preserve this direction;
 close the arbitrary custom-row builder and keep coordinator state separate from
 Field presentation. Permissions produce read-only Fields, not dead tappable

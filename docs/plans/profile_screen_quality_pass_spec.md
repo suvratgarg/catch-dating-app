@@ -24,7 +24,7 @@ Scope — the profile feature is **four surfaces sharing one flagship widget**:
 | Preview tab | tab 2 of `/you` | `ProfileSurface` mode `preview` |
 
 The shared shell is `ProfileSurface` (`lib/swipes/shared/profile_surface/profile_surface.dart:21`)
-over the flagship `CatchProfileView` (`catch_profile_view.dart:27`). The Edit tab
+over the flagship `ProfileBody` (`catch_profile_view.dart:27`). The Edit tab
 is a one-off inline-editor surface; Insights is `UserAnalyticsPanel`.
 
 Data-layer note: profile reads are healthy relative to the systemic findings in
@@ -44,7 +44,7 @@ baselines `artifacts/ui-captures/non-host-reference-baseline-20260625/`;
 
 ## 1. Executive summary
 
-The flagship `CatchProfileView` is genuinely good — it is the proof that the
+The flagship `ProfileBody` is genuinely good — it is the proof that the
 design language works. The problems are around it: the tab you actually live on
 is a form, the preview doesn't promise the truth, photo management has
 destructive one-tap paths, and there is no trust layer at all.
@@ -222,7 +222,7 @@ meant to be dark-first, grade it dark-first.
 
 ## 4. Widget reviews, duplication, primitives, hygiene
 
-### 4.1 `CatchProfileView` / hero — the flagship earns its status
+### 4.1 `ProfileBody` / hero — the flagship earns its status
 
 Graded 4:5 hero, bottom-radius 28 component token, 4-stop scrim, mono kicker,
 Archivo display name, `numericMeta` line, hairline-separated body sections with

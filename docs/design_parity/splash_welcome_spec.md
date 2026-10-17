@@ -131,7 +131,7 @@ In `lib/app_bootstrap.dart` (`runCatchApp`):
 
 ## Part 3 — Re-tone the startup screen (and stop reusing it) `[codex]`
 
-1. `CatchStartupLoadingScreen` becomes the seamless continuation of the
+1. `SplashScreen` becomes the seamless continuation of the
    native splash instead of a brand-color flash: `backgroundColor: t.bg`
    (dark: `t.ink`-register via the standard token resolution — match the
    native dark hex), the mark centered at the same visual size/position
@@ -139,12 +139,12 @@ In `lib/app_bootstrap.dart` (`runCatchApp`):
    only after a 600ms delay (fast boots must never show a spinner). With
    Part 2, this screen is visible only on slow boots — and when it is, it
    is indistinguishable from the native splash except the spinner.
-2. `host_edit_club_route_screen.dart` reuses `CatchStartupLoadingScreen`
+2. `host_edit_club_route_screen.dart` reuses `SplashScreen`
    as a ROUTE loading state (two sites) — wrong altitude. Replace with the
    feature's skeleton loading per the G2 doctrine (match whatever the host
    club editor's loaded composition mimics; a `CatchSkeletonList`-based
    body is acceptable if no mimic exists). After this,
-   `CatchStartupLoadingScreen`'s only consumer is the boot gate — record
+   `SplashScreen`'s only consumer is the boot gate — record
    that in the widget catalog entry.
 
 ## Part 4 — Welcome reel pixel parity `[codex]`
@@ -268,7 +268,7 @@ The installable Host app has a distinct static launch contract:
    the installable Host iOS/Android target and restores the Host-centered iOS
    storyboard plus light/dark platform splash drawables after any
    `flutter_native_splash:create` run.
-4. `CatchStartupLoadingScreen` resolves the Host mark by `AppRole`, so the
+4. `SplashScreen` resolves the Host mark by `AppRole`, so the
    force-update gate cannot flash the Consumer `Catch_` identity.
 5. Host never mounts `CatchConsumerBootstrap` or the Welcome reel. Its static
    native splash remains preserved through initialization and the force-update
@@ -292,7 +292,7 @@ The installable Host app has a distinct static launch contract:
 | Part 1 regenerated native/web splash outputs and cold-launch evidence | aligned | Historical pass ids are retained in Git history; the former tracked pass file and writer are retired. Current verification uses the branding checks and live cold-launch evidence. |
 | Part 2 preserve native splash before startup awaits | aligned | `lib/app_bootstrap.dart` calls `FlutterNativeSplash.preserve` before orientation/Firebase/logger/analytics awaits |
 | Part 2 idempotent native splash removal | aligned | `CatchNativeSplash` owns one platform removal; Consumer removes after the matching boot frame and Host removes after its force-update gate resolves |
-| Part 3 startup screen retone and delayed spinner | aligned | `CatchStartupLoadingScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |
+| Part 3 startup screen retone and delayed spinner | aligned | `SplashScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |
 | Part 3 route-level loading no longer reuses startup screen | aligned | Host club create/edit loading routes use `HostClubEditorLoadingScreen`; widget catalog records startup as boot-only |
 | Part 4 Archivo type and motion/layout tokenization | aligned | `CatchTextStyles.welcomeReelHeadline`, `CatchTextStyles.welcomeIntroBody`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
 | Part 4 geometry anchors | aligned with accepted drift | `test/onboarding/onboarding_widgets_test.dart` covers Catch/focus alphabetic-baseline equality, a separate below-text underline, 78%-width font variation, and CTA anchors; `SPLASH-WELCOME-DEBT-001` defers only the single-line `108` inset |
@@ -305,7 +305,7 @@ The installable Host app has a distinct static launch contract:
 | Part 6 static/reel anchor and responsive matrix | aligned | `CatchConsumerBootScreen` and `WelcomeScene` share `CatchLayout` anchor helpers; `test/core/consumer_bootstrap_test.dart` proves exact handoff coordinates and `test/onboarding/welcome_reel_handoff_test.dart` covers intermediate motion, 320–430pt widths, safe areas, and enlarged text |
 | Part 6 Consumer iOS native anchor | aligned | `tool/branding/generate_native_brand_assets.dart` owns the Consumer-only LaunchScreen constraints; the generated storyboard aligns the mark's alpha bounds to the same reference/safe-area/max-width equations without changing Host |
 | Part 7 Host launcher and splash identity | aligned | `tool/branding/generate_catch_icon.swift` applies the locked Archivo axes to singular `Catch Host`; `generate_native_brand_assets.dart` projects Host icon/splash assets into `apps/host`; `test/tooling/host_native_branding_test.dart` rejects fallback fonts, plural naming, clipped marks, and missing installable-target outputs |
-| Part 7 Host static routing handoff | aligned | `CatchStartupLoadingScreen` selects Host light/dark marks by role; `test/core/host_startup_branding_test.dart`, `test/core/consumer_bootstrap_test.dart`, and `test/routing/router_redirect_test.dart` prove no Host reel and direct Login/Home routing |
+| Part 7 Host static routing handoff | aligned | `SplashScreen` selects Host light/dark marks by role; `test/core/host_startup_branding_test.dart`, `test/core/consumer_bootstrap_test.dart`, and `test/routing/router_redirect_test.dart` prove no Host reel and direct Login/Home routing |
 
 ## Acceptance
 

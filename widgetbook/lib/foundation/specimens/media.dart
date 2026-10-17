@@ -192,7 +192,7 @@ class _ActivityGlyphGrid extends StatelessWidget {
 class _ActivityGlyphTile extends StatelessWidget {
   const _ActivityGlyphTile({required this.activity});
 
-  final CatchActivity activity;
+  final ActivityStyle activity;
 
   @override
   Widget build(BuildContext context) {

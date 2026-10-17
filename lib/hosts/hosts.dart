@@ -51,11 +51,11 @@ export 'presentation/host_team_workspace_state.dart'; // public-api: provider-fr
 export 'presentation/payments/host_payment_account_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/payments/host_payment_account_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
-export 'presentation/widgets/catch_roster_board.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_event_attendance_panel.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_event_tools.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_loading_skeletons.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_organizer_switcher.dart'; // public-api: shared Host-shell identity component
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/participant_table.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/stepper_footer.dart'; // public-api: shared presentation component used outside this feature
 export 'today/presentation/host_today_screen.dart'; // public-api: route entry point exposed to app routing

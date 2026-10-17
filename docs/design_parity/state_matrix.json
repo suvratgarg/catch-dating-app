@@ -137,7 +137,7 @@
             "lib/auth/presentation/auth_screen.dart",
             "lib/auth/presentation/phone_page.dart",
             "lib/auth/presentation/otp_page.dart",
-            "lib/core/widgets/catch_startup_loading_screen.dart"
+            "lib/core/widgets/splash_screen.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -936,7 +936,7 @@
             "lib/explore/presentation/widgets/explore_body.dart",
             "lib/explore/presentation/widgets/explore_events_section.dart",
             "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-            "lib/explore/presentation/widgets/catch_cover_story.dart",
+            "lib/explore/presentation/widgets/featured_event_poster.dart",
             "lib/cross_paths/presentation/cross_paths_explore_card.dart"
           ],
           "componentIds": [
@@ -3466,7 +3466,7 @@
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
             "lib/chats/presentation/widgets/message_bubble.dart",
-            "lib/chats/presentation/widgets/chat_input_bar.dart",
+            "lib/chats/presentation/widgets/chat_input.dart",
             "lib/chats/presentation/widgets/chat_share_card.dart",
             "lib/chats/presentation/widgets/suvbot_action_bar.dart"
           ],
@@ -3771,7 +3771,7 @@
               "id": "keyboard_composer",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+              "notes": "ChatInput uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -4204,7 +4204,7 @@
             "lib/public_profile/presentation/public_profile_controller.dart",
             "lib/public_profile/data/public_profile_repository.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart",
-            "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+            "lib/swipes/shared/profile_surface/profile_body.dart",
             "lib/swipes/shared/profile_surface/profile_view_mapper.dart"
           ],
           "componentIds": [
@@ -6730,7 +6730,7 @@
               "id": "club_fetch_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "Without an initial club extra, fetchClubProvider loading renders CatchStartupLoadingScreen and now has a deterministic route capture.",
+              "notes": "Without an initial club extra, fetchClubProvider loading renders SplashScreen and now has a deterministic route capture.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -9146,7 +9146,7 @@
             "packages/catch_ui/lib/src/components/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
-            "lib/chats/presentation/widgets/chat_input_bar.dart",
+            "lib/chats/presentation/widgets/chat_input.dart",
             "lib/chats/presentation/widgets/message_bubble.dart"
           ],
           "componentIds": [
@@ -9366,7 +9366,7 @@
               "id": "composer_enabled",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatInputBar enabled state is covered by shared send tests plus Host Chat composer-state and keyboard-open multiline captures.",
+              "notes": "ChatInput enabled state is covered by shared send tests plus Host Chat composer-state and keyboard-open multiline captures.",
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
@@ -9408,7 +9408,7 @@
               "id": "send_message_pending",
               "kind": "mutation",
               "status": "captured",
-              "notes": "ChatController.sendMessageMutation pending drives the ChatInputBar send loading indicator; Host Chat composer-state capture includes send-pending UI.",
+              "notes": "ChatController.sendMessageMutation pending drives the ChatInput send loading indicator; Host Chat composer-state capture includes send-pending UI.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ],

@@ -7,7 +7,7 @@ import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -73,7 +73,7 @@ void main() {
               disableAnimations: true,
             );
             final brand = tester.getRect(
-              find.byKey(CatchStartupBrandStage.markKey),
+              find.byKey(StartupBrandHeader.markKey),
             );
             final card = tester.getRect(find.byType(HostAuthCard));
             final laneLeft = size.width > CatchLayout.maxContentWidth
@@ -97,7 +97,7 @@ void main() {
                 .goToStep(AuthStep.otp);
             await tester.pump();
             expect(
-              tester.getRect(find.byKey(CatchStartupBrandStage.markKey)),
+              tester.getRect(find.byKey(StartupBrandHeader.markKey)),
               brand,
             );
             expect(tester.getRect(find.byType(HostAuthCard)).top, card.top);
@@ -236,7 +236,7 @@ void main() {
 
       expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.byType(HostAuthFlowFrame), findsOneWidget);
-      expect(find.byType(CatchStartupBrandStage), findsOneWidget);
+      expect(find.byType(StartupBrandHeader), findsOneWidget);
       expect(find.byType(HostAuthCard), findsOneWidget);
       expect(find.text('Sign in with your phone'), findsOneWidget);
       expect(
@@ -247,8 +247,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.utility,
+              widget is CatchDock && widget.variant == CatchDockVariant.utility,
         ),
         findsNothing,
       );
@@ -279,7 +278,7 @@ void main() {
 
       await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
       final logoBefore = tester.getCenter(
-        find.byKey(CatchStartupBrandStage.markKey),
+        find.byKey(StartupBrandHeader.markKey),
       );
 
       await tester.enterText(
@@ -308,7 +307,7 @@ void main() {
       expect(find.textContaining('Resend code in'), findsOneWidget);
       expect(find.text('Verify'), findsNothing);
       expect(
-        tester.getCenter(find.byKey(CatchStartupBrandStage.markKey)),
+        tester.getCenter(find.byKey(StartupBrandHeader.markKey)),
         logoBefore,
       );
     });
@@ -319,14 +318,11 @@ void main() {
       AppConfig.configureEntrypointRole(AppRole.host);
       addTearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
       await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: const CatchStartupLoadingScreen(),
-        ),
+        MaterialApp(theme: AppTheme.light, home: const SplashScreen()),
       );
       await tester.pump();
       final startupLogo = tester.getCenter(
-        find.byKey(CatchStartupBrandStage.markKey),
+        find.byKey(StartupBrandHeader.markKey),
       );
 
       final repository = FakeAuthRepository();
@@ -336,7 +332,7 @@ void main() {
       await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
 
       expect(
-        tester.getCenter(find.byKey(CatchStartupBrandStage.markKey)),
+        tester.getCenter(find.byKey(StartupBrandHeader.markKey)),
         startupLogo,
       );
     });
@@ -354,8 +350,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.utility,
+              widget is CatchDock && widget.variant == CatchDockVariant.utility,
         ),
         findsOneWidget,
       );

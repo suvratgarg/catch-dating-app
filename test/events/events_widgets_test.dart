@@ -23,7 +23,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart'
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
+import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -244,9 +244,7 @@ void main() {
       );
 
       expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
-      final preview = tester.widget<CatchMapPreview>(
-        find.byType(CatchMapPreview),
-      );
+      final preview = tester.widget<MapPreview>(find.byType(MapPreview));
       expect(preview.coordinate, const LocationCoordinate(22.7196, 75.8577));
       expect(preview.path, const [
         LocationCoordinate(22.7196, 75.8577),
@@ -743,8 +741,8 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchDockSurface &&
-                widget.variant == CatchDockSurfaceVariant.utility,
+                widget is CatchDock &&
+                widget.variant == CatchDockVariant.utility,
           ),
           findsNothing,
         );

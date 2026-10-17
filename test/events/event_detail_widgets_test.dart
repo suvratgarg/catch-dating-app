@@ -5,7 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -659,8 +659,8 @@ void main() {
 
       for (final mode in EventDetailPresentationMode.values) {
         await pumpHero(mode);
-        final thumbnail = tester.widget<CatchEventThumbnail>(
-          find.byType(CatchEventThumbnail),
+        final thumbnail = tester.widget<EventThumbnail>(
+          find.byType(EventThumbnail),
         );
         expect(
           thumbnail.photoUrl,

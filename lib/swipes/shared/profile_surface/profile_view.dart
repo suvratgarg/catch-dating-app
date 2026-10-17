@@ -2,13 +2,13 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:flutter/widgets.dart';
 
-/// Presentation model for the flagship profile surface ([CatchProfileView]).
+/// Presentation model for the flagship profile surface ([ProfileBody]).
 ///
 /// Pure and fixture-friendly so the surface can be golden-tested without a real
 /// `PublicProfile`. The real data is mapped on at integration time via
 /// `profileViewFromCardContent` (see `profile_view_mapper.dart`).
 ///
-/// A profile is a dark "wow" hero plus an ordered list of [ProfileSection]s.
+/// A profile is a dark "wow" hero plus an ordered list of [ProfileSectionData]s.
 /// Every section that the Catches flow lets you react to carries a
 /// [ProfileReactionTarget]; in read-only modes (preview / public profile) the
 /// surface is handed a null `onReact` and the reaction affordances disappear.
@@ -22,7 +22,7 @@ class ProfileView {
     this.kicker,
     this.kickerActivity,
     this.metaLine,
-    this.sections = const <ProfileSection>[],
+    this.sections = const <ProfileSectionData>[],
   });
 
   final String name;
@@ -44,21 +44,21 @@ class ProfileView {
   final String? metaLine;
 
   /// Ordered body sections (compatibility, prompts, running, photos, details…).
-  final List<ProfileSection> sections;
+  final List<ProfileSectionData> sections;
 }
 
 /// One body block. [reaction] is non-null only where the Catches flow allows a
 /// like/comment; the surface renders [ProfileReactionControls] for it when the
 /// surface itself is reactable (`onReact != null`).
 @immutable
-sealed class ProfileSection {
-  const ProfileSection({this.reaction});
+sealed class ProfileSectionData {
+  const ProfileSectionData({this.reaction});
   final ProfileReactionTarget? reaction;
 }
 
 /// "Why you might click" — compatibility reasons + confidence signals.
-class ProfileCompatibilitySection extends ProfileSection {
-  const ProfileCompatibilitySection({
+class ProfileCompatibilitySectionData extends ProfileSectionData {
+  const ProfileCompatibilitySectionData({
     required this.title,
     required this.reasons,
     this.confidence = const <String>[],
@@ -71,7 +71,7 @@ class ProfileCompatibilitySection extends ProfileSection {
 }
 
 /// A prompt: tracked-mono question + Archivo answer.
-class ProfilePromptSectionData extends ProfileSection {
+class ProfilePromptSectionData extends ProfileSectionData {
   const ProfilePromptSectionData({
     required this.question,
     required this.answer,
@@ -83,8 +83,8 @@ class ProfilePromptSectionData extends ProfileSection {
 }
 
 /// Running identity: pace + distance headline, with reasons / times / tags.
-class ProfileRunningSection extends ProfileSection {
-  const ProfileRunningSection({
+class ProfileRunningSectionData extends ProfileSectionData {
+  const ProfileRunningSectionData({
     required this.pace,
     required this.distance,
     this.reasons = const <String>[],
@@ -101,8 +101,8 @@ class ProfileRunningSection extends ProfileSection {
 }
 
 /// A standalone profile photo (graded), optionally with its photo prompt caption.
-class ProfilePhotoSection extends ProfileSection {
-  const ProfilePhotoSection({
+class ProfilePhotoSectionData extends ProfileSectionData {
+  const ProfilePhotoSectionData({
     required this.image,
     this.caption,
     super.reaction,
@@ -113,8 +113,8 @@ class ProfilePhotoSection extends ProfileSection {
 }
 
 /// A titled group of icon + text facts (details, lifestyle).
-class ProfileFactsSection extends ProfileSection {
-  const ProfileFactsSection({
+class ProfileFactsSectionData extends ProfileSectionData {
+  const ProfileFactsSectionData({
     required this.title,
     required this.facts,
     super.reaction,

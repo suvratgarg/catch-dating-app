@@ -3,7 +3,7 @@ import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
 import 'package:catch_dating_app/auth/presentation/otp_page.dart';
 import 'package:catch_dating_app/auth/presentation/phone_page.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +98,7 @@ class HostAuthFlowFrame extends StatelessWidget {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           children: [
-            const CatchStartupBrandStage(appRole: AppRole.host),
+            const StartupBrandHeader(appRole: AppRole.host),
             Padding(
               padding: CatchInsets.hostAuthStage,
               child: Align(

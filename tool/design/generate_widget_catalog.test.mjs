@@ -171,6 +171,11 @@ test("the naming ratchet rejects new debt with a redirect and fixed debt still l
   assert.match(namingRatchetProblems({findings, baseline: stale})[0], /OldThing .* is fixed; run node/u);
   assert.deepEqual(prunedNamingBaseline({findings, baseline: stale}).allowedFindings, findings);
   assert.deepEqual(namingRatchetProblems({findings, baseline: prunedNamingBaseline({findings, baseline: stale})}), []);
+  // Moving a file carries its debt; write mode records the new path.
+  const moved = {allowedFindings: [{...findings[1], file: "lib/profile/old/profile_panel.dart"}, findings[0]]};
+  assert.deepEqual(namingRatchetProblems({findings, baseline: moved}), []);
+  assert.equal(prunedNamingBaseline({findings, baseline: moved}).allowedFindings[0].file,
+    "lib/profile/presentation/profile_panel.dart");
 });
 
 test("rendered rows index registry aliases so a search for any likely name finds the widget", () => {

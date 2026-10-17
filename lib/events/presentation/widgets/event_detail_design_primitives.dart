@@ -8,8 +8,8 @@ import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
-import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -195,13 +195,13 @@ class EventDetailMapCard extends StatelessWidget {
     final itineraryMarkers = event.itinerary
         .where((item) => item.location != null)
         .map(
-          (item) => CatchMapMarker(
+          (item) => MapMarker(
             id: 'event-itinerary-${item.id}',
             position: LocationCoordinate(
               item.location!.latitude,
               item.location!.longitude,
             ),
-            hue: CatchMapMarkerHue.azure,
+            hue: MapMarkerHue.azure,
             infoTitle: item.title,
             infoSnippet: item.location!.name,
           ),
@@ -230,7 +230,7 @@ class EventDetailMapCard extends StatelessWidget {
               child: Column(
                 children: [
                   Expanded(
-                    child: CatchMapPreview(
+                    child: MapPreview(
                       coordinate: coordinate,
                       path: routePath,
                       markers: itineraryMarkers,

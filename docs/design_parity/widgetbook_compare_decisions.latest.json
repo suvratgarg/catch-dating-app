@@ -129,7 +129,7 @@
     "decision": "separate concepts",
     "note": "",
     "recommended": "catch.map",
-    "left": "CatchActivityMapPin",
+    "left": "ActivityMapPin",
     "right": "MapPinTile"
   },
   {
@@ -329,7 +329,7 @@
     "decision": "separate concepts",
     "note": "",
     "recommended": "catch.roster",
-    "left": "CatchRosterTable",
+    "left": "ParticipantTable",
     "right": "CatchRosterTiles"
   },
   {
@@ -605,12 +605,12 @@
   {
     "ts": "2026-06-26T13:45:46.529Z",
     "id": "duplicate-roster_row",
-    "title": "CatchRosterRow: catalog vs contract",
+    "title": "ParticipantRow: catalog vs contract",
     "decision": "merge",
     "note": "",
     "recommended": "catch.roster_row",
-    "left": "CatchRosterRow",
-    "right": "CatchRosterRow"
+    "left": "ParticipantRow",
+    "right": "ParticipantRow"
   },
   {
     "ts": "2026-06-26T13:44:40.625Z",
@@ -665,12 +665,12 @@
   {
     "ts": "2026-06-26T12:45:19.145Z",
     "id": "duplicate-roster_table",
-    "title": "CatchRosterTable: catalog vs contract",
+    "title": "ParticipantTable: catalog vs contract",
     "decision": "merge",
     "note": "",
     "recommended": "catch.roster_table",
-    "left": "CatchRosterTable",
-    "right": "CatchRosterTable"
+    "left": "ParticipantTable",
+    "right": "ParticipantTable"
   },
   {
     "ts": "2026-06-26T12:43:53.775Z",

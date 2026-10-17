@@ -137,7 +137,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
           ],
         ),
         footer: profileState.isLoading
-            ? CatchDockSurface(
+            ? CatchDock(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
                 child: CatchSkeleton.content(
@@ -150,7 +150,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               )
             : preferencesState == null
             ? null
-            : CatchDockSurface(
+            : CatchDock(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
                 child: CatchButton(
@@ -339,7 +339,7 @@ class FiltersContent extends StatelessWidget {
         Expanded(
           child: CatchPageBody.screen(pb: CatchSpacing.s5, child: fields),
         ),
-        CatchDockSurface(
+        CatchDock(
           includeSafeArea: false,
           padding: CatchInsets.pageBody.copyWith(
             top: CatchSpacing.s3,

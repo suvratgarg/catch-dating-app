@@ -57,14 +57,6 @@
       ]
     },
     {
-      "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-      "name": "ChatInputBar",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
       "file": "lib/chats/presentation/widgets/chat_share_card.dart",
       "name": "ShareCardBubble",
       "issues": [
@@ -113,20 +105,6 @@
       "name": "ClubDetailReadOnlyPreviewSliver",
       "issues": [
         "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "name": "CatchClubDock",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "name": "CatchClubDockState",
-      "issues": [
-        "reserved-symbol-prefix"
       ]
     },
     {
@@ -189,29 +167,6 @@
       ]
     },
     {
-      "file": "lib/clubs/shared/catch_club_cover.dart",
-      "name": "CatchClubCover",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/clubs/shared/catch_organizer_poster.dart",
-      "name": "CatchOrganizerPoster",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/clubs/shared/catch_organizer_poster.dart",
-      "name": "OrganizerPosterArtwork",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
       "file": "lib/clubs/shared/club_identity_atoms.dart",
       "name": "ClubHostIdentityLine",
       "issues": [
@@ -225,41 +180,6 @@
       "issues": [
         "noncanonical-feature-widget-file",
         "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/core/business_rules.dart",
-      "name": "CatchBusinessRules",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "name": "CatchCelebrationScreen",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/formatters/catch_count_copy.dart",
-      "name": "CatchCountCopy",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/formatters/catch_distance_formatter.dart",
-      "name": "CatchDistanceFormatter",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
-      "name": "CatchAdaptiveTabScaffold",
-      "issues": [
-        "reserved-symbol-prefix"
       ]
     },
     {
@@ -281,94 +201,6 @@
       "name": "CatchAsyncStatus",
       "issues": [
         "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/startup/catch_native_splash.dart",
-      "name": "CatchNativeSplash",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/startup/catch_startup_animation_scope.dart",
-      "name": "CatchStartupAnimationScope",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/theme/activity_palette.dart",
-      "name": "CatchActivity",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/catch_activity_map_pin.dart",
-      "name": "CatchActivityMapPin",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/catch_event_activity_cards.dart",
-      "name": "CatchEventCard",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/catch_event_thumbnail.dart",
-      "name": "CatchEventThumbnail",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/catch_event_thumbnail.dart",
-      "name": "CatchEventThumbnailActivityFallback",
-      "issues": [
-        "noncanonical-feature-widget-name",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/catch_startup_loading_screen.dart",
-      "name": "CatchStartupBrandStage",
-      "issues": [
-        "noncanonical-feature-widget-name",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/catch_startup_loading_screen.dart",
-      "name": "CatchStartupLoadingScreen",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/event_activity_visuals.dart",
-      "name": "EventActivityBackdrop",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/core/widgets/event_visual_atoms.dart",
-      "name": "EventActivityStamp",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
       ]
     },
     {
@@ -1035,58 +867,10 @@
       ]
     },
     {
-      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "name": "CatchCoverStory",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "name": "CoverStoryChrome",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "name": "CoverStoryContent",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
       "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
       "name": "CityTrigger",
       "issues": [
         "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "name": "ExploreClubTags",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "name": "ExploreFeedClubRow",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
-      "name": "ExploreOrganizerPosterCard",
-      "issues": [
-        "noncanonical-feature-widget-file"
       ]
     },
     {
@@ -1635,86 +1419,6 @@
       ]
     },
     {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterAction",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterActionCell",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterBadgeAction",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterButtonAction",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterDecideAction",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterDecideTarget",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterRow",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterTable",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterTextAction",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "name": "CatchRosterTile",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
       "name": "HostEventParticipantsPanel",
       "issues": [
@@ -1866,96 +1570,10 @@
       ]
     },
     {
-      "file": "lib/l10n/l10n.dart",
-      "name": "CatchLocalizationsBuildContext",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
       "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
       "name": "LaunchAccessApplicationForm",
       "issues": [
         "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchGoogleMap",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchGoogleMapController",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchGoogleMapStyle",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapCameraPosition",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapCircle",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapMarker",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapMarkerBitmap",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapMarkerHue",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapPolyline",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_google_map.dart",
-      "name": "CatchMapType",
-      "issues": [
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/locations/shared/catch_map_preview.dart",
-      "name": "CatchMapPreview",
-      "issues": [
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
       ]
     },
     {
@@ -2227,103 +1845,6 @@
       "file": "lib/swipes/presentation/swipe_screen.dart",
       "name": "CatchesProfileReview",
       "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "CatchProfileView",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name",
-        "reserved-feature-widget-prefix",
-        "reserved-symbol-prefix"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "PhotoCaption",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileCompatibility",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileFacts",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileHeroWidget",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfilePhoto",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfilePhotoBlock",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfilePrompt",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileRule",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileRunning",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileSectionKicker",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "name": "ProfileSectionView",
-      "issues": [
-        "noncanonical-feature-widget-file",
         "noncanonical-feature-widget-name"
       ]
     },

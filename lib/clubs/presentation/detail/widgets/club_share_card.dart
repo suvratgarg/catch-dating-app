@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
@@ -135,6 +135,6 @@ class ClubShareArtwork extends StatelessWidget {
         showScrim: false,
       );
     }
-    return OrganizerPosterArtwork(club: club);
+    return ClubPlaceholderCover(club: club);
   }
 }

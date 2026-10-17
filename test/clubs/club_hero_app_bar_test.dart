@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
-import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/clubs/shared/club_cover.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -37,9 +37,9 @@ void main() {
 
       await _pumpHeroModule(tester, club, clubHeroVariantFor(club));
 
-      expect(find.byType(CatchOrganizerPoster), findsOneWidget);
-      expect(find.byType(CatchClubCover), findsOneWidget);
-      expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
+      expect(find.byType(CatchPoster), findsOneWidget);
+      expect(find.byType(ClubCover), findsOneWidget);
+      expect(find.byType(ClubPlaceholderCover), findsOneWidget);
       expect(
         find.byKey(const ValueKey('club-detail-hero-poster-frame')),
         findsOneWidget,
@@ -55,8 +55,8 @@ void main() {
 
       await _pumpHeroModule(tester, club, clubHeroVariantFor(club));
 
-      expect(find.byType(CatchOrganizerPoster), findsOneWidget);
-      expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
+      expect(find.byType(CatchPoster), findsOneWidget);
+      expect(find.byType(ClubPlaceholderCover), findsOneWidget);
       expect(
         find.byKey(const ValueKey('club-detail-hero-poster-frame')),
         findsOneWidget,
@@ -79,8 +79,8 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchAvatar), findsOneWidget);
-      expect(find.byType(CatchOrganizerPoster), findsNothing);
-      expect(find.byType(OrganizerPosterArtwork), findsNothing);
+      expect(find.byType(CatchPoster), findsNothing);
+      expect(find.byType(ClubPlaceholderCover), findsNothing);
       expect(find.text('Stride Social'), findsOneWidget);
     });
 

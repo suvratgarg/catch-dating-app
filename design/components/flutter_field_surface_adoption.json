@@ -115,13 +115,13 @@
         {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormRowList<UpdateClubPatch>", "expected": 2},
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormList<UpdateClubPatch>", "expected": 2},
         {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
       ],
-      "targetModes": ["CatchFormRowList", "CatchField.choices"],
+      "targetModes": ["CatchFormList", "CatchField.choices"],
       "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
       "verification": [
-        "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
+        "Host Club Identity and Contact sections render through two typed CatchFormList<UpdateClubPatch> instances",
         "Contract alignment test covers all eight editable Host Club patch fields, including organizer type",
         "Deleted HostInline editors leave zero production legacy call sites"
       ],

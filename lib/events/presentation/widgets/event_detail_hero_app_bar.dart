@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
@@ -289,7 +289,7 @@ class EventDetailTicketSurface extends StatelessWidget {
         mediaBuilder: (context, compact) => Stack(
           fit: StackFit.expand,
           children: [
-            CatchEventThumbnail(
+            EventThumbnail(
               photoUrl: event.primaryPhotoUrl,
               pace: event.pace,
               activityKind: event.activityKind,

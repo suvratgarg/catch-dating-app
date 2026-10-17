@@ -15,8 +15,8 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_d
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/clubs/shared/club_cover.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -43,13 +43,13 @@ import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart'
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';

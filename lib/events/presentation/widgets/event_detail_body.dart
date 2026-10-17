@@ -328,7 +328,7 @@ class GuestBookCta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchDockSurface.primary(
+    return CatchDock.primary(
       label: context.l10n.eventsEventDetailBodyLabelSignInToBook,
       onPressed: onPressed,
       backgroundColor: darkSurface ? t.ink : t.surface,
