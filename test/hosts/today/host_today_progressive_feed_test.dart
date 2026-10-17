@@ -722,10 +722,10 @@ class _HeldEvents extends Fake implements EventRepository {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) {
-    expect(organizerId, rig.request.organizerId);
-    expect(sessionBoundary, rig.boundary);
-    expect(startAfter, isNull);
-    expect(limit, ReadLimitPolicy.directoryPage);
+    expectSync(organizerId, rig.request.organizerId);
+    expectSync(sessionBoundary, rig.boundary);
+    expectSync(startAfter, isNull);
+    expectSync(limit, ReadLimitPolicy.directoryPage);
     rig.calls.add('active');
     if (rig.readSource.synchronousActiveError case final error?) throw error;
     return rig.readSource.active.future;
@@ -738,10 +738,10 @@ class _HeldEvents extends Fake implements EventRepository {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) {
-    expect(organizerId, rig.request.organizerId);
-    expect(sessionBoundary, rig.boundary);
-    expect(startAfter, isNull);
-    expect(limit, ReadLimitPolicy.directoryPage);
+    expectSync(organizerId, rig.request.organizerId);
+    expectSync(sessionBoundary, rig.boundary);
+    expectSync(startAfter, isNull);
+    expectSync(limit, ReadLimitPolicy.directoryPage);
     rig.calls.add('history');
     return rig.readSource.history.future;
   }
@@ -753,7 +753,7 @@ class _HeldAttention implements HostAttentionRepository {
 
   @override
   Future<HostAttentionProjection> fetch(String organizerId) {
-    expect(organizerId, rig.request.organizerId);
+    expectSync(organizerId, rig.request.organizerId);
     rig.calls.add('attention');
     return rig.readSource.attention.future;
   }
@@ -768,8 +768,8 @@ class _HeldAttendance extends Fake implements HostAttendanceOutbox {
     required String accountId,
     DateTime? now,
   }) {
-    expect(accountId, rig.request.accountId);
-    expect(now, rig.boundary);
+    expectSync(accountId, rig.request.accountId);
+    expectSync(now, rig.boundary);
     rig.calls.add('attendance');
     return rig.readSource.attendance.future;
   }
