@@ -156,6 +156,9 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Derive exact-source route and widget inventories
+        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
+
       - uses: ./.github/actions/setup-flutter
 
       - name: Analyze every Dart and Flutter package
@@ -352,17 +355,26 @@ jobs:
               'messaging-permissions': ('/tmp/catch-messaging-permissions-review', 'test/safety/messaging_permissions_widget_test.dart'),
               'chat-safety': ('/tmp/catch-chat-safety-review', 'test/chats/event_chat_message_actions_widget_test.dart'),
               'matching-host': ('/tmp/catch-matching-host-review', 'test/event_success/event_success_assignment_features_test.dart'),
+              'audience-response-catalog': ('artifacts/response-detail-review/after', 'test/ui_captures/response_detail_preview_test.dart'),
+              'audience-person-catalog': ('artifacts/ui-captures/audience-person-review', 'test/ui_captures/fixtures/host_audience_journey_fixture_test.dart'),
           }
+          nested_groups = {'audience-response-catalog', 'audience-person-catalog'}
           output = Path(os.environ['CAPTURE_OUTPUT_DIR'])
           captures = []
           for group, (directory, source_test) in sources.items():
               root = Path(directory)
+              nested = group in nested_groups
+              if nested and any(part.is_symlink() for part in (root, *root.parents)):
+                  raise SystemExit(f'Refusing symlink capture root: {root}')
               if not root.is_dir():
                   continue
-              for image in sorted(root.iterdir()):
+              images = root.rglob('*') if nested else root.iterdir()
+              for image in sorted(images):
+                  if nested and image.is_symlink():
+                      raise SystemExit(f'Refusing symlink capture entry: {image}')
                   if image.suffix != '.png' or not image.is_file() or image.is_symlink():
                       continue
-                  target = output / group / image.name
+                  target = output / group / image.relative_to(root)
                   target.parent.mkdir(parents=True, exist_ok=True)
                   shutil.copyfile(image, target)
                   capture_source = source_test
@@ -456,7 +468,7 @@ jobs:
           retention-days: 14
 
   app-package-tests:
-    name: Consumer & Host package tests
+    name: Catch UI, Consumer & Host package tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -466,6 +478,10 @@ jobs:
       - uses: ./.github/actions/setup-flutter
 
       - run: flutter pub get
+
+      - name: Catch UI package tests
+        working-directory: packages/catch_ui
+        run: flutter test --concurrency=1
 
       - name: Consumer package tests
         working-directory: apps/consumer

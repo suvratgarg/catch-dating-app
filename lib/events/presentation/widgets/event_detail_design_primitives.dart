@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -14,6 +15,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 part 'event_detail_design_support.dart';
+part 'event_detail_itinerary_row.dart';
 
 class EventDetailTicketStubBand extends StatelessWidget {
   const EventDetailTicketStubBand({
@@ -142,7 +144,7 @@ class EventDetailItinerary extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    final steps = _itineraryFor(event);
+    final steps = _itineraryFor(event, context.l10n);
 
     return Column(
       children: [
@@ -491,27 +493,38 @@ class EventDetailPhotoStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
-    final photos = event.eventPhotos.take(_photoStripTileCount).toList();
+    final photos = event.eventPhotos;
     if (photos.isEmpty) return const SizedBox.shrink();
 
     return Column(
       children: [
-        Row(
-          children: [
-            for (var index = 0; index < _photoStripTileCount; index++) ...[
-              Expanded(
-                child: EventDetailPhotoStripTile(
-                  index: index,
-                  photo: index < photos.length ? photos[index] : null,
-                  backgroundColor: activity.soft,
-                  iconColor: activity.deep,
-                  icon: activity.glyph,
+        for (
+          var start = 0;
+          start < photos.length;
+          start += _photoStripTileCount
+        ) ...[
+          if (start > 0) gapH8,
+          Row(
+            children: [
+              for (
+                var index = start;
+                index < photos.length && index < start + _photoStripTileCount;
+                index++
+              ) ...[
+                if (index > start) gapW8,
+                Expanded(
+                  child: EventDetailPhotoStripTile(
+                    index: index,
+                    photo: photos[index],
+                    backgroundColor: activity.soft,
+                    iconColor: activity.deep,
+                    icon: activity.glyph,
+                  ),
                 ),
-              ),
-              if (index != _photoStripTileCount - 1) gapW8,
+              ],
             ],
-          ],
-        ),
+          ),
+        ],
         gapH8,
         Row(
           children: [
@@ -670,122 +683,6 @@ class HairlineList extends StatelessWidget {
           itemBuilder(context, index),
         ],
       ],
-    );
-  }
-}
-
-class ItineraryStep {
-  const ItineraryStep({required this.time, required this.title, this.detail});
-
-  final String time;
-  final String title;
-  final String? detail;
-}
-
-class ItineraryRow extends StatelessWidget {
-  const ItineraryRow({
-    super.key,
-    required this.step,
-    required this.isLast,
-    required this.accent,
-    required this.railColor,
-    this.titleColor,
-    this.detailColor,
-    this.dotBackgroundColor,
-  });
-
-  final ItineraryStep step;
-  final bool isLast;
-  final Color accent;
-  final Color railColor;
-  final Color? titleColor;
-  final Color? detailColor;
-  final Color? dotBackgroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: CatchLayout.eventDetailItineraryTimeColumnWidth,
-            child: Text(
-              step.time,
-              style: CatchTextStyles.mono(
-                context,
-                color: t.ink,
-              ).copyWith(fontSize: 12, fontWeight: FontWeight.w700),
-            ),
-          ),
-          SizedBox(
-            width: CatchLayout.eventDetailItineraryRailColumnWidth,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: CatchLayout.eventDetailItineraryDotTopInset,
-                  ),
-                  child: CatchSurface(
-                    width: CatchLayout.eventDetailItineraryDotExtent,
-                    height: CatchLayout.eventDetailItineraryDotExtent,
-                    radius: CatchRadius.pill,
-                    backgroundColor: dotBackgroundColor ?? t.surface,
-                    borderSpec: CatchBorder.resolve(
-                      t,
-                      CatchBorderRole.selected,
-                      color: accent,
-                    ),
-                    child: const SizedBox.shrink(),
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical:
-                            CatchLayout.eventDetailItineraryRailVerticalInset,
-                      ),
-                      child: SizedBox(
-                        width: CatchStroke.underline,
-                        child: ColoredBox(color: railColor),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          gapW8,
-          Expanded(
-            child: Padding(
-              padding: CatchInsets.eventItineraryStep(isLast: isLast),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    step.title,
-                    style: CatchTextStyles.fieldRowTitle(
-                      context,
-                      color: titleColor,
-                    ),
-                  ),
-                  if (step.detail case final detail?) ...[
-                    const SizedBox(height: CatchSpacing.micro2),
-                    Text(
-                      detail,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: detailColor,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:catch_dating_app/hosts/data/event_publication_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_publication_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'event_controller_test_support.dart';
 
 PrivateEventBasicSummary publicationEvent({
   int revision = 2,
@@ -61,7 +60,7 @@ void main() {
         );
       }
 
-      EventPublicationController make() => EventPublicationController(
+      TestEventPublicationController make() => TestEventPublicationController(
         userId: 'host1',
         organizerId: 'org1',
         eventId: 'event1',
@@ -97,7 +96,7 @@ void main() {
     'only exact stale-rejection proof clears uncertain publication',
     () async {
       var exact = false;
-      final controller = EventPublicationController(
+      final controller = TestEventPublicationController(
         userId: 'host1',
         organizerId: 'org1',
         eventId: 'event1',
@@ -144,7 +143,7 @@ void main() {
     () async {
       var ready = false;
       var writes = 0;
-      final controller = EventPublicationController(
+      final controller = TestEventPublicationController(
         userId: 'host1',
         organizerId: 'org1',
         eventId: 'event1',
@@ -179,7 +178,7 @@ void main() {
       var uid = 'host1';
       final response = Completer<EventPublicationReceipt>();
       final invoked = Completer<void>();
-      final controller = EventPublicationController(
+      final controller = TestEventPublicationController(
         userId: 'host1',
         organizerId: 'org1',
         eventId: 'event1',

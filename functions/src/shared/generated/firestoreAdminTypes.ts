@@ -487,6 +487,10 @@ export interface EventPolicyAdmissionDocument {
   inviteRequired?: boolean;
   membershipRequired?: boolean;
   manualApprovalRequired?: boolean;
+  /**
+   * When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false.
+   */
+  approvedMembersSkipReview?: boolean;
   privateAccessPolicy?: EventPolicyPrivateAccessDocument;
   cohortCapacityLimits?: {
     [k: string]: number;
@@ -8706,6 +8710,238 @@ export interface ParticipantProfileClaimReceiptDocument {
   createdAt: FirebaseFirestore.Timestamp;
 }
 
+export interface EventApprovalPreferenceDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  revision: number;
+  choices: {
+    phoneUpdates: boolean;
+    emailUpdates: boolean;
+  };
+  phoneE164: string | null;
+  email: string | null;
+  termsVersion: "event-approval-v1";
+  receiptId: string;
+  updatedAtMillis: number;
+}
+
+export interface EventApprovalNotificationReceiptDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  revision: number;
+  choices: {
+    phoneUpdates: boolean;
+    emailUpdates: boolean;
+  };
+  phoneE164: string | null;
+  email: string | null;
+  termsVersion: "event-approval-v1";
+  receiptId: string;
+  updatedAtMillis: number;
+}
+
+export interface EventApprovalNotificationSettingsDocument {
+  enabled: boolean;
+  revision: number;
+  whatsapp: {
+    connectionId: string;
+    templateId: string;
+    maxCostMicros: number;
+  } | null;
+  sms: {
+    accountId: string;
+    credentialVersion: string;
+    senderId: string;
+    mask: string;
+    principalEntityId: string;
+    dltTemplateId: string;
+    approvedText: "Your event application is approved. View your next steps: {eventUrl}";
+    maxCostMicros: number;
+  } | null;
+  email: {
+    provider: "resend";
+    accountId: string;
+    credentialVersion: string;
+    from: string;
+  } | null;
+  dailyPhoneLimit: number;
+  monthlyPhoneLimit: number;
+  dailyCostLimitMicros: number;
+  monthlyCostLimitMicros: number;
+}
+
+export interface EventApprovalNotificationBudgetDocument {
+  accountId: string;
+  period: string;
+  count: number;
+  costMicros: number;
+  updatedAtMillis: number;
+}
+
+export interface EventApprovalNotificationMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  revision: number;
+  intent: {
+    schemaVersion: 1;
+    intentId: string;
+    revision: 1;
+    context: {
+      mode: "live";
+      applicationId: string;
+      organizerId: string;
+      eventId: string;
+      uid: string;
+      sourceResponseId: string;
+      approvedAtMillis: number;
+      approvalRevision: number;
+    };
+    createdAt: number;
+    expiresAt: number;
+    lane: "phone" | "email";
+    /**
+     * @minItems 1
+     * @maxItems 2
+     */
+    permittedRoutes: ("approvalWhatsapp" | "approvalSms" | "approvalEmail")[];
+    deliveryPolicy: {
+      maxAttempts: 3;
+      maxAttemptsPerRoute: 1;
+      minimumRetrySeconds: 60;
+    };
+  };
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
+  /**
+   * @maxItems 6
+   */
+  attempts: {
+    schemaVersion: 1;
+    attemptId: string;
+    intentId: string;
+    intentRevision: 1;
+    ordinal: number;
+    createdAt: number;
+    state:
+      | {
+          kind: "reserved";
+          at: number;
+          reconcileAfter: number;
+        }
+      | {
+          kind: "unknown";
+          at: number;
+          providerMessageId: string | null;
+          reason: "timeout" | "connectionLost" | "workerInterrupted";
+          reconcileAfter: number;
+        }
+      | {
+          kind: "accepted" | "delivered" | "read";
+          at: number;
+          providerMessageId: string | null;
+        }
+      | {
+          kind: "failed";
+          at: number;
+          providerMessageId: string | null;
+          classification:
+            | "technical"
+            | "policy"
+            | "suppressed"
+            | "invalidRecipient";
+          evidenceId: string | null;
+        }
+      | {
+          kind: "revoked";
+          at: number;
+          providerMessageId: string | null;
+          evidenceId: string | null;
+        }
+      | {
+          kind: "notDispatched";
+          at: number;
+          reason:
+            | "superseded"
+            | "expired"
+            | "permissionRevoked"
+            | "reservationExpired"
+            | "permitExpired"
+            | "campaignEnded"
+            | "recipientWithdrawn";
+        };
+    authorization: {
+      permissionRevision: string;
+      checkedAt: number;
+      validUntil: number;
+      instructionRevision: number;
+    };
+    mode: "live";
+    context: {
+      mode: "live";
+      applicationId: string;
+      organizerId: string;
+      eventId: string;
+      uid: string;
+      sourceResponseId: string;
+      approvedAtMillis: number;
+      approvalRevision: number;
+    };
+    binding: {
+      routeId: "approvalWhatsapp" | "approvalSms" | "approvalEmail";
+      senderId: string;
+      bindingRevision: number;
+      recipientEndpointId: string;
+      fallbackOwner: "catch";
+    };
+  }[];
+  deliveryConflict: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Private immutable approval WhatsApp dispatch correlation, created atomically with its shared outbox claim.
+ */
+export interface EventApprovalNotificationDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    applicationId: string;
+    organizerId: string;
+    eventId: string;
+    uid: string;
+    sourceResponseId: string;
+    approvedAtMillis: number;
+    approvalRevision: number;
+  };
+  /**
+   * organizerSenderConnections document id that owned the send.
+   */
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  /**
+   * Content hash of the sender connection snapshot authorized at claim.
+   */
+  senderHash: string;
+  recipientEndpointId: string;
+  /**
+   * Hash of the E.164 destination; the raw number never appears here.
+   */
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  /**
+   * Content hash of the rendered template + variables; the status callback must carry the matching correlation.
+   */
+  payloadHash: string;
+  createdAt: number;
+}
+
 /**
  * Private pointers to explicitly designated applicant-submitted profile and organizer-card answers. Submission prepares a proposal, never a claimed or public profile.
  */
@@ -11316,6 +11552,13 @@ export interface OrganizerApplicationDocument {
   revision: number;
   submittedAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  /**
+   * Server-owned approval occurrence. Note-only review edits retain it; a new approval transition replaces it.
+   */
+  approvalNotificationBasis?: {
+    revision: number;
+    approvedAtMillis: number;
+  };
   reviewedAt: FirebaseFirestore.Timestamp | null;
 }
 

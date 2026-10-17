@@ -1,4 +1,4 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type FormEvent, useCallback, useEffect, useId, useMemo, useRef, useState} from "react";
 import type {User} from "../../firebase";
 import {
@@ -76,6 +76,9 @@ export function useEventRuntimeController(
   venueSessionToken: string | null = null
 ) {
   const reactId = useId();
+  const cache = useQueryClient();
+  const session = useRef({epoch: 0, mounted: false});
+  const currentSession = (epoch: number) => session.current.mounted && session.current.epoch === epoch;
   const recaptchaContainerId = `event-runtime-recaptcha-${reactId.replace(/:/gu, "")}`;
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const userRef = useRef<User | null>(null);
@@ -112,9 +115,7 @@ export function useEventRuntimeController(
     useState<string[]>([]);
   const actionMutation = useMutation<void, unknown, () => Promise<void>>({
     mutationFn: (action) => action(),
-    onError: (error) => {
-      setStatus({message: eventRuntimeError(error), tone: "is-error"});
-    },
+    retry: false, gcTime: 0,
   });
   const attendeeLinkMutation = useMutation<
     EventRuntimeAttendeeInviteLink,
@@ -139,9 +140,10 @@ export function useEventRuntimeController(
       eventEnded &&
       bootstrap?.participant?.attendanceStatus === "checkedIn",
     queryFn: () => getEventSuccessConversationGraph(conversationGraphEventId),
-    queryKey: websiteQueryKeys.eventRuntime.conversationGraph(
+    gcTime: 0,
+    queryKey: [...websiteQueryKeys.eventRuntime.conversationGraph(
       conversationGraphEventId || null
-    ),
+    ), user?.uid ?? null],
   });
   const conversationGraph = conversationGraphQuery.data ?? null;
   const conversationGraphLoading = conversationGraphQuery.isLoading;
@@ -158,10 +160,13 @@ export function useEventRuntimeController(
     eventRuntimePreEventFieldId(bootstrap.event) : null;
 
   const loadAuthenticatedRuntime = useCallback(async (activeUser: User) => {
+    if (userRef.current?.uid !== activeUser.uid) return;
     if (loadingRef.current) return loadingRef.current;
+    const epoch = session.current.epoch;
     const request = (async () => {
       try {
         let next = await getEventRuntimeBootstrap({publicRuntimeId});
+        if (!currentSession(epoch)) return;
         setBootstrap(next);
         hydrateProfile(next);
         let nextStage: EventRuntimeStage = eventRuntimeStageForParticipant(next.participant);
@@ -171,11 +176,14 @@ export function useEventRuntimeController(
           } else {
             try {
               await checkInEventRuntime({publicRuntimeId, venueSessionToken});
+              if (!currentSession(epoch)) return;
               next = await getEventRuntimeBootstrap({publicRuntimeId});
+              if (!currentSession(epoch)) return;
               setBootstrap(next);
               hydrateProfile(next);
               nextStage = eventRuntimeStageForParticipant(next.participant);
             } catch (error) {
+              if (!currentSession(epoch)) return;
               setStatus({message: eventRuntimeError(error), tone: "is-error"});
               nextStage = "venue";
             }
@@ -183,6 +191,7 @@ export function useEventRuntimeController(
         }
         if (userRef.current?.uid === activeUser.uid) setStage(nextStage);
       } catch (error) {
+        if (!currentSession(epoch)) return;
         setStatus({message: eventRuntimeError(error), tone: "is-error"});
         setStage("unavailable");
       }
@@ -195,43 +204,59 @@ export function useEventRuntimeController(
     }
   }, [publicRuntimeId, venueSessionToken]);
 
+  const resetAction = actionMutation.reset;
+  const resetLink = attendeeLinkMutation.reset;
   useEffect(() => {
-    let cancelled = false;
-    void getEventRuntimeBootstrap({publicRuntimeId})
-      .then((next) => {
-        if (cancelled) return;
-        setBootstrap(next);
-        if (inviteToken && !recordedInviteOpenRef.current) {
-          recordedInviteOpenRef.current = true;
-          void recordEventInviteLinkOpen({
-            eventId: next.event.eventId,
-            inviteLinkId: inviteToken,
-            surface: "runtimeWeb",
-            sessionId: eventInviteSessionId(),
-          }).catch(() => undefined);
-        }
-        if (!userRef.current) setStage("phone");
-      })
-      .catch((error) => {
-        if (cancelled) return;
+    session.current.mounted = true;
+    const unsubscribe = watchEventRuntimeAuthState((nextUser) => {
+      const previousEvent = attendeeLinkEventIdRef.current;
+      if (previousEvent) cache.removeQueries({queryKey:
+        websiteQueryKeys.eventRuntime.conversationGraph(previousEvent)});
+      const epoch = ++session.current.epoch;
+      loadingRef.current = null;
+      userRef.current = nextUser;
+      setUser(nextUser);
+      setBootstrap(null); setLiveState(emptyLiveState);
+      setWingmanCandidates([]); setWingmanTargetUid("");
+      setQuestionAnswers({}); setSelectedConversationUids([]);
+      setDisplayName(""); setGender(null); setInterestedInGenders([]);
+      setPreferenceProfileEnabled(false); setSensitiveConsent(false);
+      setSaveAsCatchPrefill(false); setPreEventConsent(false);
+      setPaceBand(null); setSkillBand(null); setDietaryAndSeatingNotes("");
+      setTeamName(""); setPrivateNote(""); setSafetyConcern(false);
+      setWelcomeRating(4); setStructureRating(4); setMetNewPeopleCount(2);
+      attendeeLinkEventIdRef.current = null;
+      resetAction(); resetLink();
+      setStatus({message: "", tone: ""}); setStage("loading");
+      if (nextUser) {
+        void loadAuthenticatedRuntime(nextUser);
+        return;
+      }
+      void getEventRuntimeBootstrap({publicRuntimeId}).then((next) => {
+        if (!currentSession(epoch)) return;
+        // Anonymous entry never retains a participant from an old session.
+        setBootstrap({...next, participant: null});
+        setStage("phone");
+
+      }).catch((error) => {
+        if (!currentSession(epoch)) return;
         setStatus({message: eventRuntimeError(error), tone: "is-error"});
         setStage("unavailable");
       });
-    const unsubscribe = watchEventRuntimeAuthState((nextUser) => {
-      if (cancelled) return;
-      userRef.current = nextUser;
-      setUser(nextUser);
-      if (nextUser) {
-        setStage("loading");
-        void loadAuthenticatedRuntime(nextUser);
-      }
     });
     return () => {
-      cancelled = true;
-      verificationRef.current?.clear();
-      unsubscribe();
+      session.current.mounted = false; session.current.epoch++;
+      verificationRef.current?.clear(); unsubscribe();
     };
-  }, [inviteToken, loadAuthenticatedRuntime, publicRuntimeId]);
+  }, [cache, inviteToken, loadAuthenticatedRuntime, publicRuntimeId, resetAction, resetLink]);
+
+  useEffect(() => {
+    if (!bootstrap || !inviteToken || recordedInviteOpenRef.current) return;
+    recordedInviteOpenRef.current = true;
+    void recordEventInviteLinkOpen({eventId: bootstrap.event.eventId,
+      inviteLinkId: inviteToken, surface: "runtimeWeb",
+      sessionId: eventInviteSessionId()}).catch(() => undefined);
+  }, [bootstrap, inviteToken]);
 
   useEffect(() => {
     const endTimeMillis = bootstrap?.event.endTimeMillis;
@@ -259,6 +284,7 @@ export function useEventRuntimeController(
     const participant = bootstrap?.participant;
     if (stage !== "runtime" || !participant || !user) return undefined;
     let disposed = false;
+    const epoch = session.current.epoch;
     let unsubscribe: () => void = () => undefined;
     void watchEventRuntimeLiveState({
       eventId: participant.eventId,
@@ -266,7 +292,7 @@ export function useEventRuntimeController(
       organizerId: participant.organizerId,
       uid: user.uid,
     }, (next) => {
-      if (disposed) return;
+      if (disposed || !currentSession(epoch)) return;
       setLiveState(next);
       setWingmanTargetUid(next.wingmanTargetUid ?? "");
       if (next.feedback) {
@@ -294,7 +320,7 @@ export function useEventRuntimeController(
         .then((response) => {
           if (!disposed) setWingmanCandidates(response.candidates ?? []);
         })
-        .catch(() => setWingmanCandidates([]));
+        .catch(() => {if (!disposed) setWingmanCandidates([]);});
     }
     return () => {
       disposed = true;
@@ -353,10 +379,11 @@ export function useEventRuntimeController(
   useEffect(() => {
     if (stage !== "runtime" && stage !== "venue") return undefined;
     let disposed = false;
+    const epoch = session.current.epoch;
     const timer = setInterval(() => {
       void getEventRuntimeBootstrap({publicRuntimeId})
         .then((next) => {
-          if (!disposed) setBootstrap(next);
+          if (!disposed && currentSession(epoch)) setBootstrap(next);
         })
         .catch(() => undefined);
     }, 15_000);
@@ -379,6 +406,16 @@ export function useEventRuntimeController(
     stage,
   ]);
 
+  async function runAction(action: (current: () => boolean) => Promise<void>) {
+    const epoch = session.current.epoch;
+    const current = () => currentSession(epoch);
+    try {
+      await actionMutation.mutateAsync(() => action(current));
+    } catch (error) {
+      if (current()) setStatus({message: eventRuntimeError(error), tone: "is-error"});
+    }
+  }
+
   async function handlePhoneSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
@@ -388,12 +425,11 @@ export function useEventRuntimeController(
       return;
     }
     setStatus({message: "", tone: ""});
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async (current) => {
       verificationRef.current?.clear();
-      verificationRef.current = await beginPublicEventPhoneVerification(
-        phone,
-        recaptchaContainerId
-      );
+      const verification = await beginPublicEventPhoneVerification(phone, recaptchaContainerId);
+      if (!current()) {verification.clear(); return;}
+      verificationRef.current = verification;
       setStage("otp");
     }).catch(() => undefined);
   }
@@ -412,13 +448,11 @@ export function useEventRuntimeController(
       return;
     }
     setStatus({message: "", tone: ""});
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async () => {
       const verifiedUser = await verification.confirm(code.trim());
       verification.clear();
-      verificationRef.current = null;
-      userRef.current = verifiedUser;
-      setUser(verifiedUser);
-      setStage("loading");
+      if (verificationRef.current === verification) verificationRef.current = null;
+      if (userRef.current?.uid !== verifiedUser.uid) return;
       await loadAuthenticatedRuntime(verifiedUser);
     }).catch(() => undefined);
   }
@@ -459,7 +493,7 @@ export function useEventRuntimeController(
       return;
     }
     setStatus({message: "", tone: ""});
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async (current) => {
       let accessStatus = bootstrap.participant?.accessStatus ?? "needsClaim";
       if (!bootstrap.participant || accessStatus === "needsClaim") {
         const claim = await claimEventRuntimeAccess({
@@ -468,6 +502,7 @@ export function useEventRuntimeController(
           runtimeTermsVersion: bootstrap.event.runtimeTermsVersion,
           inviteToken,
         });
+        if (!current()) return;
         accessStatus = claim.status;
       }
       if (accessStatus === "pendingApproval") {
@@ -500,15 +535,15 @@ export function useEventRuntimeController(
           } : {}),
         },
       });
-      await loadAuthenticatedRuntime(user);
+      if (current()) await loadAuthenticatedRuntime(user);
     }).catch(() => undefined);
   }
 
   async function handleRefresh() {
     if (!user || pending) return;
     setStatus({message: "", tone: ""});
-    await actionMutation.mutateAsync(async () => {
-      await loadAuthenticatedRuntime(user);
+    await runAction(async (current) => {
+      if (current()) await loadAuthenticatedRuntime(user);
     }).catch(() => undefined);
   }
 
@@ -586,13 +621,14 @@ export function useEventRuntimeController(
   async function saveCompatibilityAnswers() {
     const participant = bootstrap?.participant;
     if (!participant || !user || pending) return;
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async (current) => {
       await saveEventRuntimeCompatibilityAnswers({
         eventId: participant.eventId,
         clubId: participant.clubId,
         organizerId: participant.organizerId,
         uid: user.uid,
       }, Object.values(questionAnswers));
+      if (!current()) return;
       setStatus({message: eventRuntimeCopy.compatibilitySaved, tone: "is-success"});
     }).catch(() => undefined);
   }
@@ -604,7 +640,7 @@ export function useEventRuntimeController(
       setStatus({message: eventRuntimeCopy.venueBody, tone: "is-error"});
       return;
     }
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async () => {
       await startEventRuntimeFirstHello({
         eventId: participant.eventId,
         venueSessionToken,
@@ -615,7 +651,7 @@ export function useEventRuntimeController(
   async function completeFirstHello(answerId: string) {
     const participant = bootstrap?.participant;
     if (!participant || pending) return;
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async () => {
       await completeEventRuntimeFirstHello({
         eventId: participant.eventId,
         answerId,
@@ -626,7 +662,7 @@ export function useEventRuntimeController(
   async function submitWingmanRequest() {
     const participant = bootstrap?.participant;
     if (!participant || !wingmanTargetUid || pending) return;
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async () => {
       await submitEventRuntimeWingmanRequest({
         eventId: participant.eventId,
         targetUid: wingmanTargetUid,
@@ -637,7 +673,7 @@ export function useEventRuntimeController(
   async function withdrawWingmanRequest() {
     const participant = bootstrap?.participant;
     if (!participant || pending) return;
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async () => {
       await withdrawEventRuntimeWingmanRequest({eventId: participant.eventId});
     }).catch(() => undefined);
   }
@@ -645,7 +681,7 @@ export function useEventRuntimeController(
   async function submitFeedback() {
     const participant = bootstrap?.participant;
     if (!participant || !user || pending) return;
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async (current) => {
       await saveEventRuntimeFeedback({
         eventId: participant.eventId,
         clubId: participant.clubId,
@@ -658,6 +694,7 @@ export function useEventRuntimeController(
         safetyConcern,
         privateNote: privateNote.trim() || null,
       });
+      if (!current()) return;
       setStatus({message: eventRuntimeCopy.feedbackSaved, tone: "is-success"});
     }).catch(() => undefined);
   }
@@ -672,15 +709,17 @@ export function useEventRuntimeController(
   async function submitConversationGraph(skipped = false) {
     const participant = bootstrap?.participant;
     if (!participant || !conversationGraph || pending) return;
-    await actionMutation.mutateAsync(async () => {
+    await runAction(async (current) => {
       const selectedUids = skipped ? [] : [...selectedConversationUids].sort();
       await submitEventSuccessConversationGraph({
         eventId: participant.eventId,
         selectedUids,
         skipped,
       });
+      if (!current()) return;
       setSelectedConversationUids(selectedUids);
       const refreshedGraph = await conversationGraphQuery.refetch();
+      if (!current()) return;
       if (refreshedGraph.error) throw refreshedGraph.error;
       setStatus({
         message: skipped ? eventRuntimeCopy.conversationSkipped :

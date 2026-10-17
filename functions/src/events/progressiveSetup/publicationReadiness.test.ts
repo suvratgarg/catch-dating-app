@@ -13,7 +13,7 @@ function setup() {
     "../../../../contracts/fixtures/valid/event_doc.json"), "utf8"));
   const event = {...raw, publicationState: "private",
     eventMarketId: "in-mp-indore", startTime: Timestamp.fromMillis(500_000),
-    endTime: Timestamp.fromMillis(600_000)} as EventDocument;
+    endTime: Timestamp.fromMillis(500_000 + 90 * 60_000)} as EventDocument;
   return {event,
     organizer: {appVisibility: "discoverable"} as OrganizerDocument,
     nowMillis: 100_000, timestampFromMillis: Timestamp.fromMillis};
@@ -39,7 +39,7 @@ test("readiness lists actionable missing fields without mutation", () => {
   const result = eventPublicationReadiness(params);
   assert.equal(result.canPublish, false);
   assert.deepEqual(result.missing, ["organizerVisibility", "duration", "venue",
-    "format", "description", "admissionTerms", "distancePace"]);
+    "format", "admissionTerms", "distancePace"]);
   assert.equal(JSON.stringify(params.event), before);
 });
 
@@ -59,4 +59,15 @@ test("readiness rejects an invalid registration revision", () => {
   assert.deepEqual(eventPublicationReadiness(params), {canPublish: false,
     missing: ["contract"]});
   assert.throws(() => preparePublishedEventPatch(params));
+});
+
+test("omitted description publishes as an empty legacy string", () => {
+  const params = setup();
+  delete params.event.description;
+  assert.deepEqual(eventPublicationReadiness(params), {canPublish: true,
+    missing: []});
+  assert.equal(preparePublishedEventPatch(params).description, "");
+  assert.equal(params.event.description, undefined);
+  params.event.description = "An authored plan";
+  assert.equal(preparePublishedEventPatch(params).description, undefined);
 });

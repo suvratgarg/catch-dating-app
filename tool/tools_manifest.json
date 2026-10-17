@@ -1085,7 +1085,10 @@
         ".github/workflows/react-surface-validation.yml",
         "tool/ci/web_hosting_workflow.test.mjs",
         "tool/ci/web_hosting_freshness.mjs",
-        "website/scripts/marketingDeployWorkflow.test.mjs"
+        "website/scripts/marketingDeployWorkflow.test.mjs",
+        "tool/ci/marketing_capture_package.test.mjs",
+        "tool/marketing/export_hosted_captures.mjs",
+        "tool/marketing/capture_manifest.json"
       ],
       "description": "Guards the exact Admin, standalone Host, and Marketing Hosting path: runtime-complete triggers, one production build, immutable artifact-id and digest promotion, no deploy-time rebuild, current-main freshness, and terminal source-bound recovery.",
       "checks": [
@@ -1591,6 +1594,7 @@
       "status": "active",
       "description": "Enforces provider/routing-free imports and API usage for aligned provider-free adopters tracked in the architecture pattern registry.",
       "checks": [
+        "node --test tool/architecture/check_adopted_architecture_boundaries.test.mjs",
         "node --check tool/architecture/check_adopted_architecture_boundaries.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
@@ -1604,7 +1608,11 @@
         "contains": [
           "scanBoundaryFile flags provider, routing, data, and repository access"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
+        "tool/architecture/check_adopted_architecture_boundaries.mjs"
+      ]
     },
     {
       "id": "audit:app-architecture-exhibits",
@@ -1641,6 +1649,7 @@
       "status": "active",
       "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files.",
       "checks": [
+        "node --test tool/architecture/check_dependency_direction.test.mjs",
         "node --check tool/architecture/check_dependency_direction.mjs",
         "node tool/architecture/check_dependency_direction.mjs"
       ],
@@ -1674,7 +1683,11 @@
           "scanFile flags presentation files with multiple route screens",
           "scanDependencyDirection flags untracked state adapters as a hard gate"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_dependency_direction.test.mjs",
+        "tool/architecture/check_dependency_direction.mjs"
+      ]
     },
     {
       "id": "audit:mutation-error-surfaces",
@@ -1685,6 +1698,7 @@
       "status": "active",
       "description": "Checks production Dart build methods that read Mutation isPending state also expose mutation error feedback.",
       "checks": [
+        "node --test tool/architecture/check_mutation_error_surfaces.test.mjs",
         "node --check tool/architecture/check_mutation_error_surfaces.mjs",
         "node tool/architecture/check_mutation_error_surfaces.mjs"
       ],
@@ -1698,7 +1712,11 @@
         "contains": [
           "scanFile flags build methods that read mutation pending without errors"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_mutation_error_surfaces.test.mjs",
+        "tool/architecture/check_mutation_error_surfaces.mjs"
+      ]
     },
     {
       "id": "audit:host-crm-boundaries",
@@ -1740,6 +1758,7 @@
       "status": "active",
       "description": "Checks production Dart navigation calls outside lib/routing avoid raw route path string literals.",
       "checks": [
+        "node --test tool/architecture/check_route_string_literals.test.mjs",
         "node --check tool/architecture/check_route_string_literals.mjs",
         "node tool/architecture/check_route_string_literals.mjs"
       ],
@@ -1753,7 +1772,11 @@
         "contains": [
           "scanFile flags context navigation with raw path strings"
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/architecture/check_route_string_literals.test.mjs",
+        "tool/architecture/check_route_string_literals.mjs"
+      ]
     },
     {
       "id": "audit:widget-cleanup",
@@ -2336,6 +2359,22 @@
       }
     },
     {
+      "id": "branding:catch-icon",
+      "category": "branding",
+      "path": "tool/branding/generate_catch_icon.swift",
+      "command": "swift tool/branding/generate_catch_icon.swift",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "platforms": [
+        "darwin"
+      ],
+      "description": "Generates Catch app icon and splash PNG assets using AppKit and the bundled Archivo font; checks parse syntax only.",
+      "checks": [
+        "swiftc -parse tool/branding/generate_catch_icon.swift"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "branding:native-assets",
       "category": "branding",
       "path": "tool/branding/generate_native_brand_assets.dart",
@@ -2842,8 +2881,21 @@
       "safety": "local",
       "status": "active",
       "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "functions-npm"]
+      },
+      "impactPaths": [
+        "tool/contracts/check_firestore_contract.test.mjs",
+        "tool/contracts/firestore_contract.json",
+        "tool/firebase/function_binding_intent.mjs",
+        "tool/lib/repo_paths.mjs",
+        "functions/package-lock.json"
+      ],
       "checks": [
-        "node --check tool/contracts/check_firestore_contract.mjs"
+        "node --check tool/contracts/check_firestore_contract.mjs",
+        "node --test tool/contracts/check_firestore_contract.test.mjs",
+        "node tool/contracts/check_firestore_contract.mjs"
       ]
     },
     {
@@ -3252,8 +3304,14 @@
       "status": "active",
       "description": "Audits and optionally backfills location, city, region, and market projection fields for clubs, users, public profiles, and config cities.",
       "checks": [
+        "node --test tool/data/backfill_location_market_fields.test.mjs",
         "node --check tool/data/backfill_location_market_fields.mjs"
-      ]
+      ],
+      "impactPaths": [
+        "tool/data/backfill_location_market_fields.test.mjs",
+        "tool/data/backfill_location_market_fields.mjs"
+      ],
+      "checkSafety": "local-readonly"
     },
     {
       "id": "data:hygiene-media-paths",
@@ -3333,14 +3391,19 @@
         "tool/demo/demo_ops_core.mjs",
         "tool/demo/demo_ops_core.test.mjs",
         "tool/demo/cross_paths_demo_core.mjs",
-        "tool/demo/cross_paths_demo_core.test.mjs"
+        "tool/demo/cross_paths_demo_core.test.mjs",
+        "tool/demo/demo_seed_scenario_catalog.test.mjs",
+        "tool/demo/demo_seed_scenario_catalog.mjs",
+        "tool/demo/demo_seed/scenarios/**"
       ],
       "checks": [
+        "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
         "node --check tool/demo/demo_ops.mjs",
         "node --test tool/demo/demo_ops_core.test.mjs tool/demo/cross_paths_demo_core.test.mjs",
         "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
       ],
-      "role": "generator"
+      "role": "generator",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "demo:cross-paths-core",
@@ -5346,6 +5409,22 @@
       ]
     },
     {
+      "id": "marketing:catch-host-store-screenshots",
+      "category": "marketing",
+      "path": "tool/store/generate_catch_host_app_store_screenshots.swift",
+      "command": "swift tool/store/generate_catch_host_app_store_screenshots.swift",
+      "safety": "local-writes-store-assets",
+      "status": "active",
+      "platforms": [
+        "darwin"
+      ],
+      "description": "Generates the five-image Catch Host App Store draft source set from existing captures; checks parse syntax, not rendering or submission approval.",
+      "checks": [
+        "swiftc -parse tool/store/generate_catch_host_app_store_screenshots.swift"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "marketing:app-listing-prototypes",
       "category": "marketing",
       "path": "tool/store/generate_app_listing_screenshot_prototypes.swift",
@@ -6693,10 +6772,15 @@
       "status": "active",
       "description": "Validates exported design reference PNG metadata and supports advisory pixel comparison against UI capture artifacts.",
       "checks": [
+        "node --test tool/design/check_reference_screens.test.mjs",
         "node --check tool/design/check_reference_screens.mjs",
         "node tool/design/check_reference_screens.mjs --check --summary"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "tool/design/check_reference_screens.test.mjs",
+        "tool/design/check_reference_screens.mjs"
+      ]
     },
     {
       "id": "design:reference-screen-exporter",
@@ -7060,6 +7144,7 @@
       "status": "active",
       "description": "Checks the generated admin callable request/response validator registry against current adminApi callables and schema contracts.",
       "checks": [
+        "node --test tool/admin/callable_inventory.test.mjs",
         "node --check admin/scripts/generateCallableValidators.mjs",
         "node admin/scripts/generateCallableValidators.mjs --self-test",
         "npm --workspace catch-admin run check:callable-validators"
@@ -7075,7 +7160,11 @@
           "simulated schema drift",
           "Admin callable validator drift self-test passed."
         ]
-      }
+      },
+      "impactPaths": [
+        "tool/admin/callable_inventory.test.mjs",
+        "tool/admin/callable_inventory.mjs"
+      ]
     },
     {
       "id": "design:component-lexicon",
@@ -7770,6 +7859,17 @@
       }
     },
     {
+      "id": "demo:rsvp-fixture-builder",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/build_fixture.cjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "internal",
+      "description": "Internal synthetic RSVP fixture builder dispatched and checked by the active demo:rsvp-preview owner.",
+      "checks": [
+        "node --check tool/demo/rsvp_escape/build_fixture.cjs"
+      ]
+    },
+    {
       "id": "demo:rsvp-preview",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/form_definition.mjs",
@@ -8008,6 +8108,105 @@
         "node --check tool/design/check_host_section_composition.mjs",
         "node --test test/tool/host_section_composition_test.mjs"
       ]
+    },
+    {
+      "id": "ci:generated-inventories",
+      "category": "ci",
+      "path": "tool/ci/generated_inventories.mjs",
+      "command": "node tool/ci/generated_inventories.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "role": "generator",
+      "description": "Materializes the two exact-source route/catalog inventories while preserving authored guidance and coverage decisions. Offline real-Git checks use Node and Git; no Flutter or network. CI writes an ignored source/run-bound two-output receipt; later checks verify current inventory bytes before reusing exact drift commands.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/generated_inventories.test.mjs",
+        "tool/ui_capture/check_route_inventory.mjs",
+        "tool/lib/repo_paths.mjs",
+        "tool/design/generate_widget_catalog.mjs",
+        "tool/design/generate_widget_classification.mjs",
+        "tool/design/component_concepts.mjs",
+        "tool/design/lib/component_naming.mjs",
+        "tool/design/lib/new_widget_inventory_declarations.mjs",
+        "tool/design/lib/production_widget_roots.mjs",
+        ".github/workflows/ci.yml",
+        ".github/workflows/flutter-ci.yml",
+        ".github/workflows/tools-ci.yml",
+        "tool/marketing/export_hosted_captures.mjs",
+        "tool/marketing/capture_manifest.json"
+      ],
+      "checks": [
+        "node --check tool/ci/generated_inventories.mjs",
+        "node --test tool/ci/generated_inventories.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/generated_inventories.test.mjs",
+        "contains": [
+          "actual generators replace stale outputs while preserving authored guidance, decisions and goldens",
+          "wrong or mutable source identity and dirty authored inputs fail before either output changes",
+          "a newly generated route still fails the actual authored capture coverage gate",
+          "partial sparse checkout fails even when every production root still exists"
+        ]
+      }
+    },
+    {
+      "id": "marketing:hosted-capture-import",
+      "category": "marketing",
+      "path": "tool/marketing/import_hosted_captures.mjs",
+      "command": "node tool/marketing/import_hosted_captures.mjs",
+      "safety": "remote-read-local-writes-artifacts",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "role": "generator",
+      "description": "Imports exact-id/source/run/attempt/digest-bound canonical captures and verifies website dist bytes. Offline checks use Node, Git and Python 3 standard-library ZIP support; synthetic renderer commands do not invoke Flutter or providers. The real import additionally requires gh and read-only Actions access.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/marketing/import_hosted_captures.test.mjs",
+        "tool/marketing/export_hosted_captures.mjs",
+        "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/lib/capture_provenance.mjs",
+        "tool/marketing/sync_website_media.mjs",
+        "tool/marketing/export_app_screenshots.mjs",
+        "tool/ui_capture/run_captures.mjs",
+        "tool/ci/toolchain.env",
+        "tool/lib/repo_paths.mjs",
+        "tool/design/generate_widget_catalog.mjs",
+        "tool/design/generate_widget_classification.mjs",
+        "tool/design/component_concepts.mjs",
+        "tool/design/lib/component_naming.mjs",
+        "tool/design/lib/new_widget_inventory_declarations.mjs",
+        "tool/design/lib/production_widget_roots.mjs",
+        ".github/workflows/_web-hosting-build.yml",
+        ".github/workflows/react-surface-validation.yml",
+        ".github/workflows/tools-ci.yml",
+        ".github/workflows/marketing-captures.yml"
+      ],
+      "checks": [
+        "node --check tool/marketing/import_hosted_captures.mjs",
+        "node --test tool/marketing/import_hosted_captures.test.mjs",
+        "node --test tool/marketing/export_hosted_captures.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/marketing/import_hosted_captures.test.mjs",
+        "contains": [
+          "artifact identity distinguishes capture source from the controller event and binds the current attempt",
+          "artifact download uses only its exact id and rejects attempt races and digest tampering",
+          "ZIP rejects missing, duplicate, extra, traversal, absolute, directory and symlink entries",
+          "ZIP validates local names and CRCs and rejects prefixed or truncated archives"
+        ]
+      }
     }
   ]
 }
