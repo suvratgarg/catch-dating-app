@@ -541,3 +541,194 @@ test("checkout holds and waitlist offers share remaining admission capacity",
     assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.occupied, 1);
     assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.checkoutHeld, 1);
   });
+
+async function rejectPreviewAndCommit(
+  mutate: (current: ReturnType<typeof fixture>) => void
+) {
+  for (const preview of [true, false]) {
+    const current = fixture();
+    mutate(current);
+    const before = structuredClone([...current.store.rows]);
+    const action = preview ? previewOrganizerFormAdmission({
+      db: current.store.db(), actorUid,
+      payload: {organizerId: org, eventId, responseId, contactId, offerId},
+      nowMillis: () => 2000}) : current.commit();
+    await assert.rejects(action, denied);
+    assert.deepEqual(current.store.writes, []);
+    assert.ok(current.store.timeline.every((item) =>
+      !item.startsWith("write:")));
+    assert.deepEqual(structuredClone([...current.store.rows]), before);
+  }
+}
+
+test("current withdrawal, closure and manager authority fence both paths",
+  async () => {
+    for (const [collection, id, patch] of [
+      ["organizerFormResponses", responseId, {withdrawnAt: ts(1900)}],
+      ["organizerFormResponses", responseId, {status: "withdrawn"}],
+      ["events", eventId, {status: "cancelled"}],
+      ["events", eventId, {startTime: ts(1900)}],
+      ["organizers", org, {ownerUserId: null, hostUserId: null,
+        hostUserIds: [], hostProfiles: []}],
+      ["organizerEventOffers", offerId, {status: "withdrawn"}],
+      ["organizerEventOffers", offerId, {status: "expired"}],
+    ] as Array<[string, string, Row]>) {
+      await rejectPreviewAndCommit(({store}) => {
+        Object.assign(store.get(`${collection}/${id}`)!, patch);
+      });
+    }
+    await rejectPreviewAndCommit(({store}) => {
+      const offer = store.get(`organizerEventOffers/${offerId}`)!;
+      offer.expiresAtMillis = 1900;
+      (offer.paymentSnapshot as Row).expiresAtMillis = 1900;
+    });
+  });
+
+test("exact form receipt and origin provenance fence preview and commit",
+  async () => {
+    const receiptPath = `organizerFormConversionReceipts/${
+      formConversionReceiptId(responseId, "crmContact")}`;
+    for (const patch of [
+      {organizerId: "foreign"}, {formId: "otherForm"},
+      {responseId: "otherResponse"}, {kind: "eventAttendeeProposal"},
+      {status: "pending"}, {resultId: "otherContact"},
+    ]) {
+      await rejectPreviewAndCommit(({store}) => {
+        Object.assign(store.get(receiptPath)!, patch);
+      });
+    }
+    for (const patch of [
+      {organizerId: "foreign"}, {sourceKind: "import"},
+      {sourceEntityKind: "other"}, {sourceEntityId: "otherResponse"},
+      {formId: "otherForm"}, {responseId: "otherResponse"},
+      {originContactId: "otherContact"}, {currentContactId: "otherContact"},
+    ]) {
+      await rejectPreviewAndCommit(({store, originId}) => {
+        Object.assign(store.get(`organizerContactOrigins/${originId}`)!,
+          patch);
+      });
+    }
+    for (const patch of [
+      {deletedAt: ts(1900)}, {hiddenAt: ts(1900)},
+      {mergedIntoContactId: "survivor"},
+      {identityState: "ambiguous"},
+      {ambiguousCandidateContactIds: ["candidate"]},
+    ]) {
+      await rejectPreviewAndCommit(({store}) => {
+        Object.assign(store.get(`organizerContacts/${contactId}`)!, patch);
+      });
+    }
+    for (const patch of [
+      {organizerId: "foreign"}, {formId: "otherForm"},
+    ]) {
+      await rejectPreviewAndCommit(({store}) => {
+        Object.assign(store.get("organizerFormVersions/version1")!, patch);
+      });
+    }
+    await rejectPreviewAndCommit(({store}) => {
+      (store.get("organizerFormVersions/version1")!.definition as Row)
+        .defaultTargetId = "otherEvent";
+    });
+  });
+
+test("form conversion follows a valid merged origin through the real service",
+  async () => {
+    const {store, originId, commit} = fixture();
+    store.get(`organizerFormConversionReceipts/${
+      formConversionReceiptId(responseId, "crmContact")}`)!.resultId =
+      "original";
+    store.get(`organizerContactOrigins/${originId}`)!.originContactId =
+      "original";
+    const preview = await previewOrganizerFormAdmission({db: store.db(),
+      actorUid, payload: {organizerId: org, eventId, responseId, contactId,
+        offerId}, nowMillis: () => 2000});
+    assert.equal(preview.canCommit, true);
+    assert.deepEqual(store.writes, []);
+    assert.ok(store.timeline.every((item) => !item.startsWith("write:")));
+    const receipt = await commit();
+    assert.equal(receipt.contactId, contactId);
+    assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.occupied, 1);
+  });
+
+test("exact receipt and ownership agreement fences historical replay",
+  async () => {
+    for (const mutate of [
+      (receipt: Row) => {
+        receipt.requestHash = "b".repeat(64);
+      },
+      (receipt: Row) => {
+        receipt.responseId = "otherResponse";
+      },
+      (receipt: Row) => {
+        receipt.receiptId = "otherReceipt";
+      },
+      (_receipt: Row, ownership: Row) => {
+        ownership.attendeeId = "otherAttendee";
+      },
+      (_receipt: Row, ownership: Row) => {
+        ownership.canonicalSeatKey = "otherSeat";
+      },
+      (_receipt: Row, ownership: Row) => {
+        ownership.offerRevision = 999;
+      },
+    ]) {
+      const {store, commit} = fixture();
+      const first = await commit();
+      mutate(store.get(`organizerFormAdmissionReceipts/${first.receiptId}`)!,
+        store.get(`organizerFormAdmissions/${
+          formAdmissionOwnershipId(org, eventId, responseId)}`)!);
+      const before = structuredClone([...store.rows]);
+      const writes = store.writes.length;
+      store.timeline.length = 0;
+      await assert.rejects(commit(), denied);
+      assert.equal(store.writes.length, writes);
+      assert.ok(store.timeline.every((item) => !item.startsWith("write:")));
+      assert.deepEqual(structuredClone([...store.rows]), before);
+    }
+    const {store, commit} = fixture();
+    const first = await commit();
+    const writes = store.writes.length;
+    await assert.rejects(commit({contactId: "otherContact"}), denied);
+    store.get(`events/${eventId}`)!.status = "cancelled";
+    assert.deepEqual(await commit(), {...first, replayed: true});
+    assert.equal(store.writes.length, writes);
+  });
+
+test("legacy phone receipt requires reconciliation without changing its guest",
+  async () => {
+    await rejectPreviewAndCommit(({store}) => {
+      const phone = "+919999999999";
+      const attendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+      store.put(`eventAttendees/${attendeeId}`, {organizerId: org, eventId,
+        externalReference: responseId, sourceRowId: responseId,
+        phoneE164: phone, email: null, status: "registered",
+        source: "hostManual"});
+      store.put(`organizerContactEventEdges/${attendeeId}`, {
+        organizerId: org, eventId, contactId});
+      store.put(`organizerFormConversionReceipts/${formConversionReceiptId(
+        responseId, "eventAttendeeProposal", eventId)}`, {
+        organizerId: org, formId: "form1", responseId,
+        kind: "eventAttendeeProposal", status: "completed",
+        resultId: attendeeId,
+        fields: [{destinationField: "eventId", value: eventId}]});
+    });
+  });
+
+test("canonical capacity overrides a stale booked-count projection",
+  async () => {
+    await rejectPreviewAndCommit(({store}) => {
+      store.get(`eventSeatLedgers/${eventId}`)!.occupied = 2;
+      store.get(`events/${eventId}`)!.bookedCount = 0;
+    });
+    const {store, commit} = fixture();
+    store.get(`events/${eventId}`)!.bookedCount = 2;
+    const preview = await previewOrganizerFormAdmission({db: store.db(),
+      actorUid, payload: {organizerId: org, eventId, responseId, contactId,
+        offerId}, nowMillis: () => 2000});
+    assert.equal(preview.canCommit, true);
+    assert.deepEqual(store.writes, []);
+    const result = await commit();
+    assert.equal(result.seatAlreadyOccupied, false);
+    assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.occupied, 1);
+    assert.equal(store.get(`events/${eventId}`)!.bookedCount, 1);
+  });
