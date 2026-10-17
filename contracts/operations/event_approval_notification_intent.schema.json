@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/event_approval_notification_intent.schema.json",
+  "title": "EventApprovalNotificationIntent",
+  "$ref": "../shared/event_approval_notifications.schema.json#/definitions/Intent"
+}

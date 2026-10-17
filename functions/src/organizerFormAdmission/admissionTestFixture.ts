@@ -37,11 +37,14 @@ export class Store {
   timeline: string[] = [];
   writes: string[] = [];
   collection(name: string) {
-    const query = (filters: Array<[string, string, unknown]>) => ({
+    const query = (filters: Array<[string, string, unknown]>,
+      order?: [string, string]) => ({
       collection: name, filters,
       where: (field: string, op: string, value: unknown) =>
-        query([...filters, [field, op, value]]),
-      limit: (count: number) => ({collection: name, filters, count}),
+        query([...filters, [field, op, value]], order),
+      orderBy: (field: string, direction: string) => query(filters, [field,
+        direction]),
+      limit: (count: number) => ({collection: name, filters, count, order}),
     });
     return {doc: (id: string) => ({path: `${name}/${id}`}),
       where: (field: string, op: string, value: unknown) =>
@@ -65,7 +68,8 @@ export class Store {
     };
     const tx = {
       get: async (ref: {path?: string; collection?: string;
-        filters?: Array<[string, string, unknown]>; count?: number}) => {
+        filters?: Array<[string, string, unknown]>; count?: number;
+          order?: [string, string]}) => {
         assert.equal(startedWrite, false, "no Firestore read after write");
         if (ref.collection && ref.filters) {
           this.timeline.push(`query:${ref.collection}`);
@@ -73,9 +77,16 @@ export class Store {
             path.startsWith(`${ref.collection}/`) &&
             ref.filters!.every(([field, op, value]) => op === "in" ?
               (value as unknown[]).includes(row[field]) : row[field] === value))
+            .sort(([, a], [, b]) => {
+              if (!ref.order) return 0;
+              const [field, direction] = ref.order;
+              const value = (row: Row) => row[field] instanceof Timestamp ?
+                (row[field] as Timestamp).toMillis() : Number(row[field] ?? 0);
+              return (value(a) - value(b)) * (direction === "desc" ? -1 : 1);
+            })
             .slice(0, ref.count).map(([path, row]) => ({
               id: path.split("/").at(-1), data: () => row}));
-          return {docs, empty: docs.length === 0};
+          return {docs, size: docs.length, empty: docs.length === 0};
         }
         assert.ok(ref.path);
         this.timeline.push(`read:${ref.path}`);

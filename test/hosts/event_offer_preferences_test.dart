@@ -1,15 +1,14 @@
 import 'dart:async';
-
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'event_controller_test_support.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -124,8 +123,8 @@ void main() {
         );
       }
 
-      EventOfferPreferencesController controller() =>
-          EventOfferPreferencesController(
+      TestEventOfferPreferencesController controller() =>
+          TestEventOfferPreferencesController(
             userId: 'host-1',
             organizerId: 'club-1',
             eventId: 'event-1',
@@ -164,7 +163,7 @@ void main() {
 
   test('failed offer reread clears old editable authority', () async {
     var denied = false;
-    final controller = EventOfferPreferencesController(
+    final controller = TestEventOfferPreferencesController(
       userId: 'host-1',
       organizerId: 'club-1',
       eventId: 'event-1',
@@ -190,7 +189,7 @@ void main() {
     () async {
       final sent = <EventOfferPreferencesUpdateRequest>[];
       final previews = <EventOfferPreferencesUpdateRequest>[];
-      final controller = EventOfferPreferencesController(
+      final controller = TestEventOfferPreferencesController(
         userId: 'host-1',
         organizerId: 'club-1',
         eventId: 'event-1',
@@ -243,7 +242,7 @@ void main() {
       final deferred = Completer<EventOfferPreferencesPreview>();
       EventOfferPreferencesUpdateRequest? previewRequest;
       var writes = 0;
-      final controller = EventOfferPreferencesController(
+      final controller = TestEventOfferPreferencesController(
         userId: 'host-1',
         organizerId: 'club-1',
         eventId: 'event-1',
@@ -288,7 +287,7 @@ void main() {
     () async {
       for (final kind in ['exact', 'generic', 'foreign']) {
         SharedPreferences.setMockInitialValues({});
-        final controller = EventOfferPreferencesController(
+        final controller = TestEventOfferPreferencesController(
           userId: 'host-1',
           organizerId: 'club-1',
           eventId: 'event-1',
@@ -327,7 +326,7 @@ void main() {
   test('account change blocks settings preview and writes', () async {
     var actor = 'host-1';
     var calls = 0;
-    final controller = EventOfferPreferencesController(
+    final controller = TestEventOfferPreferencesController(
       userId: actor,
       organizerId: 'club-1',
       eventId: 'event-1',
