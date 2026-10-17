@@ -223,6 +223,17 @@ jobs:
           fi
           node tool/run.mjs affected-tools --base "$BASE_SHA" --head "$SOURCE_SHA" --mode "$MODE" --check "${shared_flags[@]}" "${window_flag[@]}"
 
+      - name: Upload visual diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: tools-visual-diagnostics-affected-${{ github.run_id }}
+          path: |
+            artifacts/visual-actuals
+            artifacts/visual-diffs
+          if-no-files-found: ignore
+          retention-days: 14
+
   fast-gates:
     name: Fast deterministic tool gates
     needs: preflight
@@ -353,6 +364,17 @@ jobs:
           done
           (( ${#category_flags[@]} > 0 ))
           node tool/run.mjs check "${category_flags[@]}" "${shared_flags[@]}"
+
+      - name: Upload visual diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: tools-visual-diagnostics-${{ matrix.name }}-${{ github.run_id }}
+          path: |
+            artifacts/visual-actuals
+            artifacts/visual-diffs
+          if-no-files-found: ignore
+          retention-days: 14
 
   tools:
     name: Validate tool manifest and fast checks

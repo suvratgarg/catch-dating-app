@@ -15,10 +15,13 @@ const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
 
 function run(args, {cwd = repositoryRoot, env = process.env} = {}) {
+  const childEnv = {...env};
+  // These are independent CLI invocations, not recursive node:test workers.
+  delete childEnv.NODE_TEST_CONTEXT;
   return spawnSync("node", ["tool/run.mjs", ...args], {
     cwd,
     encoding: "utf8",
-    env,
+    env: childEnv,
   });
 }
 
@@ -239,6 +242,74 @@ test("the runner executes manifest checks without task authority metadata", (con
   assert.match(result.stdout, /fixture-check/u);
   assert.match(result.stdout, /Tool checks passed/u);
   assert.doesNotMatch(result.stderr, /authority|lease|phase|managed task/iu);
+});
+
+const restoredProofOwners = [
+  ["audit:adopted-architecture-boundaries", "tool/architecture/check_adopted_architecture_boundaries.test.mjs"],
+  ["audit:dependency-direction", "tool/architecture/check_dependency_direction.test.mjs"],
+  ["audit:mutation-error-surfaces", "tool/architecture/check_mutation_error_surfaces.test.mjs"],
+  ["audit:route-string-literals", "tool/architecture/check_route_string_literals.test.mjs"],
+  ["web:admin-callable-validators", "tool/admin/callable_inventory.test.mjs"],
+  ["demo:ops", "tool/demo/demo_seed_scenario_catalog.test.mjs"],
+  ["data:backfill-location-markets", "tool/data/backfill_location_market_fields.test.mjs"],
+  ["design:reference-screens", "tool/design/check_reference_screens.test.mjs"],
+];
+
+for (const [ownerId, proofPath] of restoredProofOwners) {
+  test(`${ownerId} propagates its declared suite's failing sentinel`, context => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const owner = manifest.tools.find(tool => tool.id === ownerId);
+    assert.equal(owner.status, "active");
+    // The test runs first, so this isolated fixture never reaches a real
+    // generator, provider operation or scanner after the sentinel fails.
+    assert.equal(owner.checks[0], `node --test ${proofPath}`);
+    const fixture = createRunnerFixture(context);
+    for (const [file, source] of [[owner.path, "export {};"],
+      [proofPath, "throw new Error('owner-execution-sentinel');"]]) {
+      fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
+      fs.writeFileSync(path.join(fixture, file), source);
+    }
+    mutateFixtureManifest(fixture, doc => doc.tools.push(owner));
+    const result = run(["check", ownerId], {cwd: fixture});
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stdout + result.stderr, /owner-execution-sentinel/u);
+    assert.doesNotMatch(result.stdout, /Tool checks passed/u);
+    assert.equal(result.stdout.match(/^==>/gm)?.length, 1);
+  });
+
+  test(`${ownerId} owns isolated helper and regression edits`, () => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    for (const changedPath of [proofPath, proofPath.replace(".test.mjs", ".mjs")]) {
+      const result = run(["affected-tools", "--paths", changedPath, "--json"]);
+      assert.equal(result.status, 0, result.stderr);
+      const plan = JSON.parse(result.stdout);
+      assert.equal(plan.mode, "affected", changedPath);
+      assert.deepEqual(plan.ownersByPath[changedPath], [ownerId]);
+      assert.deepEqual(plan.toolIds, [...new Set([...manifest.ciImpact.mandatoryCheckIds, ownerId])].sort());
+    }
+  });
+}
+
+test("scenario fixture changes select the active demo consumer", () => {
+  const changedPath = "tool/demo/demo_seed/scenarios/host-demo.json";
+  const result = run(["affected-tools", "--paths", changedPath, "--json"]);
+  assert.equal(result.status, 0, result.stderr);
+  const plan = JSON.parse(result.stdout);
+  assert.equal(plan.mode, "affected");
+  assert.deepEqual(plan.ownersByPath[changedPath], ["demo:ops", "demo:seed"]);
+});
+
+test("a failing imported proof propagates through the supported owner command", context => {
+  const fixture = createRunnerFixture(context);
+  fs.writeFileSync(path.join(fixture, "tool/alternate.test.mjs"), "import './proof.test.mjs';");
+  fs.writeFileSync(path.join(fixture, "tool/proof.test.mjs"), "throw new Error('imported-proof-sentinel');");
+  mutateFixtureManifest(fixture, manifest => {
+    manifest.tools.find(tool => tool.id === "fixture:check").checks = ["node --test tool/alternate.test.mjs"];
+  });
+  const result = run(["check", "fixture:check"], {cwd: fixture});
+  assert.equal(result.status, 1);
+  assert.match(result.stdout + result.stderr, /imported-proof-sentinel/u);
+  assert.doesNotMatch(result.stdout, /Tool checks passed/u);
 });
 
 test("direct tool execution forwards shell-sensitive arguments safely", (context) => {
@@ -524,4 +595,133 @@ test("Tools preflight and execution retain reverted files from the same exact co
   const invalid = run([...args, "--paths", "README.md"], {cwd: fixture});
   assert.notEqual(invalid.status, 0);
   assert.doesNotMatch(invalid.stdout, /==>/u);
+});
+
+
+for (const extension of ["swift", "cjs", "mjs"]) {
+  test(`manifest discovery requires exact ${extension} registration in every repository view`, context => {
+    const fixture = createRunnerFixture(context);
+    const relative = `tool/store/unknown.${extension}`;
+    const file = path.join(fixture, relative);
+    fs.mkdirSync(path.dirname(file), {recursive: true});
+    assert.equal(run(["check", "--manifest-only"], {cwd: fixture}).status, 0);
+    fs.writeFileSync(file, "// inert discovery fixture\n");
+    const assertUnmanaged = () => {
+      const result = run(["check", "--manifest-only"], {cwd: fixture});
+      assert.equal(result.status, 1, result.stdout + result.stderr);
+      assert.ok(result.stderr.includes(`Unmanaged tool script: ${relative}`));
+    };
+    assertUnmanaged(); // untracked
+    runGit(fixture, ["add", relative]);
+    assertUnmanaged(); // indexed
+    runGit(fixture, ["update-index", "--skip-worktree", relative]);
+    fs.unlinkSync(file);
+    assertUnmanaged(); // omitted sparse file, still present in the index
+    mutateFixtureManifest(fixture, manifest => manifest.tools.push({
+      id: "fixture:exact", category: "fixture", path: relative,
+      status: "internal", checks: [`node --check ${relative}`],
+    }));
+    const registered = run(["check", "--manifest-only"], {cwd: fixture});
+    assert.equal(registered.status, 0, registered.stderr);
+    fs.writeFileSync(path.join(path.dirname(file), `sibling.${extension}`), "// inert\n");
+    const sibling = run(["check", "--manifest-only"], {cwd: fixture});
+    assert.equal(sibling.status, 1);
+    assert.ok(sibling.stderr.includes(`Unmanaged tool script: tool/store/sibling.${extension}`));
+  });
+}
+
+test("new script formats retain existing helper exclusions", context => {
+  const fixture = createRunnerFixture(context);
+  for (const directory of ["lib", "fixtures", "contracts/generated"]) {
+    for (const extension of ["swift", "cjs"]) {
+      const file = path.join(fixture, "tool", directory, `helper.${extension}`);
+      fs.mkdirSync(path.dirname(file), {recursive: true});
+      fs.writeFileSync(file, "// inert helper\n");
+    }
+  }
+  const result = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(result.status, 0, result.stderr);
+});
+
+const nativeGenerators = [
+  ["branding:catch-icon", "tool/branding/generate_catch_icon.swift"],
+  ["marketing:catch-host-store-screenshots", "tool/store/generate_catch_host_app_store_screenshots.swift"],
+];
+
+for (const [id, sourcePath] of nativeGenerators) {
+  test(`${id} has exact ownership and platform-bounded parse-only dispatch`, context => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const owner = manifest.tools.find(tool => tool.id === id);
+    assert.ok(owner, id);
+    assert.equal(owner.path, sourcePath);
+    assert.equal(owner.status, "active");
+    assert.equal(owner.role, "generator");
+    assert.deepEqual(owner.platforms, ["darwin"]);
+    assert.equal(owner.command, `swift ${sourcePath}`);
+    assert.deepEqual(owner.checks, [`swiftc -parse ${sourcePath}`]);
+    const affected = run(["affected-tools", "--paths", sourcePath, "--json"]);
+    assert.equal(affected.status, 0, affected.stderr);
+    assert.deepEqual(JSON.parse(affected.stdout).ownersByPath[sourcePath], [id]);
+
+    const fixture = createRunnerFixture(context);
+    fs.mkdirSync(path.dirname(path.join(fixture, sourcePath)), {recursive: true});
+    fs.writeFileSync(path.join(fixture, sourcePath), "// inert Swift input\n");
+    mutateFixtureManifest(fixture, doc => doc.tools.push(owner));
+    const bin = path.join(fixture, "bin");
+    fs.mkdirSync(bin);
+    const receipt = path.join(fixture, "dispatch.jsonl");
+    for (const executable of ["swift", "swiftc"]) {
+      fs.writeFileSync(path.join(bin, executable), `#!${process.execPath}\n` +
+        `require('node:fs').appendFileSync(${JSON.stringify(receipt)}, JSON.stringify([${JSON.stringify(executable)}, ...process.argv.slice(2)]) + '\\n');\n`,
+      {mode: 0o755});
+    }
+    const preload = path.join(fixture, "platform.cjs");
+    for (const platform of ["darwin", "linux", "win32"]) {
+      fs.writeFileSync(preload, `Object.defineProperty(process, 'platform', {value: ${JSON.stringify(platform)}});\n`);
+      const env = {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+        NODE_OPTIONS: `--require=${preload}`};
+      const checked = run(["check", id], {cwd: fixture, env});
+      assert.equal(checked.status, 0, checked.stdout + checked.stderr);
+      const executed = run(["run", id, "two words", "it's-safe"], {cwd: fixture, env});
+      if (platform === "darwin") {
+        assert.equal(executed.status, 0, executed.stderr);
+        assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n").map(line => JSON.parse(line)), [
+          ["swiftc", "-parse", sourcePath], ["swift", sourcePath, "two words", "it's-safe"],
+        ]);
+        fs.unlinkSync(receipt);
+      } else {
+        assert.ok(checked.stdout.includes(`skipped on ${platform}`));
+        assert.equal(executed.status, 64, executed.stderr);
+        assert.ok(executed.stderr.includes(`unavailable on ${platform}`));
+        assert.equal(fs.existsSync(receipt), false);
+      }
+    }
+    // Only sentinels run here: this proves dispatch, not native Swift parsing.
+  });
+}
+
+test("RSVP CJS helper requires exact registration while retaining its active owner", context => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+  const owner = manifest.tools.find(tool => tool.id === "demo:rsvp-preview");
+  const helperPath = "tool/demo/rsvp_escape/build_fixture.cjs";
+  const helper = manifest.tools.find(tool => tool.path === helperPath);
+  assert.equal(helper?.status, "internal");
+  assert.equal(owner.command, `node ${helperPath}`);
+  assert.deepEqual(owner.checks, [`node --check ${helperPath}`, "node --test tool/demo/rsvp_escape/form_definition.test.mjs"]);
+  const affected = run(["affected-tools", "--paths", helperPath, "--json"]);
+  assert.equal(affected.status, 0, affected.stderr);
+  assert.deepEqual(JSON.parse(affected.stdout).ownersByPath[helperPath], [owner.id]);
+  const fixture = createRunnerFixture(context);
+  for (const file of [owner.path, helperPath]) {
+    fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
+    fs.writeFileSync(path.join(fixture, file), "// inert\n");
+  }
+  mutateFixtureManifest(fixture, doc => doc.tools.push(owner, helper));
+  assert.equal(run(["check", "--manifest-only"], {cwd: fixture}).status, 0);
+  mutateFixtureManifest(fixture, doc => {
+    doc.tools = doc.tools.filter(tool => tool.path !== helperPath);
+  });
+  const missing = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(missing.status, 1);
+  assert.ok(missing.stderr.includes(`Unmanaged tool script: ${helperPath}`));
 });
