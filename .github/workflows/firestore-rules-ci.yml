@@ -2,6 +2,13 @@ name: Backend Rules and Emulator Integration
 
 on:
   workflow_call:
+    inputs:
+      ci_plan_attempt:
+        type: string
+        required: false
+      ci_plan_source_sha:
+        type: string
+        required: false
   workflow_dispatch:
 
 jobs:
@@ -10,6 +17,33 @@ jobs:
     timeout-minutes: 35
 
     steps:
+      - name: Require the originating CI plan
+        id: ci-plan
+        shell: bash
+        env:
+          CI_PLAN_ATTEMPT: ${{ inputs.ci_plan_attempt }}
+          CI_PLAN_SOURCE_SHA: ${{ inputs.ci_plan_source_sha }}
+        run: |
+          set -euo pipefail
+          refuse() {
+            echo 'CI plan binding does not match this run. Use Re-run all jobs.'
+            exit 64
+          }
+          [[ "${GITHUB_REPOSITORY:-}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || refuse
+          prefix="$GITHUB_REPOSITORY/.github/workflows/"
+          [[ "${GITHUB_WORKFLOW_REF:-}" == "$prefix"* ]] || refuse
+          caller="${GITHUB_WORKFLOW_REF#"$prefix"}"
+          [[ "$caller" =~ ^[A-Za-z0-9_.-]+\.ya?ml@(refs/(heads|tags)/[^[:space:]]+|refs/pull/[1-9][0-9]*/merge)$ ]] || refuse
+          # The runner exposes the root caller, including through reusable jobs.
+          # Missing bindings are legitimate only for independent workflows.
+          if [[ "$caller" == ci.yml@* || -n "$CI_PLAN_ATTEMPT" || -n "$CI_PLAN_SOURCE_SHA" ]]; then
+            [[ "${GITHUB_RUN_ATTEMPT:-}" =~ ^[1-9][0-9]*$ && "$CI_PLAN_ATTEMPT" =~ ^[1-9][0-9]*$ ]] || refuse
+            [[ "${GITHUB_SHA:-}" =~ ^[a-f0-9]{40}$ && "$CI_PLAN_SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]] || refuse
+            printf 'CI plan: workflow=%s source=%s plan_attempt=%s current_attempt=%s\n' \
+              "$GITHUB_WORKFLOW_REF" "$GITHUB_SHA" "$CI_PLAN_ATTEMPT" "$GITHUB_RUN_ATTEMPT"
+            [[ "$CI_PLAN_ATTEMPT" == "$GITHUB_RUN_ATTEMPT" && "$CI_PLAN_SOURCE_SHA" == "$GITHUB_SHA" ]] || refuse
+          fi
+
       - uses: actions/checkout@v6
 
       - id: toolchain
@@ -39,7 +73,7 @@ jobs:
         run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 
       - name: Retain selected and executed backend tests
-        if: always()
+        if: always() && steps.ci-plan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: backend-integration-execution-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}

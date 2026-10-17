@@ -373,8 +373,11 @@ jobs:
 
   firestore-rules:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.firestore_rules == 'true' }}
+    if: ${{ needs.plan.outputs.firestore_rules == 'true' }}
     uses: ./.github/workflows/firestore-rules-ci.yml
+    with:
+      ci_plan_attempt: ${{ needs.plan.outputs.producer_attempt }}
+      ci_plan_source_sha: ${{ needs.plan.outputs.source_sha }}
     secrets: inherit
 
   flutter:
