@@ -228,11 +228,11 @@ void main() {
     expect(confirmationResult, isTrue);
     expect(title, findsNothing);
     expectOriginalScope();
-    expect(_notices(harness), isEmpty);
     final mutation = harness.container.read(
       HostCustomersController.removeMutation(_key),
     );
     expect(mutation.isPending, isTrue, reason: 'Mutation state: $mutation');
+    expect(_notices(harness), isEmpty);
     repeat();
     await tester.pump();
     expect(harness.repository.removals, hasLength(1));
@@ -724,7 +724,8 @@ class _RemovalRepository extends Fake implements HostContactsRepository {
     bool? hidden,
     List<String>? manualTags,
   }) {
-    expect(hidden, isTrue);
+    // This callback can resume while the tester is pumping the dialog.
+    expectSync(hidden, isTrue);
     removals.add((organizerId, contactId, expectedRevision));
     final result = Completer<void>();
     pending.add(result);
