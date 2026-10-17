@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   collisionKeyFor,
+  componentTierProblems,
   conceptMetrics,
   conceptTopologyProblems,
   newWidgetPolicyIssues,
@@ -324,4 +325,27 @@ test("feature previews cannot bypass reserved prefixes, role names or file suffi
   assert.deepEqual(newWidgetPolicyIssues({...base, name: "ProfileSection", file: "lib/profile/presentation/profile.dart"}, covered),
     ["noncanonical-feature-widget-file"]);
   assert.deepEqual(newWidgetPolicyIssues({...base, name: "ProfileScreen", file: "lib/profile/presentation/profile_screen.dart"}, covered), []);
+});
+
+test("parity tiers are required, keep React mappings off Flutter-only entries, and never widen a member", () => {
+  const entry = (id, tier, extra = {}) => ({
+    id, tier, surfaces: {flutter: "CatchThing"},
+    governance: {conceptRole: "concept", conceptId: id}, ...extra,
+  });
+  assert.deepEqual(componentTierProblems([
+    entry("catch.button", "T1", {surfaces: {flutter: "CatchButton", webui: "ButtonControl"}}),
+    entry("catch.sheet", "T3"),
+  ]), []);
+  assert.deepEqual(componentTierProblems([entry("catch.thing", undefined)]),
+    ["catch.thing: tier must be one of T1, T2, T3, T4"]);
+  assert.deepEqual(componentTierProblems([
+    entry("catch.sheet", "T3", {surfaces: {flutter: "CatchSheet", admin: "AdminSheet"}}),
+  ]), ["catch.sheet: T3 entries are Flutter-only but declare admin; promote to T2 through registry review"]);
+  const member = {
+    id: "catch.privacy_badge", tier: "T1", surfaces: {flutter: "CatchPrivacyBadge"},
+    governance: {conceptRole: "member", conceptId: "catch.badge", parentConceptId: "catch.badge"},
+  };
+  assert.deepEqual(componentTierProblems([entry("catch.badge", "T2"), member]),
+    ["catch.privacy_badge: member tier T1 is wider than parent catch.badge tier T2"]);
+  assert.deepEqual(componentTierProblems([entry("catch.badge", "T1"), {...member, tier: "T3"}]), []);
 });

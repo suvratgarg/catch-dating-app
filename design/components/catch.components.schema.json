@@ -123,7 +123,8 @@
         "Header", "HeaderTitle", "Scaffold", "PageBody", "ScrollView", "TabBar",
         "TabScaffold", "Poster", "Polaroid", "Ticket", "Gap", "Inset", "Divider",
         "Avatar", "Photo", "Cover", "Stepper", "StepFlow", "Accordion", "Drawer",
-        "Overlay", "Viewport", "Layout", "Action", "Menu", "Surface", "Input", "Text", "Image", "Scope", "AsyncBoundary"
+        "Overlay", "Viewport", "Layout", "Action", "Menu", "Surface", "Input", "Text", "Image", "Scope", "AsyncBoundary",
+        "Table"
       ]
     },
     "widgetNaming": {
@@ -172,6 +173,7 @@
         "name",
         "status",
         "kind",
+        "tier",
         "summary",
         "dart",
         "surfaces",
@@ -195,6 +197,10 @@
         },
         "kind": {
           "enum": ["primitive", "composite", "pattern", "screen-contract"]
+        },
+        "tier": {
+          "enum": ["T1", "T2", "T3", "T4"],
+          "description": "Cross-framework parity tier (see design/components/README.md). T1 universal: Flutter and @catch/web-ui now. T2 product: React built in @catch/web-ui on first web need. T3 native-only: Flutter only. T4 surface-specific: one surface owns it."
         },
         "level": {"$ref": "#/$defs/componentLevel"},
         "roleNoun": {"$ref": "#/$defs/roleNoun"},

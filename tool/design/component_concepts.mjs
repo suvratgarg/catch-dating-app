@@ -188,6 +188,36 @@ export function conceptTopologyProblems(components) {
   return [...new Set(problems)].sort();
 }
 
+// Cross-framework parity tiers, ordered from most to least widely required.
+export const parityTiers = Object.freeze(["T1", "T2", "T3", "T4"]);
+const reactSurfaceKeys = Object.freeze(["website", "admin", "webui"]);
+
+export function componentTierProblems(components) {
+  const problems = [];
+  const tierById = new Map(components.map((component) => [component.id, component.tier]));
+  for (const component of components) {
+    const tier = component.tier;
+    if (!parityTiers.includes(tier)) {
+      problems.push(`${component.id}: tier must be one of ${parityTiers.join(", ")}`);
+      continue;
+    }
+    if (tier === "T3" || tier === "T4") {
+      const react = reactSurfaceKeys.filter((key) => component.surfaces?.[key]);
+      if (react.length > 0) {
+        problems.push(`${component.id}: ${tier} entries are Flutter-only but declare ${react.join(", ")}; promote to T2 through registry review`);
+      }
+    }
+    const governance = component.governance ?? {};
+    if (governance.conceptRole === "member") {
+      const parentTier = tierById.get(governance.parentConceptId);
+      if (parityTiers.includes(parentTier) && parityTiers.indexOf(tier) < parityTiers.indexOf(parentTier)) {
+        problems.push(`${component.id}: member tier ${tier} is wider than parent ${governance.parentConceptId} tier ${parentTier}`);
+      }
+    }
+  }
+  return problems.sort();
+}
+
 function countBy(values, keyFor) {
   const result = {};
   for (const value of values) {
