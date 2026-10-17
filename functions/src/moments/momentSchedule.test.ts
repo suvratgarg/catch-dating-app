@@ -8,6 +8,15 @@ import type {TravelLegEvent} from "./momentConditions";
 
 const identity = {source: "travel", eventId: "event-1"};
 
+test("exported travel trigger retries the same document event", () => {
+  const endpoint = programTravelLegMoments.__endpoint;
+  assert.equal(endpoint.eventTrigger?.retry, true);
+  assert.equal(endpoint.eventTrigger?.eventType,
+    "google.cloud.firestore.document.v1.written");
+  assert.equal(endpoint.eventTrigger?.eventFilterPathPatterns?.document,
+    "programTravelLegs/{legId}");
+});
+
 test("travelLegChangeEvents diffs readiness and flight status", () => {
   const events = travelLegChangeEvents("leg-1",
     {programId: "prog", readiness: "expected", flightStatus: "onTime"},

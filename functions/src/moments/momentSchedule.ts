@@ -79,7 +79,7 @@ export function travelLegChangeEvents(
 
 /** Feeds triggered moments from programTravelLegs writes. */
 export const programTravelLegMoments = onDocumentWritten(
-  "programTravelLegs/{legId}",
+  {document: "programTravelLegs/{legId}", retry: true},
   async (event) => {
     const before = event.data?.before.data() as
       Record<string, unknown> | undefined;

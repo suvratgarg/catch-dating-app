@@ -577,8 +577,9 @@ at or before the old run's recorded wake time, or a malformed old wake time, is
 conservatively held. Old wake times may have been deferred, so this can withhold
 genuine historical events and is not exact replay proof. Later genuine events
 remain eligible. No historical replay or migration is implied. Trigger platform
-retries remain disabled pending hosted transaction acceptance; source publication
-does not establish deployment or provider acceptance.
+retries preserve the same CloudEvent identity and resume incomplete ingestion;
+they do not renew the send window or authorize resending an unknown outcome.
+Source publication does not establish deployment or provider acceptance.
 
 ## Audience automations
 
