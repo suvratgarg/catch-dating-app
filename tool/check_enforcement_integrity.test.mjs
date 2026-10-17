@@ -531,6 +531,84 @@ test("produces the same result after fixture files become sparse omitted", (cont
   assert.equal(fs.existsSync(path.join(root, "tool/policy/rules.json")), false);
 });
 
+function executionFixture(context, {checks = ["node --test tool/proof.test.mjs"],
+  source = "export {};", status = "active", additionalTools = []} = {}) {
+  const owner = gateTool({id: "fixture:proof", path: "tool/example.mjs",
+    command: "node tool/example.mjs", proofPath: "tool/proof.test.mjs", proofContains: []});
+  const root = createFixture({rules: {}, tools: [{...owner, status, checks}, ...additionalTools],
+    files: {"tool/example.mjs": "export {};", "tool/proof.test.mjs": "throw new Error('failing-sentinel');",
+      "tool/alternate.test.mjs": source}});
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  return root;
+}
+
+for (const check of ["node --check tool/proof.test.mjs", "node tool/example.mjs",
+  "echo node --test tool/proof.test.mjs", "node --test tool/proof.test.mjs || true",
+  "node --test tool/proof.test.mjs && true", "node --test --test-name-pattern=missing tool/proof.test.mjs",
+  "node --test tool/proof.test.mjs --test-skip-pattern=sentinel",
+  "node --test tool/proof.test.mjs # syntax only", "node --test tool/*.test.mjs"]) {
+  test(`unsupported or non-executing proof command is rejected: ${check}`, context => {
+    const root = executionFixture(context, {checks: [check]});
+    assert.match(checkEnforcementIntegrity({root}).errors.join("\n"),
+      /fixture:proof: Node vacuity proof tool\/proof.test.mjs has no executable active owner/u);
+  });
+}
+
+for (const source of ["// import './proof.test.mjs';\nexport {};",
+  'const text = "import \'./proof.test.mjs\'";',
+  "const text = `import './proof.test.mjs';`;", "const expression = /import '.\/proof.test.mjs'/;",
+  "if (false) await import('./proof.test.mjs');", "import('./proof.test.mjs');",
+  "import '/tool/proof.test.mjs';", "import './proof.test.mjs?query';",
+  "import '../../tool/proof.test.mjs';", "import './missing.mjs';",
+  "import './proof.test.mjs'; this is invalid JavaScript"]) {
+  test(`only parsed static relative imports establish proof reachability: ${source}`, context => {
+    const root = executionFixture(context, {checks: ["node --test tool/alternate.test.mjs"], source});
+    assert.match(checkEnforcementIntegrity({root}).errors.join("\n"), /no executable active owner/u);
+  });
+}
+
+test("alternate static import chains and cycles are parsed without evaluating source", context => {
+  const root = executionFixture(context, {checks: ["node --test tool/alternate.test.mjs"],
+    source: "import './bridge.js'; throw new Error('must-not-evaluate');"});
+  writeFile(root, "tool/bridge.js", "export * from './alternate.test.mjs'; import './proof.test.mjs';");
+  assert.deepEqual(checkEnforcementIntegrity({root}).errors, []);
+  writeFile(root, "tool/bridge.js", "export * from './alternate.test.mjs';");
+  assert.match(checkEnforcementIntegrity({root}).errors.join("\n"), /no executable active owner/u);
+});
+
+test("an unrelated active or internal check cannot rescue an active proof owner", context => {
+  for (const status of ["active", "internal"]) {
+    const root = executionFixture(context, {checks: ["node tool/example.mjs"], additionalTools: [
+      {id: "unrelated:test", path: "tool/unrelated.mjs", status,
+        checks: ["node --test tool/proof.test.mjs"]},
+    ]});
+    assert.match(checkEnforcementIntegrity({root}).errors.join("\n"), /fixture:proof: Node vacuity proof/u);
+  }
+});
+
+test("an internal proof needs an executable active consumer", context => {
+  const root = executionFixture(context, {status: "internal"});
+  assert.match(checkEnforcementIntegrity({root}).errors.join("\n"), /no executable active owner/u);
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "tool/tools_manifest.json")));
+  manifest.tools.push({id: "consumer:test", path: "tool/alternate.test.mjs", status: "active",
+    checks: ["node --test tool/alternate.test.mjs"]});
+  writeJson(root, "tool/tools_manifest.json", manifest);
+  writeFile(root, "tool/alternate.test.mjs", "import './proof.test.mjs';");
+  assert.deepEqual(checkEnforcementIntegrity({root}).errors, []);
+});
+
+test("static import ownership reads sparse snapshot modules", context => {
+  const root = executionFixture(context, {checks: ["node --test tool/alternate.test.mjs"],
+    source: "import './nested/bridge.mjs';"});
+  writeFile(root, "tool/nested/bridge.mjs", "import '../proof.test.mjs';");
+  git(root, ["init", "-q"]);
+  git(root, ["-c", "user.email=fixture@example.invalid", "-c", "user.name=Fixture", "add", "."]);
+  git(root, ["-c", "user.email=fixture@example.invalid", "-c", "user.name=Fixture", "commit", "-qm", "fixture"]);
+  git(root, ["sparse-checkout", "set", "--no-cone", "/tool/tools_manifest.json", "/tool/alternate.test.mjs"]);
+  assert.equal(fs.existsSync(path.join(root, "tool/nested/bridge.mjs")), false);
+  assert.deepEqual(checkWithRepositorySnapshot({root}).errors, []);
+});
+
 function createFixture({
   rules,
   tools = [],
@@ -586,7 +664,7 @@ function gateTool({
     status: "active",
     role,
     rules,
-    checks: [`node --check ${filePath}`, command],
+    checks: [`node --check ${filePath}`, `node --test ${proofPath}`, command],
     baseline,
     vacuityProof: {
       type: "test",
