@@ -214,7 +214,7 @@ void main() {
       await tester.pump();
       checkouts.single.emitSuccess(_success('order-a'));
       await tester.pump();
-      await tester.pump(const Duration(minutes: 10));
+      await pumpFeatureUiFor(tester, const Duration(minutes: 10));
       await timedOut;
       final oldCheckout = checkouts.single;
       verify.onCall = null;
