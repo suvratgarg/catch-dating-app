@@ -132,7 +132,7 @@ test("complete CI consumers derive source inventories before their semantic chec
     ["tools-ci.yml", "tool-buckets", "Check tool categories"],
   ]) {
     const source = selectedJob(file, job);
-    const steps = extractSteps(source);
+    const steps = extractSteps(`jobs:\n${source}`);
     const generate = steps.findIndex(step => step.name === "Derive exact-source route and widget inventories");
     const validate = steps.findIndex(step => step.name === check);
     assert.ok(generate >= 0 && validate > generate, `${file}/${job} derives before ${check}`);
@@ -1207,7 +1207,7 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
 
 test("Widgetbook first pass selects every package suite and preserves golden obligations", () => {
   const source = workflow("visual-integration-ci.yml");
-  const steps = extractSteps(source.split("  goldens:\n")[1].split("  native-smoke:\n")[0]);
+  const steps = extractSteps(`jobs:\n  goldens:\n${source.split("  goldens:\n")[1].split("  native-smoke:\n")[0]}`);
   const first = steps.findIndex((step) => step.name === "Widgetbook package suites (pass 1)");
   const second = steps.findIndex((step) => step.name === "Widgetbook corpus goldens (pass 2, determinism)");
   assert.ok(first >= 0 && second > first, "whole package precedes primitive determinism pass");

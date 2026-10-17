@@ -386,6 +386,73 @@ test("structural preflight runs from the declared sparse closure and fails close
     assert.ok(JSON.parse(listed.stdout).githubOnlyObligations.some((item) =>
       item.name === "Unsupported preflight fixture" &&
       item.reason.includes("unsupported run block style")));
+
+    fs.writeFileSync(path.join(workflows, "fixture-ci.yml"), `jobs:
+  supported:
+    steps:
+      - run: echo verify
+        working-directory: one
+      - run: echo verify
+        working-directory: two
+      - run: echo verify
+        working-directory: one
+  inherited:
+    steps:
+      - run: echo verify
+    env:
+      MODE: first
+  other-context:
+    env:
+      MODE: second
+    steps:
+      - run: echo verify
+  unsupported:
+    steps:
+    - run: echo noncanonical
+  container-job:
+    steps:
+      - run: echo verify
+    container: node:24
+  services-job:
+    services:
+      database:
+        image: postgres
+    steps:
+      - run: echo verify
+  matrix-job:
+    steps:
+      - run: echo verify
+    strategy:
+      matrix:
+        node: [22, 24]
+  conditional-job:
+    if: false
+    steps:
+      - run: echo verify
+`);
+    const inspect = format => spawnSync(process.execPath, [
+      "tool/harness/verify_local.mjs", "--target", "fixture", format,
+    ], {cwd: root, encoding: "utf8"});
+    const fixture = inspect("--json");
+    assert.equal(fixture.status, 0, fixture.stderr);
+    const fixtureReport = JSON.parse(fixture.stdout);
+    assert.deepEqual(fixtureReport.gates.map(gate => gate.workingDirectory), ["one", "two"]);
+    assert.equal(fixtureReport.skipped.length, 7);
+    assert.deepEqual(fixtureReport.skipped.map(step => step.job),
+      ["inherited", "other-context", "unsupported", "container-job", "services-job", "matrix-job", "conditional-job"]);
+    assert.ok(fixtureReport.skipped.every(step => step.line > 0));
+    assert.equal(fixtureReport.githubOnlyObligations.length, 8);
+    const text = inspect("--list");
+    assert.equal(text.status, 0, text.stderr);
+    assert.match(text.stdout, /7 CI step\(s\) are NOT covered locally/u);
+    assert.match(text.stdout, /inherited:\d+/u);
+    assert.match(text.stdout, /unsupported .*structure/u);
+    assert.match(text.stdout, /working directory: two/u);
+    // Unsupported orchestrator structure is a controlled planning error.
+    fs.writeFileSync(path.join(workflows, "ci.yml"), "jobs: {build: {steps: []}}\n");
+    const invalid = inspect("--json");
+    assert.equal(invalid.status, 2);
+    assert.match(invalid.stderr, /Cannot derive local workflow checks/u);
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
@@ -461,4 +528,206 @@ test("source preflight includes the queue regressions and refuses unavailable co
     .every(check => !check.runnable && check.reasons.length));
   assert.ok(planSourcePreflight({...options, packageAvailable: () => false})
     .filter(check => check.command.startsWith("dart ")).every(check => !check.runnable));
+});
+
+// These fixed YAML fixtures cover semantics checked against a YAML parser
+// during triage. Runtime verification stays dependency-free in sparse clones.
+test("ownership comes only from each job's own planner condition", () => {
+  const mapping = deriveTargetWorkflows(`jobs:
+  first:
+    if: >-
+      needs.plan.outputs.admin == 'true' ||
+      needs.plan.outputs.marketing == 'true'
+    uses: ./.github/workflows/react.yml
+    with:
+      source: \${{ needs.plan.outputs.source_sha }}
+  second:
+    if: needs.plan.outputs.admin == 'true' # needs.plan.outputs.inline_comment_fake
+    uses: ./.github/workflows/react.yml
+  tools:
+    if: |
+      needs.plan.outputs.tools == 'true'
+    uses: ./.github/workflows/tools.yml
+    with:
+      marketing: \${{ needs.plan.outputs.marketing }}
+  inline:
+    if: needs.plan.outputs.docs == 'true' ||
+      needs.plan.outputs.policy == 'true'
+    env:
+      FAKE: \${{ needs.plan.outputs.env_fake }}
+    steps:
+      - if: needs.plan.outputs.step_fake == 'true'
+        run: |
+          echo needs.plan.outputs.body_fake
+          uses: ./.github/workflows/fake.yml
+  other:
+    if: needs.other.outputs.other_fake == 'true'
+    uses: ./.github/workflows/other.yml
+# needs.plan.outputs.comment_fake
+outside:
+  if: needs.plan.outputs.outside_fake == 'true'
+  uses: ./.github/workflows/outside.yml
+`);
+  assert.deepEqual([...mapping], [
+    ["admin", ["react.yml"]], ["marketing", ["react.yml"]],
+    ["tools", ["tools.yml"]], ["docs", ["ci.yml"]], ["policy", ["ci.yml"]],
+  ]);
+});
+
+test("marketing does not inherit Tools or fake SHA targets in the real orchestrator", () => {
+  const mapping = deriveTargetWorkflows(fs.readFileSync(`${WORKFLOWS}/ci.yml`, "utf8"));
+  assert.deepEqual(mapping.get("marketing"), ["react-surface-validation.yml", "marketing-captures.yml"]);
+  assert.equal(mapping.has("source_sha"), false);
+  assert.equal(mapping.has("producer_attempt"), false);
+  assert.equal(mapping.has("base_sha"), false);
+  for (const target of ["android", "ios", "web"]) {
+    assert.ok(mapping.get(`flutter_build_${target}`).includes("app-build-matrix.yml"));
+  }
+  const result = spawnSync(process.execPath, ["tool/harness/verify_local.mjs",
+    "--target", "marketing", "--json"], {encoding: "utf8"});
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.deepEqual([...new Set([...report.gates, ...report.skipped].map(item => item.workflow))],
+    ["react-surface-validation.yml", "marketing-captures.yml"]);
+  assert.ok(report.githubOnlyObligations.some(item => item.target === "marketing"));
+});
+
+test("noncanonical and unsupported workflow structure remains an explicit obligation", () => {
+  for (const source of [
+    "jobs:\n    build:\n      steps:\n        - run: echo four",
+    "jobs:\n  checks:\n      runs-on: ubuntu-latest\n      steps:\n        - run: echo sentinel",
+    "jobs:\n  build:\n    steps:\n    - run: echo indentless",
+    "jobs: {build: {steps: [{run: echo flow}]}}",
+    '"jobs":\n  build:\n    steps:\n      - run: echo quoted',
+    "jobs:\n  build: &shared\n    steps:\n      - run: echo anchored",
+    "jobs:\n  build:\n    <<: *shared\n    steps:\n      - run: echo merged",
+    "jobs:\n  build:\n    steps: *shared",
+    "jobs:\n  build:\n    steps:\n      - 'run': echo quoted",
+    "jobs:\n  build:\n    steps:\n      - run: echo first\n    nested:\n      steps:\n        - run: echo second",
+    "jobs:\n  build:\n    steps:\n      - run: echo first\n   another:\n     steps:\n       - run: echo second",
+  ]) {
+    const steps = extractSteps(source);
+    assert.ok(steps.length > 0, source);
+    assert.ok(steps.every(step => !step.runnable), JSON.stringify({source, steps}));
+    assert.ok(steps.every(step => /unsupported/u.test(step.skipReason)), source);
+  }
+});
+
+test("inherited environment and defaults defer affected steps regardless of key order", () => {
+  const body = "jobs:\n  build:\n    steps:\n      - run: echo verify\n";
+  for (const source of [
+    `env:\n  MODE: test\n${body}`, `${body}env:\n  MODE: test\n`,
+    `defaults:\n  run:\n    working-directory: package\n${body}`,
+    `${body}defaults:\n  run:\n    shell: sh\n`,
+    `${body}    env:\n      MODE: test\n`,
+    `${body}    defaults:\n      run:\n        working-directory: package\n`,
+    body.replace("    steps:", "    env: {MODE: test}\n    steps:"),
+  ]) {
+    const steps = extractSteps(source);
+    assert.equal(steps.length, 1, source);
+    assert.equal(steps[0].runnable, false, source);
+    assert.match(steps[0].skipReason, /inherited/u, source);
+  }
+});
+
+test("quoted and multiline scalars are explicit; folded indentation is never flattened", () => {
+  for (const run of ['"echo quoted"', "'echo single'", "echo first\n          second",
+    ">-\n          echo first\n            indented", ">+\n          echo keep",
+    "*command", "&command echo anchored"]) {
+    const [step] = extractSteps(`jobs:\n  build:\n    steps:\n      - run: ${run}\n`);
+    assert.equal(step.runnable, false, run);
+    assert.match(step.skipReason, /unsupported/u, run);
+  }
+  const [folded] = extractSteps(`jobs:\n  build:\n    steps:\n      - run: >-\n          echo first\n\n\n          echo next\n`);
+  assert.equal(folded.run, "echo first\n\necho next");
+  assert.equal(folded.runnable, true);
+});
+
+test("literal shell comments and YAML-looking heredoc content survive byte for byte", () => {
+  const command = "cat <<'EOF'\n# required literal payload\njobs:\n  env: not workflow context\nEOF";
+  const source = `jobs:\n  build:\n    steps:\n      - run: |-\n${command.split("\n").map(line => `          ${line}`).join("\n")}\n        name: Payload\n      # YAML comment is not a step\n      - run: echo after\noutside:\n  env: ignored\n`;
+  const steps = extractSteps(source);
+  assert.equal(steps.length, 2);
+  assert.equal(steps[0].run, command);
+  assert.equal(steps[0].name, "Payload");
+  assert.equal(steps[0].runnable, true);
+  assert.equal(steps[1].run, "echo after");
+  assert.equal(steps[1].runnable, true);
+  const [literal] = extractSteps("jobs:\n  build:\n    steps:\n      - run: |\n          echo kept\n      # outside the scalar\n      - run: echo next\n");
+  assert.equal(literal.run, "echo kept");
+});
+
+test("every current canonical run declaration has a represented step", () => {
+  let count = 0;
+  for (const workflow of fs.readdirSync(WORKFLOWS).filter(file => file.endsWith(".yml"))) {
+    const source = fs.readFileSync(`${WORKFLOWS}/${workflow}`, "utf8");
+    const represented = new Set(extractSteps(source).map(step => step.line));
+    let header;
+    for (const [index, line] of source.split("\n").entries()) {
+      if (/^      - /u.test(line)) header = index + 1;
+      if (!/^(?:      - |        )run:/u.test(line)) continue;
+      count += 1;
+      assert.ok(represented.has(header), `${workflow}:${index + 1} silently omitted`);
+    }
+  }
+  assert.ok(count >= 430, `expected current 430+ run declarations, got ${count}`);
+});
+
+
+test("multiline execution context is deferred rather than truncated", () => {
+  for (const context of ["working-directory: one\n          two", "shell: bash\n          --noprofile"]) {
+    const [step] = extractSteps(`jobs:\n  build:\n    steps:\n      - run: echo verify\n        ${context}\n`);
+    assert.equal(step.runnable, false, context);
+    assert.match(step.skipReason, /unsupported working-directory|non-bash shell/u);
+  }
+});
+
+
+test("ownership refuses noncanonical job fields instead of falling back to a guessed workflow", () => {
+  assert.throws(() => deriveTargetWorkflows("jobs:\n  checks:\n      if: needs.plan.outputs.flutter\n      uses: ./.github/workflows/other.yml\n"), /Unsupported ownership job fields/u);
+});
+
+
+test("job runtime context is deferred before or after steps", () => {
+  for (const field of ["container: node:24", "services:\n      database:\n        image: postgres",
+    "strategy:\n      matrix:\n        node: [22, 24]", "if: false"]) {
+    for (const after of [false, true]) {
+      const steps = "    steps:\n      - run: node --version\n";
+      const context = `    ${field}\n`;
+      const [step] = extractSteps(`jobs:\n  checks:\n${after ? steps + context : context + steps}`);
+      assert.equal(step.runnable, false, field);
+      assert.match(step.skipReason, /inherited execution context/u);
+      assert.ok(step.skipReason.includes(`job ${field.split(":")[0]}`));
+    }
+  }
+});
+
+
+test("target flags exclude retry metadata and quoted expression payloads", () => {
+  const mapping = deriveTargetWorkflows(`jobs:
+  guarded:
+    if: >-
+      !cancelled() &&
+      (needs.plan.outputs.producer_attempt != format('{0}', github.run_attempt) ||
+       needs.plan.outputs.source_sha != github.sha ||
+       needs.plan.outputs.firestore_rules == 'true') &&
+      contains('needs.plan.outputs.literal_fake == ''true''', 'true')
+    uses: ./.github/workflows/firestore-rules-ci.yml
+  capture:
+    if: needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true'
+    uses: ./.github/workflows/marketing-captures.yml
+  metadata:
+    if: needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.source_sha == github.sha
+    uses: ./.github/workflows/metadata.yml
+  nonselection:
+    if: needs.plan.outputs.false_fake == 'false' || needs.plan.outputs.inequality_fake != 'true' || contains(needs.plan.outputs.argument_fake, 'true')
+    uses: ./.github/workflows/nonselection.yml
+`);
+  assert.deepEqual([...mapping], [
+    ["firestore_rules", ["firestore-rules-ci.yml"]],
+    ["capture_freshness", ["marketing-captures.yml"]],
+    ["marketing", ["marketing-captures.yml"]],
+  ]);
+  assert.throws(() => deriveTargetWorkflows("jobs:\n  bad:\n    if: 'needs.plan.outputs.fake == true\n    uses: ./.github/workflows/fake.yml\n"),
+    /Unsupported ownership predicate string/u);
 });
