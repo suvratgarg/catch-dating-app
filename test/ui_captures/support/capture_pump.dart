@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -12,25 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
+import 'capture_asset_bundle.dart';
 import 'capture_device.dart';
-
-Future<void> _warmImage(ImageProvider<Object> provider) {
-  final completer = Completer<void>();
-  final stream = provider.resolve(ImageConfiguration.empty);
-  late final ImageStreamListener listener;
-
-  void done() {
-    stream.removeListener(listener);
-    if (!completer.isCompleted) completer.complete();
-  }
-
-  listener = ImageStreamListener(
-    (image, sync) => done(),
-    onError: (error, stack) => done(),
-  );
-  stream.addListener(listener);
-  return completer.future;
-}
 
 class CaptureTheme {
   const CaptureTheme(this.name, this.brightness);
@@ -92,14 +74,25 @@ Future<List<CaptureArtifact>> captureCatchWidget(
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
 
+  final assetBundle = CaptureAssetBundle();
   if (precache.isNotEmpty) {
+    // runAsync reports uncaught errors to the test binding and returns null.
+    // Carry failures back explicitly so a failed required image stops export.
+    Object? warmupError;
+    StackTrace? warmupStack;
     await tester.runAsync(() async {
-      for (final provider in precache) {
-        await _warmImage(
-          provider,
-        ).timeout(const Duration(seconds: 2), onTimeout: () {});
+      try {
+        for (final provider in precache) {
+          await warmCaptureImage(provider, assetBundle);
+        }
+      } catch (error, stack) {
+        warmupError = error;
+        warmupStack = stack;
       }
     });
+    if (warmupError != null) {
+      Error.throwWithStackTrace(warmupError!, warmupStack!);
+    }
   }
 
   final artifacts = <CaptureArtifact>[];
@@ -108,6 +101,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
     final boundaryKey = GlobalKey();
     await tester.pumpWidget(
       _frame(
+        assetBundle: assetBundle,
         boundaryKey: boundaryKey,
         brightness: theme.brightness,
         textScale: textScale,
@@ -194,6 +188,7 @@ Future<void> _writeBoundaryPng(
 }
 
 Widget _frame({
+  required CaptureAssetBundle assetBundle,
   required GlobalKey boundaryKey,
   required Brightness brightness,
   required double textScale,
@@ -244,7 +239,10 @@ Widget _frame({
     ),
   );
 
-  return includeOverlays ? RepaintBoundary(key: boundaryKey, child: app) : app;
+  final bundledApp = DefaultAssetBundle(bundle: assetBundle, child: app);
+  return includeOverlays
+      ? RepaintBoundary(key: boundaryKey, child: bundledApp)
+      : bundledApp;
 }
 
 Widget _captureScaffold(WidgetBuilder builder) {
