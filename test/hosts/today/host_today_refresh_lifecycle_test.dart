@@ -438,7 +438,7 @@ void main() {
           await fixture.mount(tester, loading: true);
           final originalState = fixture.todayState(tester);
           expect(fixture.events.active, hasLength(1));
-          expect(fixture.attention.organizers, isEmpty);
+          expect(fixture.attention.organizers, ['org-a']);
           try {
             await fixture.changeScope(tester, scope, toB: true);
             expect(fixture.display(tester).status, HostTodayStatus.content);
