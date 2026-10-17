@@ -192,13 +192,47 @@ void main() {
     tester,
   ) async {
     final harness = await _pumpRemoval(tester);
+    final detailFinder = find.byType(HostCustomerDetailScreen);
+    final originalState = tester.state(detailFinder);
+    final originalUri = harness.router.state.uri;
+    void expectOriginalScope() {
+      expect(tester.state(detailFinder), same(originalState));
+      expect(harness.router.state.uri, originalUri);
+      expect(harness.container.read(uidProvider).asData?.value, _actor);
+      expect(harness.auth.currentUser?.uid, _actor);
+      final detail = tester.widget<HostCustomerDetailScreen>(detailFinder);
+      expect(detail.organizerId, _organizer);
+      expect(detail.contactId, 'a');
+    }
+
+    expectOriginalScope();
     final repeat = _savedRemovalCallback(tester);
     // Programmatic duplicate probe is separate from the pointer-path cases.
     repeat();
     repeat();
     await pumpFeatureUi(tester);
-    expect(find.text(_copy.hostsHostAudienceRemoveTitle), findsOneWidget);
+    final title = find.text(_copy.hostsHostAudienceRemoveTitle);
+    expect(title, findsOneWidget);
+    expectOriginalScope();
+    expect(harness.repository.removals, isEmpty);
+    final dialogRoute = ModalRoute.of(tester.element(title))!;
+    Object? confirmationResult;
+    unawaited(
+      dialogRoute.popped.then<void>((result) => confirmationResult = result),
+    );
+    expect(
+      find.text(_copy.hostsHostAudienceRemoveConfirm).hitTestable(),
+      findsOneWidget,
+    );
     await _acceptRemoval(tester);
+    expect(confirmationResult, isTrue);
+    expect(title, findsNothing);
+    expectOriginalScope();
+    expect(_notices(harness), isEmpty);
+    final mutation = harness.container.read(
+      HostCustomersController.removeMutation(_key),
+    );
+    expect(mutation.isPending, isTrue, reason: 'Mutation state: $mutation');
     repeat();
     await tester.pump();
     expect(harness.repository.removals, hasLength(1));
