@@ -107,7 +107,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
     final crossPathsSuggestions =
         crossPathsState.value ?? const <CrossPathsSuggestion>[];
-    final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
+    final recommendationsState = catchAsyncStateFromAsyncValue(
+      ref.watch(exploreRecommendationsProvider),
+    );
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
     final viewModelState = catchAsyncStateFromAsyncValue(viewModelAsync);
     ref.watch(exploreCityControllerProvider);
@@ -455,8 +457,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ],
             ExploreScreenBodyKind.content => buildExploreBodySlivers(
               context: context,
-              feedAsync: feedAsync,
-              recommendationsAsync: recommendationsAsync,
+              feedState: feedState,
+              recommendationsState: recommendationsState,
               clubsViewModel: bodyState.viewModel,
               filters: visibleFilters,
               searchQuery: query,
@@ -485,8 +487,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ExploreScreenBodyKind.contentWithoutClubs =>
               buildExploreBodySlivers(
                 context: context,
-                feedAsync: feedAsync,
-                recommendationsAsync: recommendationsAsync,
+                feedState: feedState,
+                recommendationsState: recommendationsState,
                 filters: visibleFilters,
                 searchQuery: query,
                 clubSectionError: bodyState.error,
