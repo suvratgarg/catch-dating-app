@@ -77,6 +77,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,7 +130,7 @@ class CatchUiLintProbe extends StatelessWidget {
         const Chip(label: Text('raw')),
         TextButton(onPressed: null, child: const Text('raw')),
         const IconButton(onPressed: null, icon: Icon(Icons.close)),
-        EventActivityBackdrop(
+        EventBackdropImage(
           visual: eventActivityVisual(ActivityKind.running),
         ),
         Image.asset('assets/branding/catch_icon.png'),
