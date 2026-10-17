@@ -7,6 +7,7 @@ import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
 import "../ci/required_ci_policy.test.mjs";
+import "../ci/generated_inventories.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -26,6 +27,31 @@ const workflow = (name) => repositorySnapshot.readText(
   {required: true},
 );
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
+
+test("complete CI consumers derive source inventories before their semantic checks", () => {
+  const selectedJob = (file, job) => {
+    const source = workflow(file);
+    const start = source.indexOf(`\n  ${job}:\n`);
+    assert.ok(start >= 0, `${file} has ${job}`);
+    const remaining = source.slice(start + 1);
+    const next = remaining.slice(1).search(/\n  [a-zA-Z0-9_-]+:\n/u);
+    return next < 0 ? remaining : remaining.slice(0, next + 1);
+  };
+  for (const [file, job, check] of [
+    ["ci.yml", "source-preflight", "Execute complete source and generation preflight"],
+    ["flutter-ci.yml", "analysis-gates", "Catch UI resolved composition contracts"],
+    ["tools-ci.yml", "affected-tools", "Check affected tools"],
+    ["tools-ci.yml", "tool-buckets", "Check tool categories"],
+  ]) {
+    const source = selectedJob(file, job);
+    const steps = extractSteps(source);
+    const generate = steps.findIndex(step => step.name === "Derive exact-source route and widget inventories");
+    const validate = steps.findIndex(step => step.name === check);
+    assert.ok(generate >= 0 && validate > generate, `${file}/${job} derives before ${check}`);
+    assert.match(steps[generate].run, /node tool\/ci\/generated_inventories\.mjs --source-sha "\$(?:SOURCE_SHA|GITHUB_SHA)"/u);
+    assert.doesNotMatch(steps[generate].run, /\|\| true|--allow|git (?:add|commit|push)/u);
+  }
+});
 const retiredUiWrapperNames = [
   "check_sizing.sh",
   "check_ui_allow_debt.sh",

@@ -163,6 +163,10 @@ jobs:
             package-lock.json
             functions/package-lock.json
 
+      - name: Derive exact-source route and widget inventories
+        if: ${{ needs.preflight.outputs.repository_view != 'index' }}
+        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
+
       - uses: ./.github/actions/setup-flutter
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'flutter') }}
 
@@ -311,6 +315,9 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             functions/package-lock.json
+
+      - name: Derive exact-source route and widget inventories
+        run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
 
       - uses: ./.github/actions/setup-flutter
 
