@@ -1027,7 +1027,10 @@
         "programTravelLegMoments",
         "onAssistanceMessageChanged",
         "onAssistanceWorkChanged",
-        "evaluateDueEventAssistanceWork"
+        "evaluateDueEventAssistanceWork",
+        "onEventApprovalNotificationPreference",
+        "onEventApprovalNotificationMessage",
+        "retryEventApprovalNotifications"
       ],
       "binding": {
         "kind": "record",
@@ -1061,6 +1064,27 @@
       "activationPolicy": "blank-current-reference-unconfigured",
       "rotationCompatibility": "provider-overlap",
       "recordReferences": false
+    },
+    {
+      "id": "functions.reference.event-approval",
+      "sourcePaths": [
+        "functions/src/events/approvalNotifications/transports.ts"
+      ],
+      "owner": "event-admission",
+      "credentialClass": "provider-envelope",
+      "consumers": [
+        "onEventApprovalNotificationPreference",
+        "onEventApprovalNotificationMessage",
+        "retryEventApprovalNotifications"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
     }
   ]
 }

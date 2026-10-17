@@ -100,7 +100,7 @@ class EventPolicyEngine {
       if (!balancedRatioPolicy.appliesTo(cohort.id)) {
         return switch (balancedRatioPolicy.outOfRatioCohortPolicy) {
           EventOutOfRatioCohortPolicy.admitWithinGeneralCapacity =>
-            _maybeManualReview(decision, admissionPolicy),
+            _maybeManualReview(decision, admissionPolicy, request),
           EventOutOfRatioCohortPolicy.waitlist => _cohortBlockedDecision(
             decision,
             admissionPolicy,
@@ -129,7 +129,7 @@ class EventPolicyEngine {
       }
     }
 
-    return _maybeManualReview(decision, admissionPolicy);
+    return _maybeManualReview(decision, admissionPolicy, request);
   }
 
   EventAdmissionDecision _maybeManualReview(
@@ -139,8 +139,10 @@ class EventPolicyEngine {
     })
     decision,
     EventAdmissionPolicy admissionPolicy,
+    EventAdmissionRequest request,
   ) {
-    if (admissionPolicy.manualApprovalRequired) {
+    if (admissionPolicy.manualApprovalRequired &&
+        !(admissionPolicy.approvedMembersSkipReview && request.isClubMember)) {
       return decision(
         type: EventAdmissionDecisionType.manualReviewRequired,
         reason: EventAdmissionDecisionReason.manualApprovalRequired,
