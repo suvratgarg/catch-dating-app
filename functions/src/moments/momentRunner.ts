@@ -101,6 +101,7 @@ export interface MomentRunnerDeps {
   ) => Promise<{title: string; body: string}>;
   sendPushToUid: (params: {
     uid: string;
+    appRole: "consumer" | "host";
     title: string;
     body: string;
     notificationType: string;
@@ -812,10 +813,14 @@ async function deliver(
     return {kind: "suppressed", reason: "hostReview"};
   }
   if (action.kind === "push" && recipient.endpoint.kind === "uid") {
+    const appRole = moment.audience.kind === "eventParticipants" ?
+      "consumer" : moment.audience.kind === "staffDuty" ? "host" : null;
+    if (appRole === null) return {kind: "suppressed", reason: "hostReview"};
     // Copy is resolved from the scope at fire time by the wiring layer.
     const copy = await deps.pushCopyFor(moment, facts);
     await deps.sendPushToUid({
       uid: recipient.endpoint.uid,
+      appRole,
       title: copy.title,
       body: copy.body,
       notificationType: action.notificationType,

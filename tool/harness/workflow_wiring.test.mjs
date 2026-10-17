@@ -7,6 +7,7 @@ import test from "node:test";
 import vm from "node:vm";
 // Keep the actual Required CI policy exercised by the registered Harness suite.
 import "../ci/required_ci_policy.test.mjs";
+import "../ci/generated_inventories.test.mjs";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, toolsOwnDesignChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
@@ -26,6 +27,31 @@ const workflow = (name) => repositorySnapshot.readText(
   {required: true},
 );
 const retiredPlanner = ["plan", "ci.mjs"].join("_");
+
+test("complete CI consumers derive source inventories before their semantic checks", () => {
+  const selectedJob = (file, job) => {
+    const source = workflow(file);
+    const start = source.indexOf(`\n  ${job}:\n`);
+    assert.ok(start >= 0, `${file} has ${job}`);
+    const remaining = source.slice(start + 1);
+    const next = remaining.slice(1).search(/\n  [a-zA-Z0-9_-]+:\n/u);
+    return next < 0 ? remaining : remaining.slice(0, next + 1);
+  };
+  for (const [file, job, check] of [
+    ["ci.yml", "source-preflight", "Execute complete source and generation preflight"],
+    ["flutter-ci.yml", "analysis-gates", "Catch UI resolved composition contracts"],
+    ["tools-ci.yml", "affected-tools", "Check affected tools"],
+    ["tools-ci.yml", "tool-buckets", "Check tool categories"],
+  ]) {
+    const source = selectedJob(file, job);
+    const steps = extractSteps(source);
+    const generate = steps.findIndex(step => step.name === "Derive exact-source route and widget inventories");
+    const validate = steps.findIndex(step => step.name === check);
+    assert.ok(generate >= 0 && validate > generate, `${file}/${job} derives before ${check}`);
+    assert.match(steps[generate].run, /node tool\/ci\/generated_inventories\.mjs --source-sha "\$(?:SOURCE_SHA|GITHUB_SHA)"/u);
+    assert.doesNotMatch(steps[generate].run, /\|\| true|--allow|git (?:add|commit|push)/u);
+  }
+});
 const retiredUiWrapperNames = [
   "check_sizing.sh",
   "check_ui_allow_debt.sh",
@@ -619,7 +645,7 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   assert.match(fastJob, /needs: preflight/u);
   assert.match(
     fastJob,
-    /if: \$\{\{ needs\.preflight\.outputs\.tool_mode == 'full' \}\}/u,
+    /if: \$\{\{ needs\.preflight\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.preflight\.outputs\.tool_mode == 'full' \}\}/u,
   );
   assert.match(fastJob, /timeout-minutes: 3/u);
 
@@ -685,7 +711,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.ok(toolJob);
   assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
-  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
@@ -696,7 +722,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.match(aggregate, /select\(\.value.result != "success" and \.value.result != "skipped"\)/u);
   assert.doesNotMatch(marketingJob, /continue-on-error/u);
   assert.match(tools, /marketing_checks_in_react:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
-  assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 2);
+  assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 3);
   assert.match(namedStep(tools, "Check affected tools"), /--check "\$\{shared_flags\[@\]\}"/u);
   const bucket = namedStep(tools, "Check tool categories");
   assert.match(bucket, /category_flags\+=\(--category "\$category"\)/u);
@@ -1130,22 +1156,79 @@ test("backend integration runs strict execution inside both emulators with a bou
   assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 
-test("capture freshness has a required Node-only lane independent of React rendering", () => {
+test("canonical native captures reach consumers before dependency setup and builds", () => {
   const ci = workflow("ci.yml");
   const capture = workflow("capture-freshness-ci.yml");
   const react = workflow("react-surface-validation.yml");
-  assert.match(ci, /capture_freshness: \$\{\{ steps.plan.outputs.capture_freshness \}\}/u);
-  assert.match(ci, /if: \$\{\{ needs.plan.outputs.capture_freshness == 'true' \}\}\n    uses: .\/\.github\/workflows\/capture-freshness-ci.yml/u);
+  assert.match(capture, /uses: \.\/\.github\/workflows\/marketing-captures.yml/u);
+  assert.match(capture, /automatic_source_sha: \$\{\{ github.sha \}\}/u);
+  assert.match(capture, /value: \$\{\{ jobs.freshness.outputs.capture_binding \}\}/u);
+  assert.match(ci, /needs: \[plan, source-preflight, capture-freshness\]/u);
+  assert.match(ci, /capture_binding: \$\{\{ needs.capture-freshness.outputs.capture_binding \}\}/u);
+  assert.doesNotMatch(react, /capture_freshness_in_ci/u);
   for (const id of ["finalize-plan", "package-firebase", "required"]) {
     const job = ci.slice(ci.indexOf(`\n  ${id}:`)).split(/\n  [a-z-]+:/u)[1];
     assert.match(job, /- capture-freshness\n/u, id);
   }
-  assert.match(capture, /node tool\/marketing\/sync_website_media.mjs --check/u);
-  assert.match(capture, /node tool\/marketing\/export_app_screenshots.mjs --check-design-json/u);
-  assert.doesNotMatch(capture, /npm ci|flutter pub get|setup-flutter|continue-on-error/u);
-  assert.match(ci, /surface: marketing\n      capture_freshness_in_ci: true/u);
-  assert.equal(react.match(/inputs.surface == 'marketing' && !inputs.capture_freshness_in_ci/gu)?.length, 2);
-  assert.match(react, /capture_freshness_in_ci:[\s\S]*?default: false/u);
+  for (const file of ["react-surface-validation.yml", "_web-hosting-build.yml", "tools-ci.yml"]) {
+    const source = workflow(file);
+    const marker = "      - name: Import verified exact-source marketing captures";
+    const parts = source.split(marker).slice(1);
+    assert.equal(parts.length, file === "tools-ci.yml" ? 2 : 1, file);
+    for (const part of parts) {
+      assert.ok(part.indexOf("--import") < part.indexOf("npm ci"), file);
+      assert.match(part.split(/\n      - /u)[0], /CAPTURE_BINDING:/u);
+      assert.doesNotMatch(part.split(/\n      - /u)[0], /continue-on-error|\|\| true/u);
+    }
+  }
+  for (const file of ["react-surface-validation.yml", "_web-hosting-build.yml"]) {
+    const source = workflow(file);
+    assert.match(source, /run: node tool\/marketing\/import_hosted_captures.mjs --check-dist/u);
+    if (file === "_web-hosting-build.yml") assert.ok(source.indexOf("--check-dist") < source.indexOf("node tool/ci/package_web_hosting.mjs prepare"));
+  }
+});
+
+function captureJobCondition(file, id, context) {
+  const block = workflow(file).split(`\n  ${id}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0];
+  const raw = block.match(/^    if: (?:>-\n)?([\s\S]*?)(?=\n    (?:uses|runs-on):)/mu)?.[1].trim();
+  assert.ok(raw, `${file}/${id} condition`);
+  const expression = raw.replace(/^\$\{\{\s*|\s*\}\}$/gu, "").replace(/needs\.([\w-]+)/gu, 'needs["$1"]');
+  return vm.runInNewContext(expression, {cancelled: () => false, format: (_, value) => String(value), ...context});
+}
+
+test("capture consumer dependency expressions reject failed producers and stale plans without duplicate renders", () => {
+  const context = {github: {run_attempt: 2}, inputs: {capture_binding: ""}, needs: {
+    plan: {outputs: {producer_attempt: "2", capture_freshness: "true", marketing: "true", tools: "true"}},
+    "source-preflight": {result: "success"}, "capture-freshness": {result: "success"},
+    preflight: {result: "success", outputs: {producer_attempt: "2", tool_mode: "affected", capture_required: "true"}},
+    captures: {result: "success"}, "fast-gates": {result: "success"},
+  }};
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), true);
+  assert.equal(captureJobCondition("ci.yml", "tools", context), true);
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), true);
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), true);
+  context.inputs.capture_binding = "immutable binding";
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
+  context.needs.captures.result = "skipped";
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), true);
+  context.needs.captures.result = "failure";
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), false);
+  context.needs["capture-freshness"].result = "failure";
+  assert.equal(captureJobCondition("ci.yml", "tools", context), false);
+  context.needs.preflight.outputs.producer_attempt = "1";
+  assert.equal(captureJobCondition("tools-ci.yml", "affected-tools", context), false);
+  context.inputs.capture_binding = "";
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
+  context.needs.plan.outputs.producer_attempt = "1";
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), false);
+  context.needs.plan.outputs.producer_attempt = "2";
+  context.needs.plan.outputs.capture_freshness = "false";
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), true, "marketing still needs fresh bytes");
+  context.needs.plan.outputs.marketing = "false";
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", context), false);
+  context.needs.preflight.outputs.producer_attempt = "2";
+  context.needs.preflight.outputs.capture_required = "false";
+  assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
 });
 
 test("cancelling admission or a validation run makes every aggregate job terminal", () => {
@@ -1248,4 +1331,37 @@ test("complete source preflight gates fanout and cannot be bypassed by Required 
     assert.match(job, /- source-preflight/u);
   }
   assert.match(ci.slice(ci.indexOf("  required:\n")), /source-preflight.*result/u);
+});
+
+test("Tools check shells independently request capture and inventory producer proofs", context => {
+  const source = workflow("tools-ci.yml");
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-tool-flags-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(root, "node"), `#!${process.execPath}\nconsole.log(JSON.stringify({args:process.argv.slice(2),binding:process.env.CAPTURE_BINDING}));\n`, {mode: 0o755});
+  for (const name of ["Check affected tools", "Check tool categories"]) {
+    const step = extractSteps(source).find(s => s.name === name);
+    const declaration = namedStep(source, name);
+    assert.match(declaration, /CAPTURE_BINDING: \$\{\{ inputs.capture_binding \|\| needs.captures.outputs.capture_binding \}\}/u);
+    assert.match(declaration, /CAPTURE_REQUIRED:/u);
+    if (name === "Check tool categories") {
+      assert.match(declaration, /matrix.name == 'marketing-design'/u);
+      assert.match(declaration, /INVENTORY_MATERIALIZED: "true"/u);
+    } else {
+      assert.match(declaration, /INVENTORY_MATERIALIZED: \$\{\{ needs.preflight.outputs.repository_view != 'index' \}\}/u);
+    }
+    for (const [required, inventory] of [["true", "true"], ["false", "true"], ["false", "false"], ["true", "false"]]) {
+      const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {
+        ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH}`,
+        INVENTORY_MATERIALIZED: inventory, CAPTURE_REQUIRED: required, CAPTURE_BINDING: "exact-binding-sentinel", MARKETING_CHECKS_IN_REACT: "true",
+        BASE_SHA: "base", SOURCE_SHA: "source", MODE: "pr", COMMIT_WINDOW: "false", CATEGORIES: "marketing ui-capture design",
+      }});
+      assert.equal(result.status, 0, result.stderr);
+      const actual = JSON.parse(result.stdout);
+      assert.equal(actual.args.includes("--marketing-captures-imported"), required === "true");
+      assert.equal(actual.args.includes("--generated-inventories-materialized"), inventory === "true");
+      assert.ok(actual.args.includes("--marketing-checks-in-react"));
+      assert.equal(actual.binding, "exact-binding-sentinel");
+    }
+  }
+  assert.doesNotMatch(extractSteps(source).find(step => step.name === "Resolve affected tool checks").run, /--marketing-captures-imported|--generated-inventories-materialized/u);
 });

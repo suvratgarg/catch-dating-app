@@ -1,5 +1,5 @@
 name: Export canonical marketing captures
-run-name: Marketing captures from ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha }}
+run-name: Marketing captures from ${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
 
 on:
   workflow_dispatch:
@@ -10,6 +10,16 @@ on:
         type: string
   pull_request:
     types: [labeled]
+  workflow_call:
+    inputs:
+      automatic_source_sha:
+        description: The exact source SHA of the calling CI consumer, including its PR merge commit.
+        required: true
+        type: string
+    outputs:
+      capture_binding:
+        description: Exact source, run, attempt, controller, and immutable artifact identity.
+        value: ${{ jobs.export.outputs.capture_binding }}
 
 permissions:
   contents: read
@@ -18,6 +28,7 @@ jobs:
   export:
     name: Render and validate 12 canonical iPhone captures
     if: >-
+      inputs.automatic_source_sha != '' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'pull_request' && github.event.action == 'labeled' &&
        github.event.label.name == 'capture:requested' &&
@@ -26,13 +37,17 @@ jobs:
        github.event.pull_request.base.repo.full_name == github.repository &&
        github.event.pull_request.head.repo.full_name == github.repository)
     concurrency:
-      group: marketing-captures-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha }}
+      group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
       cancel-in-progress: false
     runs-on: macos-26
     timeout-minutes: 45
+    outputs:
+      capture_binding: ${{ steps.identity.outputs.capture_binding }}
     env:
-      CAPTURE_SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha }}
-      CAPTURE_WORKFLOW_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+      CAPTURE_SOURCE_SHA: ${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
+      CAPTURE_WORKFLOW_SHA: ${{ inputs.automatic_source_sha && github.sha || (github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha) }}
+      CAPTURE_AUTOMATIC_SOURCE_SHA: ${{ inputs.automatic_source_sha }}
+      CAPTURE_RUN_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       CAPTURE_WORKFLOW_DEFINITION_SHA: ${{ github.workflow_sha }}
       CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
       TZ: UTC
@@ -94,6 +109,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Record exact artifact identity
+        id: identity
         env:
           ARTIFACT_ID: ${{ steps.bundle.outputs.artifact-id }}
           ARTIFACT_DIGEST: ${{ steps.bundle.outputs.artifact-digest }}
@@ -101,6 +117,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const e = process.env;
+          const binding = {repository: e.GITHUB_REPOSITORY, sourceSha: e.CAPTURE_SOURCE_SHA,
+            workflowRef: e.GITHUB_WORKFLOW_REF,
+            workflowSha: e.CAPTURE_WORKFLOW_SHA, workflowDefinitionSha: e.CAPTURE_WORKFLOW_DEFINITION_SHA,
+            eventSha: e.GITHUB_SHA, runHeadSha: e.CAPTURE_RUN_HEAD_SHA,
+            runId: e.GITHUB_RUN_ID, runAttempt: e.GITHUB_RUN_ATTEMPT,
+            artifactId: e.ARTIFACT_ID, artifactDigest: `sha256:${e.ARTIFACT_DIGEST.replace(/^sha256:/, '')}`};
+          fs.appendFileSync(e.GITHUB_OUTPUT, `capture_binding=${JSON.stringify(binding)}\n`);
+          NODE
           {
             echo "Source: $CAPTURE_SOURCE_SHA"
             echo "Exporter controller: $CAPTURE_WORKFLOW_SHA"
