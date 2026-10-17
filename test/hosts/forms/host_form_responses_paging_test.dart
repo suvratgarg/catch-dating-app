@@ -41,7 +41,7 @@ HostFormResponseSummary _response(
   ),
   sourceLinkId: null,
   sourceLabel: null,
-  submittedAt: DateTime.utc(2026, 10, 1),
+  submittedAt: DateTime.utc(2026, 10),
   withdrawnAt: null,
   highlights: const [],
   conversionKinds: const {},
