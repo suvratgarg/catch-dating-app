@@ -103,14 +103,16 @@ export async function readHostingDomain(target, {request, now = Date.now}) {
   return evaluateHostingDomain(target, result.data, now());
 }
 
-export async function provisionHostingDomain(target, {request, now = Date.now, apply = false}) {
+export async function provisionHostingDomain(target, {request, now = Date.now, apply = false, assertBinding}) {
   target = hostingDomainTarget(target);
   if (typeof apply !== "boolean") throw new Error("Hosting apply must be explicitly boolean.");
+  if (apply && typeof assertBinding !== "function") throw new Error("A current registry binding check is required.");
   const before = await readHostingDomain(target, {request, now});
   if (before.exists || !apply) return {action: before.exists ? "none" : "create-required", state: before};
   // A deterministic customDomainId makes retries converge on the same resource.
   // Never patch, redirect, delete or undelete an existing domain automatically.
   const url = `${api}${target.parent}/customDomains?customDomainId=${encodeURIComponent(target.hostname)}`;
+  await assertBinding();
   const result = await requestResult(request, options("POST", url, {}));
   if ([400, 401, 403, 404, 422].includes(result.status)) {
     throw new Error(`Hosting create rejected (HTTP ${result.status}).`);

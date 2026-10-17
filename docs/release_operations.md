@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.36
+version: 2.8.0
 updated: 2026-10-17
 owner: recursive_audit_loop
 status: active
@@ -884,6 +884,94 @@ Before merging a workflow that requires this identity, verify the service
 account's project roles, its exact impersonation principal, and both GitHub
 environment variables. A repository-wide `attribute.repository` principal is
 not an acceptable substitute for the environment-scoped subject.
+
+## Custom form domain onboarding
+
+The trusted operator command is `node tool/firebase/form_domain_operator.mjs`.
+It defaults to status and read-only plans. A future client supplies a dedicated
+subdomain and controls its DNS; no client domain is required to ship this tooling.
+Source/CI acceptance does not establish a deployed website, provider readiness or
+successful browser submission for a particular client.
+
+Before onboarding, deploy the reviewed Functions and marketing website through
+the normal release process. The selected environment must have exactly one
+`.firebaserc` marketing Hosting target and matching Firebase web configuration.
+There is no fallback to the production site when dev/staging are unmapped.
+Set the non-secret GitHub environment variable `FORM_DOMAIN_CNAME_TARGET` to
+that site's `<site-id>.web.app` in every environment that promotes its backend
+(`prod` and `prod-backend` for production). The promotion provenance and deploy
+copy both receive this value; blank keeps manager-callable reservations disabled.
+This command does not change GitHub variables or deploy anything.
+
+Use operator Application Default Credentials with the selected project's
+Firestore access, project/Hosting metadata and domain provisioning permissions,
+Identity Platform configuration, App Check configuration read, Enterprise key
+read/update, and upload-bucket CORS read/update permissions. Do not use a browser
+session or place credentials in arguments. Build the Functions modules from the
+reviewed checkout before running the CLI:
+
+```sh
+bash tool/git/bootstrap_worktree.sh --target functions
+npm --prefix functions run build
+node tool/firebase/form_domain_operator.mjs \
+  --env prod --hostname forms.client.example
+```
+
+`forms.client.example` is a placeholder, not an activation target. Use the
+client's exact lowercase ASCII subdomain. The command rejects reserved Catch and
+provider domains. It verifies the configured live project number and marketing
+site; inspect the deployed website release and its public Enterprise site key
+separately. The key must match that web app's App Check binding. Never substitute
+a debug token for `--site-key`.
+
+Run each action as a read-only plan first. Every mutation needs `--apply`, and
+production also needs `--allow-prod`. All actions except status require exact
+`--organizer-id`, `--form-id`, and `--requested-by-manager` UID. This UID is the
+current manager on whose behalf the operator acts; it does not authenticate the
+operator. ADC authenticates the operator independently. Keep one operator and
+console writer at a time for shared Auth/Enterprise configuration; those APIs
+provide no compare-and-swap protection. Bucket CORS updates use metageneration.
+
+1. `--action reserve` requires an owned, published form. On apply, record the
+   returned generation, TXT challenge and expected CNAME. Configure those DNS
+   records through the client's DNS owner. Preserve the TXT proof after activation.
+2. `--action verify --generation <generation>` reads public DNS itself. The
+   pending reservation expires after 48 hours; expired or revoked reservations
+   need a new reservation/challenge, never reuse an old generation.
+3. `--action provision --generation <generation>` creates only the exact missing
+   Hosting custom domain. Existing domains are never repointed or deleted. Follow
+   Hosting's `requiredDnsUpdates` from status, then rerun status until ownership,
+   Hosting and the unexpired certificate are active. Operation completion alone
+   does not prove TLS readiness. Catch's TXT and exact CNAME must also remain valid.
+4. `--action prepare-origins --generation <generation> --site-key <public-key>`
+   adds only this hostname to Auth and the bound Enterprise key, and its HTTPS
+   origin to upload CORS. It preserves unrelated entries and refuses allow-all
+   Enterprise keys. Capacity exhaustion requires a separate key/site decision.
+5. `--action activate --generation <generation> --site-key <public-key>` rereads
+   Hosting, DNS and origin configuration. One Firestore transaction checks the
+   unchanged reservation, current manager and published form before enabling
+   routing. A read-only plan does not claim activation.
+6. Complete browser acceptance on the actual hostname: TLS, correct published
+   tenant/form, anonymous Auth/App Check, file upload if configured, successful
+   submission and expected confirmation. Check that an unrelated hostname and a
+   revoked binding cannot resolve this tenant. This is a separate live check;
+   local transport fixtures cannot establish it.
+
+On a timeout or unknown provider response, read status before retrying; a failed
+command may have changed one provider field. The adapters re-read and converge
+on exact existing entries rather than clearing shared configuration. Never infer
+success from a previous plan or a Hosting operation handle.
+
+Rollback uses `--action revoke --generation <generation>` first, then
+`--action remove-origins --generation <generation> --site-key <public-key>`.
+Both retain the exact organizer/form and manager arguments and apply guards.
+Revocation immediately disables registry routing even if the form is unpublished.
+Origin removal preserves unrelated entries and reports inherited parent-domain,
+wildcard CORS and other same-host origins that can retain provider trust. Do not
+claim all provider trust is removed when `providerTrustRemoved` is false. Hosting
+resource deletion and client DNS removal are separate explicit operator actions;
+this command never deletes the Hosting domain. Reassignment requires a fresh
+reservation and DNS proof after coordinating remaining provider/DNS ownership.
 
 ## Public Provider IDs and Server-Side Search Secrets
 

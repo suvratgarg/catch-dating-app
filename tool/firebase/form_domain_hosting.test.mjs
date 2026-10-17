@@ -13,7 +13,7 @@ function readyResource() {
 }
 function transport(...responses) {
   const calls = [];
-  return {calls, now, request: async (config) => {
+  return {calls, now, assertBinding: async () => {}, request: async (config) => {
     calls.push(config);
     assert.ok(responses.length, "Unexpected extra provider call");
     const response = responses.shift();
@@ -186,4 +186,26 @@ test("definitive create rejections stop without activation or hidden retries", a
     await assert.rejects(() => provisionHostingDomain(target, {...fixture, apply: true}), new RegExp(`rejected.*${status}`));
     assert.equal(fixture.calls.length, 2);
   }
+});
+
+
+test("a binding revoked during the pre-create GET prevents the POST", async () => {
+  let release; let started;
+  const began = new Promise((resolve) => {started = resolve;});
+  const held = new Promise((resolve) => {release = resolve;});
+  const calls = [];
+  let revoked = false;
+  const operation = provisionHostingDomain(target, {now, apply: true,
+    assertBinding: async () => {if (revoked) throw new Error("reservation revoked");},
+    request: async (config) => {
+      calls.push(config.method); started(); await held;
+      return missing;
+    }});
+  await began; revoked = true; release();
+  await assert.rejects(operation, /reservation revoked/);
+  assert.deepEqual(calls, ["GET"]);
+  const fixture = transport();
+  await assert.rejects(() => provisionHostingDomain(target,
+    {...fixture, apply: true, assertBinding: undefined}), /binding check/);
+  assert.equal(fixture.calls.length, 0);
 });

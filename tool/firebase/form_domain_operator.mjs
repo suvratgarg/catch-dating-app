@@ -2,7 +2,11 @@ import fs from "node:fs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {assertProdWriteAllowed} from "../lib/firebase_project.mjs";
 import {parseFirebaseWebConfig} from "./storage_rules_firestore_iam.mjs";
-import {hostingDomainTarget} from "./form_domain_hosting.mjs";
+import {fileURLToPath} from "node:url";
+import path from "node:path";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
+import {readFormOrigins, reconcileFormOrigins} from "./form_domain_origins.mjs";
+import {hostingDomainTarget, readHostingDomain, provisionHostingDomain} from "./form_domain_hosting.mjs";
 
 const actions = new Set(["status", "reserve", "verify", "provision", "prepare-origins", "activate", "revoke", "remove-origins"]);
 const values = new Map([["--env", "environment"], ["--hostname", "hostname"],
@@ -65,6 +69,8 @@ export function configuredDomainTarget(args, {readFile = fs.readFileSync} = {}) 
   }
   const hosting = hostingDomainTarget({projectId, projectNumber: config.projectNumber,
     siteId: sites[0], hostname: args.hostname});
+  assertProdWriteAllowed({env: args.environment, projectId, apply: args.apply,
+    allowProd: args.allowProd, action: "change a custom form domain"});
   return {...hosting, appId: config.appId, bucket: config.storageBucket,
     siteKey: args.siteKey, expectedCname: `${hosting.siteId}.web.app`};
 }
@@ -95,4 +101,139 @@ export async function verifyDomainProviderTarget(input, {request}) {
     throw new Error("Configured marketing Hosting site does not match.");
   }
   return {projectId: target.projectId, projectNumber: target.projectNumber, siteId: target.siteId};
+}
+
+
+/** All provider and registry writes are explicit. The manager UID records whose
+ * current authority the operator acts on behalf of; ADC authenticates the
+ * operator separately and is never inferred from that UID.
+ */
+export async function runDomainOperator(args, {target, db, registry, policy,
+  request, now = Date.now, assertManager}) {
+  if (policy.normalizeCustomFormHost(target.hostname) !== target.hostname) {
+    throw new Error("Reserved or invalid custom form hostname.");
+  }
+  assertProdWriteAllowed({env: args.environment, projectId: target.projectId,
+    apply: args.apply, allowProd: args.allowProd, action: "change a custom form domain"});
+  await verifyDomainProviderTarget(target, {request});
+  const readRecord = async () => {
+    const snap = await db.collection("organizerFormDomains").doc(target.hostname).get();
+    const value = policy.parseOrganizerFormDomain(snap.data());
+    if (snap.exists && !value) throw new Error("Invalid domain registry record.");
+    return value;
+  };
+  const record = await readRecord();
+  const hosting = await readHostingDomain(target, {request, now});
+  const summary = {action: args.action, apply: args.apply, projectId: target.projectId,
+    siteId: target.siteId, hostname: target.hostname, registry: record, hosting};
+  const originSummary = ({state: _state, ...assessment}) => assessment;
+  if (args.action === "status") {
+    return {...summary, ...(args.siteKey ? {origins: originSummary(await readFormOrigins(target, {request}))} : {}),
+      nextAction: record ? "Follow registry status and Hosting requiredDnsUpdates; activation requires current proof." : "reserve"};
+  }
+  if (args.action === "reserve") {
+    // A dry run performs the same current ownership/publication checks without
+    // creating a reservation or claiming a generated challenge as real.
+    await assertManager({db, organizerId: args.organizerId, actorUid: args.managerUid});
+    const form = await db.collection("organizerForms").doc(args.formId).get();
+    if (!form.exists || form.get("status") !== "published" || form.get("organizerId") !== args.organizerId) {
+      throw new Error("A published form owned by this organizer is required.");
+    }
+    if (record && record.status !== "revoked" &&
+        !(record.status === "pending" && record.pendingExpiresAtMillis <= now())) {
+      throw new Error("Hostname is already reserved; use status and its generation.");
+    }
+    if (!args.apply) return {...summary, nextAction: "reserve-with-apply"};
+    const reserved = await registry.reserveOrganizerFormDomain(db, {hostname: target.hostname,
+      organizerId: args.organizerId, formId: args.formId, actorUid: args.managerUid},
+    now(), target.expectedCname, assertManager);
+    return {...summary, registry: reserved, nextAction: "publish-dns-then-verify"};
+  }
+  if (!record || record.organizerId !== args.organizerId || record.formId !== args.formId ||
+      record.generation !== args.generation || record.expectedCname !== target.expectedCname) {
+    throw new Error("Requested organizer/form/generation/site does not match the reservation.");
+  }
+  const cleanup = args.action === "remove-origins";
+  const statuses = cleanup ? ["revoked"] : args.action === "revoke" ?
+    ["pending", "verified", "active", "revoked"] : args.action === "verify" ? ["pending"] : ["verified", "active"];
+  const assertBinding = () => registry.assertOrganizerFormDomainBinding(db, record,
+    args.managerUid, statuses, assertManager);
+  await assertBinding();
+  if (args.action === "revoke") {
+    if (args.apply) await registry.revokeOrganizerFormDomain(db, target.hostname,
+      args.organizerId, args.managerUid, assertManager, record);
+    return {...summary, registry: await readRecord(), nextAction: args.apply ? "remove-origins" : "revoke-with-apply"};
+  }
+  if (cleanup) {
+    const origins = await reconcileFormOrigins(target, {request, apply: args.apply, remove: true, assertBinding});
+    return {...summary, origins: originSummary(origins), nextAction: "review-residual-trust-and-client-dns"};
+  }
+  const probe = await registry.probeFormDomain(target.hostname);
+  if (!policy.hasCurrentDomainOwnership(record, probe, now())) {
+    throw new Error("Current TXT challenge and exact CNAME proof are required.");
+  }
+  if (args.action === "verify") {
+    policy.verifyFormDomain(record, probe, now());
+    if (args.apply) await registry.verifyOrganizerFormDomain(db, target.hostname, probe,
+      now(), args.organizerId, {expected: record, actorUid: args.managerUid, assertManager});
+    return {...summary, registry: await readRecord(), nextAction: args.apply ? "provision" : "verify-with-apply"};
+  }
+  await assertBinding();
+  if (args.action === "provision") {
+    const result = await provisionHostingDomain(target, {request, now, apply: args.apply, assertBinding});
+    await assertBinding();
+    return {...summary, hosting: result, nextAction: "follow-hosting-dns-and-read-status"};
+  }
+  if (args.action === "prepare-origins") {
+    if (!hosting.ready) throw new Error("Hosting and certificate must be ready before preparing origins.");
+    const origins = await reconcileFormOrigins(target, {request, apply: args.apply, assertBinding});
+    return {...summary, origins: originSummary(origins), nextAction: "activate"};
+  }
+  const origins = await readFormOrigins(target, {request});
+  const freshHosting = await readHostingDomain(target, {request, now});
+  const freshProbe = await registry.probeFormDomain(target.hostname);
+  if (!origins.ready || !freshHosting.ready || !policy.hasCurrentDomainOwnership(record, freshProbe, now())) {
+    throw new Error("Current Hosting, DNS, Auth, App Check and upload origins must all be ready.");
+  }
+  await assertBinding();
+  if (args.apply) await registry.activateOrganizerFormDomain(db, {expected: record,
+    probe: freshProbe, certificate: {projectId: target.projectId, siteId: target.siteId,
+      hostname: target.hostname, observedAtMillis: freshHosting.observedAt,
+      expiresAtMillis: freshHosting.certificateExpiresAt}, actorUid: args.managerUid,
+    trustedProjectId: target.projectId}, now, assertManager);
+  return {...summary, hosting: freshHosting, origins: originSummary(origins),
+    registry: await readRecord(), nextAction: args.apply ? "browser-acceptance" : "activate-with-apply"};
+}
+
+export async function domainOperatorMain(argv = process.argv.slice(2)) {
+  const args = parseDomainOperatorArgs(argv);
+  const target = configuredDomainTarget(args);
+  if (process.env.FIRESTORE_EMULATOR_HOST || process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+    throw new Error("Unset emulator variables before using the live domain operator.");
+  }
+  const require = createFunctionsRequire();
+  const {GoogleAuth} = require("google-auth-library");
+  const {initializeApp, applicationDefault, deleteApp} = require("firebase-admin/app");
+  const {getFirestore} = require("firebase-admin/firestore");
+  const registry = require("./lib/organizers/organizerFormDomainRegistry.js");
+  const policy = require("./lib/organizers/organizerFormDomains.js");
+  const {requireOrganizerManager} = require("./lib/shared/organizerManagerAuthority.js");
+  const auth = new GoogleAuth({projectId: target.projectId,
+    scopes: ["https://www.googleapis.com/auth/cloud-platform"]});
+  const client = await auth.getClient();
+  const app = initializeApp({projectId: target.projectId, credential: applicationDefault()}, "form-domain-operator");
+  try {
+    const result = await runDomainOperator(args, {target, db: getFirestore(app), registry, policy,
+      request: (config) => client.request(config), assertManager: requireOrganizerManager});
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } finally {await deleteApp(app);}
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  domainOperatorMain().catch((error) => {
+    // SDK errors can contain credential-bearing request configs. Never dump them.
+    process.stderr.write(`Custom form-domain operation failed: ${error instanceof Error &&
+      !error.config && !error.response ? error.message : "provider operation failed; re-read status"}\n`);
+    process.exitCode = 1;
+  });
 }
