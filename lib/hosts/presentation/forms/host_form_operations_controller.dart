@@ -58,9 +58,14 @@ class HostFormResponsesState {
 
 @riverpod
 class HostFormResponsesController extends _$HostFormResponsesController {
+  int _generation = 0;
+
   @override
-  Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
-      _loadInitial();
+  Future<HostFormResponsesState> build(HostFormResponseListRequest request) {
+    ++_generation;
+    ref.onDispose(() => ++_generation);
+    return _loadInitial();
+  }
 
   Future<HostFormResponsesState> _loadInitial() async {
     final page = await ref
@@ -76,6 +81,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
   }
 
   Future<void> loadMore() async {
+    final generation = _generation;
     final current = state.asData?.value;
     if (current == null || !current.canLoadMore) return;
     state = AsyncData(
@@ -85,6 +91,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
       final page = await ref
           .read(hostFormsRepositoryProvider)
           .listResponses(request.copyWith(cursor: current.nextCursor));
+      if (!ref.mounted || generation != _generation) return;
       final byId = <String, HostFormResponseSummary>{
         for (final response in current.responses) response.responseId: response,
         for (final response in page.items) response.responseId: response,
@@ -105,6 +112,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
         ),
       );
     } on Object catch (error) {
+      if (!ref.mounted || generation != _generation) return;
       state = AsyncData(
         current.copyWith(loadingMore: false, loadMoreError: error),
       );
