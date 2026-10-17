@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {isMain} from "../lib/cli_args.mjs";
+import {isMain, parseRecomputeArgs} from "../lib/cli_args.mjs";
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
@@ -9,7 +9,7 @@ if (isMain(import.meta.url)) {
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const args = parseArgs(argv);
+  const args = parseRecomputeArgs(argv);
   if (args.help) {
     printHelp();
     return;
@@ -125,44 +125,6 @@ function loadProfileProjection() {
       `Original error: ${error.message}`
     );
   }
-}
-
-function parseArgs(argv) {
-  const parsed = {
-    env: null,
-    project: null,
-    emulatorHost: null,
-    apply: false,
-    json: false,
-    help: false,
-  };
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === "--help" || arg === "-h") parsed.help = true;
-    else if (arg === "--apply") parsed.apply = true;
-    else if (arg === "--json") parsed.json = true;
-    else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
-    else if (arg === "--emulator-host") {
-      parsed.emulatorHost = requireValue(argv, ++i, arg);
-    } else if (arg === "--env") {
-      parsed.env = requireValue(argv, ++i, arg);
-    } else if (arg === "--project") {
-      parsed.project = requireValue(argv, ++i, arg);
-    } else {
-      throw new Error(`Unknown argument: ${arg}`);
-    }
-  }
-
-  return parsed;
-}
-
-function requireValue(argv, index, flag) {
-  const value = argv[index];
-  if (!value || value.startsWith("--")) {
-    throw new Error(`${flag} requires a value.`);
-  }
-  return value;
 }
 
 function printHelp() {

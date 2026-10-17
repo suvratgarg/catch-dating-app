@@ -19,8 +19,10 @@ export function verifyRecomputeCli(t, cli, data) {
     })),
     {args: ["--env", "missing-alias", "--project", "explicit"], env: {GCLOUD_PROJECT: "ignored"}, project: "explicit"},
     {args: ["--project", "first", "--project", "last"], env: {}, project: "last"},
-    // This odd legacy value is intentional: changing parsers is a later slice.
-    {args: ["--project", "-h"], env: {}, project: "-h"},
+    // Preserve literal project values instead of interpreting them as flags.
+    ...["-h", "-x", "-", "a=b", "  ", "项目"].map((project) => ({
+      args: ["--project", project], env: {}, project,
+    })),
   ]) {
     const result = run([...args, "--json"], env);
     assert.equal(result.status, 0, result.stderr);
@@ -32,7 +34,10 @@ export function verifyRecomputeCli(t, cli, data) {
   }
   for (const args of [["--unknown"], ["--allow-prod"], ["--confirm-prod"], ["--env=dev"],
     ["--project=value"], ["--emulator-host=localhost:8080"], ["--"], ["-hh"], ["positional"],
-    ["--project"], ["--env", ""], ["--emulator-host", "--apply"], ["--env", "missing-alias"]]) {
+    ["--apply=true"], ["--json=false"], ["--help", "--unknown"],
+    ...["--project", "--env", "--emulator-host"].flatMap((flag) => [
+      [flag], [flag, ""], [flag, "--apply"],
+    ]), ["--env", "missing-alias"]]) {
     const result = run(args);
     assert.notEqual(result.status, 0, JSON.stringify(args));
     assert.deepEqual(result.report, {}, JSON.stringify(args));
