@@ -178,3 +178,29 @@ test("missing guards and provider metadata never become an apply plan", async ()
   await assert.rejects(() => readFormOrigins(target, {request: async () => ({status: 200, data: null})}), /invalid metadata/);
   assert.throws(() => evaluateFormOrigins(target, {}), /Unexpected website/);
 });
+
+test("Auth-only inherited grants and noncanonical CORS origins remain explicit on revoke", async () => {
+  const client = fixture({ready: true});
+  client.state.auth.authorizedDomains.push("CLIENT.EXAMPLE");
+  const result = await reconcileFormOrigins(target, {...client, apply: true, remove: true});
+  assert.equal(result.exactRemoved, true);
+  assert.equal(result.providerTrustRemoved, false);
+  assert.deepEqual(result.authAncestorGrants, ["CLIENT.EXAMPLE"]);
+  assert.deepEqual(result.ancestorGrants, []);
+  assert.ok(client.state.auth.authorizedDomains.includes("CLIENT.EXAMPLE"));
+  const other = fixture({ready: true});
+  other.state.bucket.cors.push({origin: ["http://forms.client.example"], method: ["GET"]});
+  const residual = await reconcileFormOrigins(target, {...other, apply: true, remove: true});
+  assert.equal(residual.providerTrustRemoved, false);
+  assert.deepEqual(residual.remainingHostCors, ["http://forms.client.example"]);
+});
+
+test("case variants of the exact domain cannot survive a successful removal claim", async () => {
+  const client = fixture({ready: true});
+  client.state.auth.authorizedDomains.push("FORMS.CLIENT.EXAMPLE");
+  client.state.key.webSettings.allowedDomains.push("FORMS.CLIENT.EXAMPLE");
+  const result = await reconcileFormOrigins(target, {...client, apply: true, remove: true});
+  assert.equal(result.providerTrustRemoved, true);
+  assert.deepEqual(client.state.auth.authorizedDomains, ["catchdates-dev.web.app"]);
+  assert.deepEqual(client.state.key.webSettings.allowedDomains, ["catchdates-dev.web.app"]);
+});

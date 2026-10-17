@@ -3,6 +3,8 @@ import {mergeUploadCors} from "./form_upload_identity.mjs";
 
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const strings = (value) => Array.isArray(value) && value.every((item) => typeof item === "string");
+const domainKey = (value) => value.toLowerCase();
+const hasDomain = (domains, hostname) => domains.some((domain) => domainKey(domain) === hostname);
 
 export function formOriginTarget(input) {
   const hosting = hostingDomainTarget(input);
@@ -60,13 +62,20 @@ export function evaluateFormOrigins(input, state) {
   const existingCors = state.bucket.cors ?? [];
   const cors = mergeUploadCors({origins: [target.origin]}, existingCors);
   const missing = [];
-  if (!state.auth.authorizedDomains.includes(target.hostname)) missing.push("auth-domain");
-  if (!state.key.webSettings.allowedDomains.includes(target.hostname)) missing.push("enterprise-domain");
+  if (!hasDomain(state.auth.authorizedDomains, target.hostname)) missing.push("auth-domain");
+  if (!hasDomain(state.key.webSettings.allowedDomains, target.hostname)) missing.push("enterprise-domain");
   if (cors !== existingCors) missing.push("upload-cors");
   const ancestorGrants = state.key.webSettings.allowedDomains.filter((domain) =>
-    target.hostname.endsWith(`.${domain.toLowerCase()}`));
+    target.hostname.endsWith(`.${domainKey(domain)}`));
+  // Firebase Auth's domain matcher also accepts subdomains, case-insensitively.
+  const authAncestorGrants = state.auth.authorizedDomains.filter((domain) =>
+    target.hostname.endsWith(`.${domainKey(domain)}`));
   const wildcardCors = existingCors.some((rule) => rule.origin.includes("*"));
-  return {ready: missing.length === 0, missing, ancestorGrants, wildcardCors};
+  const remainingHostCors = existingCors.flatMap((rule) => rule.origin).filter((origin) => {
+    try {return new URL(origin).hostname === target.hostname;} catch {return false;}
+  });
+  return {ready: missing.length === 0, missing, ancestorGrants, authAncestorGrants,
+    wildcardCors, remainingHostCors};
 }
 
 export async function readFormOrigins(input, {request}) {
@@ -107,15 +116,15 @@ export async function reconcileFormOrigins(input, {request, apply = false, remov
     let data; let url;
     if (owner === "auth") {
       const old = state.auth.authorizedDomains;
-      const next = remove ? old.filter((domain) => domain !== target.hostname) :
-        old.includes(target.hostname) ? old : [...old, target.hostname];
+      const next = remove ? old.filter((domain) => domainKey(domain) !== target.hostname) :
+        hasDomain(old, target.hostname) ? old : [...old, target.hostname];
       if (JSON.stringify(old) === JSON.stringify(next)) continue;
       data = {authorizedDomains: next};
       url = `${endpoints.auth}?updateMask=authorizedDomains`;
     } else if (owner === "key") {
       const old = state.key.webSettings.allowedDomains;
-      const next = remove ? old.filter((domain) => domain !== target.hostname) :
-        old.includes(target.hostname) ? old : [...old, target.hostname];
+      const next = remove ? old.filter((domain) => domainKey(domain) !== target.hostname) :
+        hasDomain(old, target.hostname) ? old : [...old, target.hostname];
       if (JSON.stringify(old) === JSON.stringify(next)) continue;
       if (next.length > 250) throw new Error("Enterprise domain capacity reached; no broader grant was made.");
       data = {name: state.key.name, webSettings: {allowedDomains: next}};
@@ -132,11 +141,12 @@ export async function reconcileFormOrigins(input, {request, apply = false, remov
   await assertBinding();
   const after = await readFormOrigins(target, {request});
   await assertBinding();
-  const exactRemoved = !after.state.auth.authorizedDomains.includes(target.hostname) &&
-    !after.state.key.webSettings.allowedDomains.includes(target.hostname) &&
+  const exactRemoved = !hasDomain(after.state.auth.authorizedDomains, target.hostname) &&
+    !hasDomain(after.state.key.webSettings.allowedDomains, target.hostname) &&
     !(after.state.bucket.cors ?? []).some((rule) => rule.origin.includes(target.origin));
   if (!remove && !after.ready) throw new Error("Custom origin configuration is not ready after update.");
   if (remove && !exactRemoved) throw new Error("Exact custom-origin entries remain after removal.");
   return {...after, applied: true, ...(remove ? {exactRemoved,
-    providerTrustRemoved: after.ancestorGrants.length === 0 && !after.wildcardCors} : {})};
+    providerTrustRemoved: after.ancestorGrants.length === 0 && after.authAncestorGrants.length === 0 &&
+      !after.wildcardCors && after.remainingHostCors.length === 0} : {})};
 }
