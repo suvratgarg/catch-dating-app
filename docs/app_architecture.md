@@ -1407,7 +1407,7 @@ Catch's UI system has separate sources of truth by layer:
 | Layer | Source of truth | Mirrors / consumers |
 |---|---|---|
 | Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
-| Flutter widget behavior | `lib/core/widgets/catch_*.dart` | Component contracts, goldens/captures, Figma Code Connect snippets |
+| Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/core/widgets/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
 | Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
 | Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
 
@@ -2583,8 +2583,10 @@ exist.
 
 Widgets have two normal homes:
 
-- `lib/core/widgets/**` for shared, branded, feature-neutral primitives and
-  compositions.
+- `lib/core/widgets/**` for shared, app-coupled widgets that cannot live in
+  `catch_ui` because they use app domain types or copy. They follow feature
+  naming (`<Feature><RoleNoun>`, never the `Catch` prefix) and are registered
+  in the component registry.
 - `lib/<feature>/presentation/widgets/**` for feature-owned UI that depends on
   feature domain/state language.
 

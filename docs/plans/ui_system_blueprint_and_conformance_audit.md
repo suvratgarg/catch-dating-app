@@ -1403,9 +1403,14 @@ the alias gate, prefix test and ratchet each ship with a seeded failing probe
 (a new `EventTicket`, a new `ProfilePanel`, a new `CatchFoo` in a feature
 folder); workspace analyze green.
 
-**Phase 7b.2 — Naming sweep.** Rename the 197 remaining feature-naming failures
+#### Phase 7b.2 — Naming sweep
+
+Rename the remaining feature-naming failures
 in feature-sized slices using the alias redirects, lowering the ratchet in each
-slice until it reaches zero.
+slice until it reaches zero. The ratchet lives in
+`design/components/widget_naming_baseline.json`, checked by
+`node tool/design/generate_widget_catalog.mjs --check`; `--write` only removes
+fixed entries.
 
 **Phase 7c — One registry for React identity.** Replace the `surfaces` name
 map with per-framework implementation records (symbol and file), add

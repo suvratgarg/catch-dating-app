@@ -114,6 +114,151 @@
       ]
     }
   },
+  "roleNounRedirects": {
+    "ActionBar": [
+      "Dock"
+    ],
+    "AppBar": [
+      "TopBar"
+    ],
+    "BottomBar": [
+      "Dock"
+    ],
+    "Box": [
+      "Surface"
+    ],
+    "Caption": [
+      "Text"
+    ],
+    "Carousel": [
+      "Rail"
+    ],
+    "Composer": [
+      "Input"
+    ],
+    "Container": [
+      "Surface"
+    ],
+    "Content": [
+      "Body"
+    ],
+    "Cta": [
+      "Button",
+      "Dock"
+    ],
+    "Entry": [
+      "Row",
+      "Tile",
+      "Card"
+    ],
+    "Eyebrow": [
+      "Text"
+    ],
+    "Fields": [
+      "Section",
+      "FieldLanes"
+    ],
+    "Frame": [
+      "Scaffold",
+      "Layout"
+    ],
+    "Hero": [
+      "Header",
+      "Poster"
+    ],
+    "InputBar": [
+      "Input"
+    ],
+    "Item": [
+      "Row",
+      "Tile",
+      "Card"
+    ],
+    "Label": [
+      "Text"
+    ],
+    "Line": [
+      "Text",
+      "Row"
+    ],
+    "Loader": [
+      "Indicator"
+    ],
+    "Modal": [
+      "Dialog",
+      "Sheet"
+    ],
+    "Overview": [
+      "Body",
+      "Section"
+    ],
+    "Page": [
+      "Step",
+      "Body"
+    ],
+    "Panel": [
+      "Section",
+      "Surface"
+    ],
+    "Pill": [
+      "Chip"
+    ],
+    "Popup": [
+      "Dialog",
+      "Menu"
+    ],
+    "Rows": [
+      "List"
+    ],
+    "Shell": [
+      "Scaffold",
+      "Layout"
+    ],
+    "Sliver": [
+      "SectionList",
+      "List",
+      "Body"
+    ],
+    "Snackbar": [
+      "Notice"
+    ],
+    "Spinner": [
+      "Indicator"
+    ],
+    "Stack": [
+      "Layout",
+      "SectionList"
+    ],
+    "Strip": [
+      "Rail"
+    ],
+    "Summary": [
+      "Card",
+      "Section"
+    ],
+    "Tabs": [
+      "TabBar"
+    ],
+    "Tag": [
+      "Chip"
+    ],
+    "Toast": [
+      "Notice"
+    ],
+    "Toolbar": [
+      "TopBar"
+    ],
+    "Topbar": [
+      "TopBar"
+    ],
+    "View": [
+      "Body",
+      "Map"
+    ],
+    "Wrapper": [
+      "Surface"
+    ]
+  },
   "components": [
     {
       "id": "catch.badge",
@@ -132,6 +277,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "StatusBadge",
+        "StatusChip",
+        "StatusPill",
+        "MetaBadge"
+      ],
       "summary": "Passive metadata and status with named compact, editorial, and readable rounded-rectangle recipes.",
       "dart": {
         "symbol": "CatchBadge",
@@ -499,6 +650,13 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "PrimaryButton",
+        "SecondaryButton",
+        "AppButton",
+        "ActionButton",
+        "CtaButton"
+      ],
       "summary": "Canonical labelled action with CTA, command, current-selection, counted floating and native text-action recipes.",
       "dart": {
         "symbol": "CatchButton",
@@ -1009,6 +1167,13 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "FilterChip",
+        "ChoiceChip",
+        "TagChip",
+        "ToggleChip",
+        "SelectableChip"
+      ],
       "summary": "Canonical compact-label primitive for passive tags, parent-owned choices, registry-backed activities, and removable values behind explicit named constructors.",
       "dart": {
         "symbol": "CatchChip",
@@ -1258,6 +1423,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "EmptyView",
+        "EmptyPlaceholder",
+        "NoResultsState",
+        "EmptyListState"
+      ],
       "summary": "Successful empty content uses stacked page or inline section anatomy. Inline title icons occupy the heading only; message-only states omit the decorative icon and paragraphs keep the full width.",
       "dart": {
         "symbol": "CatchEmptyState",
@@ -1500,6 +1671,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "ErrorView",
+        "ErrorPlaceholder",
+        "RetryState",
+        "FailureState"
+      ],
       "summary": "Canonical cardless error content with typed full-screen, inline and compact modes, caller-resolved copy, retry and additional actions.",
       "dart": {
         "symbol": "CatchErrorState",
@@ -1897,6 +2074,13 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "InfoBanner",
+        "AlertBanner",
+        "WarningBanner",
+        "StatusBanner",
+        "InlineAlert"
+      ],
       "summary": "Body feedback tones share fixed padding, heading icon, full-width copy and actions below. Screen-owned durable status bands retain their separate full-width geometry.",
       "dart": {
         "symbol": "CatchBanner",
@@ -2166,6 +2350,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "Toast",
+        "Snackbar",
+        "InAppNotification",
+        "NotificationToast"
+      ],
       "summary": "Configurable ambient notice family with one app-level safe-area overlay. Arrival notices open from the whole card and support swipe dismissal; ordinary notifications use explicit action and dismiss controls. Features own copy, identity, tone and routing; the shared renderer owns readable geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
@@ -2369,6 +2559,13 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "TextField",
+        "FormField",
+        "InputField",
+        "LabeledField",
+        "FormInput"
+      ],
       "summary": "Field owns activation, hover, focus, disabled state and accessibility. Ordinary records, people and conversations are sealed passive content layouts. Section owns gutters, dividers and the interaction perimeter. Form controllers own draft and persistence state.",
       "design": {
         "figma": {
@@ -4208,6 +4405,13 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "PageSection",
+        "SectionCard",
+        "SettingsSection",
+        "SectionPanel",
+        "TitledSection"
+      ],
       "summary": "Owns section anatomy. Action, collection and status modules share quiet token fill, natural content height, heading, copy and padding. Collections own compact empty content, sibling separators and an optional full-width primary command. Outlined field groups remain separate semantic recipes.",
       "design": {
         "figma": {
@@ -5244,6 +5448,12 @@
       "status": "active",
       "kind": "pattern",
       "tier": "T2",
+      "aliases": [
+        "LoadingSkeleton",
+        "ShimmerPlaceholder",
+        "SkeletonLoader",
+        "Shimmer"
+      ],
       "summary": "Content-shaped loading paint derived from the real composition, with leaf placeholders for unresolved values.",
       "dart": {
         "symbol": "CatchSkeleton",
@@ -5399,6 +5609,13 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "Spinner",
+        "LoadingSpinner",
+        "ProgressSpinner",
+        "Loader",
+        "ActivityIndicator"
+      ],
       "summary": "Indeterminate activity feedback with circular, static dots and fixed-cadence inline glyph recipes.",
       "dart": {
         "symbol": "CatchLoadingIndicator",
@@ -5538,6 +5755,12 @@
       "status": "active",
       "kind": "pattern",
       "tier": "T3",
+      "aliases": [
+        "AsyncValueView",
+        "AsyncBuilder",
+        "LoadingErrorBuilder",
+        "AsyncStateView"
+      ],
       "summary": "Exhaustive async-state boundary with typed data retention and one timeout/recovery lifecycle for box and sliver output.",
       "dart": {
         "symbol": "CatchAsyncBoundary",
@@ -5814,6 +6037,14 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "Eyebrow",
+        "EyebrowText",
+        "OverlineText",
+        "SectionLabel",
+        "UiLabel",
+        "Kicker"
+      ],
       "summary": "Public text-role atom family for uppercase kicker labels and single-line mono metadata labels.",
       "dart": {
         "symbol": "CatchKickerText",
@@ -5993,6 +6224,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "MiniBar",
+        "BarChartBar",
+        "ProgressBar",
+        "MeterBar"
+      ],
       "summary": "One quantitative bar with bounded fractional height and rounded or square rendering.",
       "dart": {
         "symbol": "CatchBarIndicator",
@@ -6144,6 +6381,13 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "StatsRow",
+        "MetricsRow",
+        "StatGrid",
+        "KpiStrip",
+        "MetricGrid"
+      ],
       "summary": "Caller-formatted metrics with a compact context rail and adaptive independent-measurement grids.",
       "dart": {
         "symbol": "CatchMetricSection",
@@ -6386,6 +6630,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "BottomSheet",
+        "ModalSheet",
+        "ActionSheet",
+        "DrawerSheet"
+      ],
       "summary": "Canonical sheet surface; standard recipe owns bounded whole-sheet scrolling, keyboard clearance, header, body and footer geometry.",
       "dart": {
         "symbol": "CatchSheet",
@@ -6822,6 +7072,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "IconButton",
+        "CircleIconButton",
+        "RoundIconButton",
+        "IconActionButton"
+      ],
       "summary": "Circular icon action for toolbar, overlay, and plain glyph-button affordances.",
       "dart": {
         "symbol": "CatchIconAction",
@@ -7127,6 +7383,13 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "DropdownMenu",
+        "PopupMenu",
+        "OverflowMenu",
+        "ContextMenu",
+        "SelectMenu"
+      ],
       "summary": "Canonical menu family with separate command overflow and adaptive mutually-exclusive selection contracts.",
       "dart": {
         "symbol": "CatchMenu",
@@ -7435,6 +7698,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "IconBadge",
+        "IconCircle",
+        "IconContainer",
+        "IconBox"
+      ],
       "summary": "Non-interactive icon presentation with square-tile, quiet empty-state, circular accent and branded error recipes. Commands belong to CatchIconAction.",
       "dart": {
         "symbol": "CatchIconTile",
@@ -7614,6 +7883,11 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "ControlContainer",
+        "InputContainer",
+        "FieldBox"
+      ],
       "summary": "Token-backed control containment with stable sizing, typed validation/focus status, disabled fill and optional button semantics.",
       "dart": {
         "symbol": "CatchControlSurface",
@@ -7816,6 +8090,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "NumberStepper",
+        "QuantityStepper",
+        "CounterControl",
+        "QuantityPicker"
+      ],
       "summary": "Canonical numeric adjustment using one compact, accelerated repeat-control renderer for bounded values and explicit caller-owned stepping.",
       "dart": {
         "symbol": "CatchStepper",
@@ -8033,6 +8313,14 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "SegmentedControl",
+        "ChipGroup",
+        "RadioGroup",
+        "CheckboxGroup",
+        "ToggleGroup",
+        "ChoiceGroup"
+      ],
       "summary": "One typed choice input: compact checked, described, segmented and Flutter Form recipes share cardinality and callbacks while preserving their rendering and semantics. The form recipe exposes caller-owned validation through onValidate.",
       "dart": {
         "symbol": "CatchChoiceInput",
@@ -8350,6 +8638,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "OptionCard",
+        "ChoiceCard",
+        "RadioCard",
+        "SelectableCard"
+      ],
       "summary": "One full-width explanatory choice target with checked and disabled semantics. The tile is rendering anatomy of the selection input, distinct from metric display and icon-only targets.",
       "dart": {
         "symbol": "CatchChoiceTile",
@@ -8501,6 +8795,13 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "AppCard",
+        "BaseCard",
+        "ContentCard",
+        "Panel",
+        "RoundedContainer"
+      ],
       "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted panels, and tappable tiles.",
       "dart": {
         "symbol": "CatchSurface",
@@ -8736,6 +9037,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "AppBar",
+        "Toolbar",
+        "HeaderBar",
+        "TitleBar"
+      ],
       "summary": "One canonical app bar with route, identity, root, embedded-root and branded navigation recipes; workspace headers flow from their content and share an anchored title baseline, with subtitles below and width-aware parent navigation.",
       "dart": {
         "symbol": "CatchTopBar",
@@ -9151,6 +9458,10 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T3",
+      "aliases": [
+        "VisibilityBadge",
+        "PrivacyLabel"
+      ],
       "summary": "Privacy/visibility adapter with caller-resolved labels and fixed mode-to-icon pairing in CatchBadge.privacy.",
       "dart": {
         "symbol": "CatchPrivacyBadge",
@@ -9277,6 +9588,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "StepsList",
+        "NumberedSteps",
+        "TimelineSteps",
+        "HowItWorksList"
+      ],
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
       "dart": {
         "symbol": "CatchStepRowList",
@@ -9416,6 +9733,12 @@
       "status": "active",
       "kind": "pattern",
       "tier": "T3",
+      "aliases": [
+        "PageContent",
+        "ScreenBody",
+        "PagePadding",
+        "ScreenContent"
+      ],
       "summary": "Semantic page insets and field paint ownership across inset, form, screen and sliver recipes; the family retains its explicit root, route and scroll owners.",
       "dart": {
         "symbol": "CatchPageBody",
@@ -10346,6 +10669,12 @@
       "status": "active",
       "kind": "pattern",
       "tier": "T2",
+      "aliases": [
+        "SectionsColumn",
+        "SectionStack",
+        "SectionedList",
+        "SettingsList"
+      ],
       "summary": "Ordered complete sections with plain, inset, sliver, responsive and scrolling-page recipes.",
       "dart": {
         "symbol": "CatchSectionList",
@@ -10929,6 +11258,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "CachedNetworkImage",
+        "RemoteImage",
+        "CachedImage",
+        "ImageLoader"
+      ],
       "summary": "Canonical remote and bundled image primitive with decode sizing, branded fallback, loading hook, and semantic-label support.",
       "dart": {
         "symbol": "CatchNetworkImage",
@@ -11116,6 +11451,11 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "RadiusOverlay",
+        "DistanceRing",
+        "MapRadius"
+      ],
       "summary": "Map radius annotation with fixed or available-space ring geometry, a wrapping label bounded to the ring width, and a shared label-only recipe for native geographic circles.",
       "dart": {
         "symbol": "CatchDistanceOverlay",
@@ -11265,6 +11605,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "OtpInput",
+        "PinCodeInput",
+        "VerificationCodeInput",
+        "OtpField"
+      ],
       "summary": "Editable one-time-code input with synchronized digit surfaces, exact-length filtering, paste, SMS autofill, caller-resolved semantics, and submission callbacks.",
       "dart": {
         "symbol": "CatchCodeInput",
@@ -11554,6 +11900,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "SegmentedTabs",
+        "TopTabs",
+        "PageTabs",
+        "TabStrip"
+      ],
       "summary": "Scaled page-tab placement over the canonical inline selection renderer; value and controller recipes share geometry, targets and selection semantics.",
       "dart": {
         "symbol": "CatchPageTabBar",
@@ -11727,6 +12079,11 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "SearchBar",
+        "SearchInput",
+        "SearchBox"
+      ],
       "summary": "Canonical search input, including pill field mode and expanding/collapsed search affordance mode.",
       "dart": {
         "symbol": "CatchSearchField",
@@ -11924,6 +12281,11 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "RangeSlider",
+        "DualSlider",
+        "RangePicker"
+      ],
       "summary": "Canonical numeric interval input with two adjustable endpoints, contract-derived limits, tickless track, endpoint labels and caller-owned update/commit callbacks.",
       "dart": {
         "symbol": "CatchRangeInput",
@@ -12114,6 +12476,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "Switch",
+        "ToggleSwitch",
+        "SwitchInput",
+        "OnOffSwitch"
+      ],
       "summary": "Canonical settings toggle control with animated pill track, primary on fill, quiet off track, surface knob, disabled opacity, Enter/Space activation, and a 2 px focus-visible ring.",
       "dart": {
         "symbol": "CatchToggleInput",
@@ -12247,6 +12615,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "WizardHeader",
+        "ProgressHeader",
+        "StepProgressBar",
+        "OnboardingHeader"
+      ],
       "summary": "Wizard/step-flow header with back or close navigation, an optional interactive section counter, and a progress hairline.",
       "dart": {
         "symbol": "CatchStepHeader",
@@ -12454,6 +12828,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "BottomNavBar",
+        "BottomNavigation",
+        "NavBar",
+        "BottomTabBar"
+      ],
       "summary": "Adaptive bottom navigation with stable keyed destination slots, one shared 48px selection/contact indicator, measured selected labels, press-and-slide selection, badges, and platform-specific chrome.",
       "dart": {
         "symbol": "CatchTabBar",
@@ -12667,6 +13047,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
+      "aliases": [
+        "ConfirmDialog",
+        "AlertDialog",
+        "ConfirmationDialog",
+        "ModalDialog"
+      ],
       "summary": "Canonical bounded modal frame with slotted content/actions and a typed confirmation recipe. The stable confirm_dialog ID now owns both former dialog contracts.",
       "dart": {
         "symbol": "CatchDialog",
@@ -12832,6 +13218,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "DotsIndicator",
+        "PageDots",
+        "CarouselDots",
+        "PagerDots"
+      ],
       "summary": "Compact page/progress dot indicator with selected-width emphasis, semantic label support, and motion-token transitions.",
       "dart": {
         "symbol": "CatchPageIndicator",
@@ -12975,6 +13367,11 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
+      "aliases": [
+        "ClubActionBar",
+        "ClubBottomBar",
+        "MembershipBar"
+      ],
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
       "dart": {
         "symbol": "ClubDetailDock",
@@ -13342,6 +13739,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
+      "aliases": [
+        "ProfileAvatar",
+        "UserAvatar",
+        "ProfilePicture",
+        "AvatarImage"
+      ],
       "summary": "Canonical avatar for photos, initials, activity identity, veils and localized overflow counts, with one clipping/ring owner and bounded labels.",
       "dart": {
         "symbol": "CatchAvatar",
@@ -14006,6 +14409,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "FilteredImage",
+        "ColorGradedImage",
+        "ImageFilter",
+        "DuotoneImage"
+      ],
       "summary": "Global display-time image grade that gives uploaded and generated imagery the shared Catch visual treatment without mutating source media. All filter stages preserve image alpha and leave surrounding content untouched.",
       "dart": {
         "symbol": "CatchGradedImage",
@@ -14129,6 +14538,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "HeroBanner",
+        "CoverImage",
+        "HeaderImage",
+        "HeroPhoto"
+      ],
       "summary": "Hero image assembly with shared source loading, photo grading, a branded missing-image surface and optional readability overlay.",
       "dart": {
         "symbol": "CatchHeroImage",
@@ -14438,6 +14853,11 @@
       "status": "active",
       "kind": "screen-contract",
       "tier": "T2",
+      "aliases": [
+        "EventDetailScreenBody",
+        "EventDetailContent",
+        "EventDetailsBody"
+      ],
       "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, consent-safe Cross Paths control, companion prompt, and booking dock under one Catch-owned handoff boundary.",
       "dart": {
         "symbol": "EventDetailBody",
@@ -14889,6 +15309,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
+      "aliases": [
+        "NotificationTile",
+        "NotificationItem",
+        "ActivityRow",
+        "NotificationListItem"
+      ],
       "summary": "Activity notification list row with type glyph, read/unread emphasis, timestamp, optional body, divider, and tap semantics.",
       "dart": {
         "symbol": "NotificationRow",
@@ -15223,6 +15649,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
+      "aliases": [
+        "BottomActionBar",
+        "StickyFooter",
+        "BottomBar",
+        "ActionDock"
+      ],
       "summary": "Persistent docked controls with utility, platform-adaptive primary-action and embedded primary-content recipes.",
       "design": {
         "figma": {
@@ -15646,6 +16078,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "MetadataRow",
+        "InfoRow",
+        "DetailRow",
+        "FactRow"
+      ],
       "summary": "Passive factual metadata rows with single-label, compact-entry, dot-separated flow and strong-trailing group recipes.",
       "dart": {
         "symbol": "CatchMetaRow",
@@ -15824,6 +16262,12 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
+      "aliases": [
+        "ListRow",
+        "DirectoryRow",
+        "NavigationRow",
+        "BrowseRow"
+      ],
       "summary": "Canonical hairline index row for compact directories and browse lists with optional leading and trailing content.",
       "dart": {
         "symbol": "CatchIndexRow",
@@ -16213,6 +16657,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "ProfileCard",
+        "PersonCard",
+        "PhotoCard",
+        "UserCard"
+      ],
       "summary": "Canonical portrait-first person material with a quiet identity caption lane and optional contextual overlay.",
       "dart": {
         "symbol": "CatchPolaroid",
@@ -16487,6 +16937,11 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T3",
+      "aliases": [
+        "RevealAnimation",
+        "FadeInView",
+        "RevealTransition"
+      ],
       "summary": "Owns the derived animation lifetime and reveal effects for route content, stationary native media and shared-element flight content.",
       "dart": {
         "symbol": "CatchRevealViewport",
@@ -16649,6 +17104,11 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T3",
+      "aliases": [
+        "MessageText",
+        "ChatMessageText",
+        "MessageWithTimestamp"
+      ],
       "summary": "Message text with a caller-formatted timestamp on the final line when it fits, or directly below it.",
       "dart": {
         "symbol": "CatchTimestampedMessageText",
@@ -16772,6 +17232,11 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "DataQualityTile",
+        "CompletenessTile",
+        "DataCoverageTile"
+      ],
       "summary": "Caller-formatted metric tile with explicit ready, partial and missing-data presentation.",
       "dart": {
         "symbol": "CatchDataQualityMetricTile",
@@ -16893,6 +17358,12 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
+      "aliases": [
+        "TicketCard",
+        "TicketShape",
+        "PerforatedCard",
+        "TicketFrame"
+      ],
       "summary": "Presentation-neutral ticket geometry: adaptive hero slots, perforation and a notched outline.",
       "dart": {
         "symbol": "CatchTicket",
@@ -17080,6 +17551,12 @@
       "status": "active",
       "kind": "pattern",
       "tier": "T3",
+      "aliases": [
+        "ResponsiveLayout",
+        "AdaptiveLayout",
+        "SizeClassBuilder",
+        "BreakpointBuilder"
+      ],
       "summary": "One local viewport owner with named size-class, explicit-width, sliver geometry, readable sliver lane and bounded-scene recipes.",
       "dart": {
         "symbol": "CatchViewport",

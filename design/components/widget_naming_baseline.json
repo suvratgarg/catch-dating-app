@@ -1,0 +1,2524 @@
+{
+  "owner": "app_architecture",
+  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7b2--naming-sweep",
+  "schemaVersion": 1,
+  "policy": "feature_widget_names_and_reserved_catch_prefix_debt_cannot_grow",
+  "allowedFindings": [
+    {
+      "file": "lib/auth/presentation/auth_screen.dart",
+      "name": "HostAuthFlowFrame",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/auth/presentation/host_auth_widgets.dart",
+      "name": "HostAuthCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/auth/presentation/host_auth_widgets.dart",
+      "name": "HostAuthHeader",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/auth/presentation/host_auth_widgets.dart",
+      "name": "HostAuthProgressButton",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/auth/presentation/otp_page.dart",
+      "name": "OtpPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/auth/presentation/phone_page.dart",
+      "name": "CountryCodeSelector",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/auth/presentation/phone_page.dart",
+      "name": "PhonePage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
+      "name": "ChatInputBar",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/chat_share_card.dart",
+      "name": "ShareCardBubble",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/message_bubble.dart",
+      "name": "MediaMessageBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/message_bubble.dart",
+      "name": "MessageBubble",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
+      "name": "MatchTesterSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
+      "name": "SuvbotActionBar",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
+      "name": "SuvbotResetActionRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
+      "name": "ClubDetailReadOnlyPreviewSliver",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "name": "CatchClubDock",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "name": "CatchClubDockState",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "name": "DockBell",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "name": "DockCount",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+      "name": "ClubHeroAppBar",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+      "name": "ClubHeroModule",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
+      "name": "ClubPhotoStrip",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
+      "name": "ClubShareArtwork",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "name": "MembershipTrailing",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "name": "MembershipTrailingController",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/shared/catch_club_cover.dart",
+      "name": "CatchClubCover",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/clubs/shared/catch_organizer_poster.dart",
+      "name": "CatchOrganizerPoster",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/clubs/shared/catch_organizer_poster.dart",
+      "name": "OrganizerPosterArtwork",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/shared/club_identity_atoms.dart",
+      "name": "ClubHostIdentityLine",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/clubs/shared/club_identity_atoms.dart",
+      "name": "ClubTagWrap",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/core/business_rules.dart",
+      "name": "CatchBusinessRules",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/celebration/catch_celebration_screen.dart",
+      "name": "CatchCelebrationScreen",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/formatters/catch_count_copy.dart",
+      "name": "CatchCountCopy",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/formatters/catch_distance_formatter.dart",
+      "name": "CatchDistanceFormatter",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
+      "name": "CatchAdaptiveTabScaffold",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncPhase",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncState",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncStatus",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/startup/catch_native_splash.dart",
+      "name": "CatchNativeSplash",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/startup/catch_startup_animation_scope.dart",
+      "name": "CatchStartupAnimationScope",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/theme/activity_palette.dart",
+      "name": "CatchActivity",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/catch_activity_map_pin.dart",
+      "name": "CatchActivityMapPin",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/catch_event_activity_cards.dart",
+      "name": "CatchEventCard",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/catch_event_thumbnail.dart",
+      "name": "CatchEventThumbnail",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/catch_event_thumbnail.dart",
+      "name": "CatchEventThumbnailActivityFallback",
+      "issues": [
+        "noncanonical-feature-widget-name",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/catch_startup_loading_screen.dart",
+      "name": "CatchStartupBrandStage",
+      "issues": [
+        "noncanonical-feature-widget-name",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/catch_startup_loading_screen.dart",
+      "name": "CatchStartupLoadingScreen",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/event_activity_visuals.dart",
+      "name": "EventActivityBackdrop",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/core/widgets/event_visual_atoms.dart",
+      "name": "EventActivityStamp",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/activity_screen.dart",
+      "name": "ActivityScreenLoading",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+      "name": "ActivitySignedOutState",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/activity_section.dart",
+      "name": "NotificationDayGroups",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/dashboard_empty.dart",
+      "name": "DashboardEmptySliverBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+      "name": "DashboardFullSliverBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
+      "name": "EmptyHeroContent",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart",
+      "name": "EventRehearsalGuestLinkSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart",
+      "name": "EventRehearsalRunSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart",
+      "name": "EventRehearsalRecapSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart",
+      "name": "EventRehearsalRosterSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart",
+      "name": "EventRehearsalSimulator",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
+      "name": "AfterglowBeatGrid",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
+      "name": "AfterglowBeatRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
+      "name": "PrivateAfterglowRecapCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+      "name": "FirstHelloCheckInCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "name": "CounterRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "name": "EventSuccessFeedbackForm",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "name": "RatingRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "IncludeMeToggle",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "LiveStepContextCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "MicroPodCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "PreCheckInPlanningCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "PreviewLine",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "RotationScheduleCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "SelfCheckInCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "StageConversationCueCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "StageCueLine",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "StagePromptCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "name": "StageSectionLabel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
+      "name": "CompatibilityQuestionnaireSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
+      "name": "QuestionProgressRail",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_reveal_cinematic.dart",
+      "name": "RevealCinematicOverlay",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+      "name": "WingmanRequestSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "name": "CompanionError",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "name": "CompanionLoading",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "name": "CompanionMessage",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_defaults_panel.dart",
+      "name": "EventSuccessDefaultsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "name": "EventSuccessConversationCueCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "name": "EventSuccessPostEventReport",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "name": "EventSuccessRecommendationTile",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+      "name": "CustomQuestionnaireFields",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "name": "EventSuccessModuleRows",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/calendar/calendar_screen.dart",
+      "name": "CalendarWeekStrip",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/event_map_screen.dart",
+      "name": "EventMapView",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "name": "PlaceSearchPanel",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "name": "SelectedPointPanel",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/saved_events_screen.dart",
+      "name": "SavedEventsAgendaSliver",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/saved_events_screen.dart",
+      "name": "SavedEventsClubNamesErrorSliver",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "name": "EventCompanionEntry",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "name": "GuestBookCta",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "name": "EventBookingDock",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "name": "EventCtaStatusLeading",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "name": "EventDetailCta",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "name": "PriceLeading",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "name": "WaitlistOfferLeading",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailFactList",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailGoodToKnowList",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailHintList",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailItinerary",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailMapCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailMechanismList",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailPhotoStrip",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailPhotoStripTile",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "EventDetailTicketStubBand",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "HairlineList",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "name": "TicketStubCell",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "name": "EventDetailHeroAppBar",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "name": "EventDetailTicketHeroSurface",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "name": "EventDetailTicketSurface",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "name": "EventPhotoHeroSurface",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "name": "HeroActivityBadge",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "name": "HeroTimeChip",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+      "name": "EventDetailLoadingCta",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+      "name": "EventDescription",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+      "name": "GuestWhoIsGoing",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
+      "name": "EventHypeAvatarStack",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_pins_map.dart",
+      "name": "EventPinsMapPlaceholder",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
+      "name": "MapOverlayControls",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "name": "EmptyRosterMessage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "name": "SwipeWindowBanner",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "name": "WhoIsGoing",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/presentation/widgets/who_is_going.dart",
+      "name": "WhoIsGoingContent",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_agenda_list.dart",
+      "name": "AgendaDayGroup",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_check_in_qr_scanner.dart",
+      "name": "EventCheckInQrScanner",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_share_card.dart",
+      "name": "EventSharePill",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_tiles/event_action_card.dart",
+      "name": "EventActionCardActions",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_tiles/event_date_marker.dart",
+      "name": "EventDateMarker",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_tiles/event_date_marker.dart",
+      "name": "MonthMarker",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_tiles/event_date_marker.dart",
+      "name": "WeekMarker",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+      "name": "EventTicketStub",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+      "name": "PerforationLine",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+      "name": "CatchCoverStory",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+      "name": "CoverStoryChrome",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+      "name": "CoverStoryContent",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
+      "name": "CityTrigger",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
+      "name": "ExploreClubTags",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
+      "name": "ExploreFeedClubRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_club_cards.dart",
+      "name": "ExploreOrganizerPosterCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_event_rows.dart",
+      "name": "ExploreExternalEventRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_event_rows.dart",
+      "name": "ExploreFeedEventRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_event_rows.dart",
+      "name": "ThisWeekRecommendationsSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "name": "ActivitySlotView",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "name": "ActivityTypeRows",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
+      "name": "EventTypeBrowseContent",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "name": "ExploreFeedContentSliver",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_events_status_slivers.dart",
+      "name": "ExploreEventsEmptySliver",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_events_status_slivers.dart",
+      "name": "ExploreEventsLoadingSliver",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "name": "ExploreAppliedFilterChips",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/explore/presentation/widgets/recommendations.dart",
+      "name": "Recommendations",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/force_update/presentation/update_required_screen.dart",
+      "name": "UpdateRequiredContent",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
+      "name": "HostEventsTimelinePage",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart",
+      "name": "CreateClubContactFields",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart",
+      "name": "HostContactMergeCandidateCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart",
+      "name": "HostContactMergeReviewSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_applications_panel.dart",
+      "name": "HostCustomerApplicationSnapshot",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_applications_panel.dart",
+      "name": "HostCustomerApplicationsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_body.dart",
+      "name": "HostCustomerDetailOverview",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerAttendanceCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerDetailsSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerIdentityCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerRecentEvents",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerRevenueBreakdown",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerRevenueCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+      "name": "HostSaveAudienceSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_history_panel.dart",
+      "name": "HostCustomerHistoryPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "name": "HostCustomerMemoryPreview",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "name": "HostCustomerMemorySection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "name": "HostCustomerNoteSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "name": "HostCustomerTagsSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      "name": "HostCustomerHistoryFilters",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      "name": "HostCustomerReachSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      "name": "HostCustomerTimelineSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customers_directory.dart",
+      "name": "HostCustomerDirectoryControls",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customers_directory.dart",
+      "name": "HostCustomerFilterSummary",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customers_directory.dart",
+      "name": "HostCustomersDirectory",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customers_directory.dart",
+      "name": "HostCustomersSummary",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
+      "name": "HostSavedAudienceOverview",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
+      "name": "HostSavedAudienceWorkspace",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_saved_audience_source_rules.dart",
+      "name": "HostAudienceSourceRuleFields",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+      "name": "HostSavedAudiencesDirectory",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
+      "name": "CreateEventLoadingFooter",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
+      "name": "HostCreateEventRouteStateView",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart",
+      "name": "CreateEventConsequencePane",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart",
+      "name": "CreateEventWorkspaceFrame",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/forms/host_form_metrics.dart",
+      "name": "HostFormMetrics",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/forms/host_form_renderer.dart",
+      "name": "HostFormRenderer",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
+      "name": "HostFormResponsesPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_audience_view.dart",
+      "name": "HostAudienceStateScaffold",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_audience_view.dart",
+      "name": "HostAudienceTabRail",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "name": "HostAnalyticsDualBar",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "name": "HostAnalyticsEventList",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "name": "HostAnalyticsReportView",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "name": "HostAnalyticsReviewsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "name": "HostAnalyticsTrendPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "name": "HostClubInsightsPane",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_audience.dart",
+      "name": "HostWhatsappSetupPane",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "name": "HostClubEditTab",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "name": "HostClubMediaSummary",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "name": "HostClubDefaultsEditor",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "name": "HostClubReadOnlyEventDefaults",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "name": "HostClubSpokeResolver",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "name": "HostClubSpokeScaffold",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "name": "HostTeamProfileRows",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostClubOrganizerOverview",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostClubOrganizerOverviewController",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostOrganizerMetricGrid",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostOrganizerMetricRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+      "name": "HostCampaignComposer",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+      "name": "HostCampaignReport",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+      "name": "HostFollowerUpdateComposerSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+      "name": "HostManualSendQueue",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterAction",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterActionCell",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterBadgeAction",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterButtonAction",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterDecideAction",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterDecideTarget",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterRow",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterTable",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterTextAction",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
+      "name": "CatchRosterTile",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "name": "HostEventParticipantsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_live_location_control.dart",
+      "name": "HostEventLiveLocationControl",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
+      "name": "HostEventReviewsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+      "name": "HostEventRosterPanel",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_tools.dart",
+      "name": "HostEventToolCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_tools.dart",
+      "name": "HostEventToolsCarousel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_tools.dart",
+      "name": "HostEventToolsPageIndicator",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
+      "name": "HostInlineSkeletonIcon",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "name": "HostGuestIntakeDisclosure",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "name": "HostGuestIntakeField",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "name": "HostOperationalRosterPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_organizer_switcher.dart",
+      "name": "HostOrganizerAvatar",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_organizer_switcher.dart",
+      "name": "HostOrganizerSwitcherSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/stepper_footer.dart",
+      "name": "StepperFooter",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/host_today_screen.dart",
+      "name": "HostTodayLoadedRoute",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+      "name": "HostTodayQuietState",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+      "name": "HostTodayAttentionSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+      "name": "HostTodayOverview",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/image_uploads/shared/photo_slot.dart",
+      "name": "PhotoSlot",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/image_uploads/shared/photo_slot.dart",
+      "name": "StripedPhotoPlaceholder",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/l10n/l10n.dart",
+      "name": "CatchLocalizationsBuildContext",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "name": "LaunchAccessApplicationForm",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchGoogleMap",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchGoogleMapController",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchGoogleMapStyle",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapCameraPosition",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapCircle",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapMarker",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapMarkerBitmap",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapMarkerHue",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapPolyline",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_google_map.dart",
+      "name": "CatchMapType",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/locations/shared/catch_map_preview.dart",
+      "name": "CatchMapPreview",
+      "issues": [
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/notifications/presentation/foreground_notification_listener.dart",
+      "name": "ForegroundNotificationListener",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/onboarding_screen.dart",
+      "name": "OnboardingStepContent",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+      "name": "GenderInterestPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+      "name": "OnboardingGenderInterestStep",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/instagram_page.dart",
+      "name": "InstagramPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/instagram_page.dart",
+      "name": "OnboardingInstagramStep",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+      "name": "NameDobPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+      "name": "OnboardingNameDobStep",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/photos_page.dart",
+      "name": "OnboardingPhotosStep",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/photos_page.dart",
+      "name": "PhotosPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+      "name": "OnboardingProfilePromptsStep",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+      "name": "ProfilePromptsPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+      "name": "PromptField",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "name": "OnboardingRunningPrefsStep",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "name": "RunningPrefsPage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "name": "ReelBand",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "name": "ReelRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "name": "RevealEntrance",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "name": "WelcomeFocusLockup",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "name": "WelcomePage",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "name": "WelcomeScene",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "name": "PaymentCheckoutEventBackdrop",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "name": "PaymentConfirmationBodyController",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "name": "PaymentConfirmationHeadsUp",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "name": "PaymentPendingCheckoutController",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "name": "PaymentHistoryListController",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/reviews/presentation/reviews_history_screen.dart",
+      "name": "ReviewHistoryItem",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/reviews/shared/reviews_section.dart",
+      "name": "ReviewOwnerResponseBlock",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/reviews/shared/star_rating.dart",
+      "name": "StarRating",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/reviews/shared/star_rating.dart",
+      "name": "StarRatingPicker",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "name": "AccountProfileStatus",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "name": "RecapHero",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/presentation/event_recap_screen.dart",
+      "name": "RecapStat",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "name": "FiltersContent",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "name": "FiltersValue",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/presentation/swipe_screen.dart",
+      "name": "CatchesBottomScrim",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/presentation/swipe_screen.dart",
+      "name": "CatchesProfileReview",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "CatchProfileView",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name",
+        "reserved-feature-widget-prefix",
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "PhotoCaption",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileCompatibility",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileFacts",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileHeroWidget",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfilePhoto",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfilePhotoBlock",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfilePrompt",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileRule",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileRunning",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileSectionKicker",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+      "name": "ProfileSectionView",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
+      "name": "ProfileReactionCommentSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
+      "name": "ProfileReactionControls",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
+      "name": "ReactionControlButton",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
+      "name": "ProfileSurfaceRule",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsDataCoveragePanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsEmptyState",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsReportSkeleton",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsReportView",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsTipRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsTipsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "name": "UserAnalyticsTrendPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "name": "ProfileInlineMultiChoiceEntryEditor",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "name": "ProfileInlineSingleChoiceEntryEditor",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+      "name": "ProfileInlineHeightEditor",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
+      "name": "ProfileInlinePromptEntryEditor",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_range.dart",
+      "name": "ProfileInlineRangeEditor",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/preview_tab.dart",
+      "name": "PreviewTab",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_insights_tab.dart",
+      "name": "ProfileInsightsTabSliverBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfileFieldRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfileMultiEnumEntry",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfilePhotosSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfilePromptEntry",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfileSingleEnumEntry",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfileTabContent",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "name": "ProfileTabSliverBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    }
+  ]
+}

@@ -4,11 +4,21 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collectProductionWidgetClassificationDeclarations} from "./generate_widget_classification.mjs";
-import {componentLevels as levels, roleNouns, sharedWidgetLevel} from "./lib/component_naming.mjs";
+import {
+  componentLevels as levels,
+  featureWidgetNamingIssues,
+  reservedPrefixSymbolProblems,
+  roleNounRedirectAdvice,
+  roleNouns,
+  sharedWidgetLevel,
+  topLevelDeclarations,
+} from "./lib/component_naming.mjs";
+import {isGeneratedProductionWidgetDartPath, productionWidgetRoots} from "./lib/production_widget_roots.mjs";
 
 export const catalogStart = "<!-- BEGIN GENERATED WIDGET INVENTORY -->";
 export const catalogEnd = "<!-- END GENERATED WIDGET INVENTORY -->";
 const catalogPath = "docs/widget_catalog.md";
+export const namingBaselinePath = "design/components/widget_naming_baseline.json";
 
 /** Preserve every public production Widget; registry metadata never filters it. */
 export function buildCatalogRows({declarations, components}) {
@@ -58,6 +68,7 @@ export function buildCatalogRows({declarations, components}) {
         conceptId: record?.governance?.conceptId ?? null,
         purpose: documentation || record?.summary || null,
         purposeSource: documentation ? "class-doc" : record?.summary ? "registry" : "missing",
+        aliases: record?.aliases ?? [],
       };
     });
   return rows.sort((a, b) =>
@@ -113,11 +124,65 @@ export function renderCatalogInventory(rows) {
       output.push(`| ${code(entry.name)} | ${code(`${entry.file}:${entry.line}`)} | ` +
         `${entry.roleNoun ? code(entry.roleNoun) : "—"} | ` +
         `${entry.conceptId ? code(entry.conceptId) : "—"} | ` +
-        `${cell(entry.purpose ?? "No class documentation or registry summary.")} |`);
+        `${cell(entry.purpose ?? "No class documentation or registry summary.")}` +
+        `${entry.aliases?.length ? ` Also called: ${entry.aliases.map(code).join(", ")}.` : ""} |`);
     }
   }
   output.push("", catalogEnd);
   return output.join("\n");
+}
+
+/**
+ * Feature-naming and reserved-prefix findings across production Dart. The
+ * baseline may only shrink: new findings and fixed-but-listed findings fail.
+ */
+export function namingFindings({declarations, symbolDeclarations}) {
+  const findings = new Map();
+  const add = (file, name, issues) => {
+    const key = `${file}::${name}`;
+    const previous = findings.get(key)?.issues ?? [];
+    findings.set(key, {file, name, issues: [...new Set([...previous, ...issues])].sort()});
+  };
+  for (const entry of declarations) {
+    if (entry.classKind !== "widget" || entry.visibility !== "public") continue;
+    const issues = featureWidgetNamingIssues(entry);
+    if (issues.length > 0) add(entry.file, entry.name, issues);
+  }
+  for (const problem of reservedPrefixSymbolProblems(symbolDeclarations)) {
+    add(problem.file, problem.name, problem.issues);
+  }
+  return [...findings.values()].sort((a, b) => compare(a.file, b.file) || compare(a.name, b.name));
+}
+
+export function namingRatchetProblems({findings, baseline, redirects = {}}) {
+  const allowed = new Map((baseline?.allowedFindings ?? []).map((entry) => [`${entry.file}::${entry.name}`, entry]));
+  const current = new Map(findings.map((finding) => [`${finding.file}::${finding.name}`, finding]));
+  const problems = [];
+  for (const [key, finding] of current) {
+    const added = finding.issues.filter((issue) => !(allowed.get(key)?.issues ?? []).includes(issue));
+    if (added.length === 0) continue;
+    const advice = roleNounRedirectAdvice(finding.name, redirects);
+    problems.push(`${finding.file}: ${finding.name} [${added.join(", ")}] is new naming debt` +
+      `${advice ? `; ${advice}` : ""}`);
+  }
+  for (const [key, entry] of allowed) {
+    const fixed = entry.issues.filter((issue) => !(current.get(key)?.issues ?? []).includes(issue));
+    if (fixed.length === 0) continue;
+    problems.push(`${entry.file}: ${entry.name} [${fixed.join(", ")}] is fixed; ` +
+      `run node tool/design/generate_widget_catalog.mjs --write to remove it from ${namingBaselinePath}`);
+  }
+  return problems.sort();
+}
+
+/** Write mode only removes fixed debt; it never admits a new finding. */
+export function prunedNamingBaseline({findings, baseline}) {
+  const current = new Map(findings.map((finding) => [`${finding.file}::${finding.name}`, finding]));
+  const allowedFindings = (baseline?.allowedFindings ?? []).flatMap((entry) => {
+    const finding = current.get(`${entry.file}::${entry.name}`);
+    const issues = entry.issues.filter((issue) => finding?.issues.includes(issue));
+    return issues.length > 0 ? [{...entry, issues}] : [];
+  });
+  return {...baseline, allowedFindings};
 }
 
 export function replaceCatalogInventory(document, inventory) {
@@ -143,6 +208,7 @@ export function runCatalog({repoRoot = fromRepo("."), mode = "check"} = {}) {
   if (!["check", "write", "json"].includes(mode)) throw new Error(`Unknown catalog mode: ${mode}`);
   const rows = buildWidgetCatalog({repoRoot});
   if (mode === "json") return {rows};
+  runNamingRatchet({repoRoot, mode});
   const file = path.join(repoRoot, catalogPath);
   const before = fs.readFileSync(file, "utf8");
   const after = replaceCatalogInventory(before, renderCatalogInventory(rows));
@@ -151,6 +217,44 @@ export function runCatalog({repoRoot = fromRepo("."), mode = "check"} = {}) {
   }
   if (mode === "write" && before !== after) fs.writeFileSync(file, after);
   return {count: rows.length, changed: before !== after};
+}
+
+function runNamingRatchet({repoRoot, mode}) {
+  const registry = JSON.parse(fs.readFileSync(
+    path.join(repoRoot, "design/components/catch.components.json"), "utf8"));
+  const findings = namingFindings({
+    declarations: collectProductionWidgetClassificationDeclarations({repoRoot}),
+    symbolDeclarations: productionDartFiles(repoRoot).flatMap((file) =>
+      topLevelDeclarations(file, fs.readFileSync(path.join(repoRoot, file), "utf8"))),
+  });
+  const baselineFile = path.join(repoRoot, namingBaselinePath);
+  const baseline = fs.existsSync(baselineFile) ? JSON.parse(fs.readFileSync(baselineFile, "utf8")) : null;
+  if (mode === "write" && baseline) {
+    const pruned = prunedNamingBaseline({findings, baseline});
+    const text = `${JSON.stringify(pruned, null, 2)}\n`;
+    if (text !== fs.readFileSync(baselineFile, "utf8")) fs.writeFileSync(baselineFile, text);
+  }
+  const current = fs.existsSync(baselineFile) ? JSON.parse(fs.readFileSync(baselineFile, "utf8")) : null;
+  const problems = namingRatchetProblems({findings, baseline: current, redirects: registry.roleNounRedirects});
+  if (problems.length > 0) {
+    throw new Error(`Widget naming ratchet failed (${problems.length}):\n- ${problems.join("\n- ")}`);
+  }
+}
+
+function productionDartFiles(repoRoot) {
+  const files = [];
+  const walk = (relative) => {
+    const absolute = path.join(repoRoot, relative);
+    if (!fs.existsSync(absolute)) return;
+    for (const entry of fs.readdirSync(absolute, {withFileTypes: true})) {
+      const child = path.posix.join(relative, entry.name);
+      if (entry.isDirectory()) walk(child);
+      else if (child.endsWith(".dart") && !isGeneratedProductionWidgetDartPath(child) &&
+        !child.includes("/design_fixtures/")) files.push(child);
+    }
+  };
+  for (const root of productionWidgetRoots) walk(root);
+  return files.sort();
 }
 
 function firstParagraph(lines) {

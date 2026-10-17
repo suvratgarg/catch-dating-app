@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   collisionKeyFor,
+  componentAliasIndex,
+  componentAliasProblems,
+  roleNounRedirectProblems,
   componentTierProblems,
   conceptMetrics,
   conceptTopologyProblems,
@@ -30,7 +33,7 @@ test("member collision keys resolve to the owning concept", () => {
   );
 });
 
-test("new core widgets require canonical names and component contracts", () => {
+test("new app-coupled core widgets follow feature naming and stay registered", () => {
   assert.deepEqual(
     newWidgetPolicyIssues(
       {
@@ -43,8 +46,15 @@ test("new core widgets require canonical names and component contracts", () => {
         componentContracted: false,
       },
     ),
-    ["noncanonical-core-widget-name", "missing-component-contract"],
+    ["noncanonical-feature-widget-name", "noncanonical-feature-widget-file", "missing-component-contract"],
   );
+  assert.deepEqual(newWidgetPolicyIssues(
+    {name: "CatchEventCard", file: "lib/core/widgets/catch_event_card.dart", visibility: "public"},
+    {widgetbookCovered: true, componentContracted: true}),
+  ["reserved-feature-widget-prefix"]);
+  assert.deepEqual(newWidgetPolicyIssues(
+    {name: "EventCard", file: "lib/core/widgets/event_card.dart", visibility: "public"},
+    {widgetbookCovered: true, componentContracted: true}), []);
 });
 
 test("package widgets retain canonical names and required contracts", () => {
@@ -348,4 +358,53 @@ test("parity tiers are required, keep React mappings off Flutter-only entries, a
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T2"), member]),
     ["catch.privacy_badge: member tier T1 is wider than parent catch.badge tier T2"]);
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T1"), {...member, tier: "T3"}]), []);
+});
+
+const aliasRegistry = [{
+  id: "catch.event_card",
+  dart: {symbol: "EventCard", file: "lib/events/shared/event_tiles/event_card.dart"},
+  aliases: ["EventTicket", "EventTile"],
+  contract: {members: [{id: "catch.event_card.thumbnail", symbol: "EventThumbnail",
+    file: "lib/core/widgets/event_thumbnail.dart", aliases: ["EventImageThumb"]}]},
+}];
+
+test("a new widget named like a registered component or alias points at it", () => {
+  const index = componentAliasIndex(aliasRegistry);
+  const covered = {widgetbookCovered: true, componentContracted: true};
+  const fresh = {name: "EventTicket", file: "lib/explore/presentation/widgets/event_ticket.dart", visibility: "public"};
+  assert.deepEqual(newWidgetPolicyIssues(fresh, {...covered, registeredOwner: index.get(normalizeSymbol(fresh.name))}),
+    ["duplicate-of-registered-component"]);
+  assert.equal(index.get(normalizeSymbol("CatchEventCard")).id, "catch.event_card");
+  assert.equal(index.get(normalizeSymbol("EventImageThumb")).symbol, "EventThumbnail");
+  const owner = {name: "EventCard", file: "lib/events/shared/event_tiles/event_card.dart", visibility: "public"};
+  assert.deepEqual(newWidgetPolicyIssues(owner, {...covered, registeredOwner: index.get(normalizeSymbol(owner.name))}), []);
+});
+
+test("aliases are unique, never shadow a symbol, and never a bare role noun", () => {
+  assert.deepEqual(componentAliasProblems(aliasRegistry), []);
+  const broken = [
+    {...aliasRegistry[0], aliases: ["Card", "EventCard", "EventThumbnail"]},
+    {id: "catch.ticket", dart: {symbol: "CatchTicket", file: "packages/catch_ui/lib/src/components/catch_ticket.dart"},
+      aliases: ["EventTile"]},
+    {id: "catch.other", dart: {symbol: "OtherTile", file: "lib/other/other_tile.dart"}, aliases: ["EventTile"]},
+  ];
+  assert.deepEqual(componentAliasProblems(broken), [
+    "catch.event_card: alias Card is a bare role noun",
+    "catch.event_card: alias EventCard repeats its own symbol",
+    "catch.event_card: alias EventThumbnail names registered symbol of catch.event_card.thumbnail",
+    "catch.other: alias EventTile is also an alias of catch.ticket",
+  ]);
+});
+
+test("role-noun redirects name only off-vocabulary nouns and real roles", () => {
+  assert.deepEqual(roleNounRedirectProblems({Panel: ["Section", "Surface"]}), []);
+  assert.deepEqual(roleNounRedirectProblems({Card: ["Surface"], Panel: ["Pane"]}), [
+    "roleNounRedirects.Card: already a role noun",
+    "roleNounRedirects.Panel: target Pane is not a role noun",
+  ]);
+});
+
+test("normalization only strips the reserved prefix, not the Catches product word", () => {
+  assert.equal(normalizeSymbol("CatchEventCard"), "event_card");
+  assert.equal(normalizeSymbol("CatchesTopOverlay"), "catches_top_overlay");
 });

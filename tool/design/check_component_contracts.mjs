@@ -5,11 +5,13 @@ import Ajv2020 from "ajv/dist/2020.js";
 import {isComponentSourcePath} from "./lib/component_source_path.mjs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {
+  componentAliasProblems,
   componentTierProblems,
   conceptMetrics,
   conceptQualifiers,
   conceptRoles,
   conceptTopologyProblems,
+  roleNounRedirectProblems,
 } from "./component_concepts.mjs";
 
 import {checkHostSectionComposition} from './check_host_section_composition.mjs';
@@ -33,6 +35,8 @@ validateSchema(registry);
 validateComponents(registry.components ?? []);
 failures.push(...conceptTopologyProblems(registry.components ?? []));
 failures.push(...componentTierProblems(registry.components ?? []));
+failures.push(...componentAliasProblems(registry.components ?? []));
+failures.push(...roleNounRedirectProblems(registry.roleNounRedirects));
 failures.push(...checkHostSectionComposition(repoRoot));
 
 if (failures.length > 0) {

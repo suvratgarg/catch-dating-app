@@ -1,4 +1,4 @@
-import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
+import {featureWidgetNamingIssues, roleNouns} from "./lib/component_naming.mjs";
 
 export const conceptRoles = new Set(["concept", "member", "composition", "screen"]);
 export const conceptQualifiers = new Set([
@@ -12,7 +12,7 @@ export const conceptQualifiers = new Set([
 export function normalizeSymbol(value) {
   return String(value ?? "")
     .replace(/^_+/u, "")
-    .replace(/^Catch/u, "")
+    .replace(/^Catch(?=[A-Z0-9])/u, "")
     .replace(/(?:Widget|View)$/u, "")
     .replace(/([a-z0-9])([A-Z])/gu, "$1_$2")
     .replace(/[^A-Za-z0-9]+/gu, "_")
@@ -27,20 +27,112 @@ export function collisionKeyFor({conceptRole, conceptId, symbol}) {
 
 export function newWidgetPolicyIssues(
   entry,
-  {widgetbookCovered, componentContracted},
+  {widgetbookCovered, componentContracted, registeredOwner = null},
 ) {
   if (entry.visibility === "private") return ["private-widget-class"];
 
   const issues = featureWidgetNamingIssues(entry);
   if (!widgetbookCovered) issues.push("missing-widgetbook");
-  if (["lib/core/widgets/", "lib/core/riverpod_ui/", "packages/catch_ui/lib/"]
+  // Design-system homes require the reserved prefix; app-coupled
+  // lib/core/widgets follow feature naming but stay registered.
+  if (["lib/core/riverpod_ui/", "packages/catch_ui/lib/"]
     .some((home) => entry.file.startsWith(home))) {
     if (!/^Catch[A-Z0-9]/u.test(entry.name)) {
       issues.push("noncanonical-core-widget-name");
     }
-    if (!componentContracted) issues.push("missing-component-contract");
+  }
+  const contractHome = ["lib/core/widgets/", "lib/core/riverpod_ui/", "packages/catch_ui/lib/"]
+    .some((home) => entry.file.startsWith(home));
+  if (contractHome && !componentContracted) issues.push("missing-component-contract");
+  // The same symbol at a moved path is a stale registry row, reported above.
+  const staleRegistryPath = contractHome && registeredOwner?.symbol === entry.name;
+  if (registeredOwner && !staleRegistryPath &&
+      registeredOwner.identity !== `${entry.file}::${entry.name}`) {
+    issues.push("duplicate-of-registered-component");
   }
   return issues;
+}
+
+/**
+ * Every registered name and alias, normalized, mapped to its owning
+ * component. A new widget that lands on one of these keys is a second
+ * implementation of an existing responsibility.
+ */
+export function componentAliasIndex(components) {
+  const index = new Map();
+  const add = (name, owner) => {
+    const key = normalizeSymbol(name);
+    if (key && !index.has(key)) index.set(key, owner);
+  };
+  for (const component of components) {
+    const file = component.dart?.file;
+    const owner = {
+      id: component.id,
+      symbol: component.dart?.symbol,
+      identity: `${file}::${component.dart?.symbol}`,
+    };
+    add(component.dart?.symbol, owner);
+    for (const alias of component.aliases ?? []) add(alias, owner);
+    for (const member of component.contract?.members ?? []) {
+      const memberOwner = {
+        id: member.id,
+        symbol: member.symbol,
+        identity: `${member.file ?? file}::${member.symbol}`,
+      };
+      add(member.symbol, memberOwner);
+      for (const alias of member.aliases ?? []) add(alias, memberOwner);
+    }
+  }
+  return index;
+}
+
+/** Aliases must point at exactly one component and never shadow a real symbol. */
+export function componentAliasProblems(components) {
+  const problems = [];
+  const symbols = new Map();
+  const entries = [];
+  for (const component of components) {
+    entries.push({id: component.id, symbol: component.dart?.symbol, aliases: component.aliases ?? []});
+    for (const member of component.contract?.members ?? []) {
+      entries.push({id: member.id, symbol: member.symbol, aliases: member.aliases ?? []});
+    }
+  }
+  for (const entry of entries) symbols.set(normalizeSymbol(entry.symbol), entry.id);
+  const seen = new Map();
+  for (const entry of entries) {
+    for (const alias of entry.aliases) {
+      const key = normalizeSymbol(alias);
+      if (roleNouns.includes(alias)) {
+        problems.push(`${entry.id}: alias ${alias} is a bare role noun`);
+      }
+      if (key === normalizeSymbol(entry.symbol)) {
+        problems.push(`${entry.id}: alias ${alias} repeats its own symbol`);
+        continue;
+      }
+      if (symbols.has(key)) {
+        problems.push(`${entry.id}: alias ${alias} names registered symbol of ${symbols.get(key)}`);
+      }
+      if (seen.has(key) && seen.get(key) !== entry.id) {
+        problems.push(`${entry.id}: alias ${alias} is also an alias of ${seen.get(key)}`);
+      }
+      seen.set(key, entry.id);
+    }
+  }
+  return [...new Set(problems)].sort();
+}
+
+/** Redirect keys are off-vocabulary nouns; every target is a role noun. */
+export function roleNounRedirectProblems(redirects) {
+  const problems = [];
+  for (const [noun, targets] of Object.entries(redirects ?? {})) {
+    if (roleNouns.includes(noun)) problems.push(`roleNounRedirects.${noun}: already a role noun`);
+    for (const target of targets) {
+      if (!roleNouns.includes(target)) {
+        problems.push(`roleNounRedirects.${noun}: target ${target} is not a role noun`);
+      }
+    }
+  }
+  return problems.sort();
 }
 
 export function publicWidgetNamingProblems(rows) {

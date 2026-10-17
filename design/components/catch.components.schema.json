@@ -3,7 +3,7 @@
   "$id": "https://catch.local/design/components/catch.components.schema.json",
   "title": "Catch Component Contract Registry",
   "type": "object",
-  "required": ["version", "updated", "sourceOfTruth", "interactionContracts", "components"],
+  "required": ["version", "updated", "sourceOfTruth", "interactionContracts", "roleNounRedirects", "components"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -103,6 +103,18 @@
         }
       }
     },
+    "roleNounRedirects": {
+      "type": "object",
+      "description": "Nouns agents commonly write that are synonyms of existing role nouns. Naming checks name these targets instead of only rejecting the noun (docs/app_architecture.md Naming Grammar).",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^[A-Z][A-Za-z0-9]*$"},
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {"$ref": "#/$defs/roleNoun"}
+      }
+    },
     "components": {
       "type": "array",
       "items": {
@@ -112,6 +124,13 @@
     }
   },
   "$defs": {
+    "componentAliases": {
+      "type": "array",
+      "description": "Other names an agent unaware of this component would plausibly write. The catalog indexes them and the new-widget gate rejects a new widget whose name matches one.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^(?:[A-Z][a-z0-9]*)+$"}
+    },
     "componentLevel": {
       "enum": ["L0", "L1", "L2", "L3", "L4", "L4a", "L5", "L6"]
     },
@@ -205,6 +224,7 @@
         "level": {"$ref": "#/$defs/componentLevel"},
         "roleNoun": {"$ref": "#/$defs/roleNoun"},
         "naming": {"$ref": "#/$defs/widgetNaming"},
+        "aliases": {"$ref": "#/$defs/componentAliases"},
         "summary": {
           "type": "string",
           "minLength": 1
@@ -754,6 +774,7 @@
         "level": {"$ref": "#/$defs/componentLevel"},
         "roleNoun": {"$ref": "#/$defs/roleNoun"},
         "naming": {"$ref": "#/$defs/widgetNaming"},
+        "aliases": {"$ref": "#/$defs/componentAliases"},
         "id": {
           "type": "string",
           "pattern": "^catch\\.[a-z0-9_.-]+$"

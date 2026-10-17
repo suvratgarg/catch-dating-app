@@ -1,6 +1,6 @@
 ---
 doc_id: component_contract_registry
-version: 1.7.0
+version: 1.8.0
 updated: 2026-10-17
 owner: ui_elevation_initiative
 status: active
@@ -97,19 +97,41 @@ every recipe and state, each entry has a screenshot baseline in its own
 framework, a generated side-by-side sheet joins the two catalogs on registry
 id, and metrics are asserted from the same contract values in both test suites.
 
+## Aliases And Redirects
+
+`aliases` on a component or member lists the other names an agent unaware of
+it would plausibly write (`PrimaryButton` for `CatchButton`, `ProfileCard` for
+`CatchPolaroid`). Aliases must be unique, must not repeat or shadow any
+registered symbol, and must not be a bare role noun; the contract check enforces
+this. The generated widget catalog prints them as "Also called", the design
+context pack carries them, and the new-widget gate
+(`node tool/design/check_new_widget_inventory.mjs --check`) rejects a new widget
+whose name matches a registered name or alias and names the component to use.
+
+`roleNounRedirects` maps nouns agents commonly write but the grammar spells
+differently (Panel, Content, View, ...) to the role nouns to use. Naming
+failures quote the redirect instead of only rejecting the name.
+
+`widget_naming_baseline.json` is the decrease-only ratchet for feature-naming
+and reserved-prefix debt, checked by
+`node tool/design/generate_widget_catalog.mjs --check`. A new finding fails; a
+fixed finding that is still listed also fails until
+`node tool/design/generate_widget_catalog.mjs --write` removes it.
+
 ## Files
 
 | File | Purpose |
 |---|---|
 | `catch.components.json` | Authoritative component contract registry. |
 | `catch.components.schema.json` | JSON Schema for the registry shape. |
+| `widget_naming_baseline.json` | Decrease-only ratchet of existing naming debt. |
 | `../../tool/design/generated/enforcement_expectations.json` | Generated code ownership and anti-vacuity expectations for repository gates. |
 
 ## Workflow
 
 1. Add or change the Flutter primitive in `packages/catch_ui/lib/src`.
-2. Update the matching contract entry here, including its `tier`, props,
-   states, slots, and DTCG token references. Confirm its accessibility policy preserves primary
+2. Update the matching contract entry here, including its `tier`, `aliases`,
+   props, states, slots, and DTCG token references. Confirm its accessibility policy preserves primary
    meaning and actions at text scale 2.0 and does not depend on motion.
 3. Add or revise the governance decision. Prefer static enforcement when a
    misuse pattern is mechanically detectable; otherwise use executable
