@@ -347,3 +347,67 @@ test("Firestore keeps an in-flight unknown journal repairable beyond expiry",
       provider.release(); await h.close();
     }
   });
+
+test("Firestore enforces three definitely-unsent attempts and no fourth",
+  options, async () => {
+    const h = await fixture();
+    try {
+      const intent = programActivityIntent(h.request);
+      const channel = prepareProgramActivityChannel(h.db, intent, h.send,
+        () => h.clock.now);
+      if (channel.kind !== "ready") throw new Error("Expected channel");
+      const outbox = new FirestoreDeliveryOutbox(h.db, programDeliveryAdapter,
+        channel.readFacts, () => h.clock.now);
+      await outbox.enqueue(intent);
+      for (let ordinal = 1; ordinal <= 3; ordinal++) {
+        const reserved = await outbox.reserve(h.messageId);
+        assert.equal(reserved.decision.kind, "dispatch");
+        assert.equal(reserved.record.attempts.at(-1)?.ordinal, ordinal);
+        h.clock.now += 120_000;
+        await outbox.reserve(h.messageId);
+        h.clock.now += 60_000 * 2 ** (ordinal - 1);
+      }
+      const fourth = await outbox.reserve(h.messageId);
+      assert.deepEqual(fourth.decision,
+        {kind: "hostDecision", reason: "attemptLimit"});
+      assert.equal((await h.record()).attempts.length, 3);
+      assert.ok((await h.record()).attempts.every((attempt) =>
+        attempt.state.kind === "notDispatched"));
+      assert.equal(h.messages.length, 0);
+      assert.equal((await h.item.get()).exists, false);
+    } finally {
+      await h.close();
+    }
+  });
+
+test("Firestore deferral cannot renew the original six-hour send window",
+  options, async () => {
+    const h = await fixture();
+    try {
+      const intent = programActivityIntent(h.request);
+      const channel = prepareProgramActivityChannel(h.db, intent, h.send,
+        () => h.clock.now);
+      if (channel.kind !== "ready") throw new Error("Expected channel");
+      const outbox = new FirestoreDeliveryOutbox(h.db, programDeliveryAdapter,
+        channel.readFacts, () => h.clock.now);
+      await outbox.enqueue(intent);
+      assert.equal((await outbox.reserve(h.messageId)).decision.kind,
+        "dispatch");
+      h.clock.now = ACTIVITY_NOW + ACTIVITY_WINDOW;
+      const deferred = {...h.request.run, dueAtMillis: h.clock.now + 60_000};
+      await h.run.update({dueAtMillis: deferred.dueAtMillis});
+      const result = await deliverProgramActivity({...h.request, run: deferred,
+        db: h.db, now: () => h.clock.now, send: h.send});
+      assert.equal(result.kind, "suppressed");
+      assert.equal(result.kind === "suppressed" && result.reason, "expired");
+      const record = await h.record();
+      assert.equal(record.intent.createdAt, ACTIVITY_NOW);
+      assert.equal(record.intent.expiresAt, ACTIVITY_NOW + ACTIVITY_WINDOW);
+      assert.deepEqual(record.attempts.map((attempt) => attempt.state.kind),
+        ["notDispatched"]);
+      assert.equal(h.messages.length, 0);
+      assert.equal((await h.item.get()).exists, false);
+    } finally {
+      await h.close();
+    }
+  });

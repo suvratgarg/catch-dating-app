@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.100.0
-updated: 2026-10-16
+version: 1.101.0
+updated: 2026-10-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -551,6 +551,34 @@ Internal demo tooling marks source documents with `demoOps`, `demoOpsId`,
 projections should copy those fields through
 `functions/src/shared/demoMetadata.ts` so cleanup and single-user reset commands
 can remove derived demo activity precisely.
+
+### Travel-triggered staff activity
+
+`programTravelLegMoments` immediately creates a stable occurrence from the
+CloudEvent source, ID, fact kind, leg and Moment identity. A later Moment edit
+does not create another occurrence for the same event. The committed run freezes
+its original revision and six-hour send window. `programActivityDelivery.ts`
+uses the existing delivery outbox for staff Activity and FCM; at most three
+attempts may recover work proven not to have reached provider I/O, subject to
+current program, Moment, scoped duty, user, preference and endpoint checks.
+Unknown provider outcomes never resend. Local Activity receipts name the local
+document and preserve read state; they do not claim FCM acceptance.
+
+The existing five-minute Moment sweep repairs committed receipts before current
+send-policy checks. An SDK-settled unknown result is distinct from an interrupted
+or still-running invocation. Provisional unknowns and missing receipt projections
+keep the run planned for reconciliation, even after expiry; their next wake moves
+five minutes ahead without renewing sending authority. A crashed worker or failed
+receipt write may therefore need indefinite reconciliation until stronger evidence
+exists. Expiry alone never proves that an SDK invocation has finished.
+
+Legacy status-keyed runs have no authoritative event identity. An incoming event
+at or before the old run's recorded wake time, or a malformed old wake time, is
+conservatively held. Old wake times may have been deferred, so this can withhold
+genuine historical events and is not exact replay proof. Later genuine events
+remain eligible. No historical replay or migration is implied. Trigger platform
+retries remain disabled pending hosted transaction acceptance; source publication
+does not establish deployment or provider acceptance.
 
 ## Audience automations
 

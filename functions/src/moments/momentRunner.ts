@@ -975,7 +975,12 @@ async function markRun(
     const current = await tx.get(ref);
     if (!current.exists || current.data()?.status !== "planned") return true;
     if (status !== "planned" && !await canCloseProgramActivityRun(
-      tx, db, runFromDocument(current.data()!), now)) return false;
+      tx, db, runFromDocument(current.data()!), now)) {
+      // Receipt reconciliation must remain reachable without monopolizing the
+      // bounded due page. This wake time never renews the original send window.
+      tx.update(ref, {dueAtMillis: now + 5 * 60_000});
+      return false;
+    }
     tx.update(ref, {status, ...extra});
     return true;
   });

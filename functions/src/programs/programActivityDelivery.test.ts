@@ -248,6 +248,7 @@ test("competing terminalization cannot strand an in-flight receipt journal",
       `organizerMomentRuns/${activityRequest.run.runId}`)
       ?.status, "planned");
     failJournal = false;
+    h.clock.now += 5 * 60_000;
     const sweep = await runMomentSweep(h.deps);
     assert.equal(sweep.runsFailed, 0);
     assert.equal(h.sends().length, 1);
@@ -346,7 +347,54 @@ test("in-flight unknown journal cannot close before late SDK acceptance",
     assert.equal(h.db.getDoc(
       `organizerMomentRuns/${activityRequest.run.runId}`)?.status, "planned");
     fail = false;
+    h.clock.now += 5 * 60_000;
     await runMomentSweep(h.deps);
     assert.equal(h.sends()[0][1].deliveryState, "accepted");
     assert.equal(h.messages.length, 1);
+  });
+
+test("a full page of held receipts cannot starve newly due activity",
+  async () => {
+    const h = runnerHarness();
+    await h.deliver();
+    const source = activityRecord(h.db);
+    h.db.deleteDoc(`programDeliveryMessages/${source.messageId}`);
+    h.messages.length = 0;
+    for (let index = 0; index < 200; index++) {
+      const run = {...activityRequest.run,
+        runId: "travel_v1_" + index.toString(16).padStart(64, "0")};
+      const intent = programActivityIntent({...activityRequest, run});
+      const record = newProgramDeliveryRecord(intent, ACTIVITY_NOW);
+      record.attempts = [{...source.attempts[0], intentId: intent.intentId,
+        state: {kind: "unknown", at: ACTIVITY_NOW, providerMessageId: null,
+          reason: "workerInterrupted",
+          reconcileAfter: ACTIVITY_NOW + 120_000}}];
+      h.db.setDoc(`programDeliveryMessages/${record.messageId}`, {...record});
+      h.db.setDoc(`organizerMomentRuns/${run.runId}`, {...run});
+    }
+    h.clock.now += ACTIVITY_WINDOW + 1;
+    const healthy = {...activityRequest.run, dueAtMillis: h.clock.now,
+      expiresAtMillis: h.clock.now + ACTIVITY_WINDOW,
+      travelOccurrence: {...activityRequest.run.travelOccurrence!,
+        createdAtMillis: h.clock.now, occurredAtMillis: h.clock.now}};
+    h.db.setDoc(`organizerMomentRuns/${healthy.runId}`, {...healthy});
+    h.db.setDoc("users/healthy", {fcmToken: "healthy-token"});
+    h.db.setDoc("programStaffGrants/prog__healthy", {
+      ...h.db.getDoc("programStaffGrants/prog__staff"), uid: "healthy"});
+    const first = await runMomentSweep(h.deps);
+    assert.equal(first.runsDeferred, 200);
+    assert.equal(first.runsFailed, 0);
+    assert.equal(h.messages.length, 0);
+    const held = h.db.getDoc(
+      "organizerMomentRuns/travel_v1_" + "0".repeat(64))!;
+    assert.equal(held.dueAtMillis, h.clock.now + 5 * 60_000);
+    assert.equal(held.expiresAtMillis, ACTIVITY_NOW + ACTIVITY_WINDOW);
+    assert.deepEqual(held.travelOccurrence,
+      activityRequest.run.travelOccurrence);
+    const second = await runMomentSweep(h.deps);
+    assert.equal(second.runsFired, 1);
+    assert.equal(second.runsFailed, 0);
+    assert.equal(h.messages.length, 1);
+    assert.equal("token" in h.messages[0] && h.messages[0].token,
+      "healthy-token");
   });
