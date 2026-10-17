@@ -89,7 +89,11 @@ test("CI fences every plan consumer while Required CI can explain skipped retry 
     const job = ciJob(ci, name);
     const condition = job.match(/^    if: (.*(?:\n      [^\n]*)*)/m)?.[1];
     assert.ok(condition?.includes(guard), `${name} must reject a reused planner before starting.`);
-    assert.match(job, /needs: (?:plan|\[plan, source-preflight\])|^      - plan$/m);
+    if (["tools", "marketing"].includes(name)) {
+      assert.match(job, /^    needs: \[plan, source-preflight, capture-freshness\]$/m);
+    } else {
+      assert.match(job, /needs: (?:plan|\[plan, source-preflight\])|^      - plan$/m);
+    }
   }
   for (const name of ["docs-policy", "app-builds"]) {
     const job = ciJob(ci, name);
@@ -113,17 +117,39 @@ test("CI fences every plan consumer while Required CI can explain skipped retry 
     const outputs = {producer_attempt: producerAttempt};
     for (const match of ci.matchAll(/needs\.plan\.outputs\.([a-z_]+) == 'true'/g)) outputs[match[1]] = "true";
     const needs = {plan: {result: "success", outputs}, "source-preflight": {result: "success"},
-      "finalize-plan": {result: "success", outputs: {deploy_required: "true"}}};
+      "capture-freshness": {result: "success"}, "finalize-plan": {result: "success", outputs: {deploy_required: "true"}}};
     for (const name of consumers) {
       const expression = ciJob(ci, name).match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
-        .replace(/^\$\{\{ | \}\}$/g, "").replace(/^>-\s*/, "").trim()
-        .replaceAll("needs.*.result", "results").replaceAll("needs.finalize-plan", 'needs["finalize-plan"]');
+        .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
+        .replaceAll("needs.*.result", "results")
+        .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]')
+        .replaceAll("needs.source-preflight", 'needs["source-preflight"]')
+        .replaceAll("needs.capture-freshness", 'needs["capture-freshness"]');
       const context = {needs, github: {run_attempt: 2, event_name: "push", ref: "refs/heads/main"},
         cancelled: () => false, contains: (values, value) => values.includes(value),
         format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
         results: ["success", "skipped"]};
       assert.equal(vm.runInNewContext(expression, context), producerAttempt === "2",
         `${name} planner attempt ${producerAttempt || "missing"}`);
+      if (name === "tools") {
+        // Tools overrides implicit success(), so exercise its actual dependencies.
+        for (const result of ["failure", "cancelled", "skipped"]) {
+          needs["capture-freshness"].result = result;
+          assert.equal(vm.runInNewContext(expression, context),
+            producerAttempt === "2" && result === "skipped",
+            `${name} planner attempt ${producerAttempt || "missing"}, capture ${result}`);
+        }
+        needs["capture-freshness"].result = "success";
+        needs["source-preflight"].result = "failure";
+        assert.equal(vm.runInNewContext(expression, context), false, "Tools rejects failed preflight");
+        needs["source-preflight"].result = "success";
+        outputs.tools = "false";
+        assert.equal(vm.runInNewContext(expression, context), false, "Tools must be selected");
+        outputs.tools = "true";
+        context.cancelled = () => true;
+        assert.equal(vm.runInNewContext(expression, context), false, "Cancelled Tools must not run");
+        context.cancelled = () => false;
+      }
       if (["finalize-plan", "package-firebase"].includes(name)) {
         needs["finalize-plan"].result = "failure";
         context.results = ["success", "failure"];
