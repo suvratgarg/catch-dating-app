@@ -44,7 +44,7 @@ void main() {
     final h = await _Harness.mount(tester);
     final original = tester.state(find.byType(HostFormsScreen));
     expect(
-      h.repo.responses.any(
+      h.repo.responseRequests.any(
         (r) =>
             r.organizerId == 'a' &&
             r.formId == 'form-a' &&
@@ -57,8 +57,8 @@ void main() {
     expect(tester.state(find.byType(HostFormsScreen)), same(original));
     expect(h.panel(tester).formId, 'second');
     expect(h.panel(tester).contactId, 'second-contact');
-    expect(h.repo.responses.last.formId, 'second');
-    expect(h.repo.responses.last.contactId, 'second-contact');
+    expect(h.repo.responseRequests.last.formId, 'second');
+    expect(h.repo.responseRequests.last.contactId, 'second-contact');
   });
 
   testWidgets(
@@ -72,15 +72,16 @@ void main() {
       final original = tester.state(find.byType(HostFormsScreen));
       expect(h.repo.forms.every((r) => r.organizerId == 'b'), isTrue);
       expect(h.panel(tester).formId, 'form-b');
-      expect(h.repo.responses.every((r) => r.organizerId == 'b'), isTrue);
-      h.router.go(
-        _location(org: 'a', form: 'route-form', contact: 'route-contact'),
+      expect(
+        h.repo.responseRequests.every((r) => r.organizerId == 'b'),
+        isTrue,
       );
+      h.router.go(_location(form: 'route-form', contact: 'route-contact'));
       await _frames(tester);
       expect(tester.state(find.byType(HostFormsScreen)), same(original));
       expect(h.panel(tester).organizerId, 'a');
       expect(h.panel(tester).formId, 'route-form');
-      expect(h.repo.responses.last.contactId, 'route-contact');
+      expect(h.repo.responseRequests.last.contactId, 'route-contact');
       h.select('b');
       await _frames(tester);
       expect(h.panel(tester).organizerId, 'b');
@@ -97,9 +98,9 @@ void main() {
         location: _location(org: 'foreign'),
       );
       expect(h.repo.forms.every((r) => r.organizerId == 'a'), isTrue);
-      expect(h.repo.responses, isNotEmpty);
+      expect(h.repo.responseRequests, isNotEmpty);
       expect(
-        h.repo.responses.every(
+        h.repo.responseRequests.every(
           (r) =>
               r.organizerId == 'a' && r.formId == null && r.contactId == null,
         ),
@@ -115,7 +116,7 @@ void main() {
     'invalid later route clears IDs even when fallback stays unchanged',
     (tester) async {
       final h = await _Harness.mount(tester);
-      final before = h.repo.responses.length;
+      final before = h.repo.responseRequests.length;
       h.router.go(
         _location(
           org: 'foreign',
@@ -124,9 +125,9 @@ void main() {
         ),
       );
       await _frames(tester);
-      expect(h.repo.responses.skip(before), isNotEmpty);
+      expect(h.repo.responseRequests.skip(before), isNotEmpty);
       expect(
-        h.repo.responses
+        h.repo.responseRequests
             .skip(before)
             .every(
               (r) =>
@@ -153,7 +154,7 @@ void main() {
       await tester.tap(find.text('Submitted'));
       await _frames(tester);
       oldSearch.onChanged!('private-a-query');
-      final before = h.repo.responses.length;
+      final before = h.repo.responseRequests.length;
       h.select('b');
       if (returnToA) h.select('a'); // No frame between transitions.
       await _frames(tester);
@@ -163,9 +164,9 @@ void main() {
       final org = returnToA ? 'a' : 'b';
       expect(h.panel(tester).organizerId, org);
       expect(h.panel(tester).key, isNot(oldPanel.key));
-      expect(h.repo.responses.skip(before), isNotEmpty);
+      expect(h.repo.responseRequests.skip(before), isNotEmpty);
       expect(
-        h.repo.responses
+        h.repo.responseRequests
             .skip(before)
             .every(
               (r) =>
@@ -177,7 +178,7 @@ void main() {
             ),
         isTrue,
       );
-      expect(h.repo.responses.length - before, lessThanOrEqualTo(3));
+      expect(h.repo.responseRequests.length - before, lessThanOrEqualTo(3));
       expect(h.repo.forms.last.accountGeneration, returnToA ? 2 : 1);
       expect(h.repo.forms.last.query, isNull);
       expect(h.uri.queryParameters, {
@@ -185,12 +186,12 @@ void main() {
         'organizerId': org,
         'keep': 'yes',
       });
-      final reads = h.repo.responses.length;
+      final reads = h.repo.responseRequests.length;
       // Invoke callbacks retained by an old sheet/row after the switch.
       oldPanel.onFormChanged!('stale-form');
       oldSearch.onSubmitted!('stale-search');
       await _frames(tester);
-      expect(h.repo.responses.length, reads);
+      expect(h.repo.responseRequests.length, reads);
       expect(h.panel(tester).formId, isNull);
       expect(tester.takeException(), isNull);
     });
@@ -243,10 +244,10 @@ void main() {
         h.repo.heldResponses['b'] = b;
         h.header(tester).search!.onSubmitted!('held-a');
         await _frames(tester);
-        expect(h.repo.responses.last.query, 'held-a');
+        expect(h.repo.responseRequests.last.query, 'held-a');
         h.select('b');
         await _frames(tester);
-        final bRequest = h.repo.responses.last;
+        final bRequest = h.repo.responseRequests.last;
         expect(bRequest.organizerId, 'b');
         expect(bRequest.formId, isNull);
         expect(bRequest.contactId, isNull);
@@ -258,7 +259,7 @@ void main() {
         h.repo.heldResponses.remove('a');
         h.select('a');
         await _frames(tester);
-        final reads = h.repo.responses.length;
+        final reads = h.repo.responseRequests.length;
         expect(h.panel(tester).organizerId, 'a');
         if (fails) {
           a.completeError(StateError('stale-a-response-failure'));
@@ -268,7 +269,7 @@ void main() {
           b.complete(_responsePage('b'));
         }
         await _frames(tester);
-        expect(h.repo.responses.length, reads);
+        expect(h.repo.responseRequests.length, reads);
         expect(h.panel(tester).formId, isNull);
         expect(find.text('stale-a'), findsNothing);
         expect(find.text('stale-b'), findsNothing);
@@ -290,7 +291,7 @@ void main() {
     expect(h.uri.queryParameters['formId'], 'new-route-form');
     expect(h.panel(tester).formId, 'new-route-form');
     expect(
-      h.repo.responses
+      h.repo.responseRequests
           .where((r) => r.organizerId == 'b')
           .every(
             (r) =>
@@ -314,7 +315,12 @@ void main() {
       await _frames(tester);
       expect(h.repo.mutations, isEmpty);
       await _rowAction(tester, action);
-      await tester.tap(find.widgetWithText(CatchButton, action).last);
+      final confirm = find.descendant(
+        of: find.byType(CatchDialog<bool>),
+        matching: find.widgetWithText(CatchButton, action),
+      );
+      expect(confirm, findsOneWidget);
+      await tester.tap(confirm);
       await _frames(tester);
       expect(h.repo.mutations, [
         action == 'Archive' ? 'lifecycle:a' : 'delete:a',
@@ -335,7 +341,12 @@ void main() {
         await _rowAction(tester, action);
         expect(find.byType(CatchDialog<bool>), findsOneWidget);
         await h.change(tester, change);
-        await tester.tap(find.widgetWithText(CatchButton, action).last);
+        final confirm = find.descendant(
+          of: find.byType(CatchDialog<bool>),
+          matching: find.widgetWithText(CatchButton, action),
+        );
+        expect(confirm, findsOneWidget);
+        await tester.tap(confirm);
         await _frames(tester);
         expect(h.repo.mutations, isEmpty);
         expect(tester.takeException(), isNull);
@@ -396,7 +407,7 @@ void main() {
         }
         await h.change(tester, change);
         final uri = h.uri;
-        final reads = h.repo.responses.length;
+        final reads = h.repo.responseRequests.length;
         if (phase == 'picker') {
           pick.complete(_table);
         } else if (phase == 'confirmation') {
@@ -406,7 +417,7 @@ void main() {
         }
         await _frames(tester);
         expect(h.importer.imports, phase == 'acknowledgment' ? ['a'] : isEmpty);
-        expect(h.repo.responses.length, reads);
+        expect(h.repo.responseRequests.length, reads);
         expect(h.uri, uri);
         expect(find.byType(CatchSheet), findsNothing);
         expect(find.byType(CatchNotice), findsNothing);
@@ -455,7 +466,7 @@ void main() {
       expect(h.importer.imports, ['a']);
       expect(h.panel(tester).formId, isNull);
       expect(h.panel(tester).contactId, isNull);
-      expect(h.repo.responses.last.formId, isNull);
+      expect(h.repo.responseRequests.last.formId, isNull);
       expect(h.uri.queryParameters.containsKey('formId'), isFalse);
       expect(h.header(tester).primaryAction!.onPressed, isNotNull);
       expect(tester.takeException(), isNull);
@@ -475,7 +486,7 @@ String _location({
 // for a hung test. Every held future is completed before the fixture is disposed.
 Future<void> _frames(WidgetTester tester) async {
   for (var i = 0; i < 8; i++) {
-    await tester.pump(const Duration(milliseconds: 50));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 50));
   }
 }
 
@@ -487,7 +498,11 @@ Future<void> _rowAction(WidgetTester tester, String label) async {
     ),
   );
   await _frames(tester);
-  await tester.tap(find.text(label).last);
+  final choice = find.byWidgetPredicate(
+    (widget) => widget is CatchMenuRow && widget.item.label == label,
+  );
+  expect(choice, findsOneWidget);
+  await tester.tap(choice);
   await _frames(tester);
 }
 
@@ -641,7 +656,7 @@ class _Harness {
 
 class _Repository extends Fake implements HostFormsRepository {
   final forms = <HostFormListRequest>[];
-  final responses = <HostFormResponseListRequest>[];
+  final responseRequests = <HostFormResponseListRequest>[];
   final mutations = <String>[];
   final heldResponses = <String, Completer<HostFormResponsePage>>{};
   Completer<HostFormPage>? heldForms;
@@ -659,7 +674,7 @@ class _Repository extends Fake implements HostFormsRepository {
   Future<HostFormResponsePage> listResponses(
     HostFormResponseListRequest request,
   ) async {
-    responses.add(request);
+    responseRequests.add(request);
     expectSync(request.limit, 25);
     final held = heldResponses[request.organizerId];
     if (held != null) return held.future;
@@ -675,6 +690,7 @@ class _Repository extends Fake implements HostFormsRepository {
     required String organizerId,
     required String sourceFormId,
     required String requestId,
+    String? title,
   }) async {
     mutations.add('duplicate:$organizerId');
     return duplicateResult!.future;
