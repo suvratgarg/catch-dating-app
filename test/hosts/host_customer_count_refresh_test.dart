@@ -112,6 +112,8 @@ void main() {
       const ValueKey('host-customers-refresh-coverage'),
     );
     await tester.ensureVisible(refresh);
+    await pumpFeatureUi(tester);
+    expect(refresh.hitTestable(), findsOneWidget);
     await tester.tap(refresh);
     await pumpFeatureUi(tester);
 
