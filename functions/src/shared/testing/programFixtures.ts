@@ -12,18 +12,22 @@ export function request(data: Record<string, unknown>, uid: string) {
 
 export const now = admin.firestore.Timestamp.fromMillis(1_800_000_000_000);
 
-export const transportSettings = {
-  bandWindowMillis: 30 * 60 * 1000,
-  maxReadyWaitMillis: 10 * 60 * 1000,
-  domesticExitLagMillis: 25 * 60 * 1000,
-  internationalExitLagMillis: 60 * 60 * 1000,
-  vehicleClasses: [
-    {id: "sedan", label: "Sedan", passengerCapacity: 3,
-      luggageCapacity: 3, capabilities: [], sortOrder: 0},
-    {id: "suv", label: "Innova / SUV", passengerCapacity: 6,
-      luggageCapacity: 8, capabilities: ["extraLuggage"], sortOrder: 1},
-  ],
-};
+function createTransportSettings() {
+  return {
+    bandWindowMillis: 30 * 60 * 1000,
+    maxReadyWaitMillis: 10 * 60 * 1000,
+    domesticExitLagMillis: 25 * 60 * 1000,
+    internationalExitLagMillis: 60 * 60 * 1000,
+    vehicleClasses: [
+      {id: "sedan", label: "Sedan", passengerCapacity: 3,
+        luggageCapacity: 3, capabilities: [], sortOrder: 0},
+      {id: "suv", label: "Innova / SUV", passengerCapacity: 6,
+        luggageCapacity: 8, capabilities: ["extraLuggage"], sortOrder: 1},
+    ],
+  };
+}
+
+export const transportSettings = createTransportSettings();
 
 export function baseSeed(): Record<string, FakeData> {
   return {
@@ -42,7 +46,7 @@ export function baseSeed(): Record<string, FakeData> {
       endsAt: admin.firestore.Timestamp.fromMillis(1_800_300_000_000),
       status: "active",
       capabilities: ["arrivalsTransport"],
-      transportSettings,
+      transportSettings: createTransportSettings(),
       createdBy: "manager-1",
       createdAt: now,
       updatedAt: now,
