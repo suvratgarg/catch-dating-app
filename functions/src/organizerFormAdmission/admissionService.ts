@@ -1,3 +1,5 @@
+import {readVerifiedOfferRecipient} from
+  "../organizerEventOfferRecipients/recipientGrant";
 import {assertUnpartitionedAdmission} from "./admissionEligibility";
 import {newFormAttendee} from "./admissionRoster";
 import {heldSeatCount} from "../events/seatAuthority/seatAuthority";
@@ -89,6 +91,8 @@ export function formAdmissionReceiptId(organizerId: string,
 export interface FormAdmissionServiceDeps {
   db: FirebaseFirestore.Firestore;
   actorUid: string;
+  /** Server-only recipient proof, never a manager callable input. */
+  recipientGrantId?: string;
   payload: CommitOrganizerFormAdmissionCallablePayload;
   nowMillis?: () => number;
   /** Server-only test seam. Production resolves the current Admin Auth user. */
@@ -246,18 +250,32 @@ async function executeAdmission(
     if (!Number.isSafeInteger(now) || now <= 0) {
       throw new AdmissionPolicyError("invalid", "Server time is unavailable.");
     }
+    const recipient = params.recipientGrantId ?
+      await readVerifiedOfferRecipient({db, tx,
+        grantId: params.recipientGrantId, uid: actorUid, nowMillis: now,
+        loadCurrentAuthUser: params.loadCurrentAuthUser}) : null;
+    if (recipient && (recipient.grant.organizerId !== payload.organizerId ||
+        recipient.grant.eventId !== payload.eventId ||
+        recipient.grant.responseId !== payload.responseId ||
+        recipient.grant.offerId !== payload.offerId ||
+        recipient.grant.contactId !== payload.contactId ||
+        recipient.source.offer.paymentSnapshot.expectedAmountMinor !== 0 ||
+        recipient.source.offer.manualPayment.status !== "none")) {
+      unavailable("Current free invitation authority is required.");
+    }
     const manager: AdmissionFacts["manager"] = {
       organizerId: payload.organizerId, actorUid,
-      authorized: !!organizer && isOrganizerManager(organizer, actorUid),
-      accountDeleted: !!deletedActorRaw || !actor || actor.deleted === true ||
-        actor.deletedAt != null,
+      authorized: !!recipient ||
+        !!organizer && isOrganizerManager(organizer, actorUid),
+      accountDeleted: !!deletedActorRaw || !recipient && !actor ||
+        actor?.deleted === true || actor?.deletedAt != null,
       organizerActive: !!organizer && organizer.archived !== true &&
         organizer.status === "active",
     };
     if (!manager.authorized || manager.accountDeleted ||
         !manager.organizerActive) {
       throw new AdmissionPolicyError("denied",
-        "Current organizer manager authority is required.");
+        "Current admission authority is required.");
     }
     const priorReceipt = receiptRaw as AdmissionReceipt | undefined;
     const sourceAdmission = ownershipRaw as AdmissionOwnership | undefined;
@@ -418,7 +436,11 @@ async function executeAdmission(
         sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",
         sourceEntityId: payload.responseId}),
       responseId: payload.responseId,
-      verifiedRespondent: verifiedPhone && response.respondentUid ?
+      verifiedOfferRecipient: recipient ? {grantId: params.recipientGrantId!,
+        uid: actorUid, now: admin.firestore.Timestamp.fromMillis(now),
+        loadCurrentAuthUser: params.loadCurrentAuthUser} : undefined,
+      verifiedRespondent: !recipient && verifiedPhone &&
+        response.respondentUid ?
         {uid: response.respondentUid, currentAuthPhoneNumber: verifiedPhone,
           now: admin.firestore.Timestamp.fromMillis(now)} : undefined});
     const seatTx = new FirestoreSeatTransaction(db, tx);
@@ -585,6 +607,10 @@ async function executeAdmission(
         participation ? catchAttendee(payload.eventId, payload.organizerId,
           participation.uid, participation, publicProfile,
           timestamp) : null;
+    if (operationalAttendee && recipient) {
+      Object.assign(operationalAttendee, {linkedUid: actorUid,
+        linkedAt: timestamp, phoneE164: recipient.source.phoneE164});
+    }
     if (operationalAttendee && attestedRevenue) {
       Object.assign(operationalAttendee, attestedRevenue);
     }

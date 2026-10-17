@@ -297,6 +297,20 @@ test("flags unreviewed permission-authority access", () => {
   }), []);
 });
 
+test("approval notification permission review is limited to its facts owner", () => {
+  const source = 'db.collection("organizerCommunicationPreferences")' +
+    '.doc(organizerCommunicationPreferenceId(organizerId, uid))';
+  assert.deepEqual(scanBackendFile({
+    relativePath: "functions/src/events/approvalNotifications/facts.ts",
+    source,
+  }), []);
+  const findings = scanBackendFile({
+    relativePath: "functions/src/events/approvalNotifications/dispatch.ts",
+    source,
+  });
+  assert.match(findings[0].reason, /explicit reviewed owner/u);
+});
+
 test("flags direct contact creation outside canonical projection owners", () => {
   const findings = scanBackendFile({
     relativePath: "functions/src/organizers/shortcut.ts",

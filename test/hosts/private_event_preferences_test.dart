@@ -3,10 +3,10 @@ import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart
 import 'package:catch_dating_app/hosts/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'event_controller_test_support.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -148,8 +148,8 @@ void main() {
         );
       }
 
-      PrivateEventPreferencesController controller() =>
-          PrivateEventPreferencesController(
+      TestPrivateEventPreferencesController controller() =>
+          TestPrivateEventPreferencesController(
             userId: 'host-1',
             organizerId: 'club-1',
             eventId: 'event-1',
@@ -190,7 +190,7 @@ void main() {
 
   test('failed private settings reread disables stale editing', () async {
     var denied = false;
-    final controller = PrivateEventPreferencesController(
+    final controller = TestPrivateEventPreferencesController(
       userId: 'host-1',
       organizerId: 'club-1',
       eventId: 'event-1',
@@ -216,7 +216,7 @@ void main() {
     () async {
       for (final kind in ['exact', 'generic', 'foreign']) {
         SharedPreferences.setMockInitialValues({});
-        final controller = PrivateEventPreferencesController(
+        final controller = TestPrivateEventPreferencesController(
           userId: 'host-1',
           organizerId: 'club-1',
           eventId: 'event-1',
@@ -255,7 +255,7 @@ void main() {
   test('account change blocks settings preview and writes', () async {
     var actor = 'host-1';
     var calls = 0;
-    final controller = PrivateEventPreferencesController(
+    final controller = TestPrivateEventPreferencesController(
       userId: actor,
       organizerId: 'club-1',
       eventId: 'event-1',

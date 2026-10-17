@@ -1,0 +1,262 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_approval_notifications.schema.json",
+  "title": "EventApprovalNotifications",
+  "definitions": {
+    "Intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "intentId",
+        "revision",
+        "context",
+        "createdAt",
+        "expiresAt",
+        "lane",
+        "permittedRoutes",
+        "deliveryPolicy"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "const": 1
+        },
+        "context": {
+          "$ref": "#/definitions/Context"
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "lane": {
+          "type": "string",
+          "enum": [
+            "phone",
+            "email"
+          ]
+        },
+        "permittedRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "approvalWhatsapp",
+              "approvalSms",
+              "approvalEmail"
+            ]
+          }
+        },
+        "deliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "const": 3
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "const": 1
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "const": 60
+            }
+          }
+        }
+      }
+    },
+    "Attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "intentId",
+        "intentRevision",
+        "ordinal",
+        "createdAt",
+        "state",
+        "authorization",
+        "mode",
+        "context",
+        "binding"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "attemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "const": 1
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "$ref": "automation_delivery_messaging.schema.json#/definitions/AttemptState"
+        },
+        "authorization": {
+          "$ref": "automation_delivery_messaging.schema.json#/definitions/DispatchAuthorization"
+        },
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "context": {
+          "$ref": "#/definitions/Context"
+        },
+        "binding": {
+          "$ref": "#/definitions/Binding"
+        }
+      }
+    },
+    "Context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "applicationId",
+        "organizerId",
+        "eventId",
+        "uid",
+        "sourceResponseId",
+        "approvedAtMillis",
+        "approvalRevision"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "applicationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "approvalRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "Binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "senderId",
+        "bindingRevision",
+        "recipientEndpointId",
+        "fallbackOwner"
+      ],
+      "properties": {
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "approvalWhatsapp",
+            "approvalSms",
+            "approvalEmail"
+          ]
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "bindingRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "fallbackOwner": {
+          "type": "string",
+          "const": "catch"
+        }
+      }
+    }
+  }
+}
