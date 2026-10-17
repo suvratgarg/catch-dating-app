@@ -75,7 +75,7 @@ function listTools(args) {
 }
 
 async function checkTools(args) {
-  const {categories, ids, manifestOnly, marketingChecksInReact, marketingCapturesImported} = parseCheckArgs(args);
+  const {categories, ids, manifestOnly, marketingChecksInReact, marketingCapturesImported, generatedInventoriesMaterialized} = parseCheckArgs(args);
   const manifest = loadManifest();
   const tools = categories.length === 0 ? selectTools(manifest, {ids}) :
     categories.flatMap((category) => selectTools(manifest, {category, ids}));
@@ -107,7 +107,7 @@ async function checkTools(args) {
     requireSelection(tools.filter((tool) => tool.category === category), {category, ids});
   }
   requireSelection(tools, {ids});
-  await runChecks(tools, {marketingChecksInReact, marketingCapturesImported});
+  await runChecks(tools, {marketingChecksInReact, marketingCapturesImported, generatedInventoriesMaterialized});
 }
 
 function reactOwnsMarketingCheck({toolId, command}) {
@@ -145,27 +145,46 @@ function importedCaptureOwnsCheck({toolId, command}) {
       command === "node tool/marketing/sync_website_media.mjs --check");
 }
 
-async function runChecks(tools, {marketingChecksInReact = false, marketingCapturesImported = false} = {}) {
+function materializedInventoryOwnsCheck({toolId, command}) {
+  return (toolId === "design:widget-catalog" && command === "node tool/design/generate_widget_catalog.mjs --check") ||
+    (["ui-capture:route-inventory", "design:parity-gate"].includes(toolId) &&
+      command === "node tool/ui_capture/check_route_inventory.mjs --check");
+}
+
+// Execute proof only in full consumer checkouts, like the registered checks
+// below. Planning stays usable from its declared sparse module closure.
+function verifyProducerCommand(script, flag) {
+  const result = spawnSync(process.execPath, [script, flag], {cwd: repoRoot,
+    encoding: "utf8", maxBuffer: 1024 * 1024});
+  if (result.status !== 0) throw new Error(result.stderr?.trim() || result.error?.message ||
+    `Producer verification failed: ${script}`);
+}
+
+async function runChecks(tools, {marketingChecksInReact = false, marketingCapturesImported = false,
+  generatedInventoriesMaterialized = false} = {}) {
   if (marketingChecksInReact && process.env.GITHUB_ACTIONS !== "true") {
     console.error("--marketing-checks-in-react requires the same-run CI marketing lane.");
     process.exitCode = 64;
     return;
   }
-  const verifyCaptureProof = async () => {
-    if (!marketingCapturesImported) return;
-    const binding = JSON.parse(process.env.CAPTURE_BINDING);
-    const expected = {repository: "GITHUB_REPOSITORY", sourceSha: "GITHUB_SHA",
-      runId: "GITHUB_RUN_ID", runAttempt: "GITHUB_RUN_ATTEMPT",
-      workflowRef: "GITHUB_WORKFLOW_REF", workflowDefinitionSha: "GITHUB_WORKFLOW_SHA"};
-    if (process.env.GITHUB_ACTIONS !== "true" || Object.entries(expected).some(([key, variable]) =>
-      !process.env[variable] || binding[key] !== process.env[variable])) {
-      throw new Error("Imported capture checks require this CI source, repository, workflow, run and attempt.");
+  const verifyProducerProofs = async () => {
+    if (marketingCapturesImported) {
+      const binding = JSON.parse(process.env.CAPTURE_BINDING);
+      const expected = {repository: "GITHUB_REPOSITORY", sourceSha: "GITHUB_SHA",
+        runId: "GITHUB_RUN_ID", runAttempt: "GITHUB_RUN_ATTEMPT",
+        workflowRef: "GITHUB_WORKFLOW_REF", workflowDefinitionSha: "GITHUB_WORKFLOW_SHA"};
+      if (process.env.GITHUB_ACTIONS !== "true" || Object.entries(expected).some(([key, variable]) =>
+        !process.env[variable] || binding[key] !== process.env[variable])) {
+        throw new Error("Imported capture checks require this CI source, repository, workflow, run and attempt.");
+      }
+      verifyProducerCommand("tool/marketing/import_hosted_captures.mjs", "--verify-imported");
     }
-    const {verifyImportedCaptureBytes} = await import("./marketing/import_hosted_captures.mjs");
-    verifyImportedCaptureBytes({binding});
+    if (generatedInventoriesMaterialized) {
+      verifyProducerCommand("tool/ci/generated_inventories.mjs", "--verify-materialized");
+    }
   };
-  try { await verifyCaptureProof(); } catch (error) {
-    console.error(`Cannot reuse imported capture checks: ${error.message}`);
+  try { await verifyProducerProofs(); } catch (error) {
+    console.error(`Cannot reuse CI producer checks: ${error.message}`);
     process.exitCode = 1;
     return;
   }
@@ -189,6 +208,10 @@ async function runChecks(tools, {marketingChecksInReact = false, marketingCaptur
       console.log(`==> ${toolId}: provided by the verified exact-source capture artifact.`);
       continue;
     }
+    if (generatedInventoriesMaterialized && materializedInventoryOwnsCheck({toolId, command})) {
+      console.log(`==> ${toolId}: provided by verified exact-source inventory generation.`);
+      continue;
+    }
     console.log(`==> ${toolId}: ${command}`);
     const result = spawnSync(command, {
       cwd: repoRoot,
@@ -201,8 +224,8 @@ async function runChecks(tools, {marketingChecksInReact = false, marketingCaptur
     }
   }
   // Selected checks must not invalidate evidence reused by this invocation.
-  try { await verifyCaptureProof(); } catch (error) {
-    console.error(`Imported capture checks were invalidated: ${error.message}`);
+  try { await verifyProducerProofs(); } catch (error) {
+    console.error(`CI producer checks were invalidated: ${error.message}`);
     process.exitCode = 1;
     return;
   }
@@ -288,7 +311,8 @@ async function affectedToolChecks(args) {
     return;
   }
   await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact,
-    marketingCapturesImported: options.marketingCapturesImported});
+    marketingCapturesImported: options.marketingCapturesImported,
+    generatedInventoriesMaterialized: options.generatedInventoriesMaterialized});
 }
 
 function runTool(args) {
@@ -489,7 +513,8 @@ function parseCheckArgs(args) {
   });
   return {categories, ids, manifestOnly,
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
-    marketingCapturesImported: args.includes("--marketing-captures-imported")};
+    marketingCapturesImported: args.includes("--marketing-captures-imported"),
+    generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized")};
 }
 
 function parseAffectedToolArgs(args) {
@@ -509,6 +534,7 @@ function parseAffectedToolArgs(args) {
     mode: valueAfter(args, "--mode") ?? "pr",
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
     marketingCapturesImported: args.includes("--marketing-captures-imported"),
+    generatedInventoriesMaterialized: args.includes("--generated-inventories-materialized"),
     githubOutput: valueAfter(args, "--github-output"),
   };
 }
@@ -540,6 +566,8 @@ Commands:
     aggregate owns the same-run React marketing lane.
   --marketing-captures-imported verifies CAPTURE_BINDING and all imported bytes
     for this CI source/run/attempt before reusing the three freshness checks.
+  --generated-inventories-materialized verifies this job's source-bound receipt
+    and current output bytes before reusing route/catalog drift checks.
   run <tool-id> [args...]
 
 Examples:

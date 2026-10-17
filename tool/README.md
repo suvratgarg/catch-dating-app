@@ -779,6 +779,15 @@ coverage decisions and regression goldens remain inputs; generation cannot make
 missing semantic coverage pass. These first-phase outputs remain tracked for
 local consumers but need no routine CI refresh commit.
 
+In Actions, materialization also writes the ignored
+`build/ci/generated-inventories.json` receipt, binding both output hashes to the
+source tree, workflow and run attempt. Full-checkout Tools consumers pass
+`--generated-inventories-materialized`; the runner verifies the receipt and
+authored source before and after checks, and substitutes only the exact catalog
+and route inventory drift commands. Sparse index consumers and standalone
+commands keep their ordinary checks. Missing or changed proof fails; authored
+coverage decisions and semantic gates still execute.
+
 ## Marketing App Screenshot Context
 
 Marketing app screenshots are tracked by `tool/marketing/capture_manifest.json`.

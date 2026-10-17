@@ -278,7 +278,7 @@ export function verifyBuiltCaptureBytes({binding}) {
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    assert.equal(process.argv.length, 3, "Usage: import_hosted_captures.mjs --import|--check-dist (CAPTURE_BINDING required)");
+    assert.equal(process.argv.length, 3, "Usage: import_hosted_captures.mjs --import|--check-dist|--verify-imported (CAPTURE_BINDING required)");
     const binding = JSON.parse(process.env.CAPTURE_BINDING);
     assert.equal(binding.repository, process.env.GITHUB_REPOSITORY, "Consumer repository differs.");
     assert.equal(binding.sourceSha, process.env.GITHUB_SHA, "Consumer source differs.");
@@ -286,6 +286,8 @@ if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import
       const bytes = await downloadCaptureArtifact({binding});
       const receipt = importCaptureArchive({bytes, binding});
       console.log(`Imported ${receipt.captures.length} verified exact-source captures.`);
+    } else if (process.argv[2] === "--verify-imported") {
+      console.log(JSON.stringify(verifyImportedCaptureBytes({binding})));
     } else {
       assert.equal(process.argv[2], "--check-dist", "Unknown capture consumer command.");
       console.log(JSON.stringify(verifyBuiltCaptureBytes({binding})));

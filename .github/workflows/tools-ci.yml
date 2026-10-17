@@ -253,6 +253,7 @@ jobs:
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
           CAPTURE_REQUIRED: ${{ needs.preflight.outputs.capture_required }}
           CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
+          INVENTORY_MATERIALIZED: ${{ needs.preflight.outputs.repository_view != 'index' }}
         run: |
           set -euo pipefail
           shared_flags=()
@@ -261,6 +262,9 @@ jobs:
           fi
           if [[ "$CAPTURE_REQUIRED" == "true" ]]; then
             shared_flags+=(--marketing-captures-imported)
+          fi
+          if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
+            shared_flags+=(--generated-inventories-materialized)
           fi
           window_flag=()
           if [[ "$COMMIT_WINDOW" == "true" ]]; then
@@ -412,6 +416,7 @@ jobs:
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
           CAPTURE_REQUIRED: ${{ matrix.name == 'marketing-design' && needs.preflight.outputs.capture_required == 'true' }}
           CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
+          INVENTORY_MATERIALIZED: "true"
         run: |
           set -euo pipefail
           shared_flags=()
@@ -420,6 +425,9 @@ jobs:
           fi
           if [[ "$CAPTURE_REQUIRED" == "true" ]]; then
             shared_flags+=(--marketing-captures-imported)
+          fi
+          if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
+            shared_flags+=(--generated-inventories-materialized)
           fi
           category_flags=()
           for category in $CATEGORIES; do

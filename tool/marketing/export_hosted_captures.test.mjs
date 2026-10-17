@@ -602,6 +602,12 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   consumer.importCaptureArchive({bytes: packed.stdout, binding});
   for (const file of generated) assert.deepEqual(fs.readFileSync(path.join(f.root, file.path)), files.get(file.path));
   assert.equal(consumer.verifyImportedCaptureBytes({binding}).verifiedFiles, 26);
+  const verifyCli = () => spawnSync(process.execPath, ["tool/marketing/import_hosted_captures.mjs", "--verify-imported"],
+    {cwd: f.root, encoding: "utf8", env: {...process.env, CAPTURE_BINDING: JSON.stringify(binding),
+      GITHUB_REPOSITORY: binding.repository, GITHUB_SHA: binding.sourceSha}});
+  const cliVerified = verifyCli();
+  assert.equal(cliVerified.status, 0, cliVerified.stderr);
+  assert.equal(JSON.parse(cliVerified.stdout).verifiedFiles, 26);
   for (const file of generated) {
     f.write(file.path, "mutated after import");
     assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /Imported capture output differs/);
@@ -625,6 +631,9 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   f.git("restore", "--", "lib/leaf.dart");
   fs.writeFileSync(cachePath, invalid);
   assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /digest differs/);
+  const cliRefused = verifyCli();
+  assert.equal(cliRefused.status, 1);
+  assert.match(cliRefused.stderr, /digest differs/);
   fs.writeFileSync(cachePath, packed.stdout);
   for (const file of receipt.files.filter(file => file.path.startsWith("website/public/"))) {
     f.write(file.path.replace("website/public/", "website/dist/"), files.get(file.path));

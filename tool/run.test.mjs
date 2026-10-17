@@ -781,7 +781,8 @@ test("imported capture mode verifies before and after exact freshness substituti
   // This suite tests actual CLI dispatch; the exporter suite separately uses
   // the real archive/import verifier and corrupts every materialized output.
   write("tool/marketing/import_hosted_captures.mjs", `import fs from 'node:fs';
-    export function verifyImportedCaptureBytes() {
+    if (process.argv[2] !== '--verify-imported') throw new Error('Wrong proof command');
+    {
       fs.appendFileSync('proof-calls', 'verified\\n');
       if (fs.existsSync('invalid-proof')) throw new Error('proof sentinel refused');
     }`);
@@ -848,6 +849,102 @@ test("imported capture mode verifies before and after exact freshness substituti
   });
   const lateMutation = invoke(flag);
   assert.equal(lateMutation.status, 1);
-  assert.match(lateMutation.stderr, /Imported capture checks were invalidated/u);
+  assert.match(lateMutation.stderr, /CI producer checks were invalidated/u);
   assert.doesNotMatch(lateMutation.stdout, /Tool checks passed/u);
+});
+
+test("materialized inventories replace only exact drift commands with checked current proof", context => {
+  const root = createRunnerFixture(context);
+  const write = (file, contents) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), contents);
+  };
+  // Actual generator/receipt/source/byte controls live in generated_inventories.test.
+  // Here the actual runner executes fixtures that expose dispatch and proof order.
+  write("tool/ci/generated_inventories.mjs", `import fs from 'node:fs';
+    if (process.argv[2] !== '--verify-materialized') throw new Error('Wrong proof command');
+    {
+      fs.appendFileSync('proof-calls', 'verified\\n');
+      if (process.env.GITHUB_ACTIONS !== 'true' || fs.existsSync('invalid-proof')) throw new Error('inventory proof refused');
+    }`);
+  const catalog = "tool/design/generate_widget_catalog.mjs";
+  const routes = "tool/ui_capture/check_route_inventory.mjs";
+  for (const file of [catalog, routes]) write(file, `console.log('drift-executed:' + process.argv.slice(2).join(' '));`);
+  const ids = ["design:widget-catalog", "ui-capture:route-inventory", "design:parity-gate"];
+  mutateFixtureManifest(root, doc => {
+    doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal", path: "tool/ci/generated_inventories.mjs"});
+    for (const id of ids) {
+      const file = id === "design:widget-catalog" ? catalog : routes;
+      doc.tools.push({...doc.tools[0], id, path: file, checks: [
+        `node --check ${file}`, "node tool/check.mjs authored-coverage-sentinel", `node ${file} --check`,
+      ]});
+    }
+  });
+  const flag = "--generated-inventories-materialized";
+  const env = {...process.env, GITHUB_ACTIONS: "true"};
+  const invoke = args => run(["check", ...ids, ...args], {cwd: root, env});
+  const normal = invoke([]);
+  assert.equal(normal.status, 0, normal.stderr);
+  assert.equal((normal.stdout.match(/^drift-executed:/gmu) ?? []).length, 2);
+  assert.equal(fs.existsSync(path.join(root, "proof-calls")), false);
+  const verified = invoke([flag]);
+  assert.equal(verified.status, 0, verified.stderr);
+  assert.doesNotMatch(verified.stdout, /drift-executed:/u);
+  assert.equal((verified.stdout.match(/provided by verified exact-source inventory generation/gmu) ?? []).length, 2);
+  assert.match(verified.stdout, /authored-coverage-sentinel/u);
+  assert.match(verified.stdout, /node --check tool\/ui_capture\/check_route_inventory.mjs/u);
+  assert.equal(fs.readFileSync(path.join(root, "proof-calls"), "utf8"), "verified\nverified\n");
+  const parity = run(["check", "design:parity-gate", flag], {cwd: root, env});
+  assert.equal(parity.status, 0, parity.stderr);
+  assert.doesNotMatch(parity.stdout, /drift-executed:/u);
+  write("invalid-proof", "missing or damaged receipt");
+  const refused = invoke([flag]);
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /inventory proof refused/u);
+  assert.doesNotMatch(refused.stdout, /==>/u);
+  fs.unlinkSync(path.join(root, "invalid-proof"));
+  mutateFixtureManifest(root, doc => {
+    doc.tools.push({...doc.tools[0], id: "fixture:other-owner", path: routes, checks: [`node ${routes} --check`]});
+    doc.tools.find(t => t.id === "design:widget-catalog").checks.push(`node ${catalog} --check --changed`);
+  });
+  const other = run(["check", "fixture:other-owner", flag], {cwd: root, env});
+  assert.equal(other.status, 0, other.stderr);
+  assert.match(other.stdout, /drift-executed:--check/u);
+  const changedCommand = invoke([flag]);
+  assert.equal(changedCommand.status, 0, changedCommand.stderr);
+  assert.match(changedCommand.stdout, /drift-executed:--check --changed/u);
+  mutateFixtureManifest(root, doc => {
+    doc.tools.find(t => t.id === "design:widget-catalog").checks.push(
+      "node -e \"require('fs').writeFileSync('invalid-proof', 'mutated during checks')\"");
+  });
+  const lateMutation = invoke([flag]);
+  assert.equal(lateMutation.status, 1);
+  assert.match(lateMutation.stderr, /CI producer checks were invalidated/u);
+  assert.doesNotMatch(lateMutation.stdout, /Tool checks passed/u);
+});
+
+
+test("sparse planner runs without loading or launching full-checkout producer verifiers", context => {
+  const root = createRunnerFixture(context);
+  fs.copyFileSync(path.join(repositoryRoot, "tool/harness/component_graph.json"),
+    path.join(root, "tool/harness/component_graph.json"));
+  const helpers = ["tool/marketing/import_hosted_captures.mjs", "tool/ci/generated_inventories.mjs"];
+  for (const helper of helpers) {
+    fs.mkdirSync(path.dirname(path.join(root, helper)), {recursive: true});
+    fs.writeFileSync(path.join(root, helper), "throw new Error('Planner launched producer verifier');\n");
+  }
+  mutateFixtureManifest(root, doc => {
+    for (const [i, helper] of helpers.entries()) doc.tools.push({id: `fixture:producer-${i}`,
+      category: "fixture", path: helper, status: "internal"});
+  });
+  runGit(root, ["add", "."]);
+  runGit(root, ["update-index", "--skip-worktree", ...helpers]);
+  for (const helper of helpers) fs.unlinkSync(path.join(root, helper));
+  const planned = run(["affected-tools", "--paths", "tool/check.mjs", "--json"], {cwd: root});
+  assert.equal(planned.status, 0, planned.stderr);
+  assert.deepEqual(JSON.parse(planned.stdout).toolIds, ["fixture:check"]);
+  const refused = run(["check", "fixture:check", "--generated-inventories-materialized"],
+    {cwd: root, env: {...process.env, GITHUB_ACTIONS: "true"}});
+  assert.equal(refused.status, 1);
+  assert.doesNotMatch(refused.stdout, /==>/u);
 });
