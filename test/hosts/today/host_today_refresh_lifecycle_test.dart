@@ -137,8 +137,11 @@ void main() {
     // Flutter advances timer time, not DateTime.now(). Check non-regression,
     // not a fabricated three-minute wall-clock advance.
     expect(
-      tester.widget<HostTodayHeader>(find.byType(HostTodayHeader)).now!,
-      isNot(lessThan(clockBefore)),
+      tester
+          .widget<HostTodayHeader>(find.byType(HostTodayHeader))
+          .now!
+          .isBefore(clockBefore),
+      isFalse,
     );
   });
 
@@ -178,8 +181,20 @@ void main() {
       ..attention.version = null;
     await fixture.mount(tester);
     final originalState = fixture.todayState(tester);
+    // Quiet personalization waits for its own preference future, and its
+    // create action follows the roadmap below the initial viewport.
+    await pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('host-today-change-focus')),
+    );
+    expect(fixture.display(tester).status, HostTodayStatus.empty);
+    expect(fixture.display(tester).attentionIssues, isEmpty);
     final create = find.byKey(const ValueKey('host-today-create-event'));
-    await tester.ensureVisible(create);
+    await tester.scrollUntilVisible(
+      create,
+      300,
+      scrollable: verticalScroll(const ValueKey('host-today-scroll-view')),
+    );
     await tester.tap(create);
     await pumpFeatureUi(tester);
     await tester.tap(
