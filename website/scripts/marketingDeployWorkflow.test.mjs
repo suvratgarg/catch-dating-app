@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {planAffected} from "../../tool/harness/lib/component_graph.mjs";
 import {fileURLToPath} from "node:url";
@@ -143,4 +145,43 @@ test("capture-only native edits validate in CI without triggering a production M
     .find(step => step.startsWith("name: Check marketing media\n"));
   assert.match(mediaStep, /!inputs\.capture_freshness_in_ci/u);
   assert.match(mediaStep, /run: node tool\/marketing\/sync_website_media\.mjs --check/u);
+});
+
+
+test("selected marketing deploy-contract runs probe regressions and propagates failure", () => {
+  assert.equal(packageJson.scripts.pretypecheck.split(" && ")
+    .filter(command => command === "npm run check:deploy-contract").length, 1);
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "catch-probe-runner-"));
+  const env = {...process.env};
+  // A child CLI must start its own test runner, not inherit Node's child-test
+  // context and accidentally execute test files outside the selected runner.
+  delete env.NODE_TEST_CONTEXT;
+  const run = () => spawnSync("npm", ["--prefix", fixture, "run", "check:deploy-contract"], {
+    env, encoding: "utf8", timeout: 30_000,
+  });
+  try {
+    fs.mkdirSync(path.join(fixture, "scripts"));
+    fs.writeFileSync(path.join(fixture, "package.json"), JSON.stringify({
+      private: true,
+      type: "module",
+      scripts: {"check:deploy-contract": packageJson.scripts["check:deploy-contract"]},
+    }));
+    fs.writeFileSync(path.join(fixture, "scripts/marketingDeployWorkflow.test.mjs"),
+      'import test from "node:test"; test("workflow sentinel", () => {});\n');
+    const probePath = path.join(fixture, "scripts/probeProduction.test.mjs");
+    fs.writeFileSync(probePath,
+      'import test from "node:test"; test("probe failure sentinel", () => { throw new Error("CAT66 probe failure reached"); });\n');
+    const failing = run();
+    assert.equal(failing.error, undefined);
+    assert.equal(failing.status, 1, failing.stdout + failing.stderr);
+    assert.match(failing.stdout + failing.stderr, /CAT66 probe failure reached/u);
+    fs.writeFileSync(probePath,
+      'import test from "node:test"; test("probe passing sentinel", () => {});\n');
+    const passing = run();
+    assert.equal(passing.error, undefined);
+    assert.equal(passing.status, 0, passing.stdout + passing.stderr);
+    assert.match(passing.stdout, /probe passing sentinel/u);
+  } finally {
+    fs.rmSync(fixture, {recursive: true, force: true});
+  }
 });
