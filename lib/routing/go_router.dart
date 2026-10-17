@@ -10,8 +10,10 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -106,6 +108,7 @@ import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -200,7 +203,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
       GoRoute(
         path: Routes.loadingScreen.path,
         name: Routes.loadingScreen.name,
-        builder: (context, state) => const _RouteLoadingScreen(),
+        builder: (context, state) => _RouteLoadingScreen(isHostApp: isHostApp),
       ),
       GoRoute(
         path: Routes.startScreen.path,
@@ -1498,12 +1501,33 @@ ClubDetailScreen _clubDetailScreen(GoRouterState state) => ClubDetailScreen(
   initialClub: _clubDetailInitialClub(state),
 );
 
-class _RouteLoadingScreen extends StatelessWidget {
-  const _RouteLoadingScreen();
+class _RouteLoadingScreen extends ConsumerWidget {
+  const _RouteLoadingScreen({required this.isHostApp});
+
+  final bool isHostApp;
 
   @override
-  Widget build(BuildContext context) => CatchScaffold.standalone(
-    backgroundColor: CatchTokens.of(context).bg,
-    body: const CatchStateViewport.loading(accountForBottomOverlay: false),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    const loading = CatchStateViewport.loading(accountForBottomOverlay: false);
+    final uidAsync = ref.watch(uidProvider);
+    final needsProfile =
+        !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
+    return CatchScaffold.standalone(
+      backgroundColor: CatchTokens.of(context).bg,
+      body: needsProfile
+          ? CatchStateViewport(
+              accountForBottomOverlay: false,
+              child: CatchAsyncBoundary<UserProfile?>(
+                value: ref.watch(watchUserProfileProvider),
+                errorContext: AppErrorContext.profile,
+                retainDataOn: const {},
+                onRetry: () => ref.invalidate(watchUserProfileProvider),
+                loadingBuilder: (_) => loading,
+                // The router refresh resumes the destination once resolved.
+                builder: (_, _) => loading,
+              ),
+            )
+          : loading,
+    );
+  }
 }
