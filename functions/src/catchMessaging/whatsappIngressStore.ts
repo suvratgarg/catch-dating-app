@@ -166,6 +166,9 @@ export async function persistCatchVerifiedIngressEvent(
       tx.update(proofRef, {state: "blocked"});
     }
     if (!previous.exists && !proof.exists) tx.create(ref, incoming);
+    if (previous.exists && proof.exists && !rejected) {
+      tx.update(ref, {expiresAt: incoming.expiresAt});
+    }
     return rejected;
   });
   // Report only after durable denial/STOP commits; throwing inside rolls
