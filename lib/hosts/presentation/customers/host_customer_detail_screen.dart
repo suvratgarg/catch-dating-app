@@ -35,6 +35,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,7 +72,7 @@ class _HostCustomerDetailScreenState
   HostCustomerDetailView _selectedView = HostCustomerDetailView.overview;
   bool _openingConversation = false;
   bool _updatingCustomer = false;
-  Object? _removalOperation;
+  ({Object token, HostCustomerRemovalKey key, int epoch})? _removalOperation;
   int _removalEpoch = 0;
   GoRouter? _removalRouter;
   Uri? _removalRoute;
@@ -147,17 +148,17 @@ class _HostCustomerDetailScreenState
     final currentUid = catchAsyncStateFromAsyncValue(
       ref.watch(uidProvider),
     ).value;
-    final removalPending =
-        currentUid != null &&
-        ref
-            .watch(
-              HostCustomersController.removeMutation((
-                actorUid: currentUid,
-                organizerId: widget.organizerId,
-                contactId: widget.contactId,
-              )),
-            )
-            .isPending;
+    var removalPending = false;
+    if (currentUid != null) {
+      final key = (
+        actorUid: currentUid,
+        organizerId: widget.organizerId,
+        contactId: widget.contactId,
+      );
+      final removalMutation = HostCustomersController.removeMutation(key);
+      removalPending = ref.watch(removalMutation).isPending;
+      _listenToRemovalMutationErrors([removalMutation]);
+    }
     final updatingCustomer =
         _updatingCustomer || _removalOperation != null || removalPending;
     final detail = ref.watch(
@@ -374,6 +375,25 @@ class _HostCustomerDetailScreenState
     );
   }
 
+  void _listenToRemovalMutationErrors(List<Mutation<void>> mutations) {
+    for (final mutation in mutations) {
+      ref.listen(mutation, (previous, current) {
+        if (previous?.isPending != true || current is! MutationError) return;
+        final operation = _removalOperation;
+        if (operation == null ||
+            operation.key != mutation.key ||
+            !_ownsRemoval(operation.epoch, operation.key)) {
+          return;
+        }
+        showCatchNoticeError(
+          context,
+          current.error,
+          errorContext: AppErrorContext.customer,
+        );
+      });
+    }
+  }
+
   Future<void> _editTags(HostAudienceContactDetail customer) async {
     final updated = await showCatchBottomSheet<bool>(
       context: context,
@@ -569,7 +589,9 @@ class _HostCustomerDetailScreenState
         sameActor = false;
       }
     });
-    setState(() => _removalOperation = operation);
+    setState(
+      () => _removalOperation = (token: operation, key: key, epoch: epoch),
+    );
     try {
       final confirmed = await showCatchConfirmDialog(
         copy: catchDialogCopy(context.l10n),
@@ -588,14 +610,9 @@ class _HostCustomerDetailScreenState
               .get(hostCustomersControllerProvider)
               .removeCustomer(key: key, expectedRevision: customer.revision),
         );
-      } on Object catch (error) {
-        if (_ownsRemoval(epoch, key)) {
-          showCatchNoticeError(
-            context,
-            error,
-            errorContext: AppErrorContext.customer,
-          );
-        }
+      } on Object {
+        // The scoped mutation listener owns failure feedback. Stop here so a
+        // rejected write cannot invalidate caches or navigate as success.
         return;
       }
 
@@ -628,7 +645,7 @@ class _HostCustomerDetailScreenState
           );
         }
       }
-      if (!_ownsRemoval(epoch, key)) return;
+      if (!mounted || !_ownsRemoval(epoch, key)) return;
       showCatchNotice(
         context,
         context.l10n
@@ -662,7 +679,7 @@ class _HostCustomerDetailScreenState
       }
     } finally {
       actorLease.close();
-      if (mounted && identical(_removalOperation, operation)) {
+      if (mounted && identical(_removalOperation?.token, operation)) {
         setState(() => _removalOperation = null);
       }
     }

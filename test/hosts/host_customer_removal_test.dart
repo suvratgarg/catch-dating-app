@@ -147,6 +147,47 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('removal rejection is not replayed by rebuild and can retry', (
+    tester,
+  ) async {
+    final harness = await _pumpRemoval(tester);
+    await _confirmRemoval(tester);
+    harness.repository.pending.single.completeError(StateError('rejected'));
+    await pumpFeatureUi(tester);
+    expect(_notices(harness).single.tone, CatchNoticeTone.danger);
+    harness.container.read(catchNoticeControllerProvider.notifier).clear();
+    harness.container.invalidate(
+      hostAudienceContactDetailProvider(_organizer, 'a'),
+    );
+    await pumpFeatureUi(tester);
+    expect(_notices(harness), isEmpty);
+    await _confirmRemoval(tester);
+    expect(harness.repository.removals, hasLength(2));
+    harness.repository.acknowledge(index: 1);
+    await pumpFeatureUi(tester);
+    expect(_notices(harness).single.tone, CatchNoticeTone.success);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('reentry cannot consume a departed removal rejection', (
+    tester,
+  ) async {
+    final harness = await _pumpRemoval(tester);
+    await _confirmRemoval(tester);
+    harness.router.go('/elsewhere');
+    await pumpFeatureUi(tester);
+    harness.router.go(_peopleLocation());
+    await pumpFeatureUi(tester);
+    harness.repository.pending.single.completeError(
+      StateError('late rejection'),
+    );
+    await pumpFeatureUi(tester);
+    expect(harness.repository.removals, hasLength(1));
+    expect(harness.router.state.uri.queryParameters['contactId'], 'a');
+    expect(_notices(harness), isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('saved duplicate callbacks cannot overlap confirmation or hide', (
     tester,
   ) async {
@@ -593,7 +634,11 @@ VoidCallback _savedRemovalCallback(WidgetTester tester) {
   final remove = menu.items.singleWhere(
     (item) => item.label == _copy.hostsHostAudienceRemoveAction,
   );
-  return () => menu.onSelected!(remove.value);
+  // Read the callback dynamically so Dart retains its private enum parameter
+  // type instead of inserting a Function(dynamic) cast on the generic getter.
+  final dynamic typedMenu = menu;
+  final dynamic value = remove.value;
+  return () => typedMenu.onSelected(value);
 }
 
 Future<void> _openRemoval(WidgetTester tester) async {
