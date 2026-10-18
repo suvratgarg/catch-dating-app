@@ -39,7 +39,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
                       context: AppErrorContext.club,
                       onRetry: () => ref.invalidate(watchClubProvider(clubId)),
                     )
-                  : HostWhatsappSetupPane(club: value),
+                  : HostWhatsappSetupSection(club: value),
             ),
           ),
         ],

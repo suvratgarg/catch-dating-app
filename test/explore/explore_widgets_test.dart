@@ -12,11 +12,11 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_mode
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_top_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/clubs/shared/club_cover.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -26,6 +26,8 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -43,13 +45,14 @@ import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart'
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -151,6 +154,8 @@ Future<void> _pumpClubUi(WidgetTester tester) async {
 
 Widget _exploreBodySliverGroup({
   required ExploreViewModel clubsViewModel,
+  CatchAsyncState<ExploreFeedViewModel>? feedState,
+  CatchAsyncState<List<ExploreEventRecommendation>>? recommendationsState,
   AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
     ExploreFeedViewModel(items: []),
   ),
@@ -174,7 +179,8 @@ Widget _exploreBodySliverGroup({
     builder: (context) => SliverMainAxisGroup(
       slivers: buildExploreBodySlivers(
         context: context,
-        feedAsync: feedAsync,
+        feedState: feedState ?? catchAsyncStateFromAsyncValue(feedAsync),
+        recommendationsState: recommendationsState,
         clubsViewModel: clubsViewModel,
         filters: filters,
         searchQuery: searchQuery,
@@ -212,7 +218,7 @@ Widget _exploreEventsSection({
 }) {
   return SliverMainAxisGroup(
     slivers: buildExploreEventsSlivers(
-      feedAsync,
+      catchAsyncStateFromAsyncValue(feedAsync),
       l10n: _l10n,
       pinnedDayHeaders: false,
       filters: filters,
@@ -247,7 +253,7 @@ List<Widget> _exploreEventsSlivers({
   Set<String> joinedClubIds = const {},
 }) {
   return buildExploreEventsSlivers(
-    feedAsync,
+    catchAsyncStateFromAsyncValue(feedAsync),
     l10n: _l10n,
     filters: filters,
     searchQuery: searchQuery,
@@ -308,6 +314,7 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('Explore and club discovery widgets', () {
+    _registerExploreAsyncPhaseTests();
     _registerExploreDiscoveryWidgetsTests();
     _registerExploreClubCardsTests();
     _registerExploreClubDetailTests();
@@ -395,4 +402,236 @@ Finder _fieldOptionCard(String title, {bool? selected}) {
         widget.title == title &&
         (selected == null || widget.selected == selected),
   );
+}
+
+// Obtain combined states from Riverpod's public lifecycle rather than using its
+// package-internal copyWithPrevious constructor in presentation tests.
+Future<Map<String, CatchAsyncState<T>>> _exploreAsyncPhases<T>(
+  WidgetTester tester,
+  T value,
+) async {
+  final dependency = Provider<int>((ref) => 0);
+  var pending = Completer<T>();
+  final provider = FutureProvider<T>((ref) {
+    ref.watch(dependency);
+    return pending.future;
+  });
+  final container = ProviderContainer(
+    overrides: [dependency.overrideWithValue(0)],
+    retry: (_, _) => null,
+  );
+  try {
+    container.listen(provider, (_, _) {});
+    final phases = <String, CatchAsyncState<T>>{
+      'initial loading': catchAsyncStateFromAsyncValue(
+        container.read(provider),
+      ),
+    };
+    pending.complete(value);
+    await tester.pump();
+    phases['data'] = catchAsyncStateFromAsyncValue(container.read(provider));
+    pending = Completer<T>();
+    container.invalidate(provider);
+    phases['refresh'] = catchAsyncStateFromAsyncValue(container.read(provider));
+    pending.completeError(StateError('refresh failed'), StackTrace.empty);
+    await tester.pump();
+    phases['stale error'] = catchAsyncStateFromAsyncValue(
+      container.read(provider),
+    );
+    pending = Completer<T>();
+    container.invalidate(provider);
+    phases['stale retry'] = catchAsyncStateFromAsyncValue(
+      container.read(provider),
+    );
+    pending.complete(value);
+    await tester.pump();
+    pending = Completer<T>();
+    container.updateOverrides([dependency.overrideWithValue(1)]);
+    phases['reload'] = catchAsyncStateFromAsyncValue(container.read(provider));
+    pending.complete(value);
+    await tester.pump();
+
+    final failedProvider = FutureProvider<T>((ref) => pending.future);
+    pending = Completer<T>();
+    container.listen(failedProvider, (_, _) {});
+    pending.completeError(StateError('initial failed'), StackTrace.empty);
+    await tester.pump();
+    phases['terminal error'] = catchAsyncStateFromAsyncValue(
+      container.read(failedProvider),
+    );
+    pending = Completer<T>();
+    container.invalidate(failedProvider);
+    phases['retry'] = catchAsyncStateFromAsyncValue(
+      container.read(failedProvider),
+    );
+    pending.complete(value);
+    await tester.pump();
+    expect(phases.map((name, state) => MapEntry(name, state.phase)), {
+      'initial loading': CatchAsyncPhase.initialLoading,
+      'data': CatchAsyncPhase.data,
+      'refresh': CatchAsyncPhase.refreshing,
+      'stale error': CatchAsyncPhase.staleDataWithError,
+      'stale retry': CatchAsyncPhase.staleDataWithError,
+      'reload': CatchAsyncPhase.refreshing,
+      'terminal error': CatchAsyncPhase.terminalError,
+      'retry': CatchAsyncPhase.retrying,
+    });
+    return phases;
+  } finally {
+    container.dispose();
+  }
+}
+
+void _registerExploreAsyncPhaseTests() {
+  testWidgets('Explore feed preserves canonical phases and paging ownership', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'phase-club');
+    final event = event_test.buildEvent(id: 'phase-event', clubId: club.id);
+    final feed = ExploreFeedViewModel(
+      items: [
+        ExploreEventItem(
+          event: event,
+          club: club,
+          status: EventTileStatus.open,
+        ),
+      ],
+      isExhaustive: false,
+    );
+    final phases = await _exploreAsyncPhases(tester, feed);
+    for (final entry in phases.entries) {
+      var retries = 0;
+      var loads = 0;
+      final state = entry.value;
+      final content =
+          state.phase == CatchAsyncPhase.data ||
+          state.phase == CatchAsyncPhase.refreshing;
+      final failed = state.hasStaleError || state.isTerminalError;
+      await _pumpClubsSlivers(tester, [
+        _exploreBodySliverGroup(
+          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          feedState: state,
+          onRetryFeed: () => retries++,
+          onLoadMore: () => loads++,
+        ),
+      ]);
+      expect(
+        find.byType(ExploreEventsSkeleton),
+        state.isLoading ? findsOneWidget : findsNothing,
+        reason: entry.key,
+      );
+      expect(
+        find.bySubtype<CatchErrorState>(),
+        failed ? findsOneWidget : findsNothing,
+        reason: entry.key,
+      );
+      expect(
+        find.byType(ExploreFeedSliverBody),
+        content ? findsOneWidget : findsNothing,
+        reason: entry.key,
+      );
+      expect(
+        find.byType(ExploreEventTypeBrowseGrid),
+        content ? findsOneWidget : findsNothing,
+        reason: entry.key,
+      );
+      final pager = _catchButtonWithLabel(
+        _l10n.exploreExploreScreenActionLoadMorePlans,
+      );
+      expect(pager, content ? findsOneWidget : findsNothing, reason: entry.key);
+      if (content) {
+        tester.widget<CatchButton>(pager).onPressed!();
+        expect(loads, 1);
+      }
+      if (failed) {
+        tester.widget<CatchErrorState>(find.byType(CatchErrorState)).onRetry!();
+        expect(retries, 1);
+      }
+      expect(tester.takeException(), isNull, reason: entry.key);
+    }
+    await _pumpClubsSlivers(tester, [
+      _exploreBodySliverGroup(
+        clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+        feedAsync: AsyncData(
+          ExploreFeedViewModel(
+            items: feed.items,
+            isExhaustive: false,
+            isLoadingMore: true,
+          ),
+        ),
+        onLoadMore: () => fail('Pending paging cannot dispatch again'),
+      ),
+    ]);
+    final pendingPager = tester.widget<CatchButton>(
+      _catchButtonWithLabel(_l10n.exploreExploreScreenActionLoadMorePlans),
+    );
+    expect(pendingPager.onPressed, isNull);
+    expect(pendingPager.status, CatchButtonStatus.loading);
+  });
+
+  testWidgets('Explore recommendation phases preserve independent recovery', (
+    tester,
+  ) async {
+    final recommendation = ExploreEventRecommendation(
+      event: event_test.buildEvent(
+        id: 'phase-recommendation',
+        clubId: 'phase-club',
+      ),
+      clubName: 'Phase club',
+      reasonLabel: 'For this test',
+      score: 1,
+    );
+    final phases = await _exploreAsyncPhases(tester, [recommendation]);
+    for (final entry in phases.entries) {
+      var retries = 0;
+      final state = entry.value;
+      final failed = state.hasStaleError || state.isTerminalError;
+      await _pumpClubsSlivers(tester, [
+        _exploreBodySliverGroup(
+          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          recommendationsState: state,
+          onRetryFeed: () => retries++,
+        ),
+      ]);
+      expect(find.byType(ExploreFeedEmptyState), findsOneWidget);
+      expect(
+        find.byType(ExploreRecommendationsSection),
+        failed ? findsNothing : findsOneWidget,
+        reason: entry.key,
+      );
+      expect(
+        find.bySubtype<CatchErrorState>(),
+        failed ? findsOneWidget : findsNothing,
+        reason: entry.key,
+      );
+      if (failed) {
+        tester.widget<CatchErrorState>(find.byType(CatchErrorState)).onRetry!();
+        expect(retries, 1);
+      } else {
+        final rail = tester.widget<ExploreRecommendationsSection>(
+          find.byType(ExploreRecommendationsSection),
+        );
+        expect(
+          rail.recommendations,
+          state.isLoading ? isEmpty : [recommendation],
+          reason: entry.key,
+        );
+      }
+      expect(tester.takeException(), isNull, reason: entry.key);
+    }
+    for (final recommendations in [
+      null,
+      const CatchAsyncState<List<ExploreEventRecommendation>>.data([]),
+    ]) {
+      await _pumpClubsSlivers(tester, [
+        _exploreBodySliverGroup(
+          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          recommendationsState: recommendations,
+        ),
+      ]);
+      expect(find.byType(ExploreRecommendationsSection), findsNothing);
+      expect(find.bySubtype<CatchErrorState>(), findsNothing);
+      expect(find.byType(ExploreFeedEmptyState), findsOneWidget);
+    }
+  });
 }

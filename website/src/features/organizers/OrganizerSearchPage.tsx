@@ -1,3 +1,5 @@
+import {claimGuidance} from "@content/claimGuidance";
+import {MarketingSection, MarketingSectionCopy, ButtonLink} from "../../shared/ui/primitives";
 import {websiteCopy} from "@content/generated";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {
@@ -45,6 +47,10 @@ export function OrganizerSearchPage({listings}: OrganizerSearchPageProps = {}) {
           queryTerms={queryTerms}
           results={results}
         />
+        <MarketingSection variant="story">
+          <MarketingSectionCopy variant="proof" reveal={false} title={claimGuidance.title} body={claimGuidance.body} />
+          <ButtonLink href="/host/apply/" variant="ghost">{claimGuidance.pilot}</ButtonLink>
+        </MarketingSection>
       </WebsitePageMain>
 
       <PublicSiteFooter

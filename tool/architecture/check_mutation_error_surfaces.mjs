@@ -11,7 +11,16 @@ const isCliEntrypoint =
 if (isCliEntrypoint) runCli();
 
 export function scanMutationErrorSurfaces({root = fromRepo()} = {}) {
-  const dartFiles = collectDartFiles(path.join(root, "lib"));
+  const inputRoot = path.join(root, "lib");
+  for (const directory of [root, inputRoot]) {
+    if (!fs.existsSync(directory) || !fs.statSync(directory).isDirectory()) {
+      return scopeFailure("Expected a repository root with a production lib directory.");
+    }
+  }
+  const dartFiles = collectDartFiles(inputRoot);
+  if (dartFiles.length === 0) {
+    return scopeFailure("No eligible production lib Dart files found (.g.dart files are excluded).");
+  }
   const findings = [];
 
   for (const file of dartFiles) {
@@ -23,6 +32,18 @@ export function scanMutationErrorSurfaces({root = fromRepo()} = {}) {
   return {
     checkedFiles: dartFiles.length,
     findings,
+  };
+}
+
+function scopeFailure(reason) {
+  return {
+    checkedFiles: 0,
+    findings: [{
+      path: "lib",
+      line: null,
+      reason,
+      text: "Check --root and materialize the production lib source before running this check.",
+    }],
   };
 }
 
@@ -49,7 +70,6 @@ export function scanFile({relativePath, source}) {
 }
 
 function collectDartFiles(root) {
-  if (!fs.existsSync(root)) return [];
   const files = [];
   walk(root, files);
   return files
@@ -282,7 +302,9 @@ function printHelp() {
   node tool/architecture/check_mutation_error_surfaces.mjs --json
   node tool/architecture/check_mutation_error_surfaces.mjs --root <repo-root>
 
-Scans production lib/**/*.dart build methods. Any watched mutation whose
+Scans production lib/**/*.dart build methods, excluding .g.dart files.
+Missing, non-directory or empty input scopes fail the check.
+Any watched mutation whose
 isPending state is read must also expose a matching mutation error surface, such
 as listenToCatchMutationErrors, CatchLocalizedErrorBanner.mutation, mutationErrorMessage, or
 a direct hasError branch for that same mutation.`);

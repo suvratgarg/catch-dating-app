@@ -3,7 +3,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MarketingSection} from "../shared/ui/primitives";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../shared/site";
 
-const publicRouteIds = ["home", "visitor_discovery", "host", "claim", "claim_lookup", "privacy", "terms", "help", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy", "event_detail_canonical", "host_workflows", "host_overview", "host_platform", "host_planners", "host_mixers", "host_clubs", "host_directory", "host_claim", "host_apply", "host_stack"];
+const publicRouteIds = ["home", "visitor_discovery", "host", "claim", "claim_lookup", "privacy", "terms", "help", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy", "event_detail_canonical", "host_apply"];
 const meta = {title: "Marketing Website/Shared/Public site chrome", component: PublicSiteHeader} satisfies Meta<typeof PublicSiteHeader>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -70,8 +70,8 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     const menu = within(dialog);
     const close = menu.getByRole("button", {name: "Close"});
     await expect(close).toHaveFocus();
-    const actions = [menu.getByRole("link", {name: "Sign in for a claim"}),
-      menu.getByRole("link", {name: "Get started free"})];
+    const actions = [menu.getByRole("link", {name: "Claim your page"}),
+      menu.getByRole("link", {name: "Apply for a pilot"})];
     for (const action of actions) {
       await hoverAction(action, false);
       await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
@@ -116,7 +116,7 @@ export const PublicSiteHeaderDarkStory: Story = {
   </div>,
   play: async (context) => {
     const header = context.canvasElement.querySelector<HTMLElement>(".site-header")!;
-    const signIn = within(header).getByRole("link", {name: "Sign in for a claim"});
+    const signIn = within(header).getByRole("link", {name: "Claim your page"});
     if (getComputedStyle(signIn).display !== "none") {
       await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
       await hoverAction(signIn);

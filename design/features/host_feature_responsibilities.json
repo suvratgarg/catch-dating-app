@@ -293,7 +293,7 @@
               "functions/src/organizers/organizerSavedAudienceMembers.ts",
               "functions/src/organizers/organizerAudienceCoverage.ts",
               "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart",
-              "lib/hosts/presentation/customers/host_saved_audience_overview.dart"
+              "lib/hosts/presentation/customers/host_saved_audience_section.dart"
             ],
             "examples": [
               {

@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
-import 'package:catch_dating_app/auth/presentation/otp_page.dart';
-import 'package:catch_dating_app/auth/presentation/phone_page.dart';
+import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
+import 'package:catch_dating_app/auth/presentation/otp_step.dart';
+import 'package:catch_dating_app/auth/presentation/phone_step.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -108,37 +110,150 @@ Widget authScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Phone entry states',
-  type: PhonePage,
+  type: PhoneStep,
   path: '[P3 utility surfaces]/Auth',
 )
 Widget phonePageStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'PhonePage',
+    title: 'PhoneStep',
     contractId: 'screen.auth.phone',
     children: [
       WidgetbookPageStateCard(
         label: 'default country',
-        child: _authFrame(child: const PhonePage()),
+        child: _authFrame(child: const PhoneStep()),
       ),
       WidgetbookPageStateCard(
         label: 'send code pending',
         child: _authFrame(
           mode: _AuthPreviewMode.sendCodePending,
-          child: const PhonePage(),
+          child: const PhoneStep(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'send code error',
         child: _authFrame(
           mode: _AuthPreviewMode.sendCodeError,
-          child: const PhonePage(),
+          child: const PhoneStep(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'text scale 2',
         child: _authFrame(
           textScaler: const TextScaler.linear(2),
-          child: const PhonePage(),
+          child: const PhoneStep(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Scaffold states',
+  type: HostAuthScaffold,
+  path: '[P3 utility surfaces]/Auth',
+)
+Widget hostAuthScaffoldStates(BuildContext context) {
+  return const WidgetbookPageCatalogFrame(
+    title: 'HostAuthScaffold',
+    contractId: 'screen.auth.host_scaffold',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'brand header over inset card',
+        child: SizedBox(
+          height: 560,
+          child: HostAuthScaffold(
+            child: HostAuthCard(
+              child: HostAuthHeader(
+                title: 'Sign in to Catch Host',
+                subtitle: 'We will text a code to your phone.',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Card states',
+  type: HostAuthCard,
+  path: '[P3 utility surfaces]/Auth',
+)
+Widget hostAuthCardStates(BuildContext context) {
+  return const WidgetbookPageCatalogFrame(
+    title: 'HostAuthCard',
+    contractId: 'component.auth.host_card',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'header and action',
+        child: HostAuthCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              HostAuthHeader(
+                title: 'Enter the code',
+                subtitle: 'Sent to +91 98765 43210.',
+              ),
+              SizedBox(height: CatchSpacing.s4),
+              HostAuthProgressButton(label: 'Verifying'),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: HostAuthHeader,
+  path: '[P3 utility surfaces]/Auth',
+)
+Widget hostAuthHeaderStates(BuildContext context) {
+  return const WidgetbookPageCatalogFrame(
+    title: 'HostAuthHeader',
+    contractId: 'component.auth.host_header',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'phone step',
+        child: HostAuthHeader(
+          title: 'Sign in to Catch Host',
+          subtitle: 'We will text a code to your phone.',
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'long subtitle',
+        child: HostAuthHeader(
+          title: 'Enter the code',
+          subtitle:
+              'We sent a six-digit code to +91 98765 43210. It can take a '
+              'minute to arrive.',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Progress button states',
+  type: HostAuthProgressButton,
+  path: '[P3 utility surfaces]/Auth',
+)
+Widget hostAuthProgressButtonStates(BuildContext context) {
+  return const WidgetbookPageCatalogFrame(
+    title: 'HostAuthProgressButton',
+    contractId: 'component.auth.host_progress_button',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'primary in flight',
+        child: HostAuthProgressButton(label: 'Sending code'),
+      ),
+      WidgetbookPageStateCard(
+        label: 'secondary in flight',
+        child: HostAuthProgressButton(
+          label: 'Resending',
+          variant: CatchButtonVariant.secondary,
         ),
       ),
     ],
@@ -147,19 +262,19 @@ Widget phonePageStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Country code selector states',
-  type: CountryCodeSelector,
+  type: PhoneCountryCodePicker,
   path: '[P3 utility surfaces]/Auth',
 )
 Widget countryCodeSelectorStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'CountryCodeSelector',
+    title: 'PhoneCountryCodePicker',
     contractId: 'component.auth.country_code_selector',
     children: [
       WidgetbookPageStateCard(
         label: 'India default',
         child: Align(
           alignment: Alignment.centerLeft,
-          child: CountryCodeSelector(
+          child: PhoneCountryCodePicker(
             countryCode: '+91',
             onChanged: widgetbookIgnoreString,
           ),
@@ -169,7 +284,7 @@ Widget countryCodeSelectorStates(BuildContext context) {
         label: 'US default',
         child: Align(
           alignment: Alignment.centerLeft,
-          child: CountryCodeSelector(
+          child: PhoneCountryCodePicker(
             countryCode: '+1',
             onChanged: widgetbookIgnoreString,
           ),
@@ -181,47 +296,47 @@ Widget countryCodeSelectorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'OTP entry states',
-  type: OtpPage,
+  type: OtpStep,
   path: '[P3 utility surfaces]/Auth',
 )
 Widget otpPageStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'OtpPage',
+    title: 'OtpStep',
     contractId: 'screen.auth.otp',
     children: [
       WidgetbookPageStateCard(
         label: 'verification code cooldown',
         child: _authFrame(
           mode: _AuthPreviewMode.otpEntry,
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'verify pending',
         child: _authFrame(
           mode: _AuthPreviewMode.verifyCodePending,
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'verify error',
         child: _authFrame(
           mode: _AuthPreviewMode.verifyCodeError,
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'resend pending',
         child: _authFrame(
           mode: _AuthPreviewMode.resendPending,
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'resend error',
         child: _authFrame(
           mode: _AuthPreviewMode.resendError,
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
       WidgetbookPageStateCard(
@@ -229,7 +344,7 @@ Widget otpPageStates(BuildContext context) {
         child: _authFrame(
           mode: _AuthPreviewMode.otpEntry,
           textScaler: const TextScaler.linear(2),
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
       WidgetbookPageStateCard(
@@ -237,7 +352,7 @@ Widget otpPageStates(BuildContext context) {
         child: _authFrame(
           mode: _AuthPreviewMode.otpEntry,
           disableAnimations: true,
-          child: const OtpPage(),
+          child: const OtpStep(),
         ),
       ),
     ],

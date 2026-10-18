@@ -25,7 +25,7 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
           ref.invalidate(hostGroupDirectoryControllerProvider);
         },
         children: [
-          HostSavedAudiencesDirectory(
+          HostSavedAudiencesList(
             organizerId: organizerId,
             query: query,
             onOpen: onOpen,
@@ -34,8 +34,8 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
       );
 }
 
-class HostSavedAudiencesDirectory extends ConsumerStatefulWidget {
-  const HostSavedAudiencesDirectory({
+class HostSavedAudiencesList extends ConsumerStatefulWidget {
+  const HostSavedAudiencesList({
     super.key,
     required this.organizerId,
     required this.query,
@@ -47,12 +47,12 @@ class HostSavedAudiencesDirectory extends ConsumerStatefulWidget {
   final ValueChanged<HostSavedAudience> onOpen;
 
   @override
-  ConsumerState<HostSavedAudiencesDirectory> createState() =>
-      _HostSavedAudiencesDirectoryState();
+  ConsumerState<HostSavedAudiencesList> createState() =>
+      _HostSavedAudiencesListState();
 }
 
-class _HostSavedAudiencesDirectoryState
-    extends ConsumerState<HostSavedAudiencesDirectory> {
+class _HostSavedAudiencesListState
+    extends ConsumerState<HostSavedAudiencesList> {
   _HostSavedAudienceMembership _membership = _HostSavedAudienceMembership.all;
   bool _byName = true;
   int _openGeneration = 0;
@@ -68,7 +68,7 @@ class _HostSavedAudiencesDirectoryState
       );
 
   @override
-  void didUpdateWidget(covariant HostSavedAudiencesDirectory oldWidget) {
+  void didUpdateWidget(covariant HostSavedAudiencesList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.organizerId != widget.organizerId ||
         oldWidget.query != widget.query) {

@@ -4,7 +4,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_compatibilit
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 const _customQuestionSetId = '__custom__';
 
@@ -98,7 +97,7 @@ class _EventSuccessQuestionnaireConfigEditorState
           if (previewConfig.usesCustom &&
               widget.value.usesCustom &&
               !_questionSetOpen)
-            CustomQuestionnaireFields(
+            CustomQuestionnaireSection(
               value: widget.value,
               enabled: widget.enabled,
               onChanged: widget.onChanged,
@@ -154,8 +153,8 @@ EventSuccessQuestionnaireConfig _configForQuestionSetId(String id) =>
     ? const EventSuccessQuestionnaireConfig.customTemplate()
     : EventSuccessQuestionnaireConfig(templateId: id);
 
-class CustomQuestionnaireFields extends StatefulWidget {
-  const CustomQuestionnaireFields({
+class CustomQuestionnaireSection extends StatefulWidget {
+  const CustomQuestionnaireSection({
     super.key,
     required this.value,
     required this.enabled,
@@ -167,11 +166,12 @@ class CustomQuestionnaireFields extends StatefulWidget {
   final ValueChanged<EventSuccessQuestionnaireConfig> onChanged;
 
   @override
-  State<CustomQuestionnaireFields> createState() =>
-      _CustomQuestionnaireFieldsState();
+  State<CustomQuestionnaireSection> createState() =>
+      _CustomQuestionnaireSectionState();
 }
 
-class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
+class _CustomQuestionnaireSectionState
+    extends State<CustomQuestionnaireSection> {
   static const _titleKey = 'title';
 
   final CatchAccordionController _accordion = CatchAccordionController();
@@ -186,7 +186,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
   }
 
   @override
-  void didUpdateWidget(CustomQuestionnaireFields oldWidget) {
+  void didUpdateWidget(CustomQuestionnaireSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     _reconcileControllers();
   }
@@ -213,23 +213,31 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _inputField(
-            key: _titleKey,
+          CustomQuestionnaireField(
+            state: _fieldState(
+              _titleKey,
+              (title) =>
+                  widget.onChanged(widget.value.copyWith(customTitle: title)),
+            ),
             title: context
                 .l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentQuestionnaireConfigCustomTitle,
-            onCommit: (title) =>
-                widget.onChanged(widget.value.copyWith(customTitle: title)),
           ),
           for (
             var questionIndex = 0;
             questionIndex < questions.length;
             questionIndex++
           ) ...[
-            _inputField(
-              key: _promptKey(questions[questionIndex]),
+            CustomQuestionnaireField(
+              state: _fieldState(
+                _promptKey(questions[questionIndex]),
+                (prompt) => _updateQuestion(
+                  questionIndex,
+                  questions[questionIndex].copyWith(prompt: prompt),
+                ),
+              ),
               title: context.l10n
                   .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
                     value1: questionIndex + 1,
@@ -237,20 +245,28 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsPrompt,
               maxLines: 3,
-              onCommit: (prompt) => _updateQuestion(
-                questionIndex,
-                questions[questionIndex].copyWith(prompt: prompt),
-              ),
             ),
             for (
               var optionIndex = 0;
               optionIndex < questions[questionIndex].options.length;
               optionIndex++
             )
-              _inputField(
-                key: _optionKey(
-                  questions[questionIndex],
-                  questions[questionIndex].options[optionIndex],
+              CustomQuestionnaireField(
+                state: _fieldState(
+                  _optionKey(
+                    questions[questionIndex],
+                    questions[questionIndex].options[optionIndex],
+                  ),
+                  (label) {
+                    final question = questions[questionIndex];
+                    final nextOptions = [...question.options];
+                    nextOptions[optionIndex] = nextOptions[optionIndex]
+                        .copyWith(label: label);
+                    _updateQuestion(
+                      questionIndex,
+                      question.copyWith(options: nextOptions),
+                    );
+                  },
                 ),
                 title: context.l10n
                     .eventSuccessEventSuccessQuestionnaireConfigEditorTitleOptionValue1(
@@ -258,17 +274,6 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
                     ),
                 contract: CatchContractConstraints
                     .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
-                onCommit: (label) {
-                  final question = questions[questionIndex];
-                  final nextOptions = [...question.options];
-                  nextOptions[optionIndex] = nextOptions[optionIndex].copyWith(
-                    label: label,
-                  );
-                  _updateQuestion(
-                    questionIndex,
-                    question.copyWith(options: nextOptions),
-                  );
-                },
               ),
             if (questions.length > 1)
               CatchFieldLanes.single(
@@ -334,39 +339,25 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
     );
   }
 
-  CatchFieldLanes _inputField({
-    required String key,
-    required String title,
-    required CatchContractFieldConstraints contract,
-    required ValueChanged<String> onCommit,
-    List<TextInputFormatter>? inputFormatters,
-    int maxLines = 1,
-  }) {
+  CustomQuestionnaireFieldState _fieldState(
+    String key,
+    ValueChanged<String> onCommit,
+  ) {
     final controller = _controllers[key]!;
-    return CatchFieldLanes.single(
-      child: CatchField.inputActions(
-        copy: catchFieldCopy(context.l10n),
-        key: ValueKey('custom-questionnaire-$key'),
-        title: title,
-        contract: contract,
-        controller: controller,
-        open: _accordion.isExpanded(key),
-        onOpenChanged: (open) => _setOpen(key, open),
-        onCancel: () {
-          controller.text = _sourceValues[key] ?? '';
-          _accordion.collapse();
-        },
-        onSubmit: () {
-          onCommit(controller.text);
-          _accordion.collapse();
-        },
-        states: <WidgetState>{if (!widget.enabled) WidgetState.disabled},
-        inputFormatters: inputFormatters,
-        maxLines: maxLines,
-        textInputAction: maxLines == 1
-            ? TextInputAction.done
-            : TextInputAction.newline,
-      ),
+    return (
+      fieldKey: key,
+      controller: controller,
+      open: _accordion.isExpanded(key),
+      enabled: widget.enabled,
+      onOpenChanged: (open) => _setOpen(key, open),
+      onCancel: () {
+        controller.text = _sourceValues[key] ?? '';
+        _accordion.collapse();
+      },
+      onSubmit: () {
+        onCommit(controller.text);
+        _accordion.collapse();
+      },
     );
   }
 
@@ -465,4 +456,55 @@ EventSuccessCompatibilityQuestion _blankQuestion(
       ),
     ],
   );
+}
+
+/// Editing state for one [CustomQuestionnaireField], owned by
+/// [CustomQuestionnaireSection].
+typedef CustomQuestionnaireFieldState = ({
+  String fieldKey,
+  TextEditingController controller,
+  bool open,
+  bool enabled,
+  ValueChanged<bool> onOpenChanged,
+  VoidCallback onCancel,
+  VoidCallback onSubmit,
+});
+
+/// One accordion text field of a custom questionnaire: the set name, a
+/// question prompt or an answer option.
+class CustomQuestionnaireField extends StatelessWidget {
+  const CustomQuestionnaireField({
+    super.key,
+    required this.state,
+    required this.title,
+    required this.contract,
+    this.maxLines = 1,
+  });
+
+  final CustomQuestionnaireFieldState state;
+  final String title;
+  final CatchContractFieldConstraints contract;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchFieldLanes.single(
+      child: CatchField.inputActions(
+        copy: catchFieldCopy(context.l10n),
+        key: ValueKey('custom-questionnaire-${state.fieldKey}'),
+        title: title,
+        contract: contract,
+        controller: state.controller,
+        open: state.open,
+        onOpenChanged: state.onOpenChanged,
+        onCancel: state.onCancel,
+        onSubmit: state.onSubmit,
+        states: <WidgetState>{if (!state.enabled) WidgetState.disabled},
+        maxLines: maxLines,
+        textInputAction: maxLines == 1
+            ? TextInputAction.done
+            : TextInputAction.newline,
+      ),
+    );
+  }
 }

@@ -95,8 +95,11 @@ class CatchCountBadge extends StatelessWidget {
         : CatchSurface(
             radius: CatchRadius.pill,
             backgroundColor: t.primary,
-            borderColor: t.surface,
-            borderWidth: CatchLayout.countBadgeBorderWidth,
+            borderSpec: CatchBorderSpec(
+              role: CatchBorderRole.separator,
+              color: t.surface,
+              width: CatchLayout.countBadgeBorderWidth,
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 minWidth: CatchLayout.countBadgeMinExtent,

@@ -246,7 +246,7 @@ class _AccordionPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +270,7 @@ class _ProposedReveal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,7 +320,7 @@ class _DrawerPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
+      borderRole: CatchBorderRole.separator,
       child: CatchFieldDrawer(
         open: open,
         offstage: !open,
@@ -345,7 +345,7 @@ class _StatusSnapshot extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Row(
         children: [

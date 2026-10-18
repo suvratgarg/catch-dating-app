@@ -372,17 +372,17 @@ Widget calendarDateHeaderSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Skeleton state',
-  type: CalendarWeekStripSkeleton,
+  type: CalendarWeekRowSkeleton,
   path: '[P3 utility surfaces]/Calendar/Components',
 )
 Widget calendarWeekStripSkeletonStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CalendarWeekStripSkeleton',
+    title: 'CalendarWeekRowSkeleton',
     contractId: 'component.calendar.week_strip_skeleton',
     children: const [
       WidgetbookPageStateCard(
         label: 'loading',
-        child: CalendarWeekStripSkeleton(),
+        child: CalendarWeekRowSkeleton(),
       ),
     ],
   );
@@ -444,17 +444,17 @@ Widget calendarStatSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Week strip state',
-  type: CalendarWeekStrip,
+  type: CalendarWeekRow,
   path: '[P3 utility surfaces]/Calendar/Components',
 )
 Widget calendarWeekStripStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CalendarWeekStrip',
+    title: 'CalendarWeekRow',
     contractId: 'component.calendar.week_strip',
     children: [
       WidgetbookPageStateCard(
         label: 'event markers',
-        child: CalendarWeekStrip(
+        child: CalendarWeekRow(
           summary: _calendarSummary,
           selectedDate: _calendarSummary.anchorDate,
           onDateSelected: (_) {},

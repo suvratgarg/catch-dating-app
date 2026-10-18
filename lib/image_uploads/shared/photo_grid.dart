@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
-import 'package:catch_dating_app/image_uploads/shared/photo_slot.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_slot_tile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -99,7 +99,7 @@ class _PhotoGridState extends State<PhotoGrid> {
             final photo = photosByPosition[index];
             final isLoading = widget.loadingIndices.contains(index);
             final isActive = index <= photos.length;
-            final slot = PhotoSlot(
+            final slot = PhotoSlotTile(
               key: PhotoGridKeys.slot(index),
               index: index,
               url: photo?.url,

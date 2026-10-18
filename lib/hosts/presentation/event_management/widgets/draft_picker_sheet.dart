@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -68,9 +68,9 @@ class DraftCard extends StatelessWidget {
         emphasis: CatchFieldEmphasis.title,
         copy: catchFieldCopy(context.l10n),
         title: titleOverride ?? draft.summary,
-        body: bodyOverride ?? context.l10n.hostDraftSavedAt(
-          time: _formatRelative(draft.savedAt),
-        ),
+        body:
+            bodyOverride ??
+            context.l10n.hostDraftSavedAt(time: _formatRelative(draft.savedAt)),
         icon: CatchIcons.descriptionOutlined,
         iconColor: t.ink3,
         onTap: isDeleting ? null : onSelect,
@@ -83,7 +83,7 @@ class DraftCard extends StatelessWidget {
             size: 36,
             backgroundColor: Colors.transparent,
             child: isDeleting
-                ? const HostInlineSkeletonIcon()
+                ? const HostInlineIconSkeleton()
                 : Icon(
                     CatchIcons.deleteOutlineRounded,
                     size: CatchIcon.control,
