@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
@@ -14,18 +15,18 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Deck composition',
-  type: CatchesProfileReview,
+  type: CatchesProfileBody,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget catchesProfileReviewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CatchesProfileReview',
+    title: 'CatchesProfileBody',
     contractId: 'screen.catches.event sections',
     children: [
       WidgetbookPageStateCard(
         label: 'profile review',
         child: WidgetbookCatchesDeviceFrame(
-          child: CatchesProfileReview(
+          child: CatchesProfileBody(
             profile: CatchesSurfaceFixtures.candidates.first,
             remainingCount: CatchesSurfaceFixtures.candidates.length,
             viewerProfile: CatchesSurfaceFixtures.viewer,
@@ -42,7 +43,7 @@ Widget catchesProfileReviewStates(BuildContext context) {
         child: WidgetbookCatchesDeviceFrame(
           child: WidgetbookMediaOverride(
             disableAnimations: true,
-            child: CatchesProfileReview(
+            child: CatchesProfileBody(
               profile: CatchesSurfaceFixtures.candidates.last,
               remainingCount: 1,
               viewerProfile: CatchesSurfaceFixtures.viewer,
@@ -128,19 +129,19 @@ Widget catchesTopOverlayStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Bottom scrim states',
-  type: CatchesBottomScrim,
+  type: CatchesScrimOverlay,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget catchesBottomScrimStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'CatchesBottomScrim',
+    title: 'CatchesScrimOverlay',
     contractId: 'screen.catches.event.bottom_scrim',
     children: [
       WidgetbookPageStateCard(
         label: 'default',
         child: WidgetbookCatchesDeckChromeFrame(
           height: WidgetbookPreviewLayout.stateViewportHeight,
-          child: CatchesBottomScrim(),
+          child: CatchesScrimOverlay(),
         ),
       ),
     ],

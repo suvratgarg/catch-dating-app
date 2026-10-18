@@ -1,11 +1,9 @@
 import 'dart:async';
-
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
@@ -13,7 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_sc
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
-
+import 'event_editor_preview.dart';
 import 'host_form_workspace_use_cases.dart';
 import 'operations/role_theme.dart';
 
@@ -53,7 +51,7 @@ Widget hostOfferNeedsContact(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Offer review ready',
-  type: HostEventOfferWorkspaceSection,
+  type: HostEventOfferWorkspaceBodySection,
   path: '[P1 product surfaces]/Host operations/RSVP review',
 )
 Widget hostOfferPrepared(BuildContext context) =>
@@ -79,9 +77,6 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
   late final HostResponseQueryController _query = HostResponseQueryController(
     _FixtureQuery(),
   );
-  late final HostEventOfferController _offers = HostEventOfferController(
-    _FixtureOffers(),
-  );
   bool _selected = false;
 
   @override
@@ -105,7 +100,6 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
   @override
   void dispose() {
     _query.dispose();
-    _offers.dispose();
     super.dispose();
   }
 
@@ -120,66 +114,69 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: _selected
-              ? HostEventOfferWorkspaceSection(
-                  organizerId: 'org_demo',
-                  accountId: 'manager_demo',
-                  queryController: _query,
-                  offerController: _offers,
-                  listOffers:
-                      ({
-                        required organizerId,
-                        required eventId,
-                        afterOfferId,
-                      }) async => {
-                        'items': widget.mode == _PreviewMode.existing
-                            ? [
-                                {
-                                  'offerId': 'offer_demo',
-                                  'eventId': 'event_demo',
-                                  'contactId': 'contact_demo',
-                                  'effectiveStatus': 'offered',
-                                },
-                              ]
-                            : <Object>[],
-                        'nextCursor': null,
-                      },
-                  getOffer:
-                      ({
-                        required organizerId,
-                        required eventId,
-                        required contactId,
-                      }) async => _previewOffer(),
-                  prepareHandoff: ({required offer}) async =>
-                      const HostOfferHandoff(
-                        kind: 'blocked',
-                        offerId: 'offer_demo',
-                        blockers: ['fixture'],
-                      ),
-                  copyMessage: (_) async {},
-                  openHandoff: (_) async => false,
-                  targets: _FixtureTargets(widget.mode),
-                  getResponseDetail: (_) async => HostFormResponseDetail(
-                    response: hostFormResponsePreviewDetail.response,
-                    contactId: widget.mode == _PreviewMode.needsContact
-                        ? null
-                        : 'contact_demo',
-                    answers: hostFormResponsePreviewDetail.answers,
-                    consentVersion:
-                        hostFormResponsePreviewDetail.consentVersion,
-                    completionMillis:
-                        hostFormResponsePreviewDetail.completionMillis,
+              ? eventOfferPreview(
+                  _FixtureOffers(),
+                  HostEventOfferWorkspaceSection(
+                    organizerId: 'org_demo',
+                    accountId: 'manager_demo',
+                    queryController: _query,
+                    offerScope: previewOfferScope,
+                    listOffers:
+                        ({
+                          required organizerId,
+                          required eventId,
+                          afterOfferId,
+                        }) async => {
+                          'items': widget.mode == _PreviewMode.existing
+                              ? [
+                                  {
+                                    'offerId': 'offer_demo',
+                                    'eventId': 'event_demo',
+                                    'contactId': 'contact_demo',
+                                    'effectiveStatus': 'offered',
+                                  },
+                                ]
+                              : <Object>[],
+                          'nextCursor': null,
+                        },
+                    getOffer:
+                        ({
+                          required organizerId,
+                          required eventId,
+                          required contactId,
+                        }) async => _previewOffer(),
+                    prepareHandoff: ({required offer}) async =>
+                        const HostOfferHandoff(
+                          kind: 'blocked',
+                          offerId: 'offer_demo',
+                          blockers: ['fixture'],
+                        ),
+                    copyMessage: (_) async {},
+                    openHandoff: (_) async => false,
+                    targets: _FixtureTargets(widget.mode),
+                    getResponseDetail: (_) async => HostFormResponseDetail(
+                      response: hostFormResponsePreviewDetail.response,
+                      contactId: widget.mode == _PreviewMode.needsContact
+                          ? null
+                          : 'contact_demo',
+                      answers: hostFormResponsePreviewDetail.answers,
+                      consentVersion:
+                          hostFormResponsePreviewDetail.consentVersion,
+                      completionMillis:
+                          hostFormResponsePreviewDetail.completionMillis,
+                    ),
+                    openResponseForConversion: (_) async {},
+                    openEventSettings: (_) async {},
+                    copy: _copy,
+                    now: () => DateTime.utc(2026, 9, 24),
+                    initiallyReviewSelection: true,
+                    initialEventId:
+                        widget.mode == _PreviewMode.needsContact ||
+                            widget.mode == _PreviewMode.prepared ||
+                            widget.mode == _PreviewMode.existing
+                        ? 'event_demo'
+                        : null,
                   ),
-                  openResponseForConversion: (_) async {},
-                  openEventSettings: (_) async {},
-                  copy: _copy,
-                  now: () => DateTime.utc(2026, 9, 24),
-                  initiallyReviewSelection: true,
-                  initialEventId:
-                      widget.mode == _PreviewMode.needsContact ||
-                          widget.mode == _PreviewMode.prepared ||
-                          widget.mode == _PreviewMode.existing
-                      ? 'event_demo'
-                      : null,
                 )
               : const Center(child: CircularProgressIndicator()),
         ),

@@ -16,10 +16,10 @@ export const productionProbeContracts = [
     markers: ["Mumbai and Indore"],
   },
   {
-    path: "/host/workflows/",
-    title: "Workflows | Catch Host content preview",
-    canonicalPath: "/host/workflows/",
-    markers: ["Illustrative capabilities are separate from the supported pilot"],
+    path: "/host/apply/",
+    title: "Apply for a pilot | Catch Host",
+    canonicalPath: "/host/apply/",
+    markers: ["Catch reviews each pilot application"],
   },
   {
     path: "/organizers/",

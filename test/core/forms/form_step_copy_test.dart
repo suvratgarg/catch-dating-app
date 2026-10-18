@@ -10,24 +10,24 @@ const _items = [
   CatchFormStepReviewItem(
     index: 0,
     title: 'Basics',
-    status: CatchFormStepRowListStatus.complete,
+    status: CatchFormStepListStatus.complete,
   ),
   CatchFormStepReviewItem(
     index: 1,
     title: 'Location',
-    status: CatchFormStepRowListStatus.needsInformation,
+    status: CatchFormStepListStatus.needsInformation,
   ),
   CatchFormStepReviewItem(
     index: 2,
     title: 'Notes',
-    status: CatchFormStepRowListStatus.optional,
+    status: CatchFormStepListStatus.optional,
   ),
 ];
 
-String _statusLabel(CatchFormStepRowListStatus status) => switch (status) {
-  CatchFormStepRowListStatus.complete => 'Terminé',
-  CatchFormStepRowListStatus.needsInformation => 'À compléter',
-  CatchFormStepRowListStatus.optional => 'Facultatif',
+String _statusLabel(CatchFormStepListStatus status) => switch (status) {
+  CatchFormStepListStatus.complete => 'Terminé',
+  CatchFormStepListStatus.needsInformation => 'À compléter',
+  CatchFormStepListStatus.optional => 'Facultatif',
 };
 
 Widget _app(Widget child) => MaterialApp(
@@ -40,15 +40,15 @@ void main() {
     final l10n = AppLocalizationsEn();
     final label = catchFormStepStatusLabelBuilder(l10n);
     expect(
-      label(CatchFormStepRowListStatus.complete),
+      label(CatchFormStepListStatus.complete),
       l10n.hostsWizardStatusComplete,
     );
     expect(
-      label(CatchFormStepRowListStatus.needsInformation),
+      label(CatchFormStepListStatus.needsInformation),
       l10n.hostsWizardStatusNeedsInformation,
     );
     expect(
-      label(CatchFormStepRowListStatus.optional),
+      label(CatchFormStepListStatus.optional),
       l10n.hostsWizardStatusOptional,
     );
   });
@@ -59,7 +59,7 @@ void main() {
     int? selected;
     await tester.pumpWidget(
       _app(
-        CatchFormStepRowList(
+        CatchFormStepList(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           items: _items,
           statusLabelBuilder: _statusLabel,
@@ -127,6 +127,6 @@ void main() {
     await tester.tap(find.text('Location'));
     await pumpFeatureUi(tester);
     expect(selected, 1);
-    expect(find.byType(CatchFormStepRowList), findsNothing);
+    expect(find.byType(CatchFormStepList), findsNothing);
   });
 }

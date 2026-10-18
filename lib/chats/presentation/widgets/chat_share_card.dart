@@ -71,7 +71,7 @@ class ChatShareCard extends StatelessWidget {
       aspectRatio: CatchLayout.chatShareCardAspectRatio,
       child: CatchSurface(
         backgroundColor: t.bg,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.contentRelaxed,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +201,7 @@ class ShareCardBubble extends StatelessWidget {
               : AlignmentDirectional.centerStart,
           child: CatchSurface(
             backgroundColor: isMe ? t.primary : t.surface,
-            borderColor: isMe ? null : t.line,
+            borderRole: isMe ? null : CatchBorderRole.separator,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(
                 isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,

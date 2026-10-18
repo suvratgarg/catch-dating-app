@@ -9,7 +9,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
         EventSuccessController,
-        EventSuccessDefaultsPanel,
+        EventSuccessDefaultsSection,
         EventSuccessRoomSetupSection,
         eventSuccessControllerProvider;
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -129,7 +129,7 @@ class _EventSuccessStepState extends ConsumerState<EventSuccessStep> {
           ],
         ),
         if (_customizing && eventSuccessDefaults.enabled)
-          EventSuccessDefaultsPanel(
+          EventSuccessDefaultsSection(
             showEnableToggle: false,
             defaults: eventSuccessDefaults,
             activityKind: activityKind,

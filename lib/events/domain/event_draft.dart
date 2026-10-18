@@ -49,6 +49,7 @@ abstract class EventDraft with _$EventDraft {
     String? interactionModel,
     String? paceName,
     Map<String, dynamic>? routePlan,
+    @JsonKey(includeIfNull: false) bool? routePlanEnabled,
     @Default([]) List<EventItineraryItem> itinerary,
     // Where step
     String? meetingPoint,
@@ -62,8 +63,7 @@ abstract class EventDraft with _$EventDraft {
     int? selectedDateMillis,
     int? selectedStartHour,
     int? selectedStartMinute,
-    @Default(CatchBusinessRules.eventDefaultDurationMinutes)
-    int durationMinutes,
+    @Default(BusinessRules.eventDefaultDurationMinutes) int durationMinutes,
     // Rules step
     String? minAge,
     String? maxAge,
@@ -128,7 +128,7 @@ extension EventDraftX on EventDraft {
       selectedDateMillis == null &&
       selectedStartHour == null &&
       selectedStartMinute == null &&
-      durationMinutes == CatchBusinessRules.eventDefaultDurationMinutes &&
+      durationMinutes == BusinessRules.eventDefaultDurationMinutes &&
       minAge == null &&
       maxAge == null &&
       maxMen == null &&
@@ -144,6 +144,7 @@ extension EventDraftX on EventDraft {
       eventSuccessDefaults == const EventSuccessDefaults();
 
   bool get _routePlanIsDefault {
+    if (routePlanEnabled == false) return false;
     if (routePlan == null) return true;
     final activity = ActivityKind.values.firstWhere(
       (value) => value.name == activityKind,

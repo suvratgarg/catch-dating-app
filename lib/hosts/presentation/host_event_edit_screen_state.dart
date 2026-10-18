@@ -378,8 +378,7 @@ class HostEventEditPolicyFieldState {
       showCohortCapsFields:
           admissionPreset == EventAdmissionPreset.openCapacity &&
           cohortCapsEnabled,
-      showRequestToJoinCopy:
-          admissionPreset == EventAdmissionPreset.requestToJoin,
+      showRequestToJoinCopy: admissionPreset.requiresReview,
       showDynamicPricingToggle:
           admissionPreset == EventAdmissionPreset.balancedSingles,
       showDynamicPricingFields:
@@ -393,7 +392,9 @@ class HostEventEditPolicyFieldState {
   ) {
     if (policy.usesInviteOnly) return EventAdmissionPreset.inviteOnly;
     if (policy.admissionPolicy.manualApprovalRequired) {
-      return EventAdmissionPreset.requestToJoin;
+      return policy.admissionPolicy.approvedMembersSkipReview
+          ? EventAdmissionPreset.requestToJoinMembersExempt
+          : EventAdmissionPreset.requestToJoin;
     }
     if (policy.usesBalancedRatio) {
       return EventAdmissionPreset.balancedSingles;

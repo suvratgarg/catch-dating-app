@@ -27,6 +27,7 @@ import {rosterWithReservedWaitlistOffersInTransaction} from "../eventPolicy";
 import {
   assertCurrentPublicGuest,
   readPublicEventSource,
+  publicGuestMembership,
 } from "./authority";
 import {preparePublicGuestIdentity} from "./identity";
 import {
@@ -111,7 +112,8 @@ export async function reservePublicPayment(input: {
       tx,
       eventId,
     });
-    const quote = publicCheckoutQuote(eventId, event, organizer, nowMillis);
+    const quote = publicCheckoutQuote(eventId, event, organizer, nowMillis,
+      await publicGuestMembership({db, tx, event, uid, nowMillis}));
     assertReviewedPublicQuote(reviewedQuote, quote);
     const organizerId = event.organizerId!;
     if (

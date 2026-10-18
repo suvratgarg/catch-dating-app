@@ -240,8 +240,13 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
   final signUpStatus = eventSignUpStatusForViewerAvailability(
     availability.status,
   );
+  final admissionPolicy = event.effectiveEventPolicy.admissionPolicy;
+  final activeMember = currentViewer == null
+      ? isClubMember
+      : currentViewer.membership == EventViewerMembership.active;
   final requiresHostApproval =
-      event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired;
+      admissionPolicy.manualApprovalRequired &&
+      !(admissionPolicy.approvedMembersSkipReview && activeMember);
   final waitlistEnabled =
       event.effectiveEventPolicy.admissionPolicy.waitlistPolicy.isEnabled;
   final hasApprovedJoinRequest =

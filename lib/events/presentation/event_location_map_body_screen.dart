@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
@@ -59,7 +60,7 @@ class EventLocationMapScreen extends StatelessWidget {
             child: CatchSurface(
               tone: CatchSurfaceTone.raised,
               emphasis: CatchSurfaceEmphasis.floating,
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               padding: CatchInsets.content,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -88,6 +89,19 @@ class EventLocationMapScreen extends StatelessWidget {
                               state.locationName,
                               style: CatchTextStyles.sectionTitle(context),
                             ),
+                            if (state.event.effectiveMeetingLocation?.address
+                                    ?.trim()
+                                case final address?
+                                when address.isNotEmpty) ...[
+                              gapH2,
+                              Text(
+                                address,
+                                style: CatchTextStyles.supporting(
+                                  context,
+                                  color: t.ink2,
+                                ),
+                              ),
+                            ],
                             if (state.locationNotes != null) ...[
                               gapH2,
                               Text(

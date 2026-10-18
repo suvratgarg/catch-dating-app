@@ -22,6 +22,7 @@ node tool/contracts/check_schema_fixtures.mjs
 
 echo "==> Checking generated domain classes are current"
 node tool/contracts/generate_domain_classes.mjs --check
+node --test tool/contracts/generate_domain_classes.test.mjs
 
 echo "==> Checking schema path literals"
 node tool/contracts/check_schema_path_literals.mjs

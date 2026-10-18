@@ -6,7 +6,7 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomersSummary(
+        body: HostCustomersSummarySection(
           summary: const AsyncData(
             HostCrmSummary(
               organizerId: 'organizer-1',
@@ -34,7 +34,7 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
     expect(find.text('Returning  2+'), findsOneWidget);
     // An unavailable new-customer count must not become a fabricated zero.
     expect(find.text('New'), findsOneWidget);
-    final summary = find.byType(HostCustomersSummary);
+    final summary = find.byType(HostCustomersSummarySection);
     final choices = find.descendant(
       of: summary,
       matching: find.byType(CatchChoiceButton<HostCustomerFilter>),

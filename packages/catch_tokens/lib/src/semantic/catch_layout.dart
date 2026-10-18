@@ -141,11 +141,11 @@ abstract final class CatchLayout {
   /// Event detail hero sizing for ticket and spotlight presentations.
   static const double eventDetailHeroTicketPhoneHeight = 380.0;
   static const double eventDetailHeroTicketWideHeight = 360.0;
-  static const double eventDetailTicketCompactHeightThreshold = 360.0;
-  static const double eventDetailTicketVisualCompactRatio = 0.48;
-  static const double eventDetailTicketVisualExpandedRatio = 0.62;
-  static const double eventDetailTicketVisualMinHeight = 96.0;
-  static const double eventDetailTicketVisualMaxHeight = 290.0;
+  static const double ticketHeroCompactHeightThreshold = 360.0;
+  static const double ticketHeroVisualCompactRatio = 0.48;
+  static const double ticketHeroVisualExpandedRatio = 0.62;
+  static const double ticketHeroVisualMinHeight = 96.0;
+  static const double ticketHeroVisualMaxHeight = 290.0;
   static const double eventDetailTicketTitleCompactSize = 30.0;
   static const double eventDetailTicketTitleExpandedSize = 42.0;
   static const double eventDetailTicketTitleLineHeight = 0.92;
@@ -267,9 +267,9 @@ abstract final class CatchLayout {
   static const double settingsRowChevronIconSize = CatchIcon.xs;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
-  static const double organizerPosterRadius = CatchSpacing.micro6;
-  static const double organizerPosterMediaRadius = CatchSpacing.micro3;
-  static const double organizerPosterMinimalMediaHeight = 104.0;
+  static const double posterRadius = CatchSpacing.micro6;
+  static const double posterMediaRadius = CatchSpacing.micro3;
+  static const double posterMinimalMediaHeight = 104.0;
   static const double personPolaroidRadius = CatchSpacing.micro6;
   static const double personPolaroidMediaRadius = CatchSpacing.micro3;
   static const double clubCoverCompactMediaRadius = CatchRadius.md;
@@ -751,11 +751,11 @@ abstract final class CatchLayout {
   static const double celebrationIconExtent = 86.0;
   static const double questionnaireDotExtent = 28.0;
   static const double eventTicketDividerHeight = 20.0;
-  static const double eventTicketNotchRadius = 10.0;
-  static const double eventTicketNotchDepth = 8.0;
+  static const double ticketNotchRadius = 10.0;
+  static const double ticketNotchDepth = 8.0;
 
   /// Center of the perforation below a ticket's media region.
-  static double eventTicketNotchCenterY(double mediaHeight) =>
+  static double ticketNotchCenterY(double mediaHeight) =>
       mediaHeight + eventTicketDividerHeight / 2;
   static const double ticketPerforationStartOffset = 0.5;
   static const double ticketPerforationDashLength = 2.2;

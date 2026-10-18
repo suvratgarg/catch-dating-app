@@ -463,7 +463,7 @@ class CalendarDateHeader extends StatelessWidget {
                   onDateSelected: onDateSelected,
                 )
               else
-                CalendarWeekStrip(
+                CalendarWeekRow(
                   summary: summary,
                   selectedDate: selectedDate,
                   onDateSelected: onDateSelected,
@@ -487,13 +487,13 @@ class CalendarDateHeaderSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: CatchInsets.pageHeaderCompact,
-      child: CalendarWeekStripSkeleton(),
+      child: CalendarWeekRowSkeleton(),
     );
   }
 }
 
-class CalendarWeekStripSkeleton extends StatelessWidget {
-  const CalendarWeekStripSkeleton({super.key});
+class CalendarWeekRowSkeleton extends StatelessWidget {
+  const CalendarWeekRowSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -558,8 +558,6 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Padding(
       padding: CatchInsets.pageBody.copyWith(
         top: CatchSpacing.micro2,
@@ -570,11 +568,11 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: CatchSurface(
+          child: const CatchSurface(
             padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
-            borderColor: t.line,
-            child: const Row(
+            borderRole: CatchBorderRole.separator,
+            child: Row(
               children: [
                 Expanded(child: CalendarStatSkeleton()),
                 CalendarStatDivider(),
@@ -606,8 +604,8 @@ class CalendarStatSkeleton extends StatelessWidget {
   }
 }
 
-class CalendarWeekStrip extends StatelessWidget {
-  const CalendarWeekStrip({
+class CalendarWeekRow extends StatelessWidget {
+  const CalendarWeekRow({
     super.key,
     required this.summary,
     required this.selectedDate,
@@ -633,7 +631,7 @@ class CalendarWeekStrip extends StatelessWidget {
             child: Builder(
               builder: (context) {
                 final date = DateUtils.dateOnly(monday.add(Duration(days: i)));
-                return EventDateMarker(
+                return EventDateTile(
                   key: _calendarWeekDayKey(date),
                   date: date,
                   active: DateUtils.isSameDay(date, selectedDate),
@@ -714,10 +712,10 @@ class CalendarMonthGrid extends StatelessWidget {
                         ),
                       );
                       final inMonth = date.month == selectedDate.month;
-                      return EventDateMarker(
+                      return EventDateTile(
                         key: inMonth ? _calendarMonthDayKey(date) : null,
                         date: date,
-                        layout: EventDateMarkerLayout.monthGrid,
+                        layout: EventDateTileVariant.monthGrid,
                         enabled: inMonth,
                         active: DateUtils.isSameDay(date, selectedDate),
                         today: DateUtils.isSameDay(date, summary.today),

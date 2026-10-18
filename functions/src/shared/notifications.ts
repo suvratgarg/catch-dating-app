@@ -223,17 +223,15 @@ export async function createActivityNotificationIfAbsent(
   params: ActivityNotificationParams
 ): Promise<boolean> {
   const ref = activityNotificationRef(db, params.uid, params.id);
-  let created = false;
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
-    if (snap.exists) return;
+    if (snap.exists) return false;
     tx.create(ref, {
       ...activityNotificationData(params),
       readAt: null,
     });
-    created = true;
+    return true;
   });
-  return created;
 }
 
 export type ActiveUserActivityCreationResult =

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
@@ -12,36 +11,40 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 /// Manager-only settings on a saved event. Private and published events share
 /// controls; each controller retains its own authoritative command protocol.
-class PrivateEventPreferencesScreen extends AnimatedWidget {
+class PrivateEventPreferencesScreen extends ConsumerWidget {
   const PrivateEventPreferencesScreen({
     super.key,
-    required this.controller,
+    required this.scope,
     required this.onBack,
-  }) : super(listenable: controller);
+  });
 
-  final EventPreferencesEditorController controller;
+  final EventEditorScope scope;
   final VoidCallback onBack;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(privateEventPreferencesControllerProvider(scope));
+    final controller = ref.read(
+      privateEventPreferencesControllerProvider(scope).notifier,
+    );
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
     final tokens = CatchTokens.of(context);
-    final defaults = controller.defaults;
-    final intents = controller.editorIntents;
+    final defaults = state.defaults;
+    final intents = state.editorIntents;
     final intentsJson = intents.toJson();
     final suggestions =
         defaults?.preferences.toSparseJson() ?? const <String, Object?>{};
     final resolved = <String, Object?>{
-      ...controller.resolvedValues,
-      if (controller.review != null)
-        ...controller.review!.candidate.resolvedValues,
+      ...state.resolvedValues,
+      if (state.review != null) ...state.review!.candidate.resolvedValues,
     };
-    if (controller.draftIntents != null && controller.review == null) {
+    if (state.draftIntents != null && state.review == null) {
       for (final key in eventPreferenceFields) {
         final intent = intentsJson[key] as Map;
         if (intent['mode'] == 'set') resolved[key] = intent['value'];
@@ -51,7 +54,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
         }
       }
     }
-    final editable = controller.canEdit;
+    final editable = state.canEdit;
 
     void saveField(String field, Map<String, Object?> intent) {
       if (!editable) return;
@@ -172,7 +175,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
       return value.toString();
     }
 
-    final review = controller.review;
+    final review = state.review;
     final changedFields = review == null
         ? <String>[]
         : [
@@ -190,7 +193,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                 key,
           ];
 
-    if (controller.loading && !controller.hasLoadedEvent) {
+    if (state.loading && !state.hasLoadedEvent) {
       return const CatchScaffold.stepFlow(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -202,7 +205,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
         children: [
           CatchStepHeader(
             title: l10n.hostsEventPreferenceTitle,
-            subtitle: controller.eventName ?? l10n.hostsPrivateEventPayments,
+            subtitle: state.eventName ?? l10n.hostsPrivateEventPayments,
             stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
             compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(l10n),
             onBack: onBack,
@@ -227,17 +230,17 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                           children: [
                             CatchField.read(
                               copy: copy,
-                              title: controller.isPrivateEvent
+                              title: state.isPrivateEvent
                                   ? l10n.hostsPrivateEventPrivateTitle
                                   : l10n.hostsEventPreferencePublishedTitle,
-                              body: controller.isPrivateEvent
+                              body: state.isPrivateEvent
                                   ? l10n.hostsEventPreferencePrivateHint
                                   : l10n.hostsEventPreferencePublishedHint,
-                              icon: controller.isPrivateEvent
+                              icon: state.isPrivateEvent
                                   ? CatchIcons.lockOutline
                                   : CatchIcons.infoOutlineRounded,
                             ),
-                            if (controller.hasPending) ...[
+                            if (state.hasPending) ...[
                               CatchField.read(
                                 copy: copy,
                                 title: l10n.hostsEventPreferencePending,
@@ -247,29 +250,28 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                               CatchField.action(
                                 copy: copy,
                                 title: l10n.hostsEventPreferenceRetry,
-                                onTap: controller.saving
+                                onTap: state.saving
                                     ? null
                                     : () =>
                                           unawaited(controller.retryPending()),
                               ),
                             ],
-                            if (controller.error != null)
+                            if (state.error != null)
                               CatchField.read(
                                 copy: copy,
                                 title: l10n.hostsEventPreferenceError,
                                 body: appErrorMessage(
-                                  controller.error!,
+                                  state.error!,
                                   l10n: l10n,
                                   context: AppErrorContext.event,
                                 ),
                                 icon: CatchIcons.errorOutlineRounded,
                               ),
-                            if (!controller.hasPending &&
-                                controller.error != null)
+                            if (!state.hasPending && state.error != null)
                               CatchField.action(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventRetryDefaultsRead,
-                                onTap: controller.loading
+                                onTap: state.loading
                                     ? null
                                     : () => unawaited(controller.load()),
                               ),
@@ -329,10 +331,10 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                             CatchField.action(
                               copy: copy,
                               titleMaxLines: 3,
-                              title: controller.previewing
+                              title: state.previewing
                                   ? l10n.hostsEventPreferenceReviewLoading
                                   : l10n.hostsEventPreferencePreview,
-                              onTap: editable && controller.readPreview != null
+                              onTap: editable && state.previewAvailable
                                   ? () => unawaited(controller.previewChanges())
                                   : null,
                             ),

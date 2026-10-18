@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.2.1
-updated: 2026-09-21
+version: 0.2.2
+updated: 2026-10-17
 owner: product_design_parity
 status: active
 ---
@@ -67,6 +67,13 @@ checks in one durable matrix.
 6. Run focused analyzer/tests/scanners for the touched feature.
 7. Preserve the result in the commit and CI checks; do not write an audit
    receipt or generated evidence file.
+
+CI generates the route inventory and only the widget catalog's marked region
+from each exact source checkout before its semantic checks. Authored prose,
+component identities, route coverage decisions and regression goldens remain
+unchanged. A fresh inventory does not supply missing coverage. Local generators
+below remain useful during authoring; routine CI consumers need no generated
+inventory commit.
 
 ## New Route Workflow
 
@@ -366,7 +373,7 @@ audience segmentation, and broadcasts are host operations rather than thread
 behavior.
 
 The same rule applies when one implementation serves two registered entry
-points for the same user goal. `WelcomePage` is both the onboarding welcome
+points for the same user goal. `OnboardingWelcomeBody` is both the onboarding welcome
 state and the logged-out Start route, so Member Onboarding owns two projections
 instead of creating a duplicate Start feature. Reuse the same semantic action
 ids across such projections when the user decision and production callback are
