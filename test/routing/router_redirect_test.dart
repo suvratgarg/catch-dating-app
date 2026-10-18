@@ -230,7 +230,6 @@ void main() {
           }
           final incomplete = _bookingReadyUser().copyWith(
             activityPreferences: const ActivityPreferences(),
-            runPreferencesVersion: 0,
           );
           expect(
             _redirect(
