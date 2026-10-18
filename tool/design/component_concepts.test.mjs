@@ -337,27 +337,71 @@ test("feature previews cannot bypass reserved prefixes, role names or file suffi
   assert.deepEqual(newWidgetPolicyIssues({...base, name: "ProfileScreen", file: "lib/profile/presentation/profile_screen.dart"}, covered), []);
 });
 
-test("parity tiers are required, keep React mappings off Flutter-only entries, and never widen a member", () => {
+test("parity tiers are required, keep React implementations off Flutter-only entries, and never widen a member", () => {
   const entry = (id, tier, extra = {}) => ({
-    id, tier, surfaces: {flutter: "CatchThing"},
+    id, tier, dart: {symbol: "CatchThing"},
     governance: {conceptRole: "concept", conceptId: id}, ...extra,
   });
+  const headless = {symbol: "ButtonControl", file: "packages/web-ui/src/primitives.tsx", api: "headless-control"};
   assert.deepEqual(componentTierProblems([
-    entry("catch.button", "T1", {surfaces: {flutter: "CatchButton", webui: "ButtonControl"}}),
+    entry("catch.button", "T1", {dart: {symbol: "CatchButton"}, react: headless}),
     entry("catch.sheet", "T3"),
   ]), []);
   assert.deepEqual(componentTierProblems([entry("catch.thing", undefined)]),
     ["catch.thing: tier must be one of T1, T2, T3, T4"]);
   assert.deepEqual(componentTierProblems([
-    entry("catch.sheet", "T3", {surfaces: {flutter: "CatchSheet", admin: "AdminSheet"}}),
-  ]), ["catch.sheet: T3 entries are Flutter-only but declare admin; promote to T2 through registry review"]);
+    entry("catch.sheet", "T3", {dart: {symbol: "CatchSheet"}, react: {...headless, symbol: "SheetControl"}}),
+  ]), ["catch.sheet: T3 entries are Flutter-only but declare React implementation SheetControl; promote to T2 through registry review"]);
+  assert.deepEqual(componentTierProblems([
+    entry("catch.button", "T1", {dart: {symbol: "CatchButton"}, react: {...headless, api: "styled"}}),
+  ]), ["catch.button: styled React implementation ButtonControl must use the Flutter symbol CatchButton"]);
+  assert.deepEqual(componentTierProblems([
+    entry("catch.button", "T1", {dart: {symbol: "CatchButton"}, react: {...headless, api: "styled", symbol: "CatchButton"}}),
+  ]), []);
   const member = {
-    id: "catch.privacy_badge", tier: "T1", surfaces: {flutter: "CatchPrivacyBadge"},
+    id: "catch.privacy_badge", tier: "T1", dart: {symbol: "CatchPrivacyBadge"},
     governance: {conceptRole: "member", conceptId: "catch.badge", parentConceptId: "catch.badge"},
   };
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T2"), member]),
     ["catch.privacy_badge: member tier T1 is wider than parent catch.badge tier T2"]);
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T1"), {...member, tier: "T3"}]), []);
+});
+
+test("T1 and T2 design-system props declare a React type beside the Dart one", () => {
+  const contract = (tier, level, props) => ({
+    id: "catch.thing", tier, level, dart: {symbol: "CatchThing"},
+    governance: {conceptRole: "concept", conceptId: "catch.thing"}, contract: {props},
+  });
+  const valid = [
+    {name: "label", type: "string", required: true, dartType: "String", tsType: "string"},
+    {name: "tone", type: "enum", required: false, dartType: "CatchThingTone", tsType: "CatchThingTone"},
+    {name: "fit", type: "enum", required: false, dartType: "BoxFit", values: ["cover", "contain"], tsType: "\"cover\" | \"contain\""},
+    {name: "onPressed", type: "callback", required: true, dartType: "VoidCallback?", tsType: "(() => void) | null"},
+    {name: "leading", type: "widget", required: false, dartType: "Widget?", tsType: "ReactNode"},
+    {name: "focusNode", type: "object", required: false, dartType: "FocusNode?", tsType: null},
+    {name: "itemKeyBuilder", type: "callback", required: false, dartType: "Key? Function(T value)?", tsType: null},
+  ];
+  assert.deepEqual(componentTierProblems([contract("T1", "L3", valid)]), []);
+  assert.deepEqual(componentTierProblems([contract("T1", "L3", [
+    {name: "label", type: "string", required: true, dartType: "String"},
+    {name: "tone", type: "enum", required: false, dartType: "CatchThingTone", tsType: "ThingTone"},
+    {name: "onPressed", type: "callback", required: true, dartType: "VoidCallback?", tsType: "string"},
+    {name: "leading", type: "widget", required: false, dartType: "Widget?", tsType: "JSX.Element"},
+    {name: "color", type: "color", required: false, dartType: "Color?", tsType: null},
+    {name: "focusNode", type: "object", required: false, dartType: "FocusNode?", tsType: "HTMLElement"},
+  ])]), [
+    "catch.thing.color: tsType null is reserved for Flutter mechanisms, not Color?",
+    "catch.thing.focusNode: FocusNode? is a Flutter mechanism; its tsType must be null",
+    "catch.thing.label: T1/T2 prop needs a tsType beside dartType String",
+    "catch.thing.leading: widget tsType must render ReactNode",
+    "catch.thing.onPressed: callback tsType must be a function type",
+    "catch.thing.tone: enum tsType must be CatchThingTone",
+  ]);
+  const flutterOnly = [{name: "label", type: "string", required: true, dartType: "String", tsType: "string"}];
+  for (const [tier, level] of [["T3", "L3"], ["T4", "L3"], ["T2", "L5"], ["T2", "L6"]]) {
+    assert.deepEqual(componentTierProblems([contract(tier, level, flutterOnly)]),
+      ["catch.thing.label: tsType is only declared on T1/T2 contracts at L2, L3, L4"]);
+  }
 });
 
 const aliasRegistry = [{

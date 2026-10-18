@@ -75,8 +75,11 @@
         "owner": {"type": "string"},
         "source": {"type": "string"},
         "exportName": {"type": "string"},
-        "lexicon": {"type": "boolean"},
-        "lexiconId": {"type": "string", "pattern": "^catch\\.[a-z0-9_.-]+$"},
+        "componentId": {
+          "type": "string",
+          "pattern": "^catch\\.[a-z0-9_.-]+$",
+          "description": "The design/components/catch.components.json contract this export implements as a website adapter."
+        },
         "css": {
           "type": "array",
           "items": {"type": "string"},
