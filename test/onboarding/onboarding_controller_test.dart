@@ -116,16 +116,20 @@ void main() {
       () async {
         final profile = buildUser().copyWith(profileComplete: false);
         final retainedError = await _profileFailureAfterData(profile);
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(uid: profile.uid);
         final draftRepository = _CountingDraftRepository();
         final container = createOnboardingTestContainer(
           overrides: [
-            uidProvider.overrideWithValue(const AsyncData('runner-1')),
+            authRepositoryProvider.overrideWithValue(repository),
+            uidProvider.overrideWithValue(AsyncData(profile.uid)),
             watchUserProfileProvider.overrideWithValue(retainedError),
             onboardingDraftRepositoryProvider.overrideWithValue(
               draftRepository,
             ),
           ],
         );
+        addTearDown(repository.dispose);
         addTearDown(container.dispose);
 
         await container
