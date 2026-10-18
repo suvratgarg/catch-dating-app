@@ -1,14 +1,14 @@
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_record_menu.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_whatsapp_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -22,13 +22,13 @@ import 'customer_routes.dart';
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerApplicationsPanel,
+  type: HostCustomerApplicationsSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerApplicationsPanelComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => HostCustomerApplicationsPanel(
+      detailBuilder: (customer) => HostCustomerApplicationsSection(
         organizerId: customer.organizerId,
         contactId: customer.contactId,
         onOpenApplication: (_) {},
@@ -38,13 +38,13 @@ Widget hostCustomerApplicationsPanelComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerApplicationSnapshot,
+  type: HostCustomerApplicationCard,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerApplicationSnapshotComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => HostCustomerApplicationSnapshot(
+      detailBuilder: (customer) => HostCustomerApplicationCard(
         organizerId: customer.organizerId,
         applicationId: 'design-application-1',
         onOpen: () {},
@@ -69,26 +69,26 @@ Widget hostCustomerDetailsSectionComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerRecentEvents,
+  type: HostCustomerRecentEventsList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerRecentEventsComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
       detailBuilder: (customer) =>
-          HostCustomerRecentEvents(customer: customer, onOpenEvent: (_) {}),
+          HostCustomerRecentEventsList(customer: customer, onOpenEvent: (_) {}),
     );
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerRevenueBreakdown,
+  type: HostCustomerRevenueList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerRevenueBreakdownComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
       detailBuilder: (customer) =>
-          HostCustomerRevenueBreakdown(customer: customer, onOpenEvent: (_) {}),
+          HostCustomerRevenueList(customer: customer, onOpenEvent: (_) {}),
     );
 
 @widgetbook.UseCase(
@@ -105,13 +105,13 @@ Widget hostCustomerMemoryPreviewComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerHistoryFilters,
+  type: HostCustomerHistoryFilterSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerHistoryFiltersComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => HostCustomerHistoryFilters(
+      detailBuilder: (customer) => HostCustomerHistoryFilterSection(
         builder: (filter) => HostCustomerTimelineSection(
           customer: customer,
           filter: filter,
@@ -148,14 +148,16 @@ Widget hostCustomerTimelineRecordComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerDetailOverview,
+  type: HostCustomerOverviewSectionList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDetailOverviewComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) =>
-          HostCustomerDetailOverview(customer: customer, onOpenRevenue: () {}),
+      detailBuilder: (customer) => HostCustomerOverviewSectionList(
+        customer: customer,
+        onOpenRevenue: () {},
+      ),
     );
 
 @widgetbook.UseCase(
@@ -174,7 +176,7 @@ Widget hostCustomerDetailTabsComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Directory states',
-  type: HostCustomersDirectory,
+  type: HostCustomersList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomersDirectoryStates(BuildContext context) =>
@@ -182,7 +184,7 @@ Widget hostCustomersDirectoryStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Directory control states',
-  type: HostCustomerDirectoryControls,
+  type: HostCustomerControlSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDirectoryControlsStates(BuildContext context) =>
@@ -270,7 +272,7 @@ Widget hostCustomerConversationStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Summary states',
-  type: HostCustomersSummary,
+  type: HostCustomersSummarySection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomersSummaryStates(BuildContext context) =>
@@ -278,13 +280,13 @@ Widget hostCustomersSummaryStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Loaded history',
-  type: HostCustomerHistoryPanel,
+  type: HostCustomerHistorySection,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostCustomerHistoryPanelStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => HostCustomerHistoryPanel(
+      detailBuilder: (customer) => HostCustomerHistorySection(
         customer: customer,
         onOpenFormResponse: (_) {},
         onOpenEvent: (_) {},
@@ -445,4 +447,42 @@ Widget hostCustomerWhatsappHandoffSheetStates(BuildContext context) =>
       context,
       detailBuilder: (customer) =>
           HostCustomerWhatsappHandoffSheet(customer: customer),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerIdentitySection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerIdentitySectionStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerIdentitySection(
+        customer: customer,
+        displayName: customer.displayName,
+        phoneE164: customer.phoneE164,
+        phonePlaceholder: context.l10n.hostCustomersNotSaved,
+        email: customer.email,
+        emailPlaceholder: context.l10n.hostCustomersNotSaved,
+        onEdit: () {},
+        showName: true,
+        showContacts: true,
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerTimelineList,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerTimelineListStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerTimelineList(
+        entries: customer.timeline,
+        onOpenFormResponse: (_) {},
+        onOpenEvent: (_) {},
+        onOpenCatchThread: (_) {},
+        onOpenWhatsappThread: (_) {},
+      ),
     );

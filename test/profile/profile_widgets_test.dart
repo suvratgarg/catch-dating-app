@@ -17,7 +17,7 @@ import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
@@ -29,11 +29,11 @@ import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab_sliver_body.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_preview_body.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
 import 'package:catch_ui/catch_ui.dart';
@@ -62,7 +62,7 @@ Widget _profileTab(UserProfile user) {
     child: MaterialApp(
       theme: AppTheme.light,
       home: Scaffold(
-        body: ProfileTabContent(
+        body: ProfileTabBody(
           user: user,
           uploadState: const PhotoUploadState(),
           builder: (context, children) => ListView(
@@ -204,7 +204,7 @@ Widget _editableProfileTab(
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: ProfileTabContent(
+          body: ProfileTabBody(
             user: user,
             uploadState: const PhotoUploadState(),
             builder: (context, children) => ListView(

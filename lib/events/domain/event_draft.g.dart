@@ -60,7 +60,7 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   selectedStartMinute: (json['selectedStartMinute'] as num?)?.toInt(),
   durationMinutes:
       (json['durationMinutes'] as num?)?.toInt() ??
-      CatchBusinessRules.eventDefaultDurationMinutes,
+      BusinessRules.eventDefaultDurationMinutes,
   minAge: json['minAge'] as String?,
   maxAge: json['maxAge'] as String?,
   maxMen: json['maxMen'] as String?,

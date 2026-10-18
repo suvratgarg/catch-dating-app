@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -34,13 +34,17 @@ EventChatState fixture({
       organizerId: 'rsvp',
       roomStatus: mode,
       roomRevision: 0,
-      membershipStatus: removed ? 'removed' : joined ? 'joined' : 'notJoined',
+      membershipStatus: removed
+          ? 'removed'
+          : joined
+          ? 'joined'
+          : 'notJoined',
       membershipRevision: 0,
       canManage: host,
       canJoin: readable && !claim && !removed,
       canReadMessages: canRead,
-      canPostMessages: canRead &&
-          (mode == 'open' || (mode == 'announcementsOnly' && host)),
+      canPostMessages:
+          canRead && (mode == 'open' || (mode == 'announcementsOnly' && host)),
       notificationsMuted: muted,
       profileClaimRequired: claim,
       termsVersion: 'event-chat-v1',
@@ -158,7 +162,13 @@ void main() {
     expect(find.text('Join event chat'), findsNothing);
     await capture(tester, 'host-open-profile-review');
   });
-  for (final room in ['scheduled', 'paused', 'announcementsOnly', 'removed', 'muted']) {
+  for (final room in [
+    'scheduled',
+    'paused',
+    'announcementsOnly',
+    'removed',
+    'muted',
+  ]) {
     testWidgets('fixture room state $room has appropriate access and capture', (
       tester,
     ) async {
@@ -174,7 +184,7 @@ void main() {
       await pumpRoom(tester, state, draft, scroll);
       expect(tester.takeException(), isNull);
       expect(
-        find.byType(ChatInputBar),
+        find.byType(ChatInput),
         room == 'muted' ? findsOneWidget : findsNothing,
       );
       if (room == 'paused') {
@@ -184,7 +194,10 @@ void main() {
         expect(find.textContaining('Only hosts can post'), findsOneWidget);
       }
       if (room == 'removed') {
-        expect(find.textContaining('membership is unavailable'), findsOneWidget);
+        expect(
+          find.textContaining('membership is unavailable'),
+          findsOneWidget,
+        );
       }
       if (room == 'removed' || room == 'scheduled') {
         expect(state.access.canJoin, isFalse);
@@ -206,7 +219,7 @@ void main() {
       expect(state.access.canPostMessages, isFalse);
       expect(state.access.canJoin, isFalse);
       await pumpRoom(tester, state, draft, scroll);
-      expect(find.byType(ChatInputBar), findsNothing);
+      expect(find.byType(ChatInput), findsNothing);
       expect(find.text('Join event chat'), findsNothing);
       expect(find.text('Open event chat'), findsNothing);
       expect(find.text('Looking forward to meeting everyone!'), findsNothing);
@@ -229,9 +242,11 @@ void main() {
       scale: 2,
       viewport: const Size(1280, 900),
     );
-    expect(find.byType(ChatInputBar), findsOneWidget);
-    expect(find.textContaining('Looking forward to meeting everyone!'),
-        findsWidgets);
+    expect(find.byType(ChatInput), findsOneWidget);
+    expect(
+      find.textContaining('Looking forward to meeting everyone!'),
+      findsWidgets,
+    );
     expect(tester.takeException(), isNull);
     await capture(tester, 'desktop-room-open-2x');
   });
@@ -365,7 +380,8 @@ Future<void> pumpRoom(
 }
 
 Future<void> capture(WidgetTester tester, String name) async {
-  final directory = Platform.environment['CATCH_EVENT_CHAT_REVIEW_DIR'] ??
+  final directory =
+      Platform.environment['CATCH_EVENT_CHAT_REVIEW_DIR'] ??
       '/tmp/catch-event-chat-review';
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(captureKey),

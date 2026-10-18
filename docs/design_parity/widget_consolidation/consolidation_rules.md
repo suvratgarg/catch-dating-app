@@ -43,7 +43,7 @@ regeneration cannot orphan a decision merely because its cluster number moved.
 The calibration slice pins four outcomes:
 
 1. Error and person-row placement/layout APIs are members of one concept.
-2. `CatchMetaRow` is a concept while `StageSectionLabel` remains feature
+2. `CatchMetaRow` is a concept while `StageSectionHeader` remains feature
    composition; visual similarity does not erase the metadata/structure split.
 3. `NotificationRow` is feature behavior composed with `CatchField`, and
    `CatchPrivacyBadge` is a typed recipe member of `catch.badge`.
@@ -122,7 +122,7 @@ review session.
 If widget A instantiates widget B (B appears in A's construction tree — check
 `widgetsUsed` in the fingerprint artifact or grep A's build), never merge the
 pair, whatever the similarity score. Record keep-distinct.
-*Evidence: ProfileTab/ProfileTabContent, DashboardFull/DashboardFullSliverBody.*
+*Evidence: ProfileTab/ProfileTabBody, DashboardFull/DashboardFullSliverBody.*
 
 **K2 — Domain forks stay forked.**
 If the pair's constructor/param types come from parallel domain model
@@ -155,14 +155,14 @@ happened; two public entry points are API ergonomics. Keep-distinct.
 If the mergeable shared code is under ~10 lines AND the two names carry
 distinct intent, keep-distinct. Do not create a parameterized widget that
 needs 3+ new knobs to reproduce both originals.
-*Evidence: CompanionError/CompanionMessage, celebration details cards,
+*Evidence: CompanionErrorState/CompanionEmptyState, celebration details cards,
 dashboard home screens.*
 
 **K5 — Concept mismatch → escalate (not merge, not keep).**
 Same skeleton but the typography/token roles differ in kind (label* vs
 title* vs kicker styles; meta row vs section title vs status leading): this
 is a design-intent question. Escalate with both bodies quoted.
-*Evidence: StageSectionLabel vs meta rows; UnsavedChangesPill vs CTA
+*Evidence: StageSectionHeader vs meta rows; UnsavedChangesPill vs CTA
 leadings; MapPill vs PhotoSlotMainBadge.*
 
 ## MERGE rules

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -109,6 +110,32 @@ Widget onboardingScreenRouteStates(BuildContext context) {
           ),
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Step dispatch',
+  type: OnboardingStepBody,
+  path: '[P1 product surfaces]/Onboarding',
+)
+Widget onboardingStepBodyStates(BuildContext context) {
+  return WidgetbookWrapCatalogFrame(
+    title: 'OnboardingStepBody',
+    children: [
+      for (final step in [OnboardingStep.nameDob, OnboardingStep.instagram])
+        WidgetbookPhoneStateCard(
+          label: step.name,
+          child: WidgetbookMaterialPhoneFrame(
+            child: WidgetbookOnboardingScope(
+              child: OnboardingStepBody(
+                step: step,
+                profileCompletionOnly: false,
+                runPreferencesOnly: false,
+              ),
+            ),
+          ),
+        ),
     ],
   );
 }

@@ -73,7 +73,7 @@ class SavedEventsScreen extends ConsumerWidget {
                 loadingBuilder: (_) =>
                     const EventAgendaSliverSkeleton(padding: EdgeInsets.zero),
                 errorBuilder: (_, error, _, onBoundaryRetry) =>
-                    SavedEventsClubNamesErrorSliver(
+                    SavedEventsClubNamesErrorState(
                       error: error,
                       onRetry: onBoundaryRetry!,
                     ),
@@ -111,11 +111,11 @@ class SavedEventsScreen extends ConsumerWidget {
                       padding: EdgeInsets.zero,
                     ),
                     errorBuilder: (_, error, _, onBoundaryRetry) =>
-                        SavedEventsClubNamesErrorSliver(
+                        SavedEventsClubNamesErrorState(
                           error: error,
                           onRetry: onBoundaryRetry!,
                         ),
-                    builder: (context, names) => SavedEventsAgendaSliver(
+                    builder: (context, names) => SavedEventsAgendaList(
                       state: state,
                       clubNames: names,
                       padding: EdgeInsets.zero,
@@ -141,8 +141,8 @@ class SavedEventsScreen extends ConsumerWidget {
   }
 }
 
-class SavedEventsAgendaSliver extends StatelessWidget {
-  const SavedEventsAgendaSliver({
+class SavedEventsAgendaList extends StatelessWidget {
+  const SavedEventsAgendaList({
     super.key,
     required this.state,
     required this.clubNames,
@@ -178,8 +178,8 @@ class SavedEventsAgendaSliver extends StatelessWidget {
   }
 }
 
-class SavedEventsClubNamesErrorSliver extends StatelessWidget {
-  const SavedEventsClubNamesErrorSliver({
+class SavedEventsClubNamesErrorState extends StatelessWidget {
+  const SavedEventsClubNamesErrorState({
     super.key,
     required this.error,
     required this.onRetry,

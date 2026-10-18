@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/formatters/catch_count_copy.dart';
+import 'package:catch_dating_app/core/formatters/count_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -34,7 +34,7 @@ class _ExploreEventTypeBrowseGridState
 
   @override
   Widget build(BuildContext context) {
-    return EventTypeBrowseContent(
+    return EventTypeBrowseBody(
       items: widget.items,
       activeActivityTag: widget.activeActivityTag,
       expanded: _expanded,
@@ -44,8 +44,8 @@ class _ExploreEventTypeBrowseGridState
   }
 }
 
-class EventTypeBrowseContent extends StatelessWidget {
-  const EventTypeBrowseContent({
+class EventTypeBrowseBody extends StatelessWidget {
+  const EventTypeBrowseBody({
     super.key,
     required this.items,
     required this.activeActivityTag,
@@ -84,7 +84,7 @@ class EventTypeBrowseContent extends StatelessWidget {
             style: CatchTextStyles.kicker(context),
           ),
           gapH16,
-          ActivityTypeRows(
+          ActivityTypeList(
             slots: slots,
             activeActivityTag: activeActivityTag,
             onCategoryTap: onCategoryTap,
@@ -96,8 +96,8 @@ class EventTypeBrowseContent extends StatelessWidget {
   }
 }
 
-class ActivityTypeRows extends StatelessWidget {
-  const ActivityTypeRows({
+class ActivityTypeList extends StatelessWidget {
+  const ActivityTypeList({
     super.key,
     required this.slots,
     required this.activeActivityTag,
@@ -117,7 +117,7 @@ class ActivityTypeRows extends StatelessWidget {
       compactBuilder: (context) => Column(
         children: [
           for (final slot in slots)
-            ActivitySlotView(
+            ActivitySlotRow(
               slot: slot,
               activeActivityTag: activeActivityTag,
               onCategoryTap: onCategoryTap,
@@ -135,7 +135,7 @@ class ActivityTypeRows extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: ActivitySlotView(
+                    child: ActivitySlotRow(
                       slot: slots[row * columns],
                       activeActivityTag: activeActivityTag,
                       onCategoryTap: onCategoryTap,
@@ -145,7 +145,7 @@ class ActivityTypeRows extends StatelessWidget {
                   gapW24,
                   Expanded(
                     child: row * columns + 1 < slots.length
-                        ? ActivitySlotView(
+                        ? ActivitySlotRow(
                             slot: slots[row * columns + 1],
                             activeActivityTag: activeActivityTag,
                             onCategoryTap: onCategoryTap,
@@ -162,8 +162,8 @@ class ActivityTypeRows extends StatelessWidget {
   }
 }
 
-class ActivitySlotView extends StatelessWidget {
-  const ActivitySlotView({
+class ActivitySlotRow extends StatelessWidget {
+  const ActivitySlotRow({
     super.key,
     required this.slot,
     required this.activeActivityTag,
@@ -215,7 +215,7 @@ class ActivityTypeRow extends StatelessWidget {
       semanticLabel: context.l10n
           .exploreExploreEventTypeBrowseGridLabelLabelCountlabel(
             label: visual.label,
-            countLabel: CatchCountCopy.events(context.l10n, entry.count),
+            countLabel: CountCopy.events(context.l10n, entry.count),
           ),
       title: visual.label,
       titleStyle: CatchTextStyles.titleL(context, color: foreground),

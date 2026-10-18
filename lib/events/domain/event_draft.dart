@@ -63,8 +63,7 @@ abstract class EventDraft with _$EventDraft {
     int? selectedDateMillis,
     int? selectedStartHour,
     int? selectedStartMinute,
-    @Default(CatchBusinessRules.eventDefaultDurationMinutes)
-    int durationMinutes,
+    @Default(BusinessRules.eventDefaultDurationMinutes) int durationMinutes,
     // Rules step
     String? minAge,
     String? maxAge,
@@ -129,7 +128,7 @@ extension EventDraftX on EventDraft {
       selectedDateMillis == null &&
       selectedStartHour == null &&
       selectedStartMinute == null &&
-      durationMinutes == CatchBusinessRules.eventDefaultDurationMinutes &&
+      durationMinutes == BusinessRules.eventDefaultDurationMinutes &&
       minAge == null &&
       maxAge == null &&
       maxMen == null &&

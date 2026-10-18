@@ -35,8 +35,8 @@ class CreateEventPrefill {
         .difference(event.startTime)
         .inMinutes
         .clamp(
-          CatchBusinessRules.eventMinDurationMinutes,
-          CatchBusinessRules.eventMaxDurationMinutes,
+          BusinessRules.eventMinDurationMinutes,
+          BusinessRules.eventMaxDurationMinutes,
         );
 
     return CreateEventPrefill._(

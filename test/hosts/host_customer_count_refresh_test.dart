@@ -226,8 +226,8 @@ void _expectCounts(
   required int all,
   required int newPeople,
 }) {
-  final summary = tester.widget<HostCustomersSummary>(
-    find.byType(HostCustomersSummary, skipOffstage: false),
+  final summary = tester.widget<HostCustomersSummarySection>(
+    find.byType(HostCustomersSummarySection, skipOffstage: false),
   );
   expect(summary.summary.requireValue.contactCount, all);
   expect(summary.newCustomerCount?.count, newPeople);

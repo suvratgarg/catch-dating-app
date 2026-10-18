@@ -13,7 +13,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_height_editor.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart'
     show AutofillHints, IconData, TextCapitalization, TextInputType, ValueKey;

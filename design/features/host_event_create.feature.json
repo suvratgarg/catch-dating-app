@@ -24,7 +24,7 @@
           "widgetbook/lib/hosts/operations/create_event_routes.dart"
         ],
         "actionOwners": [
-          {"id": "route_screen", "language": "dart", "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart", "symbol": "HostCreateEventRouteStateView"},
+          {"id": "route_screen", "language": "dart", "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart", "symbol": "HostCreateEventRouteBody"},
           {"id": "wizard_state", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_wizard_state.dart", "symbol": "CreateEventWizardState"},
           {"id": "create_screen", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart", "symbol": "CreateEventScreen"},
           {"id": "create_actions", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_actions.dart", "symbol": "_handleCloseIntent"},

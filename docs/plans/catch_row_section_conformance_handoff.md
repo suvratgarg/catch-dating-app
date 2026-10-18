@@ -59,7 +59,7 @@ The old public PersonRow, RecordRow, and RowPressSurface exports are removed.
 | Today | Shell -> root scroll -> SectionList.panes(body:, trailing:) -> event spotlight, attention rows, bounded upcoming preview and actions. Each pane publishes its own interaction width. | Today projects operational evidence; unknown task totals remain partial, and checked-in people are not relabelled as attendees. |
 | Messaging | Shell -> Inbox/Sends views -> scope and audience controls -> adaptive person collection/detail. Inbox rows use ConversationLayout; New message pushes a person directory, then explicit available routes. Sends has one sealed history/intent/compose/report state. | Controllers own paging, recipient authorization and send operations. Person projection joins only verified organizer-scoped identities; drafts include person, scope and route. |
 
-`CatchFormRowList` remains the package-owned adapter for schema-driven editing.
+`CatchFormList` remains the package-owned adapter for schema-driven editing.
 Native text inputs, transcript bubbles, draggable spatial items, metric groups,
 media and true multi-column tables retain their specialized owners. This does
 not authorize a second ordinary interactive row shell. Menu, accordion and
@@ -159,7 +159,7 @@ behavior are separate evidence states.
 | Cause | Evidence from the pre-migration audit | Required correction |
 |---|---|---|
 | Multiple interaction owners | `packages/catch_ui/lib/src/components/catch_record_row.dart`, `catch_person_row.dart` delegate to `src/primitives/catch_row_press_surface.dart`. The surface paints a rectangular parent-sized overlay. | Layouts become passive; Field owns row interaction. |
-| Wrong section role | `lib/hosts/events/presentation/widgets/host_events_list.dart`, `HostEventsTimelinePage`, still constructs `CatchSection.plain` around `HostEventLifecycleRow`/`CatchRecordRow`. | Typed row sections supply header rule and text-lane sibling separators. The month label already uses shared section infrastructure; a different label widget alone cannot fix it. |
+| Wrong section role | `lib/hosts/events/presentation/widgets/host_events_list.dart`, `HostEventsTimelineBody`, still constructs `CatchSection.plain` around `HostEventLifecycleRow`/`CatchRecordRow`. | Typed row sections supply header rule and text-lane sibling separators. The month label already uses shared section infrastructure; a different label widget alone cannot fix it. |
 | Field bypass and incomplete hover | The original audit found Add delegating through legacy row anatomy and a press/focus path without hover-enter tint. Those families moved into package Field renderers. | Audit every extracted mode, including Add, using the same interaction test matrix; do not assume merely wrapping the old rows in today's Field is enough. |
 | Geometry inferred through widget shape | Current section/lane rendering has used direct-child type inspection, fallback icon insets, and separate single/divided lane wrappers. Form and feature adapters obscure actual text lanes. | Typed entries expose package-derived layout metrics independent of wrapper shape. |
 | Paint can exceed input | Original Field overlays paint horizontal outsets around locally bounded gesture content. | Test both visible extent and edge activation; changing only the overlay is insufficient. |
@@ -349,7 +349,7 @@ render/state helpers; passive layouts are immutable configuration values.
 | `.dependentFieldRows` checkpoint | `.dependentRows(...)` or named dependent-group entry | One controlling Field and attached region. Choose one integration, not parallel families. |
 | Generic `.plain/.contained(child:)` | Explicit content-section recipe | Preserve real prose/media/metric uses; forbid ordinary row lists through this escape hatch. |
 | `title/count/trailing` loose header props | `CatchSectionHeaderData(title:, count:, action:)` | Header anatomy and rule owned once; plural actions only when there is a real requirement. |
-| `CatchFormRowList<P>` | Consider `CatchFormSection<P>` when separating its coordinator | It renders one section and binds descriptors. Defer a cosmetic rename if no responsibility changes; keep a separate coordinator for state shared across sections. |
+| `CatchFormList<P>` | Consider `CatchFormSection<P>` when separating its coordinator | It renders one section and binds descriptors. Defer a cosmetic rename if no responsibility changes; keep a separate coordinator for state shared across sections. |
 | `CatchFormCustomRow.build -> Widget` | Typed layout/editor extension slots | Cannot replace Field with an arbitrary widget. |
 | `CatchAccordionController` | Keep | Extraction already renamed the controller; do not reintroduce `CatchFieldAccordion`. |
 | `CatchFieldLanes.single/divided/custom` | Internal renderer or narrow transparent adapters | Do not permit nested lane scopes to redefine the enclosing section's geometry. |
@@ -568,7 +568,7 @@ so a future implementer can map these roles onto the extracted package.
 
 Sources: `lib/hosts/events/presentation/host_events_screen.dart` and
 `lib/hosts/events/presentation/widgets/host_events_list.dart`, especially
-`HostEventsClubCard`, `HostEventsClubSection`, `HostEventsTimelinePage` and
+`HostEventsClubCard`, `HostEventsClubSection`, `HostEventsTimelineBody` and
 `HostEventLifecycleRow`. Root source already uses canonical scaffold/rail/page
 owners, stable organizer/view keys and separate lifecycle loading states.
 Preserve its event-entry/draft/repeat capability and stable pagination boundary.
@@ -578,7 +578,7 @@ Preserve its event-entry/draft/repeat capability and stable pagination boundary.
 - `HostEventsClubCard` loads data; it is not a card. Rename to
   `HostEventsWorkspaceAdapter` or absorb into the existing route adapter.
   `HostEventsClubSection` composes the entire workspace; rename to
-  `HostEventsWorkspaceView`. `HostEventsTimelinePage` is an appropriate page
+  `HostEventsWorkspaceView`. `HostEventsTimelineBody` is an appropriate page
   adapter name. Prefer organizer vocabulary for new feature names without
   forcing a domain-model migration.
 - The rail options and pages are independently enumerated. Use one stable
@@ -739,7 +739,7 @@ separate scroll controllers and the shared public sliver renderer for Preview.
 
 ### Edit
 
-Identity and Contact already use typed `CatchFormRowList<UpdateClubPatch>`
+Identity and Contact already use typed `CatchFormList<UpdateClubPatch>`
 descriptors and a shared `CatchAccordionController`. Preserve this direction;
 close the arbitrary custom-row builder and keep coordinator state separate from
 Field presentation. Permissions produce read-only Fields, not dead tappable
