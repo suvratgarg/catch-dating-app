@@ -15,6 +15,12 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "ManageWebsiteAccountCallablePayload",
+    source: "callables/manage_website_account_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageWebsiteAccountCallablePayload.ts"},
+  {name: "ManageWebsiteAccountCallableResponse",
+    source: "callable_responses/manage_website_account_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageWebsiteAccountCallableResponse.ts"},
   {name: "HostResponseSummaryDocument", source: "firestore/host_response_summaries.schema.json",
     typeOutput: "functions/src/shared/generated/hostResponseSummaryDocument.ts"},
   {name: "HostGroupDetailDocument", source: "firestore/host_group_details.schema.json",
@@ -6570,6 +6576,10 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
 const generatedFiles = [];
 
 async function main() {
+  generatedFiles.push(...profileRequirementsOutputs(
+    readContractJson("catalogs/profile_requirements.json"),
+    readContractJson("firestore/users.schema.json")
+  ));
   const profileCatalog = readContractJson("catalogs/profile_prompts.json");
   const personFieldCatalog = readContractJson("catalogs/person_fields.json");
   const organizerFormTemplateCatalog = readContractJson(
@@ -10061,4 +10071,102 @@ function indent(value, spaces) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   await main();
+}
+
+/** Render capability policy for every client from the same authored catalog. */
+export function profileRequirementsOutputs(catalog, userSchema) {
+  if (catalog.schemaVersion !== 1 || catalog.kind !== "profileRequirements") {
+    throw new Error("Unsupported profile requirements catalog");
+  }
+  const fields = new Set(Object.keys(userSchema.properties));
+  const resolve = (key, ancestors = []) => {
+    const entry = catalog.capabilities[key];
+    if (!entry || ancestors.includes(key)) {
+      throw new Error(`Invalid profile capability inheritance: ${key}`);
+    }
+    const required = [...new Set([
+      ...(entry.extends ? resolve(entry.extends, [...ancestors, key]) : []),
+      ...entry.required,
+    ])];
+    for (const field of required) {
+      if (!fields.has(field)) throw new Error(`Unknown profile field: ${field}`);
+    }
+    return required;
+  };
+  const capabilities = Object.fromEntries(Object.keys(catalog.capabilities)
+    .map((key) => [key, resolve(key)]));
+  for (const field of [...catalog.optionalAccountFields,
+    ...Object.values(catalog.eventRequirements).flat()]) {
+    if (!fields.has(field)) throw new Error(`Unknown profile field: ${field}`);
+  }
+  if (catalog.optionalAccountFields.some((field) =>
+    capabilities.account.includes(field))) {
+    throw new Error("Optional account fields cannot be required");
+  }
+  const header = "// GENERATED from contracts/catalogs/profile_requirements.json. Do not edit.\n";
+  const json = (value) => JSON.stringify(value, null, 2);
+  const ts = `${header}
+export const profileRequiredFields = ${json(capabilities)} as const;
+export const eventProfileRequirements = ${json(catalog.eventRequirements)} as const;
+export const optionalAccountFields = ${json(catalog.optionalAccountFields)} as const;
+export const eventAgePolicy = ${json(catalog.eventAgePolicy)} as const;
+export type ProfileCapability = keyof typeof profileRequiredFields;
+export type EventProfileRequirement = keyof typeof eventProfileRequirements;
+export type ProfileRequirementField =
+  (typeof profileRequiredFields)[ProfileCapability][number];
+
+export function missingProfileFields(
+  capability: ProfileCapability,
+  hasField: (field: ProfileRequirementField) => boolean,
+  eventRequirements: readonly EventProfileRequirement[] = [],
+): ProfileRequirementField[] {
+  const fields = new Set<ProfileRequirementField>(profileRequiredFields[capability]);
+  if (capability === "eventBooking") {
+    for (const requirement of eventRequirements) {
+      for (const field of eventProfileRequirements[requirement]) fields.add(field);
+    }
+  }
+  return [...fields].filter((field) => !hasField(field));
+}
+`;
+  const dartMap = (value) => Object.entries(value).map(([key, values]) => {
+    const prefix = `  '${key}': <String>[`;
+    const line = `${prefix}${values.map((v) => `'${v}'`).join(', ')}],`;
+    return line.length <= 80 ? line :
+      `${prefix}\n${values.map((v) => `    '${v}',`).join('\n')}\n  ],`;
+  }).join('\n');
+  const dart = `${header}
+const unrestrictedEventMinimumAge = ${catalog.eventAgePolicy.unrestrictedMinimum};
+const openEndedEventMaximumAge = ${catalog.eventAgePolicy.openEndedMaximum};
+const profileRequiredFields = <String, List<String>>{
+${dartMap(capabilities)}
+};
+const eventProfileRequirements = <String, List<String>>{
+${dartMap(catalog.eventRequirements)}
+};
+const optionalAccountFields = <String>[${catalog.optionalAccountFields.map((v) => `'${v}'`).join(', ')}];
+
+List<String> missingProfileFields(
+  String capability,
+  bool Function(String field) hasField, {
+  Iterable<String> eventRequirements = const [],
+}) {
+  final required = profileRequiredFields[capability];
+  if (required == null) throw ArgumentError.value(capability, 'capability');
+  final fields = <String>{...required};
+  if (capability == 'eventBooking') {
+    for (final requirement in eventRequirements) {
+      final extra = eventProfileRequirements[requirement];
+      if (extra == null) throw ArgumentError.value(requirement, 'requirement');
+      fields.addAll(extra);
+    }
+  }
+  return fields.where((field) => !hasField(field)).toList(growable: false);
+}
+`;
+  return [
+    {path: "functions/src/shared/generated/profileRequirements.ts", content: ts},
+    {path: "website/src/shared/contracts/generated/profileRequirements.ts", content: ts},
+    {path: "lib/core/schema_contracts/generated/profile_requirements.g.dart", content: dart},
+  ];
 }

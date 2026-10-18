@@ -12,6 +12,7 @@ export function isReciprocallyEligible(params: {
 }): boolean {
   const {viewer, candidate, nowMillis} = params;
   if (
+    !viewer.gender || !candidate.gender ||
     !viewer.interestedInGenders.includes(candidate.gender) ||
     !candidate.interestedInGenders.includes(viewer.gender)
   ) {
@@ -21,16 +22,18 @@ export function isReciprocallyEligible(params: {
   const candidateAge = ageAt(candidate.dateOfBirth, nowMillis);
   const viewerRange = normalizedAgeRange(viewer);
   const candidateRange = normalizedAgeRange(candidate);
-  return candidateAge >= viewerRange.min &&
+  return candidateAge !== null && viewerAge !== null &&
+    candidateAge >= viewerRange.min &&
     candidateAge <= viewerRange.max &&
     viewerAge >= candidateRange.min &&
     viewerAge <= candidateRange.max;
 }
 
 export function ageAt(
-  dateOfBirth: FirebaseFirestore.Timestamp,
+  dateOfBirth: FirebaseFirestore.Timestamp | undefined,
   nowMillis: number
-): number {
+): number | null {
+  if (!dateOfBirth) return null;
   const birth = new Date(dateOfBirth.toMillis());
   const now = new Date(nowMillis);
   let age = now.getUTCFullYear() - birth.getUTCFullYear();

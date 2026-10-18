@@ -373,7 +373,7 @@ void main() {
 
         expect(
           container.read(onboardingControllerProvider).step,
-          OnboardingStep.genderInterest,
+          OnboardingStep.nameDob,
         );
         expect(container.read(onboardingControllerProvider).firstName, 'Asha');
       },
@@ -550,7 +550,7 @@ void main() {
       },
     );
 
-    test('rejects saving a profile without interested-in genders', () async {
+    test('social identity rejects missing interested-in genders', () async {
       final repository = FakeAuthRepository()
         ..currentUserValue = TestUser(
           uid: 'runner-1',
@@ -589,7 +589,7 @@ void main() {
         );
 
       await expectLater(
-        notifier.saveProfile(),
+        notifier.saveProfile(socialIdentityOnly: true),
         throwsA(isA<ValidationException>()),
       );
 

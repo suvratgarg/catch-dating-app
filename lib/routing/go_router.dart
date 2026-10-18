@@ -5,7 +5,7 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart'; // ChatsListScreen
+import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -227,6 +228,11 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           path: Routes.onboardingScreen.path,
           name: Routes.onboardingScreen.name,
           builder: (context, state) => OnboardingScreen(
+            eventRequirements:
+                state.uri.queryParameters[_onboardingIntentQueryParam] ==
+                    _completeProfileIntent
+                ? _eventRequirementsFromUri(state.uri)
+                : null,
             profileCompletionOnly:
                 state.uri.queryParameters[_onboardingIntentQueryParam] ==
                 _completeProfileIntent,

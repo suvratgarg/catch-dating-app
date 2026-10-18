@@ -260,6 +260,7 @@ String? _availabilityLabel(
       l10n.exploreExploreScreenStateAvailabilityInviteRequired,
     ViewerEventAvailabilityStatus.membershipRequired =>
       l10n.exploreExploreScreenStateAvailabilityMembersOnly,
+    ViewerEventAvailabilityStatus.profileRequired ||
     ViewerEventAvailabilityStatus.runPreferencesRequired =>
       l10n.exploreExploreScreenStateAvailabilitySetPreferences,
     ViewerEventAvailabilityStatus.ageRestricted => _ageRestrictedLabel(
