@@ -316,8 +316,8 @@ service cloud.firestore {
 	        && optionalString(data, 'instagramHandle')
 	        && data.phoneNumber == request.auth.token.phone_number
 	        && optionalString(data, 'countryCode')
-	        && (!hasField(data, 'dateOfBirth') || data.dateOfBirth is timestamp)
-        && (!hasField(data, 'gender') ||
+	        && (!('dateOfBirth' in data) || data.dateOfBirth is timestamp)
+        && (!('gender' in data) ||
           data.gender in ['man', 'woman', 'nonBinary', 'other'])
         && data.profileComplete is bool
         // Photos

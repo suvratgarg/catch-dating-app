@@ -2602,8 +2602,8 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("requires at least one interested-in gender on create", async () => {
-      await assertFails(
+    it("allows account creation without matching preferences", async () => {
+      await assertSucceeds(
         setDoc(
           doc(authedDb("runner-1"), "users", "runner-1"),
           userProfile({interestedInGenders: []}),
@@ -2798,6 +2798,20 @@ describe("firestore.rules", () => {
       await assertSucceeds(getDoc(owner));
       await assertFails(getDoc(doc(authedDb("other-user"), "users", "runner-1")));
       await assertFails(setDoc(doc(authedDb("runner-2"), "users", "runner-2"), {...minimal, phoneNumber: "+919111111111"}));
+    });
+
+    it("rejects malformed optional age and gender on account creation", async () => {
+      for (const patch of [
+        {dateOfBirth: null},
+        {dateOfBirth: "1998-01-01"},
+        {gender: null},
+        {gender: "unknown"},
+      ]) {
+        await assertFails(setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile(patch),
+        ));
+      }
     });
 
     it("denies direct profile field updates regardless of field shape", async () => {
