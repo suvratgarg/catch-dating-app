@@ -66,14 +66,10 @@ bool _isSelfCheckInOpen({
   required DateTime now,
 }) {
   final startsAt = event.startTime.subtract(
-    const Duration(
-      minutes: CatchBusinessRules.eventSelfCheckInWindowBeforeMinutes,
-    ),
+    const Duration(minutes: BusinessRules.eventSelfCheckInWindowBeforeMinutes),
   );
   final endsAt = event.startTime.add(
-    const Duration(
-      minutes: CatchBusinessRules.eventSelfCheckInWindowAfterMinutes,
-    ),
+    const Duration(minutes: BusinessRules.eventSelfCheckInWindowAfterMinutes),
   );
   return isSignedUp &&
       !hasAttended &&

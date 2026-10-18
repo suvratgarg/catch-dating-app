@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_route_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -43,7 +43,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             ).accent,
             first: true,
             dividerColor: style?.dividerColor,
-            child: EventDescription(
+            child: EventDescriptionSection(
               description: description,
               surfaceStyle: style,
             ),
@@ -82,7 +82,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             title: context.l10n.eventsEventDetailOverviewSectionTitleItinerary,
             dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
-            child: EventDetailItinerary(
+            child: EventDetailItineraryList(
               event: event,
               titleColor: style?.headingColor,
               detailColor: style?.bodyColor,
@@ -94,7 +94,7 @@ class EventDetailOverviewSection extends StatelessWidget {
             title: context.l10n.eventsEventDetailOverviewSectionTitlePhotos,
             dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
-            child: EventDetailPhotoStrip(event: event),
+            child: EventDetailPhotoGrid(event: event),
           ),
         CatchSection.divided(
           title: context.l10n.eventsEventDetailOverviewSectionTitleWhere,
@@ -154,8 +154,8 @@ class EventDetailOverviewSection extends StatelessWidget {
   }
 }
 
-class EventDescription extends StatelessWidget {
-  const EventDescription({
+class EventDescriptionSection extends StatelessWidget {
+  const EventDescriptionSection({
     super.key,
     required this.description,
     this.surfaceStyle,

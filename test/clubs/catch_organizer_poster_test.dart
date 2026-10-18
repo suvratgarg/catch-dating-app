@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +8,7 @@ void main() {
   testWidgets('uses editorial title and arrow defaults', (tester) async {
     await pumpTestApp(
       tester,
-      CatchOrganizerPoster(
+      CatchPoster(
         media: const ColoredBox(color: Colors.black),
         kicker: 'CLUB TO KNOW',
         title: 'Neighbourhood Club',
@@ -24,7 +23,7 @@ void main() {
 
     await pumpTestApp(
       tester,
-      const CatchOrganizerPoster(
+      const CatchPoster(
         media: ColoredBox(color: Colors.black),
         kicker: 'CLUB TO KNOW',
         title: 'Neighbourhood Club',
@@ -36,21 +35,21 @@ void main() {
   });
 
   testWidgets('renders every approved recipe', (tester) async {
-    for (final layout in OrganizerPosterLayout.values) {
+    for (final layout in CatchPosterVariant.values) {
       await pumpTestApp(
         tester,
         SizedBox(
           width: 360,
           height: 480,
-          child: CatchOrganizerPoster(
+          child: CatchPoster(
             media: const ColoredBox(color: Colors.black),
             kicker: 'Run club · Mumbai',
             title: 'A deliberately long organizer identity',
             tagline: 'A recurring scene with enough copy to test the layout.',
             meta: 'Every Saturday · 6:30 AM',
-            layout: layout,
-            treatment: OrganizerPosterTreatment
-                .values[layout.index % OrganizerPosterTreatment.values.length],
+            variant: layout,
+            tone: CatchPosterTone
+                .values[layout.index % CatchPosterTone.values.length],
             titleMaxLines: 2,
             showArrow: false,
           ),

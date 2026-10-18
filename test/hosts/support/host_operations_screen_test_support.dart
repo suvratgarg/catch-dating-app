@@ -2,7 +2,7 @@ part of '../host_operations_screen_test.dart';
 
 Finder _hostEventsScrollable() => find
     .descendant(
-      of: find.byType(HostEventsTimelinePage),
+      of: find.byType(HostEventsTimelineBody),
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is Scrollable && widget.axisDirection == AxisDirection.down,
@@ -250,11 +250,11 @@ void registerHostWorkspacePagingTest() {
       findsNothing,
     );
     expect(find.byType(HostClubEditTab), findsOneWidget);
-    expect(find.byType(HostClubInsightsPane), findsNothing);
+    expect(find.byType(HostClubInsightsSection), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(find.byType(HostClubInsightsSection), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsOneWidget,
@@ -271,7 +271,7 @@ void registerHostWorkspacePagingTest() {
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(find.byType(HostClubInsightsSection), findsOneWidget);
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);

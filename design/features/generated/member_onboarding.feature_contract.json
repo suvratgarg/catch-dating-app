@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:2a4c07467ec877e90d27858cfe15ddd868ce4674fcd5857c042d194127732cc3",
-  "resolvedDigest": "sha256:61c3ab4c5e292943b152f91300ceccd05b930fcdc8db9429048fa1ed985c3a1f",
+  "sourceDigest": "sha256:17f2898b7ec0a976a250da221871a877ec0cf0a7ebef06cc0ce4396dbc15199c",
+  "resolvedDigest": "sha256:7755feeb227e3f07ea000a20b0d61ef970df4081685ccb6a148d63077d5aaa8d",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -52,8 +52,8 @@
           {
             "id": "welcome_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           },
           {
             "id": "flow_controller",
@@ -64,20 +64,20 @@
           {
             "id": "name_dob_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
-            "symbol": "NameDobPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+            "symbol": "OnboardingNameDobBody"
           },
           {
             "id": "gender_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-            "symbol": "GenderInterestPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+            "symbol": "OnboardingGenderInterestBody"
           },
           {
             "id": "photos_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/photos_page.dart",
-            "symbol": "PhotosPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+            "symbol": "OnboardingPhotosBody"
           },
           {
             "id": "photo_controller",
@@ -88,14 +88,14 @@
           {
             "id": "prompts_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-            "symbol": "ProfilePromptsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+            "symbol": "OnboardingProfilePromptsBody"
           },
           {
             "id": "running_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-            "symbol": "RunningPrefsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+            "symbol": "OnboardingRunningPrefsBody"
           }
         ],
         "componentContracts": [
@@ -716,7 +716,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -790,7 +790,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "NameDobPage/Identity form"
+              "OnboardingNameDobBody/Identity form"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -864,7 +864,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "GenderInterestPage/Gender and interest form"
+              "OnboardingGenderInterestBody/Gender and interest form"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -938,7 +938,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "InstagramPage/Instagram form"
+              "OnboardingInstagramBody/Instagram form"
             ],
             "tests": []
           },
@@ -1012,7 +1012,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "PhotosPage/Photo grid states"
+              "OnboardingPhotosBody/Photo grid states"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -1344,7 +1344,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "ProfilePromptsPage/Prompt form"
+              "OnboardingProfilePromptsBody/Prompt form"
             ],
             "tests": []
           },
@@ -1500,7 +1500,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "RunningPrefsPage/Run preferences form"
+              "OnboardingRunningPrefsBody/Run preferences form"
             ],
             "tests": [
               "test/onboarding/onboarding_controller_test.dart",
@@ -1616,8 +1616,8 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "NameDobPage/Identity form",
-              "GenderInterestPage/Gender and interest form"
+              "OnboardingNameDobBody/Identity form",
+              "OnboardingGenderInterestBody/Gender and interest form"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -1846,7 +1846,7 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "GenderInterestPage/Gender and interest form"
+              "OnboardingGenderInterestBody/Gender and interest form"
             ],
             "tests": [
               "test/onboarding/onboarding_controller_test.dart"
@@ -1961,8 +1961,8 @@
             ],
             "previewIds": [
               "OnboardingScreen/Route states",
-              "ProfilePromptsPage/Prompt form",
-              "RunningPrefsPage/Run preferences form"
+              "OnboardingProfilePromptsBody/Prompt form",
+              "OnboardingRunningPrefsBody/Run preferences form"
             ],
             "tests": [
               "test/onboarding/onboarding_controller_test.dart"
@@ -2390,14 +2390,14 @@
           }
         ],
         "previews": [
-          "GenderInterestPage/Gender and interest form",
-          "InstagramPage/Instagram form",
-          "NameDobPage/Identity form",
+          "OnboardingGenderInterestBody/Gender and interest form",
+          "OnboardingInstagramBody/Instagram form",
+          "OnboardingNameDobBody/Identity form",
+          "OnboardingPhotosBody/Photo grid states",
+          "OnboardingProfilePromptsBody/Prompt form",
+          "OnboardingRunningPrefsBody/Run preferences form",
           "OnboardingScreen/Route states",
-          "PhotosPage/Photo grid states",
-          "ProfilePromptsPage/Prompt form",
-          "RunningPrefsPage/Run preferences form",
-          "WelcomePage/Splash states"
+          "OnboardingWelcomeBody/Splash states"
         ]
       }
     },
@@ -2424,8 +2424,8 @@
           {
             "id": "welcome_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           }
         ],
         "componentContracts": [
@@ -2559,7 +2559,7 @@
               "start_welcome_animated_reel"
             ],
             "previewIds": [
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -2602,7 +2602,7 @@
               "start_welcome_text_scale_2"
             ],
             "previewIds": [
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -2646,7 +2646,7 @@
               "start_welcome_text_scale_2"
             ],
             "previewIds": [
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -2688,7 +2688,7 @@
               "start_welcome_reduced_motion"
             ],
             "previewIds": [
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": [
               "test/onboarding/onboarding_widgets_test.dart"
@@ -2730,7 +2730,7 @@
               "start_welcome_text_scale_2"
             ],
             "previewIds": [
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": []
           },
@@ -2772,7 +2772,7 @@
               "start_welcome_text_scale_2"
             ],
             "previewIds": [
-              "WelcomePage/Splash states"
+              "OnboardingWelcomeBody/Splash states"
             ],
             "tests": []
           },
@@ -2842,7 +2842,7 @@
           }
         ],
         "previews": [
-          "WelcomePage/Splash states"
+          "OnboardingWelcomeBody/Splash states"
         ]
       }
     }

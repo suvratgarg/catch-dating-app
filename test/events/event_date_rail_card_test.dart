@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -41,7 +41,7 @@ void main() {
 
     expect(find.text('Social run'), findsOneWidget);
     expect(find.text('FREE'), findsOneWidget);
-    expect(find.byType(EventActivityStamp), findsNothing);
+    expect(find.byType(EventActivityBadge), findsNothing);
     expect(find.byType(CatchClockIndicator), findsNothing);
     expect(find.byType(CatchBadge), findsNothing);
 

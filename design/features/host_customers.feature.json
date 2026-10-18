@@ -43,8 +43,8 @@
           {
             "id": "audience_overview",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-            "symbol": "HostSavedAudienceOverview"
+            "file": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
+            "symbol": "HostSavedAudienceSection"
           },
           {
             "id": "audience_members",
@@ -85,7 +85,7 @@
           {
             "id": "customer_memory",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "symbol": "HostCustomerMemorySection"
           },
           {

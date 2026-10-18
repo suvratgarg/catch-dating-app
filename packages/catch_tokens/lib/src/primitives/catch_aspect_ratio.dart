@@ -12,7 +12,7 @@ abstract final class CatchAspectRatio {
   static const double organizerGallery = standardPhoto;
   static const double portrait4x5 = 4 / 5;
   static const double portrait3x4 = 3 / 4;
-  static const double organizerPoster = portrait3x4;
+  static const double poster = portrait3x4;
   static const double profileSlotFeedback = 112 / 150;
   static const double eventRecapVibeTile = 0.74;
 }

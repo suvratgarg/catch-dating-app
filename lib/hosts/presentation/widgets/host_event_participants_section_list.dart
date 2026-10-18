@@ -6,7 +6,7 @@ typedef _HostParticipantRosterRowData = ({
   String? meta,
   String? signal,
   CatchBadgeTone tone,
-  CatchRosterAction action,
+  ParticipantAction action,
 });
 
 class HostEventParticipantsSectionList extends StatefulWidget {
@@ -193,7 +193,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
               onChanged: onSearchChanged,
             ),
             gapH14,
-            CatchRosterTable(
+            ParticipantTable(
               columns: [
                 context.l10n.hostsHostEventAttendancePanelVisiblecopyGuest,
                 context.l10n.hostsHostEventAttendancePanelVisiblecopySignal,
@@ -216,7 +216,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                       ),
                     ),
                   ])
-                    CatchRosterRow(
+                    ParticipantRow(
                       person: row.person,
                       imageUrl: row.imageUrl,
                       meta: row.meta,
@@ -293,7 +293,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
               onChanged: onSearchChanged,
             ),
             gapH14,
-            CatchRosterTable(
+            ParticipantTable(
               columns: [
                 context.l10n.hostsHostEventAttendancePanelVisiblecopyGuest,
                 context.l10n.hostsHostEventAttendancePanelVisiblecopyStatus,
@@ -316,7 +316,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                       ),
                     ),
                   ])
-                    CatchRosterRow(
+                    ParticipantRow(
                       person: row.person,
                       imageUrl: row.imageUrl,
                       meta: row.meta,
@@ -417,7 +417,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                 onChanged: onSearchChanged,
               ),
               gapH14,
-              CatchRosterTable(
+              ParticipantTable(
                 columns: [
                   context.l10n.hostsHostEventAttendancePanelVisiblecopyName,
                   context
@@ -431,7 +431,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                 rows: [
                   for (final uid in rosterState.rowIds)
                     for (final row in [_reportRowData(context, uid)])
-                      CatchRosterRow(
+                      ParticipantRow(
                         person: row.person,
                         imageUrl: row.imageUrl,
                         meta: row.meta,
@@ -488,9 +488,9 @@ class HostParticipationLifecycleSection extends StatelessWidget {
       participation: participation,
       usesRequestApproval: usesRequestApproval,
     );
-    final CatchRosterAction action;
+    final ParticipantAction action;
     if (rowState.showRequestActions) {
-      action = CatchRosterDecideAction(
+      action = ParticipantDecideAction(
         onProfile: () => actions.openProfile(uid),
         onApprove: requestActionPending
             ? null
@@ -534,9 +534,9 @@ class HostParticipationLifecycleSection extends StatelessWidget {
       attended: attended,
       usesRequestApproval: usesRequestApproval,
     );
-    final CatchRosterAction action;
+    final ParticipantAction action;
     if (rowState.showAttendanceToggle) {
-      action = CatchRosterButtonAction(
+      action = ParticipantButtonAction(
         buttonKey: HostEventActionKeys.attendeeCheckInButton(uid),
         label: rowState.attendanceButtonLabel,
         primary: rowState.attendanceButtonPrimary,
@@ -584,7 +584,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
       meta: rowState.meta,
       signal: rowState.signal,
       tone: rowState.tone,
-      action: CatchRosterTextAction(rowState.payment),
+      action: ParticipantTextAction(rowState.payment),
     );
   }
 
@@ -594,7 +594,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
 
   /// Shared waitlist action — a settled offer reads as an outcome [CatchBadge],
   /// otherwise an "Offer" button (disabled while a send is in flight).
-  CatchRosterAction _waitlistOfferAction(
+  ParticipantAction _waitlistOfferAction(
     BuildContext context,
     String uid,
     EventParticipation? participation, {
@@ -604,14 +604,14 @@ class HostParticipationLifecycleSection extends StatelessWidget {
     if (offerStatus == EventWaitlistOfferStatus.active ||
         offerStatus == EventWaitlistOfferStatus.accepted) {
       final accepted = offerStatus == EventWaitlistOfferStatus.accepted;
-      return CatchRosterBadgeAction(
+      return ParticipantBadgeAction(
         label: accepted
             ? context.l10n.hostsHostEventAttendancePanelLabelAccepted
             : context.l10n.hostsHostEventAttendancePanelLabelOffered,
         tone: accepted ? CatchBadgeTone.success : CatchBadgeTone.brand,
       );
     }
-    return CatchRosterButtonAction(
+    return ParticipantButtonAction(
       label: context.l10n.hostsHostEventAttendancePanelLabelOffer,
       onPressed: offerActionPending
           ? null
@@ -620,8 +620,8 @@ class HostParticipationLifecycleSection extends StatelessWidget {
     );
   }
 
-  CatchRosterAction _profileAction(BuildContext context, String uid) {
-    return CatchRosterButtonAction(
+  ParticipantAction _profileAction(BuildContext context, String uid) {
+    return ParticipantButtonAction(
       label: context.l10n.hostsHostEventAttendancePanelLabelProfile,
       onPressed: () => actions.openProfile(uid),
     );

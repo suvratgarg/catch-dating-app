@@ -1,0 +1,285 @@
+{
+  "owner": "app_architecture",
+  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7b2--naming-sweep",
+  "schemaVersion": 1,
+  "policy": "feature_widget_names_and_reserved_catch_prefix_debt_cannot_grow",
+  "allowedFindings": [
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncPhase",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncState",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncStatus",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+      "name": "DashboardFullSliverBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_check_in_qr_scanner.dart",
+      "name": "EventCheckInQrScanner",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart",
+      "name": "HostContactMergeCandidateCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart",
+      "name": "HostContactMergeReviewSheet",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerAttendanceCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerDetailsSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerIdentityCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerRecentEvents",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerRevenueBreakdown",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+      "name": "HostCustomerRevenueCard",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      "name": "HostCustomerHistoryFilters",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      "name": "HostCustomerReachSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      "name": "HostCustomerTimelineSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/forms/host_form_renderer.dart",
+      "name": "HostFormRenderer",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
+      "name": "HostFormResponsesPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_audience_view.dart",
+      "name": "HostAudienceStateScaffold",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_audience_view.dart",
+      "name": "HostAudienceTabRail",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "name": "HostClubEditTab",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "name": "HostClubMediaSummary",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostClubOrganizerOverviewController",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostOrganizerMetricGrid",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "name": "HostOrganizerMetricRow",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+      "name": "HostCampaignComposer",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+      "name": "HostCampaignReport",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+      "name": "HostManualSendQueue",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "name": "HostEventParticipantsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_live_location_control.dart",
+      "name": "HostEventLiveLocationControl",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
+      "name": "HostEventReviewsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "name": "HostGuestIntakeDisclosure",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "name": "HostGuestIntakeField",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "name": "HostOperationalRosterPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/host_today_screen.dart",
+      "name": "HostTodayLoadedRoute",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+      "name": "HostTodayAttentionSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+      "name": "HostTodayOverview",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    }
+  ]
+}

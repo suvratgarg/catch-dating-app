@@ -118,7 +118,7 @@ void main() {
     );
     expect(firstBar, findsOneWidget);
     await tester.ensureVisible(firstBar);
-    tester.widget<HostAnalyticsDualBar>(firstBar).onTap();
+    tester.widget<HostAnalyticsBarTile>(firstBar).onTap();
     await pumpFeatureUi(tester);
     final detail = find.byKey(
       const ValueKey('host-analytics-trend-detail'),
@@ -272,7 +272,7 @@ Future<void> _pumpReport(
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: SingleChildScrollView(
-          child: HostAnalyticsReportView(
+          child: HostAnalyticsReportBody(
             report: report,
             rangePreset: HostClubInsightsRangePreset.thirtyDays,
             currencyCode: 'INR',

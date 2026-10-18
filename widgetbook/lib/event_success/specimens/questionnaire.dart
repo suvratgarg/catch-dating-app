@@ -5,8 +5,8 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: "CustomQuestionnaireFields",
-  type: CustomQuestionnaireFields,
+  name: "CustomQuestionnaireSection",
+  type: CustomQuestionnaireSection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
 )
@@ -14,7 +14,7 @@ Widget eventSuccessStrictCustomQuestionnaireFields(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.questionnaire,
-    componentName: "CustomQuestionnaireFields",
+    componentName: "CustomQuestionnaireSection",
   );
 }
 
@@ -31,5 +31,19 @@ Widget eventSuccessStrictEventSuccessQuestionnaireConfigEditor(
     context,
     surface: EventSuccessStrictSurface.questionnaire,
     componentName: "EventSuccessQuestionnaireConfigEditor",
+  );
+}
+
+@widgetbook.UseCase(
+  name: "CustomQuestionnaireField",
+  type: CustomQuestionnaireField,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
+)
+Widget eventSuccessStrictCustomQuestionnaireField(BuildContext context) {
+  return eventSuccessStrictPreview(
+    context,
+    surface: EventSuccessStrictSurface.questionnaire,
+    componentName: "CustomQuestionnaireField",
   );
 }

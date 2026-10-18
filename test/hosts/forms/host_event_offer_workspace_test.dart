@@ -115,7 +115,7 @@ void main() {
     expect(find.text(preview), findsNothing);
     await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
     await pumpUntilFound(tester, find.text(preview));
-    final dock = find.byType(CatchDockSurface);
+    final dock = find.byType(CatchDock);
     expect(dock, findsOneWidget);
     expect(tester.getBottomLeft(dock).dy, greaterThan(500));
     expect(

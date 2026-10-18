@@ -210,7 +210,6 @@ Widget catchBadgeContractStates(BuildContext context) {
         label: 'on-dark metadata / status',
         child: CatchSurface(
           backgroundColor: t.ink,
-          borderWidth: 0,
           padding: CatchInsets.content,
           child: WidgetbookContractWrap(
             children: [

@@ -23,7 +23,7 @@ class _EventMapPinIconKey {
   int get hashCode => Object.hash(activityKindName, selected, label);
 }
 
-Future<CatchMapMarkerBitmap> _buildEventMapPinBitmap({
+Future<MapMarkerBitmap> _buildEventMapPinBitmap({
   required Color activityColor,
   required Color inkColor,
   required Color shadowColor,
@@ -133,7 +133,7 @@ Future<CatchMapMarkerBitmap> _buildEventMapPinBitmap({
   if (bytes == null || bytes.isEmpty) {
     throw StateError('Unable to render event map pin bitmap');
   }
-  return CatchMapMarkerBitmap(
+  return MapMarkerBitmap(
     bytes: bytes,
     logicalSize: Size(logicalWidth, logicalHeight),
     imagePixelRatio: pixelRatio,
@@ -141,7 +141,7 @@ Future<CatchMapMarkerBitmap> _buildEventMapPinBitmap({
 }
 
 @visibleForTesting
-Future<CatchMapMarkerBitmap> buildEventMapClusterPinBitmap({
+Future<MapMarkerBitmap> buildEventMapClusterPinBitmap({
   required int count,
   required Color fillColor,
   required Color borderColor,
@@ -182,7 +182,7 @@ Future<CatchMapMarkerBitmap> buildEventMapClusterPinBitmap({
   if (bytes == null || bytes.isEmpty) {
     throw StateError('Unable to render event cluster marker bitmap');
   }
-  return CatchMapMarkerBitmap(
+  return MapMarkerBitmap(
     bytes: bytes,
     logicalSize: const Size.square(logicalSize),
     imagePixelRatio: pixelRatio,

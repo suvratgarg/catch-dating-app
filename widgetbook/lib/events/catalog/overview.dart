@@ -88,13 +88,13 @@ Widget eventDetailOverviewSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Event description',
-  type: EventDescription,
+  type: EventDescriptionSection,
   path: '[Event Detail]/Sections',
 )
 Widget eventDescriptionState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: EventDescription(
+    child: EventDescriptionSection(
       description:
           'A low-pressure morning plan with a clear route, relaxed pace, and coffee after.',
     ),
@@ -335,3 +335,57 @@ Widget eventPhotoHeaderState(BuildContext context) {
 }
 
 void _noopBool(bool value) {}
+
+@widgetbook.UseCase(
+  name: 'Ticket stub tile skeleton',
+  type: TicketStubTileSkeleton,
+  path: '[Event Detail]/Sections',
+)
+Widget ticketStubTileSkeletonState(BuildContext context) {
+  return const WidgetbookScrollCatalogFrame(
+    title: 'TicketStubTileSkeleton',
+    catalogId: 'section.event.ticket_stub_tile_skeleton',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'loading cell',
+        child: SizedBox(width: 160, child: TicketStubTileSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Itinerary list skeleton',
+  type: EventDetailItineraryListSkeleton,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailItineraryListSkeletonState(BuildContext context) {
+  return const WidgetbookScrollCatalogFrame(
+    title: 'EventDetailItineraryListSkeleton',
+    catalogId: 'section.event.itinerary_skeleton',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'loading itinerary',
+        child: EventDetailItineraryListSkeleton(),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading dock',
+  type: EventDetailLoadingDock,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailLoadingDockState(BuildContext context) {
+  return const WidgetbookScrollCatalogFrame(
+    title: 'EventDetailLoadingDock',
+    catalogId: 'section.event.loading_dock',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'booking action loading',
+        child: EventDetailLoadingDock(),
+      ),
+    ],
+  );
+}

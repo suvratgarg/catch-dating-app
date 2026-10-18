@@ -4,7 +4,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
@@ -12,7 +12,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ void main() {
   });
 
   test('selected native pins keep the resting bitmap while art resolves', () {
-    final restingBitmap = CatchMapMarkerBitmap(
+    final restingBitmap = MapMarkerBitmap(
       bytes: Uint8List.fromList(<int>[1, 2, 3]),
       logicalSize: const Size(38, 58),
       imagePixelRatio: 2,
@@ -86,7 +86,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapView(
+      const EventMap(
         enableNetworkTiles: false,
         viewModel: AsyncLoading<EventMapViewModel>(),
       ),
@@ -107,7 +107,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapView(enableNetworkTiles: false),
+      const EventMap(enableNetworkTiles: false),
       overrides: [
         eventMapViewModelProvider.overrideWith(
           (ref) =>
@@ -127,7 +127,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapView(
+      const EventMap(
         enableNetworkTiles: false,
         preserveCanvasWhenEmpty: true,
         distanceRingRadiusKm: 3,
@@ -145,7 +145,7 @@ void main() {
       ],
     );
 
-    expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+    expect(find.byType(EventPinsFallbackMap), findsOneWidget);
     expect(find.byType(CatchDistanceOverlay), findsOneWidget);
     expect(find.text('No mapped events yet'), findsNothing);
   });
@@ -168,7 +168,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMapView(enableNetworkTiles: false),
+      const EventMap(enableNetworkTiles: false),
       overrides: [
         eventMapViewModelProvider.overrideWith(
           (ref) => AsyncData(
@@ -224,7 +224,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      EventMapView(
+      EventMap(
         enableNetworkTiles: false,
         viewModel: AsyncData(
           EventMapViewModel(
@@ -266,7 +266,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMapView(
+      const EventMap(
         enableNetworkTiles: false,
         initialSelectedEventId: 'second-event',
       ),
@@ -333,7 +333,7 @@ void main() {
     await tester.pump();
 
     final pins = tester
-        .widgetList<CatchActivityMapPin>(find.byType(CatchActivityMapPin))
+        .widgetList<ActivityMapPin>(find.byType(ActivityMapPin))
         .toList();
     final restingPin = pins.singleWhere((pin) => !pin.selected);
     final selectedPin = pins.singleWhere((pin) => pin.selected);
@@ -375,14 +375,14 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: CatchGoogleMap(
+        home: LocationMap(
           initialCenter: const LocationCoordinate(22.72, 75.86),
           initialZoom: 14,
           markers: {
-            CatchMapMarker(
+            MapMarker(
               id: 'byte-backed-marker',
               position: const LocationCoordinate(22.72, 75.86),
-              bitmap: CatchMapMarkerBitmap(
+              bitmap: MapMarkerBitmap(
                 bytes: Uint8List.fromList(<int>[1, 2, 3, 4]),
                 logicalSize: const Size(38, 58),
                 imagePixelRatio: 2,
@@ -442,13 +442,13 @@ void main() {
       find.byType(gmaps.GoogleMap),
     );
 
-    expect(googleMap.style, CatchGoogleMapStyle.dark);
+    expect(googleMap.style, LocationMapStyle.dark);
   });
 
   testWidgets('event pin clusters rasterize app-owned ink count markers', (
     tester,
   ) async {
-    late CatchMapMarkerBitmap bitmap;
+    late MapMarkerBitmap bitmap;
     await tester.runAsync(() async {
       bitmap = await buildEventMapClusterPinBitmap(
         count: 6,

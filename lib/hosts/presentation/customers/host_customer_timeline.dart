@@ -240,7 +240,8 @@ String _permissionSummary(
     };
     if (label == null) continue;
     final purpose = entry.value;
-    final status = purpose.evidenceStatus ==
+    final status =
+        purpose.evidenceStatus ==
             HostCustomerPermissionEvidenceStatus.incomplete
         ? context.l10n.hostCustomersWhatsappPermissionIncomplete
         : _permissionStatusLabel(context, purpose.status);

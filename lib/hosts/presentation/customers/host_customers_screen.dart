@@ -54,15 +54,15 @@ import 'package:intl/intl.dart';
 
 part 'host_customer_detail_cards.dart';
 part 'host_customer_editor.dart';
-part 'host_customer_editor_sheets.dart';
+part 'host_save_audience_sheet.dart';
 part 'host_customer_filter_sheet.dart';
-part 'host_customers_directory.dart';
+part 'host_customers_list.dart';
 part 'host_customers_directory_actions.dart';
 part 'host_saved_audience_editor.dart';
 part 'host_saved_audience_rule_draft.dart';
 part 'host_static_audience_members_editor.dart';
-part 'host_saved_audience_source_rules.dart';
-part 'host_saved_audience_overview.dart';
+part 'host_audience_source_rule_section.dart';
+part 'host_saved_audience_section.dart';
 part 'host_saved_audiences_workspace.dart';
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
@@ -286,7 +286,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       builder: (context, viewport) {
         final screenSize = viewport.sizeClass;
         final activeQuery = peopleView ? _search : _audienceSearch;
-        final directoryControls = HostCustomerDirectoryControls(
+        final directoryControls = HostCustomerControlSection(
           sort: _sort,
           activeFilters: effectiveFilters.isEmpty && _manualTags.isEmpty
               ? null
@@ -399,7 +399,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                HostCustomersSummary(
+                                HostCustomersSummarySection(
                                   summary: summary,
                                   newCustomerCount: newCustomerCount,
                                   onRetry: () =>
@@ -441,7 +441,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                           CatchPageBody.sliver(
                             child: SliverList.list(
                               children: [
-                                HostCustomerFilterSummary(
+                                HostCustomerFilterSummarySection(
                                   filter: effectiveFilter,
                                   selectionLabel: selectionLabel,
                                   count: directoryState.matchCount,
@@ -491,7 +491,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 context: AppErrorContext.customers,
                                 onRetry: onBoundaryRetry,
                               ),
-                          builder: (context, state) => HostCustomersDirectory(
+                          builder: (context, state) => HostCustomersList(
                             state: state,
                             selectedContactId: _selectedContactId,
                             hasActiveQuery:

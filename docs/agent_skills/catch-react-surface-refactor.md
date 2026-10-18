@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.0.141
-updated: 2026-08-07
+version: 1.1.0
+updated: 2026-10-17
 owner: agent_operating_model
 status: active
 ---
@@ -42,8 +42,14 @@ Loop:
    `design/web-ui/shared_primitive_adoption.json`; run
    `node tool/run.mjs check web:shared-ui-adoption` whenever either surface
    primitive owner or `packages/web-ui` changes. Adopted candidates must route
-   through package controls in both surface adapters; styling and feature
-   composition stay surface-owned.
+   through package controls in both surface adapters. Styling and feature
+   composition stay surface-owned only until UI blueprint Phase 7 moves styled
+   `Catch*` components into `@catch/web-ui` (ratified 2026-10-17). Before
+   adding a shared React component, find its concept in
+   `design/components/catch.components.json`: use the concept's symbol and prop
+   names (Cross-Framework Names in `docs/app_architecture.md`), build it in
+   `@catch/web-ui` rather than a surface folder when its `tier` is T1 or T2,
+   and never port a T3 entry locally.
 8. For the marketing website, every exported uppercase component under `website/src/features/**/*.tsx` must be declared in `design/website/components.json` as a route, section, flow, or supporting component, or made private. Run `node tool/run.mjs check marketing:website-components` after adding, moving, or exporting website route/section/supporting components.
 9. For admin feature UI, export only route/workspace entry components such as `*Screen` and `*Workspace`; reusable panels/cards/lists/sections belong in `admin/src/shared/ui` or stay private. Route/workspace entries, shared admin primitives, and admin feedback providers must be declared in `design/admin/components.json`. Run `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` after touching admin feature or shared admin UI exports. When an admin registry entry becomes preview-ready, add or update `admin/src/stories/**` metadata and run `node tool/run.mjs check web:admin-storybook`.
 10. For marketing website public route changes, update

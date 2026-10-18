@@ -1881,9 +1881,9 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/events/presentation/widgets/event_detail_cta.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
+      "siteId": "material-page:lib/events/presentation/widgets/event_detail_dock.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);}))",
-      "sourcePath": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "sourcePath": "lib/events/presentation/widgets/event_detail_dock.dart",
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventJoinedCelebrationScreen",

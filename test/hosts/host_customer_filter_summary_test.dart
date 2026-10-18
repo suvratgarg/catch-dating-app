@@ -25,7 +25,7 @@ void main() {
 
     await tester.pumpWidget(
       _app(
-        HostCustomerFilterSummary(
+        HostCustomerFilterSummarySection(
           filter: HostCustomerFilter.atRisk,
           count: 12,
           countCoverage: HostCustomerMatchCountCoverage.exact,
@@ -48,7 +48,7 @@ void main() {
 
     await tester.pumpWidget(
       _app(
-        HostCustomerFilterSummary(
+        HostCustomerFilterSummarySection(
           filter: HostCustomerFilter.atRisk,
           count: 12,
           countCoverage: HostCustomerMatchCountCoverage.atLeast,
@@ -75,7 +75,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _app(
-        const HostCustomerFilterSummary(
+        const HostCustomerFilterSummarySection(
           filter: HostCustomerFilter.all,
           count: 2,
           countCoverage: HostCustomerMatchCountCoverage.exact,
@@ -96,7 +96,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _app(
-        const HostCustomerFilterSummary(
+        const HostCustomerFilterSummarySection(
           filter: HostCustomerFilter.atRisk,
           count: 12,
           countCoverage: HostCustomerMatchCountCoverage.exact,
@@ -118,7 +118,7 @@ void main() {
 
     await tester.pumpWidget(
       _app(
-        HostCustomerFilterSummary(
+        HostCustomerFilterSummarySection(
           filter: HostCustomerFilter.all,
           manualTag: const HostCustomerManualTag(
             tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',

@@ -31,7 +31,7 @@ final _externalFeedItem = ExploreExternalEventItem(
 
 @widgetbook.UseCase(
   name: 'Feed states',
-  type: ExploreFeedContentSliver,
+  type: ExploreFeedSliverBody,
   path: '[Explore]/Sections',
 )
 Widget exploreEventsSectionStates(BuildContext context) {

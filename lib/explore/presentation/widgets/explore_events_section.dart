@@ -7,17 +7,17 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_empty_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
-export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
-export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/explore_feed_empty_state.dart';
 
 typedef CrossPathsProfileSelected =
     void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
@@ -63,7 +63,7 @@ List<Widget> buildExploreEventsSlivers(
     CatchAsyncState(
       phase: CatchAsyncPhase.initialLoading || CatchAsyncPhase.retrying,
     ) =>
-      [const ExploreEventsLoadingSliver()],
+      [const ExploreEventsSkeleton()],
     CatchAsyncState(
       phase: CatchAsyncPhase.staleDataWithError ||
           CatchAsyncPhase.terminalError,
@@ -102,14 +102,14 @@ List<Widget> buildExploreEventsSlivers(
       :final value,
     ) =>
       () {
-        if (value == null) return [const ExploreEventsLoadingSliver()];
+        if (value == null) return [const ExploreEventsSkeleton()];
         final hasDiscoverableClubCandidates = rankExploreClubIntermixCandidates(
           candidateClubs,
           joinedClubIds: joinedClubIds,
         ).isNotEmpty;
         return value.isEmpty && !hasDiscoverableClubCandidates
             ? [
-                ExploreEventsEmptySliver(
+                ExploreFeedEmptyState(
                   state: ExploreEventsEmptyState.from(
                     filters: filters,
                     searchQuery: searchQuery,
@@ -121,7 +121,7 @@ List<Widget> buildExploreEventsSlivers(
                 ),
               ]
             : [
-                ExploreFeedContentSliver(
+                ExploreFeedSliverBody(
                   viewModel: value,
                   l10n: l10n,
                   candidateClubs: candidateClubs,
@@ -144,8 +144,8 @@ List<Widget> buildExploreEventsSlivers(
   };
 }
 
-class ExploreFeedContentSliver extends StatelessWidget {
-  const ExploreFeedContentSliver({
+class ExploreFeedSliverBody extends StatelessWidget {
+  const ExploreFeedSliverBody({
     super.key,
     required this.viewModel,
     required this.l10n,
@@ -276,11 +276,10 @@ class ExploreFeedContentSliver extends StatelessWidget {
                       item: item,
                       onExternalEventOpened: onExternalEventOpened,
                     ),
-                  ExploreMixedClubSpotlightCard(:final club) =>
-                    ExploreOrganizerPosterCard(
-                      club: club,
-                      onClubSelected: onClubSelected,
-                    ),
+                  ExploreMixedClubSpotlightCard(:final club) => ClubCard(
+                    club: club,
+                    onClubSelected: onClubSelected,
+                  ),
                   ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
                     club: club,
                     onClubSelected: onClubSelected,

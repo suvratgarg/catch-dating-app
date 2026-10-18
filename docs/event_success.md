@@ -4325,7 +4325,7 @@ The 2026-07-16 modernization replaces the original pre-design-system setup
 wizard with a compact shared form. Durable outcomes:
 
 - **Phase 1 — surface unification.** `EventSuccessSetupBody` is the shared
-  setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
+  setup widget consumed by both `EventSuccessDefaultsSection` (create-event last
   step) and the Host Manage setup tab. The two surfaces stay in sync
   automatically — no copy or behaviour drift.
 - **Room setup parity.** `EventSuccessRoomSetupSection` is the shared layout

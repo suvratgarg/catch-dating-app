@@ -602,7 +602,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 onRefresh: _refreshExploreData,
                 children: [
                   SliverToBoxAdapter(
-                    child: ExploreAppliedFilterChips(
+                    child: ExploreAppliedFilterRail(
                       filters: visibleFilters,
                       showJoinedOnly: showAccountControls,
                       onDistanceFilterSelected: (filter) =>

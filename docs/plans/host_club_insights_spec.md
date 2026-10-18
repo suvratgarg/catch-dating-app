@@ -15,7 +15,7 @@ Items marked `⚠ OWNER` need explicit go-ahead. Everything else is ratified.
 ## 0. Background — what the surface is
 
 The organizer workspace (`HostClubsScaffold`) Insights tab renders
-[`HostClubInsightsPane`](../../lib/hosts/presentation/host_operations/host_analytics.dart)
+[`HostClubInsightsSection`](../../lib/hosts/presentation/host_operations/host_club_insights_section.dart)
 (1,083-line part file). Data path:
 
 - `HostClubInsightsState` (range preset, granularity, custom dates, optional
@@ -95,7 +95,7 @@ Presentation / design-system:
 
 | # | Finding | Evidence |
 |---|---------|----------|
-| T10 | **Chart is unreadable as a chart**: hand-rolled dual bars (full-width demand behind, half-width bookings in front) with no legend mapping bar style → series, no time labels under bars, no values, fixed height from a *spacing* token (`CatchSpacing.s16`), horizontal scroll with `reverse:` | `host_analytics.dart` `HostAnalyticsTrendPanel` ~lines 563–693 |
+| T10 | **Chart is unreadable as a chart**: hand-rolled dual bars (full-width demand behind, half-width bookings in front) with no legend mapping bar style → series, no time labels under bars, no values, fixed height from a *spacing* token (`CatchSpacing.s16`), horizontal scroll with `reverse:` | `host_analytics.dart` `HostAnalyticsTrendSection` ~lines 563–693 |
 | T11 | **Event tile = up to 11 badges + revenue** (demand, booked, waitlisted, attended, matches, chats, repeat, checkouts, drop-off, failed, refunded) with no hierarchy — the literal "dashboard wall" | `HostAnalyticsEventTile` ~lines 816–908 |
 | T12 | **"Top events" is a lie**: backend sorts by `startTime` desc and slices 25 (recency, not performance); UI takes 5; no path to the rest | `hostAnalytics.ts` `topEvents` sort ~line 253; `events.take(5)` |
 | T13 | **Tap-to-scope conflates filter and navigation**: embedded mode re-scopes the entire report to one event (summary cards, trend, reviews all silently become event-scoped); dedicated mode instead navigates to Manage → Report. Identical tile, two behaviors; the per-event Report tab already answers the event question better | `host_analytics.dart` ~lines 83, 131; `host_insights_screen.dart` ~line 83 |
@@ -200,13 +200,13 @@ conventions and `node tool/run.mjs check --manifest-only`.
 
 - Remove `HostInsightsScreen`, `HostInsightsScaffold`, `HostInsightsHeader`,
   `HostInsightsUnavailableScreen` (`host_insights_screen.dart`), the
-  `dedicated` flag and both its branches in `HostClubInsightsPane`,
+  `dedicated` flag and both its branches in `HostClubInsightsSection`,
   `HostAnalyticsRangeChip`, `HostAnalyticsRangeSheet`, and
   `_showRangePicker`.
 - Remove route `Routes.hostInsightsScreen` and retire
   `/host/organizer/:clubId/insights`; the organizer workspace accepts
   `clubId` + `tab` query params without maintaining a legacy route.
-- Event-report navigation moves into the pane: `HostClubInsightsPane` gains
+- Event-report navigation moves into the pane: `HostClubInsightsSection` gains
   a default `onOpenEventReport` that pushes
   `Routes.hostAppEventManageScreen` (section=report) — see Phase 2 §7.4.
 - Delete orphaned ARB keys (the copy checks will list them; also the
@@ -218,7 +218,7 @@ conventions and `node tool/run.mjs check --manifest-only`.
 ### 5.5 Small correctness fixes
 
 - Revenue formatting (T7): thread the club's currency into
-  `HostAnalyticsReportView` (`currencyCodeForCityName(club.location)` — the
+  `HostAnalyticsReportBody` (`currencyCodeForCityName(club.location)` — the
   pattern the edit tab already uses) and pass it to
   `EventFormatters.priceInPaise`.
 - Date formatting (T17): replace `_formatAnalyticsDate` with the
@@ -270,7 +270,7 @@ strings like `"SERVER_LABEL"` — they must not appear).
 
 ## 7. Phase 2 — The narrative scorecard (presentation restructure)
 
-Target layout for `HostClubInsightsPane`, top to bottom. Reuse
+Target layout for `HostClubInsightsSection`, top to bottom. Reuse
 `CatchSection.divided` stacking; all new copy via l10n.
 
 ### 7.1 Header block

@@ -8,29 +8,23 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Membership trailing controller states',
-  type: MembershipTrailingController,
+  type: ClubJoinAction,
   path: '[Club Discovery]/Atoms',
 )
 Widget membershipTrailingControllerStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'MembershipTrailingController',
+    title: 'ClubJoinAction',
     catalogId: 'atom.club.membership_trailing_controller',
     children: [
       WidgetbookPageStateCard(
         label: 'joinable controller',
         child: WidgetbookClubClubDirectoryPreviewScope(
-          child: MembershipTrailingController(
-            clubId: widgetbookClubClub.id,
-            isJoined: false,
-          ),
+          child: ClubJoinAction(clubId: widgetbookClubClub.id, isJoined: false),
         ),
       ),
       const WidgetbookPageStateCard(
         label: 'joined controller',
-        child: MembershipTrailingController(
-          clubId: widgetbookClubClubId,
-          isJoined: true,
-        ),
+        child: ClubJoinAction(clubId: widgetbookClubClubId, isJoined: true),
       ),
     ],
   );
@@ -38,17 +32,17 @@ Widget membershipTrailingControllerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Membership trailing states',
-  type: MembershipTrailing,
+  type: ClubJoinButton,
   path: '[Club Discovery]/Atoms',
 )
 Widget membershipTrailingStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'MembershipTrailing',
+    title: 'ClubJoinButton',
     catalogId: 'atom.club.membership_trailing',
     children: [
       WidgetbookPageStateCard(
         label: 'join button',
-        child: MembershipTrailing(
+        child: ClubJoinButton(
           isJoined: false,
           isPending: false,
           onJoinPressed: () {},
@@ -56,7 +50,7 @@ Widget membershipTrailingStates(BuildContext context) {
       ),
       const WidgetbookPageStateCard(
         label: 'pending',
-        child: MembershipTrailing(
+        child: ClubJoinButton(
           isJoined: false,
           isPending: true,
           onJoinPressed: null,
@@ -64,7 +58,7 @@ Widget membershipTrailingStates(BuildContext context) {
       ),
       const WidgetbookPageStateCard(
         label: 'joined badge',
-        child: MembershipTrailing(
+        child: ClubJoinButton(
           isJoined: true,
           isPending: false,
           onJoinPressed: null,

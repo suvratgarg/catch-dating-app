@@ -241,8 +241,12 @@ class _CompanionStageImageState extends State<CompanionStageImage>
             backgroundColor: widget._stageTheme.foreground.withValues(
               alpha: CatchOpacity.subtleFill,
             ),
-            borderColor: widget._stageTheme.foreground.withValues(
-              alpha: CatchOpacity.eventSuccessSubtleBorder,
+            borderSpec: CatchBorder.resolve(
+              CatchTokens.of(context),
+              CatchBorderRole.boundary,
+              color: widget._stageTheme.foreground.withValues(
+                alpha: CatchOpacity.eventSuccessSubtleBorder,
+              ),
             ),
             boxShadow: CatchElevation.glow(
               widget._stageTheme.accent.withValues(alpha: glowAlpha),
@@ -291,10 +295,14 @@ class _CompanionStageSurfaceState extends State<CompanionStageSurface>
           backgroundColor: t.surface.withValues(
             alpha: CatchOpacity.eventSuccessPanelFill,
           ),
-          borderColor: t.surface.withValues(
-            alpha:
-                CatchOpacity.eventSuccessPanelBorderBase +
-                breath * CatchOpacity.eventSuccessPanelBorderBreath,
+          borderSpec: CatchBorder.resolve(
+            t,
+            CatchBorderRole.boundary,
+            color: t.surface.withValues(
+              alpha:
+                  CatchOpacity.eventSuccessPanelBorderBase +
+                  breath * CatchOpacity.eventSuccessPanelBorderBreath,
+            ),
           ),
           child: child!,
         );
@@ -687,7 +695,11 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
         return CatchSurface(
           radius: CatchRadius.pill,
           backgroundColor: t.primarySoft,
-          borderColor: t.primary.withValues(alpha: glowAlpha),
+          borderSpec: CatchBorder.resolve(
+            t,
+            CatchBorderRole.boundary,
+            color: t.primary.withValues(alpha: glowAlpha),
+          ),
           child: Padding(
             padding: CatchInsets.compactControlContent,
             child: Row(

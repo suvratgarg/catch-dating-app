@@ -200,7 +200,7 @@ void _registerHostOperationsPresenceTests() {
           key: const ValueKey('presence-preview-boundary'),
           child: Scaffold(
             body: SingleChildScrollView(
-              child: HostAnalyticsReportView(
+              child: HostAnalyticsReportBody(
                 report: report,
                 rangePreset: HostClubInsightsRangePreset.thirtyDays,
                 currencyCode: 'INR',
@@ -315,7 +315,7 @@ void _registerHostOperationsPresenceTests() {
           key: const ValueKey('presence-preview-boundary'),
           child: Scaffold(
             body: SingleChildScrollView(
-              child: HostClubInsightsPane(club: club),
+              child: HostClubInsightsSection(club: club),
             ),
           ),
         ),

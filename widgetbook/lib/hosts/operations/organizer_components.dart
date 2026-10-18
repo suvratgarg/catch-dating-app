@@ -37,13 +37,7 @@ Widget _hostClubPreviewFor(String focus) {
   final team = club.displayHostProfiles;
   final payment = HostOperationsFixtures.readyPaymentAccount;
   return switch (focus) {
-    'HostClubInsightsPane' => HostClubInsightsPane(club: club),
-    'HostClubOrganizerOverview' => HostClubOrganizerOverview(
-      club: club,
-      eventsLoaded: true,
-      eventCount: events.length,
-      activeEventCount: events.where((event) => !event.isCancelled).length,
-    ),
+    'HostClubInsightsSection' => HostClubInsightsSection(club: club),
     'HostClubOrganizerOverviewController' =>
       HostClubOrganizerOverviewController(club: club),
     'HostClubEditTab' => HostClubEditTab(
@@ -103,19 +97,11 @@ Widget _hostClubPreviewFor(String focus) {
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubInsightsPane,
+  type: HostClubInsightsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostClubInsightsPaneCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubInsightsPane');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostClubOrganizerOverview,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostClubOrganizerOverviewCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubOrganizerOverview');
+    _hostClubExactCatalog(context, 'HostClubInsightsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -190,7 +176,7 @@ Widget hostClubPaymentsScreenLoaded(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Resolver states',
-  type: HostClubSpokeResolver,
+  type: HostClubSpokeAsyncBoundary,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
 Widget hostClubSpokeResolverStates(BuildContext context) =>
@@ -214,7 +200,7 @@ Widget hostClubDefaultsEditorStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Co-host read only',
-  type: HostClubReadOnlyEventDefaults,
+  type: HostClubReadOnlyDefaultsSection,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
 Widget hostClubReadOnlyEventDefaultsStates(BuildContext context) =>

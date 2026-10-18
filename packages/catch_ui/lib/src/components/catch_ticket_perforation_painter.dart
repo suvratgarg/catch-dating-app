@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class CatchTicketPerforationPainter extends CustomPainter {
   const CatchTicketPerforationPainter({
     required this.lineColor,
-    this.notchRadius = CatchLayout.eventTicketNotchRadius,
+    this.notchRadius = CatchLayout.ticketNotchRadius,
   });
 
   final Color lineColor;
