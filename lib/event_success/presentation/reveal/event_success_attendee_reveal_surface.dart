@@ -132,8 +132,10 @@ class _EventSuccessAttendeeRevealSurfaceState
         alpha: CatchOpacity.revealAttendeePanelFill,
       ),
       radius: CatchRadius.sm,
-      borderColor: revealColor.withValues(
-        alpha: CatchOpacity.revealAttendeeBorder,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: revealColor.withValues(alpha: CatchOpacity.revealAttendeeBorder),
       ),
       padding: CatchInsets.content,
       child: Column(

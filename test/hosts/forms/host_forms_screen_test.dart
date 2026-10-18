@@ -12,7 +12,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
@@ -90,7 +90,7 @@ void main() {
             bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: Scaffold(
               body: CustomScrollView(
-                slivers: [HostFormResponsesPanel(organizerId: 'org-1')],
+                slivers: [HostFormResponsesSection(organizerId: 'org-1')],
               ),
             ),
           ),

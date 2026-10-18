@@ -11,7 +11,7 @@ void main() {
     Future<void> pump(List<CatchStepRowData> steps) => tester.pumpWidget(
       MaterialApp(
         theme: CatchTheme.light,
-        home: Scaffold(body: CatchStepRowList(steps: steps)),
+        home: Scaffold(body: CatchStepList(steps: steps)),
       ),
     );
     final connectors = find.byWidgetPredicate(
@@ -57,7 +57,7 @@ void main() {
             child: SingleChildScrollView(
               child: SizedBox(
                 width: 320,
-                child: CatchStepRowList(
+                child: CatchStepList(
                   steps: [
                     CatchStepRowData(
                       title: 'A longer first instruction',

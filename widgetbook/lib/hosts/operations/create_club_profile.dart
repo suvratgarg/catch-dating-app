@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_basics_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_section.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -57,18 +57,18 @@ Widget clubDetailsStepCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contact states',
-  type: CreateClubContactFields,
+  type: CreateClubContactSection,
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubContactFieldsCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'CreateClubContactFields',
+    title: 'CreateClubContactSection',
     contractId: 'component.host.club.contact_fields',
     children: [
       WidgetbookPageStateCard(
         label: 'filled',
         child: WidgetbookHostDeviceFrame(
-          child: _CreateClubContactFieldsFrame(),
+          child: _CreateClubContactSectionFrame(),
         ),
       ),
     ],
@@ -167,18 +167,18 @@ Widget orderedPhotoManagerCatalogState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Role-sized summary states',
-  type: HostClubMediaSummary,
+  type: HostClubMediaRail,
   path: '[P1 product surfaces]/Host organizer',
 )
-Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
+Widget hostClubMediaRailCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubMediaSummary',
+    title: 'HostClubMediaRail',
     contractId: 'component.host.club.photos_picker',
     children: [
       WidgetbookPageStateCard(
         label: 'logo, cover, and gallery',
         child: WidgetbookHostDeviceFrame(
-          child: HostClubMediaSummary(
+          child: HostClubMediaRail(
             logoImageBytes: widgetbookCreateClubPngBytes(),
             logoImageUrl: null,
             photos: widgetbookOrderedPhotoPreviews('summary-photo', 3),
@@ -191,7 +191,7 @@ Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'compact empty',
         child: WidgetbookHostDeviceFrame(
-          child: HostClubMediaSummary(
+          child: HostClubMediaRail(
             logoImageBytes: null,
             logoImageUrl: null,
             photos: const [],
@@ -204,6 +204,49 @@ Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Logo states',
+  type: HostClubLogoManagerHeader,
+  path: '[P1 product surfaces]/Host organizer',
+)
+Widget hostClubLogoManagerHeaderStates(BuildContext context) =>
+    widgetbookHostComponentStates('HostClubLogoManagerHeader', [
+      (
+        'logo picked',
+        HostClubLogoManagerHeader(
+          imageBytes: widgetbookCreateClubPngBytes(),
+          existingImageUrl: null,
+          onPickLogo: () async => null,
+          onRemoveLogo: () async {},
+        ),
+      ),
+      (
+        'no logo',
+        HostClubLogoManagerHeader(
+          imageBytes: null,
+          existingImageUrl: null,
+          onPickLogo: () async => null,
+          onRemoveLogo: () async {},
+        ),
+      ),
+    ]);
+
+@widgetbook.UseCase(
+  name: 'Save dock',
+  type: HostClubMediaManagerDock,
+  path: '[P1 product surfaces]/Host organizer',
+)
+Widget hostClubMediaManagerDockStates(BuildContext context) =>
+    widgetbookHostComponentStates('HostClubMediaManagerDock', [
+      (
+        'ready to save',
+        HostClubMediaManagerDock(
+          onSave: () async => false,
+          errorText: (_) => null,
+        ),
+      ),
+    ]);
 
 @widgetbook.UseCase(
   name: 'Image states',
@@ -383,16 +426,16 @@ class _ClubDetailsStepFrameState extends State<_ClubDetailsStepFrame> {
   }
 }
 
-class _CreateClubContactFieldsFrame extends StatefulWidget {
-  const _CreateClubContactFieldsFrame();
+class _CreateClubContactSectionFrame extends StatefulWidget {
+  const _CreateClubContactSectionFrame();
 
   @override
-  State<_CreateClubContactFieldsFrame> createState() =>
-      _CreateClubContactFieldsFrameState();
+  State<_CreateClubContactSectionFrame> createState() =>
+      _CreateClubContactSectionFrameState();
 }
 
-class _CreateClubContactFieldsFrameState
-    extends State<_CreateClubContactFieldsFrame> {
+class _CreateClubContactSectionFrameState
+    extends State<_CreateClubContactSectionFrame> {
   late final TextEditingController _instagramController;
   late final TextEditingController _phoneController;
   late final TextEditingController _emailController;
@@ -417,7 +460,7 @@ class _CreateClubContactFieldsFrameState
   Widget build(BuildContext context) {
     return Padding(
       padding: CatchInsets.content,
-      child: CreateClubContactFields(
+      child: CreateClubContactSection(
         instagramController: _instagramController,
         phoneController: _phoneController,
         emailController: _emailController,

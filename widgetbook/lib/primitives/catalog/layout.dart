@@ -65,12 +65,12 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
               CatchFormStepReviewItem(
                 index: 0,
                 title: 'Event basics',
-                status: CatchFormStepRowListStatus.complete,
+                status: CatchFormStepListStatus.complete,
               ),
               CatchFormStepReviewItem(
                 index: 1,
                 title: 'Meeting point',
-                status: CatchFormStepRowListStatus.needsInformation,
+                status: CatchFormStepListStatus.needsInformation,
               ),
             ],
           ),

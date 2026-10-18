@@ -37,16 +37,9 @@ Widget _hostClubPreviewFor(String focus) {
   final team = club.displayHostProfiles;
   final payment = HostOperationsFixtures.readyPaymentAccount;
   return switch (focus) {
-    'HostClubInsightsPane' => HostClubInsightsPane(club: club),
-    'HostClubOrganizerOverview' => HostClubOrganizerOverview(
-      club: club,
-      eventsLoaded: true,
-      eventCount: events.length,
-      activeEventCount: events.where((event) => !event.isCancelled).length,
-    ),
-    'HostClubOrganizerOverviewController' =>
-      HostClubOrganizerOverviewController(club: club),
-    'HostClubEditTab' => HostClubEditTab(
+    'HostClubInsightsSection' => HostClubInsightsSection(club: club),
+    'HostClubOrganizerSectionList' => HostClubOrganizerSectionList(club: club),
+    'HostClubEditBody' => HostClubEditBody(
       club: club,
       currentUid: widgetbookHostUid,
       isOwner: true,
@@ -103,36 +96,28 @@ Widget _hostClubPreviewFor(String focus) {
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubInsightsPane,
+  type: HostClubInsightsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubInsightsPaneCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubInsightsPane');
+Widget hostStrictHostClubInsightsSectionCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubInsightsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubOrganizerOverview,
+  type: HostClubOrganizerSectionList,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubOrganizerOverviewCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubOrganizerOverview');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostClubOrganizerOverviewController,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostClubOrganizerOverviewControllerCatalogStates(
+Widget hostStrictHostClubOrganizerSectionListCatalogStates(
   BuildContext context,
-) => _hostClubExactCatalog(context, 'HostClubOrganizerOverviewController');
+) => _hostClubExactCatalog(context, 'HostClubOrganizerSectionList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubEditTab,
+  type: HostClubEditBody,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubEditTabCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubEditTab');
+Widget hostStrictHostClubEditBodyCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostClubEditBody');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -190,7 +175,7 @@ Widget hostClubPaymentsScreenLoaded(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Resolver states',
-  type: HostClubSpokeResolver,
+  type: HostClubSpokeAsyncBoundary,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
 Widget hostClubSpokeResolverStates(BuildContext context) =>
@@ -214,7 +199,7 @@ Widget hostClubDefaultsEditorStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Co-host read only',
-  type: HostClubReadOnlyEventDefaults,
+  type: HostClubReadOnlyDefaultsSection,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
 )
 Widget hostClubReadOnlyEventDefaultsStates(BuildContext context) =>
@@ -227,3 +212,109 @@ Widget hostClubReadOnlyEventDefaultsStates(BuildContext context) =>
 )
 Widget hostStrictHostEventsClubCardCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostEventsClubCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerMetricGrid,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerMetricGridCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerMetricGrid');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerMetricRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerMetricRowCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostOrganizerMetricRow');
+
+@widgetbook.UseCase(
+  name: 'Audience rollup states',
+  type: HostCrmAudienceCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostCrmAudienceCardStates(BuildContext context) {
+  final summary = widgetbookHostCrmSummary(
+    HostOperationsFixtures.primaryClub.id,
+  );
+  return widgetbookHostComponentStates('HostCrmAudienceCard', [
+    (
+      'loaded',
+      HostCrmAudienceCard(
+        summary: summary,
+        loading: false,
+        hasError: false,
+        onRetry: () {},
+      ),
+    ),
+    (
+      'loading',
+      HostCrmAudienceCard(
+        summary: null,
+        loading: true,
+        hasError: false,
+        onRetry: () {},
+      ),
+    ),
+    (
+      'unavailable',
+      HostCrmAudienceCard(
+        summary: null,
+        loading: false,
+        hasError: true,
+        onRetry: () {},
+      ),
+    ),
+  ]);
+}
+
+@widgetbook.UseCase(
+  name: 'Channel readiness',
+  type: HostCrmChannelRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostCrmChannelRowStates(BuildContext context) =>
+    widgetbookHostComponentStates('HostCrmChannelRow', [
+      (
+        'live channel',
+        const HostCrmChannelRow(
+          label: 'Catch app',
+          value: '92 linked',
+          status: 'Live for the current event',
+        ),
+      ),
+      (
+        'setup required',
+        const HostCrmChannelRow(
+          label: 'WhatsApp',
+          value: '74 opted in',
+          status: 'Connect a WhatsApp sender to message them',
+        ),
+      ),
+    ]);
+
+@widgetbook.UseCase(
+  name: 'Publication status',
+  type: HostClubPublicationChannelRow,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostClubPublicationChannelRowStates(BuildContext context) =>
+    widgetbookHostComponentStates('HostClubPublicationChannelRow', [
+      (
+        'visible',
+        const HostClubPublicationChannelRow(
+          label: 'Catch app',
+          status: 'Visible',
+          visible: true,
+        ),
+      ),
+      (
+        'hidden',
+        const HostClubPublicationChannelRow(
+          label: 'Public web page',
+          status: 'Hidden',
+          visible: false,
+        ),
+      ),
+    ]);

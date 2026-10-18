@@ -150,7 +150,7 @@ mimic (skeleton mimics must track the widget they imitate).
 - `DashboardEmptySliverBody`: role-derived padding (`pageBody.copyWith`),
   `CatchSection.divided` + `CatchJourneySteps` — clean; the model for what
   a section body should look like.
-- `Recommendations`: the LayoutBuilder card-width math is real CONFIGURES
+- `ExploreRecommendationsSection`: the LayoutBuilder card-width math is real CONFIGURES
   value (its rail zeroings fall away with D4).
 - `EventFocusCard` → `EventActionCard`: adapter over a shared primitive, as
   designed.
@@ -227,7 +227,7 @@ third-occurrence review point if another callout shape converges.
 
 ### E3. Spinner loading in companion/hosts sections `[done fca49f467]` (G2 approved)
 
-`EventCompanionEntry.loading` and `EventDetailHostsSection.loading` rendered
+`EventCompanionCard.loading` and `EventDetailHostsSection.loading` rendered
 `Center(CatchLoadingIndicator())`. They now use content-shaped skeletons:
 hosts uses `EventDetailHostsSkeleton`, and companion uses
 `EventDetailCompanionSkeleton`.
@@ -306,14 +306,14 @@ copy uses `CatchTextStyles.proseL` instead of overriding `bodyLead`'s weight.
 341 lines hand-rolling its own SafeArea/ColoredBox dock shell while the
 event side then used the now-retired `CatchBottomDock.cta`. Rebuild the club
 utility surface on `CatchBottomDock` (keep
-DockCount/DockBell content). LEXICON: `Catch*` is reserved for core
+ClubMemberCountText/ClubBellButton content). LEXICON: `Catch*` is reserved for core
 primitives; this is a clubs feature widget — rename to `ClubDetailDock`
 (with the usual deprecated typedef for one release if usages are wide).
 
 Done: `CatchClubDock` moved to feature-owned `ClubDetailDock` in
 `club_detail_dock.dart`, delegates sticky footer chrome, the top divider, and
-bottom safe-area handling to `CatchBottomDock`, keeps `DockCount` and
-`DockBell` as feature content, and carries deprecated `CatchClubDock` /
+bottom safe-area handling to `CatchBottomDock`, keeps `ClubMemberCountText` and
+`ClubBellButton` as feature content, and carries deprecated `CatchClubDock` /
 `CatchClubDockState` typedefs for one release. Its full state matrix now lives
 under `[Club Detail]/Dock` in Widgetbook instead of Core primitives.
 Primary screen CTAs separately route through `CatchBottomAction`; the duplicate
@@ -421,7 +421,7 @@ exercises the real `CatchCrossPathsCard` postcard/photo states.
 
 ### X4. Lexicon notes (ratification input, no code now)
 
-`CatchCoverStory` and `CatchCrossPathsCard` are feature widgets on the core
+`FeaturedEventPoster` and `CatchCrossPathsCard` are feature widgets on the core
 `Catch*` prefix — but CoverStory's doc claims design-system handoff lineage
 (`components/explore/CoverStory`), so the prefix rule needs a ratified
 carve-out or a rename. Also `Catches*` (the feature noun) colliding with
@@ -582,7 +582,7 @@ rules.
 `EventSuccessCompanionRouteScreen` runs three provider waves inline: event/auth/
 profile/participation/plan, then arrival mission/compatibility, then moment-
 specific feedback/preference/wingman/assignment/peer reads. Each branch returns
-`CompanionLoading`, `CompanionError`, or `CompanionMessage` directly, and the
+`CompanionSkeleton`, `CompanionErrorState`, or `CompanionEmptyState` directly, and the
 loaded branch then constructs a very wide `EventSuccessCompanionScreen`
 argument list.
 
@@ -592,7 +592,7 @@ create an `EventSuccessCompanionRouteState` (or similarly named display-state
 adapter) with statuses for loading, access/message, error + retry intent, and
 ready data. The route screen still owns the provider watches and mutation
 callbacks, but branch selection and retry intent mapping move into that adapter
-with focused tests. Keep `CompanionLoading/Error/Message` as renderers unless
+with focused tests. Keep `CompanionSkeleton/Error/Message` as renderers unless
 the adapter makes one redundant. Acceptance: no UI copy or state-order change;
 existing route Widgetbook states still cover event-not-found, sign-in-required,
 no-booking, plan-missing, offline/error, loading, and ready moments.
@@ -664,7 +664,7 @@ and pass ordinary typed callbacks into the provider-free panel.
 
 ### S5. Positive calibration — keep the stage grammar distinct
 
-`StagePanel`, `StageSectionLabel`, `StageActionDock`, `StageSoftBand`,
+`StagePanel`, `StageSectionHeader`, `StageActionDock`, `StageSoftBand`,
 `StageBouncyPress`, and the paper companion scaffold are not stray aliases for
 ordinary sections. They define the immersive attendee companion language:
 breathing surfaces, stage-native press feedback, motif/reveal overlays, and
@@ -700,7 +700,7 @@ text-scale, reduced-motion, and light/dark states.
 
 ### CA1. Calendar's date header is real product grammar — keep
 
-`CalendarDateHeader`, `CalendarWeekStrip`, `CalendarMonthGrid`,
+`CalendarDateHeader`, `CalendarWeekRow`, `CalendarMonthGrid`,
 `CalendarStatsHeader`, and `CalendarLoadingScreen` look large in one file, but
 they are not pass-through wrappers around a generic section. The header owns
 route-local interaction state: selected day, collapsed/expanded month mode,
@@ -721,8 +721,8 @@ structure, not top-level page sections.
 
 ### CA3. Saved Events' small header widgets are provider-free sections — keep
 
-`SavedEventsHeaderSliver`, `SavedEventsAgendaSliver`, `SavedEventsLoading`,
-`SavedEventsError`, and `SavedEventsClubNamesErrorSliver` add narrow sliver or
+`SavedEventsHeaderSliver`, `SavedEventsAgendaList`, `SavedEventsLoading`,
+`SavedEventsError`, and `SavedEventsClubNamesErrorState` add narrow sliver or
 state-shape value and are covered as public catalog entries. No dead parallel
 shell or feature-local section system was found.
 
@@ -751,7 +751,7 @@ history-specific review shell.
 ### RH1. Loading/list shells are intentional mirrors — keep
 
 `ReviewsHistoryList` and `ReviewsHistorySkeleton` both use the same relaxed
-page padding and row gap. The skeleton rows mimic `ReviewHistoryItem` and
+page padding and row gap. The skeleton rows mimic `ReviewHistoryRow` and
 `ReviewCard` anatomy with shared `CatchSkeleton`/`CatchSurface` pieces. This is
 not enough repetition to justify a new public history-list primitive.
 
@@ -772,7 +772,7 @@ Files: `lib/payments/presentation/payment_history_screen.dart`,
 `lib/payments/presentation/payment_history_view_model.dart`.
 
 Overall: also acceptable for this composition pass. `PaymentHistoryScreen`
-owns uid access and the route shell, `PaymentHistoryListController` adapts the
+owns uid access and the route shell, `PaymentHistoryBody` adapts the
 payment-history provider, `paymentHistoryViewModelProvider` performs the
 batched event-title display join, and `PaymentHistoryList`/`PaymentHistoryTile`
 render provider-free rows. The receipt detail sheet is provider-free and uses

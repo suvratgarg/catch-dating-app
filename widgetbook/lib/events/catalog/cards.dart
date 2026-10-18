@@ -68,13 +68,13 @@ Widget eventActionCardHeaderState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Action card actions',
-  type: EventActionCardActions,
+  type: EventActionList,
   path: '[Events]/Tiles',
 )
 Widget eventActionCardActionsState(BuildContext context) {
   return Padding(
     padding: CatchInsets.contentDense,
-    child: EventActionCardActions(
+    child: EventActionList(
       actions: [
         EventActionCardAction(
           label: 'Open event',
@@ -110,7 +110,7 @@ Widget eventDateRailCardState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Ticket stub states',
-  type: EventTicketStub,
+  type: EventTicketStubRow,
   path: '[Events]/Tiles',
 )
 Widget eventTicketStubStates(BuildContext context) {
@@ -118,13 +118,13 @@ Widget eventTicketStubStates(BuildContext context) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      EventTicketStub(
+      EventTicketStubRow(
         decisionLabel: '6:30 PM · 18 going · 6 left',
         priceLabel: 'Free',
         statusColor: t.accent,
       ),
       gapH16,
-      EventTicketStub(
+      EventTicketStubRow(
         decisionLabel: '7:00 PM · Waitlist open',
         statusLabel: 'Request',
         priceLabel: 'From ₹499',
@@ -148,13 +148,13 @@ Widget eventDateRailState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Perforation line',
-  type: PerforationLine,
+  type: PerforationDivider,
   path: '[Events]/Tiles',
 )
 Widget eventPerforationLineState(BuildContext context) {
   return SizedBox(
     height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
-    child: PerforationLine(
+    child: PerforationDivider(
       color: CatchTokens.of(context).ticketPerforationLine,
     ),
   );

@@ -31,7 +31,7 @@ class _HostClubEventDefaultsScreenState
     final progressiveDefaultsAvailable = ref.watch(
       progressiveEventDefaultsAvailableProvider,
     );
-    return HostClubSpokeResolver._(
+    return HostClubSpokeAsyncBoundary._(
       clubId: widget.clubId,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       builder: (context, club, uid, isOwner) {
@@ -233,7 +233,7 @@ class _HostClubEventDefaultsScreenState
                       ],
                     ),
                   )
-                : HostClubReadOnlyEventDefaults._(
+                : HostClubReadOnlyDefaultsSection._(
                     club: club,
                     progressiveDefaultsAvailable: progressiveDefaultsAvailable,
                   );

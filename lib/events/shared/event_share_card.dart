@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -106,7 +107,7 @@ class EventShareCard extends StatelessWidget {
       aspectRatio: CatchLayout.richShareCardAspectRatio,
       child: CatchSurface(
         backgroundColor: t.ink,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         padding: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -117,7 +118,7 @@ class EventShareCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  EventActivityBackdrop(
+                  EventBackdropImage(
                     visual: visual,
                     dense: true,
                     iconAlignment: Alignment.centerRight,
@@ -131,8 +132,12 @@ class EventShareCard extends StatelessWidget {
                       backgroundColor: t.primaryInk.withValues(
                         alpha: CatchOpacity.scrimFill,
                       ),
-                      borderColor: visual.accent.withValues(
-                        alpha: CatchOpacity.subtleBorder,
+                      borderSpec: CatchBorder.resolve(
+                        t,
+                        CatchBorderRole.boundary,
+                        color: visual.accent.withValues(
+                          alpha: CatchOpacity.subtleBorder,
+                        ),
                       ),
                       radius: CatchRadius.pill,
                       padding: CatchInsets.compactLabelContent,
@@ -230,8 +235,8 @@ class EventShareCard extends StatelessWidget {
                         spacing: CatchSpacing.micro6,
                         runSpacing: CatchSpacing.micro6,
                         children: [
-                          EventSharePill(label: priceLabel),
-                          EventSharePill(
+                          EventShareChip(label: priceLabel),
+                          EventShareChip(
                             label: _spotsLabel(event, context.l10n),
                           ),
                         ],
@@ -254,8 +259,8 @@ class EventShareCard extends StatelessWidget {
   }
 }
 
-class EventSharePill extends StatelessWidget {
-  const EventSharePill({super.key, required this.label});
+class EventShareChip extends StatelessWidget {
+  const EventShareChip({super.key, required this.label});
 
   final String label;
 
@@ -264,7 +269,11 @@ class EventSharePill extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       backgroundColor: t.primarySoft,
-      borderColor: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
+      ),
       radius: CatchRadius.pill,
       padding: CatchInsets.compactLabelContent,
       child: Text(label, style: CatchTextStyles.labelS(context, color: t.ink)),

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_top_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -49,7 +49,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: CustomScrollView(
-              slivers: [ClubHeroAppBar(club: club, isHost: false)],
+              slivers: [ClubHeroTopBar(club: club, isHost: false)],
             ),
           ),
         ),

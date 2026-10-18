@@ -32,7 +32,7 @@ test("scanFile flags GoRouter navigation with raw path strings", () => {
 
 test("scanFile allows named routes and route constants", () => {
   const findings = scanFile({
-    relativePath: "lib/onboarding/presentation/pages/welcome_page.dart",
+    relativePath: "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
     source: [
       "context.goNamed(Routes.exploreScreen.name);",
       "context.go(Routes.exploreScreen.path);",

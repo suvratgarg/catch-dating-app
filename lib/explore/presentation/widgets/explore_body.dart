@@ -11,7 +11,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +116,7 @@ List<Widget> buildExploreBodySlivers({
           const SliverToBoxAdapter(
             child: Padding(
               padding: CatchInsets.pageBody,
-              child: Recommendations.loading(),
+              child: ExploreRecommendationsSection.loading(),
             ),
           ),
         CatchAsyncState(
@@ -144,7 +144,9 @@ List<Widget> buildExploreBodySlivers({
               : SliverToBoxAdapter(
                   child: Padding(
                     padding: CatchInsets.pageBody,
-                    child: Recommendations(recommendations: value),
+                    child: ExploreRecommendationsSection(
+                      recommendations: value,
+                    ),
                   ),
                 ),
       },

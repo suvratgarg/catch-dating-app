@@ -515,7 +515,6 @@ class OrderedPhotoTile extends StatelessWidget {
         child: CatchSurface(
           tone: CatchSurfaceTone.raised,
           radius: CatchRadius.md,
-          borderWidth: 0,
           clipBehavior: Clip.antiAlias,
           child: Stack(
             fit: StackFit.expand,
@@ -734,7 +733,6 @@ class OrderedPhotoAddTile extends StatelessWidget {
           key: OrderedPhotoPickerKeys.addAction(label),
           tone: CatchSurfaceTone.raised,
           radius: CatchRadius.md,
-          borderWidth: 0,
           clipBehavior: Clip.antiAlias,
           onTap: onTap,
           padding: CatchInsets.contentDense,

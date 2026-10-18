@@ -58,7 +58,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(HostWhatsappSetupPane), findsOneWidget);
+    expect(find.byType(HostWhatsappSetupSection), findsOneWidget);
     expect(find.byType(CatchPageBody), findsOneWidget);
     expect(find.byType(CustomScrollView), findsOneWidget);
     expect(find.text('WhatsApp Business settings'), findsOneWidget);
@@ -103,7 +103,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: SingleChildScrollView(
-              child: HostWhatsappSetupPane(club: buildClub(id: organizerId)),
+              child: HostWhatsappSetupSection(club: buildClub(id: organizerId)),
             ),
           ),
         ),

@@ -25,7 +25,7 @@ Future<void> _boot(
     MaterialApp(
       theme: CatchTheme.light,
       home: Scaffold(
-        body: CatchFormRowList<Object?>(
+        body: CatchFormList<Object?>(
           fieldCopy: copy,
           rows: [
             CatchFormSingleChoiceRow<Object?, String>(

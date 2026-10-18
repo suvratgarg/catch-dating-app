@@ -190,7 +190,7 @@ export const HostApplySectionStory: Story = {
     a11y: {test: "todo"},
     catchComponent: {
       id: "host_apply_section",
-      routeIds: ["host"],
+      routeIds: ["host_apply"],
       states: ["initial", "interactive-steps"],
     },
   },
@@ -239,7 +239,7 @@ export const HostApplicationFlowInitial: Story = {
     a11y: {test: "todo"},
     catchComponent: {
       id: "host_application_flow",
-      routeIds: ["host"],
+      routeIds: ["host_apply"],
       states: ["initial", "interactive-steps"],
     },
   },

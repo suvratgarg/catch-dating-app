@@ -9,7 +9,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart'
     show PlaceAutocompleteSuggestion;
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   String? _selectedLabel;
   String? _selectedAddress;
   String? _selectedPlaceId;
-  CatchGoogleMapController? _mapController;
+  LocationMapController? _mapController;
   Timer? _searchDebounce;
   String _sessionToken = _newSessionToken();
   var _suggestions = <PlaceAutocompleteSuggestion>[];
@@ -133,20 +133,20 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     final hasInitialCameraHint =
         widget.initialLocation != null || widget.initialCenter != null;
     final mapLayer = widget.usePlatformMapView
-        ? CatchGoogleMap(
+        ? LocationMap(
             initialCenter: initialCameraTarget,
             initialZoom: hasInitialCameraHint ? 15 : 12,
             markers: {
               if (_selected != null)
-                CatchMapMarker(
+                MapMarker(
                   id: 'selected-starting-point',
                   position: _selected!,
-                  hue: CatchMapMarkerHue.orange,
+                  hue: MapMarkerHue.orange,
                 ),
             },
             mapType: widget.loadMapTiles
-                ? CatchMapType.normal
-                : CatchMapType.none,
+                ? LocationMapType.normal
+                : LocationMapType.none,
             onMapCreated: (controller) => _mapController = controller,
             onTap: _setSelectedPoint,
           )
@@ -164,7 +164,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
               bottom: false,
               child: MapPickerSearchRow(
                 onBack: () => Navigator.of(context).maybePop(),
-                searchPanel: PlaceSearchPanel(
+                searchPanel: PlaceSearchSection(
                   controller: _searchController,
                   suggestions: _suggestions,
                   stateText: _searchStateText,
@@ -181,7 +181,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             right: 16,
             child: SafeArea(
               top: false,
-              child: SelectedPointPanel(
+              child: SelectedPointSection(
                 selectedLabel: _selectedLabel,
                 hasSelection: _selected != null,
                 onConfirm: _selected == null || _pendingSuggestion != null
@@ -409,8 +409,8 @@ class MapPickerSearchRow extends StatelessWidget {
   }
 }
 
-class PlaceSearchPanel extends StatelessWidget {
-  const PlaceSearchPanel({
+class PlaceSearchSection extends StatelessWidget {
+  const PlaceSearchSection({
     super.key,
     required this.controller,
     required this.suggestions,
@@ -429,7 +429,6 @@ class PlaceSearchPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final isPending = stateText != null;
 
     return Column(
@@ -472,7 +471,7 @@ class PlaceSearchPanel extends StatelessWidget {
           CatchSurface(
             padding: EdgeInsets.zero,
             emphasis: CatchSurfaceEmphasis.floating,
-            borderColor: t.line,
+            borderRole: CatchBorderRole.separator,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 260),
               child: ListView.separated(
@@ -518,7 +517,6 @@ class PlaceSuggestionRow extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.transparent,
       radius: 0,
-      borderWidth: 0,
       onTap: onTap,
       padding: CatchInsets.listBody,
       child: Row(
@@ -564,8 +562,8 @@ class PlaceSuggestionRow extends StatelessWidget {
   }
 }
 
-class SelectedPointPanel extends StatelessWidget {
-  const SelectedPointPanel({
+class SelectedPointSection extends StatelessWidget {
+  const SelectedPointSection({
     super.key,
     required this.hasSelection,
     required this.selectedLabel,
@@ -594,7 +592,7 @@ class SelectedPointPanel extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.content,
       emphasis: CatchSurfaceEmphasis.floating,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       radius: CatchRadius.md,
       backgroundColor: t.surface.withValues(
         alpha: CatchOpacity.locationPickerPanelFill,

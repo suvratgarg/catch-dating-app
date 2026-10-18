@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -244,7 +244,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
   }
 
   Future<void> _prepareMatchingFirstFrame() async {
-    final iconAsset = CatchStartupLoadingScreen.iconAssetForBrightness(
+    final iconAsset = SplashScreen.iconAssetForBrightness(
       Theme.of(context).brightness,
     );
     try {
@@ -423,7 +423,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                                       left: catchLeft,
                                       right: rightInset,
                                       top: catchTop,
-                                      child: WelcomeFocusLockup(
+                                      child: WelcomeFocusText(
                                         catchColor: themeTokens.ink,
                                         maxWidth:
                                             sceneWidth - catchLeft - rightInset,
@@ -436,7 +436,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                             ),
                             Opacity(
                               opacity: handoff,
-                              child: WelcomeScene(
+                              child: WelcomeSceneLayout(
                                 viewportWidth: sceneWidth,
                                 viewportHeight: size.height,
                                 mediaPadding: media.padding,

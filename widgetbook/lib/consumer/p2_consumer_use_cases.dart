@@ -111,18 +111,18 @@ Widget filtersRouteStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Content states',
-  type: FiltersContent,
+  type: FiltersBody,
   path: '[P2 consumer surfaces]/Filters',
 )
 Widget filtersContentStates(BuildContext context) {
   return _ConsumerCatalog(
-    title: 'FiltersContent',
+    title: 'FiltersBody',
     contractId: 'screen.filters.preferences sections',
     children: [
       _StateCard(
         label: 'default preferences',
         child: _DeviceFrame(
-          child: _FiltersContentFrame(
+          child: _FiltersBodyFrame(
             ageRange: filtersAgeRangeValues(_filtersProfile),
             interestedIn: _filtersProfile.interestedInGenders.toSet(),
           ),
@@ -131,7 +131,7 @@ Widget filtersContentStates(BuildContext context) {
       _StateCard(
         label: 'dirty edits',
         child: const _DeviceFrame(
-          child: _FiltersContentFrame(
+          child: _FiltersBodyFrame(
             ageRange: RangeValues(20, 60),
             interestedIn: {Gender.woman, Gender.nonBinary},
           ),
@@ -140,7 +140,7 @@ Widget filtersContentStates(BuildContext context) {
       _StateCard(
         label: 'reset restored',
         child: _DeviceFrame(
-          child: _FiltersContentFrame(
+          child: _FiltersBodyFrame(
             ageRange: filtersAgeRangeValues(_filtersProfile),
             interestedIn: _filtersProfile.interestedInGenders.toSet(),
           ),
@@ -149,7 +149,7 @@ Widget filtersContentStates(BuildContext context) {
       _StateCard(
         label: 'save pending',
         child: const _DeviceFrame(
-          child: _FiltersContentFrame(
+          child: _FiltersBodyFrame(
             ageRange: RangeValues(25, 34),
             interestedIn: {Gender.man, Gender.woman},
             saving: true,
@@ -161,7 +161,7 @@ Widget filtersContentStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             textScaler: TextScaler.linear(2),
-            child: _FiltersContentFrame(
+            child: _FiltersBodyFrame(
               ageRange: RangeValues(24, 36),
               interestedIn: {Gender.man},
             ),
@@ -173,7 +173,7 @@ Widget filtersContentStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             disableAnimations: true,
-            child: _FiltersContentFrame(
+            child: _FiltersBodyFrame(
               ageRange: RangeValues(24, 36),
               interestedIn: {Gender.man},
             ),
@@ -185,7 +185,7 @@ Widget filtersContentStates(BuildContext context) {
         child: _DeviceFrame(
           child: Theme(
             data: AppTheme.dark,
-            child: const _FiltersContentFrame(
+            child: const _FiltersBodyFrame(
               ageRange: RangeValues(24, 36),
               interestedIn: {Gender.man},
             ),
@@ -250,8 +250,8 @@ class _FiltersSaveErrorSeederState
   Widget build(BuildContext context) => widget.child;
 }
 
-class _FiltersContentFrame extends StatelessWidget {
-  const _FiltersContentFrame({
+class _FiltersBodyFrame extends StatelessWidget {
+  const _FiltersBodyFrame({
     required this.ageRange,
     required this.interestedIn,
     this.saving = false,
@@ -272,7 +272,7 @@ class _FiltersContentFrame extends StatelessWidget {
           CatchButton.text(label: 'Reset', onPressed: saving ? null : _noopTap),
         ],
       ),
-      body: FiltersContent(
+      body: FiltersBody(
         ageRange: ageRange,
         interestedIn: interestedIn,
         saving: saving,

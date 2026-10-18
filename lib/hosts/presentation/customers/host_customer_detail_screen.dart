@@ -16,15 +16,15 @@ import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_record_menu.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_whatsapp_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -41,7 +41,7 @@ import 'package:go_router/go_router.dart';
 
 part 'host_customer_detail_body.dart';
 part 'host_customer_active_merges_section.dart';
-part 'host_customer_history_panel.dart';
+part 'host_customer_history_section.dart';
 part 'host_customer_submissions_section.dart';
 
 class HostCustomerDetailScreen extends ConsumerStatefulWidget {
@@ -355,7 +355,7 @@ class _HostCustomerDetailScreenState
   Future<void> _openRevenue(HostAudienceContactDetail customer) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (sheetContext) => HostCustomerRevenueBreakdown(
+        builder: (sheetContext) => HostCustomerRevenueList(
           customer: customer,
           onOpenEvent: (eventId) {
             Navigator.of(sheetContext).pop();

@@ -278,7 +278,7 @@ class ProgramLodgingFloorLayout extends StatelessWidget {
     final rows = units.map((u) => u.layoutUnit.gridY).reduce(math.max) + 1;
     return CatchSurface(
       backgroundColor: CatchTokens.of(context).raised,
-      borderColor: CatchTokens.of(context).line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: AspectRatio(
         aspectRatio: CatchAspectRatio.roomMap,

@@ -205,12 +205,12 @@ Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchDockSurface,
+  type: CatchDock,
   path: '[Core primitives]/Product composites',
 )
 Widget catchDockSurfaceContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchDockSurface',
+    title: 'CatchDock',
     contractId: 'catch.bottom_action',
     states: const [
       'ios-floating',
@@ -232,7 +232,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
         child: _DockFrame(
           child: Theme(
             data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
-            child: const CatchDockSurface.primary(
+            child: const CatchDock.primary(
               label: 'Book your spot',
               onPressed: widgetbookNoop,
             ),
@@ -244,7 +244,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
         child: _DockFrame(
           child: Theme(
             data: Theme.of(context).copyWith(platform: TargetPlatform.android),
-            child: const CatchDockSurface.primary(
+            child: const CatchDock.primary(
               label: 'Book your spot',
               onPressed: widgetbookNoop,
             ),
@@ -254,7 +254,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'leading-content',
         child: _DockFrame(
-          child: CatchDockSurface.primary(
+          child: CatchDock.primary(
             label: 'Join waitlist',
             leading: const CatchBadge(label: '4 left'),
             onPressed: widgetbookNoop,
@@ -264,7 +264,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'rounded-button',
         child: _DockFrame(
-          child: CatchDockSurface.primary(
+          child: CatchDock.primary(
             label: 'Review & publish',
             buttonMode: CatchButtonMode.rounded,
             onPressed: widgetbookNoop,
@@ -274,7 +274,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'catch-line-footnote',
         child: _DockFrame(
-          child: CatchDockSurface.primary(
+          child: CatchDock.primary(
             label: 'Confirm',
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
@@ -325,7 +325,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       const WidgetbookContractStateCard(
         label: 'loading',
         child: _DockFrame(
-          child: CatchDockSurface.primary(
+          child: CatchDock.primary(
             label: 'Saving',
             isLoading: true,
             onPressed: null,
@@ -335,14 +335,14 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       const WidgetbookContractStateCard(
         label: 'disabled',
         child: _DockFrame(
-          child: CatchDockSurface.primary(label: 'Sold out', onPressed: null),
+          child: CatchDock.primary(label: 'Sold out', onPressed: null),
         ),
       ),
 
       WidgetbookContractStateCard(
         label: 'custom',
         child: _DockFrame(
-          child: CatchDockSurface(
+          child: CatchDock(
             child: CatchButton(label: 'Continue', onPressed: widgetbookNoop),
           ),
         ),
@@ -350,7 +350,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'custom-no-safe-area',
         child: _DockFrame(
-          child: CatchDockSurface(
+          child: CatchDock(
             includeSafeArea: false,
             child: CatchButton(
               label: 'Apply filters',
@@ -363,7 +363,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
       const WidgetbookContractStateCard(
         label: 'embedded',
         child: _DockFrame(
-          child: CatchDockSurface.primaryContent(
+          child: CatchDock.primaryContent(
             label: 'Next',
             onPressed: widgetbookNoop,
             leading: CatchBadge(label: 'Step 2'),

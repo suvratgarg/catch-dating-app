@@ -33,8 +33,8 @@
           {
             "id": "welcome_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           },
           {
             "id": "flow_controller",
@@ -45,20 +45,20 @@
           {
             "id": "name_dob_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
-            "symbol": "NameDobPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+            "symbol": "OnboardingNameDobBody"
           },
           {
             "id": "gender_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-            "symbol": "GenderInterestPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+            "symbol": "OnboardingGenderInterestBody"
           },
           {
             "id": "photos_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/photos_page.dart",
-            "symbol": "PhotosPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+            "symbol": "OnboardingPhotosBody"
           },
           {
             "id": "photo_controller",
@@ -69,14 +69,14 @@
           {
             "id": "prompts_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-            "symbol": "ProfilePromptsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+            "symbol": "OnboardingProfilePromptsBody"
           },
           {
             "id": "running_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-            "symbol": "RunningPrefsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+            "symbol": "OnboardingRunningPrefsBody"
           }
         ],
         "componentContracts": [
@@ -541,8 +541,8 @@
           {
             "id": "welcome_page",
             "language": "dart",
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           }
         ],
         "componentContracts": ["catch.button", "catch.surface"],

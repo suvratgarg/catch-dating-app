@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
