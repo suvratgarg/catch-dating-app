@@ -4,10 +4,11 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
 
 const knownBad = process.argv.includes("--known-bad");
+const knownBadWebsite = process.argv.includes("--known-bad-website");
 const knownBadAdapter = process.argv.includes("--known-bad-adapter");
 const knownBadApi = process.argv.includes("--known-bad-api");
 const surfacesOnly = process.argv.includes("--surfaces-only");
-const allowedArgs = new Set(["--known-bad", "--known-bad-adapter", "--known-bad-api", "--surfaces-only"]);
+const allowedArgs = new Set(["--known-bad", "--known-bad-website", "--known-bad-adapter", "--known-bad-api", "--surfaces-only"]);
 if (process.argv.slice(2).some((arg) => !allowedArgs.has(arg)) ||
     (surfacesOnly && knownBadApi)) {
   console.error("Use --surfaces-only for the Node-only cross-stack symbol check; API probes require the full default check.");
@@ -61,6 +62,14 @@ let adapterLinks = 0;
 const adapterComponentIds = new Map();
 for (const [surface, relativePath] of Object.entries(surfaceRegistries)) {
   const document = readJson(relativePath);
+  if (knownBadWebsite && surface === "website") {
+    document.components.push({
+      id: "known_bad_website_adapter",
+      source: "website/src/shared/ui/primitives/feedback.tsx",
+      exportName: "__KnownMissingWebsiteSymbol__",
+      componentId: "catch.badge",
+    });
+  }
   if (knownBadAdapter && surface === "website") {
     document.components.push({
       id: "known_bad_adapter",

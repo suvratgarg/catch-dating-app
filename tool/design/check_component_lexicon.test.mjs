@@ -20,6 +20,13 @@ test("component lexicon rejects a React implementation symbol that does not exis
   assert.match(result.stderr, /react symbol '__KnownMissingReactSymbol__' was not found/u);
 });
 
+test("component lexicon rejects a declared surface symbol that does not exist", () => {
+  const result = run(["--known-bad-website", "--surfaces-only"]);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr,
+    /known_bad_website_adapter: __KnownMissingWebsiteSymbol__ was not found/u);
+});
+
 test("component lexicon rejects a surface adapter of a Flutter-only contract", () => {
   const result = run(["--known-bad-adapter", "--surfaces-only"]);
   assert.notEqual(result.status, 0);
