@@ -15,7 +15,8 @@ vi.mock("../../firebase", () => ({
 }));
 import {useEventSmsPreferenceController} from "./useEventSmsPreferenceController";
 import {EventSmsPreferencePanel, EventSmsPreferenceCard} from "./EventSmsPreferencePanel";
-import {newerSmsPreference, type SmsPreferenceView} from "./eventMessagingModel";
+import {newerSmsPreference, type SmsPreferenceView} from "./smsPreferenceModel";
+import {newerSenderPreference} from "./senderPreferencePort";
 import type {EventAssistanceSmsPreferenceCallableResponse as Response} from "../../shared/contracts/generated/eventAssistanceSmsPreferenceCallableResponse";
 import {eventMessagingCopy as copy} from "../../content/eventMessaging";
 
@@ -154,18 +155,27 @@ describe("verified event SMS controller", () => {
     expect(h.client.getQueryCache().getAll()).toHaveLength(0);
   });
 
-  it("a new event scope stays usable while the previous event write is pending", async () => {
+  it.each([
+    {eventId: "other", attendeeId: "attendee"},
+    {eventId: "event", attendeeId: "other-attendee"},
+  ])("keeps a new scope isolated from the previous pending write: %j", async (scope) => {
     const result = deferred<Response>(); api.set.mockReturnValueOnce(result.promise);
     const h = setup();
     const page = render(<EventSmsPreferencePanel eventId="event" attendeeId="attendee" />, h);
     fireEvent.click(await screen.findByRole("button", {name: copy.turnOn}));
     await waitFor(() => expect(api.set).toHaveBeenCalledOnce());
-    api.get.mockResolvedValue({...initial, view: {...view, eventId: "other"}});
-    page.rerender(<EventSmsPreferencePanel eventId="other" attendeeId="attendee" />);
+    api.get.mockResolvedValue({...initial, view: {...view, ...scope}});
+    const current = deferred<Response>(); api.set.mockReturnValueOnce(current.promise);
+    page.rerender(<EventSmsPreferencePanel {...scope} />);
     fireEvent.click(await screen.findByRole("button", {name: copy.turnOn}));
     await waitFor(() => expect(api.set).toHaveBeenCalledTimes(2));
-    expect(api.set.mock.calls[1][0].eventId).toBe("other");
-    page.unmount(); await act(async () => result.resolve(enabled));
+    expect(api.set.mock.calls[1][0]).toMatchObject({...scope,
+      senderId: "sms-current", expectedRevision: null});
+    await act(async () => result.resolve(enabled));
+    expect(screen.queryByRole("button", {name: copy.turnOff})).toBeNull();
+    await act(async () => current.resolve({...enabled, view: {...enabled.view, ...scope}}));
+    await screen.findByRole("button", {name: copy.turnOff});
+    page.unmount();
   });
 
   it("explains configured sender unavailability and preserves withdrawal", async () => {
@@ -242,10 +252,37 @@ describe("verified event SMS controller", () => {
 
 });
 
-it("prefers current revisions and then server time when reads arrive out of order", () => {
-  expect(newerSmsPreference(enabled, initial)).toBe(enabled);
-  const stopped: Response = {...enabled, view: {...enabled.view, revision: 2, preference: "disabled"}};
-  expect(newerSmsPreference(stopped, enabled)).toBe(stopped);
-  expect(newerSmsPreference(stopped, {...stopped,
-    view: {...stopped.view, serverTime: 1}})).toBe(stopped);
+describe("production SMS preference ordering within one validated scope", () => {
+  it("uses the same primitive as the sender preference controller", () => {
+    expect(newerSmsPreference).toBe(newerSenderPreference);
+  });
+
+  const stopped: Response = {...enabled, view: {...enabled.view,
+    revision: 2, preference: "disabled"}};
+  const newerRead: Response = {...stopped, outcome: "read",
+    view: {...stopped.view, serverTime: 1002}};
+  const olderRead: Response = {...stopped, outcome: "read",
+    view: {...stopped.view, serverTime: 999}};
+  const tiedRead: Response = {...stopped, outcome: "read", view: {...stopped.view}};
+  const earlierRevisionLaterTime: Response = {...enabled,
+    view: {...enabled.view, serverTime: 1500}};
+  const laterRevisionEarlierTime: Response = {...stopped,
+    view: {...stopped.view, serverTime: 999}};
+  const newerUnrecordedRead: Response = {...initial,
+    view: {...initial.view, serverTime: 1001}};
+
+  it.each([
+    {name: "accepts the first response", previous: undefined, incoming: initial, expected: initial},
+    {name: "keeps a saved revision over an unrecorded read", previous: enabled, incoming: initial, expected: enabled},
+    {name: "accepts a saved revision over an unrecorded read", previous: initial, incoming: enabled, expected: enabled},
+    {name: "keeps a newer revision despite a later clock", previous: stopped, incoming: earlierRevisionLaterTime, expected: stopped},
+    {name: "accepts a newer revision despite an earlier clock", previous: enabled, incoming: laterRevisionEarlierTime, expected: laterRevisionEarlierTime},
+    {name: "accepts a later clock at equal revision", previous: stopped, incoming: newerRead, expected: newerRead},
+    {name: "rejects an earlier clock at equal revision", previous: stopped, incoming: olderRead, expected: stopped},
+    {name: "accepts the incoming response on an exact tie", previous: stopped, incoming: tiedRead, expected: tiedRead},
+    {name: "orders unrecorded reads by clock", previous: initial, incoming: newerUnrecordedRead, expected: newerUnrecordedRead},
+    {name: "rejects an older unrecorded read", previous: newerUnrecordedRead, incoming: initial, expected: newerUnrecordedRead},
+  ])("$name", ({previous, incoming, expected}) => {
+    expect(newerSmsPreference(previous, incoming)).toBe(expected);
+  });
 });

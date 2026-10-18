@@ -391,17 +391,6 @@ class FakeClubsRepository implements ClubsRepository {
     startedConversationEventId = eventId;
     return nextHostConversationMatchId;
   }
-
-  @override
-  Future<String> startClubHostConversation({
-    required String clubId,
-    required String hostUid,
-    String? eventId,
-  }) => startOrganizerConversation(
-    organizerId: clubId,
-    hostUid: hostUid,
-    eventId: eventId,
-  );
 }
 
 class CreateClubCall {

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.26.0
-updated: 2026-10-17
+version: 0.27.0
+updated: 2026-10-18
 owner: web_platform
 status: active
 ---
@@ -251,10 +251,10 @@ implementation and proof fails strict mode.
   feature composition. `ToggleGroupControl`/`ToggleButtonControl` remain the
   reference implementation for this split.
 - Cross-stack labels deliberately separate hierarchy from status:
-  `catch.typography` binds `CatchKickerText`, website `UiLabel`, admin
-  `AdminEyebrow`, and web-ui `UiLabel` (the former `catch.ui_label` mapping
-  moved there when `CatchSectionLabel` was retired); `catch.badge` binds status adapters and
-  `BadgeControl`. The lexicon test rejects future semantic collapse.
+  `catch.typography` binds `CatchKickerText`, React `UiLabel`, website
+  `UiLabel`, and admin `AdminEyebrow`; `catch.badge` binds `CatchBadge`, React
+  `BadgeControl`, and the website `StatusBadge` and admin `StatusChip`
+  adapters. The lexicon test rejects future semantic collapse.
 - `website/` is a Vite + React + TypeScript marketing app.
 - `website/src/app/App.tsx` uses React Router for the client route shell and
   `website/src/app/routeRegistry.ts` for runtime route patterns; the route
@@ -265,9 +265,16 @@ implementation and proof fails strict mode.
   `admin/src/shared/ui/**` are the React shared primitive owners. Feature,
   app, and story code must compose these primitives rather than hand-rolling
   native interactive controls.
-- `design/web-ui/components.json` registers extracted package primitives and
-  binds them back to `design/components/catch.components.json`. Imports use
-  `@catch/web-ui`; deep package imports are blocked by both app boundary gates.
+- `design/components/catch.components.json` is the one file that assigns
+  component identity. Each contract's `react` record names its `@catch/web-ui`
+  symbol, file, `api` (`headless-control` until Phase 7e ships the styled
+  component) and Storybook coverage, and its T1/T2 props carry `tsType` beside
+  `dartType`. `design/website/components.json` and `design/admin/components.json`
+  own routes, sections and surface-specific components; an adapter of a shared
+  contract points at it with `componentId`. Admin components that one feature
+  or only the app shell renders are `feature-component` entries owned by that
+  feature. Imports use `@catch/web-ui`; deep package imports are blocked by
+  both app boundary gates.
 - `tool/web/check_react_ui_primitives.mjs` enforces the first React primitive
   guard for `website/`, `admin/`, and `webui`.
 - `tool/web/check_storybook_visuals.mjs` resolves registry entries marked

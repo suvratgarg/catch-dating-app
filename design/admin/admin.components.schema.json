@@ -61,6 +61,7 @@
               "route",
               "workspace",
               "shared-primitive",
+              "feature-component",
               "provider"
             ]
           },
@@ -126,6 +127,7 @@
               "route",
               "workspace",
               "shared-primitive",
+              "feature-component",
               "provider"
             ]
           },
@@ -139,12 +141,10 @@
             "type": "string",
             "pattern": "^[A-Z][A-Za-z0-9_]*$"
           },
-          "lexicon": {
-            "type": "boolean"
-          },
-          "lexiconId": {
+          "componentId": {
             "type": "string",
-            "pattern": "^catch\\.[a-z0-9_.-]+$"
+            "pattern": "^catch\\.[a-z0-9_.-]+$",
+            "description": "The design/components/catch.components.json contract this export implements as an admin adapter."
           },
           "interactionContract": {
             "type": "object",
