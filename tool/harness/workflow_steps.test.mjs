@@ -731,3 +731,32 @@ test("target flags exclude retry metadata and quoted expression payloads", () =>
   assert.throws(() => deriveTargetWorkflows("jobs:\n  bad:\n    if: 'needs.plan.outputs.fake == true\n    uses: ./.github/workflows/fake.yml\n"),
     /Unsupported ownership predicate string/u);
 });
+
+
+test("policy consumers retain condition metadata without granting local execution", () => {
+  const steps = extractSteps(`jobs:
+  checks:
+    steps:
+      - name: Always inspect
+        if: always()
+        run: echo inspect
+      - uses: actions/checkout@v6
+      - run: echo local
+`);
+  assert.equal(steps[0].if, "always()");
+  assert.equal(steps[0].run, "echo inspect");
+  assert.equal(steps[0].uses, null);
+  assert.equal(steps[0].runnable, false);
+  assert.match(steps[0].skipReason, /condition/u);
+  assert.equal(steps[1].uses, "actions/checkout@v6");
+  assert.equal(steps[1].if, null);
+  assert.equal(steps[1].run, null);
+  assert.equal(steps[1].runnable, false);
+  assert.equal(steps[2].if, null);
+  assert.equal(steps[2].uses, null);
+  assert.equal(steps[2].runnable, true);
+  const [unsupported] = extractSteps("jobs: {}\n");
+  assert.equal(unsupported.if, null);
+  assert.equal(unsupported.uses, null);
+  assert.equal(unsupported.runnable, false);
+});

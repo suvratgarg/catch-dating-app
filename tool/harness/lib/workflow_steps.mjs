@@ -52,7 +52,7 @@ function workflowStructure(source) {
 
 function skipped(reason, job, line) {
   return {name: `(unsupported ${job ?? "workflow"})`, job, line, run: null,
-    workingDirectory: ".", runnable: false, skipReason: reason};
+    uses: null, if: null, workingDirectory: ".", runnable: false, skipReason: reason};
 }
 
 function jobFields(job) {
@@ -94,7 +94,7 @@ export function extractSteps(source) {
         (end < 0 ? job.endLine : job.rows[end].line);
       const stepRows = rows.filter(row => row.line >= header.line && row.line < nextLine);
       const step = {name: "(unnamed)", job: job.name, line: header.line,
-        run: null, workingDirectory: ".", skipReason: null};
+        run: null, uses: null, if: null, workingDirectory: ".", skipReason: null};
       const keys = new Set();
       for (const [position, row] of stepRows.entries()) {
         const text = position === 0 ? row.text.slice(2) : row.text;
@@ -135,7 +135,12 @@ export function extractSteps(source) {
           if (!/^[\w./-]+$/u.test(value) || body.some(line => line.trim() && !line.trimStart().startsWith("#"))) step.skipReason = "unsupported working-directory scalar";
           else step.workingDirectory = value;
         } else if (key === "uses") step.uses = value;
-        else if (key === "env" || key === "if" || key === "shell" && (value !== "bash" || body.some(line => line.trim() && !line.trimStart().startsWith("#")))) {
+        else if (key === "if") {
+          // Policy tests inspect conditions even when local execution is
+          // intentionally deferred. Preserve the declared metadata.
+          step.if = value;
+          step.skipReason = "requires an explicit environment, condition, or non-bash shell";
+        } else if (key === "env" || key === "shell" && (value !== "bash" || body.some(line => line.trim() && !line.trimStart().startsWith("#")))) {
           step.skipReason = "requires an explicit environment, condition, or non-bash shell";
         }
       }
