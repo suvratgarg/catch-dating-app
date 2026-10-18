@@ -20,7 +20,7 @@ class FiltersPreferencesState {
   }) {
     final savedAgeRange = filtersAgeRangeValues(user);
     final savedInterestedIn = user.interestedInGenders.toSet();
-    final content = FiltersContentState(
+    final content = FiltersBodyState(
       ageRange: draftAgeRange ?? savedAgeRange,
       interestedIn: draftInterestedIn ?? savedInterestedIn,
       saving: saving,
@@ -39,7 +39,7 @@ class FiltersPreferencesState {
   final UserProfile user;
   final RangeValues savedAgeRange;
   final Set<Gender> savedInterestedIn;
-  final FiltersContentState content;
+  final FiltersBodyState content;
   final bool resetEnabled;
   final bool applyEnabled;
 
@@ -65,8 +65,8 @@ class FiltersPreferencesState {
   }
 }
 
-class FiltersContentState {
-  const FiltersContentState({
+class FiltersBodyState {
+  const FiltersBodyState({
     required this.ageRange,
     required this.interestedIn,
     required this.saving,

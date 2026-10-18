@@ -7,6 +7,11 @@ on:
         description: Exact web surface to build (admin, host, or marketing).
         required: true
         type: string
+      capture_binding:
+        description: Exact canonical capture artifact identity required for marketing builds.
+        required: false
+        type: string
+        default: ""
     outputs:
       artifact_digest:
         description: GitHub SHA-256 digest of the uploaded artifact ZIP.
@@ -225,6 +230,13 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Import verified exact-source marketing captures
+        if: ${{ inputs.surface == 'marketing' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CAPTURE_BINDING: ${{ inputs.capture_binding }}
+        run: node tool/marketing/import_hosted_captures.mjs --import
+
       - run: npm ci
 
       - uses: ./.github/actions/setup-flutter
@@ -362,6 +374,12 @@ jobs:
         run: |
           npm --workspace catch-admin exec -- vite build
           npm --workspace catch-admin run check:bundle-budget
+
+      - name: Verify built marketing capture bytes
+        if: ${{ inputs.surface == 'marketing' }}
+        env:
+          CAPTURE_BINDING: ${{ inputs.capture_binding }}
+        run: node tool/marketing/import_hosted_captures.mjs --check-dist
 
       - name: Package and verify the exact Hosting bytes
         env:

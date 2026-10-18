@@ -56,7 +56,7 @@ test("production probe reports status, metadata, and content drift", async () =>
 
 test("production probes follow the canonical organiser and preserved visitor metadata", () => {
   const meta = JSON.parse(fs.readFileSync(new URL("../src/content/meta.json", import.meta.url), "utf8"));
-  for (const [path, routeId] of [["/", "home"], ["/explore/", "visitor_discovery"], ["/host/workflows/", "host_workflows"]]) {
+  for (const [path, routeId] of [["/", "home"], ["/explore/", "visitor_discovery"], ["/host/apply/", "host_apply"]]) {
     const probe = productionProbeContracts.find((entry) => entry.path === path);
     const route = meta.routes[routeId];
     assert.ok(probe, `missing production probe for ${path}`);

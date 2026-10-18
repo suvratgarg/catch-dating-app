@@ -33,7 +33,7 @@ Widget dashboardEmptyHeroCardReviewStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Hero content states',
-  type: EmptyHeroContent,
+  type: EmptyHeroBody,
   path: '[P1 product surfaces]/Dashboard home',
 )
 Widget dashboardEmptyHeroContentReviewStates(BuildContext context) {
@@ -51,17 +51,17 @@ Widget dashboardEmptyHeroContentReviewStates(BuildContext context) {
   }
 
   return WidgetbookPageCatalogFrame(
-    title: 'EmptyHeroContent',
+    title: 'EmptyHeroBody',
     contractId: 'dashboard.home.empty_hero_content',
     children: [
       WidgetbookPageStateCard(
         label: 'card copy',
-        child: frame(child: EmptyHeroContent(onFindEvent: widgetbookNoop)),
+        child: frame(child: EmptyHeroBody(onFindEvent: widgetbookNoop)),
       ),
       WidgetbookPageStateCard(
         label: 'welcome eyebrow',
         child: frame(
-          child: EmptyHeroContent(
+          child: EmptyHeroBody(
             onFindEvent: widgetbookNoop,
             showWelcomeEyebrow: true,
           ),

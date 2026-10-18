@@ -1,10 +1,11 @@
+import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
 import {captureOfferCredential} from "../features/eventOffers/offerCredential";
 import {Suspense, useMemo, type ComponentType} from "react";
 import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
 import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
-import {BrowserRouter, Route, Routes, useLocation, useParams} from "react-router";
+import {BrowserRouter, Navigate, Route, Routes, useLocation, useParams} from "react-router";
 import {
   getPageKey,
   pageClassFor,
@@ -57,8 +58,7 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/householdRsvp/HouseholdRsvpPage.tsx",
   "../features/forms/PublicFormPage.tsx",
   "../features/organizers/HostListingPage.tsx",
-  "../features/host/concepts/HostConceptPage.tsx",
-  "../features/host/HostContentReview.tsx",
+  "../features/host/HostApplicationPage.tsx",
   "../features/host/HostPage.tsx",
   "../features/notFound/NotFoundPage.tsx",
   "../features/organizers/OrganizerSearchPage.tsx",
@@ -121,12 +121,9 @@ const PublicFormPage = route(async () => ({
 const HostListingPage = route(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
 }), "../features/organizers/HostListingPage", "HostListingPage");
-const HostConceptPage = route(async () => ({
-  default: (await import("../features/host/concepts/HostConceptPage")).HostConceptPage,
-}), "../features/host/concepts/HostConceptPage", "HostConceptPage");
-const HostContentReview = route(async () => ({
-  default: (await import("../features/host/HostContentReview")).HostContentReview,
-}), "../features/host/HostContentReview", "HostContentReview");
+const HostApplicationPage = route(async () => ({
+  default: (await import("../features/host/HostApplicationPage")).HostApplicationPage,
+}), "../features/host/HostApplicationPage", "HostApplicationPage");
 const HostPage = route(async () => ({
   default: (await import("../features/host/HostPage")).HostPage,
 }), "../features/host/HostPage", "HostPage");
@@ -155,6 +152,12 @@ function App() {
 }
 
 function MarketingRouteShell() {
+  const location = useLocation();
+  const destination = retiredMarketingDestination(location);
+  return destination ? <Navigate replace to={destination} /> : <CanonicalMarketingRouteShell />;
+}
+
+function CanonicalMarketingRouteShell() {
   const location = useLocation();
   const {listings, phase: eventFeedPhase} = usePublicHostListings();
   const events = useMemo(() => buildPublicEventDetailRecords(listings), [listings]);
@@ -187,7 +190,7 @@ function MarketingRouteShell() {
   useDocumentMeta(meta);
 
   return (
-    <PageShell pageClassName={`${pageClassFor(page)}${pageMetaForHostPath(location.pathname) ? " host-content-review" : ""}`}>
+    <PageShell pageClassName={pageClassFor(page)}>
       <RouteChunkRecovery>
       <Suspense fallback={<RouteLoadingState />}>
         <RouteLifecycleEffects
@@ -197,16 +200,7 @@ function MarketingRouteShell() {
             "" : location.hash}
         />
         <Routes>
-          <Route path={marketingRoutePaths.host_overview} element={<HostConceptPage slug="index" />} />
-          <Route path={marketingRoutePaths.host_platform} element={<HostConceptPage slug="host" />} />
-          <Route path={marketingRoutePaths.host_planners} element={<HostConceptPage slug="planners" />} />
-          <Route path={marketingRoutePaths.host_mixers} element={<HostConceptPage slug="mixers" />} />
-          <Route path={marketingRoutePaths.host_clubs} element={<HostConceptPage slug="clubs" />} />
-          <Route path={marketingRoutePaths.host_directory} element={<HostConceptPage slug="directory" />} />
-          <Route path={marketingRoutePaths.host_claim} element={<HostConceptPage slug="claim" />} />
-          <Route path={marketingRoutePaths.host_apply} element={<HostConceptPage slug="apply" />} />
-          <Route path={marketingRoutePaths.host_stack} element={<HostConceptPage slug="stack" />} />
-          <Route path={marketingRoutePaths.host_workflows} element={<HostContentReview />} />
+          <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}

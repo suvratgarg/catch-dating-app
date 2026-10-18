@@ -5,7 +5,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_ui/catch_ui.dart';

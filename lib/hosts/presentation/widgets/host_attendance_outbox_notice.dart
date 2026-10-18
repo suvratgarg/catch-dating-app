@@ -1,4 +1,4 @@
-part of 'host_operational_roster_panel.dart';
+part of 'host_operational_roster_section.dart';
 
 class HostAttendanceOutboxNotice extends StatelessWidget {
   const HostAttendanceOutboxNotice({

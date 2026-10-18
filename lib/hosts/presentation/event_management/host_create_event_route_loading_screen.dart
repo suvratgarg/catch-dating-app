@@ -29,7 +29,7 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
           ),
           gapH4,
           const Expanded(child: CreateEventLoadingBody()),
-          const CreateEventLoadingFooter(),
+          const CreateEventDockSkeleton(),
         ],
       ),
     );
@@ -89,8 +89,8 @@ class LoadingChipRow extends StatelessWidget {
   }
 }
 
-class CreateEventLoadingFooter extends StatelessWidget {
-  const CreateEventLoadingFooter({super.key});
+class CreateEventDockSkeleton extends StatelessWidget {
+  const CreateEventDockSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

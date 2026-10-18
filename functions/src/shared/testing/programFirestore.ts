@@ -18,15 +18,30 @@ export function timestampMillis(value: unknown): number {
   return typeof value === "number" ? value : 0;
 }
 
+/** Copy mutable fixture containers; SDK value objects retain their prototypes.
+ * This deliberately does not clone arbitrary class instances or cyclic data.
+ */
+function copyDataValue<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(copyDataValue) as T;
+  if (value === null || typeof value !== "object") return value;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) return value;
+  return Object.setPrototypeOf(Object.fromEntries(Object.entries(value)
+    .map(([key, child]) => [key, copyDataValue(child)])), prototype) as T;
+}
+
 class FakeDocSnapshot {
+  private readonly value: FakeData | undefined;
   constructor(readonly id: string,
     readonly ref: FakeDocRef,
-    private readonly value: FakeData | undefined) {}
+    value: FakeData | undefined) {
+    this.value = copyDataValue(value);
+  }
   get exists() {
     return this.value !== undefined;
   }
   data() {
-    return this.value;
+    return copyDataValue(this.value);
   }
 }
 
@@ -117,19 +132,22 @@ class FakeTransaction {
     return Promise.all(refs.map((ref) => this.get(ref)));
   }
   set(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => this.firestore.setDoc(ref.path, data));
+    const queued = copyDataValue(data);
+    this.writes.push(() => this.firestore.setDoc(ref.path, queued));
   }
   create(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => this.firestore.createDoc(ref.path, data));
+    const queued = copyDataValue(data);
+    this.writes.push(() => this.firestore.createDoc(ref.path, queued));
   }
   update(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => this.firestore.updateDoc(ref.path, data));
+    const queued = copyDataValue(data);
+    this.writes.push(() => this.firestore.updateDoc(ref.path, queued));
   }
   delete(ref: FakeDocRef) {
     this.writes.push(() => this.firestore.deleteDoc(ref.path));
   }
   commit() {
-    for (const write of this.writes) write();
+    this.firestore.applyWrites(this.writes);
   }
 }
 
@@ -138,16 +156,18 @@ class FakeWriteBatch {
   private readonly writes: Array<() => void> = [];
   constructor(private readonly firestore: FakeFirestore) {}
   set(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => this.firestore.setDoc(ref.path, data));
+    const queued = copyDataValue(data);
+    this.writes.push(() => this.firestore.setDoc(ref.path, queued));
   }
   update(ref: FakeDocRef, data: FakeData) {
-    this.writes.push(() => this.firestore.updateDoc(ref.path, data));
+    const queued = copyDataValue(data);
+    this.writes.push(() => this.firestore.updateDoc(ref.path, queued));
   }
   delete(ref: FakeDocRef) {
     this.writes.push(() => this.firestore.deleteDoc(ref.path));
   }
   async commit() {
-    for (const write of this.writes) write();
+    this.firestore.applyWrites(this.writes);
   }
 }
 
@@ -164,7 +184,7 @@ export class FakeFirestore {
     return new FakeDocRef(this, path);
   }
   constructor(seed: Record<string, FakeData | undefined>) {
-    this.docs = new Map(Object.entries(seed)
+    this.docs = new Map(Object.entries(copyDataValue(seed))
       .filter(([, v]) => v !== undefined) as [string, FakeData][]);
   }
   collection(path: string) {
@@ -173,11 +193,12 @@ export class FakeFirestore {
   batch() {
     return new FakeWriteBatch(this);
   }
+  // Mutable setup/inspection ports: docs and getDoc are not snapshots.
   getDoc(path: string) {
     return this.docs.get(path);
   }
   setDoc(path: string, data: FakeData) {
-    this.docs.set(path, {...data});
+    this.docs.set(path, copyDataValue(data));
     this.version++;
   }
   createDoc(path: string, data: FakeData) {
@@ -191,7 +212,7 @@ export class FakeFirestore {
     if (!existing) throw new Error(`Document missing: ${path}`);
     const next = {...existing};
     for (const [key, value] of Object.entries(data)) {
-      applyFieldUpdate(next, key.split("."), value);
+      applyFieldUpdate(next, key.split("."), copyDataValue(value));
     }
     this.docs.set(path, next);
     this.version++;
@@ -230,6 +251,22 @@ export class FakeFirestore {
       filtered : filtered.slice(0, query.limitN);
     return new FakeQuerySnapshot(limited);
   }
+  /** Writes replace records, so a map snapshot restores the prior values.
+   * Capture only commit-owned state: allocated IDs and external hook writes
+   * predate this boundary and must not be rewound.
+   */
+  applyWrites(writes: ReadonlyArray<() => void>) {
+    const before = new Map(this.docs);
+    const version = this.version;
+    try {
+      for (const write of writes) write();
+    } catch (error) {
+      this.docs.clear();
+      for (const [key, value] of before) this.docs.set(key, value);
+      this.version = version;
+      throw error;
+    }
+  }
   async runTransaction<T>(callback: (tx: FakeTransaction) => Promise<T>) {
     for (let attempt = 0; attempt < 20; attempt++) {
       const readVersion = this.version;
@@ -237,16 +274,9 @@ export class FakeFirestore {
       const result = await callback(tx);
       await this.beforeCommit?.();
       if (readVersion !== this.version) continue;
-      const before = new Map(this.docs);
-      try {
-        tx.commit();
-        this.transactionCommits++;
-        return result;
-      } catch (error) {
-        this.docs.clear();
-        for (const [key, value] of before) this.docs.set(key, value);
-        throw error;
-      }
+      tx.commit();
+      this.transactionCommits++;
+      return result;
     }
     throw new Error("Test transaction exhausted retries.");
   }

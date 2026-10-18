@@ -62,7 +62,7 @@ separate primitive review pages.
 Controller/helper-only catalog rows are represented through their visible
 widgets instead of standalone fake surfaces. Examples: `CatchGrade` is reviewed
 through `CatchGradedImage`, `CatchTicketShapeClipper` through the ticket-surface
-preview, and celebration effects through `CatchCelebrationScreen` with effects
+preview, and celebration effects through `CelebrationScreen` with effects
 disabled for deterministic review.
 
 ## Geometry System Atlas

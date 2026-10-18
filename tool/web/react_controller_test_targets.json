@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 18,
+  "version": 19,
   "updated": "2026-10-16",
   "owner": "web_surface_architecture",
   "statuses": {
@@ -225,11 +225,6 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/host/useHostApplicationController.ts",
-      "status": "exempt",
-      "reason": "Compatibility re-export of the application controller."
-    },
-    {
       "source": "website/src/features/householdRsvp/useHouseholdRsvpController.ts",
       "test": "website/src/features/householdRsvp/useHouseholdRsvpController.test.tsx",
       "status": "required"
@@ -287,6 +282,21 @@
     {
       "source": "admin/src/features/sales/controllers/useSalesDemoPartnerReviewController.ts",
       "test": "admin/src/features/sales/controllers/useSalesDemoPartnerReviewController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/events/useGuestEventController.ts",
+      "test": "website/src/features/events/useGuestEventController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/events/useFreeEventRegistrationController.ts",
+      "test": "website/src/features/events/useFreeEventRegistrationController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/events/useApprovalNotificationsController.ts",
+      "test": "website/src/features/events/useApprovalNotificationsController.test.tsx",
       "status": "required"
     },
     {

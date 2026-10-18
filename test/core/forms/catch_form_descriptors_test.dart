@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('CatchFormRowList maps rows through one accordion and save', (
+  testWidgets('CatchFormList maps rows through one accordion and save', (
     tester,
   ) async {
     final pendingSave = Completer<bool>();
@@ -18,7 +18,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchFormRowList<_Patch>(
+        CatchFormList<_Patch>(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           title: 'About you',
           rows: [
@@ -134,7 +134,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchFormRowList<_Patch>(
+        CatchFormList<_Patch>(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           rows: [
             CatchFormTextRow<_Patch>(
@@ -180,9 +180,9 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchFormRowList<_Patch>(
+        CatchFormList<_Patch>(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
-          textCommitMode: CatchFormRowListMode.onBlur,
+          textCommitMode: CatchFormListMode.onBlur,
           rows: [
             CatchFormTextRow<_Patch>(
               validationCopy: catchFormValidationCopy(AppLocalizationsEn()),

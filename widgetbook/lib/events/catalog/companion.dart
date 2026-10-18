@@ -13,18 +13,18 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Companion entry states',
-  type: EventCompanionEntry,
+  type: EventCompanionCard,
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailCompanionEntryStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'EventCompanionEntry',
+    title: 'EventCompanionCard',
     catalogId: 'section.event.companion_entry',
     children: [
       WidgetbookPageStateCard(
         label: 'hidden',
         child: WidgetbookEventDeviceFrame(
-          child: EventCompanionEntry(
+          child: EventCompanionCard(
             state: const EventDetailCompanionState.hidden(),
             surfaceStyle: EventDetailSurfaceStyle.light(
               CatchTokens.of(context),
@@ -37,7 +37,7 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'loading',
         child: WidgetbookEventDeviceFrame(
-          child: EventCompanionEntry(
+          child: EventCompanionCard(
             state: const EventDetailCompanionState.loading(),
             surfaceStyle: EventDetailSurfaceStyle.light(
               CatchTokens.of(context),
@@ -50,7 +50,7 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'available',
         child: WidgetbookEventDeviceFrame(
-          child: EventCompanionEntry(
+          child: EventCompanionCard(
             state: const EventDetailCompanionState.available(),
             surfaceStyle: EventDetailSurfaceStyle.light(
               CatchTokens.of(context),
@@ -63,7 +63,7 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'error',
         child: WidgetbookEventDeviceFrame(
-          child: EventCompanionEntry(
+          child: EventCompanionCard(
             state: EventDetailCompanionState.error(
               StateError('Could not load event companion.'),
             ),
@@ -182,24 +182,24 @@ Widget eventDetailCalloutCardStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Guest book CTA',
-  type: GuestBookCta,
+  type: GuestBookDock,
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailGuestBookCtaStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'GuestBookCta',
+    title: 'GuestBookDock',
     catalogId: 'section.event.guest_book_cta',
     children: [
       WidgetbookPageStateCard(
         label: 'light dock',
         child: const WidgetbookContentFrame(
-          child: GuestBookCta(onPressed: widgetbookNoop),
+          child: GuestBookDock(onPressed: widgetbookNoop),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'dark dock',
         child: const WidgetbookContentFrame(
-          child: GuestBookCta(onPressed: widgetbookNoop, darkSurface: true),
+          child: GuestBookDock(onPressed: widgetbookNoop, darkSurface: true),
         ),
       ),
     ],

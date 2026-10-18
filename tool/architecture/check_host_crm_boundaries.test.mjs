@@ -280,7 +280,7 @@ test("flags host-visible communication route pickers", () => {
 test("flags manual-send queues outside Sends", () => {
   const findings = scanPresentationFile({
     relativePath: "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-    source: "const HostManualSendQueue()",
+    source: "const HostManualSendList()",
   });
   assert.match(findings[0].reason, /Sends workspace/u);
 });
@@ -295,6 +295,20 @@ test("flags unreviewed permission-authority access", () => {
     relativePath: "functions/src/organizers/organizerFormConsentPromotion.ts",
     source: 'db.collection("organizerCommunicationPreferences").doc(id)',
   }), []);
+});
+
+test("approval notification permission review is limited to its facts owner", () => {
+  const source = 'db.collection("organizerCommunicationPreferences")' +
+    '.doc(organizerCommunicationPreferenceId(organizerId, uid))';
+  assert.deepEqual(scanBackendFile({
+    relativePath: "functions/src/events/approvalNotifications/facts.ts",
+    source,
+  }), []);
+  const findings = scanBackendFile({
+    relativePath: "functions/src/events/approvalNotifications/dispatch.ts",
+    source,
+  });
+  assert.match(findings[0].reason, /explicit reviewed owner/u);
 });
 
 test("flags direct contact creation outside canonical projection owners", () => {

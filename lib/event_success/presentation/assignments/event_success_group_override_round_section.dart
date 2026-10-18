@@ -34,7 +34,7 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

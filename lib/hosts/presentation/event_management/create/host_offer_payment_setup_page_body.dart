@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
@@ -16,21 +15,24 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 /// Modeled as a decision, not a preference grid: the host picks how guests pay,
 /// sees only the fields that mode needs, and reads how payment confirmation
 /// works before saving. Draft edits stage on the controller; Save runs the
 /// server preview and an explicit confirm keeps the reviewed commit.
-class HostOfferPaymentSetupPageBody extends StatefulWidget {
+class HostOfferPaymentSetupPageBody extends ConsumerStatefulWidget {
   const HostOfferPaymentSetupPageBody({
     super.key,
-    required this.controller,
+    required this.scope,
     required this.onBack,
     this.catchCheckoutAvailable = false,
+    this.eventName,
   });
 
-  final EventOfferPreferencesController controller;
+  final EventEditorScope scope;
+  final String? eventName;
   final VoidCallback onBack;
 
   /// First-party checkout needs verified provider activation. Until that
@@ -38,12 +40,17 @@ class HostOfferPaymentSetupPageBody extends StatefulWidget {
   final bool catchCheckoutAvailable;
 
   @override
-  State<HostOfferPaymentSetupPageBody> createState() =>
+  ConsumerState<HostOfferPaymentSetupPageBody> createState() =>
       _HostOfferPaymentSetupPageBodyState();
 }
 
 class _HostOfferPaymentSetupPageBodyState
-    extends State<HostOfferPaymentSetupPageBody> {
+    extends ConsumerState<HostOfferPaymentSetupPageBody> {
+  EventPreferencesEditorState get _snapshot =>
+      ref.read(eventOfferPreferencesControllerProvider(widget.scope));
+  EventOfferPreferencesController get _controller =>
+      ref.read(eventOfferPreferencesControllerProvider(widget.scope).notifier);
+
   static const _validityChips = offerPaymentValidityChips;
 
   HostOfferPaymentMode? _mode;
@@ -110,7 +117,7 @@ class _HostOfferPaymentSetupPageBodyState
   }
 
   void _hydrate() {
-    final resolved = widget.controller.resolvedValues;
+    final resolved = _snapshot.resolvedValues;
     final amount = resolved['expectedAmountMinor'];
     final collection = resolved['collectionPreference'];
     if (amount is int && amount == 0) {
@@ -158,14 +165,14 @@ class _HostOfferPaymentSetupPageBodyState
   /// manage keep their current intents; dependents outside the chosen mode
   /// are cleared so the saved snapshot only carries what applies.
   void _stage() {
-    if (!_hydrated || !widget.controller.canEdit) return;
-    final current = widget.controller.editorIntents;
+    if (!_hydrated || !_snapshot.canEdit) return;
+    final current = _snapshot.editorIntents;
     final amount = _amountMinor;
     final currency = _currency.text.trim().toUpperCase();
     final message = _committedMessage;
     final instructions = _committedInstructions;
     final pageUrl = _pageUrl.text.trim();
-    widget.controller.stage(
+    _controller.stage(
       PrivateEventPreferenceIntents(
         usualDurationMinutes: current.usualDurationMinutes,
         preferredVenueId: current.preferredVenueId,
@@ -215,7 +222,7 @@ class _HostOfferPaymentSetupPageBodyState
   /// at the event start. Hidden while validity is unset or already past.
   int? get _resolvedExpiryMillis {
     final validity = _validityMinutes;
-    final configuration = widget.controller.configuration;
+    final configuration = _snapshot.configuration;
     if (validity == null ||
         validity < 5 ||
         validity > 10080 ||
@@ -286,31 +293,31 @@ class _HostOfferPaymentSetupPageBodyState
   }
 
   Future<void> _save() async {
-    if (!widget.controller.canEdit) return;
+    if (!_snapshot.canEdit) return;
     // Preview binds the reviewed revision fences; without a preview endpoint
     // the command journal still guards the write itself.
-    if (widget.controller.readPreview == null) {
-      await widget.controller.save(widget.controller.editorIntents);
+    if (!_snapshot.previewAvailable) {
+      await _controller.save(_snapshot.editorIntents);
       if (!mounted) return;
-      if (widget.controller.error == null && !widget.controller.hasPending) {
+      if (_snapshot.error == null && !_snapshot.hasPending) {
         widget.onBack();
       }
       return;
     }
-    await widget.controller.previewChanges();
-    if (!mounted || widget.controller.review == null) return;
+    await _controller.previewChanges();
+    if (!mounted || _snapshot.review == null) return;
     final summary = _summary(context.l10n);
     final confirmed = await showCatchBottomSheet<bool>(
       context: context,
       builder: (context) => HostOfferPaymentReviewSheet(
-        review: widget.controller.review!,
+        review: _snapshot.review!,
         summary: summary,
       ),
     );
     if (confirmed != true || !mounted) return;
-    await widget.controller.applyReview();
+    await _controller.applyReview();
     if (!mounted) return;
-    if (widget.controller.error == null && !widget.controller.hasPending) {
+    if (_snapshot.error == null && !_snapshot.hasPending) {
       widget.onBack();
     }
   }
@@ -319,243 +326,229 @@ class _HostOfferPaymentSetupPageBodyState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tokens = CatchTokens.of(context);
-    return AnimatedBuilder(
-      animation: widget.controller,
-      builder: (context, _) {
-        final controller = widget.controller;
-        if (!_hydrated &&
-            controller.hasLoadedEvent &&
-            controller.defaults != null) {
-          _hydrate();
-        }
-        if (controller.loading && !controller.hasLoadedEvent) {
-          return const CatchScaffold.stepFlow(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final blockers = _blockers(l10n);
-        final editable = controller.canEdit;
-        final saving = controller.saving || controller.previewing;
-        return CatchScaffold.stepFlow(
-          backgroundColor: tokens.bg,
-          resizeToAvoidBottomInset: true,
-          body: Column(
-            children: [
-              CatchStepHeader(
-                title: l10n.hostOfferPaymentTitle,
-                subtitle:
-                    controller.eventName ?? l10n.hostsPrivateEventPayments,
-                stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
-                compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
-                  l10n,
+    final snapshot = ref.watch(
+      eventOfferPreferencesControllerProvider(widget.scope),
+    );
+    final controller = _controller;
+    if (!_hydrated && snapshot.hasLoadedEvent && snapshot.defaults != null) {
+      _hydrate();
+    }
+    if (snapshot.loading && !snapshot.hasLoadedEvent) {
+      return const CatchScaffold.stepFlow(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final blockers = _blockers(l10n);
+    final editable = snapshot.canEdit;
+    final saving = snapshot.saving || snapshot.previewing;
+    return CatchScaffold.stepFlow(
+      backgroundColor: tokens.bg,
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          CatchStepHeader(
+            title: l10n.hostOfferPaymentTitle,
+            subtitle:
+                widget.eventName ??
+                snapshot.eventName ??
+                l10n.hostsPrivateEventPayments,
+            stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(l10n),
+            onBack: widget.onBack,
+            leadingType: CatchTopBarNavigationMode.back,
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: CatchLayout.hostCreateEventFormLaneMaxWidth,
                 ),
-                onBack: widget.onBack,
-                leadingType: CatchTopBarNavigationMode.back,
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: CatchLayout.hostCreateEventFormLaneMaxWidth,
-                    ),
-                    child: ListView(
-                      padding: CatchInsets.formStepBodyWithBottomActions,
+                child: ListView(
+                  padding: CatchInsets.formStepBodyWithBottomActions,
+                  children: [
+                    CatchSectionList(
+                      emptyStateOmitted: true,
                       children: [
-                        CatchSectionList(
-                          emptyStateOmitted: true,
-                          children: [
-                            if (controller.hasPending ||
-                                controller.error != null)
-                              Column(
-                                children: [
-                                  if (controller.hasPending)
-                                    CatchBanner(
-                                      title: l10n.hostsEventPreferencePending,
-                                      message:
-                                          l10n.hostsEventPreferencePendingBody,
-                                      icon: CatchIcons.scheduleOutlined,
-                                      tone: CatchBannerTone.neutral,
-                                      actions: [
-                                        CatchButton(
-                                          label: l10n.hostsEventPreferenceRetry,
-                                          variant: CatchButtonVariant.secondary,
-                                          size: CatchButtonSize.sm,
-                                          onPressed: controller.saving
-                                              ? null
-                                              : () => unawaited(
-                                                  controller.retryPending(),
-                                                ),
-                                        ),
-                                      ],
+                        if (snapshot.hasPending || snapshot.error != null)
+                          Column(
+                            children: [
+                              if (snapshot.hasPending)
+                                CatchBanner(
+                                  title: l10n.hostsEventPreferencePending,
+                                  message: l10n.hostsEventPreferencePendingBody,
+                                  icon: CatchIcons.scheduleOutlined,
+                                  tone: CatchBannerTone.neutral,
+                                  actions: [
+                                    CatchButton(
+                                      label: l10n.hostsEventPreferenceRetry,
+                                      variant: CatchButtonVariant.secondary,
+                                      size: CatchButtonSize.sm,
+                                      onPressed: snapshot.saving
+                                          ? null
+                                          : () => unawaited(
+                                              controller.retryPending(),
+                                            ),
                                     ),
-                                  if (controller.hasPending &&
-                                      controller.error != null)
-                                    gapH8,
-                                  if (controller.error != null)
-                                    CatchBanner.error(
-                                      message: appErrorMessage(
-                                        controller.error!,
-                                        l10n: l10n,
-                                        context: AppErrorContext.event,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            HostOfferPaymentModeSection(
-                              mode: _mode,
-                              pickerExpanded: _pickerExpanded,
-                              editable: editable,
-                              checkoutAvailable: widget.catchCheckoutAvailable,
-                              first:
-                                  !controller.hasPending &&
-                                  controller.error == null,
-                              onSelected: (mode) {
-                                setState(() {
-                                  _mode = mode;
-                                  _pickerExpanded = false;
-                                  _openEditor = null;
-                                  _instructionsError = null;
-                                });
-                                _stage();
-                              },
-                              onExpandPicker: () =>
-                                  setState(() => _pickerExpanded = true),
-                            ),
-                            if (_mode != null)
-                              HostOfferPaymentDetailsSection(
-                                mode: _mode!,
-                                editable: editable,
-                                amountController: _amount,
-                                currencyController: _currency,
-                                customValidityController: _customValidity,
-                                pageUrlController: _pageUrl,
-                                instructionsController: _instructions,
-                                messageController: _message,
-                                validityCustom: _validityCustom,
-                                validityMinutes: _validityMinutes,
-                                reuseAttested: _reuseAttested,
-                                resolvedExpiryMillis: _resolvedExpiryMillis,
-                                openEditor: _openEditor,
-                                instructionsError: _instructionsError,
-                                onFieldChanged: _stage,
-                                onValiditySelected:
-                                    ({required custom, minutes}) {
-                                      setState(() {
-                                        _validityCustom = custom;
-                                        _validityMinutes = custom
-                                            ? int.tryParse(
-                                                _customValidity.text.trim(),
-                                              )
-                                            : minutes;
-                                      });
-                                      _stage();
-                                    },
-                                onValidityMinutesChanged: (text) {
-                                  _validityMinutes = int.tryParse(text.trim());
-                                  _stage();
-                                },
-                                onReuseAttestedChanged: (value) {
-                                  setState(() => _reuseAttested = value);
-                                  _stage();
-                                },
-                                onInstructionsOpenChanged: (open) {
-                                  if (!editable) return;
-                                  setState(
-                                    () => _openEditor = open
-                                        ? 'instructions'
-                                        : null,
-                                  );
-                                },
-                                onInstructionsCancel: () => setState(() {
-                                  _instructions.text = _committedInstructions;
-                                  _instructionsError = null;
-                                  _openEditor = null;
-                                }),
-                                onInstructionsSubmit: () {
-                                  if (_instructions.text.trim().isEmpty) {
-                                    setState(
-                                      () => _instructionsError =
-                                          l10n.hostsEventPreferenceInvalidValue,
-                                    );
-                                    return;
-                                  }
-                                  setState(() {
-                                    _committedInstructions = _instructions.text
-                                        .trim();
-                                    _instructionsError = null;
-                                    _openEditor = null;
-                                  });
-                                  _stage();
-                                },
-                                onInstructionsChanged: (_) {
-                                  if (_instructionsError != null) {
-                                    setState(() => _instructionsError = null);
-                                  }
-                                },
-                                onMessageOpenChanged: (open) {
-                                  if (!editable) return;
-                                  setState(
-                                    () => _openEditor = open ? 'message' : null,
-                                  );
-                                },
-                                onMessageCancel: () => setState(() {
-                                  _message.text = _committedMessage;
-                                  _openEditor = null;
-                                }),
-                                onMessageSubmit: () {
-                                  setState(() {
-                                    _committedMessage = _message.text.trim();
-                                    _openEditor = null;
-                                  });
-                                  _stage();
-                                },
-                              ),
-                            if (_mode == HostOfferPaymentMode.personalRequest)
-                              CatchNotice(
-                                dismissLabel:
-                                    l10n.coreCatchNoticeTooltipDismiss,
-                                notice: CatchNoticeData(
-                                  id: 'offer-payment-request-links',
-                                  title: l10n.hostsEventDefaultsPersonalRequest,
-                                  message:
-                                      l10n.hostOfferPaymentRequestLinksBody,
-                                  icon: CatchIcons.linkOutlined,
-                                  duration: null,
-                                  dismissible: false,
+                                  ],
                                 ),
-                              ),
-                            if (_mode != null)
-                              HostOfferPaymentConfirmationSection(mode: _mode!),
-                          ],
-                        ),
-                        if (_mode != null) ...[
-                          gapH4,
-                          Text(
-                            l10n.hostsEventPreferenceProviderHint,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: tokens.ink2),
+                              if (snapshot.hasPending && snapshot.error != null)
+                                gapH8,
+                              if (snapshot.error != null)
+                                CatchBanner.error(
+                                  message: appErrorMessage(
+                                    snapshot.error!,
+                                    l10n: l10n,
+                                    context: AppErrorContext.event,
+                                  ),
+                                ),
+                            ],
                           ),
-                        ],
+                        HostOfferPaymentModeSection(
+                          mode: _mode,
+                          pickerExpanded: _pickerExpanded,
+                          editable: editable,
+                          checkoutAvailable: widget.catchCheckoutAvailable,
+                          first: !snapshot.hasPending && snapshot.error == null,
+                          onSelected: (mode) {
+                            setState(() {
+                              _mode = mode;
+                              _pickerExpanded = false;
+                              _openEditor = null;
+                              _instructionsError = null;
+                            });
+                            _stage();
+                          },
+                          onExpandPicker: () =>
+                              setState(() => _pickerExpanded = true),
+                        ),
+                        if (_mode != null)
+                          HostOfferPaymentDetailsSection(
+                            mode: _mode!,
+                            editable: editable,
+                            amountController: _amount,
+                            currencyController: _currency,
+                            customValidityController: _customValidity,
+                            pageUrlController: _pageUrl,
+                            instructionsController: _instructions,
+                            messageController: _message,
+                            validityCustom: _validityCustom,
+                            validityMinutes: _validityMinutes,
+                            reuseAttested: _reuseAttested,
+                            resolvedExpiryMillis: _resolvedExpiryMillis,
+                            openEditor: _openEditor,
+                            instructionsError: _instructionsError,
+                            onFieldChanged: _stage,
+                            onValiditySelected: ({required custom, minutes}) {
+                              setState(() {
+                                _validityCustom = custom;
+                                _validityMinutes = custom
+                                    ? int.tryParse(_customValidity.text.trim())
+                                    : minutes;
+                              });
+                              _stage();
+                            },
+                            onValidityMinutesChanged: (text) {
+                              _validityMinutes = int.tryParse(text.trim());
+                              _stage();
+                            },
+                            onReuseAttestedChanged: (value) {
+                              setState(() => _reuseAttested = value);
+                              _stage();
+                            },
+                            onInstructionsOpenChanged: (open) {
+                              if (!editable) return;
+                              setState(
+                                () =>
+                                    _openEditor = open ? 'instructions' : null,
+                              );
+                            },
+                            onInstructionsCancel: () => setState(() {
+                              _instructions.text = _committedInstructions;
+                              _instructionsError = null;
+                              _openEditor = null;
+                            }),
+                            onInstructionsSubmit: () {
+                              if (_instructions.text.trim().isEmpty) {
+                                setState(
+                                  () => _instructionsError =
+                                      l10n.hostsEventPreferenceInvalidValue,
+                                );
+                                return;
+                              }
+                              setState(() {
+                                _committedInstructions = _instructions.text
+                                    .trim();
+                                _instructionsError = null;
+                                _openEditor = null;
+                              });
+                              _stage();
+                            },
+                            onInstructionsChanged: (_) {
+                              if (_instructionsError != null) {
+                                setState(() => _instructionsError = null);
+                              }
+                            },
+                            onMessageOpenChanged: (open) {
+                              if (!editable) return;
+                              setState(
+                                () => _openEditor = open ? 'message' : null,
+                              );
+                            },
+                            onMessageCancel: () => setState(() {
+                              _message.text = _committedMessage;
+                              _openEditor = null;
+                            }),
+                            onMessageSubmit: () {
+                              setState(() {
+                                _committedMessage = _message.text.trim();
+                                _openEditor = null;
+                              });
+                              _stage();
+                            },
+                          ),
+                        if (_mode == HostOfferPaymentMode.personalRequest)
+                          CatchNotice(
+                            dismissLabel: l10n.coreCatchNoticeTooltipDismiss,
+                            notice: CatchNoticeData(
+                              id: 'offer-payment-request-links',
+                              title: l10n.hostsEventDefaultsPersonalRequest,
+                              message: l10n.hostOfferPaymentRequestLinksBody,
+                              icon: CatchIcons.linkOutlined,
+                              duration: null,
+                              dismissible: false,
+                            ),
+                          ),
+                        if (_mode != null)
+                          HostOfferPaymentConfirmationSection(mode: _mode!),
                       ],
                     ),
-                  ),
+                    if (_mode != null) ...[
+                      gapH4,
+                      Text(
+                        l10n.hostsEventPreferenceProviderHint,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: tokens.ink2),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              CatchDockSurface.primaryContent(
-                label: l10n.hostOfferPaymentSave,
-                buttonKey: const ValueKey('offer-payment-setup-save'),
-                catchLine: blockers.isEmpty
-                    ? _summary(l10n)
-                    : blockers.first.toUpperCase(),
-                footnote: l10n.hostsEventPreferencePublishedHint,
-                isLoading: saving,
-                onPressed: editable && blockers.isEmpty ? _save : null,
-              ),
-            ],
+            ),
           ),
-        );
-      },
+          CatchDock.primaryContent(
+            label: l10n.hostOfferPaymentSave,
+            buttonKey: const ValueKey('offer-payment-setup-save'),
+            catchLine: blockers.isEmpty
+                ? _summary(l10n)
+                : blockers.first.toUpperCase(),
+            footnote: l10n.hostsEventPreferencePublishedHint,
+            isLoading: saving,
+            onPressed: editable && blockers.isEmpty ? _save : null,
+          ),
+        ],
+      ),
     );
   }
 }

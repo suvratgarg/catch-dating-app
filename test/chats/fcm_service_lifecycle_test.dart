@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
@@ -107,7 +109,25 @@ void main() {
   late GoRouter router;
   final delivered = <String>[];
 
+  final momentPayloads =
+      jsonDecode(
+            File(
+              'test/chats/fixtures/moment_push_payloads.json',
+            ).readAsStringSync(),
+          )
+          as Map<String, dynamic>;
+
+  RemoteMessage momentMessage(String name, {String? uid, String? role}) {
+    final data = Map<String, dynamic>.from(
+      momentPayloads[name] as Map<String, dynamic>,
+    );
+    if (uid != null) data['recipientUid'] = uid;
+    if (role != null) data['appRole'] = role;
+    return RemoteMessage(messageId: name, data: data);
+  }
+
   setUp(() {
+    AppConfig.configureEntrypointRole(AppRole.consumer);
     SharedPreferences.setMockInitialValues({});
     PackageInfo.setMockInitialValues(
       appName: 'Catch',
@@ -124,6 +144,12 @@ void main() {
     router = GoRouter(
       routes: [
         GoRoute(path: '/', builder: (context, state) => const SizedBox()),
+        GoRoute(
+          path: '/organizers/:organizerId/events/:eventId',
+          builder: (context, state) => Text(
+            '${state.pathParameters['organizerId']}/${state.pathParameters['eventId']}',
+          ),
+        ),
       ],
     );
     delivered.clear();
@@ -134,6 +160,7 @@ void main() {
     await opened.close();
     await sdk.dispose();
     router.dispose();
+    AppConfig.resetEntrypointRoleOverrideForTesting();
   });
 
   Future<void> initialize(String uid) => service.initialize(
@@ -291,6 +318,119 @@ void main() {
         (await SharedPreferences.getInstance()).getBool(
           'catch.pushTokenNeedsRevocation',
         ),
+        isNull,
+      );
+    },
+  );
+  for (final fixture in ['canonical', 'legacy']) {
+    for (final delivery in ['opened', 'cold-start']) {
+      testWidgets('backend $fixture reminder routes through $delivery', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          WidgetsApp.router(
+            color: const Color(0xff000000),
+            routerConfig: router,
+          ),
+        );
+        final notification = momentMessage(fixture);
+        if (delivery == 'cold-start') {
+          sdk.initialGate = Completer<RemoteMessage?>()..complete(notification);
+        }
+        await initialize('one');
+        if (delivery == 'opened') opened.add(notification);
+        await pumpFeatureUi(tester);
+        final organizer = fixture == 'canonical'
+            ? 'canonical-org'
+            : 'legacy-org';
+        expect(
+          router.routeInformationProvider.value.uri.path,
+          '/organizers/$organizer/events/evt',
+        );
+        expect(find.text('$organizer/evt'), findsOneWidget);
+      });
+    }
+  }
+
+  for (final delivery in ['opened', 'cold-start']) {
+    for (final invalid in ['recipient', 'role']) {
+      test('backend reminder rejects wrong $invalid on $delivery', () async {
+        final notification = momentMessage(
+          'canonical',
+          uid: invalid == 'recipient' ? 'other-account' : null,
+          role: invalid == 'role' ? 'host' : null,
+        );
+        if (delivery == 'cold-start') {
+          sdk.initialGate = Completer<RemoteMessage?>()..complete(notification);
+        }
+        await initialize('one');
+        if (delivery == 'opened') opened.add(notification);
+        foreground.add(notification);
+        await flushTestEventQueue();
+        expect(router.routeInformationProvider.value.uri.path, '/');
+        expect(delivered, isEmpty);
+      });
+    }
+  }
+
+  for (final transition in ['logout', 'replacement']) {
+    test(
+      'delayed backend reminder cannot navigate after $transition',
+      () async {
+        final gate = Completer<RemoteMessage?>();
+        sdk.initialGate = gate;
+        final pending = initialize('one');
+        await sdk.initialStarted.future;
+        try {
+          if (transition == 'logout') {
+            await service.reset();
+          } else {
+            sdk.initialGate = null;
+            await initialize('two');
+          }
+          gate.complete(momentMessage('canonical'));
+          await pending;
+          expect(router.routeInformationProvider.value.uri.path, '/');
+          expect(delivered, isEmpty);
+        } finally {
+          if (!gate.isCompleted) gate.complete(null);
+          await pending;
+        }
+      },
+    );
+  }
+
+  test('backend event payload requires both route identifiers', () {
+    final data = momentMessage('canonical').data;
+    expect(
+      eventDetailRouteFromMessageData(data),
+      '/organizers/canonical-org/events/evt',
+    );
+    expect(
+      eventDetailRouteFromMessageData({...data}..remove('organizerId')),
+      isNull,
+    );
+    expect(
+      eventDetailRouteFromMessageData({...data}..remove('eventId')),
+      isNull,
+    );
+  });
+
+  test(
+    'Host accepts backend staff payloads and rejects Consumer payload',
+    () async {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      await initialize('staff');
+      foreground.add(momentMessage('staffPush'));
+      foreground.add(momentMessage('staffAttention'));
+      // Same UID ensures role, rather than recipient rejection, is exercised.
+      foreground.add(momentMessage('canonical', uid: 'staff'));
+      opened.add(momentMessage('canonical', uid: 'staff'));
+      await flushTestEventQueue();
+      expect(delivered, ['staffPush', 'staffAttention']);
+      expect(router.routeInformationProvider.value.uri.path, '/');
+      expect(
+        eventDetailRouteFromMessageData(momentMessage('staffPush').data),
         isNull,
       );
     },

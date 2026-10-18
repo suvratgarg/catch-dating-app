@@ -19,7 +19,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(appVersionConfigProvider);
 
-    return UpdateRequiredContent(
+    return UpdateRequiredBody(
       onUpdateNow: () async {
         final platform = Theme.of(context).platform;
         final controller = ref.read(updateRequiredControllerProvider);
@@ -52,8 +52,8 @@ class UpdateRequiredScreen extends ConsumerWidget {
 }
 
 /// Provider-free full-screen update prompt rendered by [UpdateRequiredScreen].
-class UpdateRequiredContent extends StatelessWidget {
-  const UpdateRequiredContent({super.key, required this.onUpdateNow});
+class UpdateRequiredBody extends StatelessWidget {
+  const UpdateRequiredBody({super.key, required this.onUpdateNow});
 
   final VoidCallback onUpdateNow;
 

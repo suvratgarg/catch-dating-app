@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
@@ -10,18 +11,18 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Signed-out state',
-  type: ActivitySignedOutState,
+  type: ActivitySignedOutEmptyState,
   path: '[P1 product surfaces]/Dashboard activity',
 )
 Widget dashboardActivitySignedOutStateReview(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ActivitySignedOutState',
+    title: 'ActivitySignedOutEmptyState',
     contractId: 'dashboard.activity.signed_out',
     children: [
       WidgetbookPageStateCard(
         label: 'signed out',
         child: WidgetbookDashboardPrimitiveFrame(
-          child: ActivitySignedOutState(),
+          child: ActivitySignedOutEmptyState(),
         ),
       ),
     ],
@@ -30,18 +31,18 @@ Widget dashboardActivitySignedOutStateReview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Grouped rows',
-  type: NotificationDayGroups,
+  type: NotificationDayList,
   path: '[P1 product surfaces]/Dashboard activity',
 )
 Widget dashboardNotificationDayGroupsReview(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'NotificationDayGroups',
+    title: 'NotificationDayList',
     contractId: 'dashboard.activity.day_groups',
     children: [
       WidgetbookPageStateCard(
         label: 'today and earlier',
         child: WidgetbookDashboardPrimitiveFrame(
-          child: NotificationDayGroups(groups: _notificationDayGroups()),
+          child: NotificationDayList(groups: _notificationDayGroups()),
         ),
       ),
     ],
@@ -173,4 +174,22 @@ List<NotificationDayGroup> _notificationDayGroups() {
       ],
     ),
   ];
+}
+
+@widgetbook.UseCase(
+  name: 'Screen skeleton',
+  type: ActivityScreenSkeleton,
+  path: '[P1 product surfaces]/Dashboard activity',
+)
+Widget activityScreenSkeletonStates(BuildContext context) {
+  return const WidgetbookPageCatalogFrame(
+    title: 'ActivityScreenSkeleton',
+    contractId: 'dashboard.activity.screen_skeleton',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'route loading',
+        child: SizedBox(height: 520, child: ActivityScreenSkeleton()),
+      ),
+    ],
+  );
 }

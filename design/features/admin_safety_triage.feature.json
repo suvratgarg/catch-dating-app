@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-10-17",
   "id": "feature.admin_safety_triage",
   "name": "Admin Safety Triage",
   "owner": "admin_console",
   "status": "pilot",
-  "description": "Orchestrates capped safety queue inspection, encoded detail routing, assignment, audited review or dismissal, and explicitly scoped queue-health analytics.",
+  "description": "Orchestrates capped safety queue inspection, encoded detail routing, assignment, audited review or dismissal, and separately labelled aggregate counts and capped queue previews.",
   "surfaces": [
     {
       "id": "admin_web",
@@ -16,7 +16,7 @@
         "included": "Filtering the bounded queue, opening one exact target path, returning to the queue, refreshing evidence, assigning an owner, recording review or dismissal, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Free-text search and assignment/decision note edits remain local query or form data.",
-          "Priority and age analytics describe only capped returned preview rows; aggregate open counts remain separately labelled."
+          "Filtering and search apply only to returned preview rows; aggregate open counts remain separately labelled. Priority and age distributions are not implemented."
         ]
       },
       "bindings": {
@@ -43,7 +43,7 @@
           "queue-health": ["admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"],
           "honest-preview-analytics": [
             "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
-            "admin/src/features/safety/controllers/safetyTriageAnalytics.test.ts"
+            "admin/src/features/safety/ui/SafetyTriageScreen.test.tsx"
           ]
         }
       },

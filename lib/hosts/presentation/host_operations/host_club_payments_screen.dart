@@ -7,7 +7,7 @@ class HostClubPaymentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostClubSpokeResolver._(
+    return HostClubSpokeAsyncBoundary._(
       clubId: clubId,
       title: context.l10n.hostsHostClubEditTabLabelPayments,
       builder: (context, club, _, isOwner) => isOwner

@@ -52,7 +52,7 @@ void _registerHostOperationsCustomerCompositionTests() {
         ],
       );
       expect(requests, 0);
-      expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
+      expect(find.byType(HostCustomerOverviewSectionList), findsOneWidget);
       expect(find.byType(HostCustomerReachSection), findsNothing);
       expect(find.text('Ananya Rao'), findsOneWidget);
       expect(find.byType(HostCustomerIdentityCard), findsNothing);

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ void main() {
       'profile_redesign',
       size: const Size(440, 1820),
       precache: <ImageProvider<Object>>[_heroImage],
-      builder: (context) => CatchProfileView(
+      builder: (context) => ProfileBody(
         data: _profileViewFromPersona(_persona),
         onReact: (target, comment) {},
       ),
@@ -45,7 +45,7 @@ void main() {
       size: const Size(440, 2440),
       textScale: 1.1,
       precache: <ImageProvider<Object>>[_heroImage],
-      builder: (context) => CatchProfileView(
+      builder: (context) => ProfileBody(
         data: _denseLongProfileView(),
         onReact: (target, comment) {},
       ),
@@ -60,8 +60,7 @@ void main() {
         'profile_redesign_missing_photos_dynamic_type',
         size: const Size(390, 1960),
         textScale: 1.3,
-        builder: (context) =>
-            CatchProfileView(data: _missingPhotoProfileView()),
+        builder: (context) => ProfileBody(data: _missingPhotoProfileView()),
       );
     },
     tags: const ['golden'],
@@ -96,8 +95,8 @@ ProfileView _profileViewFromPersona(PublicProfile profile) {
       profile.company,
       profile.city,
     ].nonNulls.join(' · '),
-    sections: <ProfileSection>[
-      ProfileCompatibilitySection(
+    sections: <ProfileSectionData>[
+      ProfileCompatibilitySectionData(
         title: 'Why you might click',
         reasons: const <String>[
           'Shared event context from the sales demo roster',
@@ -121,7 +120,7 @@ ProfileView _profileViewFromPersona(PublicProfile profile) {
             prompt.displayPrompt,
           ),
         ),
-      ProfileRunningSection(
+      ProfileRunningSectionData(
         pace: '5:20-6:00 /km',
         distance: '5K, 10K',
         reasons: const <String>['Headspace miles'],
@@ -137,12 +136,12 @@ ProfileView _profileViewFromPersona(PublicProfile profile) {
           'Running rhythm',
         ),
       ),
-      ProfilePhotoSection(
+      ProfilePhotoSectionData(
         image: _heroImage,
         caption: photoCaption,
         reaction: _target('photo-2', SwipeReactionTargetType.photo, 'Photo 2'),
       ),
-      ProfileFactsSection(
+      ProfileFactsSectionData(
         title: 'Details',
         facts: <ProfileFact>[
           if (profile.occupation case final occupation?)
@@ -176,8 +175,8 @@ ProfileView _denseLongProfileView() {
     kickerActivity: ActivityKind.socialRun,
     metaLine:
         'Urban planner · Lower Parel · 4 mutual clubs · Usually dawn miles',
-    sections: <ProfileSection>[
-      ProfileCompatibilitySection(
+    sections: <ProfileSectionData>[
+      ProfileCompatibilitySectionData(
         title: 'Why you might click',
         reasons: const <String>[
           'You both keep easy runs social and save harder efforts for planned workout days.',
@@ -228,7 +227,7 @@ ProfileView _denseLongProfileView() {
           'My green flag is',
         ),
       ),
-      ProfileRunningSection(
+      ProfileRunningSectionData(
         pace: '5:05-6:45 /km',
         distance: '5K, 10K, half',
         reasons: const <String>[
@@ -251,7 +250,7 @@ ProfileView _denseLongProfileView() {
           'Running rhythm',
         ),
       ),
-      ProfilePhotoSection(
+      ProfilePhotoSectionData(
         image: _heroImage,
         caption:
             'The one hill on the route that everyone complains about and secretly wants to repeat.',
@@ -261,7 +260,7 @@ ProfileView _denseLongProfileView() {
           'Hill photo',
         ),
       ),
-      ProfilePhotoSection(
+      ProfilePhotoSectionData(
         image: _heroImage,
         caption:
             'Post-run table evidence: medals, two extra coffees, and a route map covered in notes.',
@@ -271,7 +270,7 @@ ProfileView _denseLongProfileView() {
           'Coffee photo',
         ),
       ),
-      ProfileFactsSection(
+      ProfileFactsSectionData(
         title: 'Details',
         facts: <ProfileFact>[
           ProfileFact(
@@ -305,8 +304,8 @@ ProfileView _missingPhotoProfileView() {
     kicker: 'Was at · neighborhood 5K',
     kickerActivity: ActivityKind.openActivity,
     metaLine: 'Product lead · Bandra · Prefers morning runs',
-    sections: <ProfileSection>[
-      const ProfileCompatibilitySection(
+    sections: <ProfileSectionData>[
+      const ProfileCompatibilitySectionData(
         title: 'Why you might click',
         reasons: <String>[
           'Both of you use events for relaxed, in-person introductions.',
@@ -319,19 +318,19 @@ ProfileView _missingPhotoProfileView() {
         answer:
             'A friendly 5K where people wait at turns and nobody treats the first kilometer like a race.',
       ),
-      const ProfileRunningSection(
+      const ProfileRunningSectionData(
         pace: '5:30-7:00 /km',
         distance: '5K, 10K',
         reasons: <String>['Headspace miles', 'Meet people naturally'],
         times: <String>['Morning', 'Weekend'],
         tags: <String>['Conversational pace', 'Park loops', 'Cafe finish'],
       ),
-      const ProfilePhotoSection(
+      const ProfilePhotoSectionData(
         image: null,
         caption:
             'Photo caption remains readable when the image fallback shows.',
       ),
-      ProfileFactsSection(
+      ProfileFactsSectionData(
         title: 'Details',
         facts: <ProfileFact>[
           ProfileFact(

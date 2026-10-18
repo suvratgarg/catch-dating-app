@@ -230,7 +230,7 @@
       "occurrences": 3
     },
     {
-      "path": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
+      "path": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -349,7 +349,7 @@
       "occurrences": 1
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "path": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -703,7 +703,7 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+      "path": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -712,13 +712,13 @@
   ],
   "rawChromeExceptions": [
     {
-      "path": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+      "path": "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
       "expression": "SliverAppBar",
       "occurrences": 1,
       "reason": "Club detail media hero owns collapsing photo chrome, not a route title bar."
     },
     {
-      "path": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+      "path": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
       "expression": "SliverAppBar",
       "occurrences": 1,
       "reason": "Event detail media hero owns collapsing photo chrome, not a route title bar."
@@ -781,6 +781,20 @@
       "role": "step-flow",
       "owner": "CatchStepHeader",
       "reason": "Onboarding delegates progress and navigation chrome to the canonical step header."
+    },
+    {
+      "path": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "symbol": "PaymentCheckoutHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.headline",
+      "reason": "Checkout hero: event identity on the activity backdrop above the payment body; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
+    },
+    {
+      "path": "lib/swipes/presentation/event_recap_screen.dart",
+      "symbol": "RecapHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.headline",
+      "reason": "Recap hero: event kicker and stats on the dark recap card; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
     }
   ]
 }
