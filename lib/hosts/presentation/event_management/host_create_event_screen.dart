@@ -131,7 +131,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
           : null,
       uid: _catchAsyncState(ref.watch(uidProvider)),
     );
-    return HostCreateEventRouteStateView(
+    return HostCreateEventRouteBody(
       clubId: clubId,
       state: routeState,
       initialDraft: initialDraft,
@@ -146,8 +146,8 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
   }
 }
 
-class HostCreateEventRouteStateView extends ConsumerWidget {
-  const HostCreateEventRouteStateView({
+class HostCreateEventRouteBody extends ConsumerWidget {
+  const HostCreateEventRouteBody({
     super.key,
     required this.clubId,
     required this.state,
@@ -203,31 +203,34 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.ready when ref.watch(privateEventSetupAvailableProvider) =>
+      HostCreateEventRouteStatus.ready
+          when ref.watch(privateEventSetupAvailableProvider) =>
         PrivateEventCreateScreen(
-        club: state.club!,
-        initialDraft: initialDraft,
-        initialPrefill: initialPrefill,
-        initialSavedEventId: initialSavedEventId,
-        initialRosterImportPlan: initialRosterImportPlan,
-        promptForDraftsOnStart: promptForDrafts,
-        readOrganizerDefaults: (organizerId) =>
-            ManagerEventSetupDefaultsRepository(
-              ref.read(firebaseFunctionsProvider),
-            ).get(organizerId),
-        returnToResponsesOnSave: returnToResponsesOnSave,
-        onSaved: returnToResponsesOnSave
-            ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  Navigator.of(context).pop(receipt.eventId);
-                }
-              })
-            : null,
-      ),
+          club: state.club!,
+          initialDraft: initialDraft,
+          initialPrefill: initialPrefill,
+          initialSavedEventId: initialSavedEventId,
+          initialRosterImportPlan: initialRosterImportPlan,
+          promptForDraftsOnStart: promptForDrafts,
+          readOrganizerDefaults: (organizerId) =>
+              ManagerEventSetupDefaultsRepository(
+                ref.read(firebaseFunctionsProvider),
+              ).get(organizerId),
+          returnToResponsesOnSave: returnToResponsesOnSave,
+          onSaved: returnToResponsesOnSave
+              ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (context.mounted) {
+                    Navigator.of(context).pop(receipt.eventId);
+                  }
+                })
+              : null,
+        ),
       HostCreateEventRouteStatus.ready when initialSavedEventId != null =>
         CatchScaffold.stepFlow(
           body: CatchErrorState(
-            title: context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+            title: context
+                .l10n
+                .hostsHostCreateEventScreenTitleEventSetupUnavailable,
             message: context.l10n.hostsPrivateEventSetupUnavailable,
             actions: const [CatchErrorBackButton()],
           ),

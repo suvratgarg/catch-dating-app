@@ -69,6 +69,8 @@ export async function getPrivateEventSetup(params: {
         venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
         meetingLocation: event.meetingLocation ?? null,
         description: event.description ?? null,
+        itinerary: event.itinerary ?? [],
+        eventPhotos: event.eventPhotos ?? [],
         distanceKm: event.distanceKm ?? null,
         pace: event.pace ?? null,
         admissionTerms: isEventPolicyTerms(event as EventDocument) ? {

@@ -5,13 +5,13 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,7 +82,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
     final currentStep = KeyedSubtree(
       key: ValueKey(flowState.step),
-      child: OnboardingStepContent(
+      child: OnboardingStepBody(
         step: flowState.step,
         profileCompletionOnly: widget.profileCompletionOnly,
         runPreferencesOnly: widget.runPreferencesOnly,
@@ -129,8 +129,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class OnboardingStepContent extends StatelessWidget {
-  const OnboardingStepContent({
+class OnboardingStepBody extends StatelessWidget {
+  const OnboardingStepBody({
     super.key,
     required this.step,
     required this.profileCompletionOnly,
@@ -144,17 +144,17 @@ class OnboardingStepContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (step) {
-      OnboardingStep.welcome => const WelcomePage(),
-      OnboardingStep.nameDob => const NameDobPage(),
-      OnboardingStep.genderInterest => const GenderInterestPage(),
-      OnboardingStep.instagram => const InstagramPage(),
-      OnboardingStep.photos => PhotosPage(
+      OnboardingStep.welcome => const OnboardingWelcomeBody(),
+      OnboardingStep.nameDob => const OnboardingNameDobBody(),
+      OnboardingStep.genderInterest => const OnboardingGenderInterestBody(),
+      OnboardingStep.instagram => const OnboardingInstagramBody(),
+      OnboardingStep.photos => OnboardingPhotosBody(
         profileCompletionOnly: profileCompletionOnly,
       ),
-      OnboardingStep.prompts => ProfilePromptsPage(
+      OnboardingStep.prompts => OnboardingProfilePromptsBody(
         profileCompletionOnly: profileCompletionOnly,
       ),
-      OnboardingStep.runningPrefs => RunningPrefsPage(
+      OnboardingStep.runningPrefs => OnboardingRunningPrefsBody(
         profileCompletionOnly: profileCompletionOnly,
         runPreferencesOnly: runPreferencesOnly,
       ),

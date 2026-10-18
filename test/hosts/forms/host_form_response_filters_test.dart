@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -23,63 +23,65 @@ void main() {
     setUpAll(loadCatchTestFonts);
   }
 
-  testWidgets('published version is selected and switching clears answer filters', (
-    tester,
-  ) async {
-    final requests = <HostFormResponseListRequest>[];
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          hostFormResponsesControllerProvider.overrideWith2(
-            (_) => _VersionedResponses(requests),
-          ),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                HostFormResponsesPanel(
-                  organizerId: 'org',
-                  formId: 'form',
-                  showFormContext: false,
-                ),
-              ],
+  testWidgets(
+    'published version is selected and switching clears answer filters',
+    (tester) async {
+      final requests = <HostFormResponseListRequest>[];
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            hostFormResponsesControllerProvider.overrideWith2(
+              (_) => _VersionedResponses(requests),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  HostFormResponsesSection(
+                    organizerId: 'org',
+                    formId: 'form',
+                    showFormContext: false,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v2');
-    expect(find.text('Published version 2'), findsWidgets);
-    await tester.tap(find.text('Filters'));
-    await pumpFeatureUi(tester);
-    final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
-    await tester.ensureVisible(city);
-    await tester.tap(city);
-    await pumpFeatureUi(tester);
-    expect(requests.last.answerFilters['city'], {'Mumbai'});
-    final firstVersion =
-        find.byKey(const ValueKey('response-version-form_v1'));
-    await tester.ensureVisible(firstVersion);
-    await tester.tap(firstVersion);
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v1');
-    expect(requests.last.answerFilters, isEmpty);
-    await tester.tap(find.text('Reset all'));
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v2');
-    final allVersions = find.byKey(const ValueKey('response-version-'));
-    await tester.ensureVisible(allVersions);
-    await tester.tap(allVersions);
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, isNull);
-    expect(requests.last.answerFilters, isEmpty);
-    await tester.tap(find.text('Reset all'));
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v2');
-  });
+      );
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v2');
+      expect(find.text('Published version 2'), findsWidgets);
+      await tester.tap(find.text('Filters'));
+      await pumpFeatureUi(tester);
+      final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
+      await tester.ensureVisible(city);
+      await tester.tap(city);
+      await pumpFeatureUi(tester);
+      expect(requests.last.answerFilters['city'], {'Mumbai'});
+      final firstVersion = find.byKey(
+        const ValueKey('response-version-form_v1'),
+      );
+      await tester.ensureVisible(firstVersion);
+      await tester.tap(firstVersion);
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v1');
+      expect(requests.last.answerFilters, isEmpty);
+      await tester.tap(find.text('Reset all'));
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v2');
+      final allVersions = find.byKey(const ValueKey('response-version-'));
+      await tester.ensureVisible(allVersions);
+      await tester.tap(allVersions);
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, isNull);
+      expect(requests.last.answerFilters, isEmpty);
+      await tester.tap(find.text('Reset all'));
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v2');
+    },
+  );
   testWidgets(
     'city filters remain available during loading and empty scan pages',
     (tester) async {
@@ -105,7 +107,7 @@ void main() {
             home: const Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostFormResponsesPanel(
+                  HostFormResponsesSection(
                     organizerId: 'org',
                     formId: 'form',
                     showFormContext: false,
@@ -139,9 +141,11 @@ void main() {
       await pumpFeatureUi(tester);
       expect(find.text('Load more responses'), findsOneWidget);
       expect(
-        tester.widget<CatchButton>(
-          find.widgetWithText(CatchButton, 'Load more responses'),
-        ).onPressed,
+        tester
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Load more responses'),
+            )
+            .onPressed,
         isNotNull,
       );
       expect(find.text('No matching responses'), findsNothing);
@@ -178,7 +182,7 @@ void main() {
           home: const Scaffold(
             body: CustomScrollView(
               slivers: [
-                HostFormResponsesPanel(
+                HostFormResponsesSection(
                   organizerId: 'org',
                   formId: 'form',
                   showFormContext: false,
@@ -201,8 +205,10 @@ void main() {
     expect(requests.last.answerFilters['city'], {'Mumbai'});
     expect(find.text('Maya Test Guest'), findsOneWidget);
     expect(find.text('Rohan Test Guest'), findsOneWidget);
-    expect(find.byKey(const ValueKey('host-response-entry-response:maya')),
-        findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-response-entry-response:maya')),
+      findsOneWidget,
+    );
     await _captureFilters(tester, 'responses-populated-queue');
     expect(tester.takeException(), isNull);
   });
@@ -224,7 +230,7 @@ void main() {
             home: const Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostFormResponsesPanel(
+                  HostFormResponsesSection(
                     organizerId: 'org',
                     formId: 'form',
                     showFormContext: false,
@@ -293,7 +299,7 @@ void main() {
                 builder: (context, update) => Scaffold(
                   body: CustomScrollView(
                     slivers: [
-                      HostFormResponsesPanel(
+                      HostFormResponsesSection(
                         organizerId: 'review',
                         formId: formId,
                         onFormChanged: (value) => update(() => formId = value),

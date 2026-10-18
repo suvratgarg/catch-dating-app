@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {UploadedPhoto} from "./uploadedPhoto";
+
 export interface UpdatePrivateEventDetailsCallablePayload {
   organizerId: string;
   eventId: string;
@@ -193,5 +195,26 @@ export interface UpdatePrivateEventDetailsCallablePayload {
     };
     distanceKm?: number;
     pace?: "easy" | "moderate" | "fast" | "competitive";
+    /**
+     * @maxItems 40
+     */
+    itinerary?: {
+      id: string;
+      kind: "gather" | "activity" | "stop" | "break" | "transition" | "finish";
+      offsetMinutes: number;
+      durationMinutes?: number | null;
+      title: string;
+      description?: string | null;
+      location?: {
+        name: string;
+        address?: string | null;
+        placeId?: string | null;
+        latitude: number;
+        longitude: number;
+        notes?: string | null;
+      } | null;
+      routeDistanceMeters?: number | null;
+    }[];
+    eventPhotos?: UploadedPhoto[];
   };
 }

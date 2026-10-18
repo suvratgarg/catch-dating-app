@@ -1,24 +1,23 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_empty_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncData, AsyncError, AsyncLoading, AsyncValue;
 
-export 'package:catch_dating_app/explore/presentation/widgets/explore_club_cards.dart';
-export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
-export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/club_card.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
+export 'package:catch_dating_app/explore/presentation/widgets/explore_feed_empty_state.dart';
 
 typedef CrossPathsProfileSelected =
     void Function(CrossPathsSuggestion suggestion, ExploreEventItem eventItem);
@@ -40,7 +39,7 @@ final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(
 /// so the parent sheet keeps one scroll owner while the feed can interleave
 /// compact event rows and club recommendations.
 List<Widget> buildExploreEventsSlivers(
-  AsyncValue<ExploreFeedViewModel> feedAsync, {
+  CatchAsyncState<ExploreFeedViewModel> feedState, {
   required AppLocalizations l10n,
   required ExploreFilterSelection filters,
   required String searchQuery,
@@ -60,80 +59,93 @@ List<Widget> buildExploreEventsSlivers(
   List<Club> candidateClubs = const <Club>[],
   Set<String> joinedClubIds = const <String>{},
 }) {
-  return switch (feedAsync) {
-    AsyncLoading() => [const ExploreEventsLoadingSliver()],
-    AsyncError(:final error) => [
-      SliverToBoxAdapter(
-        // Bound the error sliver's scroll extent so a long `error.toString()`
-        // (e.g. a wrapped ProviderException with full stack trace) does not
-        // dominate the sheet's sliver layout and starve following siblings
-        // of paint extent. The `OverflowBox` lets the child report its
-        // natural intrinsic size while we clip down to a fixed paint area.
-        child: ClipRect(
-          child: SizedBox(
-            height: CatchLayout.exploreErrorSliverHeight,
-            child: OverflowBox(
-              alignment: Alignment.topCenter,
-              minHeight: 0,
-              maxHeight: 1200,
-              child: Padding(
-                padding: _exploreEventsErrorPadding,
-                child: CatchLocalizedErrorState(
-                  error,
-                  context: AppErrorContext.event,
-                  onRetry: onRetry,
-                  mode: CatchErrorStateMode.compact,
+  return switch (feedState) {
+    CatchAsyncState(
+      phase: CatchAsyncPhase.initialLoading || CatchAsyncPhase.retrying,
+    ) =>
+      [const ExploreEventsSkeleton()],
+    CatchAsyncState(
+      phase: CatchAsyncPhase.staleDataWithError ||
+          CatchAsyncPhase.terminalError,
+      :final error,
+    ) =>
+      [
+        SliverToBoxAdapter(
+          // Bound the error sliver's scroll extent so a long `error.toString()`
+          // (e.g. a wrapped ProviderException with full stack trace) does not
+          // dominate the sheet's sliver layout and starve following siblings
+          // of paint extent. The `OverflowBox` lets the child report its
+          // natural intrinsic size while we clip down to a fixed paint area.
+          child: ClipRect(
+            child: SizedBox(
+              height: CatchLayout.exploreErrorSliverHeight,
+              child: OverflowBox(
+                alignment: Alignment.topCenter,
+                minHeight: 0,
+                maxHeight: 1200,
+                child: Padding(
+                  padding: _exploreEventsErrorPadding,
+                  child: CatchLocalizedErrorState(
+                    error!,
+                    context: AppErrorContext.event,
+                    onRetry: onRetry,
+                    mode: CatchErrorStateMode.compact,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    ],
-    AsyncData(:final value) => () {
-      final hasDiscoverableClubCandidates = rankExploreClubIntermixCandidates(
-        candidateClubs,
-        joinedClubIds: joinedClubIds,
-      ).isNotEmpty;
-      return value.isEmpty && !hasDiscoverableClubCandidates
-          ? [
-              ExploreEventsEmptySliver(
-                state: ExploreEventsEmptyState.from(
-                  filters: filters,
-                  searchQuery: searchQuery,
-                  l10n: l10n,
+      ],
+    CatchAsyncState(
+      phase: CatchAsyncPhase.data || CatchAsyncPhase.refreshing,
+      :final value,
+    ) =>
+      () {
+        if (value == null) return [const ExploreEventsSkeleton()];
+        final hasDiscoverableClubCandidates = rankExploreClubIntermixCandidates(
+          candidateClubs,
+          joinedClubIds: joinedClubIds,
+        ).isNotEmpty;
+        return value.isEmpty && !hasDiscoverableClubCandidates
+            ? [
+                ExploreFeedEmptyState(
+                  state: ExploreEventsEmptyState.from(
+                    filters: filters,
+                    searchQuery: searchQuery,
+                    l10n: l10n,
+                  ),
+                  onClearSearch: onClearSearch,
+                  onClearFilters: onClearFilters,
+                  onSetTimeFilter: onSetTimeFilter,
                 ),
-                onClearSearch: onClearSearch,
-                onClearFilters: onClearFilters,
-                onSetTimeFilter: onSetTimeFilter,
-              ),
-            ]
-          : [
-              ExploreFeedContentSliver(
-                viewModel: value,
-                l10n: l10n,
-                candidateClubs: candidateClubs,
-                joinedClubIds: joinedClubIds,
-                pinnedDayHeaders: pinnedDayHeaders,
-                promoteFeaturedItem: promoteFeaturedItem,
-                showThisWeekList:
-                    filters.timeFilter == ExploreTimeFilter.thisWeek &&
-                    searchQuery.trim().isEmpty,
-                now: now,
-                onEventSelected: onEventSelected,
-                onExternalEventOpened: onExternalEventOpened,
-                crossPathsSuggestions: crossPathsSuggestions,
-                onCrossPathsProfileSelected: onCrossPathsProfileSelected,
-                onCrossPathsImpression: onCrossPathsImpression,
-                onClubSelected: onClubSelected,
-              ),
-            ];
-    }(),
+              ]
+            : [
+                ExploreFeedSliverBody(
+                  viewModel: value,
+                  l10n: l10n,
+                  candidateClubs: candidateClubs,
+                  joinedClubIds: joinedClubIds,
+                  pinnedDayHeaders: pinnedDayHeaders,
+                  promoteFeaturedItem: promoteFeaturedItem,
+                  showThisWeekList:
+                      filters.timeFilter == ExploreTimeFilter.thisWeek &&
+                      searchQuery.trim().isEmpty,
+                  now: now,
+                  onEventSelected: onEventSelected,
+                  onExternalEventOpened: onExternalEventOpened,
+                  crossPathsSuggestions: crossPathsSuggestions,
+                  onCrossPathsProfileSelected: onCrossPathsProfileSelected,
+                  onCrossPathsImpression: onCrossPathsImpression,
+                  onClubSelected: onClubSelected,
+                ),
+              ];
+      }(),
   };
 }
 
-class ExploreFeedContentSliver extends StatelessWidget {
-  const ExploreFeedContentSliver({
+class ExploreFeedSliverBody extends StatelessWidget {
+  const ExploreFeedSliverBody({
     super.key,
     required this.viewModel,
     required this.l10n,
@@ -264,11 +276,10 @@ class ExploreFeedContentSliver extends StatelessWidget {
                       item: item,
                       onExternalEventOpened: onExternalEventOpened,
                     ),
-                  ExploreMixedClubSpotlightCard(:final club) =>
-                    ExploreOrganizerPosterCard(
-                      club: club,
-                      onClubSelected: onClubSelected,
-                    ),
+                  ExploreMixedClubSpotlightCard(:final club) => ClubCard(
+                    club: club,
+                    onClubSelected: onClubSelected,
+                  ),
                   ExploreMixedClubRowCard(:final club) => ExploreFeedClubRow(
                     club: club,
                     onClubSelected: onClubSelected,

@@ -165,7 +165,7 @@ class _OrganizerMomentEditScreenState
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
         ),
-        footer: CatchDockSurface.primary(
+        footer: CatchDock.primary(
           label: l.hostMomentSave,
           buttonKey: const ValueKey('moment-save'),
           isLoading: _busy,

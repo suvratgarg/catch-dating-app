@@ -55,7 +55,7 @@ class PaymentHistoryScreen extends ConsumerWidget {
                 ),
               );
             }
-            return PaymentHistoryListController(userId: uid);
+            return PaymentHistoryBody(userId: uid);
           },
         ),
       ),
@@ -63,8 +63,8 @@ class PaymentHistoryScreen extends ConsumerWidget {
   }
 }
 
-class PaymentHistoryListController extends ConsumerWidget {
-  const PaymentHistoryListController({super.key, required this.userId});
+class PaymentHistoryBody extends ConsumerWidget {
+  const PaymentHistoryBody({super.key, required this.userId});
 
   final String userId;
 

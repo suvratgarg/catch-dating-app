@@ -1,15 +1,17 @@
 import 'dart:math';
-
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
-
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+export 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+part 'private_event_preferences_controller.g.dart';
 
 typedef ReadPrivateEventForPreferences =
     Future<PrivateEventBasicSummary> Function({
@@ -23,143 +25,8 @@ typedef WritePrivateEventPreferences =
       PrivateEventPreferencesUpdateRequest request,
     );
 
-/// Shared presentation contract. Private setup and published offer settings
-/// retain separate reads, revision fences, journals and mutations.
-abstract class EventPreferencesEditorController extends ChangeNotifier {
-  String? get eventName;
-  String get userId;
-  String? Function()? get currentUserId;
-  bool _actorInvalidated = false;
-  bool get actorAvailable =>
-      !_actorInvalidated &&
-      !_editorDisposed &&
-      (currentUserId == null || currentUserId!() == userId);
-
-  void invalidateActor() {
-    _actorInvalidated = true;
-    resetDraft();
-  }
-
-  bool get hasLoadedEvent;
-  bool get isPrivateEvent;
-  PrivateEventPreferenceIntents get intents;
-  Map<String, Object?> get resolvedValues;
-  ManagerEventSetupDefaults? get defaults;
-  bool get hasPending;
-  Object? get error;
-  set error(Object? value);
-  bool get loading;
-  bool get saving;
-  bool get canEdit;
-  Future<void> load();
-  Future<void> retryPending();
-  Future<void> save(PrivateEventPreferenceIntents intents);
-
-  PreviewEventOfferPreferences? get readPreview;
-  EventOfferPreferencesUpdateRequest buildPreviewRequest(
-    PrivateEventPreferenceIntents intents,
-  );
-
-  PrivateEventPreferenceIntents? draftIntents;
-  EventOfferPreferencesPreview? review;
-  bool previewing = false;
-  int _reviewEpoch = 0;
-  bool _editorDisposed = false;
-
-  PrivateEventPreferenceIntents get editorIntents => draftIntents ?? intents;
-
-  void stage(PrivateEventPreferenceIntents next) {
-    if (!canEdit) return;
-    draftIntents = next;
-    review = null;
-    error = null;
-    _reviewEpoch++;
-    notifyListeners();
-  }
-
-  void resetDraft() {
-    draftIntents = null;
-    review = null;
-    previewing = false;
-    _reviewEpoch++;
-  }
-
-  Future<void> previewChanges() async {
-    final reader = readPreview;
-    if (!canEdit || reader == null) return;
-    final request = buildPreviewRequest(editorIntents);
-    final epoch = ++_reviewEpoch;
-    previewing = true;
-    review = null;
-    error = null;
-    notifyListeners();
-    try {
-      final result = await reader(request);
-      if (!actorAvailable || epoch != _reviewEpoch) return;
-      if (!const DeepCollectionEquality().equals(
-        result.request.toJson(),
-        request.toJson(),
-      )) {
-        throw const FormatException('Preview command identity changed');
-      }
-      review = result;
-    } catch (cause) {
-      if (!_editorDisposed && epoch == _reviewEpoch) error = cause;
-    } finally {
-      if (!_editorDisposed && epoch == _reviewEpoch) {
-        previewing = false;
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<void> applyReview() async {
-    final approved = review;
-    if (!canEdit || approved == null) return;
-    final current = buildPreviewRequest(editorIntents);
-    final frozen = approved.request;
-    if (current.organizerId != frozen.organizerId ||
-        current.eventId != frozen.eventId ||
-        current.expectedEventSourceRevision !=
-            frozen.expectedEventSourceRevision ||
-        current.expectedPreferencesRevision !=
-            frozen.expectedPreferencesRevision ||
-        current.reviewedDefaultsHash != frozen.reviewedDefaultsHash) {
-      resetDraft();
-      reportError(
-        StateError('Event settings changed. Reload and review again.'),
-      );
-      return;
-    }
-    await save(frozen.intents);
-    if (_editorDisposed) return;
-    // A failed write may have committed. Its existing journal owns all retries.
-    resetDraft();
-    notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _editorDisposed = true;
-    resetDraft();
-    super.dispose();
-  }
-
-  /// Surface an inline editor validation failure through the owned state.
-  void reportError(Object cause) {
-    error = cause;
-    notifyListeners();
-  }
-}
-
-/// Event-scoped editor state. Once a command is sent, every retry uses the
-/// same persisted body even after a lost response, revocation or app restart.
-class PrivateEventPreferencesController
-    extends EventPreferencesEditorController {
-  PrivateEventPreferencesController({
-    required this.userId,
-    required this.organizerId,
-    required this.eventId,
+class PrivateEventPreferencesDependencies {
+  const PrivateEventPreferencesDependencies({
     required this.readEvent,
     required this.readDefaults,
     required this.write,
@@ -167,214 +34,213 @@ class PrivateEventPreferencesController
     this.currentUserId,
     this.journal = const PrivateEventPreferencesJournal(),
   });
-
-  @override
-  final String userId;
-  @override
-  final String? Function()? currentUserId;
-  final String organizerId;
-  final String eventId;
   final ReadPrivateEventForPreferences readEvent;
-  final ReadDefaultsForPrivateEvent readDefaults;
+  final Future<ManagerEventSetupDefaults> Function(String) readDefaults;
   final WritePrivateEventPreferences write;
-  @override
   final PreviewEventOfferPreferences? readPreview;
+  final String? Function()? currentUserId;
   final PrivateEventPreferencesJournal journal;
+}
 
-  PrivateEventBasicSummary? event;
-  @override
-  ManagerEventSetupDefaults? defaults;
-  PrivateEventPreferencesUpdateRequest? pending;
-  @override
-  Object? error;
-  @override
-  bool loading = false;
-  @override
-  bool saving = false;
-  bool _disposed = false;
+@riverpod
+PrivateEventPreferencesDependencies privateEventPreferencesDependencies(
+  Ref ref,
+) {
+  final functions = ref.watch(firebaseFunctionsProvider);
+  return PrivateEventPreferencesDependencies(
+    readEvent: PrivateEventSetupRepository(functions).get,
+    readDefaults: ManagerEventSetupDefaultsRepository(functions).get,
+    write: PrivateEventPreferencesRepository(functions).update,
+    readPreview: EventOfferPreferencesRepository(functions).preview,
+    currentUserId: () => ref.read(uidProvider).asData?.value,
+  );
+}
 
+@riverpod
+class PrivateEventPreferencesController
+    extends _$PrivateEventPreferencesController
+    with EventPreferencesEditorController {
   @override
-  String? get eventName => event?.name;
-  @override
-  bool get hasLoadedEvent => event != null;
-  @override
-  bool get isPrivateEvent => true;
-  @override
-  PrivateEventPreferenceIntents get intents =>
-      event?.eventPreferences?.intents ?? const PrivateEventPreferenceIntents();
-  @override
-  Map<String, Object?> get resolvedValues =>
-      event?.eventPreferences?.resolvedValues ??
-      defaults?.preferences.toSparseJson() ??
-      const <String, Object?>{};
-  @override
-  bool get hasPending => pending != null;
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
+  EventPreferencesEditorState build(EventEditorScope scope) {
+    final dependencies = ref.watch(privateEventPreferencesDependenciesProvider);
+    bindActor();
+    return EventPreferencesEditorState(
+      previewAvailable: dependencies.readPreview != null,
+    );
   }
 
   @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
+  EventEditorScope scopeIdentity() => scope;
   @override
-  bool get canEdit =>
-      event?.canEditBasics == true &&
-      defaults != null &&
-      actorAvailable &&
-      pending == null &&
-      !loading &&
-      !saving &&
-      !previewing;
-
+  String? Function()? actorReader() => _dependencies.currentUserId;
   @override
+  PreviewEventOfferPreferences? previewReader() => _dependencies.readPreview;
+  PrivateEventPreferencesDependencies get _dependencies =>
+      ref.read(privateEventPreferencesDependenciesProvider);
+  String get _userId => scope.userId;
+  String get _organizerId => scope.organizerId;
+  String get _eventId => scope.eventId;
+  ReadPrivateEventForPreferences get _readEvent => _dependencies.readEvent;
+  Future<ManagerEventSetupDefaults> Function(String) get _readDefaults =>
+      _dependencies.readDefaults;
+  WritePrivateEventPreferences get _write => _dependencies.write;
+  PrivateEventPreferencesJournal get _journal => _dependencies.journal;
+  PrivateEventPreferencesUpdateRequest? get _pending => state.privatePending;
+  set _pending(PrivateEventPreferencesUpdateRequest? value) =>
+      updateEditor((s) => s.copyWith(privatePending: value));
+  PrivateEventBasicSummary? get _event => state.event;
+  set _event(PrivateEventBasicSummary? value) =>
+      updateEditor((s) => s.copyWith(event: value));
+  ManagerEventSetupDefaults? get _defaults => state.defaults;
+  set _defaults(ManagerEventSetupDefaults? value) =>
+      updateEditor((s) => s.copyWith(defaults: value));
+  bool get _loading => state.loading;
+  set _loading(bool value) => updateEditor((s) => s.copyWith(loading: value));
+  bool get _saving => state.saving;
+  set _saving(bool value) => updateEditor((s) => s.copyWith(saving: value));
+  set _error(Object? value) => updateEditor((s) => s.copyWith(error: value));
   Future<void> load() async {
+    if (!actorIsAvailable() || _loading || _saving) return;
     resetDraft();
-    loading = true;
-    error = null;
-    event = null;
-    defaults = null;
-    notifyListeners();
+    _loading = true;
+    _error = null;
+    _event = null;
+    _defaults = null;
     try {
-      pending = await journal.load(
-        userId: userId,
-        organizerId: organizerId,
-        eventId: eventId,
+      _pending = await _journal.load(
+        userId: _userId,
+        organizerId: _organizerId,
+        eventId: _eventId,
       );
+      if (!actorIsAvailable()) return;
       final results = await Future.wait<Object>([
-        readEvent(organizerId: organizerId, eventId: eventId),
-        readDefaults(organizerId),
+        _readEvent(organizerId: _organizerId, eventId: _eventId),
+        _readDefaults(_organizerId),
       ]);
+      if (!actorIsAvailable()) return;
       final nextEvent = results[0] as PrivateEventBasicSummary;
       final nextDefaults = results[1] as ManagerEventSetupDefaults;
-      if (nextEvent.eventId != eventId ||
-          nextEvent.organizerId != organizerId ||
-          nextDefaults.organizerId != organizerId) {
+      if (nextEvent.eventId != _eventId ||
+          nextEvent.organizerId != _organizerId ||
+          nextDefaults.organizerId != _organizerId) {
         throw const FormatException(
           'Private event preferences identity changed',
         );
       }
-      event = nextEvent;
-      defaults = nextDefaults;
+      _event = nextEvent;
+      _defaults = nextDefaults;
     } catch (cause) {
-      error = cause;
+      _error = cause;
     } finally {
-      loading = false;
-      notifyListeners();
+      _loading = false;
     }
   }
 
   @override
-  EventOfferPreferencesUpdateRequest buildPreviewRequest(
+  EventOfferPreferencesUpdateRequest previewRequest(
     PrivateEventPreferenceIntents intents,
   ) => EventOfferPreferencesUpdateRequest(
-    expectedActorUid: userId,
-    organizerId: organizerId,
-    eventId: eventId,
+    expectedActorUid: _userId,
+    organizerId: _organizerId,
+    eventId: _eventId,
     requestId: _newRequestId(),
-    expectedEventSourceRevision: event!.setupRevision,
-    expectedPreferencesRevision: event!.eventPreferences?.revision ?? 0,
-    reviewedDefaultsHash: defaults!.preferencesHash,
+    expectedEventSourceRevision: _event!.setupRevision,
+    expectedPreferencesRevision: _event!.eventPreferences?.revision ?? 0,
+    reviewedDefaultsHash: _defaults!.preferencesHash,
     intents: intents,
   );
 
   @override
   Future<void> save(PrivateEventPreferenceIntents intents) async {
-    if (!canEdit) return;
+    if (!canEditNow()) return;
     final request = PrivateEventPreferencesUpdateRequest(
-      expectedActorUid: userId,
-      organizerId: organizerId,
-      eventId: eventId,
+      expectedActorUid: _userId,
+      organizerId: _organizerId,
+      eventId: _eventId,
       requestId: _newRequestId(),
-      expectedSetupRevision: event!.setupRevision,
-      expectedPreferencesRevision: event!.eventPreferences?.revision ?? 0,
-      reviewedDefaultsHash: defaults!.preferencesHash,
+      expectedSetupRevision: _event!.setupRevision,
+      expectedPreferencesRevision: _event!.eventPreferences?.revision ?? 0,
+      reviewedDefaultsHash: _defaults!.preferencesHash,
       intents: intents,
     );
     if (!request.isValid) {
-      error = ArgumentError.value(intents, 'intents');
-      notifyListeners();
+      _error = ArgumentError.value(intents, 'intents');
       return;
     }
-    saving = true;
-    error = null;
-    notifyListeners();
+    _saving = true;
+    _error = null;
     try {
-      await journal.save(userId: userId, request: request);
-      pending = request;
-      notifyListeners();
+      await _journal.save(userId: _userId, request: request);
+      if (!actorIsAvailable()) return;
+      _pending = request;
       await _sendPending(request);
+      if (!actorIsAvailable()) return;
     } catch (cause) {
-      error = cause;
-      notifyListeners();
+      _error = cause;
     } finally {
-      saving = false;
-      notifyListeners();
+      _saving = false;
     }
   }
 
-  @override
   Future<void> retryPending() async {
-    if (pending == null || saving) return;
-    saving = true;
-    error = null;
-    notifyListeners();
+    if (!actorIsAvailable() || _pending == null || _saving || _loading) return;
+    _saving = true;
+    _error = null;
     try {
-      await _sendPending(pending!);
+      await _sendPending(_pending!);
+      if (!actorIsAvailable()) return;
     } catch (cause) {
       // A later permission/precondition error is not proof that the original
       // send failed. Never rotate its identity or payload here.
-      error = cause;
-      notifyListeners();
+      _error = cause;
     } finally {
-      saving = false;
-      notifyListeners();
+      _saving = false;
     }
   }
 
   Future<void> _sendPending(
     PrivateEventPreferencesUpdateRequest request,
   ) async {
-    if (!actorAvailable) {
+    if (!actorIsAvailable()) {
       throw const SignInRequiredException('apply event settings');
     }
     late final PrivateEventCreateReceipt receipt;
     try {
-      receipt = await write(request);
+      receipt = await _write(request);
+      if (!actorIsAvailable()) return;
     } catch (cause) {
-      if (isDefinitiveEventPreferenceRejection(
-        cause,
-        requestId: request.requestId,
-        eventId: eventId,
-        organizerId: organizerId,
-      )) {
-        await journal.clear(userId: userId, request: request);
-        pending = null;
-        event = null;
-        defaults = null;
+      if (actorIsAvailable() &&
+          isDefinitiveEventPreferenceRejection(
+            cause,
+            requestId: request.requestId,
+            eventId: _eventId,
+            organizerId: _organizerId,
+          )) {
+        await _journal.clear(userId: _userId, request: request);
+        if (!actorIsAvailable()) return;
+        _pending = null;
+        _event = null;
+        _defaults = null;
         resetDraft();
       }
       rethrow;
     }
-    if (receipt.eventId != eventId ||
+    if (receipt.eventId != _eventId ||
         receipt.setupRevision <= request.expectedSetupRevision) {
       throw const FormatException('Invalid event preferences receipt');
     }
-    await journal.clear(userId: userId, request: request);
-    pending = null;
+    await _journal.clear(userId: _userId, request: request);
+    if (!actorIsAvailable()) return;
+    _pending = null;
     // The command is settled, but its new revision must be read before a
     // second command can be built. A failed reread must not reuse stale state.
-    event = null;
-    event = await readEvent(organizerId: organizerId, eventId: eventId);
-    if (event!.eventId != eventId || event!.organizerId != organizerId) {
+    _event = null;
+    _event = await _readEvent(organizerId: _organizerId, eventId: _eventId);
+    if (!actorIsAvailable()) return;
+    if (_event!.eventId != _eventId || _event!.organizerId != _organizerId) {
       throw const FormatException('Private event reread changed identity');
     }
-    error = null;
-    notifyListeners();
+    _error = null;
   }
 }
 

@@ -6594,6 +6594,14 @@
       "id": "design:screen-gutters",
       "category": "design",
       "path": "tool/design/check_screen_gutters.mjs",
+      "impactPaths": [
+        "tool/design/check_screen_gutters.test.mjs",
+        "tool/design/fixtures/screen_gutters/bad_presentation_widget.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "command": "node tool/design/check_screen_gutters.mjs --summary",
       "safety": "local",
       "status": "active",
@@ -6710,6 +6718,13 @@
       "id": "design:rail-contracts",
       "category": "design",
       "path": "tool/design/check_rail_contracts.mjs",
+      "impactPaths": [
+        "tool/design/check_rail_contracts.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "command": "node tool/design/check_rail_contracts.mjs --summary",
       "safety": "local",
       "status": "active",
@@ -7711,6 +7726,13 @@
       "id": "design:terminal-padding",
       "category": "design",
       "path": "tool/design/check_terminal_padding.mjs",
+      "impactPaths": [
+        "tool/design/check_terminal_padding.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "command": "node tool/design/check_terminal_padding.mjs --check",
       "safety": "local",
       "status": "active",

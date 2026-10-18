@@ -12,10 +12,10 @@ import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_scroll_physics.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab_sliver_body.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_preview_body.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -155,7 +155,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               page: CatchRootScreenPageScrollView.embeddedViewport(
                 scrollKey: const PageStorageKey('profile-preview-tab-loading'),
                 children: [
-                  PreviewTabSkeletonSliverBody(
+                  ProfilePreviewSkeletonSliverBody(
                     scrollController: previewScrollController,
                     onForwardScroll: onPreviewForwardScroll,
                     onLeadingOverscroll: onPreviewLeadingOverscroll,
@@ -229,7 +229,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               page: CatchRootScreenPageScrollView.embeddedViewport(
                 scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
                 children: [
-                  PreviewTabSliverBody(
+                  ProfilePreviewSliverBody(
                     profile: previewProfile,
                     scrollController: previewScrollController,
                     onForwardScroll: onPreviewForwardScroll,
@@ -258,8 +258,8 @@ const _formProfilesPage = CatchRootScreenPageSpec.scroll(
   ),
 );
 
-class PreviewTabSkeletonSliverBody extends StatelessWidget {
-  const PreviewTabSkeletonSliverBody({
+class ProfilePreviewSkeletonSliverBody extends StatelessWidget {
+  const ProfilePreviewSkeletonSliverBody({
     super.key,
     required this.scrollController,
     required this.onForwardScroll,
@@ -295,8 +295,8 @@ class PreviewTabSkeletonSliverBody extends StatelessWidget {
   }
 }
 
-class PreviewTabSliverBody extends StatelessWidget {
-  const PreviewTabSliverBody({
+class ProfilePreviewSliverBody extends StatelessWidget {
+  const ProfilePreviewSliverBody({
     super.key,
     required this.profile,
     required this.scrollController,
@@ -319,7 +319,7 @@ class PreviewTabSliverBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: CatchLayout.maxContentWidth,
             ),
-            child: PreviewTab(
+            child: ProfilePreviewBody(
               profile: profile,
               scrollController: scrollController,
               scrollPhysics: PreviewHeaderBridgeScrollPhysics(

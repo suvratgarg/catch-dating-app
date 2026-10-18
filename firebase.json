@@ -123,48 +123,102 @@
           "source": "/host/preview/**",
           "destination": "/host/",
           "type": 301
+        },
+        {
+          "source": "/host/overview",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/host/overview/**",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/host/platform",
+          "destination": "/host/#features",
+          "type": 301
+        },
+        {
+          "source": "/host/platform/**",
+          "destination": "/host/#features",
+          "type": 301
+        },
+        {
+          "source": "/host/workflows",
+          "destination": "/host/#how-it-works",
+          "type": 301
+        },
+        {
+          "source": "/host/workflows/**",
+          "destination": "/host/#how-it-works",
+          "type": 301
+        },
+        {
+          "source": "/host/planners",
+          "destination": "/host/#use-cases",
+          "type": 301
+        },
+        {
+          "source": "/host/planners/**",
+          "destination": "/host/#use-cases",
+          "type": 301
+        },
+        {
+          "source": "/host/mixers",
+          "destination": "/host/#use-cases",
+          "type": 301
+        },
+        {
+          "source": "/host/mixers/**",
+          "destination": "/host/#use-cases",
+          "type": 301
+        },
+        {
+          "source": "/host/clubs",
+          "destination": "/host/#use-cases",
+          "type": 301
+        },
+        {
+          "source": "/host/clubs/**",
+          "destination": "/host/#use-cases",
+          "type": 301
+        },
+        {
+          "source": "/host/stack",
+          "destination": "/host/#existing-tools",
+          "type": 301
+        },
+        {
+          "source": "/host/stack/**",
+          "destination": "/host/#existing-tools",
+          "type": 301
+        },
+        {
+          "source": "/host/directory",
+          "destination": "/organizers/",
+          "type": 301
+        },
+        {
+          "source": "/host/directory/**",
+          "destination": "/organizers/",
+          "type": 301
+        },
+        {
+          "source": "/host/claim",
+          "destination": "/claim/",
+          "type": 301
+        },
+        {
+          "source": "/host/claim/**",
+          "destination": "/claim/",
+          "type": 301
         }
       ],
       "rewrites": [
         {
-          "source": "/host/overview/**",
-          "destination": "/host/overview/index.html"
-        },
-        {
-          "source": "/host/platform/**",
-          "destination": "/host/platform/index.html"
-        },
-        {
-          "source": "/host/planners/**",
-          "destination": "/host/planners/index.html"
-        },
-        {
-          "source": "/host/mixers/**",
-          "destination": "/host/mixers/index.html"
-        },
-        {
-          "source": "/host/clubs/**",
-          "destination": "/host/clubs/index.html"
-        },
-        {
-          "source": "/host/directory/**",
-          "destination": "/host/directory/index.html"
-        },
-        {
-          "source": "/host/claim/**",
-          "destination": "/host/claim/index.html"
-        },
-        {
           "source": "/host/apply/**",
           "destination": "/host/apply/index.html"
-        },
-        {
-          "source": "/host/stack/**",
-          "destination": "/host/stack/index.html"
-        },
-        {
-          "source": "/host/workflows/**",
-          "destination": "/host/workflows/index.html"
         },
         {
           "source": "/events/**",
@@ -202,10 +256,6 @@
         },
         {
           "source": "/host",
-          "destination": "/host/index.html"
-        },
-        {
-          "source": "/host/**",
           "destination": "/host/index.html"
         },
         {

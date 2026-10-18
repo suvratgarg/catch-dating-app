@@ -5,6 +5,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function matchesType(value: unknown, type: unknown): boolean {
+  if (Array.isArray(type)) return type.some((candidate) => matchesType(value, candidate));
   if (type === "null") return value === null;
   if (type === "array") return Array.isArray(value);
   if (type === "object") return isRecord(value);
@@ -34,6 +35,7 @@ export function matchesJsonSchema(
   value: unknown,
   schema: JsonSchema
 ): boolean {
+  if (schema.$ref !== undefined) return false; // Browser inputs must be bundled.
   const oneOf = schema.oneOf;
   if (Array.isArray(oneOf)) {
     return oneOf.filter((candidate) =>
@@ -54,7 +56,13 @@ export function matchesJsonSchema(
     return false;
   }
 
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) return false;
+    if (typeof schema.minimum === "number" && value < schema.minimum) return false;
+    if (typeof schema.maximum === "number" && value > schema.maximum) return false;
+  }
   if (typeof value === "string") {
+    if (typeof schema.pattern === "string" && !new RegExp(schema.pattern, "u").test(value)) return false;
     if (
       typeof schema.minLength === "number" &&
       value.length < schema.minLength

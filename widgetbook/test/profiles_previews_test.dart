@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:widgetbook_workspace/profiles/catalog/photos.dart';
 import 'package:widgetbook_workspace/profiles/catalog/loading.dart';
+import 'package:widgetbook_workspace/profiles/catalog/photos.dart';
 
 void main() {
   for (final scale in [1.0, 2.0]) {

@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   beginPublicEventPhoneVerification,
   managePublicEventCheckout,
+  signOutGuestUser,
   watchPublicFormAuthState,
   type User,
 } from "../../firebase";
@@ -428,6 +429,9 @@ export function usePublicCheckoutController(
   };
   const changePhone = () => {
     if (busy.current) return;
+    if (user) {
+      void signOutGuestUser().catch(() => setStatus({message: eventOfferCopy.codeError, tone: "is-error"}));
+    }
     challenge.current?.clear();
     challenge.current = null;
     setCode("");

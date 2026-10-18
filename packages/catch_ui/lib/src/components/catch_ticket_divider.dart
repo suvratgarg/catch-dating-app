@@ -10,7 +10,7 @@ class CatchTicketDivider extends StatelessWidget {
     super.key,
     this.height = CatchLayout.eventTicketDividerHeight,
     this.lineColor,
-    this.notchRadius = CatchLayout.eventTicketNotchRadius,
+    this.notchRadius = CatchLayout.ticketNotchRadius,
   });
 
   final double height;

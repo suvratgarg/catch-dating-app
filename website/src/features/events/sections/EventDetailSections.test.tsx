@@ -35,7 +35,7 @@ describe("Event Detail sections", () => {
     const event = externalEvent();
     render(
       <>
-        <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
+        <EventDetailHeroSection event={event} />
         <EventDetailFactsSection event={event} />
         <EventDetailProvenanceSection event={event} />
       </>
@@ -49,57 +49,60 @@ describe("Event Detail sections", () => {
     fireEvent.click(screen.getByRole("link", {name: "Luma"}));
     expect(trackOrganizerAnalytics).toHaveBeenLastCalledWith(event.listing, "outboundClick", "external_event_source", event.eventId);
     expect(trackOrganizerAnalytics.mock.calls.some((call) => call[1] === "eventView")).toBe(false);
-    expect(screen.getByText("Source-backed event · Luma")).toBeTruthy();
     expect(screen.getByText("Registration stays with Luma")).toBeTruthy();
     expect(screen.getByText("Asia/Kolkata")).toBeTruthy();
     expect(screen.queryByRole("link", {name: /book|checkout|sign in/iu})).toBeNull();
     expect(screen.queryByRole("button", {name: /book|checkout|sign in/iu})).toBeNull();
   });
 
-  it("hands Catch booking to the app and renders only event-scoped reviews", () => {
+  it("hands Catch booking to the web guest journey and renders only event-scoped reviews", () => {
     const event = catchEvent();
     render(
       <>
-        <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
+        <EventDetailHeroSection event={event} />
         <EventDetailReviewsSection event={event} />
       </>
     );
 
-    expect(screen.getByText("Booking stays in the Catch app")).toBeTruthy();
-    expect(screen.getAllByText("Scoped attendee")).toHaveLength(2);
+    expect(screen.getByRole("link", {name: "Check event access"}).getAttribute("href")).toBe(`/booking/${event.eventId}/`);
+    expect(screen.getAllByText("Scoped attendee")).toHaveLength(1);
     expect(screen.queryByText("Organizer-only reviewer")).toBeNull();
     expect(screen.queryByRole("link", {name: /book|checkout|sign in/iu})).toBeNull();
   });
 
-  it("shows one closed-registration explanation without a booking action", () => {
-    render(<EventDetailHeroSection appDownloadCtas={appDownloadCtas}
-      event={{...catchEvent(), registrationState: "closed"}} />);
-    expect(screen.getAllByText("Registration is closed for this event.")).toHaveLength(1);
-    expect(screen.queryByRole("link", {name: /app store|book|checkout/iu})).toBeNull();
+  it("preserves the guest journey after registration closes", () => {
+    render(<EventDetailHeroSection event={{...catchEvent(), registrationState: "closed"}}
+      guestEntry={<p>Account-owned booking recovery</p>} />);
+    expect(screen.getByText("Account-owned booking recovery")).toBeTruthy();
+    expect(screen.queryByText("Registration is closed for this event.")).toBeNull();
   });
 
-  it("shows claim and unavailable-review states only when their capabilities allow it", () => {
-    const event = claimableExternalEvent();
-    render(
-      <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
-    );
-
-    expect(screen.getByRole("link", {name: "Claim this organizer listing"})
-      .getAttribute("href")).toBe(`/claim/?listing=${event.listing.id}`);
-    expect(screen.getByText("Event reviews are not available yet")).toBeTruthy();
-    expect(screen.queryByText("No event-specific reviews yet")).toBeNull();
+  it("omits absent optional content and unrelated reviews", () => {
+    const event = {...claimableExternalEvent(), summary: "", accessibility: "", requirements: ""};
+    render(<><EventDetailHeroSection event={event} /><EventDetailFactsSection event={event} />
+      <EventDetailReviewsSection event={event} /></>);
+    for (const text of ["About this event", "The plan", "Requirements", "Accessibility", "No event-specific reviews yet", "Event reviews are not available yet"]) {
+      expect(screen.queryByText(text)).toBeNull();
+    }
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.queryByRole("link", {name: "Claim this organizer listing"})).toBeNull();
   });
+
+  it("renders the real cover and structured itinerary, including zero coordinates", () => {
+    const event = {...catchEvent(), photoUrl: "https://example.com/event.jpg", itinerary: [{
+      id: "arrival", title: "Meet at the café", kind: "gather" as const, offsetMinutes: 30,
+      description: null, location: {name: "Café", latitude: 0, longitude: 0},
+    }]};
+    render(<><EventDetailHeroSection event={event} /><EventDetailFactsSection event={event} /></>);
+    expect(screen.getByRole("img").getAttribute("src")).toBe(event.photoUrl);
+    expect(screen.getByText("7:30 pm")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Café"}).getAttribute("href")).toContain("query=0%2C0");
+    fireEvent.error(screen.getByRole("img"));
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe(event.title);
+  });
+
 });
-
-const appDownloadCtas = {
-  items: [{
-    href: "https://apps.apple.com/app/catch",
-    kicker: "Download on the",
-    label: "App Store",
-    platform: "ios" as const,
-  }],
-  placement: "event-detail-test",
-};
 
 function readableListing(): HostListing {
   const listing = hostListings[0];

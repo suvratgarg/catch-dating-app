@@ -9,7 +9,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_location_map_body_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
+import 'package:catch_dating_app/events/presentation/widgets/map_overlay_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -130,7 +130,7 @@ class EventLocationMapLoadingBody extends StatelessWidget {
             child: CatchSurface(
               tone: CatchSurfaceTone.raised,
               emphasis: CatchSurfaceEmphasis.floating,
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               padding: CatchInsets.content,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -193,7 +193,7 @@ class ChromelessMapScaffold extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(child: safeArea ? SafeArea(child: child) : child),
-          const MapOverlayControls(),
+          const MapOverlayTopBar(),
         ],
       ),
     );

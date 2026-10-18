@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
-  "sourceDigest": "sha256:cdb57667e36b041bb9418f8776b74d2bfe43929c54412bdb39a5056edd187518",
+  "sourceDigest": "sha256:8a04f2fa03402e2846f7dfe733e581330e5f054df43070dff4d28f7ed82f0bcd",
   "resolvedDigest": "sha256:0948257cd9b86b6ba692cb9bfe0d017c1703ab153aa7c1e158c4f363550a523b",
   "feature": {
     "id": "feature.event_success",
@@ -64,8 +64,8 @@
           {
             "id": "conversation_cue",
             "language": "dart",
-            "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-            "symbol": "StageCueLine"
+            "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
+            "symbol": "StageCueCard"
           }
         ],
         "componentContracts": [

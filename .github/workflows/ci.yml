@@ -67,6 +67,7 @@ jobs:
       app_roles: ${{ steps.plan.outputs.app_roles }}
       capture_freshness: ${{ steps.plan.outputs.capture_freshness }}
       contracts: ${{ steps.plan.outputs.contracts }}
+      preflight_functions_dependencies: ${{ steps.plan.outputs.preflight_functions_dependencies }}
       docs: ${{ steps.plan.outputs.docs }}
       docs_checkout: ${{ steps.plan.outputs.docs_checkout }}
       firestore_rules: ${{ steps.plan.outputs.firestore_rules }}
@@ -317,7 +318,7 @@ jobs:
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get --enforce-lockfile
       - name: Install selected contract generator dependencies
-        if: ${{ needs.plan.outputs.contracts == 'true' }}
+        if: ${{ needs.plan.outputs.preflight_functions_dependencies == 'true' }}
         run: npm --prefix functions ci --ignore-scripts
       - name: Execute complete source and generation preflight
         env:
@@ -373,8 +374,19 @@ jobs:
 
   firestore-rules:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.firestore_rules == 'true' }}
+    if: >-
+      !cancelled() && !failure() &&
+      needs.plan.result != 'failure' && needs.plan.result != 'cancelled' &&
+      needs.source-preflight.result != 'failure' && needs.source-preflight.result != 'cancelled' &&
+      (needs.plan.outputs.producer_attempt != format('{0}', github.run_attempt) ||
+       needs.plan.outputs.source_sha != github.sha ||
+       (needs.plan.result == 'success' &&
+        needs.source-preflight.result == 'success' &&
+        needs.plan.outputs.firestore_rules == 'true'))
     uses: ./.github/workflows/firestore-rules-ci.yml
+    with:
+      ci_plan_attempt: ${{ needs.plan.outputs.producer_attempt }}
+      ci_plan_source_sha: ${{ needs.plan.outputs.source_sha }}
     secrets: inherit
 
   flutter:
@@ -475,11 +487,25 @@ jobs:
       - name: Checkout ordinary-doc closure
         if: ${{ steps.docs-checkout.outcome == 'success' }}
         uses: actions/checkout@v6
-        timeout-minutes: ${{ fromJSON(steps.docs-checkout.outputs.timeout_minutes) }}
+        # Supplying sparse-checkout to checkout also enables blob:none. The
+        # offline metadata scanner needs current and historical document blobs.
+        timeout-minutes: 10
         with:
           fetch-depth: ${{ steps.docs-checkout.outputs.fetch_depth }}
-          sparse-checkout-cone-mode: ${{ steps.docs-checkout.outputs.cone_mode }}
-          sparse-checkout: ${{ steps.docs-checkout.outputs.paths }}
+
+      - name: Apply ordinary-doc working-tree closure
+        if: ${{ steps.docs-checkout.outcome == 'success' }}
+        env:
+          DOCS_CHECKOUT_PATHS: ${{ steps.docs-checkout.outputs.paths }}
+          DOCS_CHECKOUT_CONE_MODE: ${{ steps.docs-checkout.outputs.cone_mode }}
+        run: |
+          set -euo pipefail
+          case "$DOCS_CHECKOUT_CONE_MODE" in
+            true) cone_flag=--cone ;;
+            false) cone_flag=--no-cone ;;
+            *) echo "Invalid docs checkout cone mode."; exit 64 ;;
+          esac
+          printf '%s\n' "$DOCS_CHECKOUT_PATHS" | git sparse-checkout set "$cone_flag" --stdin
 
       - name: Checkout full policy closure
         if: >-

@@ -581,7 +581,7 @@ final class HostAllSavedAudienceSummariesProvider
 }
 
 String _$hostAllSavedAudienceSummariesHash() =>
-    r'5c400f23ddf558d044321ee3d51393f8f748e77e';
+    r'e6264ad0f0413534bacff53319ec65bcebf4f0cb';
 
 /// Preserves the workspace's exhaustive local name search using small metadata
 /// documents; full selected-member lists are loaded only when a group opens.
@@ -666,7 +666,7 @@ final class HostGroupDirectoryControllerProvider
 }
 
 String _$hostGroupDirectoryControllerHash() =>
-    r'ab49ab78999ad696155028b8770d4c9756090cd7';
+    r'd383c92aa88487b753c361a88edfcb38abc9653d';
 
 /// First-page publication and continuation belong to one authenticated scope.
 

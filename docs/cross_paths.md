@@ -92,7 +92,7 @@ event, and the event remains the primary marketplace object.
 
 `CatchPolaroid` represents the person only. Cross Paths composes the
 event context around it as an event-ticket stub, adjacent copy, or CTA. It must
-not fork a second Polaroid canvas. `CatchOrganizerPoster` remains the organizer
+not fork a second Polaroid canvas. `CatchPoster` remains the organizer
 material and must not be reused for people.
 
 ### Name and promise
@@ -147,7 +147,7 @@ workflow:
 The implementation should extend these existing contracts rather than build
 parallel systems:
 
-1. `CatchPolaroid` and `CatchOrganizerPoster` establish the person and
+1. `CatchPolaroid` and `CatchPoster` establish the person and
    organizer materials. Cross Paths consumes the canonical person material and
    keeps its event context in adjacent composition.
 2. `profileQualitySummary` already measures profile completeness, including

@@ -24,7 +24,7 @@ ProfileView profileViewFromCardContent(
   ActivityKind? kickerActivity,
   String? metaLine,
 }) {
-  final sections = <ProfileSection>[];
+  final sections = <ProfileSectionData>[];
 
   // 1 · Compatibility / match signals.
   final confidence = content.insights.confidenceSignals
@@ -38,7 +38,7 @@ ProfileView profileViewFromCardContent(
         ? l10n.swipesProfileViewMapperTitleProfileSignals
         : l10n.swipesProfileViewMapperTitleWhyYouMightClick;
     sections.add(
-      ProfileCompatibilitySection(
+      ProfileCompatibilitySectionData(
         title: title,
         reasons: reasons,
         confidence: confidence,
@@ -73,7 +73,7 @@ ProfileView profileViewFromCardContent(
   // 3 · Running identity.
   if (running.hasCurrentRunPreferences) {
     sections.add(
-      ProfileRunningSection(
+      ProfileRunningSectionData(
         pace: formatPaceRange(
           running.paceMinSecsPerKm,
           running.paceMaxSecsPerKm,
@@ -105,7 +105,7 @@ ProfileView profileViewFromCardContent(
   final detailsFacts = _detailsFacts(content);
   if (detailsFacts.isNotEmpty) {
     sections.add(
-      ProfileFactsSection(
+      ProfileFactsSectionData(
         title: l10n.swipesProfileViewMapperTitleDetails,
         facts: detailsFacts,
         reaction: _target(
@@ -121,7 +121,7 @@ ProfileView profileViewFromCardContent(
   // 6 · Lifestyle.
   if (content.lifestyle.isNotEmpty) {
     sections.add(
-      ProfileFactsSection(
+      ProfileFactsSectionData(
         title: l10n.swipesProfileViewMapperTitleLifestyle,
         facts: content.lifestyle
             .map((fact) => ProfileFact(icon: fact.icon, text: fact.text))
@@ -169,7 +169,7 @@ List<ProfileFact> _detailsFacts(ProfileCardContent content) {
   ];
 }
 
-ProfilePhotoSection _photoSection(
+ProfilePhotoSectionData _photoSection(
   String name,
   ProfileCardPhoto photo, {
   required int ordinal,
@@ -177,7 +177,7 @@ ProfilePhotoSection _photoSection(
   final ordinalLabel = ordinal == 2
       ? 'second profile photo'
       : 'profile photo $ordinal';
-  return ProfilePhotoSection(
+  return ProfilePhotoSectionData(
     image: _profileImageProvider(photo.url),
     caption: photo.prompt?.displayPrompt,
     reaction: _target(

@@ -10,7 +10,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -143,8 +143,16 @@ Widget hostAudienceHeaderStates(BuildContext context) =>
     hostSavedAudiencesStates(context);
 
 @widgetbook.UseCase(
+  name: 'Sender setup states',
+  type: HostWhatsappSetupSection,
+  path: '[P1 product surfaces]/Host operations/Messaging',
+)
+Widget hostWhatsappSetupSectionStates(BuildContext context) =>
+    hostCustomerMessagingStates(context);
+
+@widgetbook.UseCase(
   name: 'Campaign and sender states',
-  type: HostCampaignComposer,
+  type: HostCampaignEditor,
   path: '[P1 product surfaces]/Host operations/Messaging',
 )
 Widget hostCustomerMessagingStates(BuildContext context) {
@@ -202,10 +210,10 @@ Widget hostCustomerMessagingStates(BuildContext context) {
                   child: CatchSectionList(
                     emptyStateOmitted: true,
                     children: [
-                      HostWhatsappSetupPane(
+                      HostWhatsappSetupSection(
                         club: HostOperationsFixtures.primaryClub,
                       ),
-                      HostCampaignComposer(
+                      HostCampaignEditor(
                         club: HostOperationsFixtures.primaryClub,
                       ),
                     ],

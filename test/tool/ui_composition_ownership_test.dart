@@ -388,7 +388,7 @@ Map<String, Object?> _screen() => <String, Object?>{
   'topBar': <String, Object?>{
     'role': 'shell',
     'expression': 'shell-owned',
-    'owner': 'CatchAdaptiveTabScaffold',
+    'owner': 'AdaptiveTabScaffold',
     'reason': 'fixture',
   },
   'statePolicy': <String, Object?>{

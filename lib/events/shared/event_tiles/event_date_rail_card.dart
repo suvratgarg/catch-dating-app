@@ -13,8 +13,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 const double _dateRailWidth = CatchLayout.eventDateRailWidth;
-const double _ticketNotchRadius = CatchLayout.eventTicketNotchRadius;
-const double _ticketNotchDepth = CatchLayout.eventTicketNotchDepth;
+const double _ticketNotchRadius = CatchLayout.ticketNotchRadius;
+const double _ticketNotchDepth = CatchLayout.ticketNotchDepth;
 
 enum EventDateRailCardStripPosition { single, first, middle, last }
 
@@ -168,7 +168,7 @@ class EventDateRailCard extends StatelessWidget {
                       ),
                     ],
                     gapH8,
-                    EventTicketStub(
+                    EventTicketStubRow(
                       decisionLabel: decisionLabel,
                       statusLabel: effectiveStatus,
                       priceLabel: effectivePrice,
@@ -194,7 +194,7 @@ class EventDateRailCard extends StatelessWidget {
               top: perforationTop,
               bottom: perforationBottom,
               child: IgnorePointer(
-                child: PerforationLine(color: t.ticketPerforationLine),
+                child: PerforationDivider(color: t.ticketPerforationLine),
               ),
             ),
             Positioned.fill(
@@ -238,8 +238,8 @@ class EventDateRailCard extends StatelessWidget {
 }
 
 /// Canonical decision row used by date-rail and agenda ticket compositions.
-class EventTicketStub extends StatelessWidget {
-  const EventTicketStub({
+class EventTicketStubRow extends StatelessWidget {
+  const EventTicketStubRow({
     super.key,
     required this.decisionLabel,
     required this.priceLabel,
@@ -481,8 +481,8 @@ class _DateRailTicketBorderPainter extends CustomPainter {
   }
 }
 
-class PerforationLine extends StatelessWidget {
-  const PerforationLine({super.key, required this.color});
+class PerforationDivider extends StatelessWidget {
+  const PerforationDivider({super.key, required this.color});
 
   final Color color;
 

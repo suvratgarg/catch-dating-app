@@ -132,7 +132,7 @@ void main() {
       'lib/event_success/presentation/companion_parts/event_success_companion_shared.dart',
     ).readAsStringSync();
     final reveal = File(
-      'lib/event_success/presentation/companion_parts/event_success_companion_reveal_cinematic.dart',
+      'lib/event_success/presentation/companion_parts/event_success_companion_reveal_overlay.dart',
     ).readAsStringSync();
     final sources = '$shared\n$reveal';
 

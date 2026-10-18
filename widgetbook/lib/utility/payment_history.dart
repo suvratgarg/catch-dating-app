@@ -136,12 +136,12 @@ Widget paymentHistoryScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Provider states',
-  type: PaymentHistoryListController,
+  type: PaymentHistoryBody,
   path: '[P3 utility surfaces]/Payment history',
 )
 Widget paymentHistoryListControllerStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'PaymentHistoryListController',
+    title: 'PaymentHistoryBody',
     contractId: 'screen.payments.history.provider-list',
     children: [
       WidgetbookPageStateCard(
@@ -149,9 +149,7 @@ Widget paymentHistoryListControllerStates(BuildContext context) {
         child: WidgetbookUtilityDeviceFrame(
           child: WidgetbookPaymentScope(
             paymentsStream: Stream.value(widgetbookUtilityPayments),
-            child: const PaymentHistoryListController(
-              userId: widgetbookUtilityViewerUid,
-            ),
+            child: const PaymentHistoryBody(userId: widgetbookUtilityViewerUid),
           ),
         ),
       ),
@@ -160,9 +158,7 @@ Widget paymentHistoryListControllerStates(BuildContext context) {
         child: WidgetbookUtilityDeviceFrame(
           child: WidgetbookPaymentScope(
             paymentsStream: widgetbookUtilityLoadingStream<List<Payment>>(),
-            child: const PaymentHistoryListController(
-              userId: widgetbookUtilityViewerUid,
-            ),
+            child: const PaymentHistoryBody(userId: widgetbookUtilityViewerUid),
           ),
         ),
       ),

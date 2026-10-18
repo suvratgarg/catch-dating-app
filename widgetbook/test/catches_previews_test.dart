@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/catches/catalog/profile_sections.dart';
@@ -8,7 +8,7 @@ void main() {
   for (final scale in [1.0, 2.0]) {
     for (final (name, builder, type, count)
         in <(String, WidgetBuilder, Type, int)>[
-          ('running profile', profileRunningStates, ProfileRunning, 1),
+          ('running profile', profileRunningStates, ProfileRunningSection, 1),
         ]) {
       testWidgets('$name preview fits its content at text scale $scale', (
         tester,

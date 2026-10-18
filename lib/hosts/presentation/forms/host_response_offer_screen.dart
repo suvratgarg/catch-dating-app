@@ -3,11 +3,9 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_form_admission_gateway.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
@@ -58,7 +56,7 @@ class HostResponseOfferScreen extends ConsumerStatefulWidget {
 
 class _HostResponseOfferScreenState
     extends ConsumerState<HostResponseOfferScreen> {
-  HostEventOfferController? _offers;
+  HostEventOfferScope? _offerScope;
   String? _accountId;
   bool _accountLost = false;
   HostOfferEventTarget? _created;
@@ -76,7 +74,6 @@ class _HostResponseOfferScreenState
 
   @override
   void dispose() {
-    _offers?.dispose();
     _primaryAction.dispose();
     super.dispose();
   }
@@ -172,26 +169,13 @@ class _HostResponseOfferScreenState
     );
   }
 
-  HostFormAdmissionController _admission(
+  HostFormAdmissionSession _admission(
     HostEventOffer offer,
     String responseId,
-  ) {
-    final gateway = CallableHostFormAdmissionGateway(
-      ref.read(firebaseFunctionsProvider),
-    );
-    String? currentAccount() => ref.read(firebaseAuthProvider).currentUser?.uid;
-    return HostFormAdmissionController(
-      accountId: _accountId!,
-      scope: HostFormAdmissionScope.fromOffer(offer, responseId: responseId),
-      gateway: gateway,
-      currentAccountId: currentAccount,
-      outbox: JournalHostFormAdmissionOutbox(
-        gateway: gateway,
-        storage: ref.read(commandJournalStorageProvider),
-        currentAccountId: currentAccount,
-      ),
-    );
-  }
+  ) => hostFormAdmissionSession(
+    _accountId!,
+    HostFormAdmissionScope.fromOffer(offer, responseId: responseId),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -220,17 +204,17 @@ class _HostResponseOfferScreenState
         : null;
     if (_accountId != null && (uid != _accountId || liveUid != _accountId)) {
       _accountLost = true;
-      _offers?.dispose();
-      _offers = null;
+      _offerScope = null;
     }
     final available = enabled && !_accountLost && uid != null && uid == liveUid;
-    if (available && _offers == null) {
+    if (available) {
       _accountId = uid;
-      _offers = HostEventOfferController.forCallables(
-        functions: ref.read(firebaseFunctionsProvider),
-        storage: ref.read(commandJournalStorageProvider),
-        currentAccountId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      _offerScope = (
+        accountId: uid,
+        organizerId: widget.organizerId,
+        sourceId: widget.queryController ?? widget.responseId!,
       );
+      ref.watch(hostEventOfferControllerProvider(_offerScope!));
     }
     final gateway = available
         ? CallableHostEventOfferGateway(ref.read(firebaseFunctionsProvider))
@@ -265,7 +249,7 @@ class _HostResponseOfferScreenState
                     responseId: widget.responseId,
                     recipientLabel: widget.recipientLabel,
                     queryController: widget.queryController,
-                    offerController: _offers!,
+                    offerScope: _offerScope!,
                     initiallyReviewSelection: true,
                     initialEventTarget: _created,
                     onCreateEvent: _creating ? null : _createEvent,
@@ -316,7 +300,7 @@ class _HostResponseOfferScreenState
                       );
                     },
                     openEventSettings: _settings,
-                    createAdmissionController: _admission,
+                    admissionSession: _admission,
                     copy: hostEventOfferWorkspaceCopy(context.l10n),
                     now: DateTime.now,
                     layoutBuilder: (body, action) {

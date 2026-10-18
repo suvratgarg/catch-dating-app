@@ -1588,7 +1588,7 @@ select {
   margin-top: 13px;
   padding-top: 9px;
   border-top: 1px solid var(--line);
-  color: var(--faint);
+  color: var(--muted);
   font-family: var(--catch-font-mono);
   font-size: 9px;
   font-weight: 700;
@@ -1709,7 +1709,7 @@ select {
 }
 
 .queue-heading-copy small {
-  color: var(--faint);
+  color: var(--muted);
   font-family: var(--catch-font-mono);
   font-size: 9px;
   font-weight: 650;
@@ -2925,7 +2925,7 @@ th {
 }
 
 .signals > .intake-eyebrow {
-  color: var(--faint);
+  color: var(--muted);
   font-family: var(--catch-font-mono);
   font-size: 9px;
   letter-spacing: 0.05em;
