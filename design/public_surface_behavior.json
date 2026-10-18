@@ -4983,7 +4983,7 @@
       "id": "web.homeOrganizerDiscovery",
       "platform": "web",
       "coverageKind": "matrix",
-      "coverageRationale": "Home exposes provenance-aware public organizer cards and listing navigation. Claim, save, and review actions belong to detail routes.",
+      "coverageRationale": "Home exposes provenance-aware public organizer cards and listing navigation. Claim, follow, and review actions belong to detail routes.",
       "routeIds": [
         "home"
       ],
@@ -5146,7 +5146,7 @@
       "id": "web.organizerSearch",
       "platform": "web",
       "coverageKind": "matrix",
-      "coverageRationale": "Search exposes provenance-aware filtering and listing navigation without requiring a website login. Claim, save, and review actions belong to detail routes.",
+      "coverageRationale": "Search exposes provenance-aware filtering and listing navigation without requiring a website login. Claim, follow, and review actions belong to detail routes.",
       "routeIds": [
         "organizer_search"
       ],
