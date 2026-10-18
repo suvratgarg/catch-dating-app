@@ -120,12 +120,27 @@ export async function savedAudienceSourceMatches(
         origin.sourceEntityId, origin.currentContactId);
     }
   }
+  // Reuse only bounded source snapshots within this evaluation. Permission
+  // checks below still run for each matching application; a later request
+  // reads all sources again, including withdrawals and changed review state.
+  const formSources = new Map<string,
+    FirebaseFirestore.QueryDocumentSnapshot[]>();
+  const formDocuments = async (collection: "organizerApplications" |
+    "organizerFormResponses", formId: string) => {
+    const key = JSON.stringify([collection, formId]);
+    const existing = formSources.get(key);
+    if (existing) return existing;
+    const docs = await bounded(db.collection(collection)
+      .where("organizerId", "==", organizerId)
+      .where("formId", "==", formId));
+    formSources.set(key, docs);
+    return docs;
+  };
   for (const predicate of sources) {
     const ids = new Set<string>();
     if (predicate.kind === "applicationStatus") {
-      const apps = await bounded(db.collection("organizerApplications")
-        .where("organizerId", "==", organizerId)
-        .where("formId", "==", predicate.formId));
+      const apps = await formDocuments("organizerApplications",
+        predicate.formId);
       for (const doc of apps) {
         const application = doc.data() as OrganizerApplicationDocument;
         if (application.reviewStatus !== predicate.reviewStatus) continue;
@@ -138,9 +153,8 @@ export async function savedAudienceSourceMatches(
         if (contactId) ids.add(contactId);
       }
     } else if (predicate.kind === "formAnswer") {
-      const responses = await bounded(db.collection("organizerFormResponses")
-        .where("organizerId", "==", organizerId)
-        .where("formId", "==", predicate.formId));
+      const responses = await formDocuments("organizerFormResponses",
+        predicate.formId);
       for (const doc of responses) {
         const response = doc.data() as OrganizerFormResponseDocument;
         if (response.status !== "submitted" ||
