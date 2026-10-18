@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.79.0
+version: 1.80.0
 updated: 2026-10-18
 owner: app_architecture
 status: active
@@ -2824,12 +2824,15 @@ by the component registry (`design/components/README.md`).
 - **No surface names on shared components.** `Admin`, `Website`, `Marketing`,
   `Host` and `Consumer` never appear in a T1–T3 symbol. Density or scale
   differences are a prop or a scope, never a second component.
-- **One role-noun vocabulary.** React names use the closed list above. Common
-  React nouns map onto it: Card and Panel become Surface or Tile; Shell, Frame,
-  Workspace and Workbench become Scaffold or Layout; Grid and Stack become
-  Layout, or SectionList when they order sections; List becomes RowList or
-  SectionList; Toolbar and Topbar become TopBar or Header; Rail and Strip
-  become TabBar, StepFlow or Layout; Label, Eyebrow and Caption become Text.
+- **One role-noun vocabulary.** React names use the closed list above. The
+  registry's `roleNounRedirects` map the synonyms React code commonly uses
+  (Panel, Shell, Frame, Toolbar, Strip, Label, Eyebrow and others) onto it, in
+  both frameworks.
+- **One record per framework.** The registry names each implementation of a
+  contract: `dart` for Flutter and `react` for `@catch/web-ui`, each with its
+  symbol and file. Prop types sit side by side as `dartType` and `tsType`.
+  Website and admin adapters of a shared contract point at it with
+  `componentId` in their surface registry and assign no identity of their own.
 - **Surface-specific (T4) components** never use the `Catch` prefix and end in a
   closed role noun (`<Feature><RoleNoun>`). A surface prefix (`AdminQueueRow`)
   is allowed but carries no meaning: the folder scopes the component, and no
