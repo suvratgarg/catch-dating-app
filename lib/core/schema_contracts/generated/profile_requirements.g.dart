@@ -1,10 +1,21 @@
 // GENERATED from contracts/catalogs/profile_requirements.json. Do not edit.
 
+const unrestrictedEventMinimumAge = 0;
+const openEndedEventMaximumAge = 99;
 const profileRequiredFields = <String, List<String>>{
   'account': <String>['name', 'phoneNumber'],
   'organizerFollow': <String>['name', 'phoneNumber'],
   'eventBooking': <String>['name', 'phoneNumber'],
-  'socialDiscovery': <String>['name', 'phoneNumber', 'dateOfBirth', 'gender', 'interestedInGenders', 'profilePhotos', 'profilePrompts', 'profileComplete'],
+  'socialDiscovery': <String>[
+    'name',
+    'phoneNumber',
+    'dateOfBirth',
+    'gender',
+    'interestedInGenders',
+    'profilePhotos',
+    'profilePrompts',
+    'profileComplete',
+  ],
 };
 const eventProfileRequirements = <String, List<String>>{
   'ageRestricted': <String>['dateOfBirth'],

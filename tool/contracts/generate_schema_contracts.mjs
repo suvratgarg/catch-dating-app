@@ -15,6 +15,12 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "ManageWebsiteAccountCallablePayload",
+    source: "callables/manage_website_account_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageWebsiteAccountCallablePayload.ts"},
+  {name: "ManageWebsiteAccountCallableResponse",
+    source: "callable_responses/manage_website_account_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageWebsiteAccountCallableResponse.ts"},
   {name: "HostResponseSummaryDocument", source: "firestore/host_response_summaries.schema.json",
     typeOutput: "functions/src/shared/generated/hostResponseSummaryDocument.ts"},
   {name: "HostGroupDetailDocument", source: "firestore/host_group_details.schema.json",
@@ -10103,6 +10109,7 @@ export function profileRequirementsOutputs(catalog, userSchema) {
 export const profileRequiredFields = ${json(capabilities)} as const;
 export const eventProfileRequirements = ${json(catalog.eventRequirements)} as const;
 export const optionalAccountFields = ${json(catalog.optionalAccountFields)} as const;
+export const eventAgePolicy = ${json(catalog.eventAgePolicy)} as const;
 export type ProfileCapability = keyof typeof profileRequiredFields;
 export type EventProfileRequirement = keyof typeof eventProfileRequirements;
 export type ProfileRequirementField =
@@ -10122,9 +10129,15 @@ export function missingProfileFields(
   return [...fields].filter((field) => !hasField(field));
 }
 `;
-  const dartMap = (value) => Object.entries(value).map(([key, values]) =>
-    `  '${key}': <String>[${values.map((v) => `'${v}'`).join(', ')}],`).join('\n');
+  const dartMap = (value) => Object.entries(value).map(([key, values]) => {
+    const prefix = `  '${key}': <String>[`;
+    const line = `${prefix}${values.map((v) => `'${v}'`).join(', ')}],`;
+    return line.length <= 80 ? line :
+      `${prefix}\n${values.map((v) => `    '${v}',`).join('\n')}\n  ],`;
+  }).join('\n');
   const dart = `${header}
+const unrestrictedEventMinimumAge = ${catalog.eventAgePolicy.unrestrictedMinimum};
+const openEndedEventMaximumAge = ${catalog.eventAgePolicy.openEndedMaximum};
 const profileRequiredFields = <String, List<String>>{
 ${dartMap(capabilities)}
 };

@@ -224,8 +224,10 @@ abstract class UserProfile with _$UserProfile {
     @Default('') String firstName,
     @Default('') String lastName,
     @Default('') String displayName,
-    @TimestampConverter() required DateTime dateOfBirth,
-    required Gender gender,
+    @JsonKey(includeIfNull: false)
+    @NullableTimestampConverter()
+    DateTime? dateOfBirth,
+    @JsonKey(includeIfNull: false) Gender? gender,
     required String phoneNumber,
     @Default(defaultCountryDialCode) String countryCode,
     required bool profileComplete,
@@ -287,7 +289,10 @@ abstract class UserProfile with _$UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
       _$UserProfileFromJson(_migrateUserProfileJson(json));
 
-  int ageOn(DateTime today) => calculateAge(dateOfBirth, today: today);
+  int? ageOn(DateTime today) {
+    final birthday = dateOfBirth;
+    return birthday == null ? null : calculateAge(birthday, today: today);
+  }
 
   String get accountDisplayName {
     final parts = [

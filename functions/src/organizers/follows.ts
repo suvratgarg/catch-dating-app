@@ -46,11 +46,15 @@ export async function followOrganizerHandler(
   deps: OrganizerFollowDeps = defaultDeps
 ): Promise<{following: boolean}> {
   const uid = requireAuth(request);
-  const {organizerId} = validateCallableWithAjv<OrganizerFollowCallablePayload>(
-    request,
-    validateOrganizerFollowCallablePayload,
-    normalizeOrganizerIdPayload
-  );
+  const {organizerId, expectedUid} =
+    validateCallableWithAjv<OrganizerFollowCallablePayload>(
+      request,
+      validateOrganizerFollowCallablePayload,
+      normalizeOrganizerIdPayload
+    );
+  if (expectedUid !== undefined && expectedUid !== uid) {
+    throw new HttpsError("aborted", "Your signed-in account changed.");
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "followOrganizer");
   await db.runTransaction(async (tx) => {
@@ -98,11 +102,15 @@ export async function unfollowOrganizerHandler(
   deps: OrganizerFollowDeps = defaultDeps
 ): Promise<{following: boolean}> {
   const uid = requireAuth(request);
-  const {organizerId} = validateCallableWithAjv<OrganizerFollowCallablePayload>(
-    request,
-    validateOrganizerFollowCallablePayload,
-    normalizeOrganizerIdPayload
-  );
+  const {organizerId, expectedUid} =
+    validateCallableWithAjv<OrganizerFollowCallablePayload>(
+      request,
+      validateOrganizerFollowCallablePayload,
+      normalizeOrganizerIdPayload
+    );
+  if (expectedUid !== undefined && expectedUid !== uid) {
+    throw new HttpsError("aborted", "Your signed-in account changed.");
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "unfollowOrganizer");
   await db.runTransaction(async (tx) => {

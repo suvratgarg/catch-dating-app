@@ -7744,8 +7744,8 @@ export interface UserProfileDocument {
   firstName: string;
   lastName: string;
   displayName: string;
-  dateOfBirth: FirebaseFirestore.Timestamp;
-  gender: "man" | "woman" | "nonBinary" | "other";
+  dateOfBirth?: FirebaseFirestore.Timestamp;
+  gender?: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
   countryCode?: string;
   profileRevision?: number;

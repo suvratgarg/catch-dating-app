@@ -60,7 +60,9 @@ class SelfProfileScreenState {
         );
       case CatchAsyncPhase.data:
         final value = profileState.value;
-        return value == null
+        return value == null ||
+                value.dateOfBirth == null ||
+                value.gender == null
             ? SelfProfileScreenState(
                 status: SelfProfileRouteStatus.unavailable,
                 uploadState: uploadState,

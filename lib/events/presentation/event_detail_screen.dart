@@ -660,7 +660,11 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
       return GuestBookDock(onPressed: onGuestBook, darkSurface: darkSurface);
     }
 
-    if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
+    if (!eventDetailHasBookingReadyProfile(
+      userProfile,
+      now: now,
+      event: event,
+    )) {
       return EventBookingDock(
         label: completeProfileLabel,
         onPressed: onCompleteProfile,

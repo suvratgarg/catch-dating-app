@@ -6,13 +6,13 @@ import {beginPublicEventPhoneVerification, registerPublicEvent,
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
-export function useFreeEventRegistrationController(eventId: string, inviteTokenOverride?: string | null) {
+export function useFreeEventRegistrationController(eventId: string, inviteTokenOverride?: string | null, initialDisplayName = "") {
   const reactId = useId();
   const recaptchaContainerId = `event-registration-recaptcha-${reactId.replace(/:/gu, "")}`;
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const identity = useRef<{user: User | null; epoch: number; mounted: boolean}>({user: null, epoch: 0, mounted: false});
   const [verified, setVerified] = useState(false);
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState(initialDisplayName);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
   const [whatsappUpdates, setWhatsappUpdates] = useState(false);

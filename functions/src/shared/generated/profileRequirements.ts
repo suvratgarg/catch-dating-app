@@ -36,6 +36,10 @@ export const eventProfileRequirements = {
 export const optionalAccountFields = [
   "dateOfBirth"
 ] as const;
+export const eventAgePolicy = {
+  "unrestrictedMinimum": 0,
+  "openEndedMaximum": 99
+} as const;
 export type ProfileCapability = keyof typeof profileRequiredFields;
 export type EventProfileRequirement = keyof typeof eventProfileRequirements;
 export type ProfileRequirementField =
