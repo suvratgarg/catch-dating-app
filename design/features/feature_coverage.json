@@ -347,6 +347,14 @@
     },
     {
       "authority": "marketing_routes",
+      "authorityId": "host_apply",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "The sole Host pilot application route is bound to the marketing_application surface in the Host acquisition contract.",
+      "featureContract": "feature.host_acquisition"
+    },
+    {
+      "authority": "marketing_routes",
       "authorityId": "event_runtime",
       "status": "contracted",
       "priority": "P1",
