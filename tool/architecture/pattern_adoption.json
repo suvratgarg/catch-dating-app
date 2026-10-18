@@ -239,7 +239,7 @@
             "lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart",
             "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
             "lib/event_success/presentation/host_live/event_success_host_live_page_body.dart",
             "lib/event_success/presentation/assignments/event_success_host_pod_section.dart",
             "lib/event_success/presentation/assignments/event_success_host_rotation_section.dart",
@@ -697,37 +697,37 @@
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/photos_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_photos_step_state.dart",
           "role": "provider-free OnboardingPhotosState adapter for onboarding photo count, upload pending state, continue gating/hints, supporting copy, delete availability, and typed photo slot intents",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/name_dob_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_name_dob_step_state.dart",
           "role": "provider-free OnboardingNameDobState adapter for onboarding identity draft display, autofocus policy, date picker bounds, age suffix copy, validated submit intent, and field controller/callback seams",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart",
           "role": "provider-free OnboardingGenderInterestState adapter for onboarding gender and interest selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/instagram_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_instagram_step_state.dart",
           "role": "provider-free OnboardingInstagramState adapter for optional Instagram handle seed text, trimmed continue intent, skip intent, and field controller/callback seams",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart",
           "role": "provider-free OnboardingProfilePromptsState adapter for prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed prompt/continue callbacks",
           "providerFree": true,
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart",
           "role": "provider-free OnboardingRunningPrefsState adapter for pace label display, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent",
           "providerFree": true,
           "status": "aligned"
@@ -1372,7 +1372,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+          "path": "lib/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart",
           "role": "consumer presentation-state copy resolved from AppLocalizations",
           "status": "aligned"
         },
@@ -1728,13 +1728,13 @@
         "packages/catch_ui/lib/src/patterns/catch_form_choice_field.dart",
         "packages/catch_ui/lib/src/patterns/catch_form_range_field.dart",
         "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
-        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "lib/user_profile/presentation/widgets/profile_tab_body.dart",
         "test/core/forms/catch_form_descriptors_test.dart",
         "test/profile/self_profile_edit_tab_state_test.dart"
       ],
       "adopters": [
         {
-          "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
+          "path": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
           "role": "reference About You section adopter with one typed UpdateUserProfilePatch save delegate and shared accordion wiring",
           "status": "aligned"
         },
@@ -1778,7 +1778,7 @@
         },
         {
           "id": "ARCH-FORM-DESCRIPTOR-001-CONSUMER-COMMIT",
-          "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
+          "path": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
           "reason": "Consumer About You preserves its existing on-blur text commit as one list-level compatibility policy. Review the product interaction before removing that override and inheriting the explicit Cancel/Done default."
         }
       ],
@@ -1786,7 +1786,7 @@
       "requiredBackPropagation": "When descriptor fields, save semantics, accordion ownership, or error mapping change, update the About You prototype, core descriptor tests, architecture exhibit, and every promoted adopter before broad rollout.",
       "requiredChecks": [
         "flutter test --concurrency=1 test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
-        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab.dart lib/hosts/presentation/host_operations/host_club_edit_tab.dart test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab_body.dart lib/hosts/presentation/host_operations/host_club_edit_tab.dart test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "Consumer Profile About You and Host Club Identity/Contact are promoted. Text commit behavior belongs to CatchFormList: explicit Cancel/Done is the default, while Consumer About You carries one deliberate on-blur compatibility override. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."

@@ -4,8 +4,8 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_defaults_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
@@ -40,7 +40,7 @@ Widget eventSuccessStrictPreview(
     ),
     EventSuccessStrictSurface.defaults => StrictCoverageScaffold(
       componentName: componentName,
-      child: EventSuccessDefaultsPanel(
+      child: EventSuccessDefaultsSection(
         defaults: EventSuccessDefaults.recommendedForActivity(
           ActivityKind.socialRun,
           enabled: true,
@@ -58,7 +58,7 @@ Widget eventSuccessStrictPreview(
       componentName: componentName,
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [EventSuccessPostEventReport()],
+        children: [EventSuccessReportSectionList()],
       ),
     ),
     EventSuccessStrictSurface.host => StrictCoverageScaffold(

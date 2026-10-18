@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
+import 'package:catch_dating_app/user_analytics/shared/user_analytics_section.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInsightsTabSliverBody extends StatelessWidget {
@@ -9,7 +9,7 @@ class ProfileInsightsTabSliverBody extends StatelessWidget {
     return const SliverToBoxAdapter(
       child: SizedBox(
         width: double.infinity,
-        child: UserAnalyticsPanel(showSectionTitle: false),
+        child: UserAnalyticsSection(showSectionTitle: false),
       ),
     );
   }

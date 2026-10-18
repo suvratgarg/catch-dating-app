@@ -455,7 +455,7 @@ class CompanionExpectationSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.eventAvailableRounded,
             label: context
                 .l10n

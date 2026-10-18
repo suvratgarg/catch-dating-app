@@ -15,8 +15,8 @@ import 'package:go_router/go_router.dart';
 
 part 'welcome_motion.dart';
 
-class WelcomePage extends ConsumerStatefulWidget {
-  const WelcomePage({super.key, this.playIntro = true});
+class OnboardingWelcomeBody extends ConsumerStatefulWidget {
+  const OnboardingWelcomeBody({super.key, this.playIntro = true});
 
   static const splashTapTargetKey = ValueKey<String>(
     'welcome-splash-tap-target',
@@ -26,10 +26,11 @@ class WelcomePage extends ConsumerStatefulWidget {
   final bool playIntro;
 
   @override
-  ConsumerState<WelcomePage> createState() => _WelcomePageState();
+  ConsumerState<OnboardingWelcomeBody> createState() =>
+      _OnboardingWelcomeBodyState();
 }
 
-class _WelcomePageState extends ConsumerState<WelcomePage>
+class _OnboardingWelcomeBodyState extends ConsumerState<OnboardingWelcomeBody>
     with TickerProviderStateMixin {
   late final AnimationController _spinController;
   late final AnimationController _landingController;
@@ -75,7 +76,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 
   @override
-  void didUpdateWidget(covariant WelcomePage oldWidget) {
+  void didUpdateWidget(covariant OnboardingWelcomeBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.playIntro && !widget.playIntro) {
       _land(immediate: true);
@@ -178,7 +179,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
               : context.l10n.onboardingWelcomePageLabelSkipWelcomeAnimation,
           onTap: _landed ? null : _skip,
           child: GestureDetector(
-            key: WelcomePage.splashTapTargetKey,
+            key: OnboardingWelcomeBody.splashTapTargetKey,
             behavior: HitTestBehavior.opaque,
             onTap: _landed ? null : _skip,
             child: CatchViewport.scene(
@@ -186,7 +187,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
               builder: (context, viewport) => AnimatedBuilder(
                 animation: _sceneListenable,
                 builder: (context, _) {
-                  return WelcomeScene(
+                  return WelcomeSceneLayout(
                     viewportWidth: viewport.width,
                     viewportHeight: viewport.height,
                     mediaPadding: viewport.mediaPadding,
@@ -218,8 +219,8 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 }
 
-class WelcomeScene extends StatelessWidget {
-  const WelcomeScene({
+class WelcomeSceneLayout extends StatelessWidget {
+  const WelcomeSceneLayout({
     super.key,
     required this.viewportWidth,
     required this.viewportHeight,
@@ -301,7 +302,7 @@ class WelcomeScene extends StatelessWidget {
           right: 0,
           top: wheelTop,
           height: reelHeight,
-          child: ReelBand(
+          child: WelcomeReelList(
             viewportWidth: sceneWidth,
             spinValue: spinValue,
             landingValue: landingValue,
@@ -310,7 +311,7 @@ class WelcomeScene extends StatelessWidget {
           ),
         ),
         Positioned(
-          key: WelcomeScene.catchWordKey,
+          key: WelcomeSceneLayout.catchWordKey,
           left: catchLeft,
           right: rightInset,
           top: catchTop,
@@ -325,7 +326,7 @@ class WelcomeScene extends StatelessWidget {
             ),
             transitionBuilder: (child, animation) =>
                 FadeTransition(opacity: animation, child: child),
-            child: WelcomeFocusLockup(
+            child: WelcomeFocusText(
               key: ValueKey<int>(focusedPhraseIndex),
               phrase: focusedPhrase.object,
               catchColor: tokens.ink,
@@ -340,7 +341,7 @@ class WelcomeScene extends StatelessWidget {
             left: CatchWelcomeTokens.welcomeBodyHorizontalPadding,
             right: CatchWelcomeTokens.welcomeBodyHorizontalPadding,
             top: bodyTop,
-            child: RevealEntrance(
+            child: WelcomeRevealTransition(
               landingValue: landingValue,
               order: 0,
               child: Text(
@@ -363,7 +364,7 @@ class WelcomeScene extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  RevealEntrance(
+                  WelcomeRevealTransition(
                     landingValue: landingValue,
                     order: 1,
                     child: CatchButton(
@@ -378,7 +379,7 @@ class WelcomeScene extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: CatchWelcomeTokens.welcomeButtonGap),
-                  RevealEntrance(
+                  WelcomeRevealTransition(
                     landingValue: landingValue,
                     order: 2,
                     child: CatchButton(
@@ -408,8 +409,8 @@ class WelcomeScene extends StatelessWidget {
 /// `Catch` and the active phrase are painted as one line with a literal space,
 /// so their alphabetic baseline cannot drift. The underline is positioned from
 /// the measured phrase glyph box and never participates in the text baseline.
-class WelcomeFocusLockup extends StatelessWidget {
-  const WelcomeFocusLockup({
+class WelcomeFocusText extends StatelessWidget {
+  const WelcomeFocusText({
     super.key,
     required this.catchColor,
     required this.maxWidth,
@@ -516,7 +517,7 @@ class WelcomeFocusLockup extends StatelessWidget {
                 clipBehavior: Clip.none,
                 children: [
                   Text.rich(
-                    key: WelcomeFocusLockup.textKey,
+                    key: WelcomeFocusText.textKey,
                     lockupSpan,
                     style: style,
                     maxLines: 1,
@@ -531,7 +532,7 @@ class WelcomeFocusLockup extends StatelessWidget {
                       width: phraseBox.right - phraseBox.left,
                       height: CatchWelcomeTokens.welcomeReelUnderlineThickness,
                       child: ColoredBox(
-                        key: WelcomeFocusLockup.underlineKey,
+                        key: WelcomeFocusText.underlineKey,
                         color: underlineColor!,
                       ),
                     ),
@@ -552,8 +553,8 @@ TextScaler _welcomeReelTextScaler(BuildContext context) {
   );
 }
 
-class ReelBand extends StatelessWidget {
-  const ReelBand({
+class WelcomeReelList extends StatelessWidget {
+  const WelcomeReelList({
     super.key,
     this.viewportWidth = CatchWelcomeTokens.welcomeReferenceWidth,
     required this.spinValue,
@@ -611,7 +612,7 @@ class ReelBand extends StatelessWidget {
                       index < welcomePhraseBank.length;
                       index += 1
                     )
-                      ReelRow(
+                      WelcomeReelRow(
                         viewportWidth: viewportWidth,
                         phrase: welcomePhraseBank[index],
                         phraseIndex: index,
@@ -631,8 +632,8 @@ class ReelBand extends StatelessWidget {
   }
 }
 
-class ReelRow extends StatelessWidget {
-  const ReelRow({
+class WelcomeReelRow extends StatelessWidget {
+  const WelcomeReelRow({
     super.key,
     required this.viewportWidth,
     required this.phrase,
@@ -763,8 +764,8 @@ class ReelRow extends StatelessWidget {
   }
 }
 
-class RevealEntrance extends StatelessWidget {
-  const RevealEntrance({
+class WelcomeRevealTransition extends StatelessWidget {
+  const WelcomeRevealTransition({
     super.key,
     required this.landingValue,
     required this.order,

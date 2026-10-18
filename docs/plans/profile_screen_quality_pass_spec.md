@@ -25,7 +25,7 @@ Scope — the profile feature is **four surfaces sharing one flagship widget**:
 
 The shared shell is `ProfileSurface` (`lib/swipes/shared/profile_surface/profile_surface.dart:21`)
 over the flagship `ProfileBody` (`catch_profile_view.dart:27`). The Edit tab
-is a one-off inline-editor surface; Insights is `UserAnalyticsPanel`.
+is a one-off inline-editor surface; Insights is `UserAnalyticsSection`.
 
 Data-layer note: profile reads are healthy relative to the systemic findings in
 the explore spec §3 — single-doc realtime streams (`user_profile_repository.dart:148-161`,

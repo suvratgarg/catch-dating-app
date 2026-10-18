@@ -27,7 +27,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              StageSectionLabel(
+              StageSectionHeader(
                 icon: CatchIcons.autoAwesomeRounded,
                 label: context
                     .l10n

@@ -100,7 +100,7 @@ uses. Values/labels unchanged; skeleton follows.
 
 ### N4. Analytics info panels lose their boxes `[confirm]`
 
-`UserAnalyticsTrendPanel`, `UserAnalyticsTipsPanel`,
+`UserAnalyticsTrendSection`, `UserAnalyticsTipsSection`,
 `HostAnalyticsTrendPanel`, `HostAnalyticsReviewDiscoveryPanel`, and
 `HostAnalyticsEventList`'s empty-state surface: charts, tips, and stat
 pairs are information inside kicker sections — the border is an information
@@ -142,7 +142,7 @@ them, record the rule the box earns. Same check covers
 ### N8. Form-step surface batch — box only the modules `[codex]`
 
 `HostProfileForm`, `EventPolicyStep` (six surfaces), `EventSuccessStep`,
-`ClubHostDefaultsStep`/`_PolicyDefaultsCard`, `EventSuccessDefaultsPanel`,
+`ClubHostDefaultsStep`/`_PolicyDefaultsCard`, `EventSuccessDefaultsSection`,
 `IntegrationNotesCard`, `ChatEventContextHeader`: per surface, apply the
 test — input/editor modules and pickers keep their box (R2); pure grouping
 or explainer text flattens to `CatchSection`/fieldRows grammar. Record the

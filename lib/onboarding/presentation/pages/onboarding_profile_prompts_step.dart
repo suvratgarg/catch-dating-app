@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -14,16 +14,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfilePromptsPage extends ConsumerStatefulWidget {
-  const ProfilePromptsPage({super.key, this.profileCompletionOnly = false});
+class OnboardingProfilePromptsBody extends ConsumerStatefulWidget {
+  const OnboardingProfilePromptsBody({
+    super.key,
+    this.profileCompletionOnly = false,
+  });
 
   final bool profileCompletionOnly;
 
   @override
-  ConsumerState<ProfilePromptsPage> createState() => _ProfilePromptsPageState();
+  ConsumerState<OnboardingProfilePromptsBody> createState() =>
+      _OnboardingProfilePromptsBodyState();
 }
 
-class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
+class _OnboardingProfilePromptsBodyState
+    extends ConsumerState<OnboardingProfilePromptsBody> {
   late final List<TextEditingController> _controllers = List.generate(
     maxProfilePromptAnswers,
     (_) => TextEditingController(),

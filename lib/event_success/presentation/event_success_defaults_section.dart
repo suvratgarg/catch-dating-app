@@ -13,8 +13,8 @@ typedef EventSuccessDefaultsUpdate =
 /// Create-event panel that lets the host enable the live event guide and tune
 /// the saved defaults inline. The configuration UI is shared with the Host
 /// Manage Setup tab via [EventSuccessSetupBody].
-class EventSuccessDefaultsPanel extends StatelessWidget {
-  const EventSuccessDefaultsPanel({
+class EventSuccessDefaultsSection extends StatelessWidget {
+  const EventSuccessDefaultsSection({
     super.key,
     required this.defaults,
     required this.activityKind,

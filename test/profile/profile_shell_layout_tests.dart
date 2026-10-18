@@ -252,13 +252,13 @@ void _registerProfileShellLayoutTests() {
 
     expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
-    expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfilePreviewBody), findsNothing);
     expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
     await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(PreviewTab), findsOneWidget);
+    expect(find.byType(ProfilePreviewBody), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
     expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
@@ -267,12 +267,12 @@ void _registerProfileShellLayoutTests() {
 
     expect(find.byType(ProfileInsightsTabSliverBody), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
-    expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfilePreviewBody), findsNothing);
 
     await tester.drag(find.byType(TabBarView), const Offset(320, 0));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(PreviewTab), findsOneWidget);
+    expect(find.byType(ProfilePreviewBody), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
     expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
@@ -280,7 +280,7 @@ void _registerProfileShellLayoutTests() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
-    expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfilePreviewBody), findsNothing);
     expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
   });
 
@@ -307,7 +307,7 @@ void _registerProfileShellLayoutTests() {
 
     expect(find.byType(ProfileInsightsTabSliverBody), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
-    expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfilePreviewBody), findsNothing);
   });
 
   testWidgets('ProfileScreen preserves NestedScrollView overlap contract', (
@@ -597,7 +597,12 @@ void _registerProfileShellLayoutTests() {
     await tester.tap(find.text('Preview'));
     await pumpFeatureUi(tester);
 
-    expect(tester.widget<PreviewTab>(find.byType(PreviewTab)).bottomPadding, 0);
+    expect(
+      tester
+          .widget<ProfilePreviewBody>(find.byType(ProfilePreviewBody))
+          .bottomPadding,
+      0,
+    );
 
     final previewScrollView = find.byKey(ProfileBody.scrollViewKey);
     final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
@@ -743,7 +748,7 @@ void _registerProfileShellLayoutTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: ProfileTabContent(
+            body: ProfileTabBody(
               user: user,
               uploadState: const PhotoUploadState(),
               builder: (context, children) => ListView(

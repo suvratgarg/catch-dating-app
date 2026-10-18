@@ -3,20 +3,21 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NameDobPage extends ConsumerStatefulWidget {
-  const NameDobPage({super.key});
+class OnboardingNameDobBody extends ConsumerStatefulWidget {
+  const OnboardingNameDobBody({super.key});
 
   @override
-  ConsumerState<NameDobPage> createState() => _NameDobPageState();
+  ConsumerState<OnboardingNameDobBody> createState() =>
+      _OnboardingNameDobBodyState();
 }
 
-class _NameDobPageState extends ConsumerState<NameDobPage> {
+class _OnboardingNameDobBodyState extends ConsumerState<OnboardingNameDobBody> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();

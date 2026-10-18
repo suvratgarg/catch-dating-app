@@ -79,6 +79,8 @@ import 'package:widgetbook_workspace/event_rehearsal/event_rehearsal_entry_use_c
     as _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases;
 import 'package:widgetbook_workspace/event_rehearsal/rehearsal_settings_use_cases.dart'
     as _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases;
+import 'package:widgetbook_workspace/event_rehearsal/simulator_use_cases.dart'
+    as _widgetbook_workspace_event_rehearsal_simulator_use_cases;
 import 'package:widgetbook_workspace/event_success/companion/feedback.dart'
     as _widgetbook_workspace_event_success_companion_feedback;
 import 'package:widgetbook_workspace/event_success/companion/loading.dart'
@@ -359,6 +361,8 @@ import 'package:widgetbook_workspace/onboarding/catalog/reel.dart'
     as _widgetbook_workspace_onboarding_catalog_reel;
 import 'package:widgetbook_workspace/onboarding/catalog/screen.dart'
     as _widgetbook_workspace_onboarding_catalog_screen;
+import 'package:widgetbook_workspace/onboarding/catalog/steps.dart'
+    as _widgetbook_workspace_onboarding_catalog_steps;
 import 'package:widgetbook_workspace/onboarding/catalog/welcome.dart'
     as _widgetbook_workspace_onboarding_catalog_welcome;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
@@ -7452,6 +7456,66 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Rehearsal run',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalGuestLinkSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Guest link',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_simulator_use_cases
+                            .rehearsalGuestLinkSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalRecapSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Recap',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_simulator_use_cases
+                            .rehearsalRecapSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalRosterSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Roster',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_simulator_use_cases
+                            .rehearsalRosterSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalRunSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Run controls',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_simulator_use_cases
+                            .rehearsalRunSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalSimulatorBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Simulator',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_simulator_use_cases
+                            .rehearsalSimulatorBody,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Rehearsal settings',
             children: [
               _widgetbook.WidgetbookComponent(
@@ -7923,6 +7987,36 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Event Success companion',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CompanionEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route message',
+                builder: _widgetbook_workspace_event_success_companion_loading
+                    .companionEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CompanionErrorState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route error',
+                builder: _widgetbook_workspace_event_success_companion_loading
+                    .companionErrorStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CompanionSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route skeleton',
+                builder: _widgetbook_workspace_event_success_companion_loading
+                    .companionSkeletonState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CounterRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -8233,6 +8327,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'CompanionPreviewText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPreviewText',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_social
+                            .eventSuccessStrictPreviewLine,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'CompanionPrivacySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8376,6 +8481,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessMarqueeImage',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessMarqueeImage',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_social
+                            .eventSuccessStrictEventSuccessMarqueeImage,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'FirstHelloCheckInCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8383,6 +8499,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictFirstHelloCheckInCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'FirstHelloMissionEditor',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'FirstHelloMissionEditor',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_social
+                            .eventSuccessStrictFirstHelloMissionEditor,
                   ),
                 ],
               ),
@@ -8398,10 +8525,10 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'IncludeMeToggle',
+                name: 'IncludeMeField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'IncludeMeToggle',
+                    name: 'IncludeMeField',
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictIncludeMeToggle,
@@ -8449,17 +8576,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictPreCheckInPlanningCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PreviewLine',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PreviewLine',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_social
-                            .eventSuccessStrictPreviewLine,
                   ),
                 ],
               ),
@@ -8541,10 +8657,10 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'StageCueLine',
+                name: 'StageCueCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'StageCueLine',
+                    name: 'StageCueCard',
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageCueLine,
@@ -8563,10 +8679,10 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'StageSectionLabel',
+                name: 'StageSectionHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'StageSectionLabel',
+                    name: 'StageSectionHeader',
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageSectionLabel,
@@ -8590,10 +8706,10 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Defaults panel folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessDefaultsPanel',
+                name: 'EventSuccessDefaultsSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessDefaultsPanel',
+                    name: 'EventSuccessDefaultsSection',
                     builder:
                         _widgetbook_workspace_event_success_specimens_defaults
                             .eventSuccessStrictEventSuccessDefaultsPanel,
@@ -8628,17 +8744,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessPostEventReport',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessPostEventReport',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_feature_blocks
-                            .eventSuccessStrictEventSuccessPostEventReport,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessRecommendationTile',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8646,6 +8751,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessRecommendationTile,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessReportSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessReportSectionList',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
+                            .eventSuccessStrictEventSuccessPostEventReport,
                   ),
                 ],
               ),
@@ -8917,10 +9033,21 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Questionnaire editor folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CustomQuestionnaireFields',
+                name: 'CustomQuestionnaireField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'CustomQuestionnaireFields',
+                    name: 'CustomQuestionnaireField',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_questionnaire
+                            .eventSuccessStrictCustomQuestionnaireField,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CustomQuestionnaireSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CustomQuestionnaireSection',
                     builder:
                         _widgetbook_workspace_event_success_specimens_questionnaire
                             .eventSuccessStrictCustomQuestionnaireFields,
@@ -8944,7 +9071,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Setup body folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessModuleRows',
+                name: 'EventSuccessModuleList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Within setup body',
@@ -12407,6 +12534,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'OnboardingStepBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Step dispatch',
+                builder: _widgetbook_workspace_onboarding_catalog_screen
+                    .onboardingStepBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'OnboardingStepLayout',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -12450,7 +12587,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'GenderInterestPage',
+                name: 'OnboardingGenderInterestBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Gender and interest form',
@@ -12460,7 +12597,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'InstagramPage',
+                name: 'OnboardingInstagramBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Instagram form',
@@ -12470,7 +12607,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'NameDobPage',
+                name: 'OnboardingNameDobBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Identity form',
@@ -12480,7 +12617,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'PhotosPage',
+                name: 'OnboardingPhotosBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo grid states',
@@ -12490,12 +12627,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfilePromptsPage',
+                name: 'OnboardingProfilePromptsBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Prompt form',
                     builder: _widgetbook_workspace_onboarding_catalog_prompts
                         .profilePromptsPageStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingRunningPrefsBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Run preferences form',
+                    builder:
+                        _widgetbook_workspace_onboarding_catalog_preferences
+                            .runningPrefsPageStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingWelcomeBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Splash states',
+                    builder: _widgetbook_workspace_onboarding_catalog_welcome
+                        .welcomePageStates,
                   ),
                 ],
               ),
@@ -12510,47 +12668,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ReelBand',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Welcome reel band states',
-                    builder: _widgetbook_workspace_onboarding_catalog_reel
-                        .welcomeReelBandStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ReelRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Welcome reel row states',
-                    builder: _widgetbook_workspace_onboarding_catalog_reel
-                        .welcomeReelRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealEntrance',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Welcome reveal states',
-                    builder: _widgetbook_workspace_onboarding_catalog_reel
-                        .welcomeRevealEntranceStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RunningPrefsPage',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Run preferences form',
-                    builder:
-                        _widgetbook_workspace_onboarding_catalog_preferences
-                            .runningPrefsPageStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'StartWelcomeRouteScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12561,7 +12678,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'WelcomeFocusLockup',
+                name: 'WelcomeFocusText',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome focus lockup states',
@@ -12571,22 +12688,107 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'WelcomePage',
+                name: 'WelcomeReelList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Splash states',
-                    builder: _widgetbook_workspace_onboarding_catalog_welcome
-                        .welcomePageStates,
+                    name: 'Welcome reel band states',
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeReelBandStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'WelcomeScene',
+                name: 'WelcomeReelRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome reel row states',
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeReelRowStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'WelcomeRevealTransition',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Welcome reveal states',
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeRevealEntranceStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'WelcomeSceneLayout',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome scene states',
                     builder: _widgetbook_workspace_onboarding_catalog_reel
                         .welcomeSceneStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Steps',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingGenderInterestStep',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Step states',
+                    builder: _widgetbook_workspace_onboarding_catalog_steps
+                        .onboardingGenderInterestStepStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingInstagramStep',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Step states',
+                    builder: _widgetbook_workspace_onboarding_catalog_steps
+                        .onboardingInstagramStepStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingNameDobStep',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Step states',
+                    builder: _widgetbook_workspace_onboarding_catalog_steps
+                        .onboardingNameDobStepStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingPhotosStep',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Step states',
+                    builder: _widgetbook_workspace_onboarding_catalog_steps
+                        .onboardingPhotosStepStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingProfilePromptsStep',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Step states',
+                    builder: _widgetbook_workspace_onboarding_catalog_steps
+                        .onboardingProfilePromptsStepStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OnboardingRunningPrefsStep',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Step states',
+                    builder: _widgetbook_workspace_onboarding_catalog_steps
+                        .onboardingRunningPrefsStepStates,
                   ),
                 ],
               ),
@@ -12826,16 +13028,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'PreviewTab',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Preview tab states',
-                    builder: _widgetbook_workspace_profiles_catalog_tabs
-                        .previewTabStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'ProfileFieldRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12876,7 +13068,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileMultiEnumEntry<Labelled>',
+                name: 'ProfileMultiEnumRow<Labelled>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Multi enum entry adapter states',
@@ -12906,7 +13098,37 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfilePromptEntry',
+                name: 'ProfilePreviewBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview tab states',
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
+                        .previewTabStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePreviewSkeletonSliverBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview sliver skeleton',
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
+                        .profilePreviewSkeletonSliverBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePreviewSliverBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Preview sliver body states',
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
+                        .profilePreviewSliverBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePromptRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Prompt entry adapter states',
@@ -12936,7 +13158,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileSingleEnumEntry<Labelled>',
+                name: 'ProfileSingleEnumRow<Labelled>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Single enum entry adapter states',
@@ -12956,7 +13178,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileTabContent',
+                name: 'ProfileTabBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Edit tab content states',
@@ -13792,7 +14014,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsDataCoveragePanel',
+            name: 'UserAnalyticsDataCoverageSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Data coverage panel states',
@@ -13814,13 +14036,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsPanel',
+            name: 'UserAnalyticsReportBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Panel states',
+                name: 'Report states',
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsPanelStates,
+                        .userAnalyticsReportViewStates,
               ),
             ],
           ),
@@ -13836,13 +14058,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsReportView',
+            name: 'UserAnalyticsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Report states',
+                name: 'Panel states',
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsReportViewStates,
+                        .userAnalyticsPanelStates,
               ),
             ],
           ),
@@ -13858,7 +14080,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsTipsPanel',
+            name: 'UserAnalyticsTipsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Tips panel states',
@@ -13869,7 +14091,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsTrendPanel',
+            name: 'UserAnalyticsTrendSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Trend panel states',

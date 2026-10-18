@@ -61,7 +61,7 @@ class MicroPodCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.groups2Outlined,
             label: context
                 .l10n
@@ -127,7 +127,7 @@ class MicroPodCard extends StatelessWidget {
           ],
           gapH14,
           CompanionStageActionSection(
-            child: IncludeMeToggle(
+            child: IncludeMeField(
               label: context
                   .l10n
                   .eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInStarter,
@@ -172,7 +172,7 @@ class RotationScheduleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.syncAltRounded,
             label: context
                 .l10n
@@ -229,7 +229,7 @@ class RotationScheduleCard extends StatelessWidget {
           ],
           gapH14,
           CompanionStageActionSection(
-            child: IncludeMeToggle(
+            child: IncludeMeField(
               label: context
                   .l10n
                   .eventSuccessEventSuccessCompanionLiveCardsLabelIncludeMeInTimed,
@@ -257,7 +257,7 @@ class LiveStepContextCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.locationOnOutlined,
             label:
                 activeStep?.stage.label ??
@@ -310,37 +310,37 @@ class PreCheckInPlanningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final entries = <PreviewLine>[
+    final entries = <CompanionPreviewText>[
       if (microPodsEnabled)
-        PreviewLine(
+        CompanionPreviewText(
           icon: CatchIcons.groups2Outlined,
           text: context
               .l10n
               .eventSuccessEventSuccessCompanionLiveCardsTextSmallStarterGroupWhen,
         ),
       if (guidedRotationsEnabled)
-        PreviewLine(
+        CompanionPreviewText(
           icon: CatchIcons.syncAltRounded,
           text: context
               .l10n
               .eventSuccessEventSuccessCompanionLiveCardsTextTimedPartnerRotationsDuring,
         ),
       if (liveRevealEnabled)
-        PreviewLine(
+        CompanionPreviewText(
           icon: CatchIcons.boltRounded,
           text: context
               .l10n
               .eventSuccessEventSuccessCompanionLiveCardsTextSynchronizedPartnerRevealsAs,
         ),
       if (socialMissionsEnabled)
-        PreviewLine(
+        CompanionPreviewText(
           icon: CatchIcons.chatBubbleOutlineRounded,
           text: context
               .l10n
               .eventSuccessEventSuccessCompanionLiveCardsTextLiveConversationPromptsFrom,
         ),
       if (wingmanRequestsEnabled)
-        PreviewLine(
+        CompanionPreviewText(
           icon: CatchIcons.volunteerActivismOutlined,
           text: context
               .l10n
@@ -351,7 +351,7 @@ class PreCheckInPlanningCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.eventAvailableOutlined,
             label: context
                 .l10n
@@ -380,8 +380,12 @@ class PreCheckInPlanningCard extends StatelessWidget {
   }
 }
 
-class PreviewLine extends StatelessWidget {
-  const PreviewLine({super.key, required this.icon, required this.text});
+class CompanionPreviewText extends StatelessWidget {
+  const CompanionPreviewText({
+    super.key,
+    required this.icon,
+    required this.text,
+  });
 
   final IconData icon;
   final String text;
@@ -403,8 +407,8 @@ class PreviewLine extends StatelessWidget {
   }
 }
 
-class IncludeMeToggle extends StatelessWidget {
-  const IncludeMeToggle({
+class IncludeMeField extends StatelessWidget {
+  const IncludeMeField({
     super.key,
     required this.label,
     required this.included,
@@ -474,7 +478,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.qrCode2Rounded,
             label: context
                 .l10n
@@ -565,7 +569,7 @@ class StagePromptCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.chatBubbleOutlineRounded,
             label: title ?? context.l10n.eventSuccessSocialMissionTitle,
             color: t.primary,
@@ -604,7 +608,7 @@ class StageConversationCueCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(icon: icon, label: title, color: t.primary),
+          StageSectionHeader(icon: icon, label: title, color: t.primary),
           if (subtitle != null) ...[
             gapH8,
             Text(
@@ -613,15 +617,15 @@ class StageConversationCueCard extends StatelessWidget {
             ),
           ],
           gapH14,
-          for (final cue in cues.take(3)) StageCueLine(cue: cue),
+          for (final cue in cues.take(3)) StageCueCard(cue: cue),
         ],
       ),
     );
   }
 }
 
-class StageCueLine extends StatelessWidget {
-  const StageCueLine({super.key, required this.cue});
+class StageCueCard extends StatelessWidget {
+  const StageCueCard({super.key, required this.cue});
 
   final EventSuccessConversationCue cue;
 
@@ -696,8 +700,8 @@ class StageCueLine extends StatelessWidget {
   }
 }
 
-class StageSectionLabel extends StatelessWidget {
-  const StageSectionLabel({
+class StageSectionHeader extends StatelessWidget {
+  const StageSectionHeader({
     super.key,
     required this.icon,
     required this.label,

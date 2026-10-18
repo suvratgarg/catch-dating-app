@@ -2,21 +2,23 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class InstagramPage extends ConsumerStatefulWidget {
-  const InstagramPage({super.key});
+class OnboardingInstagramBody extends ConsumerStatefulWidget {
+  const OnboardingInstagramBody({super.key});
 
   @override
-  ConsumerState<InstagramPage> createState() => _InstagramPageState();
+  ConsumerState<OnboardingInstagramBody> createState() =>
+      _OnboardingInstagramBodyState();
 }
 
-class _InstagramPageState extends ConsumerState<InstagramPage> {
+class _OnboardingInstagramBodyState
+    extends ConsumerState<OnboardingInstagramBody> {
   late final TextEditingController _controller;
 
   @override

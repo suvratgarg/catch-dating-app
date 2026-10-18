@@ -130,30 +130,49 @@ class EventRehearsalRunSection extends StatelessWidget {
             children: [
               ...switch (session.status) {
                 EventRehearsalStatus.draft || EventRehearsalStatus.ready => [
-                  _EventRehearsalControlButton(
+                  CatchButton(
                     label: context.l10n.hostEventRehearsalStart,
-                    action: EventRehearsalControlAction.start,
-                    variant: CatchButtonVariant.primary,
-                    isLoading: isLoading,
-                    onControl: onControl,
+                    size: CatchButtonSize.sm,
+                    status: isLoading
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                    onPressed: isLoading
+                        ? null
+                        : () => onControl(
+                            EventRehearsalControlAction.start,
+                            null,
+                          ),
                   ),
                 ],
                 EventRehearsalStatus.running => [
-                  _EventRehearsalControlButton(
+                  CatchButton(
                     label: context.l10n.hostEventRehearsalPause,
-                    action: EventRehearsalControlAction.pause,
+                    size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
-                    isLoading: isLoading,
-                    onControl: onControl,
+                    status: isLoading
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                    onPressed: isLoading
+                        ? null
+                        : () => onControl(
+                            EventRehearsalControlAction.pause,
+                            null,
+                          ),
                   ),
                 ],
                 EventRehearsalStatus.paused => [
-                  _EventRehearsalControlButton(
+                  CatchButton(
                     label: context.l10n.hostEventRehearsalResume,
-                    action: EventRehearsalControlAction.resume,
-                    variant: CatchButtonVariant.primary,
-                    isLoading: isLoading,
-                    onControl: onControl,
+                    size: CatchButtonSize.sm,
+                    status: isLoading
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                    onPressed: isLoading
+                        ? null
+                        : () => onControl(
+                            EventRehearsalControlAction.resume,
+                            null,
+                          ),
                   ),
                 ],
                 EventRehearsalStatus.complete ||
@@ -161,19 +180,33 @@ class EventRehearsalRunSection extends StatelessWidget {
               },
               if (session.hasStarted &&
                   session.status != EventRehearsalStatus.complete) ...[
-                _EventRehearsalControlButton(
+                CatchButton(
                   label: context.l10n.hostEventRehearsalPrevious,
-                  action: EventRehearsalControlAction.previous,
+                  size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.ghost,
-                  isLoading: isLoading,
-                  onControl: onControl,
+                  status: isLoading
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  onPressed: isLoading
+                      ? null
+                      : () => onControl(
+                          EventRehearsalControlAction.previous,
+                          null,
+                        ),
                 ),
-                _EventRehearsalControlButton(
+                CatchButton(
                   label: context.l10n.hostEventRehearsalNext,
-                  action: EventRehearsalControlAction.advance,
+                  size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
-                  isLoading: isLoading,
-                  onControl: onControl,
+                  status: isLoading
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  onPressed: isLoading
+                      ? null
+                      : () => onControl(
+                          EventRehearsalControlAction.advance,
+                          null,
+                        ),
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalAdvanceFive,
@@ -198,12 +231,19 @@ class EventRehearsalRunSection extends StatelessWidget {
                         ),
                   semanticsLabel: context.l10n.hostEventRehearsalAdvanceFifteen,
                 ),
-                _EventRehearsalControlButton(
+                CatchButton(
                   label: context.l10n.hostEventRehearsalComplete,
-                  action: EventRehearsalControlAction.complete,
+                  size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.danger,
-                  isLoading: isLoading,
-                  onControl: onControl,
+                  status: isLoading
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  onPressed: isLoading
+                      ? null
+                      : () => onControl(
+                          EventRehearsalControlAction.complete,
+                          null,
+                        ),
                 ),
               ],
             ],
@@ -212,30 +252,4 @@ class EventRehearsalRunSection extends StatelessWidget {
       ],
     );
   }
-}
-
-class _EventRehearsalControlButton extends StatelessWidget {
-  const _EventRehearsalControlButton({
-    required this.label,
-    required this.action,
-    required this.variant,
-    required this.isLoading,
-    required this.onControl,
-  });
-
-  final String label;
-  final EventRehearsalControlAction action;
-  final CatchButtonVariant variant;
-  final bool isLoading;
-  final void Function(EventRehearsalControlAction action, int? minutes)
-  onControl;
-
-  @override
-  Widget build(BuildContext context) => CatchButton(
-    label: label,
-    size: CatchButtonSize.sm,
-    variant: variant,
-    status: (isLoading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-    onPressed: isLoading ? null : () => onControl(action, null),
-  );
 }

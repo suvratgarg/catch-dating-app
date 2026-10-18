@@ -700,7 +700,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `MetricGrid` | `_HostAnalyticsMetricGrid` / `_UserAnalyticsMetricGrid` | Private source-backed candidates exist in host and user analytics panels; needs shared analytics-grid extraction before formal component coverage. |
 | `PhotoGrid` | `PhotoGrid` | Source-backed widget exists in `lib/image_uploads/presentation/photo_grid.dart` and is embedded in profile Widgetbook states; standalone component entry still pending. |
 | `ProfilePhoto` | `ProfilePhoto` / `ProfilePhotoEditorScreen` | Domain model and editor route exist; design component boundary likely belongs to photo slot/grid rather than the data model. |
-| `ProfilePrompt` | `ProfilePromptsPage` / profile inline prompt editors | Source-backed flow exists, but no standalone prompt-card primitive is currently exposed. |
+| `ProfilePrompt` | `OnboardingProfilePromptsBody` / profile inline prompt editors | Source-backed flow exists, but no standalone prompt-card primitive is currently exposed. |
 | `QuickActions` | `QuickActions` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Dashboard primitives`; direct component-contract decision still pending. |
 | `RosterRow` | `ParticipantRow` | Formal `catch.roster_row` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RosterTable` | `ParticipantTable` | Formal `catch.roster_table` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |

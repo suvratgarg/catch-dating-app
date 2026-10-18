@@ -197,7 +197,7 @@ untouched (same id/category).
 
 The prompt editor now hides the header `body` while expanded (single source
 of truth in the control; `918297d5a`). The single/multi choice editors in
-`lib/user_profile/presentation/widgets/inline_editor_choice.dart` may still
+`lib/user_profile/presentation/widgets/profile_inline_choice_editor.dart` may still
 render the joined value in the header while the control shows the selected
 chips. FIRST verify against the rendered tree/tests (see
 `test/profile/profile_widgets_test.dart` `multi-choice selected chips move

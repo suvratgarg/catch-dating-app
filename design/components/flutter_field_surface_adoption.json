@@ -179,11 +179,11 @@
       "semanticFieldCount": 5,
       "bindings": [
         {"file": "lib/event_success/presentation/event_success_companion_body_screen.dart", "symbol": "EventSuccessCompanionScreen"},
-        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "EventSuccessFeedbackForm"}
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart", "symbol": "EventSuccessFeedbackForm"}
       ],
       "anchors": [
-        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "CatchField.toggle", "expected": 1},
-        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "CatchField.input", "expected": 1}
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart", "symbol": "CatchField.toggle", "expected": 1},
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart", "symbol": "CatchField.input", "expected": 1}
       ],
       "targetModes": ["CatchField.control", "CatchField.choices", "CatchField.stepper"],
       "preserve": ["privacy rules", "feedback state", "specialized rating interaction"],

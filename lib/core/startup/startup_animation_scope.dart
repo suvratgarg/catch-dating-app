@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 /// Session-scoped startup state shared with route-owned welcome surfaces.
 ///
-/// The consumer cold-start reel and [WelcomePage] use the same visual scene.
+/// The consumer cold-start reel and [OnboardingWelcomeBody] use the same visual scene.
 /// This scope prevents the route from replaying that reel after bootstrap.
 class StartupAnimationScope extends InheritedWidget {
   const StartupAnimationScope({

@@ -50,8 +50,8 @@ source of truth when in doubt; `strings.json` = phrase bank;
    restoration cannot dispose the animation mid-flight. Host keeps the existing
    static native splash → force-update-gate handoff.
 
-The Welcome reel remains the signed-out landing sequence when `WelcomePage` is
-mounted. Consumer cold boot reuses its provider-free `WelcomeScene` with landing
+The Welcome reel remains the signed-out landing sequence when `OnboardingWelcomeBody` is
+mounted. Consumer cold boot reuses its provider-free `WelcomeSceneLayout` with landing
 actions suppressed; the animation is therefore above routing rather than owned
 by `/start`.
 
@@ -202,7 +202,7 @@ to device; when in doubt match `reference/Splash-prototype.html`):
 1. starts critical initialization and the boot experience concurrently;
 2. waits for the matching Flutter splash mark to decode and paint before
    removing the native splash;
-3. fades into `CatchConsumerBootScreen`, which reuses `WelcomeScene` without
+3. fades into `CatchConsumerBootScreen`, which reuses `WelcomeSceneLayout` without
    signed-out body/CTA content;
 4. keeps auth and routing unmounted until both initialization and motion finish,
    then atomically replaces the boot `MaterialApp` with the initialized
@@ -211,7 +211,7 @@ to device; when in doubt match `reference/Splash-prototype.html`):
    consumer navigation shell;
 5. preloads package metadata so `ForceUpdateGate` resolves without flashing a
    second startup-loader frame;
-6. marks the process reel as played so route-owned `WelcomePage` lands without
+6. marks the process reel as played so route-owned `OnboardingWelcomeBody` lands without
    replaying it;
 7. lands immediately for reduced-motion users and exposes tap-to-skip;
 8. holds the landed reel if initialization runs long; and
@@ -222,7 +222,7 @@ Host, web, and desktop retain the prior startup behavior.
 ## Part 6 — Fixed focus lockup and responsive handoff `[codex]`
 
 The Consumer boot handoff and every reel frame share one
-`WelcomeFocusLockup` contract:
+`WelcomeFocusText` contract:
 
 1. The static Flutter `Catch_` and reel `Catch` use the same `left`, `top`, and
    right-bound calculations. `Catch` must not jump when the handoff begins.
@@ -297,12 +297,12 @@ The installable Host app has a distinct static launch contract:
 | Part 4 Archivo type and motion/layout tokenization | aligned | `CatchTextStyles.welcomeReelHeadline`, `CatchTextStyles.welcomeIntroBody`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
 | Part 4 geometry anchors | aligned with accepted drift | `test/onboarding/onboarding_widgets_test.dart` covers Catch/focus alphabetic-baseline equality, a separate below-text underline, 78%-width font variation, and CTA anchors; `SPLASH-WELCOME-DEBT-001` defers only the single-line `108` inset |
 | Part 4 reel mechanics and phrase bank | aligned | `welcomePhraseBank` is the runtime bank; `test/onboarding/onboarding_widgets_test.dart` verifies object, activity kind, pigment, landing index, and 2x rendered rows against `strings.json` |
-| Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
-| Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
+| Part 4 focus/color math and band mask | aligned | `WelcomeReelRow` and `WelcomeReelList` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
+| Part 4 landing and reduced motion | aligned | `OnboardingWelcomeBody` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
 | Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/catalog/welcome.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
 | Part 5 Consumer cold-boot reel | aligned | `lib/consumer_bootstrap.dart` coordinates decoded first-frame handoff, reel/init completion, reduced motion, skip, retry, delayed router mount, and an atomic boot-root replacement; `lib/core/presentation/app_shell.dart` keeps background FCM completion from rebuilding the keyed consumer navigation shell; the focused bootstrap and shell tests cover both contracts |
-| Part 6 fixed focus lockup | aligned | `WelcomeFocusLockup` owns the single-baseline `Catch ${phrase}.` sentence and measured phrase-only underline; `ReelBand` hides the moving focus row while `WelcomeScene` paints the fixed overlay |
-| Part 6 static/reel anchor and responsive matrix | aligned | `CatchConsumerBootScreen` and `WelcomeScene` share `CatchLayout` anchor helpers; `test/core/consumer_bootstrap_test.dart` proves exact handoff coordinates and `test/onboarding/welcome_reel_handoff_test.dart` covers intermediate motion, 320–430pt widths, safe areas, and enlarged text |
+| Part 6 fixed focus lockup | aligned | `WelcomeFocusText` owns the single-baseline `Catch ${phrase}.` sentence and measured phrase-only underline; `WelcomeReelList` hides the moving focus row while `WelcomeSceneLayout` paints the fixed overlay |
+| Part 6 static/reel anchor and responsive matrix | aligned | `CatchConsumerBootScreen` and `WelcomeSceneLayout` share `CatchLayout` anchor helpers; `test/core/consumer_bootstrap_test.dart` proves exact handoff coordinates and `test/onboarding/welcome_reel_handoff_test.dart` covers intermediate motion, 320–430pt widths, safe areas, and enlarged text |
 | Part 6 Consumer iOS native anchor | aligned | `tool/branding/generate_native_brand_assets.dart` owns the Consumer-only LaunchScreen constraints; the generated storyboard aligns the mark's alpha bounds to the same reference/safe-area/max-width equations without changing Host |
 | Part 7 Host launcher and splash identity | aligned | `tool/branding/generate_catch_icon.swift` applies the locked Archivo axes to singular `Catch Host`; `generate_native_brand_assets.dart` projects Host icon/splash assets into `apps/host`; `test/tooling/host_native_branding_test.dart` rejects fallback fonts, plural naming, clipped marks, and missing installable-target outputs |
 | Part 7 Host static routing handoff | aligned | `SplashScreen` selects Host light/dark marks by role; `test/core/host_startup_branding_test.dart`, `test/core/consumer_bootstrap_test.dart`, and `test/routing/router_redirect_test.dart` prove no Host reel and direct Login/Home routing |

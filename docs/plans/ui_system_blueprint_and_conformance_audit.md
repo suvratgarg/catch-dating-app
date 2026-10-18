@@ -650,7 +650,9 @@ synonym problem the grammar removed).
 Phase 7b.2 (2026-10-18) applied the same test to the 174 remaining name
 failures. Bubble (`MessageBubble`), Form (`LaunchAccessApplicationForm`) and
 Listener (`ForegroundNotificationListener`) are what agents write and no
-existing role covers them, so they join the list. The other tails are synonyms
+existing role covers them, so they join the list; Transition joins in slice 3
+for motion-only wrappers (`WelcomeRevealTransition`), the name Flutter itself
+uses. The other tails are synonyms
 and became redirects: Selector, Scrim, Block, Controls, Loading, Wrap, Group,
 Stat, Value and Artwork.
 
@@ -1439,10 +1441,9 @@ Deviations and remaining 7b work:
 - The splash screen's Widgetbook catalog id still reads
   `core.widgets.catch_startup_loading_screen` because `lib/l10n/app_en.arb`
   references it and another active task holds that file. The same file's
-  string descriptions still cite six pre-rename source paths
-  (`catch_startup_loading_screen.dart`, `catch_cover_story.dart`,
-  `catch_roster_board.dart`, `catch_profile_view.dart`, `chat_input_bar.dart`,
-  `catch_event_activity_cards.dart`); update them with the catalog id.
+  string descriptions cite source paths, about forty of which Phase 7b and
+  7b.2 renamed (they surface in `app_localizations.dart` doc comments);
+  update them with the catalog id once that task lands.
 - Materials (2026-10-18): `CatchTable` (T1, with `CatchTableRow` and
   `CatchTableScope`) is extracted from the participant table shell, and
   `ParticipantTable` binds it through a shared `participantTableColumns`
@@ -1514,6 +1515,19 @@ render (`SavedEventsAgendaList`, `ExploreFeedSliverBody`); and
 `ExploreEventsEmptySliver` became `ExploreFeedEmptyState` because
 `ExploreEventsEmptyState` already names its data. Renamed libraries carry
 their `part` files and generated parts with them.
+
+Slice 3 (2026-10-18): event success, event rehearsal, onboarding, profile
+editing and user analytics; the ratchet fell from 162 to 84. The connected
+onboarding pager pages are `Onboarding<Step>Body` and keep their provider-free
+`Onboarding<Step>Step` (files and `_state` files now `onboarding_<step>_step`);
+Panel became Section throughout user analytics; `WelcomeScene` is
+`WelcomeSceneLayout`. The moved files brought nine private widget classes and
+one widget helper to the gate: the thin `_EventRehearsalControlButton` folded
+into `CatchButton` at its six call sites, five single-use rehearsal pickers and
+rows and the reveal vignette were inlined, and `FirstHelloMissionEditor`,
+`EventSuccessMarqueeImage` and `CustomQuestionnaireField` (with a
+`CustomQuestionnaireFieldState` record replacing the `_inputField` helper)
+became public, previewed widgets.
 
 Deferred: `DashboardFullSliverBody`'s file rename and the
 `EventCheckInQrScanner` rename both touch

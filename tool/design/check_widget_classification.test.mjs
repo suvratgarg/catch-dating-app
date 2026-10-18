@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 
 import {validateWidgetClassification} from "./check_widget_classification.mjs";
 import {publicWidgetNamingProblems} from "./component_concepts.mjs";
+import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
 import {
   buildWidgetClassification,
   collectProductionWidgetClassificationDeclarations,
@@ -48,12 +49,15 @@ test("source-derived widget classification passes its structural and semantic co
   assert.deepEqual(validate(classification), []);
 });
 
-test("classification reports existing feature naming debt without treating app bootstraps as feature UI", () => {
-  const legacyFeature = classification.widgets.find((widget) =>
-    widget.file === "lib/auth/presentation/otp_step.dart" && widget.name === "OtpStep");
-  assert.ok(legacyFeature);
-  assert.ok(legacyFeature.flags.includes("noncanonical-feature-widget-name"));
-  assert.ok(legacyFeature.flags.includes("noncanonical-feature-widget-file"));
+test("classification reports feature naming debt without treating app bootstraps as feature UI", () => {
+  // The Phase 7b.2 sweep drives the real tree to zero naming debt, so the flag
+  // contract is proven on a legacy-shaped fixture, not on a surviving widget.
+  assert.deepEqual(featureWidgetNamingIssues({
+    file: "lib/auth/presentation/otp_page.dart",
+    name: "OtpPage",
+    visibility: "public",
+    classKind: "widget",
+  }), ["noncanonical-feature-widget-name", "noncanonical-feature-widget-file"]);
   const bootstrap = classification.widgets.find((widget) =>
     widget.file === "apps/host/lib/host_platform_app.dart" && widget.name === "HostPlatformApp");
   assert.ok(bootstrap);

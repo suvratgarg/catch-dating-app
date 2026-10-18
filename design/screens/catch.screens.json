@@ -779,7 +779,7 @@
           "topEdge": "body-owned"
         }
       ],
-      "reason": "A deterministic route adapter gives the intentionally embeddable WelcomePage an explicit standalone surface owner."
+      "reason": "A deterministic route adapter gives the intentionally embeddable OnboardingWelcomeBody an explicit standalone surface owner."
     },
     "screen.auth.phone_entry": {
       "owners": [
@@ -6325,7 +6325,7 @@
               "ArrivalMission"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_card.dart",
               "symbol": "FirstHelloCheckInCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6355,7 +6355,7 @@
               "PreArrivalPlan"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
               "symbol": "PreCheckInPlanningCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6386,7 +6386,7 @@
               "MatchClues"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart",
               "symbol": "CompatibilityQuestionnaireSection"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6418,7 +6418,7 @@
               "SocialPrompt"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
               "symbol": "LiveStepContextCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6449,7 +6449,7 @@
               "PeopleRows"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
               "symbol": "MicroPodCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6512,7 +6512,7 @@
               "CandidateList"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart",
               "symbol": "WingmanRequestSection"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6544,7 +6544,7 @@
               "PostEventOpeners"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow_card.dart",
               "symbol": "PrivateAfterglowRecapCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6575,7 +6575,7 @@
               "SafetyConcern"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart",
               "symbol": "EventSuccessFeedbackForm"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -8944,12 +8944,12 @@
         {
           "id": "profile_self_inline_save_pending",
           "status": "captured",
-          "notes": "Deterministic ProfileTabContent capture opens the Education inline editor, holds the real ProfileEditController save pending, and captures the disabled chip plus loading Done button."
+          "notes": "Deterministic ProfileTabBody capture opens the Education inline editor, holds the real ProfileEditController save pending, and captures the disabled chip plus loading Done button."
         },
         {
           "id": "profile_self_inline_save_error",
           "status": "captured",
-          "notes": "Deterministic ProfileTabContent capture opens a prompt inline editor, drives a failing ProfileEditController save, and captures the retained drawer error state."
+          "notes": "Deterministic ProfileTabBody capture opens a prompt inline editor, drives a failing ProfileEditController save, and captures the retained drawer error state."
         },
         {
           "id": "profile_self_text_scale_2",
@@ -9129,7 +9129,7 @@
           "id": "preview_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "PreviewTab maps the current UserProfile into PublicProfile and renders ProfileSurface/ProfileBody without reaction affordances.",
+          "source": "ProfilePreviewBody maps the current UserProfile into PublicProfile and renders ProfileSurface/ProfileBody without reaction affordances.",
           "captureIds": [
             "profile_self",
             "profile_self_preview_tab"
@@ -9224,7 +9224,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ProfileScreen owns tab/scroll controllers and preview bridge physics, then renders typed SelfProfileScreenState branches for loading/error/unavailable/ready. SelfProfileEditTabState owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory owns inline edit patch creation, while ProfileTabContent still derives basics/about/running/lifestyle row widget descriptors inline.",
+        "currentLayout": "ProfileScreen owns tab/scroll controllers and preview bridge physics, then renders typed SelfProfileScreenState branches for loading/error/unavailable/ready. SelfProfileEditTabState owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory owns inline edit patch creation, while ProfileTabBody still derives basics/about/running/lifestyle row widget descriptors inline.",
         "targetLayout": "ProfileScreen should resolve current-profile, upload, save, and preview projection into SelfProfileScreenState and compose provider-free header, photo grid, info sections, inline editors, and preview sections from immutable view data plus typed callbacks.",
         "sections": [
           {
@@ -9300,7 +9300,7 @@
               "SectionStack"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
               "symbol": "ProfileTabSliverBody"
             },
             "currentOwner": "ProfileScreen",
@@ -9315,7 +9315,7 @@
               "long_values",
               "text_scale_2"
             ],
-            "migration": "SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. ProfileTabContent renders those descriptors through canonical CatchSection and CatchField composition while photo and inline-save behavior remain owned by their existing controllers.",
+            "migration": "SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. ProfileTabBody renders those descriptors through canonical CatchSection and CatchField composition while photo and inline-save behavior remain owned by their existing controllers.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -9362,7 +9362,7 @@
               "ProfileFieldRow"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
               "symbol": "ProfileFieldRow"
             },
             "currentOwner": "ProfileTabSliverBody",
@@ -9380,7 +9380,7 @@
               "ungrouped",
               "empty_optional"
             ],
-            "migration": "SelfProfileEditTabState supplies immutable rows and ProfileTabContent renders them through CatchSection/CatchField. Keep the primitive contracts stable across self-profile, host profile, and future settings reuse.",
+            "migration": "SelfProfileEditTabState supplies immutable rows and ProfileTabBody renders them through CatchSection/CatchField. Keep the primitive contracts stable across self-profile, host profile, and future settings reuse.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -9396,7 +9396,7 @@
               "InlineRangeEditor"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
               "symbol": "ProfileTabSliverBody"
             },
             "currentOwner": "ProfileTabSliverBody",
@@ -9432,8 +9432,8 @@
               "ProfileSurface"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/preview_tab.dart",
-              "symbol": "PreviewTab"
+              "file": "lib/user_profile/presentation/widgets/profile_preview_body.dart",
+              "symbol": "ProfilePreviewBody"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free profile preview section",
@@ -19860,15 +19860,15 @@
         }
       ],
       "source": {
-        "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-        "symbol": "WelcomePage"
+        "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+        "symbol": "OnboardingWelcomeBody"
       },
       "stateController": {
-        "primary": "WelcomePage + local welcome animation controllers + appAnalyticsProvider",
+        "primary": "OnboardingWelcomeBody + local welcome animation controllers + appAnalyticsProvider",
         "files": [
           {
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           },
           {
             "file": "lib/core/analytics/app_analytics.dart",
@@ -19876,7 +19876,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "WelcomePage owns the logged-out start route, local splash/reel animation controllers, reduced-motion landing behavior, analytics events, and CTA routing to auth or clubs. A future StartWelcomeScreenState should make motion mode, landed/direct state, and CTA intents explicit before strict visual comparison."
+        "notes": "OnboardingWelcomeBody owns the logged-out start route, local splash/reel animation controllers, reduced-motion landing behavior, analytics events, and CTA routing to auth or clubs. A future StartWelcomeScreenState should make motion mode, landed/direct state, and CTA intents explicit before strict visual comparison."
       },
       "designRefs": [
         {
@@ -19898,7 +19898,7 @@
         {
           "id": "start_welcome",
           "status": "captured",
-          "notes": "Deterministic WelcomePage(playIntro: false) capture for the landed start state."
+          "notes": "Deterministic OnboardingWelcomeBody(playIntro: false) capture for the landed start state."
         },
         {
           "id": "start_welcome_animated_reel",
@@ -19908,7 +19908,7 @@
         {
           "id": "start_welcome_reduced_motion",
           "status": "captured",
-          "notes": "Reduced-motion capture proving WelcomePage lands immediately when animations are disabled."
+          "notes": "Reduced-motion capture proving OnboardingWelcomeBody lands immediately when animations are disabled."
         },
         {
           "id": "start_welcome_text_scale_2",
@@ -19921,9 +19921,9 @@
           "id": "animated_reel",
           "kind": "populated",
           "status": "captured",
-          "source": "Production WelcomePage starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
+          "source": "Production OnboardingWelcomeBody starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome_animated_reel"
@@ -19937,9 +19937,9 @@
           "id": "landed_direct",
           "kind": "populated",
           "status": "captured",
-          "source": "WelcomePage(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
+          "source": "OnboardingWelcomeBody(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome",
@@ -19956,7 +19956,7 @@
           "status": "captured",
           "source": "The primary CTA routes to auth with the current location as from=, while the secondary CTA routes to the clubs surface.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome",
@@ -19972,9 +19972,9 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "WelcomePage lands immediately when MediaQuery.disableAnimations is true.",
+          "source": "OnboardingWelcomeBody lands immediately when MediaQuery.disableAnimations is true.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome_reduced_motion"
@@ -19990,7 +19990,7 @@
           "status": "captured",
           "source": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome_text_scale_2"
@@ -20003,7 +20003,7 @@
           "status": "captured",
           "source": "The start route intentionally uses the sunset dark landing palette; the current capture covers that dark branded state.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome",
@@ -20014,7 +20014,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "WelcomePage is a route widget that owns local animation controllers, analytics events, CTA callbacks, responsive scene layout, and the visible splash/reel/landing composition.",
+        "currentLayout": "OnboardingWelcomeBody is a route widget that owns local animation controllers, analytics events, CTA callbacks, responsive scene layout, and the visible splash/reel/landing composition.",
         "targetLayout": "Start Welcome should expose a tiny route adapter for motion mode and CTA intents, then compose provider-free reel, copy, and CTA sections backed by shared tokens and button primitives.",
         "sections": [
           {
@@ -20026,10 +20026,10 @@
               "StartWelcomeScreenState"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomePage"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "OnboardingWelcomeBody"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "StartWelcomeScreenState route adapter",
             "dependencies": [
               "catch.button"
@@ -20048,13 +20048,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "WelcomeScene"
+              "WelcomeSceneLayout"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomeScene"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "WelcomeSceneLayout"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "provider-free welcome scene section",
             "dependencies": [
               "catch.surface"
@@ -20076,10 +20076,10 @@
               "WelcomeActions"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomePage"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "OnboardingWelcomeBody"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "provider-free welcome CTA section",
             "dependencies": [
               "catch.button"
@@ -20671,79 +20671,79 @@
             "symbol": "OnboardingTopBarState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
-            "symbol": "NameDobPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+            "symbol": "OnboardingNameDobBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/name_dob_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step_state.dart",
             "symbol": "OnboardingNameDobState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
             "symbol": "OnboardingNameDobStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-            "symbol": "GenderInterestPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+            "symbol": "OnboardingGenderInterestBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart",
             "symbol": "OnboardingGenderInterestState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
             "symbol": "OnboardingGenderInterestStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/instagram_page.dart",
-            "symbol": "InstagramPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
+            "symbol": "OnboardingInstagramBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/instagram_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_instagram_step_state.dart",
             "symbol": "OnboardingInstagramState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/instagram_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
             "symbol": "OnboardingInstagramStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/photos_page.dart",
-            "symbol": "PhotosPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+            "symbol": "OnboardingPhotosBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/photos_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step_state.dart",
             "symbol": "OnboardingPhotosState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/photos_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
             "symbol": "OnboardingPhotosStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-            "symbol": "ProfilePromptsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+            "symbol": "OnboardingProfilePromptsBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart",
             "symbol": "OnboardingProfilePromptsState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
             "symbol": "OnboardingProfilePromptsStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-            "symbol": "RunningPrefsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+            "symbol": "OnboardingRunningPrefsBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart",
             "symbol": "OnboardingRunningPrefsState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
             "symbol": "OnboardingRunningPrefsStep"
           }
         ],
@@ -20961,10 +20961,10 @@
           "id": "welcome_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders WelcomePage.",
+          "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders OnboardingWelcomeBody.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "onboarding_welcome"
@@ -20978,10 +20978,10 @@
           "id": "name_dob_step",
           "kind": "populated",
           "status": "captured",
-          "source": "NameDobPage owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
+          "source": "OnboardingNameDobBody owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "NameDobPage/Identity form"
+            "OnboardingNameDobBody/Identity form"
           ],
           "captureIds": [
             "onboarding_name_dob",
@@ -20997,10 +20997,10 @@
           "id": "gender_interest_step",
           "kind": "populated",
           "status": "captured",
-          "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
+          "source": "OnboardingGenderInterestBody owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "GenderInterestPage/Gender and interest form"
+            "OnboardingGenderInterestBody/Gender and interest form"
           ],
           "captureIds": [
             "onboarding_gender_interest",
@@ -21016,10 +21016,10 @@
           "id": "instagram_step",
           "kind": "populated",
           "status": "captured",
-          "source": "InstagramPage owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
+          "source": "OnboardingInstagramBody owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "InstagramPage/Instagram form"
+            "OnboardingInstagramBody/Instagram form"
           ],
           "captureIds": [
             "onboarding_instagram",
@@ -21032,10 +21032,10 @@
           "id": "photos_photo_gate",
           "kind": "empty",
           "status": "captured",
-          "source": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
+          "source": "OnboardingPhotosBody enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "PhotosPage/Photo grid states"
+            "OnboardingPhotosBody/Photo grid states"
           ],
           "captureIds": [
             "onboarding_photos_gate",
@@ -21053,10 +21053,10 @@
           "id": "prompts_step",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfilePromptsPage owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
+          "source": "OnboardingProfilePromptsBody owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "ProfilePromptsPage/Prompt form"
+            "OnboardingProfilePromptsBody/Prompt form"
           ],
           "captureIds": [
             "onboarding_prompts_empty",
@@ -21070,10 +21070,10 @@
           "id": "running_prefs_step",
           "kind": "populated",
           "status": "captured",
-          "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
+          "source": "OnboardingRunningPrefsBody owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "RunningPrefsPage/Run preferences form"
+            "OnboardingRunningPrefsBody/Run preferences form"
           ],
           "captureIds": [
             "onboarding_running_prefs"
@@ -21091,8 +21091,8 @@
           "source": "Step pages validate required fields before advancing or completing the flow.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "NameDobPage/Identity form",
-            "GenderInterestPage/Gender and interest form"
+            "OnboardingNameDobBody/Identity form",
+            "OnboardingGenderInterestBody/Gender and interest form"
           ],
           "captureIds": [
             "onboarding_name_dob_validation_error",
@@ -21127,7 +21127,7 @@
           "source": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "GenderInterestPage/Gender and interest form"
+            "OnboardingGenderInterestBody/Gender and interest form"
           ],
           "captureIds": [
             "onboarding_save_profile_pending",
@@ -21145,8 +21145,8 @@
           "source": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "ProfilePromptsPage/Prompt form",
-            "RunningPrefsPage/Run preferences form"
+            "OnboardingProfilePromptsBody/Prompt form",
+            "OnboardingRunningPrefsBody/Run preferences form"
           ],
           "captureIds": [
             "onboarding_complete_run_prefs_pending",
@@ -21252,10 +21252,10 @@
               "OnboardingWelcomeStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomePage"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "OnboardingWelcomeBody"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "shared welcome/start step section",
             "dependencies": [
               "catch.button"
@@ -21275,10 +21275,10 @@
               "OnboardingIdentitySteps"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
-              "symbol": "NameDobPage"
+              "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+              "symbol": "OnboardingNameDobBody"
             },
-            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; GenderInterestPage adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; InstagramPage adapter over OnboardingInstagramState + OnboardingInstagramStep",
+            "currentOwner": "OnboardingNameDobBody adapter over OnboardingNameDobState + OnboardingNameDobStep; OnboardingGenderInterestBody adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; OnboardingInstagramBody adapter over OnboardingInstagramState + OnboardingInstagramStep",
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
@@ -21304,10 +21304,10 @@
               "OnboardingPhotosStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/photos_page.dart",
+              "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
               "symbol": "OnboardingPhotosStep"
             },
-            "currentOwner": "PhotosPage adapter over OnboardingPhotosState + OnboardingPhotosStep",
+            "currentOwner": "OnboardingPhotosBody adapter over OnboardingPhotosState + OnboardingPhotosStep",
             "targetOwner": "provider-free photos step section plus upload controller seam",
             "dependencies": [
               "catch.button",
@@ -21318,7 +21318,7 @@
               "save_profile_mutation",
               "text_scale_2"
             ],
-            "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while PhotosPage retains provider watches, upload/editor side effects, and controller navigation."
+            "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while OnboardingPhotosBody retains provider watches, upload/editor side effects, and controller navigation."
           },
           {
             "id": "section.onboarding.prompts_step",
@@ -21329,10 +21329,10 @@
               "OnboardingPromptsStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-              "symbol": "ProfilePromptsPage"
+              "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+              "symbol": "OnboardingProfilePromptsBody"
             },
-            "currentOwner": "ProfilePromptsPage adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
+            "currentOwner": "OnboardingProfilePromptsBody adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
             "targetOwner": "provider-free prompts step section",
             "dependencies": [
               "catch.field",
@@ -21343,7 +21343,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while ProfilePromptsPage retains provider reads, controller listeners, and completion mutation execution."
+            "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while OnboardingProfilePromptsBody retains provider reads, controller listeners, and completion mutation execution."
           },
           {
             "id": "section.onboarding.running_prefs_step",
@@ -21354,10 +21354,10 @@
               "OnboardingRunningPrefsStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+              "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
               "symbol": "OnboardingRunningPrefsStep"
             },
-            "currentOwner": "RunningPrefsPage adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
+            "currentOwner": "OnboardingRunningPrefsBody adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
             "targetOwner": "provider-free running preferences step section",
             "dependencies": [
               "catch.chip",
@@ -21369,7 +21369,7 @@
               "complete_mutation",
               "text_scale_2"
             ],
-            "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while RunningPrefsPage retains profile seeding, provider watches, controller mutation execution, and route side effects."
+            "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while OnboardingRunningPrefsBody retains profile seeding, provider watches, controller mutation execution, and route side effects."
           }
         ]
       },
@@ -21397,7 +21397,7 @@
         {
           "id": "DS-ONBOARDING-005",
           "status": "open",
-          "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: InstagramPage and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
+          "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: OnboardingInstagramBody and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
         },
         {
           "id": "DS-ONBOARDING-006",

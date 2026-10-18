@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -13,8 +13,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RunningPrefsPage extends ConsumerStatefulWidget {
-  const RunningPrefsPage({
+class OnboardingRunningPrefsBody extends ConsumerStatefulWidget {
+  const OnboardingRunningPrefsBody({
     super.key,
     this.profileCompletionOnly = false,
     this.runPreferencesOnly = false,
@@ -24,10 +24,12 @@ class RunningPrefsPage extends ConsumerStatefulWidget {
   final bool runPreferencesOnly;
 
   @override
-  ConsumerState<RunningPrefsPage> createState() => _RunningPrefsPageState();
+  ConsumerState<OnboardingRunningPrefsBody> createState() =>
+      _OnboardingRunningPrefsBodyState();
 }
 
-class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
+class _OnboardingRunningPrefsBodyState
+    extends ConsumerState<OnboardingRunningPrefsBody> {
   RangeValues _paceRange = const RangeValues(300, 420); // secs/km
   final Set<PreferredDistance> _distances = {};
   final Set<RunReason> _reasons = {};

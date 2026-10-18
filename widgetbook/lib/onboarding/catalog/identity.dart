@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -9,17 +9,17 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Identity form',
-  type: NameDobPage,
+  type: OnboardingNameDobBody,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget nameDobPageStates(BuildContext context) {
   return const WidgetbookWrapCatalogFrame(
-    title: 'NameDobPage',
+    title: 'OnboardingNameDobBody',
     children: [
       WidgetbookPhoneStateCard(
         label: 'default',
         child: WidgetbookMaterialPhoneFrame(
-          child: WidgetbookOnboardingScope(child: NameDobPage()),
+          child: WidgetbookOnboardingScope(child: OnboardingNameDobBody()),
         ),
       ),
       WidgetbookPhoneStateCard(
@@ -27,7 +27,7 @@ Widget nameDobPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.nameDobPrefilled,
-            child: NameDobPage(),
+            child: OnboardingNameDobBody(),
           ),
         ),
       ),
@@ -38,7 +38,7 @@ Widget nameDobPageStates(BuildContext context) {
             textScale: 2,
             child: WidgetbookOnboardingScope(
               mode: WidgetbookOnboardingMode.nameDobPrefilled,
-              child: NameDobPage(),
+              child: OnboardingNameDobBody(),
             ),
           ),
         ),
@@ -49,17 +49,19 @@ Widget nameDobPageStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Gender and interest form',
-  type: GenderInterestPage,
+  type: OnboardingGenderInterestBody,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget genderInterestPageStates(BuildContext context) {
   return const WidgetbookWrapCatalogFrame(
-    title: 'GenderInterestPage',
+    title: 'OnboardingGenderInterestBody',
     children: [
       WidgetbookPhoneStateCard(
         label: 'default',
         child: WidgetbookMaterialPhoneFrame(
-          child: WidgetbookOnboardingScope(child: GenderInterestPage()),
+          child: WidgetbookOnboardingScope(
+            child: OnboardingGenderInterestBody(),
+          ),
         ),
       ),
       WidgetbookPhoneStateCard(
@@ -67,7 +69,7 @@ Widget genderInterestPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.genderInterestSelected,
-            child: GenderInterestPage(),
+            child: OnboardingGenderInterestBody(),
           ),
         ),
       ),
@@ -76,7 +78,7 @@ Widget genderInterestPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.saveProfilePending,
-            child: GenderInterestPage(),
+            child: OnboardingGenderInterestBody(),
           ),
         ),
       ),
@@ -85,7 +87,7 @@ Widget genderInterestPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.saveProfileError,
-            child: GenderInterestPage(),
+            child: OnboardingGenderInterestBody(),
           ),
         ),
       ),
@@ -96,7 +98,7 @@ Widget genderInterestPageStates(BuildContext context) {
             disableAnimations: true,
             child: WidgetbookOnboardingScope(
               mode: WidgetbookOnboardingMode.genderInterest,
-              child: GenderInterestPage(),
+              child: OnboardingGenderInterestBody(),
             ),
           ),
         ),
@@ -107,17 +109,17 @@ Widget genderInterestPageStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Instagram form',
-  type: InstagramPage,
+  type: OnboardingInstagramBody,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget instagramPageStates(BuildContext context) {
   return const WidgetbookWrapCatalogFrame(
-    title: 'InstagramPage',
+    title: 'OnboardingInstagramBody',
     children: [
       WidgetbookPhoneStateCard(
         label: 'default',
         child: WidgetbookMaterialPhoneFrame(
-          child: WidgetbookOnboardingScope(child: InstagramPage()),
+          child: WidgetbookOnboardingScope(child: OnboardingInstagramBody()),
         ),
       ),
       WidgetbookPhoneStateCard(
@@ -125,7 +127,7 @@ Widget instagramPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.instagramFilled,
-            child: InstagramPage(),
+            child: OnboardingInstagramBody(),
           ),
         ),
       ),
@@ -134,7 +136,7 @@ Widget instagramPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.instagramSkipped,
-            child: InstagramPage(),
+            child: OnboardingInstagramBody(),
           ),
         ),
       ),

@@ -10,16 +10,17 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserAnalyticsPanel extends ConsumerStatefulWidget {
-  const UserAnalyticsPanel({super.key, this.showSectionTitle = true});
+class UserAnalyticsSection extends ConsumerStatefulWidget {
+  const UserAnalyticsSection({super.key, this.showSectionTitle = true});
 
   final bool showSectionTitle;
 
   @override
-  ConsumerState<UserAnalyticsPanel> createState() => _UserAnalyticsPanelState();
+  ConsumerState<UserAnalyticsSection> createState() =>
+      _UserAnalyticsSectionState();
 }
 
-class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
+class _UserAnalyticsSectionState extends ConsumerState<UserAnalyticsSection> {
   var _rangePreset = UserAnalyticsRangePreset.thirtyDays;
 
   @override
@@ -64,7 +65,7 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
               context: AppErrorContext.profile,
               onRetry: () => ref.invalidate(userAnalyticsProvider(query)),
             ),
-            data: (report) => UserAnalyticsReportView(report: report),
+            data: (report) => UserAnalyticsReportBody(report: report),
           ),
         ],
       ),
@@ -72,8 +73,8 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
   }
 }
 
-class UserAnalyticsReportView extends StatelessWidget {
-  const UserAnalyticsReportView({super.key, required this.report});
+class UserAnalyticsReportBody extends StatelessWidget {
+  const UserAnalyticsReportBody({super.key, required this.report});
 
   final UserAnalyticsReport report;
 
@@ -99,10 +100,10 @@ class UserAnalyticsReportView extends StatelessWidget {
             maxItems: 6,
           ),
         ),
-        UserAnalyticsTrendPanel(points: report.trend),
+        UserAnalyticsTrendSection(points: report.trend),
         if (report.coachingTipRefs.isNotEmpty)
-          UserAnalyticsTipsPanel(tips: report.coachingTipRefs),
-        UserAnalyticsDataCoveragePanel(rows: report.dataQuality),
+          UserAnalyticsTipsSection(tips: report.coachingTipRefs),
+        UserAnalyticsDataCoverageSection(rows: report.dataQuality),
       ],
     );
   }
@@ -298,8 +299,8 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
   }
 }
 
-class UserAnalyticsTrendPanel extends StatelessWidget {
-  const UserAnalyticsTrendPanel({super.key, required this.points});
+class UserAnalyticsTrendSection extends StatelessWidget {
+  const UserAnalyticsTrendSection({super.key, required this.points});
 
   final List<UserAnalyticsTrendPoint> points;
 
@@ -374,8 +375,8 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
   }
 }
 
-class UserAnalyticsTipsPanel extends StatelessWidget {
-  const UserAnalyticsTipsPanel({super.key, required this.tips});
+class UserAnalyticsTipsSection extends StatelessWidget {
+  const UserAnalyticsTipsSection({super.key, required this.tips});
 
   final List<UserAnalyticsCoachingTipRef> tips;
 
@@ -406,8 +407,8 @@ class UserAnalyticsTipRow extends StatelessWidget {
   }
 }
 
-class UserAnalyticsDataCoveragePanel extends StatelessWidget {
-  const UserAnalyticsDataCoveragePanel({super.key, required this.rows});
+class UserAnalyticsDataCoverageSection extends StatelessWidget {
+  const UserAnalyticsDataCoverageSection({super.key, required this.rows});
 
   final List<UserAnalyticsDataQuality> rows;
 

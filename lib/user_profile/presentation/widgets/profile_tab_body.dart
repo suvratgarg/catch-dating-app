@@ -35,7 +35,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ProfileTabContent(
+    return ProfileTabBody(
       user: user,
       uploadState: uploadState,
       builder: (context, children) => SliverToBoxAdapter(
@@ -51,11 +51,11 @@ class ProfileTabSliverBody extends ConsumerWidget {
   }
 }
 
-typedef ProfileTabContentBuilder =
+typedef ProfileTabBodyBuilder =
     Widget Function(BuildContext context, List<Widget> children);
 
-class ProfileTabContent extends ConsumerStatefulWidget {
-  const ProfileTabContent({
+class ProfileTabBody extends ConsumerStatefulWidget {
+  const ProfileTabBody({
     super.key,
     required this.user,
     required this.uploadState,
@@ -64,13 +64,13 @@ class ProfileTabContent extends ConsumerStatefulWidget {
 
   final UserProfile user;
   final PhotoUploadState uploadState;
-  final ProfileTabContentBuilder builder;
+  final ProfileTabBodyBuilder builder;
 
   @override
-  ConsumerState<ProfileTabContent> createState() => _ProfileTabContentState();
+  ConsumerState<ProfileTabBody> createState() => _ProfileTabBodyState();
 }
 
-class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
+class _ProfileTabBodyState extends ConsumerState<ProfileTabBody> {
   static const _firstPromptPadding = EdgeInsets.only(top: CatchSpacing.s3);
   static const _promptCardPadding = EdgeInsets.only(top: CatchSpacing.micro10);
   static const _promptAddPadding = EdgeInsets.only(top: CatchSpacing.s1);
@@ -129,7 +129,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         .toList(growable: false);
     final prompts = [
       for (final slot in visiblePromptSlots)
-        ProfilePromptEntry(
+        ProfilePromptRow(
           user: user,
           slot: slot,
           isExpanded: _fieldAccordion.isExpanded(slot.fieldName),
@@ -311,25 +311,24 @@ class ProfileFieldRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return descriptor.map(
-      singleChoice: <T extends Labelled>(descriptor) =>
-          ProfileSingleEnumEntry<T>(
-            icon: descriptor.icon,
-            label: descriptor.label,
-            values: descriptor.values,
-            value: descriptor.value,
-            fieldName: descriptor.fieldName,
-            contract: descriptor.contract,
-            contractValue: descriptor.contractValue,
-            patchForValue: descriptor.patchForValue,
-            emptyValueText: descriptor.emptyValueText,
-            allowEmptySelection: descriptor.allowEmptySelection,
-            showOptionalLabel: descriptor.showOptionalLabel,
-            isExpanded: isExpanded(descriptor.fieldName),
-            onTap: () => onToggle(descriptor.fieldName),
-            onSaved: onSaved,
-            onCancel: onCancel,
-          ),
-      multiChoice: <T extends Labelled>(descriptor) => ProfileMultiEnumEntry<T>(
+      singleChoice: <T extends Labelled>(descriptor) => ProfileSingleEnumRow<T>(
+        icon: descriptor.icon,
+        label: descriptor.label,
+        values: descriptor.values,
+        value: descriptor.value,
+        fieldName: descriptor.fieldName,
+        contract: descriptor.contract,
+        contractValue: descriptor.contractValue,
+        patchForValue: descriptor.patchForValue,
+        emptyValueText: descriptor.emptyValueText,
+        allowEmptySelection: descriptor.allowEmptySelection,
+        showOptionalLabel: descriptor.showOptionalLabel,
+        isExpanded: isExpanded(descriptor.fieldName),
+        onTap: () => onToggle(descriptor.fieldName),
+        onSaved: onSaved,
+        onCancel: onCancel,
+      ),
+      multiChoice: <T extends Labelled>(descriptor) => ProfileMultiEnumRow<T>(
         icon: descriptor.icon,
         label: descriptor.label,
         values: descriptor.values,
@@ -374,8 +373,8 @@ class ProfileFieldRow extends StatelessWidget {
   }
 }
 
-class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
-  const ProfileSingleEnumEntry({
+class ProfileSingleEnumRow<T extends Labelled> extends StatelessWidget {
+  const ProfileSingleEnumRow({
     super.key,
     required this.icon,
     required this.label,
@@ -434,8 +433,8 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
   }
 }
 
-class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
-  const ProfileMultiEnumEntry({
+class ProfileMultiEnumRow<T extends Labelled> extends StatelessWidget {
+  const ProfileMultiEnumRow({
     super.key,
     required this.icon,
     required this.label,
@@ -501,8 +500,8 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
   }
 }
 
-class ProfilePromptEntry extends StatelessWidget {
-  const ProfilePromptEntry({
+class ProfilePromptRow extends StatelessWidget {
+  const ProfilePromptRow({
     super.key,
     required this.user,
     required this.slot,

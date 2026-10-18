@@ -283,8 +283,8 @@
       "rationale": "_HostResponseOfferScreenState._createEvent directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
     },
     {
-      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart#_EventSuccessFeedbackFormState._submit:await:widget.onSubmitFeedback",
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart#_EventSuccessFeedbackFormState._submit:await:widget.onSubmitFeedback",
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart",
       "symbol": "_EventSuccessFeedbackFormState._submit",
       "operation": "await:widget.onSubmitFeedback",
       "maxCallsites": 1,
@@ -293,8 +293,8 @@
       "rationale": "Existing bounded review signal at _EventSuccessFeedbackFormState._submit (await:widget.onSubmitFeedback). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart#_SelfCheckInCardState._checkIn:await:widget.onSelfCheckIn",
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart#_SelfCheckInCardState._checkIn:await:widget.onSelfCheckIn",
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
       "symbol": "_SelfCheckInCardState._checkIn",
       "operation": "await:widget.onSelfCheckIn",
       "maxCallsites": 1,
@@ -303,8 +303,8 @@
       "rationale": "Existing bounded review signal at _SelfCheckInCardState._checkIn (await:widget.onSelfCheckIn). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart#_CompatibilityQuestionnaireSectionState.build:await:widget.onSaveAnswers",
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
+      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart#_CompatibilityQuestionnaireSectionState.build:await:widget.onSaveAnswers",
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart",
       "symbol": "_CompatibilityQuestionnaireSectionState.build",
       "operation": "await:widget.onSaveAnswers",
       "maxCallsites": 1,
@@ -313,8 +313,8 @@
       "rationale": "Existing bounded review signal at _CompatibilityQuestionnaireSectionState.build (await:widget.onSaveAnswers). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart#_WingmanRequestSectionState._saveRequest:await:widget.onSaveRequest",
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart#_WingmanRequestSectionState._saveRequest:await:widget.onSaveRequest",
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart",
       "symbol": "_WingmanRequestSectionState._saveRequest",
       "operation": "await:widget.onSaveRequest",
       "maxCallsites": 1,
@@ -323,8 +323,8 @@
       "rationale": "Existing bounded review signal at _WingmanRequestSectionState._saveRequest (await:widget.onSaveRequest). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart#_WingmanRequestSectionState._withdrawRequest:await:widget.onWithdrawRequest",
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+      "id": "ownership-widget-async-callback:lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart#_WingmanRequestSectionState._withdrawRequest:await:widget.onWithdrawRequest",
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart",
       "symbol": "_WingmanRequestSectionState._withdrawRequest",
       "operation": "await:widget.onWithdrawRequest",
       "maxCallsites": 1,

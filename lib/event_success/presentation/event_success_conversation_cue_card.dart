@@ -17,8 +17,8 @@ const EdgeInsets _conversationCueIconInset = EdgeInsets.only(
   top: CatchSpacing.micro3,
 );
 
-class EventSuccessPostEventReport extends StatelessWidget {
-  const EventSuccessPostEventReport({super.key, this.brief});
+class EventSuccessReportSectionList extends StatelessWidget {
+  const EventSuccessReportSectionList({super.key, this.brief});
 
   final EventSuccessBrief? brief;
 

@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/startup/startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ void main() {
         container: container,
         child: const StartupAnimationScope(
           consumerWelcomeReelPlayed: true,
-          child: WelcomePage(),
+          child: OnboardingWelcomeBody(),
         ),
       );
 
@@ -54,7 +54,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: WelcomeScene(
+          home: WelcomeSceneLayout(
             viewportWidth: 320,
             viewportHeight: 630,
             mediaPadding: EdgeInsets.zero,
@@ -67,7 +67,7 @@ void main() {
         ),
       );
 
-      final catchFinder = find.byKey(WelcomeScene.catchWordKey);
+      final catchFinder = find.byKey(WelcomeSceneLayout.catchWordKey);
       final catchTopLeft = tester.getTopLeft(catchFinder);
       expect(
         catchTopLeft.dx,
@@ -84,7 +84,7 @@ void main() {
 
       final focusTextFinder = find.descendant(
         of: catchFinder,
-        matching: find.byKey(WelcomeFocusLockup.textKey),
+        matching: find.byKey(WelcomeFocusText.textKey),
       );
       final focusText = tester.widget<Text>(focusTextFinder);
       final rootSpan = focusText.textSpan! as TextSpan;
@@ -102,7 +102,7 @@ void main() {
 
       final underlineFinder = find.descendant(
         of: catchFinder,
-        matching: find.byKey(WelcomeFocusLockup.underlineKey),
+        matching: find.byKey(WelcomeFocusText.underlineKey),
       );
       final underlineRect = tester.getRect(underlineFinder);
       expect(
@@ -116,7 +116,7 @@ void main() {
           320 - CatchWelcomeTokens.welcomeReelRightForWidth(320) + 0.1,
         ),
       );
-      expect(find.byKey(ReelRow.focusedUnderlineKey), findsNothing);
+      expect(find.byKey(WelcomeReelRow.focusedUnderlineKey), findsNothing);
 
       expect(
         tester
@@ -139,7 +139,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.light,
-            home: WelcomeScene(
+            home: WelcomeSceneLayout(
               key: ValueKey<double>(spinValue),
               viewportWidth: 393,
               viewportHeight: 852,
@@ -153,10 +153,10 @@ void main() {
           ),
         );
 
-        final lockupFinder = find.byKey(WelcomeScene.catchWordKey);
+        final lockupFinder = find.byKey(WelcomeSceneLayout.catchWordKey);
         final textFinder = find.descendant(
           of: lockupFinder,
-          matching: find.byKey(WelcomeFocusLockup.textKey),
+          matching: find.byKey(WelcomeFocusText.textKey),
         );
         final text = tester.widget<Text>(textFinder);
         expect(text.textSpan!.toPlainText(), startsWith('Catch '));
@@ -164,8 +164,8 @@ void main() {
           tester.getTopLeft(lockupFinder).dy,
           closeTo(CatchWelcomeTokens.welcomeReelCatchTopFor(padding), 0.1),
         );
-        expect(find.byKey(WelcomeFocusLockup.underlineKey), findsOneWidget);
-        expect(find.byKey(ReelRow.focusedUnderlineKey), findsNothing);
+        expect(find.byKey(WelcomeFocusText.underlineKey), findsOneWidget);
+        expect(find.byKey(WelcomeReelRow.focusedUnderlineKey), findsNothing);
         expect(tester.takeException(), isNull);
       }
     });
@@ -203,7 +203,7 @@ void main() {
                 child: SizedBox(
                   width: sceneWidth,
                   height: device.size.height,
-                  child: WelcomeScene(
+                  child: WelcomeSceneLayout(
                     viewportWidth: sceneWidth,
                     viewportHeight: device.size.height,
                     mediaPadding: device.padding,
@@ -221,14 +221,14 @@ void main() {
         );
 
         final lockupRect = tester.getRect(
-          find.byKey(WelcomeScene.catchWordKey),
+          find.byKey(WelcomeSceneLayout.catchWordKey),
         );
         expect(lockupRect.left, greaterThanOrEqualTo(0));
         expect(lockupRect.right, lessThanOrEqualTo(device.size.width));
         expect(lockupRect.top, greaterThanOrEqualTo(device.padding.top));
         expect(
           tester
-              .widget<Text>(find.byKey(WelcomeFocusLockup.textKey))
+              .widget<Text>(find.byKey(WelcomeFocusText.textKey))
               .textSpan!
               .toPlainText(),
           'Catch the sunset 5K.',

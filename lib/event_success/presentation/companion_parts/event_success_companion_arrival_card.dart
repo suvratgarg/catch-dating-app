@@ -80,7 +80,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               runSpacing: CatchSpacing.s2,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                StageSectionLabel(
+                StageSectionHeader(
                   icon: CatchIcons.wavingHandOutlined,
                   label: context
                       .l10n
@@ -172,7 +172,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
     return Stack(
       children: [
         CompanionStageSurface(
-          child: _FirstHelloMissionEditor(
+          child: FirstHelloMissionEditor(
             mission: mission,
             selectedAnswerId: selectedAnswerId,
             saving: saving,
@@ -273,8 +273,10 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
   }
 }
 
-class _FirstHelloMissionEditor extends StatelessWidget {
-  const _FirstHelloMissionEditor({
+/// The first-hello mission: answer choices plus complete and skip actions.
+class FirstHelloMissionEditor extends StatelessWidget {
+  const FirstHelloMissionEditor({
+    super.key,
     required this.mission,
     required this.selectedAnswerId,
     required this.saving,
@@ -303,7 +305,7 @@ class _FirstHelloMissionEditor extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            StageSectionLabel(
+            StageSectionHeader(
               icon: CatchIcons.wavingHandOutlined,
               label: context
                   .l10n

@@ -4,21 +4,23 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GenderInterestPage extends ConsumerStatefulWidget {
-  const GenderInterestPage({super.key});
+class OnboardingGenderInterestBody extends ConsumerStatefulWidget {
+  const OnboardingGenderInterestBody({super.key});
 
   @override
-  ConsumerState<GenderInterestPage> createState() => _GenderInterestPageState();
+  ConsumerState<OnboardingGenderInterestBody> createState() =>
+      _OnboardingGenderInterestBodyState();
 }
 
-class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
+class _OnboardingGenderInterestBodyState
+    extends ConsumerState<OnboardingGenderInterestBody> {
   final _formKey = GlobalKey<FormState>();
   Gender? _gender;
   Set<Gender> _interestedIn = {};

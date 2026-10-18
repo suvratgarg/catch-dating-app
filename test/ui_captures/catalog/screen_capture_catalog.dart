@@ -85,7 +85,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_defaults_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
@@ -238,7 +238,7 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
@@ -282,7 +282,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -2101,7 +2101,7 @@ List<Object> _publicProfileProviderOverrides({
 Widget _selfProfileCapture({SelfProfileTab initialTab = SelfProfileTab.edit}) =>
     ProfileScreen(initialTab: initialTab);
 
-Widget _editableSelfProfileCapture() => ProfileTabContent(
+Widget _editableSelfProfileCapture() => ProfileTabBody(
   user: ProfileSurfaceFixtures.viewer,
   uploadState: const PhotoUploadState(),
   builder: (context, children) => ListView(
@@ -3335,7 +3335,7 @@ Future<void> _driveCreateDisclosure(WidgetTester tester, String key) async {
   await tester.tap(target);
   await pumpFeatureUi(tester);
   if (key == 'host.create_event.customize_guide') {
-    await tester.ensureVisible(find.byType(EventSuccessDefaultsPanel));
+    await tester.ensureVisible(find.byType(EventSuccessDefaultsSection));
     await pumpFeatureUi(tester);
   }
 }
@@ -9284,14 +9284,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(playIntro: false),
+    builder: (context) => const OnboardingWelcomeBody(playIntro: false),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_animated_reel',
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(),
+    builder: (context) => const OnboardingWelcomeBody(),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_reduced_motion',
@@ -9299,7 +9299,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     disableAnimations: true,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(),
+    builder: (context) => const OnboardingWelcomeBody(),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_text_scale_2',
@@ -9307,7 +9307,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     textScale: 2,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(playIntro: false),
+    builder: (context) => const OnboardingWelcomeBody(playIntro: false),
   ),
   ScreenCaptureEntry(
     id: 'auth_phone_entry',

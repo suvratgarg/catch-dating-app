@@ -99,7 +99,7 @@
           "note": "color: maps to icon tint; label defaults ink2"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep",
           "note": "icon section title, not meta; candidate for CatchSectionHeader icon variant later"
         }
@@ -579,11 +579,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionError",
+          "name": "CompanionErrorState",
           "action": "keep"
         },
         {
-          "name": "CompanionMessage",
+          "name": "CompanionEmptyState",
           "action": "keep"
         }
       ],
@@ -623,7 +623,7 @@
           "action": "keep"
         },
         {
-          "name": "ProfileTabContent",
+          "name": "ProfileTabBody",
           "action": "keep"
         },
         {
@@ -919,11 +919,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "PreviewTabSkeletonSliverBody",
+          "name": "ProfilePreviewSkeletonSliverBody",
           "action": "keep"
         },
         {
-          "name": "PreviewTabSliverBody",
+          "name": "ProfilePreviewSliverBody",
           "action": "keep"
         }
       ],
@@ -959,11 +959,11 @@
           "action": "keep"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep"
         }
       ],
-      "rationale": "Current-registry id for the prior c006 owner decision: StageSectionLabel is an icon section title, not an icon+label meta row; folding it into CatchMetaRow would cross section-title and meta-row concepts.",
+      "rationale": "Current-registry id for the prior c006 owner decision: StageSectionHeader is an icon section title, not an icon+label meta row; folding it into CatchMetaRow would cross section-title and meta-row concepts.",
       "decidedBy": "owner+claude-reconciled",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
@@ -1235,11 +1235,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionError",
+          "name": "CompanionErrorState",
           "action": "keep"
         },
         {
-          "name": "CompanionMessage",
+          "name": "CompanionEmptyState",
           "action": "keep"
         }
       ],
@@ -1329,11 +1329,11 @@
           "action": "keep"
         },
         {
-          "name": "ProfileTabContent",
+          "name": "ProfileTabBody",
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabContent, so the match is wrapper/content composition.",
+      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabBody, so the match is wrapper/content composition.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015",
@@ -1438,7 +1438,7 @@
           "action": "keep"
         },
         {
-          "name": "UserAnalyticsTipsPanel",
+          "name": "UserAnalyticsTipsSection",
           "action": "keep"
         }
       ],
@@ -1615,7 +1615,7 @@
           "action": "keep"
         },
         {
-          "name": "PreviewLine",
+          "name": "CompanionPreviewText",
           "action": "keep"
         },
         {
@@ -1839,7 +1839,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: the shared StagePanel/StageSectionLabel shell is small, and merging would need icon, label, title, body, and optional supporting-text knobs for two live-stage concepts.",
+      "rationale": "K4 churn threshold: the shared StagePanel/StageSectionHeader shell is small, and merging would need icon, label, title, body, and optional supporting-text knobs for two live-stage concepts.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
@@ -1920,7 +1920,7 @@
       "canonicalSymbol": "CatchField.nav"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
+      "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendSection",
       "decision": "keep-distinct",
       "members": [
         {
@@ -1928,7 +1928,7 @@
           "action": "keep"
         },
         {
-          "name": "UserAnalyticsTrendPanel",
+          "name": "UserAnalyticsTrendSection",
           "action": "keep"
         }
       ],
@@ -2049,7 +2049,7 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: CatchSectionLabel/StageSectionLabel",
+      "clusterId": "ranked-pair: CatchSectionLabel/StageSectionHeader",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2057,11 +2057,11 @@
           "action": "keep"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionLabel is an Event Success live-stage row using labelL typography, required color, and two-line text. REVIEW (claude, 2026-07-03): StageSectionLabel belongs to the companion stage/paper art direction (celebration-cards precedent); CatchSectionLabel already covers the kicker+icon case for standard surfaces.",
+      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionHeader is an Event Success live-stage row using labelL typography, required color, and two-line text. REVIEW (claude, 2026-07-03): StageSectionHeader belongs to the companion stage/paper art direction (celebration-cards precedent); CatchSectionLabel already covers the kicker+icon case for standard surfaces.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2591,7 +2591,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/StageSectionLabel",
+      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/StageSectionHeader",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2599,17 +2599,17 @@
           "action": "keep"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionLabel is an Event Success live-stage label with required color and two-line wrapping. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionHeader is an Event Success live-stage label with required color and two-line wrapping. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/PreviewLine",
+      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/CompanionPreviewText",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2617,11 +2617,11 @@
           "action": "keep"
         },
         {
-          "name": "PreviewLine",
+          "name": "CompanionPreviewText",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while PreviewLine is preview/detail copy inside Event Success composition. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while CompanionPreviewText is preview/detail copy inside Event Success composition. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2765,7 +2765,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: both use StagePanel and StageSectionLabel, but StagePromptCard renders one prompt while StageConversationCueCard renders optional subtitle plus up to three cue lines.",
+      "rationale": "K4 churn threshold: both use StagePanel and StageSectionHeader, but StagePromptCard renders one prompt while StageConversationCueCard renders optional subtitle plus up to three cue lines.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -2844,15 +2844,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ProfileMultiEnumEntry/ProfileSingleEnumEntry",
+      "clusterId": "ranked-pair: ProfileMultiEnumRow/ProfileSingleEnumRow",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ProfileMultiEnumEntry",
+          "name": "ProfileMultiEnumRow",
           "action": "keep"
         },
         {
-          "name": "ProfileSingleEnumEntry",
+          "name": "ProfileSingleEnumRow",
           "action": "keep"
         }
       ],
@@ -3404,11 +3404,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: StageCueLine/StagePrivacyLine",
+      "clusterId": "ranked-pair: StageCueCard/StagePrivacyLine",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "StageCueLine",
+          "name": "StageCueCard",
           "action": "keep"
         },
         {
@@ -3768,7 +3768,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: CustomQuestionFields/CustomQuestionnaireFields",
+      "clusterId": "ranked-pair: CustomQuestionFields/CustomQuestionnaireSection",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3776,11 +3776,11 @@
           "action": "keep"
         },
         {
-          "name": "CustomQuestionnaireFields",
+          "name": "CustomQuestionnaireSection",
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition is not duplication: CustomQuestionnaireFields owns the question-set shell and instantiates CustomQuestionFields for each custom question row.",
+      "rationale": "K1 composition is not duplication: CustomQuestionnaireSection owns the question-set shell and instantiates CustomQuestionFields for each custom question row.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -4349,11 +4349,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: EventSuccessDefaultsPanel/EventSuccessHostPanel",
+      "clusterId": "ranked-pair: EventSuccessDefaultsSection/EventSuccessHostPanel",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventSuccessDefaultsPanel",
+          "name": "EventSuccessDefaultsSection",
           "action": "keep"
         },
         {
@@ -4367,7 +4367,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportView",
+      "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportBody",
       "decision": "keep-distinct",
       "members": [
         {
@@ -4375,7 +4375,7 @@
           "action": "keep"
         },
         {
-          "name": "UserAnalyticsReportView",
+          "name": "UserAnalyticsReportBody",
           "action": "keep"
         }
       ],
@@ -5605,7 +5605,7 @@
           "action": "keep"
         },
         {
-          "name": "ProfilePromptEntry",
+          "name": "ProfilePromptRow",
           "action": "keep"
         }
       ],
@@ -6327,7 +6327,7 @@
           "action": "keep"
         },
         {
-          "name": "PreviewLine",
+          "name": "CompanionPreviewText",
           "action": "keep"
         },
         {

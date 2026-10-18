@@ -8,7 +8,7 @@ import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_scree
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -16,8 +16,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PhotosPage extends ConsumerWidget {
-  const PhotosPage({super.key, this.profileCompletionOnly = false});
+class OnboardingPhotosBody extends ConsumerWidget {
+  const OnboardingPhotosBody({super.key, this.profileCompletionOnly = false});
 
   final bool profileCompletionOnly;
 

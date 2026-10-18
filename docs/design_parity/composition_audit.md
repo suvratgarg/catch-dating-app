@@ -582,7 +582,7 @@ rules.
 `EventSuccessCompanionRouteScreen` runs three provider waves inline: event/auth/
 profile/participation/plan, then arrival mission/compatibility, then moment-
 specific feedback/preference/wingman/assignment/peer reads. Each branch returns
-`CompanionLoading`, `CompanionError`, or `CompanionMessage` directly, and the
+`CompanionSkeleton`, `CompanionErrorState`, or `CompanionEmptyState` directly, and the
 loaded branch then constructs a very wide `EventSuccessCompanionScreen`
 argument list.
 
@@ -592,7 +592,7 @@ create an `EventSuccessCompanionRouteState` (or similarly named display-state
 adapter) with statuses for loading, access/message, error + retry intent, and
 ready data. The route screen still owns the provider watches and mutation
 callbacks, but branch selection and retry intent mapping move into that adapter
-with focused tests. Keep `CompanionLoading/Error/Message` as renderers unless
+with focused tests. Keep `CompanionSkeleton/Error/Message` as renderers unless
 the adapter makes one redundant. Acceptance: no UI copy or state-order change;
 existing route Widgetbook states still cover event-not-found, sign-in-required,
 no-booking, plan-missing, offline/error, loading, and ready moments.
@@ -664,7 +664,7 @@ and pass ordinary typed callbacks into the provider-free panel.
 
 ### S5. Positive calibration — keep the stage grammar distinct
 
-`StagePanel`, `StageSectionLabel`, `StageActionDock`, `StageSoftBand`,
+`StagePanel`, `StageSectionHeader`, `StageActionDock`, `StageSoftBand`,
 `StageBouncyPress`, and the paper companion scaffold are not stray aliases for
 ordinary sections. They define the immersive attendee companion language:
 breathing surfaces, stage-native press feedback, motif/reveal overlays, and

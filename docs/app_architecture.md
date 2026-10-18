@@ -2669,7 +2669,7 @@ or implementation technique cannot justify a second shared implementation.
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
-  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener.
+  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a
@@ -2700,7 +2700,9 @@ or implementation technique cannot justify a second shared implementation.
   validation and submit state. Listener: a non-visual widget that subscribes
   its subtree to an app event source and reacts (a notice, a navigation); it
   paints only its child, and unlike Scope it publishes nothing to
-  descendants.
+  descendants. Transition: animates its child in or out (opacity, offset, scale)
+  and owns motion only, after Flutter's `FadeTransition` and
+  `SlideTransition`; layout and paint stay with the child.
 - **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
   containment); Page is Step (a flow stage) or Body (a tab or pager page);
   Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
@@ -3187,7 +3189,7 @@ and initialization complete.
 - `CatchNativeSplash` is the idempotent platform-effect seam. Consumer removes
   the native surface only after the matching Flutter splash mark has decoded
   and painted; Host keeps removal in the resolved force-update gate.
-- `CatchConsumerBootScreen` is provider-free and reuses `WelcomeScene` with
+- `CatchConsumerBootScreen` is provider-free and reuses `WelcomeSceneLayout` with
   landing actions suppressed. `/start` still owns the complete logged-out
   Welcome composition, but it no longer owns Consumer cold-start timing.
 - Critical services initialize concurrently with the boot reel. A fast startup
@@ -3207,7 +3209,7 @@ and initialization complete.
   `appPackageInfoProvider` synchronously before mounting `ForceUpdateGate`.
   This prevents a second startup-loader frame after the reel.
 - `StartupAnimationScope` records that the process-level reel played.
-  Route-owned `WelcomePage` therefore renders its landed actions immediately
+  Route-owned `OnboardingWelcomeBody` therefore renders its landed actions immediately
   instead of replaying the same animation after routing starts.
 - Reduced-motion settings and tap-to-skip land the reel immediately. The
   process bootstrap runs on cold launch only; app resume does not replay it.
@@ -4726,7 +4728,7 @@ Reference files:
 - `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
 - `packages/catch_ui/lib/src/patterns/catch_form_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
-- `lib/user_profile/presentation/widgets/profile_tab.dart`
+- `lib/user_profile/presentation/widgets/profile_tab_body.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`

@@ -114,7 +114,7 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
             if (frame.phase == EventSuccessMarqueePhase.idle) {
               return const SizedBox.shrink();
             }
-            return _EventSuccessMarqueeVisual(
+            return EventSuccessMarqueeImage(
               key: ValueKey<String>('eventSuccessMarquee.${frame.phase.name}'),
               frame: frame,
               accent: widget._stageTheme.accent,
@@ -128,8 +128,10 @@ class _RevealCinematicOverlayState extends State<RevealCinematicOverlay>
   }
 }
 
-class _EventSuccessMarqueeVisual extends StatelessWidget {
-  const _EventSuccessMarqueeVisual({
+/// The reveal's animated marquee: the Lottie scene, check-in dots and a
+/// phase-driven vignette for one [EventSuccessMarqueeFrame].
+class EventSuccessMarqueeImage extends StatelessWidget {
+  const EventSuccessMarqueeImage({
     super.key,
     required this.frame,
     required this.accent,
@@ -156,6 +158,13 @@ class _EventSuccessMarqueeVisual extends StatelessWidget {
       EventSuccessMarqueePhase.idle => 0.0,
     };
     final dotCount = math.min(checkedInCount, 28);
+    final double vignetteStrength = switch (frame.phase) {
+      EventSuccessMarqueePhase.anticipation =>
+        0.18 + frame.phaseProgress * 0.42,
+      EventSuccessMarqueePhase.climax => 0.55 * (1 - frame.phaseProgress * 0.6),
+      EventSuccessMarqueePhase.settle => 0.22 * (1 - frame.phaseProgress),
+      EventSuccessMarqueePhase.idle => 0,
+    };
     final anticipation = frame.phase == EventSuccessMarqueePhase.anticipation
         ? frame.phaseProgress
         : 1.0;
@@ -184,17 +193,26 @@ class _EventSuccessMarqueeVisual extends StatelessWidget {
               repeat: false,
             ),
           ),
-          _RevealVignette(
-            strength: switch (frame.phase) {
-              EventSuccessMarqueePhase.anticipation =>
-                0.18 + frame.phaseProgress * 0.42,
-              EventSuccessMarqueePhase.climax =>
-                0.55 * (1 - frame.phaseProgress * 0.6),
-              EventSuccessMarqueePhase.settle =>
-                0.22 * (1 - frame.phaseProgress),
-              EventSuccessMarqueePhase.idle => 0,
-            },
-          ),
+          if (vignetteStrength > 0)
+            ShaderMask(
+              blendMode: BlendMode.srcIn,
+              shaderCallback: (bounds) {
+                return RadialGradient(
+                  center: const Alignment(0, -0.16),
+                  radius: 0.92,
+                  colors: [
+                    CatchTokens.editorialBlack.withValues(
+                      alpha: CatchOpacity.none,
+                    ),
+                    CatchTokens.editorialBlack.withValues(
+                      alpha: vignetteStrength.clamp(0.0, 1.0),
+                    ),
+                  ],
+                  stops: const [0.34, 1.0],
+                ).createShader(bounds);
+              },
+              child: const ColoredBox(color: CatchTokens.editorialBlack),
+            ),
           CustomMultiChildLayout(
             delegate: _EventSuccessMarqueeLayoutDelegate(
               checkedInCount: checkedInCount,
@@ -395,33 +413,5 @@ class _EventSuccessMarqueeLayoutDelegate extends MultiChildLayoutDelegate {
   ) {
     return oldDelegate.checkedInCount != checkedInCount ||
         oldDelegate.frame != frame;
-  }
-}
-
-class _RevealVignette extends StatelessWidget {
-  const _RevealVignette({required this.strength});
-
-  final double strength;
-
-  @override
-  Widget build(BuildContext context) {
-    if (strength <= 0) return const SizedBox.shrink();
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) {
-        return RadialGradient(
-          center: const Alignment(0, -0.16),
-          radius: 0.92,
-          colors: [
-            CatchTokens.editorialBlack.withValues(alpha: CatchOpacity.none),
-            CatchTokens.editorialBlack.withValues(
-              alpha: strength.clamp(0.0, 1.0),
-            ),
-          ],
-          stops: const [0.34, 1.0],
-        ).createShader(bounds);
-      },
-      child: const ColoredBox(color: CatchTokens.editorialBlack),
-    );
   }
 }

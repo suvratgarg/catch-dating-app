@@ -5,8 +5,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class EventRehearsalSimulator extends StatefulWidget {
-  const EventRehearsalSimulator({
+class EventRehearsalSimulatorBody extends StatefulWidget {
+  const EventRehearsalSimulatorBody({
     super.key,
     required this.rehearsal,
     required this.isLoading,
@@ -21,16 +21,17 @@ class EventRehearsalSimulator extends StatefulWidget {
   final ValueChanged<EventRehearsalFault> onFault;
 
   @override
-  State<EventRehearsalSimulator> createState() =>
-      _EventRehearsalSimulatorState();
+  State<EventRehearsalSimulatorBody> createState() =>
+      _EventRehearsalSimulatorBodyState();
 }
 
-class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
+class _EventRehearsalSimulatorBodyState
+    extends State<EventRehearsalSimulatorBody> {
   String? _actorId;
   EventRehearsalBehavior _behavior = EventRehearsalBehavior.arriveLate;
 
   @override
-  void didUpdateWidget(covariant EventRehearsalSimulator oldWidget) {
+  void didUpdateWidget(covariant EventRehearsalSimulatorBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!widget.rehearsal.actors.any((actor) => actor.actorId == _actorId)) {
       _actorId = null;
@@ -47,6 +48,8 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
     final canChooseFault =
         widget.rehearsal.session.status != EventRehearsalStatus.complete &&
         widget.rehearsal.session.status != EventRehearsalStatus.expired;
+    final canEdit = canSimulate && !widget.isLoading;
+    final faultEnabled = canChooseFault && !widget.isLoading;
     return Column(
       children: [
         CatchSection.fieldRows(
@@ -64,26 +67,78 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
               disclosureMode: CatchFieldMode.localExpanded,
               child: CatchFieldLanes.divided(
                 children: [
-                  _EventRehearsalActorPicker(
-                    actors: widget.rehearsal.actors,
-                    selectedActorId: selectedActorId,
-                    enabled: canSimulate && !widget.isLoading,
-                    onSelected: (actorId) => setState(() => _actorId = actorId),
+                  CatchMenu<String>.anchored(
+                    items: [
+                      for (final actor in widget.rehearsal.actors)
+                        CatchMenuItem<String>(
+                          value: actor.actorId,
+                          label: actor.displayName,
+                          sublabel: eventRehearsalActorStatusLabel(
+                            context.l10n,
+                            actor.status,
+                          ),
+                          selected: actor.actorId == selectedActorId,
+                          variant: CatchMenuItemVariant.choice,
+                        ),
+                    ],
+                    onSelected: (actorId, _) =>
+                        setState(() => _actorId = actorId),
+                    builder: (context, controller, _) => CatchFieldLanes.single(
+                      child: CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
+                        title: context.l10n.hostEventRehearsalChooseGuest,
+                        valueText: widget.rehearsal.actors
+                            .where((actor) => actor.actorId == selectedActorId)
+                            .firstOrNull
+                            ?.displayName,
+                        onTap: !canEdit
+                            ? null
+                            : controller.isOpen
+                            ? controller.close
+                            : controller.open,
+                      ),
+                    ),
                   ),
-                  _EventRehearsalBehaviorPicker(
-                    selected: _behavior,
-                    enabled: canSimulate && !widget.isLoading,
-                    onSelected: (behavior) =>
+                  CatchMenu<EventRehearsalBehavior>.anchored(
+                    items: [
+                      for (final behavior in EventRehearsalBehavior.values)
+                        CatchMenuItem<EventRehearsalBehavior>(
+                          value: behavior,
+                          label: eventRehearsalBehaviorLabel(
+                            context.l10n,
+                            behavior,
+                          ),
+                          selected: behavior == _behavior,
+                          variant: CatchMenuItemVariant.choice,
+                        ),
+                    ],
+                    onSelected: (behavior, _) =>
                         setState(() => _behavior = behavior),
+                    builder: (context, controller, _) => CatchFieldLanes.single(
+                      child: CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
+                        title: context.l10n.hostEventRehearsalChooseIssue,
+                        valueText: eventRehearsalBehaviorLabel(
+                          context.l10n,
+                          _behavior,
+                        ),
+                        onTap: !canEdit
+                            ? null
+                            : controller.isOpen
+                            ? controller.close
+                            : controller.open,
+                      ),
+                    ),
                   ),
-                  _EventRehearsalApplyIssueField(
-                    enabled:
-                        canSimulate &&
-                        !widget.isLoading &&
-                        selectedActorId != null,
-                    onApply: selectedActorId == null
-                        ? null
-                        : () => widget.onBehavior(selectedActorId, _behavior),
+                  CatchFieldLanes.single(
+                    child: CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostEventRehearsalApplyIssue,
+                      icon: CatchIcons.playArrowRounded,
+                      onTap: canEdit && selectedActorId != null
+                          ? () => widget.onBehavior(selectedActorId, _behavior)
+                          : null,
+                    ),
                   ),
                 ],
               ),
@@ -102,10 +157,32 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
                 icon: CatchIcons.scienceOutlined,
                 contractExemption:
                     'Internal-only fault state is callable-owned and isolated.',
-                child: _EventRehearsalFaultPicker(
-                  selected: widget.rehearsal.session.fault,
-                  enabled: canChooseFault && !widget.isLoading,
-                  onSelected: widget.onFault,
+                child: CatchMenu<EventRehearsalFault>.anchored(
+                  items: [
+                    for (final fault in EventRehearsalFault.values)
+                      CatchMenuItem<EventRehearsalFault>(
+                        value: fault,
+                        label: eventRehearsalFaultLabel(context.l10n, fault),
+                        selected: fault == widget.rehearsal.session.fault,
+                        variant: CatchMenuItemVariant.choice,
+                      ),
+                  ],
+                  onSelected: (fault, _) => widget.onFault(fault),
+                  builder: (context, controller, _) => CatchFieldLanes.single(
+                    child: CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostEventRehearsalChooseFault,
+                      valueText: eventRehearsalFaultLabel(
+                        context.l10n,
+                        widget.rehearsal.session.fault,
+                      ),
+                      onTap: !faultEnabled
+                          ? null
+                          : controller.isOpen
+                          ? controller.close
+                          : controller.open,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -114,147 +191,6 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
       ],
     );
   }
-}
-
-class _EventRehearsalActorPicker extends StatelessWidget {
-  const _EventRehearsalActorPicker({
-    required this.actors,
-    required this.selectedActorId,
-    required this.enabled,
-    required this.onSelected,
-  });
-
-  final List<EventRehearsalActor> actors;
-  final String? selectedActorId;
-  final bool enabled;
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) => CatchMenu<String>.anchored(
-    items: [
-      for (final actor in actors)
-        CatchMenuItem<String>(
-          value: actor.actorId,
-          label: actor.displayName,
-          sublabel: eventRehearsalActorStatusLabel(context.l10n, actor.status),
-          selected: actor.actorId == selectedActorId,
-          variant: CatchMenuItemVariant.choice,
-        ),
-    ],
-    onSelected: (actorId, _) => onSelected(actorId),
-    builder: (context, controller, _) => CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostEventRehearsalChooseGuest,
-        valueText: actors
-            .where((actor) => actor.actorId == selectedActorId)
-            .firstOrNull
-            ?.displayName,
-        onTap: !enabled
-            ? null
-            : controller.isOpen
-            ? controller.close
-            : controller.open,
-      ),
-    ),
-  );
-}
-
-class _EventRehearsalBehaviorPicker extends StatelessWidget {
-  const _EventRehearsalBehaviorPicker({
-    required this.selected,
-    required this.enabled,
-    required this.onSelected,
-  });
-
-  final EventRehearsalBehavior selected;
-  final bool enabled;
-  final ValueChanged<EventRehearsalBehavior> onSelected;
-
-  @override
-  Widget build(BuildContext context) =>
-      CatchMenu<EventRehearsalBehavior>.anchored(
-        items: [
-          for (final behavior in EventRehearsalBehavior.values)
-            CatchMenuItem<EventRehearsalBehavior>(
-              value: behavior,
-              label: eventRehearsalBehaviorLabel(context.l10n, behavior),
-              selected: behavior == selected,
-              variant: CatchMenuItemVariant.choice,
-            ),
-        ],
-        onSelected: (behavior, _) => onSelected(behavior),
-        builder: (context, controller, _) => CatchFieldLanes.single(
-          child: CatchField.nav(
-            copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostEventRehearsalChooseIssue,
-            valueText: eventRehearsalBehaviorLabel(context.l10n, selected),
-            onTap: !enabled
-                ? null
-                : controller.isOpen
-                ? controller.close
-                : controller.open,
-          ),
-        ),
-      );
-}
-
-class _EventRehearsalApplyIssueField extends StatelessWidget {
-  const _EventRehearsalApplyIssueField({
-    required this.enabled,
-    required this.onApply,
-  });
-
-  final bool enabled;
-  final VoidCallback? onApply;
-
-  @override
-  Widget build(BuildContext context) => CatchFieldLanes.single(
-    child: CatchField.action(
-      copy: catchFieldCopy(context.l10n),
-      title: context.l10n.hostEventRehearsalApplyIssue,
-      icon: CatchIcons.playArrowRounded,
-      onTap: enabled ? onApply : null,
-    ),
-  );
-}
-
-class _EventRehearsalFaultPicker extends StatelessWidget {
-  const _EventRehearsalFaultPicker({
-    required this.selected,
-    required this.enabled,
-    required this.onSelected,
-  });
-
-  final EventRehearsalFault selected;
-  final bool enabled;
-  final ValueChanged<EventRehearsalFault> onSelected;
-
-  @override
-  Widget build(BuildContext context) => CatchMenu<EventRehearsalFault>.anchored(
-    items: [
-      for (final fault in EventRehearsalFault.values)
-        CatchMenuItem<EventRehearsalFault>(
-          value: fault,
-          label: eventRehearsalFaultLabel(context.l10n, fault),
-          selected: fault == selected,
-          variant: CatchMenuItemVariant.choice,
-        ),
-    ],
-    onSelected: (fault, _) => onSelected(fault),
-    builder: (context, controller, _) => CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostEventRehearsalChooseFault,
-        valueText: eventRehearsalFaultLabel(context.l10n, selected),
-        onTap: !enabled
-            ? null
-            : controller.isOpen
-            ? controller.close
-            : controller.open,
-      ),
-    ),
-  );
 }
 
 class EventRehearsalRosterSection extends StatelessWidget {
@@ -280,35 +216,22 @@ class EventRehearsalRosterSection extends StatelessWidget {
         icon: CatchIcons.groupsOutlined,
       ),
       for (final actor in rehearsal.actors)
-        _EventRehearsalActorRow(actor: actor),
+        CatchFieldLanes.single(
+          child: CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: actor.displayName,
+            body: [
+              eventRehearsalActorStatusLabel(context.l10n, actor.status),
+              if (actor.optedOut) context.l10n.hostEventRehearsalBehaviorOptOut,
+              if (actor.helpRequested)
+                context.l10n.hostEventRehearsalSignalHelp,
+              if (actor.promptCompleted)
+                context.l10n.hostEventRehearsalSignalPromptComplete,
+            ].join(' · '),
+          ),
+        ),
     ],
   );
-}
-
-class _EventRehearsalActorRow extends StatelessWidget {
-  const _EventRehearsalActorRow({required this.actor});
-
-  final EventRehearsalActor actor;
-
-  @override
-  Widget build(BuildContext context) {
-    final signals = <String>[
-      if (actor.optedOut) context.l10n.hostEventRehearsalBehaviorOptOut,
-      if (actor.helpRequested) context.l10n.hostEventRehearsalSignalHelp,
-      if (actor.promptCompleted)
-        context.l10n.hostEventRehearsalSignalPromptComplete,
-    ];
-    return CatchFieldLanes.single(
-      child: CatchField.read(
-        copy: catchFieldCopy(context.l10n),
-        title: actor.displayName,
-        body: [
-          eventRehearsalActorStatusLabel(context.l10n, actor.status),
-          ...signals,
-        ].join(' · '),
-      ),
-    );
-  }
 }
 
 class EventRehearsalRecapSection extends StatelessWidget {
