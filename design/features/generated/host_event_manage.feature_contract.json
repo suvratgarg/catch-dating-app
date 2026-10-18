@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:09d9c1a550a82890442f2d1ade2b2dfd908ccee68c7dad529e8357ac475510ec",
-  "resolvedDigest": "sha256:688390b8e8b05017a4869ee88056d7f003a43c95dc4bdd71c221b230c1dd2896",
+  "resolvedDigest": "sha256:4886538d560ffd3efc55059fccdcfaec295390525269d81b990f0f7cd0c88a63",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -5374,10 +5374,10 @@
             "id": "catch.map_preview",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchMapPreview",
-              "file": "lib/locations/shared/catch_map_preview.dart",
+              "symbol": "MapPreview",
+              "file": "lib/locations/shared/map_preview.dart",
               "constructors": [
-                "CatchMapPreview"
+                "MapPreview"
               ]
             }
           },

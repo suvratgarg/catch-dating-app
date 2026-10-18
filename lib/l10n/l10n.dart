@@ -6,7 +6,7 @@ export 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 
 final AppLocalizations _englishFallback = AppLocalizationsEn();
 
-extension CatchLocalizationsBuildContext on BuildContext {
+extension LocalizationsBuildContext on BuildContext {
   /// Returns the generated Catch message catalogue for this subtree.
   ///
   /// Isolated widget tests and Widgetbook stories sometimes render below a

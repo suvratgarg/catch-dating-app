@@ -3,7 +3,7 @@ import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +28,7 @@ void main() {
             child: MaterialApp(
               theme: AppTheme.light,
               home: Scaffold(
-                body: ProfileTabContent(
+                body: ProfileTabBody(
                   user: _profileWithCompletedPrompts(completedCount),
                   uploadState: const PhotoUploadState(),
                   builder: (context, children) => ListView(

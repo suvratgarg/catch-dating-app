@@ -57,11 +57,15 @@ class EventActionCard extends StatelessWidget {
     return CatchSurface(
       padding: EdgeInsets.zero,
       backgroundColor: backgroundColor ?? t.surface,
-      borderColor:
-          borderColor ??
-          (urgent
-              ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
-              : t.line2),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color:
+            borderColor ??
+            (urgent
+                ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
+                : t.line2),
+      ),
       radius: radius,
       emphasis: CatchSurfaceEmphasis.subtle,
       gradient: LinearGradient(
@@ -115,7 +119,7 @@ class EventActionCard extends StatelessWidget {
                 ],
                 if (actions.isNotEmpty) ...[
                   gapH16,
-                  EventActionCardActions(actions: actions),
+                  EventActionList(actions: actions),
                 ],
               ],
             ),
@@ -201,8 +205,8 @@ class EventActionCardHeader extends StatelessWidget {
   }
 }
 
-class EventActionCardActions extends StatelessWidget {
-  const EventActionCardActions({super.key, required this.actions});
+class EventActionList extends StatelessWidget {
+  const EventActionList({super.key, required this.actions});
 
   final List<EventActionCardAction> actions;
 

@@ -105,9 +105,6 @@ class CompanionBouncyChip extends StatelessWidget {
     final t = CatchTokens.of(context);
     final background = active ? t.ink : t.surface;
     final foreground = active ? t.surface : t.ink;
-    final border = active
-        ? t.surface.withValues(alpha: CatchOpacity.none)
-        : t.line2;
     final radius = BorderRadius.circular(CatchRadius.pill);
     return CompanionBouncySurface(
       onTap: onTap,
@@ -117,7 +114,7 @@ class CompanionBouncyChip extends StatelessWidget {
       child: CatchSurface(
         borderRadius: radius,
         backgroundColor: background,
-        borderColor: border,
+        borderRole: active ? null : CatchBorderRole.boundary,
         padding: _companionStagePillPadding,
         child: Text(
           label,

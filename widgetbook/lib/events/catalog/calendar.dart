@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/shared/event_tiles/event_date_marker.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_date_tile.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -8,14 +8,14 @@ import 'fixtures.dart';
 
 @widgetbook.UseCase(
   name: 'Date marker states',
-  type: EventDateMarker,
+  type: EventDateTile,
   path: '[Events]/Calendar',
 )
 Widget eventDateMarkerStates(BuildContext context) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      EventDateMarker(
+      EventDateTile(
         date: widgetbookEvent.startTime,
         active: true,
         hasEvent: true,
@@ -23,11 +23,11 @@ Widget eventDateMarkerStates(BuildContext context) {
         onTap: widgetbookNoop,
       ),
       gapW12,
-      EventDateMarker(
+      EventDateTile(
         date: widgetbookEvent.startTime.add(const Duration(days: 1)),
         active: false,
         hasEvent: true,
-        layout: EventDateMarkerLayout.monthGrid,
+        layout: EventDateTileVariant.monthGrid,
         onTap: widgetbookNoop,
       ),
     ],
@@ -36,21 +36,21 @@ Widget eventDateMarkerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Week marker states',
-  type: WeekMarker,
+  type: WeekDayTile,
   path: '[Events]/Calendar',
 )
 Widget eventWeekMarkerStates(BuildContext context) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      WeekMarker(
+      WeekDayTile(
         date: widgetbookEvent.startTime,
         active: true,
         hasEvent: true,
         onTap: widgetbookNoop,
       ),
       gapW12,
-      WeekMarker(
+      WeekDayTile(
         date: widgetbookEvent.startTime.add(const Duration(days: 1)),
         active: false,
         hasEvent: true,
@@ -62,14 +62,14 @@ Widget eventWeekMarkerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Month marker states',
-  type: MonthMarker,
+  type: MonthDayTile,
   path: '[Events]/Calendar',
 )
 Widget eventMonthMarkerStates(BuildContext context) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      MonthMarker(
+      MonthDayTile(
         date: widgetbookEvent.startTime,
         active: true,
         today: true,
@@ -78,7 +78,7 @@ Widget eventMonthMarkerStates(BuildContext context) {
         onTap: widgetbookNoop,
       ),
       gapW12,
-      MonthMarker(
+      MonthDayTile(
         date: widgetbookEvent.startTime.add(const Duration(days: 1)),
         active: false,
         today: false,
@@ -87,7 +87,7 @@ Widget eventMonthMarkerStates(BuildContext context) {
         onTap: widgetbookNoop,
       ),
       gapW12,
-      MonthMarker(
+      MonthDayTile(
         date: widgetbookEvent.startTime.add(const Duration(days: 2)),
         active: false,
         today: false,

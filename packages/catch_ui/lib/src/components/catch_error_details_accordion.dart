@@ -74,7 +74,6 @@ class _CatchErrorDetailsAccordionState
           child: CatchSurface(
             tone: CatchSurfaceTone.transparent,
             radius: 0,
-            borderWidth: 0,
             padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
             onTap: () => setState(() => _expanded = !_expanded),
             child: Row(

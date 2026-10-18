@@ -618,13 +618,13 @@ abstract final class CatchInsets {
   );
 
   /// Standard row content for the Host roster board.
-  static const EdgeInsets rosterRowContent = EdgeInsets.symmetric(
+  static const EdgeInsets tableRowContent = EdgeInsets.symmetric(
     horizontal: CatchSpacing.micro14,
     vertical: CatchSpacing.micro10,
   );
 
   /// Column-label header inside the Host roster board.
-  static const EdgeInsets rosterHeaderContent = EdgeInsets.fromLTRB(
+  static const EdgeInsets tableHeaderContent = EdgeInsets.fromLTRB(
     CatchSpacing.micro14,
     CatchSpacing.s3,
     CatchSpacing.micro14,
@@ -632,7 +632,7 @@ abstract final class CatchInsets {
   );
 
   /// Empty-row content inside the Host roster board.
-  static const EdgeInsets rosterEmptyContent = EdgeInsets.fromLTRB(
+  static const EdgeInsets tableEmptyContent = EdgeInsets.fromLTRB(
     CatchSpacing.micro14,
     CatchSpacing.s4,
     CatchSpacing.micro14,

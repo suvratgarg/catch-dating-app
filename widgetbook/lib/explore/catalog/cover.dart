@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,19 +56,19 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Cover chrome states',
-  type: CoverStoryChrome,
+  type: FeaturedEventTopBar,
   path: '[Explore]/Sections',
 )
 Widget exploreCoverStoryChromeStates(BuildContext context) {
   const d = CatchTokens.dark;
-  final locationStory = CatchCoverStory(
+  final locationStory = FeaturedEventPoster(
     title: 'Tonight in Mumbai',
     location: 'Mumbai',
     showSearch: true,
     onLocation: widgetbookNoop,
     onSearch: widgetbookNoop,
   );
-  const searchStory = CatchCoverStory(
+  const searchStory = FeaturedEventPoster(
     title: 'Tonight in Mumbai',
     showSearch: true,
   );
@@ -87,16 +87,16 @@ Widget exploreCoverStoryChromeStates(BuildContext context) {
   }
 
   return WidgetbookScrollCatalogFrame(
-    title: 'CoverStoryChrome',
-    catalogId: 'section.explore.cover_story_chrome',
+    title: 'FeaturedEventTopBar',
+    catalogId: 'section.explore.featured_event_top_bar',
     children: [
       WidgetbookPageStateCard(
         label: 'location and search',
-        child: frame(CoverStoryChrome(paper: d.ink, story: locationStory)),
+        child: frame(FeaturedEventTopBar(paper: d.ink, story: locationStory)),
       ),
       WidgetbookPageStateCard(
         label: 'search only',
-        child: frame(CoverStoryChrome(paper: d.ink, story: searchStory)),
+        child: frame(FeaturedEventTopBar(paper: d.ink, story: searchStory)),
       ),
     ],
   );
@@ -104,13 +104,13 @@ Widget exploreCoverStoryChromeStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Cover content states',
-  type: CoverStoryContent,
+  type: FeaturedEventBody,
   path: '[Explore]/Sections',
 )
 Widget exploreCoverStoryContentStates(BuildContext context) {
   const d = CatchTokens.dark;
   final dinner = ActivityPalette.resolve(context, ActivityKind.dinner);
-  final dinnerStory = CatchCoverStory(
+  final dinnerStory = FeaturedEventPoster(
     activityKind: ActivityKind.dinner,
     kicker: 'Tonight',
     title: 'Jazz supper table',
@@ -120,7 +120,7 @@ Widget exploreCoverStoryContentStates(BuildContext context) {
     data: '8:00 PM · Rs 1,800',
     data2: '8 going · 4 left',
   );
-  const neutralStory = CatchCoverStory(
+  const neutralStory = FeaturedEventPoster(
     title: 'Plans that feel warm before they feel crowded',
     body: 'Browse hosted tables, runs, games, and coffee walks nearby.',
     data: 'Mumbai',
@@ -137,13 +137,13 @@ Widget exploreCoverStoryContentStates(BuildContext context) {
   }
 
   return WidgetbookScrollCatalogFrame(
-    title: 'CoverStoryContent',
-    catalogId: 'section.explore.cover_story_content',
+    title: 'FeaturedEventBody',
+    catalogId: 'section.explore.featured_event_body',
     children: [
       WidgetbookPageStateCard(
         label: 'event CTA',
         child: frame(
-          CoverStoryContent(
+          FeaturedEventBody(
             paper: d.ink,
             accent: dinner.accent,
             story: dinnerStory,
@@ -153,7 +153,7 @@ Widget exploreCoverStoryContentStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'neutral hook',
         child: frame(
-          CoverStoryContent(
+          FeaturedEventBody(
             paper: d.ink,
             accent: d.primary,
             story: neutralStory,

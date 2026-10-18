@@ -2,9 +2,9 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 
 enum ProfileSurfaceMode { catches, preview, publicProfile }
 
-/// The single shared profile shell. Renders the flagship [CatchProfileView] for
+/// The single shared profile shell. Renders the flagship [ProfileBody] for
 /// all three modes; only [ProfileSurfaceMode.catches] is reactable (per-section
 /// like + comment), so preview / public profile read calm and affordance-free.
 class ProfileSurface extends StatelessWidget {
@@ -75,7 +75,7 @@ class ProfileSurface extends StatelessWidget {
         age: profile.age,
       ),
       hint: _semanticHint(mode),
-      child: CatchProfileView(
+      child: ProfileBody(
         data: view,
         onReact: effectiveOnReact,
         scrollController: scrollController,
@@ -139,11 +139,11 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
               sliver: SliverList.list(
                 children: const [
                   ProfileSurfaceSectionSkeleton(lines: 3),
-                  ProfileSurfaceRule(),
+                  ProfileSurfaceDivider(),
                   ProfileSurfaceRunningSkeleton(),
-                  ProfileSurfaceRule(),
+                  ProfileSurfaceDivider(),
                   ProfileSurfacePhotoSkeleton(),
-                  ProfileSurfaceRule(),
+                  ProfileSurfaceDivider(),
                   ProfileSurfaceFactsSkeleton(),
                 ],
               ),
@@ -165,7 +165,7 @@ class ProfileSurfaceHeroSkeleton extends StatelessWidget {
     return Padding(
       padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
       child: CatchSurface(
-        borderColor: t.line,
+        borderRole: CatchBorderRole.separator,
         radius: CatchLayout.personPolaroidRadius,
         emphasis: CatchSurfaceEmphasis.subtle,
         backgroundColor: t.surface,
@@ -320,8 +320,8 @@ class ProfileSurfaceFactsSkeleton extends StatelessWidget {
   }
 }
 
-class ProfileSurfaceRule extends StatelessWidget {
-  const ProfileSurfaceRule({super.key});
+class ProfileSurfaceDivider extends StatelessWidget {
+  const ProfileSurfaceDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
