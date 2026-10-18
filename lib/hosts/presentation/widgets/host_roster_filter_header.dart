@@ -1,4 +1,4 @@
-part of 'host_event_attendance_panel.dart';
+part of 'host_event_participants_section.dart';
 
 class HostRosterSearchField extends StatelessWidget {
   const HostRosterSearchField({

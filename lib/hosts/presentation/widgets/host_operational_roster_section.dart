@@ -60,17 +60,18 @@ class HostGuestIntakeField extends StatelessWidget {
   final String revenueCurrency;
 
   @override
-  Widget build(BuildContext context) => HostOperationalRosterPanel._guestIntake(
-    eventId: eventId,
-    organizerId: organizerId,
-    bookingProvider: bookingProvider,
-    suggestedRevenueAmountMinor: suggestedRevenueAmountMinor,
-    revenueCurrency: revenueCurrency,
-  );
+  Widget build(BuildContext context) =>
+      HostOperationalRosterSection._guestIntake(
+        eventId: eventId,
+        organizerId: organizerId,
+        bookingProvider: bookingProvider,
+        suggestedRevenueAmountMinor: suggestedRevenueAmountMinor,
+        revenueCurrency: revenueCurrency,
+      );
 }
 
-class HostGuestIntakeDisclosure extends StatelessWidget {
-  const HostGuestIntakeDisclosure({
+class HostGuestIntakeSettingsField extends StatelessWidget {
+  const HostGuestIntakeSettingsField({
     super.key,
     required this.importing,
     required this.creatingHandoff,
@@ -200,8 +201,8 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
 
 enum _HostOperationalRosterView { guestIntake, roster }
 
-class HostOperationalRosterPanel extends ConsumerStatefulWidget {
-  const HostOperationalRosterPanel({
+class HostOperationalRosterSection extends ConsumerStatefulWidget {
+  const HostOperationalRosterSection({
     super.key,
     required this.eventId,
     required this.organizerId,
@@ -214,7 +215,7 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
   }) : _view = _HostOperationalRosterView.roster,
        bookingProvider = null;
 
-  const HostOperationalRosterPanel._guestIntake({
+  const HostOperationalRosterSection._guestIntake({
     required this.eventId,
     required this.organizerId,
     required this.bookingProvider,
@@ -238,12 +239,12 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
   final _HostOperationalRosterView _view;
 
   @override
-  ConsumerState<HostOperationalRosterPanel> createState() =>
-      _HostOperationalRosterPanelState();
+  ConsumerState<HostOperationalRosterSection> createState() =>
+      _HostOperationalRosterSectionState();
 }
 
-class _HostOperationalRosterPanelState
-    extends ConsumerState<HostOperationalRosterPanel> {
+class _HostOperationalRosterSectionState
+    extends ConsumerState<HostOperationalRosterSection> {
   void _setLocalState(VoidCallback callback) => setState(callback);
 
   var _importing = false;
@@ -299,7 +300,7 @@ class _HostOperationalRosterPanelState
   }
 
   @override
-  void didUpdateWidget(covariant HostOperationalRosterPanel oldWidget) {
+  void didUpdateWidget(covariant HostOperationalRosterSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.eventId != widget.eventId ||
         oldWidget.organizerId != widget.organizerId ||
@@ -318,7 +319,7 @@ class _HostOperationalRosterPanelState
   @override
   Widget build(BuildContext context) {
     if (widget._view == _HostOperationalRosterView.guestIntake) {
-      return HostGuestIntakeDisclosure(
+      return HostGuestIntakeSettingsField(
         importing: _importing,
         creatingHandoff: _creatingHandoff,
         providerMutationPending: _providerMutationPending,
@@ -406,7 +407,7 @@ class _HostOperationalRosterPanelState
               if (claims.isEmpty) return const SizedBox.shrink();
               return Padding(
                 padding: CatchInsets.sectionItemBottomGap,
-                child: _HostRuntimeClaimQueue(
+                child: HostRuntimeClaimList(
                   claims: claims,
                   attendees: attendeesState.value ?? const [],
                   pendingUid: _pendingClaimUid,
@@ -458,7 +459,7 @@ class _HostOperationalRosterPanelState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (widget.showAudienceInsights) ...[
-                    _HostRosterInsightsBar(
+                    HostRosterInsightRail(
                       insightsAsync: insightsAsync!,
                       attendeeCount: attendees.length,
                       selected: _insightFilter,
@@ -533,8 +534,9 @@ class _HostOperationalRosterPanelState
   }
 }
 
-class _HostRosterInsightsBar extends StatelessWidget {
-  const _HostRosterInsightsBar({
+class HostRosterInsightRail extends StatelessWidget {
+  const HostRosterInsightRail({
+    super.key,
     required this.insightsAsync,
     required this.attendeeCount,
     required this.selected,
@@ -670,8 +672,9 @@ CatchPersonLayout _attendeeLayout(
   );
 }
 
-class _HostRuntimeClaimQueue extends StatelessWidget {
-  const _HostRuntimeClaimQueue({
+class HostRuntimeClaimList extends StatelessWidget {
+  const HostRuntimeClaimList({
+    super.key,
     required this.claims,
     required this.attendees,
     required this.pendingUid,

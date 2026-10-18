@@ -10562,7 +10562,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             ),
             child: Padding(
               padding: CatchInsets.fieldSectionChildTop,
-              child: HostClubMediaSummary(
+              child: HostClubMediaRail(
                 logoImageBytes: _profilePortraitBytes,
                 logoImageUrl: null,
                 photos: [

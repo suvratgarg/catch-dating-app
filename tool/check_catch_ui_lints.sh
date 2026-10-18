@@ -194,6 +194,10 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const CatchSectionList(children: [SizedBox.shrink()]),
         const CatchField.read(title: 'Outside section'),
+        // A type name is not a composition boundary.
+        const _ProbeFormSchemaWrapper(
+          child: CatchField.read(title: 'Name-only boundary'),
+        ),
         const CatchFieldGeometryScope(
           gutterOwnership: CatchFieldGeometryScopeMode.container,
           child: SizedBox.shrink(),
@@ -304,6 +308,15 @@ class _ProviderProbe extends ConsumerWidget {
   }
 }
 
+class _ProbeFormSchemaWrapper extends StatelessWidget {
+  const _ProbeFormSchemaWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
+}
+
 class _ProbeSection extends StatelessWidget {
   const _ProbeSection();
 
@@ -387,7 +400,7 @@ expect_code_count "seeded violation corpus" "catch_shell_owns_tab_scaffold" 1
 expect_code_count \
   "seeded violation corpus" \
   "catch_field_requires_section_context" \
-  1
+  2
 expect_code_count \
   "seeded violation corpus" \
   "catch_field_geometry_is_section_owned" \

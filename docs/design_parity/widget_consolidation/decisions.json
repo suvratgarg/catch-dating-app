@@ -5176,11 +5176,11 @@
           "action": "keep"
         },
         {
-          "name": "HostEventParticipantsPanel",
+          "name": "HostEventParticipantsSection",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsPanel(mode: live) — the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
+      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsSection(mode: live) — the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded",
@@ -5627,7 +5627,7 @@
           "action": "keep"
         },
         {
-          "name": "HostClubOrganizerOverviewController",
+          "name": "HostClubOrganizerSectionList",
           "action": "keep"
         },
         {

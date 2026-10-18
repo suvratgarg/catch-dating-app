@@ -1,7 +1,7 @@
 part of '../host_operations_screen.dart';
 
-class HostClubOrganizerOverviewController extends ConsumerWidget {
-  const HostClubOrganizerOverviewController({super.key, required this.club});
+class HostClubOrganizerSectionList extends ConsumerWidget {
+  const HostClubOrganizerSectionList({super.key, required this.club});
 
   final Club club;
 
@@ -27,7 +27,7 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
             activeEventCount: activeEventCount,
           ),
         ),
-        _HostCrmAudienceCard(
+        HostCrmAudienceCard(
           summary: crmState.value,
           loading: crmState.isLoading,
           hasError: crmState.hasError,
@@ -38,8 +38,9 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
   }
 }
 
-class _HostCrmAudienceCard extends StatelessWidget {
-  const _HostCrmAudienceCard({
+class HostCrmAudienceCard extends StatelessWidget {
+  const HostCrmAudienceCard({
+    super.key,
     required this.summary,
     required this.loading,
     required this.hasError,
@@ -123,7 +124,7 @@ class _HostCrmAudienceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _HostCrmChannelRow(
+                HostCrmChannelRow(
                   label: context.l10n.hostsHostOrganizerCrmCatchApp,
                   value: context.l10n.hostsHostOrganizerCrmLinked(
                     count: data.linkedAccountCount,
@@ -133,7 +134,7 @@ class _HostCrmAudienceCard extends StatelessWidget {
                 gapH16,
                 const CatchDivider.section(),
                 gapH16,
-                _HostCrmChannelRow(
+                HostCrmChannelRow(
                   label: context.l10n.hostsHostOrganizerCrmWhatsapp,
                   value: context.l10n.hostsHostOrganizerCrmOptedIn(
                     count: data.whatsappOptInCount,
@@ -143,7 +144,7 @@ class _HostCrmAudienceCard extends StatelessWidget {
                 gapH16,
                 const CatchDivider.section(),
                 gapH16,
-                _HostCrmChannelRow(
+                HostCrmChannelRow(
                   label: context.l10n.hostsHostOrganizerCrmTextMessage,
                   value: context.l10n.hostsHostOrganizerCrmOptedIn(
                     count: data.smsOptInCount,
@@ -158,8 +159,9 @@ class _HostCrmAudienceCard extends StatelessWidget {
   }
 }
 
-class _HostCrmChannelRow extends StatelessWidget {
-  const _HostCrmChannelRow({
+class HostCrmChannelRow extends StatelessWidget {
+  const HostCrmChannelRow({
+    super.key,
     required this.label,
     required this.value,
     required this.status,

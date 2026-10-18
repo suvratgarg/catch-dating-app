@@ -8,7 +8,7 @@ import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -173,7 +173,7 @@ void main() {
               await tester.ensureVisible(breakdown);
               await tester.tap(breakdown);
               await pumpFeatureUi(tester);
-              expect(find.byType(HostCustomerRevenueBreakdown), findsOneWidget);
+              expect(find.byType(HostCustomerRevenueList), findsOneWidget);
             } else if (view == 'memory' || view.startsWith('history')) {
               final tab = find.text(view == 'memory' ? 'Notes' : 'History');
               await tester.ensureVisible(tab);

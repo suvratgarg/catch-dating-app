@@ -954,7 +954,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     final editSections = tester
         .widgetList<CatchSection>(
           find.descendant(
-            of: find.byType(HostClubEditTab),
+            of: find.byType(HostClubEditBody),
             matching: find.byType(CatchSection),
           ),
         )

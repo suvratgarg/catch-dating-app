@@ -35,7 +35,7 @@ test("owned renderers require exact source, library, owner, method and return ty
   }
   assert.equal(isOwnedCompositionRenderer({...entry, name: "status"}), false);
   for (const [file, name] of [
-    ["lib/hosts/presentation/customers/host_customer_timeline.dart", "hostCustomerTimelineField"],
+    ["lib/hosts/presentation/customers/host_customer_timeline_section.dart", "hostCustomerTimelineField"],
     ["lib/programs/presentation/program_events_row.dart", "programEventsField"],
   ]) {
     const factory = {
@@ -49,8 +49,8 @@ test("owned renderers require exact source, library, owner, method and return ty
 test("typed factories require their exact real source identities", () => {
   const entries = [
     {
-      file: "lib/hosts/presentation/customers/host_customer_timeline.dart",
-      library: "lib/hosts/presentation/customers/host_customer_timeline.dart",
+      file: "lib/hosts/presentation/customers/host_customer_timeline_section.dart",
+      library: "lib/hosts/presentation/customers/host_customer_timeline_section.dart",
       owner: null, name: "hostCustomerTimelineField", returnType: "CatchField",
     },
     {

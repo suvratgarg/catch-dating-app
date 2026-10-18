@@ -58,8 +58,8 @@
           {
             "id": "edit_tab",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-            "symbol": "HostClubEditTab"
+            "file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
+            "symbol": "HostClubEditBody"
           },
           {
             "id": "edit_controller",

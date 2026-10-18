@@ -80,9 +80,11 @@ export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state
 part 'host_operations/host_clubs_screen.dart';
 part 'host_operations/host_loading_screen.dart';
 part 'host_operations/host_clubs_scaffold.dart';
-part 'host_operations/host_organizer.dart';
+part 'host_operations/host_club_organizer_section_list.dart';
 part 'host_operations/host_whatsapp_setup_section.dart';
-part 'host_operations/host_club_edit_tab.dart';
+part 'host_operations/host_club_edit_body.dart';
+part 'host_operations/host_club_edit_rows.dart';
+part 'host_operations/host_club_media_rail.dart';
 part 'host_operations/host_club_event_defaults_screen.dart';
 part 'host_operations/host_club_spoke_scaffold.dart';
 part 'host_operations/host_club_live_guide_screen.dart';

@@ -51,7 +51,7 @@ export 'presentation/host_team_workspace_state.dart'; // public-api: provider-fr
 export 'presentation/payments/host_payment_account_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/payments/host_payment_account_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
-export 'presentation/widgets/host_event_attendance_panel.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/host_event_participants_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_event_tools_rail.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_loading_skeleton.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_organizer_switcher_sheet.dart'; // public-api: shared Host-shell identity component

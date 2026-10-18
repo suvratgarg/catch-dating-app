@@ -28,7 +28,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
@@ -40,7 +40,7 @@ import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_e
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -52,7 +52,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-part 'host_customer_detail_cards.dart';
+part 'host_customer_detail_card.dart';
 part 'host_customer_editor.dart';
 part 'host_save_audience_sheet.dart';
 part 'host_customer_filter_sheet.dart';

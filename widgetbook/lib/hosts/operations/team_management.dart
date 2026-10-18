@@ -18,21 +18,6 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostClubOrganizerOverviewController,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerMetricGrid,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerMetricRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
   name: 'Owner and co-host section states',
   type: HostTeamManagementSection,
   path: '[P1 product surfaces]/Host operations/Sections',

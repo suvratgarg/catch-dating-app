@@ -11,35 +11,20 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../../support/page_preview.dart';
 import 'customer_routes.dart';
 import 'preview.dart';
 
 const _path = '[P1 product surfaces]/Host operations/Workflow components';
-
-Widget _componentStates(String title, List<(String, Widget)> states) {
-  return WidgetbookPageCatalogFrame(
-    title: title,
-    contractId: 'component.host.${widgetbookHostComponentSlug(title)}',
-    children: [
-      for (final (label, child) in states)
-        WidgetbookPageStateCard(
-          label: label,
-          child: WidgetbookHostComponentFrame(child: child),
-        ),
-    ],
-  );
-}
 
 @widgetbook.UseCase(
   name: 'Loading dock',
   type: CreateEventDockSkeleton,
   path: _path,
 )
-Widget createEventDockSkeletonStates(BuildContext context) => _componentStates(
-  'CreateEventDockSkeleton',
-  [('route loading', const CreateEventDockSkeleton())],
-);
+Widget createEventDockSkeletonStates(BuildContext context) =>
+    widgetbookHostComponentStates('CreateEventDockSkeleton', [
+      ('route loading', const CreateEventDockSkeleton()),
+    ]);
 
 @widgetbook.UseCase(
   name: 'Workspace layout',
@@ -47,7 +32,7 @@ Widget createEventDockSkeletonStates(BuildContext context) => _componentStates(
   path: _path,
 )
 Widget createEventWorkspaceLayoutStates(BuildContext context) =>
-    _componentStates('CreateEventWorkspaceLayout', [
+    widgetbookHostComponentStates('CreateEventWorkspaceLayout', [
       (
         'header over body',
         const CreateEventWorkspaceLayout(
@@ -63,7 +48,7 @@ Widget createEventWorkspaceLayoutStates(BuildContext context) =>
   path: _path,
 )
 Widget createEventConsequenceSectionStates(BuildContext context) =>
-    _componentStates('CreateEventConsequenceSection', [
+    widgetbookHostComponentStates('CreateEventConsequenceSection', [
       (
         'guest impact',
         const CreateEventConsequenceSection(
@@ -79,7 +64,7 @@ Widget createEventConsequenceSectionStates(BuildContext context) =>
 
 @widgetbook.UseCase(name: 'Quiet day', type: HostTodayEmptyState, path: _path)
 Widget hostTodayEmptyStateStates(BuildContext context) =>
-    _componentStates('HostTodayEmptyState', [
+    widgetbookHostComponentStates('HostTodayEmptyState', [
       (
         'nothing scheduled',
         HostTodayEmptyState(
@@ -96,7 +81,7 @@ Widget hostTodayEmptyStateStates(BuildContext context) =>
   path: _path,
 )
 Widget hostFollowerUpdateComposerSheetStates(BuildContext context) =>
-    _componentStates('HostFollowerUpdateComposerSheet', [
+    widgetbookHostComponentStates('HostFollowerUpdateComposerSheet', [
       (
         'quota remaining',
         HostFollowerUpdateComposerSheet(
@@ -114,7 +99,7 @@ Widget hostFollowerUpdateComposerSheetStates(BuildContext context) =>
   path: _path,
 )
 Widget hostSaveAudienceSheetStates(BuildContext context) =>
-    _componentStates('HostSaveAudienceSheet', [
+    widgetbookHostComponentStates('HostSaveAudienceSheet', [
       (
         'attended filter',
         HostSaveAudienceSheet(
@@ -134,7 +119,7 @@ Widget hostSaveAudienceSheetStates(BuildContext context) =>
   path: _path,
 )
 Widget hostCustomerFilterSummarySectionStates(BuildContext context) =>
-    _componentStates('HostCustomerFilterSummarySection', [
+    widgetbookHostComponentStates('HostCustomerFilterSummarySection', [
       (
         'exact match',
         HostCustomerFilterSummarySection(

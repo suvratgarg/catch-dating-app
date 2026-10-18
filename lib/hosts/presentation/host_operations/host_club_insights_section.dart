@@ -108,7 +108,7 @@ class _HostClubInsightsSectionState
           ),
         ),
         HostTrackingSettingsSection(organizerId: widget.club.id),
-        HostClubOrganizerOverviewController(club: widget.club),
+        HostClubOrganizerSectionList(club: widget.club),
       ],
     );
   }

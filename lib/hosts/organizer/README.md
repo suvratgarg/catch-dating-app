@@ -55,7 +55,7 @@ Typed handoffs:
 |---|---|---|
 | `HostClubsScreen` | `lib/hosts/presentation/host_operations/host_clubs_screen.dart` | Feature-contract actions: sign_in, retry_organizer_workspace. |
 | `HostClubsScaffold` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart` | Feature-contract actions: create_organizer, select_workspace_tab. |
-| `HostClubEditTab` | `lib/hosts/presentation/host_operations/host_club_edit_tab.dart` | Feature-contract actions: open_organizer_setting. |
+| `HostClubEditBody` | `lib/hosts/presentation/host_operations/host_club_edit_body.dart` | Feature-contract actions: open_organizer_setting. |
 | `HostClubEditController` | `lib/hosts/presentation/club_management/host_club_edit_controller.dart` | Feature-contract actions: update_organizer, update_organizer_media. |
 | `HostClubSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart` | Feature-contract actions: retry_organizer_setting. |
 | `HostClubDefaultsSaver` | `lib/hosts/presentation/club_management/host_club_defaults_saver.dart` | Feature-contract actions: save_event_defaults. |
