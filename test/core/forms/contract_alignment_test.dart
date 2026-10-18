@@ -61,7 +61,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: SingleChildScrollView(
-              child: HostClubEditTab(
+              child: HostClubEditBody(
                 club: club,
                 currentUid: 'host-contract-user',
                 isOwner: true,
@@ -74,9 +74,9 @@ void main() {
     await tester.pump();
 
     final rows = tester
-        .widgetList<CatchFormRowList<UpdateClubPatch>>(
+        .widgetList<CatchFormList<UpdateClubPatch>>(
           find.byWidgetPredicate(
-            (widget) => widget is CatchFormRowList<UpdateClubPatch>,
+            (widget) => widget is CatchFormList<UpdateClubPatch>,
           ),
         )
         .expand((list) => list.rows)

@@ -205,7 +205,7 @@ or an independent feature contract. Its domain state and route intents remain te
   Activity, Payment Confirmation, Saved Events, Event Map, Event Location Map,
   host create/edit club/event route gates, Host Operations/Clubs, Host Account,
   Host Profile, Host Event Manage, host attendance/profile lookups, host
-  analytics, hosted-club event lists, `WhoIsGoing`, and Settings route gutters
+  analytics, hosted-club event lists, `WhoIsGoingSection`, and Settings route gutters
   now use shared async/layout primitives. Remaining direct async branches are
   dashboard view-model transformations and an optional Event Detail plan
   presence check; treat those as policy decisions before further migration.
@@ -598,7 +598,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   `HostRouteLoadingBody`, `HostSettingsRowsSkeleton`,
   `HostAnalyticsReportSkeleton`, `HostEventRowsSkeleton`, and
   `HostRosterSkeleton`.
-- [x] Host draft-picker inline loading state now uses `HostInlineSkeletonIcon`.
+- [x] Host draft-picker inline loading state now uses `HostInlineIconSkeleton`.
 - [x] Classify Dashboard health/recommendation inline progress and Event
   Success manual-QA action progress as either tiny inline exceptions or replace
   them with content-shaped skeleton/progress treatments. Dashboard inline
@@ -619,14 +619,14 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   `lib/image_uploads/presentation/widgets/photo_slot.dart` media-slot upload
   overlay, `lib/public_profile/presentation/public_profile_screen.dart`
   report/block overlay over rendered content,
-  `lib/chats/presentation/widgets/suvbot_action_bar.dart`,
-  `lib/chats/presentation/widgets/chat_input_bar.dart`, and
+  `lib/chats/presentation/widgets/suvbot_dock.dart`,
+  `lib/chats/presentation/widgets/chat_input.dart`, and
   `lib/chats/presentation/widgets/message_bubble.dart` inline action/media
   progress, `lib/events/presentation/location_picker_screen.dart` search
   suffix progress, `lib/clubs/presentation/detail/widgets/catch_club_dock.dart`
   and `lib/clubs/presentation/detail/widgets/membership_button.dart`
   notification-toggle progress, Settings delete/sign-out mutation progress,
-  `lib/core/widgets/catch_startup_loading_screen.dart` startup loading, and
+  `lib/core/widgets/splash_screen.dart` startup loading, and
   `lib/core/riverpod_ui/catch_async_value_view.dart` core async primitive defaults.
 
 ### Reference Export Queue
@@ -783,7 +783,7 @@ here without copying the computed progress view.
 | P2 | `screen.host.event.edit` | None | `feature.host_event_manage` binds owner edit as a second lifecycle projection, compiling all 21 edit states and 11 actions across route recovery, schedule/location/pace/policy decisions, the actual `LocationPickerScreen` fullscreen modal, validation, update, and caller-pop lifecycle. Save pending now freezes route dismissal and the complete form, while controller deduplication and focused widget proof close `DS-HOST-EVENT-EDIT-005`. |
 | P2 | `screen.onboarding.flow` | Blocked: interaction variants need canonical exports | `feature.member_onboarding` compiles all 13 flow states and 22 actions across booking identity, profile completion, run preferences, draft resume, exact minimum/surplus photo policy, prompts, and mutation behavior. The implemented Instagram step is explicitly `orphaned`: no production entry mode or forward transition reaches it, so retire it or reconnect it with route proof under `DS-ONBOARDING-005`. `DS-ONBOARDING-006` is closed under `REG-PENDING-SNAPSHOT-001`: pending saves freeze step-back and every request-defining identity, prompt, or running-preference control, and controller tests prove duplicate dispatches share one request. Existing Widgetbook, captures, adapters, and primary references remain registered; interaction-specific references stay blocked under `DS-ONBOARDING-004`. |
 | P2 | `screen.saved_events.list` | Blocked: no standalone Saved Events source | Event Planning binds Saved Events as the saved-only projection of Calendar's agenda goal, compiling all nine states and five back/recovery/Event Detail actions. The contract intentionally declares no list-level save/unsave action even though a saved-event repository exists, because those mutations remain on Event Detail. Widgetbook and captures remain complete; canonical reference export is still blocked. |
-| P2 | `screen.start.welcome` | State-specific references are optional until strict comparison requires them | Member Onboarding binds Start Welcome as a second projection of the same `WelcomePage` implementation and reuses its skip, phone-auth, and guest-Explore action identities. All six reel, landed, CTA, reduced-motion, text-scale, and fixed-dark states compile against their own Start authority evidence instead of creating a duplicate feature. Additional state-specific references remain blocked/reference-only unless strict visual comparison requires them. |
+| P2 | `screen.start.welcome` | State-specific references are optional until strict comparison requires them | Member Onboarding binds Start Welcome as a second projection of the same `OnboardingWelcomeBody` implementation and reuses its skip, phone-auth, and guest-Explore action identities. All six reel, landed, CTA, reduced-motion, text-scale, and fixed-dark states compile against their own Start authority evidence instead of creating a duplicate feature. Additional state-specific references remain blocked/reference-only unless strict visual comparison requires them. |
 | P3 | `screen.event.location_map` | Blocked: no standalone full-screen map source; map primitives only | Event Detail binds Event Location Map as its read-only exact-location projection, compiling all 11 states and three back/recovery/directions actions. `DP-EVENT-MAP-005` is closed: directions launch is singleton while pending, the button shows progress, and false or thrown failures restore the action with visible feedback. Deterministic pending/failure captures are registered; exported map masks and pixel comparison remain blocked on a canonical route source. |
 | P3 | `screen.notifications.list` | None | `feature.notifications` compiles all 14 states and four identity-retry/activity-retry/read/navigation actions. `DP-NOTIFICATIONS-004` is closed: uidProvider failure now renders a branded auth retry state, while resolved null uid alone owns the signed-out empty state. Deterministic uid-error preview and capture evidence is registered. |
 | P3 | `screen.payments.history` | Blocked: no standalone Payment History source; Booking moments only | `feature.payments` compiles all 17 states and six recovery/receipt/support actions. `DP-PAYMENT-HISTORY-005` is closed by the honest How to get help label and tested payment/order-ID guidance; `DP-PAYMENT-HISTORY-006` is closed by distinct event-title loading, failure, and resolved-absence behavior. Deterministic enrichment previews/captures and refreshed support-guidance captures are registered; canonical reference export remains blocked. |
@@ -1251,20 +1251,20 @@ tests, captures, Widgetbook, Git, and CI.
     `CatchScreenBody`, and `CatchSectionStack`, closing those Claude primitive
     inventory rows from "source candidate but no standalone entry."
   - Host roster primitives now expose source-backed standalone Widgetbook
-    review pages for `CatchRosterTiles`, `CatchRosterRow`, and
-    `CatchRosterTable` under `[Core catalog]/Host operations`, closing those
+    review pages for `CatchRosterTiles`, `ParticipantRow`, and
+    `ParticipantTable` under `[Core catalog]/Host operations`, closing those
     Claude primitive inventory rows from "source candidate but no standalone
     entry."
   - The Claude-vs-Widgetbook inventory now treats source-backed generated
     entries as represented rather than missing. Existing generated entries for
-    `CatchCountPill`, `CatchCoverStory`, `CatchClubCover`, `CatchIndexRow`,
+    `CatchCountPill`, `FeaturedEventPoster`, `ClubCover`, `CatchIndexRow`,
     `EventBookingDock`, `EventDetailHintList`, `EventDetailHostCard`,
-    `EventDetailItinerary`, `EventDetailMapCard`,
-    `EventDetailMechanismList`, `EventDetailPhotoStrip`,
-    `EventDetailTicketStubBand`, `NotificationRow`, and `CatchConfirmDialog`
+    `EventDetailItineraryList`, `EventDetailMapCard`,
+    `EventDetailMechanismList`, `EventDetailPhotoGrid`,
+    `EventDetailTicketStubRow`, `NotificationRow`, and `CatchConfirmDialog`
     are recorded as represented; remaining unresolved rows stay in the
     no-clear-match bucket for future product/API decisions.
-  - `CatchRosterTiles`, `CatchRosterRow`, and `CatchRosterTable` are now formal
+  - `CatchRosterTiles`, `ParticipantRow`, and `ParticipantTable` are now formal
     component contracts (`catch.roster_tiles`, `catch.roster_row`, and
     `catch.roster_table`) with matching contract-state Widgetbook previews.
   - `CatchSection`, `CatchJourneySteps`, `CatchPrivacyBadge`,
@@ -1275,7 +1275,7 @@ tests, captures, Widgetbook, Git, and CI.
   - Dashboard, messaging, and event-detail sheet sections now have standalone
     source-backed Widgetbook review entries for `QuickActions`,
     `DashboardStrideSection`, `RecommendCard`, `CatchTopBar.identity`,
-    `ChatEventContextHeader`, `MessageBubble`, `ChatInputBar`,
+    `ChatEventContextHeader`, `MessageBubble`, `ChatInput`,
     `ChatListTile`, and `BookingConflictSheet`.
   - The inventory now classifies additional source-backed Claude aliases that
     are not yet standalone/formal contracts: `CheckoutSheet`, `ClubDock`,
@@ -1498,7 +1498,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `loading`, `not_found`, `fatal_error`, `member_default`, `visitor_not_member`, `guest_join`, `host_public_view`, `empty_schedule`, `join_leave_pending`, `join_leave_failed`, `offline`, `text_scale_2`, `reduced_motion`
   - DP-CLUB-DETAIL-001: Closed by the consumer-only dock decision; shared public Club Detail sections are reused by Host Club Detail, while provider-backed `ClubMembershipDock` stays screen-local and `CatchClubDock` promotion is deferred until another host/member action-dock contract exists.
   - DP-CLUB-DETAIL-002: Closed by `ClubDetailBodyState`; route async/loading/error/not-found, initial-club fallback, next-event selection, host-message eligibility, contact actions, event-route target, review visibility, and membership dock state are derived outside visual sections.
-  - DS-CLUB-DETAIL-003: Closed by provider-free `ClubHostSection`, `ClubHostRow`, `ClubContactSection`, and `ClubPhotoStrip` files plus direct Widgetbook states and widget catalog entries.
+  - DS-CLUB-DETAIL-003: Closed by provider-free `ClubHostSection`, `ClubHostRow`, `ClubContactSection`, and `ClubPhotoRail` files plus direct Widgetbook states and widget catalog entries.
   - DP-CLUB-DETAIL-003: Closed by `club_detail_loading`, `club_detail_initial_loading`, and `club_detail_empty_schedule` captures plus the existing exported/masked Club Detail member reference.
   - DP-CLUB-DETAIL-004: Closed by advisory comparison of `club_detail_member` against the Claude Club Detail V2 member-default reference; divergence is concentrated in hero media/chrome, next-event/stat-strip treatment, and below-fold schedule/dock composition.
 - [x] `explore.map` (6 state follow-ups, 0 open gaps)
@@ -1695,7 +1695,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `uid_missing`, `saved_events_loading`, `saved_events_error`, `empty_saved_events`, `populated_saved_events`, `club_names_loading_error`, `text_scale_2`, `light_dark`
   - DP-SAVED-EVENTS-001: Closed by Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and dark theme variants.
   - DP-SAVED-EVENTS-002: Closed by deterministic Saved Events captures for uid-missing fallback, empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output.
-  - DP-SAVED-EVENTS-003: Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries.
+  - DP-SAVED-EVENTS-003: Closed by SavedEventsHeaderSliver, SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries.
 - [x] `filters.preferences` (10 state follow-ups, 0 open gaps)
   - planned: None
   - implemented: None

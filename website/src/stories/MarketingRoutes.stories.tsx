@@ -99,12 +99,12 @@ export const Host: Story = {
       reviewStates: [
         "default",
         "beta-offer",
-        "host-application",
+        "application-link",
         "capture-placeholders",
       ],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["beta-offer", "host-application", "capture-placeholders"],
+        manual: ["beta-offer", "application-link", "capture-placeholders"],
       },
     },
     catchComponent: {
@@ -113,7 +113,7 @@ export const Host: Story = {
       states: [
         "default",
         "beta-offer",
-        "host-application",
+        "application-link",
         "capture-placeholders",
       ],
     },
@@ -480,8 +480,8 @@ export const EventDetailCatch: Story = {
         "web-otp-registration",
         "external-source",
         "event-reviews",
-        "desktop-ticket-rail",
-        "mobile-single-column",
+        "desktop-invitation",
+        "mobile-sticky-action",
       ],
     },
   },

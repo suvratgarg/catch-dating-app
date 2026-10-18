@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -52,13 +53,29 @@ class HostEventsClubCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final sessionState = catchAsyncStateFromAsyncValue(
+      ref.watch(authenticatedSessionProvider),
+    );
     final request = HostEventsTimelineRequest(
       organizerId: club.id,
       sessionBoundary: sessionBoundary,
+      session: sessionState.value,
     );
-    final timelineAsync = ref.watch(
+    final timelineResult = ref.watch(
       hostEventsTimelineControllerProvider(request),
     );
+    // A required private-history failure is terminal even after Upcoming has
+    // rendered. Riverpod retains the pending value on AsyncError; remove that
+    // value for this boundary so it cannot masquerade as usable inventory.
+    final timelineState = catchAsyncStateFromAsyncValue(timelineResult);
+    final retained = timelineState.value;
+    final timelineAsync =
+        timelineState.error != null &&
+            retained != null &&
+            !retained.historyInitialized &&
+            retained.loadingMorePast
+        ? timelineResult.unwrapPrevious()
+        : timelineResult;
     final eventsAsync = timelineAsync.whenData(
       (timeline) => timeline.allEvents,
     );
@@ -300,7 +317,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
         pages: [
           for (final view in HostEventsView.values)
             CatchRootScreenPageSpec.scroll(
-              page: HostEventsTimelinePage(
+              page: HostEventsTimelineBody(
                 key: ValueKey('host-events-${widget.club.id}-${view.name}'),
                 organizerId: widget.club.id,
                 programs: widget.programs,
@@ -351,9 +368,9 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
 
 /// One lifecycle page. The root owns tabs and scrolling chrome; this adapter
 /// selects data/state only, and the shared page/section/record owners lay it out.
-class HostEventsTimelinePage extends StatelessWidget
+class HostEventsTimelineBody extends StatelessWidget
     implements CatchRootScreenPageOwner {
-  const HostEventsTimelinePage({
+  const HostEventsTimelineBody({
     super.key,
     required this.organizerId,
     required this.view,

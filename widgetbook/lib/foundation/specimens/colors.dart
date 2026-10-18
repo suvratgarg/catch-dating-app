@@ -90,7 +90,7 @@ class _ActivityPigmentGrid extends StatelessWidget {
 class _ActivityColorTile extends StatelessWidget {
   const _ActivityColorTile({required this.activity});
 
-  final CatchActivity activity;
+  final ActivityStyle activity;
 
   @override
   Widget build(BuildContext context) {

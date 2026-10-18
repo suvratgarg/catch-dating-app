@@ -99,7 +99,7 @@
           "note": "color: maps to icon tint; label defaults ink2"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep",
           "note": "icon section title, not meta; candidate for CatchSectionHeader icon variant later"
         }
@@ -579,11 +579,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionError",
+          "name": "CompanionErrorState",
           "action": "keep"
         },
         {
-          "name": "CompanionMessage",
+          "name": "CompanionEmptyState",
           "action": "keep"
         }
       ],
@@ -623,7 +623,7 @@
           "action": "keep"
         },
         {
-          "name": "ProfileTabContent",
+          "name": "ProfileTabBody",
           "action": "keep"
         },
         {
@@ -663,7 +663,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareArtwork), else keep a media param.",
+      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareCover), else keep a media param.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-014"
@@ -791,7 +791,7 @@
     {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
       "decision": "merge-new-primitive",
-      "canonicalSymbol": "EventCtaStatusLeading (feature-level)",
+      "canonicalSymbol": "EventDockStatusText (feature-level)",
       "members": [
         {
           "name": "AttendedLeading",
@@ -829,7 +829,7 @@
           "action": "keep"
         },
         {
-          "name": "ReviewHistoryItemSkeleton",
+          "name": "ReviewHistoryRowSkeleton",
           "action": "keep"
         }
       ],
@@ -919,11 +919,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "PreviewTabSkeletonSliverBody",
+          "name": "ProfilePreviewSkeletonSliverBody",
           "action": "keep"
         },
         {
-          "name": "PreviewTabSliverBody",
+          "name": "ProfilePreviewSliverBody",
           "action": "keep"
         }
       ],
@@ -959,11 +959,11 @@
           "action": "keep"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep"
         }
       ],
-      "rationale": "Current-registry id for the prior c006 owner decision: StageSectionLabel is an icon section title, not an icon+label meta row; folding it into CatchMetaRow would cross section-title and meta-row concepts.",
+      "rationale": "Current-registry id for the prior c006 owner decision: StageSectionHeader is an icon section title, not an icon+label meta row; folding it into CatchMetaRow would cross section-title and meta-row concepts.",
       "decidedBy": "owner+claude-reconciled",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
@@ -973,7 +973,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventCtaStatusLeading",
+          "name": "EventDockStatusText",
           "action": "keep"
         },
         {
@@ -1235,11 +1235,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionError",
+          "name": "CompanionErrorState",
           "action": "keep"
         },
         {
-          "name": "CompanionMessage",
+          "name": "CompanionEmptyState",
           "action": "keep"
         }
       ],
@@ -1329,11 +1329,11 @@
           "action": "keep"
         },
         {
-          "name": "ProfileTabContent",
+          "name": "ProfileTabBody",
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabContent, so the match is wrapper/content composition.",
+      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabBody, so the match is wrapper/content composition.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015",
@@ -1380,7 +1380,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventSharePill",
+          "name": "EventShareChip",
           "action": "keep"
         },
         {
@@ -1388,7 +1388,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventSharePill is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent. REVIEW (claude, 2026-07-03): light vs dark tone recipes; deliberate surface-specific variants.",
+      "rationale": "K5 concept mismatch: EventShareChip is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent. REVIEW (claude, 2026-07-03): light vs dark tone recipes; deliberate surface-specific variants.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -1438,7 +1438,7 @@
           "action": "keep"
         },
         {
-          "name": "UserAnalyticsTipsPanel",
+          "name": "UserAnalyticsTipsSection",
           "action": "keep"
         }
       ],
@@ -1514,7 +1514,7 @@
           "action": "keep"
         },
         {
-          "name": "EmptyRosterMessage",
+          "name": "WhoIsGoingEmptyState",
           "action": "keep"
         },
         {
@@ -1615,7 +1615,7 @@
           "action": "keep"
         },
         {
-          "name": "PreviewLine",
+          "name": "CompanionPreviewText",
           "action": "keep"
         },
         {
@@ -1839,7 +1839,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: the shared StagePanel/StageSectionLabel shell is small, and merging would need icon, label, title, body, and optional supporting-text knobs for two live-stage concepts.",
+      "rationale": "K4 churn threshold: the shared StagePanel/StageSectionHeader shell is small, and merging would need icon, label, title, body, and optional supporting-text knobs for two live-stage concepts.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
@@ -1853,11 +1853,11 @@
           "action": "keep"
         },
         {
-          "name": "HostEventToolsCarousel",
+          "name": "HostEventToolsRail",
           "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: EventFocusRail is member dashboard event-focus navigation while HostEventToolsCarousel is host management tooling with different data and action contracts.",
+      "rationale": "K2 domain fork: EventFocusRail is member dashboard event-focus navigation while HostEventToolsRail is host management tooling with different data and action contracts.",
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
@@ -1920,15 +1920,15 @@
       "canonicalSymbol": "CatchField.nav"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
+      "clusterId": "ranked-pair: HostAnalyticsTrendSection/UserAnalyticsTrendSection",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostAnalyticsTrendPanel",
+          "name": "HostAnalyticsTrendSection",
           "action": "keep"
         },
         {
-          "name": "UserAnalyticsTrendPanel",
+          "name": "UserAnalyticsTrendSection",
           "action": "keep"
         }
       ],
@@ -2049,7 +2049,7 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: CatchSectionLabel/StageSectionLabel",
+      "clusterId": "ranked-pair: CatchSectionLabel/StageSectionHeader",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2057,25 +2057,25 @@
           "action": "keep"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionLabel is an Event Success live-stage row using labelL typography, required color, and two-line text. REVIEW (claude, 2026-07-03): StageSectionLabel belongs to the companion stage/paper art direction (celebration-cards precedent); CatchSectionLabel already covers the kicker+icon case for standard surfaces.",
+      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionHeader is an Event Success live-stage row using labelL typography, required color, and two-line text. REVIEW (claude, 2026-07-03): StageSectionHeader belongs to the companion stage/paper art direction (celebration-cards precedent); CatchSectionLabel already covers the kicker+icon case for standard surfaces.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubPhotoStrip/EventDetailPhotoStrip",
+      "clusterId": "ranked-pair: ClubPhotoRail/EventDetailPhotoGrid",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubPhotoStrip",
+          "name": "ClubPhotoRail",
           "action": "keep"
         },
         {
-          "name": "EventDetailPhotoStrip",
+          "name": "EventDetailPhotoGrid",
           "action": "keep"
         }
       ],
@@ -2122,15 +2122,15 @@
       "canonicalSymbol": "CatchSectionHeader"
     },
     {
-      "clusterId": "ranked-pair: ClubHeroAppBar/EventDetailHeroAppBar",
+      "clusterId": "ranked-pair: ClubHeroTopBar/EventDetailHeroTopBar",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHeroAppBar",
+          "name": "ClubHeroTopBar",
           "action": "keep"
         },
         {
-          "name": "EventDetailHeroAppBar",
+          "name": "EventDetailHeroTopBar",
           "action": "keep"
         }
       ],
@@ -2212,7 +2212,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: CatchEmptyStateContent/EmptyHeroContent",
+      "clusterId": "ranked-pair: CatchEmptyStateContent/EmptyHeroBody",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2220,11 +2220,11 @@
           "action": "keep"
         },
         {
-          "name": "EmptyHeroContent",
+          "name": "EmptyHeroBody",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroContent is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment. REVIEW (claude, 2026-07-03): EmptyHeroContent is bespoke dashboard editorial hero copy, not generic empty-state content.",
+      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroBody is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment. REVIEW (claude, 2026-07-03): EmptyHeroBody is bespoke dashboard editorial hero copy, not generic empty-state content.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2447,7 +2447,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: DarkPill/EventSharePill",
+      "clusterId": "ranked-pair: DarkPill/EventShareChip",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2455,11 +2455,11 @@
           "action": "keep"
         },
         {
-          "name": "EventSharePill",
+          "name": "EventShareChip",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill — different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
+      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventShareChip is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill — different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2591,7 +2591,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/StageSectionLabel",
+      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/StageSectionHeader",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2599,17 +2599,17 @@
           "action": "keep"
         },
         {
-          "name": "StageSectionLabel",
+          "name": "StageSectionHeader",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionLabel is an Event Success live-stage label with required color and two-line wrapping. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionHeader is an Event Success live-stage label with required color and two-line wrapping. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/PreviewLine",
+      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/CompanionPreviewText",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2617,11 +2617,11 @@
           "action": "keep"
         },
         {
-          "name": "PreviewLine",
+          "name": "CompanionPreviewText",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while PreviewLine is preview/detail copy inside Event Success composition. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while CompanionPreviewText is preview/detail copy inside Event Success composition. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2765,13 +2765,13 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: both use StagePanel and StageSectionLabel, but StagePromptCard renders one prompt while StageConversationCueCard renders optional subtitle plus up to three cue lines.",
+      "rationale": "K4 churn threshold: both use StagePanel and StageSectionHeader, but StagePromptCard renders one prompt while StageConversationCueCard renders optional subtitle plus up to three cue lines.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsReviewDiscoveryPanel/HostAnalyticsTrendPanel",
+      "clusterId": "ranked-pair: HostAnalyticsReviewDiscoveryPanel/HostAnalyticsTrendSection",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2779,7 +2779,7 @@
           "action": "keep"
         },
         {
-          "name": "HostAnalyticsTrendPanel",
+          "name": "HostAnalyticsTrendSection",
           "action": "keep"
         }
       ],
@@ -2820,7 +2820,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already sharing internals: both public celebration entry points delegate to CatchCelebrationScreen with different moment kinds, details, payment/supplemental data, and action copy.",
+      "rationale": "K3 already sharing internals: both public celebration entry points delegate to CelebrationScreen with different moment kinds, details, payment/supplemental data, and action copy.",
       "decidedBy": "codex-rule:K3",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -2844,15 +2844,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ProfileMultiEnumEntry/ProfileSingleEnumEntry",
+      "clusterId": "ranked-pair: ProfileMultiEnumRow/ProfileSingleEnumRow",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ProfileMultiEnumEntry",
+          "name": "ProfileMultiEnumRow",
           "action": "keep"
         },
         {
-          "name": "ProfileSingleEnumEntry",
+          "name": "ProfileSingleEnumRow",
           "action": "keep"
         }
       ],
@@ -3163,7 +3163,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K4 churn threshold: the celebration detail rows belong to separate deterministic surface owners, CatchCelebrationScreen for standalone immersive moments and PaperCelebrationScaffold for step-flow confirmations; merging would add mode and layout-family styling knobs without simplifying callers.",
+      "rationale": "K4 churn threshold: the celebration detail rows belong to separate deterministic surface owners, CelebrationScreen for standalone immersive moments and PaperCelebrationScaffold for step-flow confirmations; merging would add mode and layout-family styling knobs without simplifying callers.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -3205,7 +3205,7 @@
       "status": "implemented-WO-020 (footer extraction only)"
     },
     {
-      "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteStateView",
+      "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteBody",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3213,7 +3213,7 @@
           "action": "keep"
         },
         {
-          "name": "HostCreateEventRouteStateView",
+          "name": "HostCreateEventRouteBody",
           "action": "keep"
         }
       ],
@@ -3404,11 +3404,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: StageCueLine/StagePrivacyLine",
+      "clusterId": "ranked-pair: StageCueCard/StagePrivacyLine",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "StageCueLine",
+          "name": "StageCueCard",
           "action": "keep"
         },
         {
@@ -3494,15 +3494,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: RecapHeroSkeleton/RecapStatSkeleton",
+      "clusterId": "ranked-pair: RecapHeaderSkeleton/RecapStatTileSkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "RecapHeroSkeleton",
+          "name": "RecapHeaderSkeleton",
           "action": "keep"
         },
         {
-          "name": "RecapStatSkeleton",
+          "name": "RecapStatTileSkeleton",
           "action": "keep"
         }
       ],
@@ -3750,15 +3750,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ExploreEventsEmptySliver/ExploreEventsLoadingSliver",
+      "clusterId": "ranked-pair: ExploreFeedEmptyState/ExploreEventsSkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ExploreEventsEmptySliver",
+          "name": "ExploreFeedEmptyState",
           "action": "keep"
         },
         {
-          "name": "ExploreEventsLoadingSliver",
+          "name": "ExploreEventsSkeleton",
           "action": "keep"
         }
       ],
@@ -3768,7 +3768,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: CustomQuestionFields/CustomQuestionnaireFields",
+      "clusterId": "ranked-pair: CustomQuestionFields/CustomQuestionnaireSection",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3776,11 +3776,11 @@
           "action": "keep"
         },
         {
-          "name": "CustomQuestionnaireFields",
+          "name": "CustomQuestionnaireSection",
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition is not duplication: CustomQuestionnaireFields owns the question-set shell and instantiates CustomQuestionFields for each custom question row.",
+      "rationale": "K1 composition is not duplication: CustomQuestionnaireSection owns the question-set shell and instantiates CustomQuestionFields for each custom question row.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -3822,7 +3822,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ProfileHeightStepperControls/ProfileReactionControls",
+      "clusterId": "ranked-pair: ProfileHeightStepperControls/ProfileReactionAction",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3830,7 +3830,7 @@
           "action": "keep"
         },
         {
-          "name": "ProfileReactionControls",
+          "name": "ProfileReactionAction",
           "action": "keep"
         }
       ],
@@ -4097,11 +4097,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostClubInsightsPane/HostClubPreviewPane",
+      "clusterId": "ranked-pair: HostClubInsightsSection/HostClubPreviewPane",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubInsightsPane",
+          "name": "HostClubInsightsSection",
           "action": "keep"
         },
         {
@@ -4187,11 +4187,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: CatchesProfileReviewSkeleton/CatchesTopOverlaySkeleton",
+      "clusterId": "ranked-pair: CatchesProfileBodySkeleton/CatchesTopOverlaySkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CatchesProfileReviewSkeleton",
+          "name": "CatchesProfileBodySkeleton",
           "action": "keep"
         },
         {
@@ -4313,19 +4313,19 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: PaymentConfirmationBodyController/PaymentPendingCheckoutController",
+      "clusterId": "ranked-pair: PaymentConfirmedBody/PaymentPendingBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "PaymentConfirmationBodyController",
+          "name": "PaymentConfirmedBody",
           "action": "keep"
         },
         {
-          "name": "PaymentPendingCheckoutController",
+          "name": "PaymentPendingBody",
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition is not duplication: PaymentPendingCheckoutController owns pending/failed payment state and delegates to PaymentConfirmationBodyController after completion.",
+      "rationale": "K1 composition is not duplication: PaymentPendingBody owns pending/failed payment state and delegates to PaymentConfirmedBody after completion.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -4349,11 +4349,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: EventSuccessDefaultsPanel/EventSuccessHostPanel",
+      "clusterId": "ranked-pair: EventSuccessDefaultsSection/EventSuccessHostPanel",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventSuccessDefaultsPanel",
+          "name": "EventSuccessDefaultsSection",
           "action": "keep"
         },
         {
@@ -4367,15 +4367,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportView",
+      "clusterId": "ranked-pair: HostAnalyticsReportBody/UserAnalyticsReportBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostAnalyticsReportView",
+          "name": "HostAnalyticsReportBody",
           "action": "keep"
         },
         {
-          "name": "UserAnalyticsReportView",
+          "name": "UserAnalyticsReportBody",
           "action": "keep"
         }
       ],
@@ -4885,7 +4885,7 @@
           "action": "keep"
         },
         {
-          "name": "EventDetailItinerarySkeleton",
+          "name": "EventDetailItineraryListSkeleton",
           "action": "keep"
         },
         {
@@ -5047,7 +5047,7 @@
           "action": "keep"
         },
         {
-          "name": "CatchStartupLoadingScreen",
+          "name": "SplashScreen",
           "action": "keep"
         },
         {
@@ -5176,11 +5176,11 @@
           "action": "keep"
         },
         {
-          "name": "HostEventParticipantsPanel",
+          "name": "HostEventParticipantsSection",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsPanel(mode: live) — the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
+      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsSection(mode: live) — the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded",
@@ -5258,11 +5258,11 @@
           "action": "keep"
         },
         {
-          "name": "ActivityScreenLoading",
+          "name": "ActivityScreenSkeleton",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): CatchAsyncScreen/SliverLoading are intentional box/sliver duals of the async-view kit (both compose CatchSkeletonList). ActivityScreenLoading is a feature loading composition over its own section skeleton.",
+      "rationale": "Name-family review (batch 2): CatchAsyncScreen/SliverLoading are intentional box/sliver duals of the async-view kit (both compose CatchSkeletonList). ActivityScreenSkeleton is a feature loading composition over its own section skeleton.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5368,15 +5368,15 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GuestWhoIsGoing",
+          "name": "GuestWhoIsGoingCard",
           "action": "keep"
         },
         {
-          "name": "WhoIsGoing",
+          "name": "WhoIsGoingSection",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): WhoIsGoing is the provider-wired roster dispatcher, GuestWhoIsGoing the static locked variant; both render through shared WhoIsGoingContent (K3).",
+      "rationale": "Name-family review (batch 2): WhoIsGoingSection is the provider-wired roster dispatcher, GuestWhoIsGoingCard the static locked variant; both render through shared WhoIsGoingBody (K3).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5386,11 +5386,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventDetailCta",
+          "name": "EventDetailDock",
           "action": "keep"
         },
         {
-          "name": "EventDetailLoadingCta",
+          "name": "EventDetailLoadingDock",
           "action": "keep"
         }
       ],
@@ -5422,7 +5422,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CatchRosterActionCell",
+          "name": "ParticipantRowAction",
           "action": "keep"
         },
         {
@@ -5449,7 +5449,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): mode-dispatching sheet lead (list/summary) vs single selected-event card adapter over CatchEventCard.",
+      "rationale": "Name-family review (batch 2): mode-dispatching sheet lead (list/summary) vs single selected-event card adapter over EventCard.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5463,7 +5463,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubShareArtwork",
+          "name": "ClubShareCover",
           "action": "keep"
         },
         {
@@ -5475,7 +5475,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: ClubShareArtwork composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
+      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: ClubShareCover composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5605,7 +5605,7 @@
           "action": "keep"
         },
         {
-          "name": "ProfilePromptEntry",
+          "name": "ProfilePromptRow",
           "action": "keep"
         }
       ],
@@ -5619,7 +5619,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "PaymentHistoryListController",
+          "name": "PaymentHistoryBody",
           "action": "keep"
         },
         {
@@ -5627,7 +5627,7 @@
           "action": "keep"
         },
         {
-          "name": "HostClubOrganizerOverviewController",
+          "name": "HostClubOrganizerSectionList",
           "action": "keep"
         },
         {
@@ -5650,7 +5650,7 @@
           "action": "keep"
         },
         {
-          "name": "CalendarWeekStripSkeleton",
+          "name": "CalendarWeekRowSkeleton",
           "action": "keep"
         }
       ],
@@ -5694,7 +5694,7 @@
           "action": "keep"
         },
         {
-          "name": "EventDetailPhotoStripTile",
+          "name": "EventDetailPhotoTile",
           "action": "keep"
         }
       ],
@@ -5811,11 +5811,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "SavedEventsAgendaSliver",
+          "name": "SavedEventsAgendaList",
           "action": "keep"
         },
         {
-          "name": "SavedEventsClubNamesErrorSliver",
+          "name": "SavedEventsClubNamesErrorState",
           "action": "keep"
         },
         {
@@ -5910,11 +5910,11 @@
       "status": "executed-parity-handoff"
     },
     {
-      "clusterId": "handoff-1A2: CatchEventCard.spotlight variant",
+      "clusterId": "handoff-1A2: EventCard.spotlight variant",
       "decision": "delete",
       "members": [
         {
-          "name": "CatchEventCard",
+          "name": "EventCard",
           "action": "keep",
           "note": "spotlight named constructor deleted; ticket variant stays (DS EventTicket)"
         }
@@ -5925,11 +5925,11 @@
       "status": "executed-parity-handoff"
     },
     {
-      "clusterId": "handoff-1A3: CatchEventCard.compact variant",
+      "clusterId": "handoff-1A3: EventCard.compact variant",
       "decision": "delete",
       "members": [
         {
-          "name": "CatchEventCard",
+          "name": "EventCard",
           "action": "keep",
           "note": "compact named constructor deleted; condensed map role belongs to the DateTicket"
         }
@@ -6014,12 +6014,12 @@
           "note": "shared cover/profile/fallback media atom"
         },
         {
-          "name": "MembershipTrailingController",
+          "name": "ClubJoinAction",
           "action": "keep",
           "note": "join mutation/auth redirect seam reused by ClubIndexRow"
         },
         {
-          "name": "MembershipTrailing",
+          "name": "ClubJoinButton",
           "action": "keep",
           "note": "provider-free joined badge/join button leaf"
         }
@@ -6227,7 +6227,7 @@
           "action": "keep"
         },
         {
-          "name": "EmptyRosterMessage",
+          "name": "WhoIsGoingEmptyState",
           "action": "keep"
         },
         {
@@ -6257,7 +6257,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubTagWrap",
+          "name": "ClubTagList",
           "action": "keep"
         },
         {
@@ -6327,7 +6327,7 @@
           "action": "keep"
         },
         {
-          "name": "PreviewLine",
+          "name": "CompanionPreviewText",
           "action": "keep"
         },
         {
@@ -6349,7 +6349,7 @@
           "action": "review"
         },
         {
-          "name": "ReactionControlButton",
+          "name": "ProfileReactionButton",
           "action": "review"
         }
       ],
@@ -6430,7 +6430,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionControls. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
+      "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionAction. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
       "decidedBy": "codex-rule:K3",
       "date": "2026-07-18",
       "status": "recorded-concept-reconciliation"
@@ -6510,7 +6510,7 @@
           "note": "catch.async_value"
         },
         {
-          "name": "CatchStartupLoadingScreen",
+          "name": "SplashScreen",
           "action": "register-composition"
         }
       ],
@@ -6553,7 +6553,7 @@
           "note": "retain pass semantics and SwipeKeys.passButton"
         },
         {
-          "name": "ReactionControlButton",
+          "name": "ProfileReactionButton",
           "action": "unify",
           "note": "retain reaction palette and pending semantics"
         }
@@ -6568,7 +6568,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CatchClubCover",
+          "name": "ClubCover",
           "action": "keep"
         },
         {
@@ -6576,7 +6576,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. CatchClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
+      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. ClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
       "date": "2026-07-19",
       "status": "recorded-concept-reconciliation"
@@ -7682,7 +7682,7 @@
       "clusterId": "pattern-family:step-instructions-and-progress",
       "patternFamilyId": "step-instructions-and-progress",
       "decision": "keep-distinct-and-retire-unused",
-      "canonicalSymbol": "CatchStepRowList",
+      "canonicalSymbol": "CatchStepList",
       "members": [
         {
           "name": "CatchJourneySteps",
@@ -7697,7 +7697,7 @@
           "action": "delete"
         },
         {
-          "name": "CatchFormRowList",
+          "name": "CatchFormList",
           "action": "keep"
         },
         {
@@ -7806,7 +7806,7 @@
       "clusterId": "pattern-family:persistent-dock-and-primary-action",
       "patternFamilyId": "persistent-dock-and-primary-action",
       "decision": "absorb-into-existing",
-      "canonicalSymbol": "CatchDockSurface",
+      "canonicalSymbol": "CatchDock",
       "members": [
         {
           "name": "CatchBottomDock",
@@ -8286,10 +8286,10 @@
       "clusterId": "pattern-family:section-row-list-anatomy",
       "patternFamilyId": "section-row-list-anatomy",
       "decision": "absorb-into-existing",
-      "canonicalSymbol": "CatchSectionRowList",
+      "canonicalSymbol": "CatchSectionBody",
       "members": [
         {
-          "name": "CatchSectionRowList",
+          "name": "CatchSectionBody",
           "action": "keep"
         },
         {
@@ -8361,7 +8361,7 @@
           "action": "keep"
         },
         {
-          "name": "CatchFormStepRowList",
+          "name": "CatchFormStepList",
           "action": "keep"
         },
         {

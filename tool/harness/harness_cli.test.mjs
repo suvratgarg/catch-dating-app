@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import {planAffected} from "./lib/component_graph.mjs";
 import {
   collectKnownCheckIds,
   formatGithubOutputs,
@@ -125,6 +126,30 @@ test("plan output derives roles and deployment authorization from bounded operat
   assert.equal(output.has_release_roles, true);
   assert.equal(output.deploy_groups, '["functions"]');
   assert.equal(output.deploy_required, true);
+});
+
+test("generator-only changes install their declared preflight dependencies without selecting contracts", () => {
+  const plan = planAffected({graph, mode: "pr",
+    changedPaths: ["tool/contracts/generate_schema_contracts.mjs"]});
+  const output = projectPlanOutputs({plan, graph});
+  assert.equal(output.contracts, false);
+  assert.equal(output.preflight_functions_dependencies, true);
+  assert.equal(output.deploy_required, false);
+
+  for (const changedPath of ["README.md", "tool/architecture/check_dependency_direction.mjs"]) {
+    const unrelated = planAffected({graph, mode: "pr", changedPaths: [changedPath]});
+    assert.equal(projectPlanOutputs({plan: unrelated, graph}).preflight_functions_dependencies, false);
+  }
+  const renamed = structuredClone(graph);
+  const generator = renamed.compileCodegen.find(entry => entry.id === "contracts.schema-projections");
+  generator.id = "renamed-generator";
+  const selected = {...plan, operations: {...plan.operations, codegenIds: [generator.id]}};
+  assert.equal(projectPlanOutputs({plan: selected, graph: renamed}).preflight_functions_dependencies, true);
+  generator.checkRequirements.packages[0].from = "package.json";
+  assert.equal(projectPlanOutputs({plan: selected, graph: renamed}).preflight_functions_dependencies, false);
+  assert.throws(() => projectPlanOutputs({plan: {...plan, operations: {
+    ...plan.operations, codegenIds: ["unknown-generator"],
+  }}, graph}), /Unknown required compile-codegen/u);
 });
 
 test("output projection rejects incomplete plans and unsafe multiline values", () => {

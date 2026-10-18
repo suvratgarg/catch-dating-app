@@ -422,7 +422,7 @@ class _HostPersonConversationPageBodyState
               ],
             ),
           ),
-          ChatInputBar(
+          ChatInput(
             controller: _text,
             sending: _sending,
             sendingImage: _sendingImage,

@@ -234,7 +234,7 @@ class _ProfilePhotoEditorScreenState
           children: [
             CatchSurface(
               backgroundColor: t.raised,
-              borderColor: t.line,
+              borderRole: CatchBorderRole.separator,
               clipBehavior: Clip.antiAlias,
               child: AspectRatio(
                 aspectRatio: profilePhotoAspectRatio,

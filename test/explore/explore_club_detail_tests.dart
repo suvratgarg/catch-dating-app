@@ -307,7 +307,7 @@ void _registerExploreClubDetailTests() {
     expect(find.text('4.7'), findsOneWidget);
   });
 
-  testWidgets('ClubHeroAppBar share button invokes share handler', (
+  testWidgets('ClubHeroTopBar share button invokes share handler', (
     tester,
   ) async {
     var sharedClubId = '';
@@ -316,7 +316,7 @@ void _registerExploreClubDetailTests() {
       tester,
       CustomScrollView(
         slivers: [
-          ClubHeroAppBar(
+          ClubHeroTopBar(
             club: buildClub(),
             isHost: true,
             onShareClub: (_, club) async {
@@ -334,7 +334,7 @@ void _registerExploreClubDetailTests() {
   });
 
   testWidgets(
-    'ClubHeroAppBar shows club identity and pops back from the detail route',
+    'ClubHeroTopBar shows club identity and pops back from the detail route',
     (tester) async {
       final router = GoRouter(
         initialLocation: '/',
@@ -349,7 +349,7 @@ void _registerExploreClubDetailTests() {
                       MaterialPageRoute<void>(
                         builder: (_) => CustomScrollView(
                           slivers: [
-                            ClubHeroAppBar(
+                            ClubHeroTopBar(
                               club: buildClub(
                                 name: 'Rated Club',
                                 rating: 4.8,
@@ -397,7 +397,7 @@ void _registerExploreClubDetailTests() {
   );
 
   testWidgets(
-    'ClubHeroAppBar keeps long title location in the poster copy block',
+    'ClubHeroTopBar keeps long title location in the poster copy block',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(402, 874);
@@ -423,7 +423,7 @@ void _registerExploreClubDetailTests() {
               ),
               child: Scaffold(
                 body: CustomScrollView(
-                  slivers: [ClubHeroAppBar(club: club, isHost: false)],
+                  slivers: [ClubHeroTopBar(club: club, isHost: false)],
                 ),
               ),
             ),
@@ -505,25 +505,25 @@ void _registerExploreClubDetailTests() {
     expect(metricTop, greaterThan(locationBottom));
   });
 
-  testWidgets('ClubHeroAppBar uses clean fallback without a cover image', (
+  testWidgets('ClubHeroTopBar uses clean fallback without a cover image', (
     tester,
   ) async {
     await pumpTestApp(
       tester,
       CustomScrollView(
         slivers: [
-          ClubHeroAppBar(club: buildClub(name: 'Morning Miles'), isHost: false),
+          ClubHeroTopBar(club: buildClub(name: 'Morning Miles'), isHost: false),
         ],
       ),
     );
 
-    expect(find.byType(OrganizerPosterArtwork), findsOneWidget);
+    expect(find.byType(ClubPlaceholderCover), findsOneWidget);
     expect(find.text('MM'), findsNothing);
     expect(find.text('Morning Miles'), findsOneWidget);
     expect(find.text('Bandra, Mumbai'), findsOneWidget);
   });
 
-  testWidgets('ClubHeroAppBar reveals the club name in the collapsed toolbar', (
+  testWidgets('ClubHeroTopBar reveals the club name in the collapsed toolbar', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -535,7 +535,7 @@ void _registerExploreClubDetailTests() {
       tester,
       CustomScrollView(
         slivers: [
-          ClubHeroAppBar(
+          ClubHeroTopBar(
             club: buildClub(
               name: 'Vijay Nagar Event Collective',
               imageUrl: 'https://example.com/club.jpg',
@@ -659,7 +659,7 @@ void _registerExploreClubDetailTests() {
       ),
     );
 
-    expect(find.byType(OrganizerPosterArtwork), findsWidgets);
+    expect(find.byType(ClubPlaceholderCover), findsWidgets);
     expect(find.text('NC'), findsNothing);
     expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
     // Index rows use the area/city/member line as the mono meta row; the

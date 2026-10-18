@@ -42,6 +42,7 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   interactionModel: json['interactionModel'] as String?,
   paceName: json['paceName'] as String?,
   routePlan: json['routePlan'] as Map<String, dynamic>?,
+  routePlanEnabled: json['routePlanEnabled'] as bool?,
   itinerary:
       (json['itinerary'] as List<dynamic>?)
           ?.map((e) => EventItineraryItem.fromJson(e as Map<String, dynamic>))
@@ -59,7 +60,7 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   selectedStartMinute: (json['selectedStartMinute'] as num?)?.toInt(),
   durationMinutes:
       (json['durationMinutes'] as num?)?.toInt() ??
-      CatchBusinessRules.eventDefaultDurationMinutes,
+      BusinessRules.eventDefaultDurationMinutes,
   minAge: json['minAge'] as String?,
   maxAge: json['maxAge'] as String?,
   maxMen: json['maxMen'] as String?,
@@ -116,6 +117,7 @@ Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
       'interactionModel': instance.interactionModel,
       'paceName': instance.paceName,
       'routePlan': instance.routePlan,
+      'routePlanEnabled': ?instance.routePlanEnabled,
       'itinerary': instance.itinerary.map((e) => e.toJson()).toList(),
       'meetingPoint': instance.meetingPoint,
       'locationDetails': instance.locationDetails,

@@ -60,16 +60,16 @@ class PaymentConfirmationScreen extends ConsumerWidget {
           );
         }
         if (data.isPendingExternalCheckout) {
-          return PaymentPendingCheckoutController(data: data, event: event);
+          return PaymentPendingBody(data: data, event: event);
         }
-        return PaymentConfirmationBodyController(data: data, event: event);
+        return PaymentConfirmedBody(data: data, event: event);
       },
     );
   }
 }
 
-class PaymentPendingCheckoutController extends ConsumerWidget {
-  const PaymentPendingCheckoutController({
+class PaymentPendingBody extends ConsumerWidget {
+  const PaymentPendingBody({
     super.key,
     required this.data,
     required this.event,
@@ -86,7 +86,7 @@ class PaymentPendingCheckoutController extends ConsumerWidget {
         payment.status == PaymentStatus.completed &&
         !payment.signUpFailed &&
         payment.cancellationRefund == null) {
-      return PaymentConfirmationBodyController(
+      return PaymentConfirmedBody(
         data: PaymentConfirmationData(
           paymentId: payment.paymentId,
           orderId: payment.orderId,
@@ -157,7 +157,7 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
       backgroundColor: t.bg,
       body: Stack(
         children: [
-          Positioned.fill(child: PaymentCheckoutEventBackdrop(event: event)),
+          Positioned.fill(child: PaymentCheckoutHeader(event: event)),
           Positioned.fill(
             child: ColoredBox(
               color: t.ink.withValues(alpha: CatchOpacity.paymentCheckoutScrim),
@@ -188,8 +188,8 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
   }
 }
 
-class PaymentCheckoutEventBackdrop extends StatelessWidget {
-  const PaymentCheckoutEventBackdrop({super.key, required this.event});
+class PaymentCheckoutHeader extends StatelessWidget {
+  const PaymentCheckoutHeader({super.key, required this.event});
 
   final Event event;
 
@@ -301,7 +301,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
 
     return CatchSurface(
       backgroundColor: t.surface,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(CatchRadius.heroCard),
       ),
@@ -444,8 +444,8 @@ String _providerLabel(String provider) {
   return provider[0].toUpperCase() + provider.substring(1);
 }
 
-class PaymentConfirmationBodyController extends ConsumerWidget {
-  const PaymentConfirmationBodyController({
+class PaymentConfirmedBody extends ConsumerWidget {
+  const PaymentConfirmedBody({
     super.key,
     required this.data,
     required this.event,
@@ -564,7 +564,7 @@ class PaymentConfirmationBody extends StatelessWidget {
                         onTap: actions[index].onPressed,
                         padding: CatchInsets.content,
                         radius: CatchRadius.md,
-                        borderColor: t.line,
+                        borderRole: CatchBorderRole.separator,
                         backgroundColor: t.surface,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -597,7 +597,7 @@ class PaymentConfirmationBody extends StatelessWidget {
             ],
           ],
         ),
-        const PaymentConfirmationHeadsUp(),
+        const PaymentConfirmationNotice(),
         PaymentReferralBanner(onShare: onReferralShare),
       ],
       backHomeKey: PaymentConfirmationKeys.backHome,
@@ -623,8 +623,8 @@ class PaymentConfirmationAction {
   bool get isEnabled => onPressed != null;
 }
 
-class PaymentConfirmationHeadsUp extends StatelessWidget {
-  const PaymentConfirmationHeadsUp({super.key});
+class PaymentConfirmationNotice extends StatelessWidget {
+  const PaymentConfirmationNotice({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -633,7 +633,6 @@ class PaymentConfirmationHeadsUp extends StatelessWidget {
       tone: CatchSurfaceTone.primarySoft,
       padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
-      borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

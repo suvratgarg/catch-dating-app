@@ -9,17 +9,17 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Filters loading composition',
-  type: FiltersContent,
+  type: FiltersBody,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget filtersContentSkeletonStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'FiltersContent.loading',
+    title: 'FiltersBody.loading',
     contractId: 'screen.catches.filters.loading',
     children: [
       WidgetbookPageStateCard(
         label: 'loading',
-        child: WidgetbookCatchesDeviceFrame(child: FiltersContent.loading()),
+        child: WidgetbookCatchesDeviceFrame(child: FiltersBody.loading()),
       ),
     ],
   );
@@ -43,7 +43,7 @@ Widget filtersSectionStates(BuildContext context) {
             padding: CatchInsets.content,
             child: FiltersSection(
               title: 'Age',
-              child: FiltersValue(value: '24 - 36'),
+              child: FiltersValueText(value: '24 - 36'),
             ),
           ),
         ),
@@ -54,12 +54,12 @@ Widget filtersSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Filter value states',
-  type: FiltersValue,
+  type: FiltersValueText,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget filtersValueStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'FiltersValue',
+    title: 'FiltersValueText',
     contractId: 'screen.catches.filters.value',
     children: [
       WidgetbookPageStateCard(
@@ -68,7 +68,7 @@ Widget filtersValueStates(BuildContext context) {
           height: WidgetbookPreviewLayout.smallPreviewExtent,
           child: Padding(
             padding: CatchInsets.content,
-            child: FiltersValue(value: '24 - 36'),
+            child: FiltersValueText(value: '24 - 36'),
           ),
         ),
       ),

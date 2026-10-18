@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -58,19 +58,19 @@ List<ProfilePromptAnswer> _promptAnswers(
 
 @widgetbook.UseCase(
   name: 'Prompt form',
-  type: ProfilePromptsPage,
+  type: OnboardingProfilePromptsBody,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget profilePromptsPageStates(BuildContext context) {
   return WidgetbookWrapCatalogFrame(
-    title: 'ProfilePromptsPage',
+    title: 'OnboardingProfilePromptsBody',
     children: [
       WidgetbookPhoneStateCard(
         label: 'empty prompts',
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profileNoPrompts,
-            child: ProfilePromptsPage(),
+            child: OnboardingProfilePromptsBody(),
           ),
         ),
       ),
@@ -79,7 +79,7 @@ Widget profilePromptsPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profilePartialPrompts,
-            child: ProfilePromptsPage(),
+            child: OnboardingProfilePromptsBody(),
           ),
         ),
       ),
@@ -88,7 +88,7 @@ Widget profilePromptsPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profileCompletePrompts,
-            child: ProfilePromptsPage(),
+            child: OnboardingProfilePromptsBody(),
           ),
         ),
       ),
@@ -97,7 +97,7 @@ Widget profilePromptsPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profileLongPrompts,
-            child: ProfilePromptsPage(),
+            child: OnboardingProfilePromptsBody(),
           ),
         ),
       ),
@@ -106,7 +106,7 @@ Widget profilePromptsPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profileCompletePrompts,
-            child: ProfilePromptsPage(profileCompletionOnly: true),
+            child: OnboardingProfilePromptsBody(profileCompletionOnly: true),
           ),
         ),
       ),
@@ -116,7 +116,7 @@ Widget profilePromptsPageStates(BuildContext context) {
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.completePending,
             profile: _profileCompletePrompts,
-            child: ProfilePromptsPage(profileCompletionOnly: true),
+            child: OnboardingProfilePromptsBody(profileCompletionOnly: true),
           ),
         ),
       ),
@@ -126,7 +126,7 @@ Widget profilePromptsPageStates(BuildContext context) {
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.completeError,
             profile: _profileCompletePrompts,
-            child: ProfilePromptsPage(profileCompletionOnly: true),
+            child: OnboardingProfilePromptsBody(profileCompletionOnly: true),
           ),
         ),
       ),

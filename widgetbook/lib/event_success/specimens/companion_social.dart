@@ -105,8 +105,8 @@ Widget eventSuccessStrictGroupRotationSlotRow(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "IncludeMeToggle",
-  type: IncludeMeToggle,
+  name: "IncludeMeField",
+  type: IncludeMeField,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
@@ -114,7 +114,7 @@ Widget eventSuccessStrictIncludeMeToggle(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "IncludeMeToggle",
+    componentName: "IncludeMeField",
   );
 }
 
@@ -219,8 +219,8 @@ Widget eventSuccessStrictPreCheckInPlanningCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "PreviewLine",
-  type: PreviewLine,
+  name: "CompanionPreviewText",
+  type: CompanionPreviewText,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
@@ -228,7 +228,7 @@ Widget eventSuccessStrictPreviewLine(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PreviewLine",
+    componentName: "CompanionPreviewText",
   );
 }
 
@@ -327,5 +327,33 @@ Widget eventSuccessStrictWingmanRequestSection(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.companion,
     componentName: "WingmanRequestSection",
+  );
+}
+
+@widgetbook.UseCase(
+  name: "FirstHelloMissionEditor",
+  type: FirstHelloMissionEditor,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
+)
+Widget eventSuccessStrictFirstHelloMissionEditor(BuildContext context) {
+  return eventSuccessStrictPreview(
+    context,
+    surface: EventSuccessStrictSurface.companion,
+    componentName: "FirstHelloMissionEditor",
+  );
+}
+
+@widgetbook.UseCase(
+  name: "EventSuccessMarqueeImage",
+  type: EventSuccessMarqueeImage,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
+)
+Widget eventSuccessStrictEventSuccessMarqueeImage(BuildContext context) {
+  return eventSuccessStrictPreview(
+    context,
+    surface: EventSuccessStrictSurface.companion,
+    componentName: "EventSuccessMarqueeImage",
   );
 }

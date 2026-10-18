@@ -319,7 +319,7 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: CustomScrollView(
           slivers: [
-            HostCustomersDirectory(
+            HostCustomersList(
               state: HostCustomersDirectoryState(
                 contacts: [
                   _customerDirectoryContact(),
@@ -389,7 +389,7 @@ void _registerHostOperationsCustomersTests() {
       Scaffold(
         body: CustomScrollView(
           slivers: [
-            HostCustomersDirectory(
+            HostCustomersList(
               state: HostCustomersDirectoryState(
                 contacts: [_customerDirectoryContact()],
                 nextCursor: null,
@@ -504,7 +504,7 @@ void _registerHostOperationsCustomersTests() {
       );
 
       expect(find.byType(CatchNavigationViewport), findsOneWidget);
-      expect(find.byType(HostCustomersDirectory), findsOneWidget);
+      expect(find.byType(HostCustomersList), findsOneWidget);
       final detail = tester.widget<HostCustomerDetailScreen>(
         find.byType(HostCustomerDetailScreen),
       );

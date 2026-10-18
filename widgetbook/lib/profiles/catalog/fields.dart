@@ -6,7 +6,7 @@ import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -165,19 +165,19 @@ Widget profileFieldRowSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Single enum entry adapter states',
-  type: ProfileSingleEnumEntry,
+  type: ProfileSingleEnumRow,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileSingleEnumEntryStates(BuildContext context) {
   return WidgetbookProfileProfileCatalog(
-    title: 'ProfileSingleEnumEntry',
+    title: 'ProfileSingleEnumRow',
     contractId: 'screen.profile.edit_tab.single_enum_entry',
     children: [
       WidgetbookProfileStateCard(
         label: 'selected collapsed',
         child: WidgetbookProfileSectionFrame(
           height: CatchLayout.activityArtDefaultHeight,
-          child: ProfileSingleEnumEntry<EducationLevel>(
+          child: ProfileSingleEnumRow<EducationLevel>(
             icon: CatchIcons.schoolOutlined,
             label: 'Education',
             contract: CatchContractConstraints.updateUserProfilePatchEducation,
@@ -197,7 +197,7 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
         label: 'empty expanded',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
-          child: ProfileSingleEnumEntry<EducationLevel>(
+          child: ProfileSingleEnumRow<EducationLevel>(
             icon: CatchIcons.schoolOutlined,
             label: 'Education',
             contract: CatchContractConstraints.updateUserProfilePatchEducation,
@@ -219,19 +219,19 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Multi enum entry adapter states',
-  type: ProfileMultiEnumEntry,
+  type: ProfileMultiEnumRow,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileMultiEnumEntryStates(BuildContext context) {
   return WidgetbookProfileProfileCatalog(
-    title: 'ProfileMultiEnumEntry',
+    title: 'ProfileMultiEnumRow',
     contractId: 'screen.profile.edit_tab.multi_enum_entry',
     children: [
       WidgetbookProfileStateCard(
         label: 'selected collapsed',
         child: WidgetbookProfileSectionFrame(
           height: CatchLayout.activityArtDefaultHeight,
-          child: ProfileMultiEnumEntry<Language>(
+          child: ProfileMultiEnumRow<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
             contract: CatchContractConstraints.updateUserProfilePatchLanguages,
@@ -252,7 +252,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
         label: 'empty expanded',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
-          child: ProfileMultiEnumEntry<Language>(
+          child: ProfileMultiEnumRow<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
             contract: CatchContractConstraints.updateUserProfilePatchLanguages,
@@ -275,7 +275,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Prompt entry adapter states',
-  type: ProfilePromptEntry,
+  type: ProfilePromptRow,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profilePromptEntryStates(BuildContext context) {
@@ -288,14 +288,14 @@ Widget profilePromptEntryStates(BuildContext context) {
   final slot = editState.promptSlots.first;
 
   return WidgetbookProfileProfileCatalog(
-    title: 'ProfilePromptEntry',
+    title: 'ProfilePromptRow',
     contractId: 'screen.profile.edit_tab.prompt_entry',
     children: [
       WidgetbookProfileStateCard(
         label: 'collapsed prompt',
         child: WidgetbookProfileSectionFrame(
           height: CatchLayout.activityArtDefaultHeight,
-          child: ProfilePromptEntry(
+          child: ProfilePromptRow(
             user: widgetbookProfileViewer,
             slot: slot,
             isExpanded: false,
@@ -309,7 +309,7 @@ Widget profilePromptEntryStates(BuildContext context) {
         label: 'expanded prompt',
         child: WidgetbookProfileSectionFrame(
           height: CatchLayout.eventDetailHeroTicketWideHeight,
-          child: ProfilePromptEntry(
+          child: ProfilePromptRow(
             user: widgetbookProfileViewer,
             slot: slot,
             isExpanded: true,

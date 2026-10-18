@@ -15,10 +15,9 @@ class WidgetbookFoundationSpecSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.surface,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,
       padding: CatchInsets.content,
       child: Column(

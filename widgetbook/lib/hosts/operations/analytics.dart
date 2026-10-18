@@ -33,12 +33,12 @@ Widget hostAnalyticsPeriodStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Insights scorecard states',
-  type: HostClubInsightsPane,
+  type: HostClubInsightsSection,
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostInsightsScorecardStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostClubInsightsPane',
+    title: 'HostClubInsightsSection',
     contractId: 'screen.host.clubs.insights',
     children: [
       WidgetbookPageStateCard(
@@ -163,7 +163,7 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       onOpenEventReport: (_) {},
       onOpenAllEvents: () {},
     ),
-    'HostAnalyticsReportView' => HostAnalyticsReportView(
+    'HostAnalyticsReportBody' => HostAnalyticsReportBody(
       report: report,
       rangePreset: HostClubInsightsRangePreset.thirtyDays,
       currencyCode: 'INR',
@@ -171,12 +171,14 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       onOpenAllEvents: () {},
       onOpenEventDefaults: () {},
     ),
-    'HostAnalyticsReviewsPanel' => HostAnalyticsReviewsPanel(report: report),
-    'HostAnalyticsTrendPanel' => HostAnalyticsTrendPanel(
+    'HostAnalyticsReviewsSection' => HostAnalyticsReviewsSection(
+      report: report,
+    ),
+    'HostAnalyticsTrendSection' => HostAnalyticsTrendSection(
       points: report.trend,
       granularity: HostAnalyticsGranularity.week,
     ),
-    'HostAnalyticsDualBar' => HostAnalyticsDualBar(
+    'HostAnalyticsBarTile' => HostAnalyticsBarTile(
       point: report.trend.first,
       maxValue: 60,
       label: '2 Jun',
@@ -310,35 +312,35 @@ Widget hostStrictHostAnalyticsEventListCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsReportView,
+  type: HostAnalyticsReportBody,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostAnalyticsReportViewCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsReportView');
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsReportBody');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsReviewsPanel,
+  type: HostAnalyticsReviewsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostAnalyticsReviewsPanelCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewsPanel');
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsTrendPanel,
+  type: HostAnalyticsTrendSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostAnalyticsTrendPanelCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsTrendPanel');
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsTrendSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsDualBar,
+  type: HostAnalyticsBarTile,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostAnalyticsDualBarCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsDualBar');
+    _hostAnalyticsExactCatalog(context, 'HostAnalyticsBarTile');
 
 final class _HostLoadingAnalyticsRepository implements HostAnalyticsRepository {
   const _HostLoadingAnalyticsRepository();

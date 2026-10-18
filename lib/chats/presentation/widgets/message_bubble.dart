@@ -62,7 +62,7 @@ class MessageBubble extends StatelessWidget {
               child: CatchSurface(
                 padding: CatchInsets.chatBubbleContent,
                 backgroundColor: isMe ? t.primary : t.surface,
-                borderColor: isMe ? null : t.line,
+                borderRole: isMe ? null : CatchBorderRole.separator,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(
                     isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,

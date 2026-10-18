@@ -1,21 +1,25 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -110,7 +114,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onDeleteEvent: () async {},
       onSharePrivateLink: (_) {},
     ),
-    'Live attendance participants' => HostEventParticipantsPanel(
+    'Live attendance participants' => HostEventParticipantsSection(
       mode: HostEventParticipantsMode.live,
       eventId: event.id,
     ),
@@ -145,15 +149,15 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       ),
       onRetryProfiles: () {},
     ),
-    'HostEventParticipantsPanel' => HostEventParticipantsPanel(
+    'HostEventParticipantsSection' => HostEventParticipantsSection(
       eventId: event.id,
       mode: HostEventParticipantsMode.setup,
     ),
     'HostEventCheckInQrSection' => HostEventCheckInQrSection(event: event),
-    'HostEventRosterPanel' => SizedBox(
+    'HostEventRosterSection' => SizedBox(
       width: 360,
       height: 520,
-      child: HostEventRosterPanel(
+      child: HostEventRosterSection(
         bookedCount: roster.bookedCount,
         onClose: () {},
         child: const Center(child: Text('Guest roster content')),
@@ -383,11 +387,11 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventRosterPanel,
+  type: HostEventRosterSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventRosterPanelCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventRosterPanel');
+    _hostEventManageExactCatalog(context, 'HostEventRosterSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -399,7 +403,7 @@ Widget hostStrictHostEventActionsSectionCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Live attendance catalog',
-  type: HostEventParticipantsPanel,
+  type: HostEventParticipantsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventAttendancePanelCatalogStates(BuildContext context) =>
@@ -425,12 +429,12 @@ Widget hostStrictHostEventParticipantsSectionListCatalogStates(
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventParticipantsPanel,
+  type: HostEventParticipantsSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventParticipantsPanelCatalogStates(
   BuildContext context,
-) => _hostEventManageExactCatalog(context, 'HostEventParticipantsPanel');
+) => _hostEventManageExactCatalog(context, 'HostEventParticipantsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -535,4 +539,54 @@ class _HostManageComponentFrame extends StatelessWidget {
       ),
     );
   }
+}
+
+@widgetbook.UseCase(
+  name: 'Operator location sharing',
+  type: HostEventLiveLocationField,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostEventLiveLocationFieldStates(BuildContext context) {
+  final plan = RouteEventPlan.socialRun.copyWith(
+    liveTrackingPolicy: const RouteLiveTrackingPolicy(
+      mode: RouteLiveTrackingMode.authorizedOperators,
+      staleAfterSeconds: 120,
+      retentionMinutes: 15,
+    ),
+  );
+  final event = HostOperationsFixtures.upcomingEvent.copyWith(
+    eventFormat: EventFormatSnapshot.fromActivityKind(
+      ActivityKind.socialRun,
+      activityDetails: {'routePlan': plan.toJson()},
+    ),
+  );
+  return widgetbookHostComponentStates('HostEventLiveLocationField', [
+    (
+      'sharing off',
+      ProviderScope(
+        overrides: [
+          eventLivePositionPublisherProvider.overrideWithValue(
+            const _PreviewLivePositionPublisher(),
+          ),
+        ],
+        child: CatchSection.fieldRows(
+          first: true,
+          children: [HostEventLiveLocationField(event: event)],
+        ),
+      ),
+    ),
+  ]);
+}
+
+class _PreviewLivePositionPublisher implements EventLivePositionPublisher {
+  const _PreviewLivePositionPublisher();
+
+  @override
+  Future<void> publish({
+    required String eventId,
+    required EventLivePositionSample position,
+  }) async {}
+
+  @override
+  Future<void> stop({required String eventId}) async {}
 }

@@ -1347,14 +1347,73 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
   },
   {
+    name: "EventApprovalPreferenceDocument",
+    source: "firestore/event_approval_notification_preferences.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalPreferenceDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationReceiptDocument",
+    source: "firestore/event_approval_notification_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationReceiptDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationSettingsDocument",
+    source: "firestore/event_approval_notification_settings.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationSettingsDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationBudgetDocument",
+    source: "firestore/event_approval_notification_budgets.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationBudgetDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationMessageDocument",
+    source: "firestore/event_approval_notification_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationMessageDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationDispatchDocument",
+    source: "firestore/event_approval_notification_dispatches.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationDispatchDocument.ts",
+  },
+  {
+    name: "EventApprovalNotificationIntent",
+    source: "operations/event_approval_notification_intent.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationIntent.ts",
+  },
+  {
+    name: "EventApprovalNotificationWork",
+    source: "operations/event_approval_notification_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationWork.ts",
+  },
+  {
+    name: "EventApprovalNotificationAttempt",
+    source: "operations/event_approval_notification_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/eventApprovalNotificationAttempt.ts",
+  },
+  {
+    name: "ManageEventApprovalNotificationsCallablePayload",
+    source: "callables/manage_event_approval_notifications_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/manageEventApprovalNotificationsCallablePayload.ts"],
+  },
+  {
+    name: "ManageEventApprovalNotificationsCallableResponse",
+    source: "callable_responses/manage_event_approval_notifications_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/manageEventApprovalNotificationsCallableResponse.ts"],
+  },
+  {
     name: "GetEventViewerStateCallablePayload",
     source: "callables/get_event_viewer_state_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getEventViewerStateCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/getEventViewerStateCallablePayload.ts"],
   },
   {
     name: "GetEventViewerStateCallableResponse",
     source: "callable_responses/get_event_viewer_state_response.schema.json",
     typeOutput: "functions/src/shared/generated/getEventViewerStateCallableResponse.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/getEventViewerStateCallableResponse.ts"],
   },
   {
     name: "ListParticipantActivityCallablePayload",
@@ -6641,6 +6700,18 @@ async function main() {
     "tool/contracts/generated/schema_contract_validators.mjs",
     renderToolValidators()
   );
+  const eventDisplayProperties = bundledSchemas.get("WebsiteHostListingProjection")
+    .definitions.catchEvent.properties;
+  addTextOutput(
+    "website/src/shared/contracts/generated/publicEventDisplaySchemas.ts",
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+    "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n" +
+    "export const publicEventDisplaySchemas = " + JSON.stringify({
+      photoUrl: eventDisplayProperties.photoUrl,
+      meetingLocation: eventDisplayProperties.meetingLocation,
+      itinerary: eventDisplayProperties.itinerary,
+    }, null, 2) + " as const;\n"
+  );
   addTextOutput(
     "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
     renderWebsiteJoinWaitlistSchemas({
@@ -6724,42 +6795,9 @@ async function main() {
     }
   }
 
-  const staleFiles = [];
-  const expectedFiles = new Set(generatedFiles.map((file) => file.path));
-  for (const directory of ["schemas", "validators", "catalogs"]) {
-    const relativeDirectory = `functions/src/shared/generated/${directory}`;
-    const absoluteDirectory = path.join(repoRoot, relativeDirectory);
-    if (!fs.existsSync(absoluteDirectory)) continue;
-    for (const file of fs.readdirSync(absoluteDirectory, {recursive: true})) {
-      const relativeFile = `${relativeDirectory}/${file}`;
-      const absoluteFile = path.join(repoRoot, relativeFile);
-      if (!fs.statSync(absoluteFile).isFile() || expectedFiles.has(relativeFile)) continue;
-      if (checkOnly) staleFiles.push(relativeFile);
-      else fs.unlinkSync(absoluteFile);
-    }
-  }
-  if (!checkOnly) {
-    fs.rmSync(
-      path.join(repoRoot, "lib/core/schema_contracts/generated/callables"),
-      {recursive: true, force: true}
-    );
-    fs.rmSync(
-      path.join(repoRoot, "lib/core/schema_contracts/generated/schemas"),
-      {recursive: true, force: true}
-    );
-  }
-  for (const file of generatedFiles) {
-    const absolutePath = path.join(repoRoot, file.path);
-    if (checkOnly) {
-      const current = fs.existsSync(absolutePath) ?
-        fs.readFileSync(absolutePath, "utf8") :
-        null;
-      if (current !== file.content) staleFiles.push(file.path);
-    } else {
-      fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
-      fs.writeFileSync(absolutePath, file.content);
-    }
-  }
+  const staleFiles = publishSchemaOutputs({
+    root: repoRoot, files: generatedFiles, checkOnly,
+  });
 
   if (staleFiles.length > 0) {
     console.error("Generated schema contract outputs are stale:");
@@ -6774,6 +6812,53 @@ async function main() {
       "Generated schema contract outputs are current." :
       `Generated ${generatedFiles.length} schema contract files.`
   );
+}
+
+/** Check or publish only this generator's declared outputs and exclusive dirs. */
+export function publishSchemaOutputs({root, files, checkOnly}) {
+  const staleFiles = [];
+  const expectedFiles = new Set(files.map((file) => file.path));
+  const ownedDirectories = [
+    "functions/src/shared/generated/schemas",
+    "functions/src/shared/generated/validators",
+    "functions/src/shared/generated/catalogs",
+    ...(checkOnly ? [DART_SCHEMA_OUTPUT_DIR, DART_CALLABLE_REQUEST_OUTPUT_DIR] : []),
+  ];
+  for (const relativeDirectory of ownedDirectories) {
+    const absoluteDirectory = path.join(root, relativeDirectory);
+    if (!fs.existsSync(absoluteDirectory)) continue;
+    for (const file of fs.readdirSync(absoluteDirectory, {recursive: true})) {
+      const relativeFile = `${relativeDirectory}/${file}`;
+      const absoluteFile = path.join(root, relativeFile);
+      if (!fs.statSync(absoluteFile).isFile() || expectedFiles.has(relativeFile)) continue;
+      if (checkOnly) staleFiles.push(relativeFile);
+      else fs.unlinkSync(absoluteFile);
+    }
+  }
+  if (!checkOnly) {
+    fs.rmSync(
+      path.join(root, "lib/core/schema_contracts/generated/callables"),
+      {recursive: true, force: true}
+    );
+    fs.rmSync(
+      path.join(root, "lib/core/schema_contracts/generated/schemas"),
+      {recursive: true, force: true}
+    );
+  }
+  for (const file of files) {
+    const absolutePath = path.join(root, file.path);
+    if (checkOnly) {
+      const current = fs.existsSync(absolutePath) ?
+        fs.readFileSync(absolutePath, "utf8") :
+        null;
+      if (current !== file.content) staleFiles.push(file.path);
+    } else {
+      fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
+      fs.writeFileSync(absolutePath, file.content);
+    }
+  }
+
+  return staleFiles;
 }
 
 const ORGANIZER_FORM_TEMPLATE_IDS = [
@@ -9974,4 +10059,6 @@ function indent(value, spaces) {
     .join("\n");
 }
 
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await main();
+}
