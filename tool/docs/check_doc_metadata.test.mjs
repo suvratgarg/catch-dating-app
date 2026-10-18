@@ -18,6 +18,8 @@ import {
   buildDocumentInventory,
   buildDocumentRetirementReport,
   retiredDocumentReferences,
+  headingAnchors,
+  machineReferenceFindings,
 } from "./check_doc_metadata.mjs";
 
 const scriptPath = fileURLToPath(new URL("./check_doc_metadata.mjs", import.meta.url));
@@ -460,4 +462,94 @@ test("completed checklist signals are advisory and historical prose is protected
   assert.equal(report.protectedDocuments.length, 2);
   assert.equal(report.findings.filter((row) => row.kind === "completed-checklist-review").length, 1);
   assert.equal(report.findings.filter((row) => row.kind.startsWith("missing-")).length, 0);
+});
+
+test("heading anchors follow GitHub slugs and ignore fenced examples", () => {
+  const anchors = headingAnchors([
+    "# Release `deploy` Order",
+    "## Phase 6 — Continuous conformance ##",
+    "```md",
+    "## Not A Heading",
+    "```",
+  ].join("\n"));
+  assert.ok(anchors.has("release-deploy-order"));
+  assert.ok(anchors.has("phase-6--continuous-conformance"));
+  assert.ok(!anchors.has("not-a-heading"));
+});
+
+test("machine references to removed documents and headings fail; old gaps are advisory", () => {
+  const matches = [
+    {path: "tool/policy/rules.json", line: 4, text: '"docAnchor": "docs/plans/old.md#scope"'},
+    {path: "tool/check.mjs", line: 7, text: 'read("../../docs/plans/old.md")'},
+    {path: "website/README.txt", line: 1, text: "website/docs/plans/old.md and docs/plans/old.mdx"},
+    {path: "tool/owner.json", line: 2, text: '"docs/guide.md#usage", "docs/guide.md#kept"'},
+    {path: "tool/owner.json", line: 3, text: '"docs/guide.md#never-existed", "docs/guide.md"'},
+    {path: "tool/other.json", line: 1, text: '"docs/untouched.md#anything"'},
+  ];
+  const sources = {
+    base: {"docs/guide.md": "# Guide\n## Usage\n## Kept\n"},
+    target: {"docs/guide.md": "# Guide\n## Kept\n```\n## Usage\n```\n"},
+  };
+  const result = machineReferenceFindings({
+    matches,
+    retiredPaths: ["docs/plans/old.md"],
+    changedPaths: ["docs/guide.md"],
+    readBase: (file) => sources.base[file],
+    readTarget: (file) => sources.target[file],
+  });
+  assert.deepEqual(result.findings.map((row) => [row.kind, row.path, row.line, row.target, row.fragment]), [
+    ["retired-document-machine-reference", "tool/policy/rules.json", 4, "docs/plans/old.md", undefined],
+    ["retired-document-machine-reference", "tool/check.mjs", 7, "docs/plans/old.md", undefined],
+    ["removed-document-anchor", "tool/owner.json", 2, "docs/guide.md", "usage"],
+  ]);
+  assert.deepEqual(result.advisories.map((row) => [row.kind, row.fragment]),
+    [["unresolved-document-anchor", "never-existed"]]);
+});
+
+test("CLI rejects registry and code references to removed documents and headings", () => {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), "catch-doc-machine-refs-"));
+  try {
+    git(repo, ["init", "-q"]);
+    git(repo, ["config", "user.email", "test@example.com"]);
+    git(repo, ["config", "user.name", "Catch Test"]);
+    const write = (relative, content) => {
+      fs.mkdirSync(path.dirname(path.join(repo, relative)), {recursive: true});
+      fs.writeFileSync(path.join(repo, relative), content);
+    };
+    write("docs/old.md", "# Old\n");
+    write("docs/guide.md", "# Guide\n\n## Scope\n");
+    write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#scope"}\n');
+    write("tool/check.mjs", 'const owner = "docs/old.md";\n');
+    git(repo, ["add", "."]);
+    git(repo, ["commit", "-qm", "base"]);
+    const base = git(repo, ["rev-parse", "HEAD"]).trim();
+    const run = (...args) => spawnSync(process.execPath,
+      [scriptPath, "--repo", repo, "--base", base, "--json", ...args], {encoding: "utf8"});
+    const kinds = (result) => JSON.parse(result.stdout).findings.map((row) => row.kind).sort();
+
+    fs.unlinkSync(path.join(repo, "docs/old.md"));
+    write("docs/guide.md", "# Guide\n\n## Ownership\n");
+    const bad = run();
+    assert.equal(bad.status, 1, bad.stderr);
+    assert.deepEqual(kinds(bad), ["removed-document-anchor", "retired-document-machine-reference"]);
+
+    // Sparse CI working trees omit consumers; the index still binds them.
+    git(repo, ["add", "-A"]);
+    git(repo, ["commit", "-qm", "break consumers"]);
+    const broken = git(repo, ["rev-parse", "HEAD"]).trim();
+    git(repo, ["update-index", "--skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
+    fs.rmSync(path.join(repo, "tool"), {recursive: true});
+    assert.deepEqual(kinds(run()), ["removed-document-anchor", "retired-document-machine-reference"]);
+    git(repo, ["update-index", "--no-skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
+    git(repo, ["checkout", "--", "tool"]);
+    assert.deepEqual(kinds(run("--ref", broken)), ["removed-document-anchor", "retired-document-machine-reference"]);
+
+    write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#ownership"}\n');
+    write("tool/check.mjs", 'const owner = "docs/guide.md";\n');
+    const good = run();
+    assert.equal(good.status, 0, good.stderr);
+    assert.deepEqual(JSON.parse(good.stdout).advisories, []);
+  } finally {
+    fs.rmSync(repo, {recursive: true, force: true});
+  }
 });
