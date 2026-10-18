@@ -80,7 +80,7 @@ export function HostHeroSection({captures: _captures}: {captures: HostCaptureMap
 
 export function HostWorkflowSection() {
   return (
-    <MarketingSection variant="story" id="workflow" aria-labelledby="workflow-title">
+    <MarketingSection variant="story" id="how-it-works" aria-labelledby="workflow-title">
       <ContentGrid variant="marketing-split">
         <SectionHeader
           id="workflow-title"
@@ -178,6 +178,7 @@ export function HostCapturesSection({captures}: {captures: HostCaptureMap}) {
 export function HostApplySection() {
   return (
     <WaitlistSection
+      introReveal={false}
       id="founding-hosts"
       titleId="host-apply-title"
       title={hostPageCopy.apply.title}

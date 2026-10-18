@@ -1089,8 +1089,8 @@ Current canonical component layer under `website/src/components/` includes:
 
 Implemented website behavior:
 
-- Homepage discovery can render real event/search data from generated organizer
-  projections.
+- `/explore/` owns consumer discovery with generated organiser projections and
+  the live published-event feed. `/` is the short organiser-first introduction.
 - Directory filters are URL-backed for query, city, format, status, upcoming,
   rating, and sort.
 - Organizer listing pages support event-aware search results, claim pressure,
@@ -1107,9 +1107,13 @@ Implemented website behavior:
   persistent matching/chat, universal provider sync and exact external revenue
   are not prerequisites and must not be presented as current dependencies.
 
+The public sitemap, content destinations and retired URL redirects are owned by
+`docs/marketing_website_architecture.md#public-sitemap-and-conversion-ownership`.
+The real pilot form lives at `/host/apply/`; `/host/` owns product detail.
+
 Catch event discovery is live. `PublicEventListingsProvider` subscribes through
 `firebase.ts` to explicitly published events; `usePublicEventListingsController` owns the
-TanStack Query cache used by home, directory, organizer, and event-detail routes.
+TanStack Query cache used by discovery, directory, organiser, and event-detail routes.
 Cache-only snapshots, pending writes, subscription failures, and oversized feeds
 withhold Catch rows. The current bounded feed supports at most 400 published
 records; overflow fails closed and requires a paginated discovery service before
@@ -1127,8 +1131,8 @@ cannot retract historical browser caches or copies made while an event was publi
 
 Deferred website decisions:
 
-- Decide whether fabricated prototype organizers become real seed listings,
-  demo-only fixtures, or stay excluded.
+- Fabricated prototype organisers remain excluded from real listings. The old
+  marketing concept pages and their simulated sample rows are retired.
 - Add an Instagram DM code-verification backend path before promising that as
   an automated claim option.
 - Add new marketing capture slots only through

@@ -2,9 +2,9 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_acquisition.feature.json",
-  "generatedFor": "2026-08-11",
-  "sourceDigest": "sha256:ac600ca3e15df711b9a07f42f3d94758e9ad02c72433b8bd5c274239b907c4dd",
-  "resolvedDigest": "sha256:8be3498fc67539a6691622f571791471e1c4ca5ddd51e066fe1b849d0a4a3c46",
+  "generatedFor": "2026-10-18",
+  "sourceDigest": "sha256:e4361a87892abb22855b5af9ffe7fc0fc25d3a1f3e60c0cd4f62508b2ce41485",
+  "resolvedDigest": "sha256:778ea9c1bb3a3874ca33594c310f0ff7ec27017fde4ee70b9f3844bb0eee2b65",
   "feature": {
     "id": "feature.host_acquisition",
     "name": "Host Acquisition",
@@ -13,14 +13,14 @@
     "description": "Orchestrates the public standalone Host-tooling narrative, external-booking setup and live-tool previews, selective beta application, and post-submission organizer and claim handoffs."
   },
   "coverage": {
-    "surfaces": 1,
-    "states": 4,
-    "scenarios": 4,
-    "actionCases": 8,
+    "surfaces": 2,
+    "states": 9,
+    "scenarios": 9,
+    "actionCases": 13,
     "actions": 11,
     "captures": 0,
-    "previews": 3,
-    "testFiles": 2,
+    "previews": 5,
+    "testFiles": 3,
     "evidenceExceptions": 3
   },
   "surfaces": [
@@ -32,7 +32,7 @@
         "id": "host"
       },
       "actionScope": {
-        "included": "Opening the beta application, operating the companion-event setup and live-stage previews, expanding Playbook modules, navigating the application, choosing bounded event/live-tool decisions, recording the current booking-platform setup, submitting the host packet, and following post-submission routes.",
+        "included": "Canonical product detail, pilot application navigation, setup and live-stage previews, and Playbook disclosures.",
         "excluded": [
           "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
           "The static current-versus-coming-later comparison and Host application text/select edits remain presentation or form data governed by their existing owners rather than separate feature actions."
@@ -67,23 +67,10 @@
             "language": "typescript",
             "file": "website/src/features/host/sections/HostComparisonSection.tsx",
             "symbol": "HostComparisonSection"
-          },
-          {
-            "id": "application_controller",
-            "language": "typescript",
-            "file": "website/src/features/host/application/useHostApplicationController.ts",
-            "symbol": "useHostApplicationController"
-          },
-          {
-            "id": "application_flow",
-            "language": "typescript",
-            "file": "website/src/features/host/application/HostApplicationFlow.tsx",
-            "symbol": "HostApplicationFlow"
           }
         ],
         "componentContracts": [
           "route_host",
-          "host_application_flow",
           "host_create_event_walkthrough",
           "host_playbook_showcase",
           "host_comparison_section"
@@ -93,21 +80,29 @@
           "contracts/http/join_waitlist_response.schema.json"
         ],
         "testEvidence": {
-          "host-application": [
-            "website/src/features/host/application/applicationModel.test.ts",
-            "website/src/features/host/application/useHostApplicationController.test.tsx"
+          "default": [
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "beta-offer": [
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "application-link": [
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "capture-placeholders": [
+            "website/src/app/MarketingSitemap.test.tsx"
           ]
         }
       },
       "coverage": {
         "states": 4,
         "scenarios": 4,
-        "actionCases": 8,
-        "actions": 11,
+        "actionCases": 4,
+        "actions": 4,
         "captures": 0,
         "previews": 3,
-        "testFiles": 2,
-        "evidenceExceptions": 3
+        "testFiles": 1,
+        "evidenceExceptions": 0
       },
       "dimensions": {
         "presentation": {
@@ -161,17 +156,18 @@
           ],
           "outcomes": [
             {
-              "kind": "surface_state",
-              "stateIds": [
-                "host-application"
-              ]
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "host_apply"
+              }
             },
             {
               "kind": "side_effect",
               "id": "analytics.host_application_opened"
             }
           ],
-          "description": "Moves to the selective beta application section and records the CTA placement.",
+          "description": "Opens the sole pilot application page and records CTA placement.",
           "implementationStatus": "implemented"
         },
         {
@@ -233,171 +229,9 @@
           ],
           "description": "Expands one Playbook module and records its module and lifecycle-stage identity.",
           "implementationStatus": "implemented"
-        },
-        {
-          "id": "go_to_application_step",
-          "owner": "application_controller",
-          "codeValue": "goToStep",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "formInstanceId",
-            "stepId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "host-application"
-              ]
-            }
-          ],
-          "description": "Moves to a selected application step while no application submission is pending.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "continue_application",
-          "owner": "application_controller",
-          "codeValue": "goNext",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "formInstanceId",
-            "draftVersion",
-            "stepId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "host-application"
-              ]
-            }
-          ],
-          "description": "Validates the current application stage and advances to the next bounded step.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "back_application",
-          "owner": "application_controller",
-          "codeValue": "goBack",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "formInstanceId",
-            "stepId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "host-application"
-              ]
-            }
-          ],
-          "description": "Returns to the previous application stage while no application submission is pending.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "toggle_application_choice",
-          "owner": "application_controller",
-          "codeValue": "toggleDraftList",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "formInstanceId",
-            "choiceDomain",
-            "choiceValue",
-            "draftVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "host-application"
-              ]
-            }
-          ],
-          "description": "Adds or removes a bounded event-format or standalone live-tool choice from the local application draft.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "submit_host_application",
-          "owner": "application_controller",
-          "codeValue": "handleSubmit",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "formInstanceId",
-            "submissionVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "host-application"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "marketing.host_application_submitted"
-            }
-          ],
-          "description": "Validates and submits one normalized host operating packet, then renders success or actionable failure status.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_organizer_search_after_submit",
-          "owner": "application_flow",
-          "codeValue": "ButtonLink",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "submissionVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_search"
-              }
-            }
-          ],
-          "description": "Opens the public organizer directory from the submitted application confirmation.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_claim_after_submit",
-          "owner": "application_flow",
-          "codeValue": "ButtonLink",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "submissionVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "claim"
-              }
-            }
-          ],
-          "description": "Opens the organizer claim workflow from the submitted application confirmation.",
-          "implementationStatus": "implemented"
         }
       ],
-      "evidenceExceptions": [
-        {
-          "stateIds": [
-            "default",
-            "beta-offer",
-            "capture-placeholders"
-          ],
-          "evidence": [
-            "tests"
-          ],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These route-level narrative and capture-fallback states have registered route/section Storybook evidence but no focused interaction test registered for their Host section composition."
-        }
-      ],
+      "evidenceExceptions": [],
       "scenarios": [
         {
           "id": "default",
@@ -417,7 +251,9 @@
               "host_playbook_showcase/PlaybookShowcaseSection",
               "route_host/Host"
             ],
-            "tests": []
+            "tests": [
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
           },
           "actionCases": [
             {
@@ -436,15 +272,7 @@
                   "expand_playbook_module"
                 ],
                 "disabled": [],
-                "notAllowed": [
-                  "go_to_application_step",
-                  "continue_application",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ]
+                "notAllowed": []
               }
             }
           ]
@@ -465,7 +293,9 @@
             "previewIds": [
               "route_host/Host"
             ],
-            "tests": []
+            "tests": [
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
           },
           "actionCases": [
             {
@@ -484,174 +314,7 @@
                   "expand_playbook_module"
                 ],
                 "disabled": [],
-                "notAllowed": [
-                  "go_to_application_step",
-                  "continue_application",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "host_application",
-          "stateId": "host-application",
-          "kind": "route_state",
-          "status": "manual",
-          "dimensions": {
-            "presentation": "application",
-            "application_step": "profile",
-            "application_mutation": "idle",
-            "preview": "idle"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "route_host/Host"
-            ],
-            "tests": [
-              "website/src/features/host/application/applicationModel.test.ts",
-              "website/src/features/host/application/useHostApplicationController.test.tsx"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "profile_or_form_step",
-              "dimensions": {
-                "presentation": "application",
-                "application_step": "profile",
-                "application_mutation": "idle",
-                "preview": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "go_to_application_step",
-                  "continue_application",
-                  "back_application",
-                  "toggle_application_choice"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_host_application",
-                  "select_create_walkthrough_step",
-                  "select_playbook_stage",
-                  "expand_playbook_module",
-                  "submit_host_application",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ]
-              }
-            },
-            {
-              "id": "review_ready",
-              "dimensions": {
-                "presentation": "application",
-                "application_step": "review",
-                "application_mutation": "idle",
-                "preview": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "go_to_application_step",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_host_application",
-                  "select_create_walkthrough_step",
-                  "select_playbook_stage",
-                  "expand_playbook_module",
-                  "continue_application",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ]
-              }
-            },
-            {
-              "id": "submission_pending_frozen_snapshot",
-              "dimensions": {
-                "presentation": "application",
-                "application_step": "review",
-                "application_mutation": "pending",
-                "preview": "idle"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "go_to_application_step",
-                  "continue_application",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application"
-                ],
-                "notAllowed": [
-                  "open_host_application",
-                  "select_create_walkthrough_step",
-                  "select_playbook_stage",
-                  "expand_playbook_module",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ]
-              }
-            },
-            {
-              "id": "submission_failed",
-              "dimensions": {
-                "presentation": "application",
-                "application_step": "review",
-                "application_mutation": "failed",
-                "preview": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "go_to_application_step",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_host_application",
-                  "select_create_walkthrough_step",
-                  "select_playbook_stage",
-                  "expand_playbook_module",
-                  "continue_application",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ]
-              }
-            },
-            {
-              "id": "submitted",
-              "dimensions": {
-                "presentation": "application",
-                "application_step": "submitted",
-                "application_mutation": "success",
-                "preview": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_host_application",
-                  "select_create_walkthrough_step",
-                  "select_playbook_stage",
-                  "expand_playbook_module",
-                  "go_to_application_step",
-                  "continue_application",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application"
-                ]
+                "notAllowed": []
               }
             }
           ]
@@ -672,7 +335,9 @@
             "previewIds": [
               "route_host/Host"
             ],
-            "tests": []
+            "tests": [
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
           },
           "actionCases": [
             {
@@ -691,14 +356,49 @@
                   "expand_playbook_module"
                 ],
                 "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "application_link",
+          "stateId": "application-link",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "default",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_host/Host"
+            ],
+            "tests": [
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "open_intake",
+              "dimensions": {
+                "presentation": "default",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_host_application"
+                ],
+                "disabled": [],
                 "notAllowed": [
-                  "go_to_application_step",
-                  "continue_application",
-                  "back_application",
-                  "toggle_application_choice",
-                  "submit_host_application",
-                  "open_organizer_search_after_submit",
-                  "open_claim_after_submit"
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module"
                 ]
               }
             }
@@ -724,23 +424,8 @@
               "states": [
                 "default",
                 "beta-offer",
-                "host-application",
+                "application-link",
                 "capture-placeholders"
-              ]
-            }
-          },
-          {
-            "id": "host_application_flow",
-            "kind": "flow",
-            "source": "website/src/features/host/application/HostApplicationFlow.tsx",
-            "exportName": "HostApplicationFlow",
-            "storybook": {
-              "status": "ready",
-              "story": "website/src/stories/HostSections.stories.tsx",
-              "exportName": "HostApplicationFlowInitial",
-              "states": [
-                "initial",
-                "interactive-steps"
               ]
             }
           },
@@ -799,6 +484,682 @@
           "host_create_event_walkthrough/CreateEventWalkthroughSection",
           "host_playbook_showcase/PlaybookShowcaseSection",
           "route_host/Host"
+        ]
+      }
+    },
+    {
+      "id": "marketing_application",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "host_apply"
+      },
+      "actionScope": {
+        "included": "The sole Host pilot intake: navigating steps, editing choices, submitting the packet and post-submission directory or claim handoffs.",
+        "excluded": [
+          "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
+          "The static current-versus-coming-later comparison and Host application text/select edits remain presentation or form data governed by their existing owners rather than separate feature actions."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/HostApplication.stories.tsx",
+          "website/src/stories/HostSections.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "application_controller",
+            "language": "typescript",
+            "file": "website/src/features/host/application/useHostApplicationController.ts",
+            "symbol": "useHostApplicationController"
+          },
+          {
+            "id": "application_flow",
+            "language": "typescript",
+            "file": "website/src/features/host/application/HostApplicationFlow.tsx",
+            "symbol": "HostApplicationFlow"
+          }
+        ],
+        "componentContracts": [
+          "route_host_apply",
+          "host_application_flow"
+        ],
+        "dataContracts": [
+          "contracts/http/join_waitlist_request.schema.json",
+          "contracts/http/join_waitlist_response.schema.json"
+        ],
+        "testEvidence": {
+          "initial": [
+            "website/src/features/host/application/applicationModel.test.ts",
+            "website/src/features/host/application/useHostApplicationController.test.tsx",
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "interactive-steps": [
+            "website/src/features/host/application/applicationModel.test.ts",
+            "website/src/features/host/application/useHostApplicationController.test.tsx",
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "review": [
+            "website/src/features/host/application/applicationModel.test.ts",
+            "website/src/features/host/application/useHostApplicationController.test.tsx",
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "submitted": [
+            "website/src/features/host/application/applicationModel.test.ts",
+            "website/src/features/host/application/useHostApplicationController.test.tsx",
+            "website/src/app/MarketingSitemap.test.tsx"
+          ],
+          "error": [
+            "website/src/features/host/application/applicationModel.test.ts",
+            "website/src/features/host/application/useHostApplicationController.test.tsx",
+            "website/src/app/MarketingSitemap.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 9,
+        "actions": 7,
+        "captures": 0,
+        "previews": 2,
+        "testFiles": 3,
+        "evidenceExceptions": 3
+      },
+      "dimensions": {
+        "presentation": {
+          "default": "default",
+          "values": [
+            "default",
+            "offer",
+            "application",
+            "capture_placeholders"
+          ]
+        },
+        "application_step": {
+          "default": "profile",
+          "values": [
+            "profile",
+            "event",
+            "setup",
+            "success",
+            "review",
+            "submitted"
+          ]
+        },
+        "application_mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        },
+        "preview": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "create_step_selected",
+            "playbook_stage_selected",
+            "module_expanded"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "go_to_application_step",
+          "owner": "application_controller",
+          "codeValue": "goToStep",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "stepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "initial",
+                "interactive-steps",
+                "review",
+                "submitted",
+                "error"
+              ]
+            }
+          ],
+          "description": "Moves to a selected application step while no application submission is pending.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "continue_application",
+          "owner": "application_controller",
+          "codeValue": "goNext",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "draftVersion",
+            "stepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "initial",
+                "interactive-steps",
+                "review",
+                "submitted",
+                "error"
+              ]
+            }
+          ],
+          "description": "Validates the current application stage and advances to the next bounded step.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "back_application",
+          "owner": "application_controller",
+          "codeValue": "goBack",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "stepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "initial",
+                "interactive-steps",
+                "review",
+                "submitted",
+                "error"
+              ]
+            }
+          ],
+          "description": "Returns to the previous application stage while no application submission is pending.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "toggle_application_choice",
+          "owner": "application_controller",
+          "codeValue": "toggleDraftList",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "choiceDomain",
+            "choiceValue",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "initial",
+                "interactive-steps",
+                "review",
+                "submitted",
+                "error"
+              ]
+            }
+          ],
+          "description": "Adds or removes a bounded event-format or standalone live-tool choice from the local application draft.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "submit_host_application",
+          "owner": "application_controller",
+          "codeValue": "handleSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "formInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "initial",
+                "interactive-steps",
+                "review",
+                "submitted",
+                "error"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "marketing.host_application_submitted"
+            }
+          ],
+          "description": "Validates and submits one normalized host operating packet, then renders success or actionable failure status.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_organizer_search_after_submit",
+          "owner": "application_flow",
+          "codeValue": "ButtonLink",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            }
+          ],
+          "description": "Opens the public organizer directory from the submitted application confirmation.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_claim_after_submit",
+          "owner": "application_flow",
+          "codeValue": "ButtonLink",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "claim"
+              }
+            }
+          ],
+          "description": "Opens the organizer claim workflow from the submitted application confirmation.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "review",
+            "submitted",
+            "error"
+          ],
+          "evidence": [
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "Existing intake controller tests cover review, success and failure. Deterministic Storybook fixtures for these controller states remain absent after moving the unchanged flow to its own route."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "initial",
+          "stateId": "initial",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "presentation": "application",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "host_application_flow/HostApplicationFlowInitial",
+              "route_host_apply/Application"
+            ],
+            "tests": [
+              "website/src/features/host/application/applicationModel.test.ts",
+              "website/src/features/host/application/useHostApplicationController.test.tsx",
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "profile_or_form_step",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "interactive_steps",
+          "stateId": "interactive-steps",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "application",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "host_application_flow/HostApplicationFlowInitial"
+            ],
+            "tests": [
+              "website/src/features/host/application/applicationModel.test.ts",
+              "website/src/features/host/application/useHostApplicationController.test.tsx",
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "profile_or_form_step",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "review",
+          "stateId": "review",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "application",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "website/src/features/host/application/applicationModel.test.ts",
+              "website/src/features/host/application/useHostApplicationController.test.tsx",
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "profile_or_form_step",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "review_ready",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "continue_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "submission_pending_frozen_snapshot",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "pending",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ],
+                "notAllowed": [
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "submission_failed",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "failed",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "continue_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "submitted",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "submitted",
+                "application_mutation": "success",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "submitted",
+          "stateId": "submitted",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "application",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "website/src/features/host/application/applicationModel.test.ts",
+              "website/src/features/host/application/useHostApplicationController.test.tsx",
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "submitted",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "submitted",
+                "application_mutation": "success",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "error",
+          "stateId": "error",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "application",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "website/src/features/host/application/applicationModel.test.ts",
+              "website/src/features/host/application/useHostApplicationController.test.tsx",
+              "website/src/app/MarketingSitemap.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "submission_failed",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "failed",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "continue_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "host_apply",
+          "kind": "static",
+          "path": "/host/apply/"
+        },
+        "components": [
+          {
+            "id": "route_host_apply",
+            "kind": "route",
+            "source": "website/src/features/host/HostApplicationPage.tsx",
+            "exportName": "HostApplicationPage",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/HostApplication.stories.tsx",
+              "exportName": "Application",
+              "states": [
+                "initial"
+              ]
+            }
+          },
+          {
+            "id": "host_application_flow",
+            "kind": "flow",
+            "source": "website/src/features/host/application/HostApplicationFlow.tsx",
+            "exportName": "HostApplicationFlow",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/HostSections.stories.tsx",
+              "exportName": "HostApplicationFlowInitial",
+              "states": [
+                "initial",
+                "interactive-steps"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "host_application_flow/HostApplicationFlowInitial",
+          "route_host_apply/Application"
         ]
       }
     }
