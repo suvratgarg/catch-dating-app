@@ -195,7 +195,6 @@
         "tier",
         "summary",
         "dart",
-        "surfaces",
         "design",
         "contract",
         "governance",
@@ -252,29 +251,7 @@
             }
           }
         },
-        "surfaces": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "flutter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "website": {
-              "type": "string",
-              "minLength": 1
-            },
-            "admin": {
-              "type": "string",
-              "minLength": 1
-            },
-            "webui": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
+        "react": {"$ref": "#/$defs/reactImplementation"},
         "design": {
           "type": "object",
           "required": ["figma", "codeConnect", "claude"],
@@ -699,6 +676,38 @@
         "reason": {"type": "string", "minLength": 12}
       }
     },
+    "reactImplementation": {
+      "type": "object",
+      "description": "The @catch/web-ui implementation of this contract. Surface adapters are recorded in the admin and website registries by componentId.",
+      "required": ["symbol", "file", "api"],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+        "file": {"type": "string", "pattern": "^packages/web-ui/src/.+\\.tsx$"},
+        "api": {
+          "enum": ["headless-control", "styled"],
+          "description": "headless-control: native semantics only, styled by surface adapters (pre-D10). styled: the D10 Catch* component, whose symbol equals dart.symbol (D9)."
+        },
+        "additionalSymbols": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "storybook": {
+          "type": "object",
+          "required": ["status", "story", "exportName", "states"],
+          "additionalProperties": false,
+          "properties": {
+            "status": {"enum": ["ready", "planned"]},
+            "story": {"type": "string", "pattern": "^packages/web-ui/src/.+\\.stories\\.tsx$"},
+            "exportName": {"type": "string"},
+            "states": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true}
+          }
+        },
+        "notes": {"type": "string"}
+      }
+    },
     "prop": {
       "type": "object",
       "required": ["name", "type", "required"],
@@ -730,6 +739,10 @@
         },
         "dartType": {
           "type": "string"
+        },
+        "tsType": {
+          "type": ["string", "null"],
+          "description": "TypeScript type of the prop in the React implementation (blueprint D9). Required on T1 and T2 contracts at L2-L4 and absent elsewhere; null marks a Flutter framework mechanism with no React prop."
         },
         "values": {
           "type": "array",

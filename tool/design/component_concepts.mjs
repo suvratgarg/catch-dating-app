@@ -282,7 +282,20 @@ export function conceptTopologyProblems(components) {
 
 // Cross-framework parity tiers, ordered from most to least widely required.
 export const parityTiers = Object.freeze(["T1", "T2", "T3", "T4"]);
-const reactSurfaceKeys = Object.freeze(["website", "admin", "webui"]);
+// Levels whose props are a cross-framework API. L5 bindings and L6 screens
+// bind each framework's own domain data (blueprint D14, D15).
+export const tsTypeLevels = Object.freeze(["L2", "L3", "L4"]);
+// Flutter framework mechanisms with no React prop; their tsType is null.
+export const flutterMechanismDartTypes = Object.freeze([
+  "FocusNode",
+  "Key",
+  "MaterialTapTargetSize",
+  "MenuController",
+  "OutlinedBorder",
+  "Set<WidgetState>",
+  "TabController",
+  "TextEditingController",
+]);
 
 export function componentTierProblems(components) {
   const problems = [];
@@ -293,12 +306,13 @@ export function componentTierProblems(components) {
       problems.push(`${component.id}: tier must be one of ${parityTiers.join(", ")}`);
       continue;
     }
-    if (tier === "T3" || tier === "T4") {
-      const react = reactSurfaceKeys.filter((key) => component.surfaces?.[key]);
-      if (react.length > 0) {
-        problems.push(`${component.id}: ${tier} entries are Flutter-only but declare ${react.join(", ")}; promote to T2 through registry review`);
-      }
+    if ((tier === "T3" || tier === "T4") && component.react) {
+      problems.push(`${component.id}: ${tier} entries are Flutter-only but declare React implementation ${component.react.symbol}; promote to T2 through registry review`);
     }
+    if (component.react?.api === "styled" && component.react.symbol !== component.dart?.symbol) {
+      problems.push(`${component.id}: styled React implementation ${component.react.symbol} must use the Flutter symbol ${component.dart?.symbol}`);
+    }
+    problems.push(...contractTsTypeProblems(component));
     const governance = component.governance ?? {};
     if (governance.conceptRole === "member") {
       const parentTier = tierById.get(governance.parentConceptId);
@@ -308,6 +322,61 @@ export function componentTierProblems(components) {
     }
   }
   return problems.sort();
+}
+
+/** T1 and T2 design-system props carry the React prop type beside the Dart one. */
+export function contractTsTypeProblems(component) {
+  const problems = [];
+  const crossFramework = ["T1", "T2"].includes(component.tier) && tsTypeLevels.includes(component.level);
+  for (const prop of component.contract?.props ?? []) {
+    const label = `${component.id}.${prop.name}`;
+    const declared = Object.hasOwn(prop, "tsType");
+    if (!crossFramework) {
+      if (declared) problems.push(`${label}: tsType is only declared on T1/T2 contracts at ${tsTypeLevels.join(", ")}`);
+      continue;
+    }
+    if (!declared) {
+      problems.push(`${label}: T1/T2 prop needs a tsType beside dartType ${prop.dartType ?? "(none)"}`);
+      continue;
+    }
+    const problem = tsTypeProblem(prop);
+    if (problem) problems.push(`${label}: ${problem}`);
+  }
+  return problems;
+}
+
+function tsTypeProblem(prop) {
+  const dartType = String(prop.dartType ?? "");
+  const base = dartType.replace(/\?$/u, "");
+  const mechanism = flutterMechanismDartTypes.includes(base) ||
+    (/\bFunction\(/u.test(dartType) && /\bKey\b/u.test(dartType));
+  if (prop.tsType === null) {
+    return mechanism ? null : `tsType null is reserved for Flutter mechanisms, not ${dartType}`;
+  }
+  if (typeof prop.tsType !== "string" || prop.tsType.trim() === "") return "tsType must be a TypeScript type or null";
+  if (mechanism) return `${dartType} is a Flutter mechanism; its tsType must be null`;
+  const type = prop.tsType.replace(/ \| null$/u, "");
+  switch (prop.type) {
+    case "enum": {
+      // Catch enums keep their name (D9); SDK enums and recipes list their values.
+      const expected = /^Catch[A-Z][A-Za-z0-9_]*$/u.test(base)
+        ? base
+        : (prop.values ?? []).map((value) => JSON.stringify(value)).join(" | ");
+      return type === expected ? null : `enum tsType must be ${expected}`;
+    }
+    case "callback":
+      return /=>/u.test(type) ? null : "callback tsType must be a function type";
+    case "widget":
+      return /\bReactNode\b/u.test(type) ? null : "widget tsType must render ReactNode";
+    case "string":
+      return type === "string" ? null : "string tsType must be string";
+    case "bool":
+      return type === "boolean" ? null : "bool tsType must be boolean";
+    case "number":
+      return type === "number" ? null : "number tsType must be number";
+    default:
+      return null;
+  }
 }
 
 function countBy(values, keyFor) {

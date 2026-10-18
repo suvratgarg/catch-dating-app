@@ -206,6 +206,21 @@
           "CatchBadge.optional"
         ]
       },
+      "react": {
+        "symbol": "BadgeControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Feedback",
+          "states": [
+            "inline",
+            "surface-tone-adapter"
+          ]
+        },
+        "notes": "Shared non-interactive inline badge root for status-oriented surface adapters; structural eyebrow labels use catch.typography instead."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -289,7 +304,8 @@
             "name": "label",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "tone",
@@ -297,6 +313,7 @@
             "required": false,
             "default": "neutral",
             "dartType": "CatchBadgeTone",
+            "tsType": "CatchBadgeTone",
             "values": [
               "neutral",
               "brand",
@@ -313,6 +330,7 @@
             "required": false,
             "default": "sm",
             "dartType": "CatchBadgeSize",
+            "tsType": "CatchBadgeSize",
             "values": [
               "sm",
               "md",
@@ -323,7 +341,8 @@
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "emphasis",
@@ -331,6 +350,7 @@
             "required": false,
             "default": "soft",
             "dartType": "CatchBadgeEmphasis",
+            "tsType": "CatchBadgeEmphasis",
             "values": [
               "soft",
               "strong"
@@ -518,12 +538,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.badge"
       },
-      "surfaces": {
-        "flutter": "CatchBadge",
-        "website": "StatusBadge",
-        "admin": "StatusChip",
-        "webui": "BadgeControl"
-      },
       "level": "L3",
       "roleNoun": "Badge",
       "naming": {
@@ -569,6 +583,23 @@
           "CatchButton.sheet"
         ]
       },
+      "react": {
+        "symbol": "ButtonControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Button",
+          "states": [
+            "default",
+            "disabled",
+            "loading",
+            "explicit-submit"
+          ]
+        },
+        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -591,13 +622,15 @@
             "name": "label",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "onPressed",
             "type": "callback",
             "required": true,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "(() => void) | null"
           },
           {
             "name": "variant",
@@ -605,6 +638,7 @@
             "required": false,
             "default": "primary",
             "dartType": "CatchButtonVariant",
+            "tsType": "CatchButtonVariant",
             "values": [
               "primary",
               "secondary",
@@ -619,6 +653,7 @@
             "required": false,
             "default": "md",
             "dartType": "CatchButtonSize",
+            "tsType": "CatchButtonSize",
             "values": [
               "sm",
               "md",
@@ -632,6 +667,7 @@
             "required": false,
             "default": "pill",
             "dartType": "CatchButtonMode",
+            "tsType": "CatchButtonMode",
             "values": [
               "pill",
               "rounded"
@@ -641,7 +677,8 @@
             "name": "leading",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "status",
@@ -649,6 +686,7 @@
             "required": false,
             "default": "idle",
             "dartType": "CatchButtonStatus",
+            "tsType": "CatchButtonStatus",
             "values": [
               "idle",
               "loading"
@@ -660,13 +698,15 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Fills available width when true. Both width modes preserve full-size text and reflow rather than scaling it down."
           },
           {
             "name": "accentColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "isInteractive",
@@ -674,6 +714,7 @@
             "required": false,
             "default": true,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "False renders a passive button-looking label inside an already tappable parent, without a second action or independent target."
           },
           {
@@ -681,19 +722,22 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Optional trailing media for the command recipe."
           },
           {
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "value",
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "Optional secondary control text. Preserves caller casing and wraps naturally; counts remain separately typed numeric badges."
           },
           {
@@ -701,38 +745,44 @@
             "type": "number",
             "required": false,
             "default": 0,
-            "dartType": "int"
+            "dartType": "int",
+            "tsType": "number"
           },
           {
             "name": "semanticsLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "tooltip",
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "Optional full-value tooltip for selection."
           },
           {
             "name": "backgroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "foregroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "borderColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "tone",
@@ -740,6 +790,7 @@
             "required": false,
             "default": "primary",
             "dartType": "CatchButtonTone",
+            "tsType": "CatchButtonTone",
             "values": [
               "primary",
               "neutral",
@@ -750,67 +801,78 @@
             "name": "disabledForegroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "disabledBackgroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "side",
             "type": "object",
             "required": false,
-            "dartType": "BorderSide?"
+            "dartType": "BorderSide?",
+            "tsType": "CSSProperties[\"border\"]"
           },
           {
             "name": "shape",
             "type": "object",
             "required": false,
-            "dartType": "OutlinedBorder?"
+            "dartType": "OutlinedBorder?",
+            "tsType": null
           },
           {
             "name": "textStyle",
             "type": "object",
             "required": false,
-            "dartType": "TextStyle?"
+            "dartType": "TextStyle?",
+            "tsType": "CSSProperties"
           },
           {
             "name": "leadingGap",
             "type": "number",
             "required": false,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "focusNode",
             "type": "object",
             "required": false,
-            "dartType": "FocusNode?"
+            "dartType": "FocusNode?",
+            "tsType": null
           },
           {
             "name": "tapTargetSize",
             "type": "object",
             "required": false,
-            "dartType": "MaterialTapTargetSize?"
+            "dartType": "MaterialTapTargetSize?",
+            "tsType": null
           },
           {
             "name": "minimumSize",
             "type": "object",
             "required": false,
-            "dartType": "Size"
+            "dartType": "Size",
+            "tsType": "{width: number; height: number}"
           },
           {
             "name": "padding",
             "type": "object",
             "required": false,
-            "dartType": "EdgeInsetsGeometry"
+            "dartType": "EdgeInsetsGeometry",
+            "tsType": "CSSProperties[\"padding\"]"
           },
           {
             "name": "role",
             "type": "enum",
             "required": false,
             "dartType": "CatchButtonEmphasis",
+            "tsType": "CatchButtonEmphasis",
             "values": [
               "dismiss",
               "alternative",
@@ -1032,12 +1094,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.button"
       },
-      "surfaces": {
-        "flutter": "CatchButton",
-        "website": "Button",
-        "admin": "AdminButton",
-        "webui": "ButtonControl"
-      },
       "level": "L3",
       "roleNoun": "Button",
       "naming": {
@@ -1079,6 +1135,22 @@
           "CatchChip.removable"
         ]
       },
+      "react": {
+        "symbol": "ToggleButtonControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Toggle",
+          "states": [
+            "unselected",
+            "selected",
+            "disabled"
+          ]
+        },
+        "notes": "Shared pressed-state and labelled-group semantics used by website choice controls and the admin segmented-control adapter; visual density remains surface-owned."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1102,6 +1174,7 @@
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "Required by tag, selectable, choice, and removable; optional override for activity."
           },
           {
@@ -1109,6 +1182,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchChipData?",
+            "tsType": "CatchChipData",
             "notes": "Required only by CatchChip.activity. Callers resolve the label, icon, and theme-aware accent/deep/soft pigments; the renderer has no feature-type dependency."
           },
           {
@@ -1116,19 +1190,22 @@
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "leading",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": false,
             "dartType": "ValueChanged<bool>?",
+            "tsType": "(value: boolean) => void",
             "notes": "Required only by CatchChip.selectable; state remains parent-owned."
           },
           {
@@ -1136,6 +1213,7 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?",
+            "tsType": "() => void",
             "notes": "Optional interaction only for CatchChip.activity."
           },
           {
@@ -1143,6 +1221,7 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?",
+            "tsType": "() => void",
             "notes": "Required only by CatchChip.removable; the whole chip is the removal action."
           },
           {
@@ -1150,25 +1229,29 @@
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "accent",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "tintColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "inkColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "emphasis",
@@ -1176,6 +1259,7 @@
             "required": false,
             "default": "soft",
             "dartType": "CatchChipEmphasis",
+            "tsType": "CatchChipEmphasis",
             "values": [
               "soft",
               "solid"
@@ -1185,12 +1269,14 @@
             "name": "semanticsLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "mode",
             "type": "enum",
             "dartType": "CatchChipMode?",
+            "tsType": "CatchChipMode",
             "required": false,
             "values": [
               "single",
@@ -1202,6 +1288,7 @@
             "name": "onPressed",
             "type": "callback",
             "dartType": "VoidCallback?",
+            "tsType": "() => void",
             "required": false,
             "notes": "Required nullable action for choice; null disables both pointer and semantic activation."
           }
@@ -1295,11 +1382,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.chip"
       },
-      "surfaces": {
-        "flutter": "CatchChip",
-        "website": "ChoiceChip",
-        "webui": "ToggleButtonControl"
-      },
       "level": "L3",
       "roleNoun": "Chip",
       "naming": {
@@ -1325,6 +1407,22 @@
           "CatchEmptyState"
         ]
       },
+      "react": {
+        "symbol": "EmptyStateControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Feedback",
+          "states": [
+            "static",
+            "polite-announcement",
+            "surface-content-adapter"
+          ]
+        },
+        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -1347,25 +1445,29 @@
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "title",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "message",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "actions",
             "type": "list",
             "required": false,
             "dartType": "List<Widget>",
+            "tsType": "ReactNode",
             "notes": "Defaults to an empty action list."
           },
           {
@@ -1373,7 +1475,8 @@
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "iconVariant",
@@ -1381,6 +1484,7 @@
             "required": false,
             "default": "plain",
             "dartType": "CatchIconTileVariant",
+            "tsType": "CatchIconTileVariant",
             "values": [
               "plain",
               "bubble"
@@ -1392,6 +1496,7 @@
             "required": false,
             "default": "stacked",
             "dartType": "CatchEmptyStateVariant",
+            "tsType": "CatchEmptyStateVariant",
             "values": [
               "stacked",
               "inline"
@@ -1533,12 +1638,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.empty_state"
       },
-      "surfaces": {
-        "flutter": "CatchEmptyState",
-        "website": "EmptyState",
-        "admin": "EmptyState",
-        "webui": "EmptyStateControl"
-      },
       "level": "L3",
       "roleNoun": "EmptyState",
       "naming": {
@@ -1590,38 +1689,44 @@
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "message",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "icon",
             "type": "object",
             "required": false,
             "default": "CatchIcons.errorOutlineRounded",
-            "dartType": "IconData"
+            "dartType": "IconData",
+            "tsType": "ReactNode"
           },
           {
             "name": "onRetry",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "retryLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "actions",
             "type": "list",
             "required": false,
             "dartType": "List<Widget>",
+            "tsType": "ReactNode",
             "notes": "Defaults to an empty action list."
           },
           {
@@ -1630,6 +1735,7 @@
             "required": false,
             "default": "fullScreen",
             "dartType": "CatchErrorStateMode",
+            "tsType": "CatchErrorStateMode",
             "values": [
               "fullScreen",
               "inline",
@@ -1942,9 +2048,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.error_state"
       },
-      "surfaces": {
-        "flutter": "CatchErrorState"
-      },
       "level": "L3",
       "roleNoun": "ErrorState",
       "naming": {
@@ -1991,19 +2094,22 @@
             "name": "message",
             "type": "string",
             "required": false,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "title",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "tone",
             "type": "enum",
             "required": false,
             "dartType": "CatchBannerTone",
+            "tsType": "CatchBannerTone",
             "default": "primary",
             "values": [
               "primary",
@@ -2018,6 +2124,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchBannerVariant",
+            "tsType": "CatchBannerVariant",
             "default": "message",
             "values": [
               "message",
@@ -2030,25 +2137,29 @@
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData"
+            "dartType": "IconData",
+            "tsType": "ReactNode"
           },
           {
             "name": "retryLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "onRetry",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "statuses",
             "type": "list",
             "required": false,
-            "dartType": "List<CatchBannerStatus>"
+            "dartType": "List<CatchBannerStatus>",
+            "tsType": "CatchBannerStatus[]"
           }
         ],
         "states": [
@@ -2200,9 +2311,6 @@
         "conceptId": "catch.banner",
         "decisionRef": "pattern-family:inline-feedback-canonical-banner"
       },
-      "surfaces": {
-        "flutter": "CatchBanner"
-      },
       "level": "L3",
       "roleNoun": "Banner",
       "naming": {
@@ -2258,19 +2366,22 @@
             "name": "dismissLabel",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "notice",
             "type": "object",
             "required": true,
-            "dartType": "CatchNoticeData"
+            "dartType": "CatchNoticeData",
+            "tsType": "CatchNoticeData"
           },
           {
             "name": "onDismiss",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           }
         ],
         "states": [
@@ -2385,9 +2496,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.notice"
       },
-      "surfaces": {
-        "flutter": "CatchNotice"
-      },
       "level": "L3",
       "roleNoun": "Notice",
       "naming": {
@@ -2431,13 +2539,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": [
-        "TextField",
-        "FormField",
-        "InputField",
-        "LabeledField",
-        "FormInput"
-      ],
+      "aliases": ["TextField", "FormField", "InputField", "LabeledField", "FormInput"],
       "summary": "Field owns activation, hover, focus, disabled state and accessibility. Ordinary records, people and conversations are sealed passive content layouts. Section owns gutters, dividers and the interaction perimeter. Form controllers own draft and persistence state.",
       "design": {
         "figma": {
@@ -2582,25 +2684,29 @@
             "type": "object",
             "required": false,
             "dartType": "CatchFieldCopy",
+            "tsType": "CatchFieldCopy",
             "notes": "Required for localized editor and legacy value recipes. Passive typed content needs no field editing copy unless it exposes a non-idle save status."
           },
           {
             "name": "title",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "body",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "metadata",
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "CatchField.sortable metadata rendered inline after the strong title, with two-line reflow at large text sizes."
           },
           {
@@ -2609,6 +2715,7 @@
             "required": false,
             "default": 1,
             "dartType": "int",
+            "tsType": "number",
             "notes": "Legacy value-row constructors default to 1. CatchField.content defaults to 2."
           },
           {
@@ -2617,25 +2724,29 @@
             "required": false,
             "default": 2,
             "dartType": "int",
+            "tsType": "number",
             "notes": "Legacy value-row constructors default to 2. CatchField.content defaults to 3."
           },
           {
             "name": "valueText",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "showChevron",
             "type": "bool",
             "required": false,
-            "dartType": "bool?"
+            "dartType": "bool?",
+            "tsType": "boolean"
           },
           {
             "name": "actions",
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "End-aligned row or input actions. In explicit-save editors these follow metadata and child content and precede Cancel/Done."
           },
           {
@@ -2643,6 +2754,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Native input trailing content; explicit actions take precedence."
           },
           {
@@ -2651,6 +2763,7 @@
             "required": false,
             "default": "body",
             "dartType": "CatchFieldEmphasis",
+            "tsType": "CatchFieldEmphasis",
             "notes": "Content rows keep their fixed title/supporting typography; emphasis controls top-aligned versus combined-block-centered leading/trailing slots.",
             "values": [
               "body",
@@ -2663,6 +2776,7 @@
             "required": false,
             "default": "normal",
             "dartType": "CatchFieldTone",
+            "tsType": "CatchFieldTone",
             "values": [
               "normal",
               "primary",
@@ -2675,6 +2789,7 @@
             "required": false,
             "default": "single",
             "dartType": "CatchChipMode",
+            "tsType": "CatchChipMode",
             "values": [
               "single",
               "multiple"
@@ -2687,6 +2802,7 @@
             "required": false,
             "default": "plain",
             "dartType": "CatchTextInputVariant",
+            "tsType": "CatchTextInputVariant",
             "values": [
               "plain",
               "obscured"
@@ -2699,6 +2815,7 @@
             "required": false,
             "default": "row",
             "dartType": "CatchFieldVariant",
+            "tsType": "CatchFieldVariant",
             "values": [
               "row",
               "underline",
@@ -2711,6 +2828,7 @@
             "required": false,
             "default": "md",
             "dartType": "CatchFieldSize",
+            "tsType": "CatchFieldSize",
             "values": [
               "floating",
               "compact",
@@ -2721,13 +2839,15 @@
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "leading",
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Caller-owned leading content: semantic content for rows, the drag target for sortable rows, or a native input prefix. Row icon and custom leading content are mutually exclusive."
           },
           {
@@ -2735,6 +2855,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Revealed disclosure content or explicit-save feedback. The field preserves its mounted identity through close and reopen."
           },
           {
@@ -2742,6 +2863,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Explicit-save supporting content before child content and actions."
           },
           {
@@ -2749,6 +2871,7 @@
             "type": "bool",
             "required": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Required only by inputActions, whose explicit-save edit lifecycle is always caller-owned. Disclosure controls use disclosureMode instead."
           },
           {
@@ -2757,6 +2880,7 @@
             "required": false,
             "default": "localCollapsed",
             "dartType": "CatchFieldMode",
+            "tsType": "CatchFieldMode",
             "values": [
               "localCollapsed",
               "localExpanded",
@@ -2771,6 +2895,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Disclosure-field opt-in to the shared single-line empty Add presentation. Direct editable row inputs derive the same presentation automatically while empty and inactive."
           },
           {
@@ -2779,6 +2904,7 @@
             "required": false,
             "default": "visible",
             "dartType": "CatchFieldLabelTextMode",
+            "tsType": "CatchFieldLabelTextMode",
             "values": [
               "visible",
               "optional",
@@ -2793,19 +2919,22 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "CatchField.choices selection policy for both single and multi controls. Independent from labelMode."
           },
           {
             "name": "onOpenChanged",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<bool>?"
+            "dartType": "ValueChanged<bool>?",
+            "tsType": "(value: boolean) => void"
           },
           {
             "name": "onEditingComplete",
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?",
+            "tsType": "() => void",
             "notes": "Optional native completion override for direct inputs, invoked before onSubmitted. Omit to retain Flutter keyboard-action focus handling; chat supplies a callback that keeps the editor focused after Send."
           },
           {
@@ -2813,13 +2942,15 @@
             "type": "object",
             "required": false,
             "dartType": "List<FontFeature>?",
+            "tsType": "CSSProperties[\"fontFeatureSettings\"]",
             "notes": "Native text font features appended to the existing theme style for standalone entry and unit text, including tabularFigures for aligned numeric data."
           },
           {
             "name": "onBlur",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<String>?"
+            "dartType": "ValueChanged<String>?",
+            "tsType": "(value: string) => void"
           },
           {
             "name": "status",
@@ -2827,6 +2958,7 @@
             "required": false,
             "default": "idle",
             "dartType": "CatchFieldStatus",
+            "tsType": "CatchFieldStatus",
             "notes": "Canonical save state for trailing feedback, disclosure interaction lock, commit actions and accessibility announcements. Saving disables choices, option cards and steppers. A visible commit bar owns the sole progress indicator; otherwise the trailing lane owns it. Saved remains a trailing success tick. Direct input edit permissions remain caller-owned.",
             "values": [
               "idle",
@@ -2838,19 +2970,22 @@
             "name": "maxLength",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "placeholder",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "emptyValueText",
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "Optional override for root-localized 'Add {field}' copy. It appears only while an editable row is empty and inactive; it does not replace the native input or its focused hint."
           },
           {
@@ -2858,19 +2993,22 @@
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "Input-only example or instruction shown after focus. At rest, empty editable rows use the shared Add presentation instead."
           },
           {
             "name": "helperText",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "badgeLabel",
             "type": "string",
             "required": false,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "CatchField.toggle title-row metadata rendered through CatchBadge."
           },
           {
@@ -2879,6 +3017,7 @@
             "required": false,
             "default": "neutral",
             "dartType": "CatchBadgeTone?",
+            "tsType": "CatchBadgeTone",
             "values": [
               "neutral",
               "brand",
@@ -2893,6 +3032,7 @@
             "type": "callback",
             "required": false,
             "dartType": "Color? Function(T item)?",
+            "tsType": "(item: T) => string | null",
             "notes": "CatchField.choices forwards a resolved item accent through CatchChoiceInput to CatchChip.choice."
           },
           {
@@ -2900,6 +3040,7 @@
             "type": "callback",
             "required": false,
             "dartType": "String Function(T value)?",
+            "tsType": "(value: T) => string",
             "notes": "CatchField.optionCards title resolver for mutually exclusive explanatory choices."
           },
           {
@@ -2907,6 +3048,7 @@
             "type": "callback",
             "required": false,
             "dartType": "String Function(T value)?",
+            "tsType": "(value: T) => string",
             "notes": "CatchField.optionCards supporting-copy resolver. Every description stays inside its option's clickable CatchChoiceTile."
           },
           {
@@ -2915,6 +3057,7 @@
             "required": false,
             "default": "neutral",
             "dartType": "CatchFieldSupportRowTone",
+            "tsType": "CatchFieldSupportRowTone",
             "values": [
               "neutral",
               "brand",
@@ -2925,33 +3068,38 @@
             "name": "error",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "errorText",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "showClearButton",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "valid",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "states",
             "type": "object",
             "required": false,
             "dartType": "Set<WidgetState>",
+            "tsType": null,
             "notes": "Caller-owned disabled and focus presentation states. Disabled suppresses interaction even when focus presentation is requested; native focus remains owned by the field. Empty restores ordinary enabled behavior."
           },
           {
@@ -2960,6 +3108,7 @@
             "required": false,
             "default": "editable",
             "dartType": "CatchTextInputMode",
+            "tsType": "CatchTextInputMode",
             "values": [
               "editable",
               "readOnly",
@@ -2975,6 +3124,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchFieldLayout",
+            "tsType": "CatchFieldLayout",
             "notes": "Required by navigate; accepted by read exclusively from legacy content slots. Sealed passive Record, Person or Conversation layout; no Widget, callback, hover, typography or geometry slot."
           },
           {
@@ -2982,6 +3132,7 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback",
+            "tsType": "() => void",
             "notes": "Required by navigate. Field states own whether it is enabled."
           },
           {
@@ -2989,6 +3140,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchFieldSecondaryAction",
+            "tsType": "CatchFieldSecondaryAction",
             "notes": "Typed independent menu, icon command, text button or action group. Field owns placement and target separation."
           }
         ],
@@ -4238,11 +4390,27 @@
           "CatchField.select"
         ]
       },
-      "surfaces": {
-        "flutter": "CatchField",
-        "website": "TextField",
-        "admin": "TextField",
-        "webui": "TextInputControl"
+      "react": {
+        "symbol": "TextInputControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "additionalSymbols": [
+          "SelectControl",
+          "TextareaControl"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Fields",
+          "states": [
+            "text",
+            "invalid",
+            "described",
+            "select",
+            "textarea"
+          ]
+        },
+        "notes": "Shared native controls normalize validation and description semantics; surface adapters own labels, controlled-value callbacks, layout, and styling."
       },
       "level": "L3",
       "roleNoun": "Field",
@@ -4277,13 +4445,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": [
-        "PageSection",
-        "SectionCard",
-        "SettingsSection",
-        "SectionPanel",
-        "TitledSection"
-      ],
+      "aliases": ["PageSection", "SectionCard", "SettingsSection", "SectionPanel", "TitledSection"],
       "summary": "Owns section anatomy. Action, collection and status modules share quiet token fill, natural content height, heading, copy and padding. Collections own compact empty content, sibling separators and an optional full-width primary command. Outlined field groups remain separate semantic recipes.",
       "design": {
         "figma": {
@@ -4477,38 +4639,44 @@
             "name": "title",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "subtitle",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "trailing",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "count",
             "type": "object",
             "required": false,
-            "dartType": "Object?"
+            "dartType": "Object?",
+            "tsType": "unknown"
           },
           {
             "name": "first",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "interaction",
             "type": "enum",
             "required": false,
             "dartType": "CatchDividedFieldInteractionScopeMode?",
+            "tsType": "CatchDividedFieldInteractionScopeMode",
             "notes": "Optional section-level override for divided field rows. Omission inherits the responsive page policy; individual fields cannot choose their own geometry.",
             "values": [
               "fullBleed",
@@ -4521,6 +4689,7 @@
             "required": false,
             "default": "outside",
             "dartType": "CatchSectionHeaderPlacement",
+            "tsType": "CatchSectionHeaderPlacement",
             "notes": "Contained field-row header placement. Inside headers share the outline and own an inset end-to-end boundary rule; outside headers sit above the perimeter.",
             "values": [
               "outside",
@@ -4531,14 +4700,16 @@
             "name": "dividerColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "dividerIndent",
             "type": "number",
             "required": false,
             "default": 0,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "dividerVariant",
@@ -4546,6 +4717,7 @@
             "required": false,
             "default": "section",
             "dartType": "CatchDividerVariant",
+            "tsType": "CatchDividerVariant",
             "values": [
               "section",
               "fieldSection",
@@ -4558,6 +4730,7 @@
             "required": false,
             "default": "fieldRow",
             "dartType": "CatchDividerVariant",
+            "tsType": "CatchDividerVariant",
             "values": [
               "section",
               "fieldSection",
@@ -4569,6 +4742,7 @@
             "type": "color",
             "required": false,
             "dartType": "Color?",
+            "tsType": "string",
             "notes": "Caller-resolved title color, including activity accents. Omission uses ink for divided content and ink2 for field-row headings."
           },
           {
@@ -4576,26 +4750,30 @@
             "type": "number",
             "required": false,
             "default": "space.s3",
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "padding",
             "type": "object",
             "required": false,
-            "dartType": "EdgeInsetsGeometry?"
+            "dartType": "EdgeInsetsGeometry?",
+            "tsType": "CSSProperties[\"padding\"]"
           },
           {
             "name": "showInternalDividers",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "footer",
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Below-section support for field recipes; feedback below an action module; the final scrollable item for horizontal collections."
           },
           {
@@ -4603,6 +4781,7 @@
             "type": "list",
             "required": false,
             "dartType": "List<Widget>?",
+            "tsType": "ReactNode",
             "notes": "rows/containedRows require List<CatchField>; collection requires List<Widget>, with successful-empty anatomy owned by Section."
           },
           {
@@ -4610,19 +4789,22 @@
             "type": "list",
             "required": false,
             "dartType": "List<CatchSectionFieldGroup>?",
+            "tsType": "CatchSectionFieldGroup[]",
             "notes": "Semantic labelled row groups for one contained collection. CatchSection owns their headers, rules, clip, and active geometry."
           },
           {
             "name": "child",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "itemCount",
             "type": "number",
             "required": false,
             "dartType": "int",
+            "tsType": "number",
             "notes": "Required by horizontal; number of content items, excluding the optional footer."
           },
           {
@@ -4630,6 +4812,7 @@
             "type": "callback",
             "required": false,
             "dartType": "IndexedWidgetBuilder",
+            "tsType": "(index: number) => ReactNode",
             "notes": "sliverRows requires a CatchField return; horizontal accepts arbitrary bounded rail content."
           },
           {
@@ -4637,6 +4820,7 @@
             "type": "callback",
             "required": false,
             "dartType": "CatchFieldLayout Function(BuildContext, int)",
+            "tsType": "(index: number) => CatchFieldLayout",
             "notes": "sliverLoadingRows supplies only passive row anatomy; Section and Field own loading paint and geometry."
           },
           {
@@ -4644,6 +4828,7 @@
             "type": "list",
             "required": false,
             "dartType": "List<CatchFieldLayout>",
+            "tsType": "CatchFieldLayout[]",
             "notes": "loadingRows supplies passive row anatomy, never a second placeholder tree."
           },
           {
@@ -4651,6 +4836,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget",
+            "tsType": "ReactNode",
             "notes": "controls accepts a Widget; collection accepts an optional leading filter; dependentFieldRows requires the controlling CatchField. The Section owns their geometry."
           },
           {
@@ -4659,6 +4845,7 @@
             "required": false,
             "default": true,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Loading rows reserve a disclosure slot without enabling interaction."
           },
           {
@@ -4666,6 +4853,7 @@
             "type": "number",
             "required": false,
             "dartType": "double?",
+            "tsType": "number",
             "notes": "Horizontal only. Defaults to CatchLayout.horizontalRailHeight; null requests intrinsic content height."
           },
           {
@@ -4673,6 +4861,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "default": "space.s3",
             "notes": "Horizontal only; gap between content items and the optional footer."
           },
@@ -4681,6 +4870,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchRailItemWidth?",
+            "tsType": "CatchRailItemWidth",
             "notes": "Horizontal only; fixed width or bounded fraction of the available viewport, including the footer. Omission preserves each item width."
           },
           {
@@ -4688,6 +4878,7 @@
             "type": "bool",
             "required": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "default": false,
             "notes": "Horizontal only; opt in to page header/list gutters and the section divider."
           },
@@ -4696,6 +4887,7 @@
             "type": "bool",
             "required": false,
             "dartType": "bool?",
+            "tsType": "boolean",
             "notes": "Horizontal only; defaults to fullBleed. Embedded collections omit the divider."
           },
           {
@@ -4703,6 +4895,7 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsets?",
+            "tsType": "CSSProperties[\"padding\"]",
             "notes": "Horizontal only; normally inherited from embedded/fullBleed ownership."
           },
           {
@@ -4710,6 +4903,7 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsetsGeometry?",
+            "tsType": "CSSProperties[\"padding\"]",
             "notes": "Horizontal only; normally inherited from embedded/fullBleed ownership."
           },
           {
@@ -4717,6 +4911,7 @@
             "type": "object",
             "required": false,
             "dartType": "Set<WidgetState>",
+            "tsType": null,
             "notes": "Explicit focus/error states for contained recipes, passed to the one SectionSurface owner. Error wins over focus; omission preserves descendant focus tracking."
           },
           {
@@ -4724,49 +4919,57 @@
             "type": "callback",
             "required": false,
             "dartType": "int? Function(Key)",
+            "tsType": null,
             "notes": "Stable identity lookup when a lazy collection changes order."
           },
           {
             "name": "message",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "actionLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "onAction",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "actionKey",
             "type": "object",
             "required": false,
-            "dartType": "Key?"
+            "dartType": "Key?",
+            "tsType": null
           },
           {
             "name": "meta",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "actionEmphasis",
             "type": "enum",
             "required": false,
             "dartType": "CatchSectionEmphasis",
+            "tsType": "CatchSectionEmphasis",
             "default": "primary",
             "values": [
               "primary",
@@ -4779,6 +4982,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchButtonStatus",
+            "tsType": "CatchButtonStatus",
             "default": "idle",
             "values": [
               "idle",
@@ -4789,19 +4993,22 @@
             "name": "emptyTitle",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "emptyMessage",
             "type": "string",
             "required": false,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "emptyIcon",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           }
         ],
         "states": [
@@ -5298,9 +5505,6 @@
           "CatchSection.status"
         ]
       },
-      "surfaces": {
-        "flutter": "CatchSection"
-      },
       "level": "L3",
       "roleNoun": "Section",
       "naming": {
@@ -5357,6 +5561,7 @@
             "required": false,
             "default": "card",
             "dartType": "CatchSkeleton constructor",
+            "tsType": "\"card\" | \"box\" | \"text\" | \"textBlock\" | \"circle\" | \"custom\"",
             "values": [
               "card",
               "box",
@@ -5370,13 +5575,15 @@
             "name": "width",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "number"
           },
           {
             "name": "height",
             "type": "number",
             "required": false,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -5454,9 +5661,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.skeleton"
       },
-      "surfaces": {
-        "flutter": "CatchSkeleton"
-      },
       "level": "L4",
       "roleNoun": "Skeleton",
       "naming": {
@@ -5507,19 +5711,22 @@
             "name": "strokeWidth",
             "type": "number",
             "required": false,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "color",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "size",
             "type": "number",
             "required": false,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -5575,9 +5782,6 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.loading_indicator"
-      },
-      "surfaces": {
-        "flutter": "CatchLoadingIndicator"
       },
       "level": "L2",
       "roleNoun": "Indicator",
@@ -5769,9 +5973,6 @@
         "conceptId": "catch.async_value",
         "decisionRef": "pattern-family:async-state-boundary"
       },
-      "surfaces": {
-        "flutter": "CatchAsyncBoundary"
-      },
       "level": "L4a",
       "roleNoun": "AsyncBoundary",
       "naming": {
@@ -5788,12 +5989,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
-      "aliases": [
-        "LaunchScreen",
-        "StartupScreen",
-        "StartupLoadingScreen",
-        "AppLoadingScreen"
-      ],
+      "aliases": ["LaunchScreen", "StartupScreen", "StartupLoadingScreen", "AppLoadingScreen"],
       "summary": "Branded app-start composition with the Catch logo and a delayed bounded loading indicator.",
       "dart": {
         "symbol": "SplashScreen",
@@ -5895,9 +6091,6 @@
         "conceptRole": "concept",
         "decisionRef": "pattern-family:loading-concept-decompression",
         "conceptId": "catch.startup_loading_screen"
-      },
-      "surfaces": {
-        "flutter": "SplashScreen"
       }
     },
     {
@@ -5928,6 +6121,22 @@
           "CatchKickerText"
         ]
       },
+      "react": {
+        "symbol": "UiLabel",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Label",
+          "states": [
+            "span",
+            "div",
+            "surface-class"
+          ]
+        },
+        "notes": "Structural label element adopted by both React surfaces; each surface owns its visual class contract."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5950,13 +6159,15 @@
             "name": "label",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "color",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "variant",
@@ -5964,6 +6175,7 @@
             "required": false,
             "default": "md",
             "dartType": "CatchKickerTextVariant",
+            "tsType": "CatchKickerTextVariant",
             "values": [
               "md",
               "lg",
@@ -5975,7 +6187,8 @@
             "type": "number",
             "required": false,
             "default": 1,
-            "dartType": "int"
+            "dartType": "int",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -6073,12 +6286,6 @@
         "conceptId": "catch.typography",
         "decisionRef": "pattern-family:typography-role-boundaries"
       },
-      "surfaces": {
-        "flutter": "CatchKickerText",
-        "website": "UiLabel",
-        "admin": "AdminEyebrow",
-        "webui": "UiLabel"
-      },
       "level": "L2",
       "roleNoun": "Text",
       "naming": {
@@ -6130,19 +6337,22 @@
             "name": "value",
             "type": "number",
             "required": true,
-            "dartType": "num"
+            "dartType": "num",
+            "tsType": "number"
           },
           {
             "name": "maxValue",
             "type": "number",
             "required": true,
-            "dartType": "num"
+            "dartType": "num",
+            "tsType": "number"
           },
           {
             "name": "variant",
             "type": "enum",
             "required": false,
             "dartType": "CatchBarIndicatorVariant",
+            "tsType": "CatchBarIndicatorVariant",
             "values": [
               "rounded",
               "square"
@@ -6154,6 +6364,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "default": 0.06
           },
           {
@@ -6161,19 +6372,22 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "default": 0.02
           },
           {
             "name": "filledColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "emptyColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -6226,9 +6440,6 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.mini_bar_chart"
-      },
-      "surfaces": {
-        "flutter": "CatchBarIndicator"
       },
       "level": "L3",
       "roleNoun": "Indicator",
@@ -6285,6 +6496,7 @@
             "type": "list",
             "required": false,
             "dartType": "List<CatchMetricValue>",
+            "tsType": "CatchMetricValue[]",
             "notes": "Required by the default rail and grid constructors."
           },
           {
@@ -6292,49 +6504,57 @@
             "type": "object",
             "required": false,
             "default": "EdgeInsets.symmetric(vertical: CatchSpacing.s4, horizontal: CatchSpacing.s3)",
-            "dartType": "EdgeInsetsGeometry"
+            "dartType": "EdgeInsetsGeometry",
+            "tsType": "CSSProperties[\"padding\"]"
           },
           {
             "name": "backgroundColor",
             "type": "object",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "borderColor",
             "type": "object",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "dividerColor",
             "type": "object",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "valueColor",
             "type": "object",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "unitColor",
             "type": "object",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "labelColor",
             "type": "object",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "metrics",
             "type": "list",
             "required": false,
             "dartType": "List<CatchMetricData>",
+            "tsType": "CatchMetricData[]",
             "notes": "Required by dataQuality; ordered caller-formatted metric payloads."
           },
           {
@@ -6342,6 +6562,7 @@
             "type": "number",
             "required": false,
             "dartType": "int?",
+            "tsType": "number",
             "notes": "Optional visible prefix in the dataQuality recipe."
           }
         ],
@@ -6470,9 +6691,6 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.metric_strip"
-      },
-      "surfaces": {
-        "flutter": "CatchMetricSection"
       },
       "level": "L3",
       "roleNoun": "Section",
@@ -6906,9 +7124,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.sheet"
       },
-      "surfaces": {
-        "flutter": "CatchSheet"
-      },
       "level": "L3",
       "roleNoun": "Sheet",
       "naming": {
@@ -6965,13 +7180,15 @@
             "name": "child",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "onPressed",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "variant",
@@ -6979,6 +7196,7 @@
             "required": false,
             "default": "bordered",
             "dartType": "CatchIconActionVariant",
+            "tsType": "CatchIconActionVariant",
             "values": [
               "bordered",
               "float",
@@ -6990,7 +7208,8 @@
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "status",
@@ -6998,6 +7217,7 @@
             "required": false,
             "default": "enabled",
             "dartType": "CatchIconActionStatus",
+            "tsType": "CatchIconActionStatus",
             "values": [
               "enabled",
               "disabled"
@@ -7009,6 +7229,7 @@
             "required": false,
             "default": "CatchIconAction.defaultSize",
             "dartType": "double",
+            "tsType": "number",
             "notes": "Visible circle diameter, not target allocation. targetExtentFor(size) supplies the greater of this diameter and the platform minimum; ancestor chrome must reserve that extent."
           },
           {
@@ -7016,7 +7237,8 @@
             "type": "number",
             "required": false,
             "default": 0,
-            "dartType": "int"
+            "dartType": "int",
+            "tsType": "number"
           },
           {
             "name": "emphasis",
@@ -7024,6 +7246,7 @@
             "required": false,
             "default": "adaptive",
             "dartType": "CatchIconActionEmphasis",
+            "tsType": "CatchIconActionEmphasis",
             "values": [
               "adaptive",
               "filled",
@@ -7034,49 +7257,57 @@
             "name": "icon",
             "type": "object",
             "required": false,
-            "dartType": "IconData"
+            "dartType": "IconData",
+            "tsType": "ReactNode"
           },
           {
             "name": "tooltip",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "backgroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "foregroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "accent",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "borderColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "borderRadius",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "number"
           },
           {
             "name": "liveRegion",
             "type": "bool",
             "required": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -7208,10 +7439,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.icon_button"
       },
-      "surfaces": {
-        "flutter": "CatchIconAction",
-        "admin": "AdminIconButton"
-      },
       "level": "L3",
       "roleNoun": "IconAction",
       "naming": {
@@ -7269,37 +7496,43 @@
             "name": "items",
             "type": "generic-list",
             "required": true,
-            "dartType": "List<CatchMenuItem<T>>"
+            "dartType": "List<CatchMenuItem<T>>",
+            "tsType": "CatchMenuItem<T>[]"
           },
           {
             "name": "onSelected",
             "type": "callback",
             "required": false,
-            "dartType": "void Function(T value, CatchMenuItem<T> item)?"
+            "dartType": "void Function(T value, CatchMenuItem<T> item)?",
+            "tsType": "(value: T, item: CatchMenuItem<T>) => void"
           },
           {
             "name": "width",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "number"
           },
           {
             "name": "builder",
             "type": "callback",
             "required": false,
-            "dartType": "CatchMenuBuilder"
+            "dartType": "CatchMenuBuilder",
+            "tsType": "(controller: {isOpen: boolean; open: () => void; close: () => void}, child: ReactNode) => ReactNode"
           },
           {
             "name": "controller",
             "type": "object",
             "required": false,
-            "dartType": "MenuController?"
+            "dartType": "MenuController?",
+            "tsType": null
           },
           {
             "name": "alignmentOffset",
             "type": "object",
             "required": false,
-            "dartType": "Offset"
+            "dartType": "Offset",
+            "tsType": "{x: number; y: number}"
           }
         ],
         "states": [
@@ -7527,9 +7760,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.menu"
       },
-      "surfaces": {
-        "flutter": "CatchMenu"
-      },
       "level": "L3",
       "roleNoun": "Menu",
       "naming": {
@@ -7579,46 +7809,53 @@
             "name": "icon",
             "type": "object",
             "required": true,
-            "dartType": "IconData"
+            "dartType": "IconData",
+            "tsType": "ReactNode"
           },
           {
             "name": "iconColor",
             "type": "color",
             "required": true,
-            "dartType": "Color"
+            "dartType": "Color",
+            "tsType": "string"
           },
           {
             "name": "backgroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "borderColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "size",
             "type": "number",
             "required": false,
             "default": 42,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "iconSize",
             "type": "number",
             "required": false,
             "default": 21,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "radius",
             "type": "number",
             "required": false,
             "default": "CatchRadius.md",
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "variant",
@@ -7626,6 +7863,7 @@
             "required": false,
             "default": "tile",
             "dartType": "CatchIconTileVariant",
+            "tsType": "CatchIconTileVariant",
             "values": [
               "tile",
               "plain",
@@ -7697,9 +7935,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.icon_tile"
       },
-      "surfaces": {
-        "flutter": "CatchIconTile"
-      },
       "level": "L2",
       "roleNoun": "Tile",
       "naming": {
@@ -7757,7 +7992,8 @@
             "name": "child",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "size",
@@ -7765,6 +8001,7 @@
             "required": false,
             "default": "md",
             "dartType": "CatchControlSurfaceSize",
+            "tsType": "CatchControlSurfaceSize",
             "values": [
               "floating",
               "compact",
@@ -7777,6 +8014,7 @@
             "required": false,
             "default": "rounded",
             "dartType": "CatchControlSurfaceVariant",
+            "tsType": "CatchControlSurfaceVariant",
             "values": [
               "rounded",
               "pill"
@@ -7788,6 +8026,7 @@
             "required": false,
             "default": "surface",
             "dartType": "CatchControlSurfaceTone",
+            "tsType": "CatchControlSurfaceTone",
             "values": [
               "surface",
               "raised"
@@ -7798,20 +8037,23 @@
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "semanticButton",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "status",
@@ -7819,6 +8061,7 @@
             "required": false,
             "default": "resting",
             "dartType": "CatchControlSurfaceStatus",
+            "tsType": "CatchControlSurfaceStatus",
             "values": [
               "resting",
               "focused",
@@ -7905,9 +8148,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.control_shell"
       },
-      "surfaces": {
-        "flutter": "CatchControlSurface"
-      },
       "level": "L2",
       "roleNoun": "Surface",
       "naming": {
@@ -7961,75 +8201,87 @@
             "name": "value",
             "type": "number",
             "required": true,
-            "dartType": "num"
+            "dartType": "num",
+            "tsType": "number"
           },
           {
             "name": "valueLabelBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "String Function(num value)?"
+            "dartType": "String Function(num value)?",
+            "tsType": "(value: number) => string"
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<num>?"
+            "dartType": "ValueChanged<num>?",
+            "tsType": "(value: number) => void"
           },
           {
             "name": "min",
             "type": "number",
             "required": false,
-            "dartType": "num?"
+            "dartType": "num?",
+            "tsType": "number"
           },
           {
             "name": "max",
             "type": "number",
             "required": false,
-            "dartType": "num?"
+            "dartType": "num?",
+            "tsType": "number"
           },
           {
             "name": "step",
             "type": "number",
             "required": false,
             "default": 1,
-            "dartType": "num"
+            "dartType": "num",
+            "tsType": "number"
           },
           {
             "name": "enabled",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "decreaseSemanticLabel",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "increaseSemanticLabel",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "unit",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "onDecrease",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "onIncrease",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           }
         ],
         "states": [
@@ -8127,9 +8379,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.number_stepper"
       },
-      "surfaces": {
-        "flutter": "CatchStepper"
-      },
       "level": "L3",
       "roleNoun": "Stepper",
       "naming": {
@@ -8159,6 +8408,20 @@
           "CatchChoiceInput.form"
         ]
       },
+      "react": {
+        "symbol": "ToggleGroupControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Toggle",
+          "states": [
+            "labelled-group"
+          ]
+        },
+        "notes": "Shared labelled-group semantics for one-of-many choice groups; the admin segmented-control adapter and the website choice grids render it."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8182,6 +8445,7 @@
             "type": "object",
             "required": true,
             "dartType": "List<T>",
+            "tsType": "T[]",
             "notes": "Required by checked/described/form recipes; segmented receives typed options with labels and availability."
           },
           {
@@ -8189,6 +8453,7 @@
             "type": "object",
             "required": true,
             "dartType": "Set<T>",
+            "tsType": "ReadonlySet<T>",
             "notes": "Set<T> for checked/described/form recipes; segmented accepts one T? and exposes its selected option through the same set-valued getter. Null is unselected unless explicitly present as an option."
           },
           {
@@ -8196,6 +8461,7 @@
             "type": "callback",
             "required": true,
             "dartType": "ValueChanged<Set<T>>?",
+            "tsType": "((value: ReadonlySet<T>) => void) | null",
             "notes": "Null disables all choices. Segmented accepts ValueChanged<T>?; checked recipes accept ValueChanged<Set<T>>?. Both share the same cardinality algorithm; segmented has selected semantics, checked recipes have checked semantics."
           },
           {
@@ -8203,6 +8469,7 @@
             "type": "callback",
             "required": true,
             "dartType": "String Function(T value)",
+            "tsType": "(value: T) => string",
             "notes": "Required by checked/described/form recipes; segmented gets full visual/spoken labels from CatchOption."
           },
           {
@@ -8210,13 +8477,15 @@
             "type": "callback",
             "required": false,
             "dartType": "String Function(T value)?",
+            "tsType": "(value: T) => string",
             "notes": "Required by described. Supporting copy stays inside each full-width target."
           },
           {
             "name": "itemKeyBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "Key? Function(T value)?"
+            "dartType": "Key? Function(T value)?",
+            "tsType": null
           },
           {
             "name": "allowEmptySelection",
@@ -8224,6 +8493,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Explicit clearing policy for compact and form recipes; optional-label copy never changes it."
           },
           {
@@ -8232,6 +8502,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Requests the enclosing field close protocol after the single-choice callback completes."
           },
           {
@@ -8239,6 +8510,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchChipMode",
+            "tsType": "CatchChipMode",
             "values": [
               "single",
               "multiple"
@@ -8250,6 +8522,7 @@
             "type": "generic-list",
             "required": false,
             "dartType": "List<CatchOption<T>>",
+            "tsType": "CatchOption<T>[]",
             "notes": "Segmented recipe only."
           },
           {
@@ -8258,6 +8531,7 @@
             "required": false,
             "default": "label",
             "dartType": "CatchChoiceInputVariant",
+            "tsType": "CatchChoiceInputVariant",
             "values": [
               "label",
               "mono",
@@ -8271,6 +8545,7 @@
             "type": "color",
             "required": false,
             "dartType": "Color?",
+            "tsType": "string",
             "notes": "Segmented recipe only."
           },
           {
@@ -8278,6 +8553,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Segmented recipe only."
           },
           {
@@ -8286,6 +8562,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Forces horizontal scrolling for non-summary variants. False still permits content-driven overflow when scaled labels and targets do not fit; summary choices wrap. Segmented recipe only."
           }
         ],
@@ -8441,10 +8718,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.chip.field"
       },
-      "surfaces": {
-        "flutter": "CatchChoiceInput",
-        "admin": "SegmentedControl"
-      },
       "level": "L3",
       "roleNoun": "Input",
       "naming": {
@@ -8496,26 +8769,30 @@
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "subtitle",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "selected",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           }
         ],
         "states": [
@@ -8580,10 +8857,6 @@
         "parentConceptId": "catch.chip.field",
         "qualifier": "anatomy",
         "decisionRef": "contract-family:catch.chip.field"
-      },
-      "surfaces": {
-        "flutter": "CatchChoiceTile",
-        "website": "ChoiceCard"
       },
       "level": "L3",
       "roleNoun": "Tile",
@@ -8650,7 +8923,8 @@
             "name": "child",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "tone",
@@ -8658,6 +8932,7 @@
             "required": false,
             "default": "surface",
             "dartType": "CatchSurfaceTone",
+            "tsType": "CatchSurfaceTone",
             "values": [
               "surface",
               "raised",
@@ -8671,6 +8946,7 @@
             "required": false,
             "default": "flat",
             "dartType": "CatchSurfaceEmphasis",
+            "tsType": "CatchSurfaceEmphasis",
             "values": [
               "flat",
               "subtle",
@@ -8683,32 +8959,37 @@
             "name": "padding",
             "type": "object",
             "required": false,
-            "dartType": "EdgeInsetsGeometry?"
+            "dartType": "EdgeInsetsGeometry?",
+            "tsType": "CSSProperties[\"padding\"]"
           },
           {
             "name": "radius",
             "type": "number",
             "required": false,
             "default": "CatchRadius.lg",
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "onFocusChange",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<bool>?"
+            "dartType": "ValueChanged<bool>?",
+            "tsType": "(value: boolean) => void"
           },
           {
             "name": "borderRole",
             "type": "enum",
             "required": false,
             "dartType": "CatchBorderRole?",
+            "tsType": "CatchBorderRole",
             "values": [
               "separator",
               "boundary",
@@ -8723,7 +9004,8 @@
             "name": "borderSpec",
             "type": "object",
             "required": false,
-            "dartType": "CatchBorderSpec?"
+            "dartType": "CatchBorderSpec?",
+            "tsType": "CatchBorderSpec"
           }
         ],
         "states": [
@@ -8809,9 +9091,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.surface",
         "decisionRef": "pattern-family:inline-feedback-canonical-banner"
-      },
-      "surfaces": {
-        "flutter": "CatchSurface"
       },
       "level": "L2",
       "roleNoun": "Surface",
@@ -9250,9 +9529,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.top_bar"
       },
-      "surfaces": {
-        "flutter": "CatchTopBar"
-      },
       "level": "L3",
       "roleNoun": "TopBar",
       "naming": {
@@ -9373,9 +9649,6 @@
         "qualifier": "recipe",
         "decisionRef": "pattern-family:badge-status"
       },
-      "surfaces": {
-        "flutter": "CatchPrivacyBadge"
-      },
       "level": "L3",
       "roleNoun": "Badge",
       "naming": {
@@ -9396,12 +9669,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": [
-        "StepsList",
-        "NumberedSteps",
-        "TimelineSteps",
-        "HowItWorksList"
-      ],
+      "aliases": ["StepsList", "NumberedSteps", "TimelineSteps", "HowItWorksList"],
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
       "dart": {
         "symbol": "CatchStepList",
@@ -9432,13 +9700,15 @@
             "name": "steps",
             "type": "list",
             "required": true,
-            "dartType": "List<CatchStepRowData>"
+            "dartType": "List<CatchStepRowData>",
+            "tsType": "CatchStepRowData[]"
           },
           {
             "name": "accent",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -9501,9 +9771,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.journey_steps"
       },
-      "surfaces": {
-        "flutter": "CatchStepList"
-      },
       "level": "L3",
       "roleNoun": "List",
       "naming": {
@@ -9541,12 +9808,7 @@
       "status": "active",
       "kind": "pattern",
       "tier": "T3",
-      "aliases": [
-        "PageContent",
-        "ScreenBody",
-        "PagePadding",
-        "ScreenContent"
-      ],
+      "aliases": ["PageContent", "ScreenBody", "PagePadding", "ScreenContent"],
       "summary": "Semantic page insets and field paint ownership across inset, form, screen and sliver recipes; the family retains its explicit root, route and scroll owners.",
       "dart": {
         "symbol": "CatchPageBody",
@@ -10453,9 +10715,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.screen_body"
       },
-      "surfaces": {
-        "flutter": "CatchPageBody"
-      },
       "level": "L4",
       "roleNoun": "PageBody",
       "naming": {
@@ -10514,6 +10773,7 @@
             "type": "list",
             "required": true,
             "dartType": "List<Widget>",
+            "tsType": "ReactNode",
             "notes": "Required by plain, inset and sliver constructors; ordered complete sections."
           },
           {
@@ -10521,6 +10781,7 @@
             "type": "list",
             "required": true,
             "dartType": "List<CatchSectionListItem>",
+            "tsType": "CatchSectionListItem[]",
             "notes": "Required by responsive and page constructors; each item carries its complete section and lane."
           },
           {
@@ -10528,6 +10789,7 @@
             "type": "bool",
             "required": true,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Required by every constructor. False requires an emptyBuilder; true explicitly permits omission."
           },
           {
@@ -10535,6 +10797,7 @@
             "type": "callback",
             "required": false,
             "dartType": "WidgetBuilder?",
+            "tsType": "() => ReactNode",
             "notes": "Renders the caller-owned empty state when there are no sections."
           },
           {
@@ -10542,6 +10805,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "notes": "Plain defaults to CatchGaps.section; inset and sliver default to zero so sections own their delimiters."
           },
           {
@@ -10549,6 +10813,7 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsetsGeometry",
+            "tsType": "CSSProperties[\"padding\"]",
             "default": "CatchInsets.pageBody",
             "notes": "Inset recipe only; use EdgeInsets.zero when the parent owns the gutter."
           },
@@ -10557,6 +10822,7 @@
             "type": "enum",
             "required": false,
             "dartType": "CatchSectionListMode",
+            "tsType": "CatchSectionListMode",
             "default": "centered",
             "notes": "Responsive and page only; adaptiveTwoColumn moves complete sections at the local-width threshold.",
             "values": [
@@ -10569,6 +10835,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchResponsiveFieldInteractionPolicy",
+            "tsType": "CatchResponsiveFieldInteractionPolicy",
             "notes": "Ordinary rows fill their local page or pane. Contained geometry is explicit."
           },
           {
@@ -10576,6 +10843,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "default": "CatchGaps.section",
             "notes": "Responsive and page section rhythm."
           },
@@ -10584,6 +10852,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "default": "CatchGaps.section",
             "notes": "Responsive and page split-lane rhythm."
           },
@@ -10592,6 +10861,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "default": "CatchSpacing.screenPb",
             "notes": "Page only; the shared terminal-padding owner adds shell clearance."
           },
@@ -10600,6 +10870,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget",
+            "tsType": "ReactNode",
             "notes": "Primary co-scrolling pane for panes."
           },
           {
@@ -10607,6 +10878,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
+            "tsType": "ReactNode",
             "notes": "Optional companion pane for panes."
           },
           {
@@ -10614,6 +10886,7 @@
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "notes": "Local secondary pane extent; only the pane owner publishes row geometry."
           }
         ],
@@ -10729,9 +11002,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.section_stack"
       },
-      "surfaces": {
-        "flutter": "CatchSectionList"
-      },
       "level": "L4",
       "roleNoun": "SectionList",
       "naming": {
@@ -10748,11 +11018,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
-      "aliases": [
-        "RosterRow",
-        "AttendeeRow",
-        "GuestRow"
-      ],
+      "aliases": ["RosterRow", "AttendeeRow", "GuestRow"],
       "summary": "Host-roster participant row with identity, signal badge, and typed action cell.",
       "dart": {
         "symbol": "ParticipantRow",
@@ -10904,9 +11170,6 @@
         "conceptRole": "composition",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "surfaces": {
-        "flutter": "ParticipantRow"
-      },
       "level": "L5",
       "roleNoun": "Row"
     },
@@ -10920,12 +11183,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
-      "aliases": [
-        "RosterTable",
-        "AttendeeTable",
-        "GuestTable",
-        "RosterBoard"
-      ],
+      "aliases": ["RosterTable", "AttendeeTable", "GuestTable", "RosterBoard"],
       "summary": "Host participant table: binds roster rows into CatchTable and keeps a compact field list below the table breakpoint.",
       "dart": {
         "symbol": "ParticipantTable",
@@ -11056,9 +11314,6 @@
         "conceptRole": "composition",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "surfaces": {
-        "flutter": "ParticipantTable"
-      },
       "level": "L5",
       "roleNoun": "Table"
     },
@@ -11107,7 +11362,8 @@
             "name": "url",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "fit",
@@ -11115,6 +11371,7 @@
             "required": false,
             "default": "cover",
             "dartType": "BoxFit",
+            "tsType": "\"cover\" | \"contain\" | \"fill\" | \"fitWidth\" | \"fitHeight\"",
             "values": [
               "cover",
               "contain",
@@ -11127,31 +11384,36 @@
             "name": "width",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "number"
           },
           {
             "name": "height",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "number"
           },
           {
             "name": "cacheWidth",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "cacheHeight",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "semanticLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -11240,9 +11502,6 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.network_image"
-      },
-      "surfaces": {
-        "flutter": "CatchNetworkImage"
       },
       "level": "L2",
       "roleNoun": "Image",
@@ -11390,9 +11649,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.distance_ring"
       },
-      "surfaces": {
-        "flutter": "CatchDistanceOverlay"
-      },
       "level": "L3",
       "roleNoun": "Overlay",
       "naming": {
@@ -11447,64 +11703,74 @@
             "required": false,
             "default": 6,
             "dartType": "int?",
+            "tsType": "number",
             "notes": "Exact contract length takes precedence; otherwise length defaults to six."
           },
           {
             "name": "active",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "caret",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "height",
             "type": "number",
             "required": false,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "gap",
             "type": "number",
             "required": false,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "controller",
             "type": "object",
             "required": true,
             "dartType": "TextEditingController",
+            "tsType": null,
             "notes": "Owns the editable value. Visual cells listen directly, including programmatic edits."
           },
           {
             "name": "semanticsLabel",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": true,
-            "dartType": "ValueChanged<String>"
+            "dartType": "ValueChanged<String>",
+            "tsType": "(value: string) => void"
           },
           {
             "name": "onSubmitted",
             "type": "callback",
             "required": true,
-            "dartType": "ValueChanged<String>"
+            "dartType": "ValueChanged<String>",
+            "tsType": "(value: string) => void"
           },
           {
             "name": "autofocus",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "status",
@@ -11512,6 +11778,7 @@
             "required": false,
             "default": "ready",
             "dartType": "CatchCodeInputStatus",
+            "tsType": "CatchCodeInputStatus",
             "values": [
               "ready",
               "error"
@@ -11521,19 +11788,22 @@
             "name": "contract",
             "type": "object",
             "required": false,
-            "dartType": "CatchContractFieldConstraints?"
+            "dartType": "CatchContractFieldConstraints?",
+            "tsType": "CatchContractFieldConstraints"
           },
           {
             "name": "contractExemption",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "inputKey",
             "type": "object",
             "required": false,
-            "dartType": "Key?"
+            "dartType": "Key?",
+            "tsType": null
           }
         ],
         "states": [
@@ -11681,9 +11951,6 @@
         "conceptId": "catch.code_input",
         "decisionRef": "pattern-family:code-entry-canonical-input"
       },
-      "surfaces": {
-        "flutter": "CatchCodeInput"
-      },
       "level": "L3",
       "roleNoun": "Input",
       "naming": {
@@ -11737,25 +12004,29 @@
             "type": "object",
             "required": true,
             "dartType": "T",
+            "tsType": "T",
             "notes": "Required for the value constructor; controlled derives the committed value from controller.index."
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<T>?"
+            "dartType": "ValueChanged<T>?",
+            "tsType": "(value: T) => void"
           },
           {
             "name": "options",
             "type": "generic-list",
             "required": true,
-            "dartType": "List<CatchOption<T>>"
+            "dartType": "List<CatchOption<T>>",
+            "tsType": "CatchOption<T>[]"
           },
           {
             "name": "groupKey",
             "type": "object",
             "required": false,
-            "dartType": "Key?"
+            "dartType": "Key?",
+            "tsType": null
           },
           {
             "name": "variant",
@@ -11763,6 +12034,7 @@
             "required": false,
             "default": "label",
             "dartType": "CatchChoiceInputVariant",
+            "tsType": "CatchChoiceInputVariant",
             "values": [
               "label",
               "mono",
@@ -11775,6 +12047,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Forwards the canonical option-group scrolling policy; overflow can still scroll when false."
           },
           {
@@ -11782,6 +12055,7 @@
             "type": "object",
             "required": false,
             "dartType": "TabController?",
+            "tsType": null,
             "notes": "Required by controlled. Caller-owned and never disposed by the component; options length must match and be nonzero."
           }
         ],
@@ -11854,9 +12128,6 @@
         "qualifier": "adapter",
         "decisionRef": "concept-boundary:option-group-tab-rail"
       },
-      "surfaces": {
-        "flutter": "CatchPageTabBar"
-      },
       "level": "L3",
       "roleNoun": "TabBar",
       "naming": {
@@ -11912,7 +12183,8 @@
             "type": "string",
             "required": false,
             "default": "",
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "placeholder",
@@ -11920,27 +12192,31 @@
             "required": false,
             "default": null,
             "dartType": "String?",
+            "tsType": "string",
             "notes": "Null resolves the caller-provided localized search placeholder."
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": false,
-            "dartType": "ValueChanged<String>?"
+            "dartType": "ValueChanged<String>?",
+            "tsType": "(value: string) => void"
           },
           {
             "name": "autofocus",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "enabled",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "status",
@@ -11948,6 +12224,7 @@
             "required": false,
             "default": "expanded",
             "dartType": "CatchSearchFieldStatus",
+            "tsType": "CatchSearchFieldStatus",
             "notes": "Only .expanding accepts the requested visibility state; explicit progress retains precedence during transitions. Fixed field and .expanded modes remain visible and cannot expose an empty close action.",
             "values": [
               "collapsed",
@@ -11958,13 +12235,15 @@
             "name": "onOpenSearch",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "onCloseSearch",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "collapsedExtent",
@@ -11972,6 +12251,7 @@
             "required": false,
             "default": "CatchIconAction.navSize",
             "dartType": "double",
+            "tsType": "number",
             "notes": "Expanding-mode visual request. Collapsed allocation is clamped to the platform target; heightFor(context) also accounts for the scaled text line box."
           }
         ],
@@ -12044,10 +12324,6 @@
         "conceptId": "catch.search_field",
         "decisionRef": "pattern-family:search-field-query-owner"
       },
-      "surfaces": {
-        "flutter": "CatchSearchField",
-        "admin": "SearchField"
-      },
       "level": "L3",
       "roleNoun": "Field",
       "naming": {
@@ -12107,19 +12383,22 @@
             "name": "values",
             "type": "object",
             "required": true,
-            "dartType": "RangeValues"
+            "dartType": "RangeValues",
+            "tsType": "{start: number; end: number}"
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": true,
-            "dartType": "ValueChanged<RangeValues>?"
+            "dartType": "ValueChanged<RangeValues>?",
+            "tsType": "((value: {start: number; end: number}) => void) | null"
           },
           {
             "name": "min",
             "type": "number",
             "required": false,
             "dartType": "double?",
+            "tsType": "number",
             "notes": "Uses the stricter lower bound of the endpoint contract and explicit minimum; falls back to 0 when neither exists."
           },
           {
@@ -12127,56 +12406,65 @@
             "type": "number",
             "required": false,
             "dartType": "double?",
+            "tsType": "number",
             "notes": "Uses the stricter upper bound of the endpoint contract and explicit maximum; falls back to 100 when neither exists."
           },
           {
             "name": "divisions",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "minLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "maxLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "semanticValueBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "SemanticFormatterCallback?"
+            "dartType": "SemanticFormatterCallback?",
+            "tsType": "(value: number) => string"
           },
           {
             "name": "onChangeEnd",
             "type": "callback",
             "required": false,
             "dartType": "ValueChanged<RangeValues>?",
+            "tsType": "(value: {start: number; end: number}) => void",
             "notes": "Commits the final interval separately from per-drag draft updates."
           },
           {
             "name": "minimumContract",
             "type": "object",
             "required": false,
-            "dartType": "CatchContractFieldConstraints?"
+            "dartType": "CatchContractFieldConstraints?",
+            "tsType": "CatchContractFieldConstraints"
           },
           {
             "name": "maximumContract",
             "type": "object",
             "required": false,
-            "dartType": "CatchContractFieldConstraints?"
+            "dartType": "CatchContractFieldConstraints?",
+            "tsType": "CatchContractFieldConstraints"
           },
           {
             "name": "contractExemption",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -12234,9 +12522,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.range_slider"
       },
-      "surfaces": {
-        "flutter": "CatchRangeInput"
-      },
       "level": "L3",
       "roleNoun": "Input",
       "naming": {
@@ -12277,6 +12562,22 @@
           "CatchToggleInput.field"
         ]
       },
+      "react": {
+        "symbol": "CheckboxControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "Checkbox",
+          "states": [
+            "unchecked",
+            "checked",
+            "disabled"
+          ]
+        },
+        "notes": "Native checkbox for the one-boolean input responsibility, adopted through the website and admin CheckboxField adapters. Flutter renders the same responsibility as a switch; checkbox or switch rendering on web is decided when Phase 7e builds the styled component."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -12299,19 +12600,22 @@
             "name": "value",
             "type": "bool",
             "required": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": true,
-            "dartType": "ValueChanged<bool>?"
+            "dartType": "ValueChanged<bool>?",
+            "tsType": "((value: boolean) => void) | null"
           },
           {
             "name": "semanticLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -12377,9 +12681,6 @@
         "conceptId": "catch.toggle",
         "decisionRef": "pattern-family:toggle-canonical-input"
       },
-      "surfaces": {
-        "flutter": "CatchToggleInput"
-      },
       "level": "L3",
       "roleNoun": "Input",
       "naming": {
@@ -12432,50 +12733,58 @@
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "subtitle",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "kicker",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "step",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "total",
             "type": "number",
             "required": false,
-            "dartType": "int?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "onBack",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "showBack",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "leadingType",
             "type": "enum",
             "required": false,
             "dartType": "CatchTopBarNavigationMode?",
+            "tsType": "CatchTopBarNavigationMode",
             "values": [
               "auto",
               "back",
@@ -12487,26 +12796,30 @@
             "name": "onStepOverview",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "stepOverviewSemanticsLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "trailing",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "gutter",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -12584,9 +12897,6 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.step_header"
-      },
-      "surfaces": {
-        "flutter": "CatchStepHeader"
       },
       "level": "L3",
       "roleNoun": "Header",
@@ -12803,9 +13113,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.tab_bar"
       },
-      "surfaces": {
-        "flutter": "CatchTabBar"
-      },
       "level": "L3",
       "roleNoun": "TabBar",
       "naming": {
@@ -12855,13 +13162,15 @@
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "child",
             "type": "widget",
             "required": false,
             "dartType": "Widget",
+            "tsType": "ReactNode",
             "notes": "Required non-null body for the default constructor; confirmation receives message instead."
           },
           {
@@ -12869,6 +13178,7 @@
             "type": "list",
             "required": true,
             "dartType": "List<Widget>",
+            "tsType": "ReactNode",
             "notes": "Default constructor receives List<Widget>; confirmation receives List<CatchDialogAction<T>> and owns typed Navigator results."
           },
           {
@@ -12876,6 +13186,7 @@
             "type": "string",
             "required": false,
             "dartType": "String",
+            "tsType": "string",
             "notes": "Required by confirmation; an empty message omits supporting copy and its gap."
           }
         ],
@@ -12969,9 +13280,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.confirm_dialog"
       },
-      "surfaces": {
-        "flutter": "CatchDialog"
-      },
       "level": "L3",
       "roleNoun": "Dialog",
       "naming": {
@@ -13020,40 +13328,46 @@
             "name": "selectedIndex",
             "type": "number",
             "required": true,
-            "dartType": "int"
+            "dartType": "int",
+            "tsType": "number"
           },
           {
             "name": "itemCount",
             "type": "number",
             "required": true,
-            "dartType": "int"
+            "dartType": "int",
+            "tsType": "number"
           },
           {
             "name": "semanticLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "selectedWidth",
             "type": "number",
             "required": false,
             "default": "CatchLayout.pageDotSelectedWidth",
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "dotWidth",
             "type": "number",
             "required": false,
             "default": "CatchLayout.pageDotExtent",
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "dotHeight",
             "type": "number",
             "required": false,
             "default": "CatchLayout.pageDotExtent",
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -13110,9 +13424,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.page_dots"
       },
-      "surfaces": {
-        "flutter": "CatchPageIndicator"
-      },
       "level": "L2",
       "roleNoun": "Indicator",
       "naming": {
@@ -13133,11 +13444,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
-      "aliases": [
-        "ClubActionBar",
-        "ClubBottomBar",
-        "MembershipBar"
-      ],
+      "aliases": ["ClubActionBar", "ClubBottomBar", "MembershipBar"],
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
       "dart": {
         "symbol": "ClubDetailDock",
@@ -13303,9 +13610,6 @@
         "conceptRole": "composition",
         "decisionRef": "contract-note:product-composition-not-generic-bottom-bar"
       },
-      "surfaces": {
-        "flutter": "ClubDetailDock"
-      },
       "level": "L5",
       "roleNoun": "Dock"
     },
@@ -13319,12 +13623,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
-      "aliases": [
-        "CoverStory",
-        "FeaturedEventHero",
-        "ExploreHero",
-        "FeaturedEventBanner"
-      ],
+      "aliases": ["CoverStory", "FeaturedEventHero", "ExploreHero", "FeaturedEventBanner"],
       "summary": "Explore cover/masthead composition with dark editorial ground, activity glow, optional chrome, CTA, and data lines.",
       "dart": {
         "symbol": "FeaturedEventPoster",
@@ -13500,9 +13799,6 @@
         "conceptRole": "composition",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "surfaces": {
-        "flutter": "FeaturedEventPoster"
-      },
       "level": "L5",
       "roleNoun": "Poster"
     },
@@ -13549,39 +13845,45 @@
             "name": "size",
             "type": "number",
             "required": true,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "name",
             "type": "string",
             "required": false,
             "default": "",
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "imageUrl",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "initials",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "borderWidth",
             "type": "number",
             "required": false,
             "default": 0,
-            "dartType": "double"
+            "dartType": "double",
+            "tsType": "number"
           },
           {
             "name": "borderColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "status",
@@ -13589,6 +13891,7 @@
             "required": false,
             "default": "none",
             "dartType": "CatchAvatarStatus",
+            "tsType": "CatchAvatarStatus",
             "values": [
               "none",
               "online"
@@ -13599,7 +13902,8 @@
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "variant",
@@ -13607,6 +13911,7 @@
             "required": false,
             "default": "circle",
             "dartType": "CatchAvatarVariant",
+            "tsType": "CatchAvatarVariant",
             "values": [
               "circle",
               "square"
@@ -13617,6 +13922,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchAvatarColors?",
+            "tsType": "CatchAvatarColors",
             "notes": "Caller-resolved accent/deep/soft colors; no app activity model is read by the renderer."
           },
           {
@@ -13624,13 +13930,15 @@
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "countLabelBuilder",
             "type": "callback",
             "required": false,
             "dartType": "String Function(int)?",
+            "tsType": "(index: number) => string",
             "notes": "Required by CatchAvatar.count and CatchAvatarRow; formats the actual overflow count using caller-owned copy."
           },
           {
@@ -13638,6 +13946,7 @@
             "type": "number",
             "required": false,
             "dartType": "int",
+            "tsType": "number",
             "notes": "Only available through CatchAvatar.count."
           }
         ],
@@ -13818,9 +14127,6 @@
         "conceptId": "catch.person_avatar",
         "decisionRef": "pattern-family:canonical-avatar-recipes"
       },
-      "surfaces": {
-        "flutter": "CatchAvatar"
-      },
       "level": "L3",
       "roleNoun": "Avatar",
       "naming": {
@@ -13837,12 +14143,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": [
-        "EventTicket",
-        "EventTile",
-        "EventListItem",
-        "EventPreviewCard"
-      ],
+      "aliases": ["EventTicket", "EventTile", "EventListItem", "EventPreviewCard"],
       "summary": "Event summary card: binds event media and metadata into the CatchTicket card recipe, which owns the ticket geometry.",
       "dart": {
         "symbol": "EventCard",
@@ -14182,9 +14483,6 @@
         "conceptId": "catch.event_card",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "surfaces": {
-        "flutter": "EventCard"
-      },
       "level": "L5",
       "roleNoun": "Card"
     },
@@ -14229,14 +14527,16 @@
             "name": "child",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "enabled",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -14299,9 +14599,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.graded_image"
       },
-      "surfaces": {
-        "flutter": "CatchGradedImage"
-      },
       "level": "L2",
       "roleNoun": "Image",
       "naming": {
@@ -14353,20 +14650,23 @@
             "name": "imageUrl",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "semanticLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "showScrim",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -14459,9 +14759,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.detail_media"
       },
-      "surfaces": {
-        "flutter": "CatchHeroImage"
-      },
       "level": "L3",
       "roleNoun": "Image",
       "naming": {
@@ -14483,11 +14780,7 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T3",
-      "aliases": [
-        "MapPin",
-        "EventMapPin",
-        "LocationPin"
-      ],
+      "aliases": ["MapPin", "EventMapPin", "LocationPin"],
       "summary": "Canonical activity-colored map pin for resting and selected map marks with optional uppercased selected-state flag text.",
       "dart": {
         "symbol": "ActivityMapPin",
@@ -14619,9 +14912,6 @@
         "conceptRole": "composition",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "surfaces": {
-        "flutter": "ActivityMapPin"
-      },
       "level": "L5",
       "roleNoun": "Pin"
     },
@@ -14639,11 +14929,7 @@
       "status": "active",
       "kind": "screen-contract",
       "tier": "T2",
-      "aliases": [
-        "EventDetailScreenBody",
-        "EventDetailContent",
-        "EventDetailsBody"
-      ],
+      "aliases": ["EventDetailScreenBody", "EventDetailContent", "EventDetailsBody"],
       "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, consent-safe Cross Paths control, companion prompt, and booking dock under one Catch-owned handoff boundary.",
       "dart": {
         "symbol": "EventDetailBody",
@@ -15081,9 +15367,6 @@
         "conceptRole": "screen",
         "decisionRef": "contract-kind:screen-contract"
       },
-      "surfaces": {
-        "flutter": "EventDetailBody"
-      },
       "level": "L6",
       "roleNoun": "Body"
     },
@@ -15097,12 +15380,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T4",
-      "aliases": [
-        "NotificationTile",
-        "NotificationItem",
-        "ActivityRow",
-        "NotificationListItem"
-      ],
+      "aliases": ["NotificationTile", "NotificationItem", "ActivityRow", "NotificationListItem"],
       "summary": "Activity notification list row with type glyph, read/unread emphasis, timestamp, optional body, divider, and tap semantics.",
       "dart": {
         "symbol": "NotificationRow",
@@ -15248,9 +15526,6 @@
         "conceptRole": "composition",
         "decisionRef": "concept-boundary:notification-row-field-composition"
       },
-      "surfaces": {
-        "flutter": "NotificationRow"
-      },
       "level": "L5",
       "roleNoun": "Row"
     },
@@ -15268,12 +15543,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
-      "aliases": [
-        "ChatInputBar",
-        "MessageInput",
-        "MessageComposer",
-        "ChatComposer"
-      ],
+      "aliases": ["ChatInputBar", "MessageInput", "MessageComposer", "ChatComposer"],
       "summary": "Canonical floating chat composer with a multiline field and matching 44px image/send actions; derives focus and sendability locally and keeps unrelated controls usable during pending operations.",
       "design": {
         "figma": {
@@ -15430,9 +15700,6 @@
           "ChatInput"
         ]
       },
-      "surfaces": {
-        "flutter": "ChatInput"
-      },
       "level": "L5",
       "roleNoun": "Input"
     },
@@ -15446,12 +15713,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T3",
-      "aliases": [
-        "BottomActionBar",
-        "StickyFooter",
-        "BottomBar",
-        "ActionDock"
-      ],
+      "aliases": ["BottomActionBar", "StickyFooter", "BottomBar", "ActionDock"],
       "summary": "Persistent docked controls with utility, platform-adaptive primary-action and embedded primary-content recipes.",
       "design": {
         "figma": {
@@ -15717,9 +15979,6 @@
           "CatchDock.primaryContent"
         ]
       },
-      "surfaces": {
-        "flutter": "CatchDock"
-      },
       "level": "L3",
       "roleNoun": "Dock",
       "naming": {
@@ -15736,12 +15995,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": [
-        "LocationPreview",
-        "StaticMap",
-        "MiniMap",
-        "MapThumbnail"
-      ],
+      "aliases": ["LocationPreview", "StaticMap", "MiniMap", "MapThumbnail"],
       "summary": "Read-only, attribution-safe Google Maps viewport for compact location previews with one exact marker and a deterministic no-network fallback.",
       "design": {
         "figma": {
@@ -15863,9 +16117,6 @@
           "MapPreview"
         ]
       },
-      "surfaces": {
-        "flutter": "MapPreview"
-      },
       "level": "L5",
       "roleNoun": "Preview"
     },
@@ -15891,9 +16142,6 @@
           "CatchMetaRow.group"
         ]
       },
-      "surfaces": {
-        "flutter": "CatchMetaRow"
-      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -15916,30 +16164,35 @@
             "name": "icon",
             "type": "object",
             "required": true,
-            "dartType": "IconData"
+            "dartType": "IconData",
+            "tsType": "ReactNode"
           },
           {
             "name": "label",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "color",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "labelColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "entry",
             "type": "object",
             "dartType": "CatchMetaEntry",
+            "tsType": "CatchMetaEntry",
             "required": false,
             "notes": "Required by the entry constructor."
           },
@@ -15947,6 +16200,7 @@
             "name": "entries",
             "type": "list",
             "dartType": "List<CatchMetaEntry>",
+            "tsType": "CatchMetaEntry[]",
             "required": false,
             "notes": "Required by flow and group constructors."
           },
@@ -15954,6 +16208,7 @@
             "name": "trailing",
             "type": "object",
             "dartType": "CatchMetaEntry?",
+            "tsType": "CatchMetaEntry",
             "required": false,
             "notes": "Optional strong trailing fact in the group recipe."
           },
@@ -15961,6 +16216,7 @@
             "name": "iconSize",
             "type": "number",
             "dartType": "double",
+            "tsType": "number",
             "required": false,
             "default": "CatchIcon.sm",
             "notes": "Compact entry, flow and group icon extent."
@@ -15969,6 +16225,7 @@
             "name": "maxLines",
             "type": "number",
             "dartType": "int",
+            "tsType": "number",
             "required": false,
             "default": 1
           },
@@ -15976,6 +16233,7 @@
             "name": "isStrong",
             "type": "bool",
             "dartType": "bool",
+            "tsType": "boolean",
             "required": false,
             "default": false,
             "notes": "Entry emphasis; group trailing entries use this recipe."
@@ -16089,38 +16347,44 @@
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "leading",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "trailing",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "selected",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "semanticLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -16188,9 +16452,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.index_row"
       },
-      "surfaces": {
-        "flutter": "CatchIndexRow"
-      },
       "level": "L3",
       "roleNoun": "Row",
       "naming": {
@@ -16211,13 +16472,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": [
-        "EditorialCard",
-        "MediaCard",
-        "FeatureCard",
-        "PosterCard",
-        "OrganizerPoster"
-      ],
+      "aliases": ["EditorialCard", "MediaCard", "FeatureCard", "PosterCard", "OrganizerPoster"],
       "summary": "Canonical organizer material with editorial, photo, split, and minimal layouts plus paper, ink, and signal treatments.",
       "dart": {
         "symbol": "CatchPoster",
@@ -16248,49 +16503,57 @@
             "name": "media",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "kicker",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "tagline",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "meta",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "footer",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "mediaOverlay",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "variant",
@@ -16298,6 +16561,7 @@
             "required": false,
             "default": "editorial",
             "dartType": "CatchPosterVariant",
+            "tsType": "CatchPosterVariant",
             "values": [
               "editorial",
               "photo",
@@ -16311,6 +16575,7 @@
             "required": false,
             "default": "paper",
             "dartType": "CatchPosterTone",
+            "tsType": "CatchPosterTone",
             "values": [
               "paper",
               "ink",
@@ -16322,7 +16587,8 @@
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -16501,9 +16767,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.organizer_poster"
       },
-      "surfaces": {
-        "flutter": "CatchPoster"
-      },
       "level": "L3",
       "roleNoun": "Poster",
       "naming": {
@@ -16551,50 +16814,58 @@
             "name": "media",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "name",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
             "name": "kicker",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "meta",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "mediaOverlay",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "accentColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void"
           },
           {
             "name": "showArrow",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -16664,9 +16935,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.person_polaroid"
       },
-      "surfaces": {
-        "flutter": "CatchPolaroid"
-      },
       "level": "L3",
       "roleNoun": "Polaroid",
       "naming": {
@@ -16683,11 +16951,7 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
-      "aliases": [
-        "ClubCoverImage",
-        "ClubImage",
-        "ClubPhoto"
-      ],
+      "aliases": ["ClubCoverImage", "ClubImage", "ClubPhoto"],
       "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
       "dart": {
         "symbol": "ClubCover",
@@ -16786,9 +17050,6 @@
         "conceptRole": "composition",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "surfaces": {
-        "flutter": "ClubCover"
-      },
       "level": "L5",
       "roleNoun": "Cover"
     },
@@ -16812,9 +17073,6 @@
           "CatchRevealViewport.stationary",
           "CatchRevealViewport.flight"
         ]
-      },
-      "surfaces": {
-        "flutter": "CatchRevealViewport"
       },
       "design": {
         "figma": {
@@ -17066,9 +17324,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.timestamped_message"
       },
-      "surfaces": {
-        "flutter": "CatchTimestampedMessageText"
-      },
       "level": "L3",
       "roleNoun": "Text",
       "naming": {
@@ -17120,7 +17375,8 @@
             "name": "data",
             "type": "object",
             "required": true,
-            "dartType": "CatchMetricData"
+            "dartType": "CatchMetricData",
+            "tsType": "CatchMetricData"
           }
         ],
         "states": [
@@ -17188,9 +17444,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.analytics_metric"
       },
-      "surfaces": {
-        "flutter": "CatchDataQualityMetricTile"
-      },
       "level": "L3",
       "roleNoun": "Tile",
       "naming": {
@@ -17211,12 +17464,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": [
-        "TicketCard",
-        "TicketShape",
-        "PerforatedCard",
-        "TicketFrame"
-      ],
+      "aliases": ["TicketCard", "TicketShape", "PerforatedCard", "TicketFrame"],
       "summary": "Ticket material: a hero recipe for a bounded, collapsing surface and a width-driven card recipe that owns the notched outline, elevation, tap surface, activity-card media ratio, perforation and body inset.",
       "dart": {
         "symbol": "CatchTicket",
@@ -17248,25 +17496,29 @@
             "name": "mediaBuilder",
             "type": "callback",
             "required": true,
-            "dartType": "CatchTicketSectionBuilder"
+            "dartType": "CatchTicketSectionBuilder",
+            "tsType": "(compact: boolean) => ReactNode"
           },
           {
             "name": "bodyBuilder",
             "type": "callback",
             "required": true,
-            "dartType": "CatchTicketSectionBuilder"
+            "dartType": "CatchTicketSectionBuilder",
+            "tsType": "(compact: boolean) => ReactNode"
           },
           {
             "name": "lineColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?",
+            "tsType": "() => void",
             "notes": "Card recipe only."
           }
         ],
@@ -17393,9 +17645,6 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.ticket"
-      },
-      "surfaces": {
-        "flutter": "CatchTicket"
       },
       "level": "L3",
       "roleNoun": "Ticket",
@@ -17612,9 +17861,6 @@
         "conceptRole": "concept",
         "conceptId": "catch.viewport"
       },
-      "surfaces": {
-        "flutter": "CatchViewport"
-      },
       "level": "L4",
       "roleNoun": "Viewport",
       "naming": {
@@ -17631,12 +17877,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": [
-        "DataTable",
-        "DataGrid",
-        "ListTable",
-        "RecordTable"
-      ],
+      "aliases": ["DataTable", "DataGrid", "ListTable", "RecordTable"],
       "summary": "Bordered data table with an uppercase header row, flex-weighted columns with start or end placement, divided rows and an empty builder below the header.",
       "dart": {
         "symbol": "CatchTable",
@@ -17645,8 +17886,20 @@
           "CatchTable"
         ]
       },
-      "surfaces": {
-        "flutter": "CatchTable"
+      "react": {
+        "symbol": "DataTableControl",
+        "file": "packages/web-ui/src/primitives.tsx",
+        "api": "headless-control",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/primitives.stories.tsx",
+          "exportName": "DataTable",
+          "states": [
+            "named-table",
+            "keyboard-scroll-region"
+          ]
+        },
+        "notes": "Shared table frame requires an accessible name and makes overflow content keyboard reachable; table density and visual treatment remain surface-owned."
       },
       "design": {
         "figma": {
@@ -17671,6 +17924,7 @@
             "type": "list",
             "required": true,
             "dartType": "List<CatchTableColumn>",
+            "tsType": "CatchTableColumn[]",
             "notes": "Header label, flex share, start or end placement and optional label inset per column."
           },
           {
@@ -17678,6 +17932,7 @@
             "type": "list",
             "required": false,
             "dartType": "List<Widget>",
+            "tsType": "ReactNode",
             "default": "[]",
             "notes": "CatchTableRow children laid out against the published columns."
           },
@@ -17686,6 +17941,7 @@
             "type": "callback",
             "required": false,
             "dartType": "WidgetBuilder?",
+            "tsType": "() => ReactNode",
             "notes": "Replaces the rows below the header when there is nothing to list."
           }
         ],
