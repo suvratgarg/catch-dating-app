@@ -199,8 +199,7 @@ String? appRedirect({
       !isHostApp &&
       uidAsync.hasValue &&
       uidAsync.value != null &&
-      (userProfileAsync.isLoading ||
-          (userProfileAsync.hasError && userProfileAsync.value == null));
+      userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isBlockedOnProfile) {
     if (!isHostApp &&
