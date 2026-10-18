@@ -6795,42 +6795,9 @@ async function main() {
     }
   }
 
-  const staleFiles = [];
-  const expectedFiles = new Set(generatedFiles.map((file) => file.path));
-  for (const directory of ["schemas", "validators", "catalogs"]) {
-    const relativeDirectory = `functions/src/shared/generated/${directory}`;
-    const absoluteDirectory = path.join(repoRoot, relativeDirectory);
-    if (!fs.existsSync(absoluteDirectory)) continue;
-    for (const file of fs.readdirSync(absoluteDirectory, {recursive: true})) {
-      const relativeFile = `${relativeDirectory}/${file}`;
-      const absoluteFile = path.join(repoRoot, relativeFile);
-      if (!fs.statSync(absoluteFile).isFile() || expectedFiles.has(relativeFile)) continue;
-      if (checkOnly) staleFiles.push(relativeFile);
-      else fs.unlinkSync(absoluteFile);
-    }
-  }
-  if (!checkOnly) {
-    fs.rmSync(
-      path.join(repoRoot, "lib/core/schema_contracts/generated/callables"),
-      {recursive: true, force: true}
-    );
-    fs.rmSync(
-      path.join(repoRoot, "lib/core/schema_contracts/generated/schemas"),
-      {recursive: true, force: true}
-    );
-  }
-  for (const file of generatedFiles) {
-    const absolutePath = path.join(repoRoot, file.path);
-    if (checkOnly) {
-      const current = fs.existsSync(absolutePath) ?
-        fs.readFileSync(absolutePath, "utf8") :
-        null;
-      if (current !== file.content) staleFiles.push(file.path);
-    } else {
-      fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
-      fs.writeFileSync(absolutePath, file.content);
-    }
-  }
+  const staleFiles = publishSchemaOutputs({
+    root: repoRoot, files: generatedFiles, checkOnly,
+  });
 
   if (staleFiles.length > 0) {
     console.error("Generated schema contract outputs are stale:");
@@ -6845,6 +6812,53 @@ async function main() {
       "Generated schema contract outputs are current." :
       `Generated ${generatedFiles.length} schema contract files.`
   );
+}
+
+/** Check or publish only this generator's declared outputs and exclusive dirs. */
+export function publishSchemaOutputs({root, files, checkOnly}) {
+  const staleFiles = [];
+  const expectedFiles = new Set(files.map((file) => file.path));
+  const ownedDirectories = [
+    "functions/src/shared/generated/schemas",
+    "functions/src/shared/generated/validators",
+    "functions/src/shared/generated/catalogs",
+    ...(checkOnly ? [DART_SCHEMA_OUTPUT_DIR, DART_CALLABLE_REQUEST_OUTPUT_DIR] : []),
+  ];
+  for (const relativeDirectory of ownedDirectories) {
+    const absoluteDirectory = path.join(root, relativeDirectory);
+    if (!fs.existsSync(absoluteDirectory)) continue;
+    for (const file of fs.readdirSync(absoluteDirectory, {recursive: true})) {
+      const relativeFile = `${relativeDirectory}/${file}`;
+      const absoluteFile = path.join(root, relativeFile);
+      if (!fs.statSync(absoluteFile).isFile() || expectedFiles.has(relativeFile)) continue;
+      if (checkOnly) staleFiles.push(relativeFile);
+      else fs.unlinkSync(absoluteFile);
+    }
+  }
+  if (!checkOnly) {
+    fs.rmSync(
+      path.join(root, "lib/core/schema_contracts/generated/callables"),
+      {recursive: true, force: true}
+    );
+    fs.rmSync(
+      path.join(root, "lib/core/schema_contracts/generated/schemas"),
+      {recursive: true, force: true}
+    );
+  }
+  for (const file of files) {
+    const absolutePath = path.join(root, file.path);
+    if (checkOnly) {
+      const current = fs.existsSync(absolutePath) ?
+        fs.readFileSync(absolutePath, "utf8") :
+        null;
+      if (current !== file.content) staleFiles.push(file.path);
+    } else {
+      fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
+      fs.writeFileSync(absolutePath, file.content);
+    }
+  }
+
+  return staleFiles;
 }
 
 const ORGANIZER_FORM_TEMPLATE_IDS = [
@@ -10045,4 +10059,6 @@ function indent(value, spaces) {
     .join("\n");
 }
 
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await main();
+}
