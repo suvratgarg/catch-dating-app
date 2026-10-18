@@ -317,7 +317,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
         pages: [
           for (final view in HostEventsView.values)
             CatchRootScreenPageSpec.scroll(
-              page: HostEventsTimelinePage(
+              page: HostEventsTimelineBody(
                 key: ValueKey('host-events-${widget.club.id}-${view.name}'),
                 organizerId: widget.club.id,
                 programs: widget.programs,
@@ -368,9 +368,9 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
 
 /// One lifecycle page. The root owns tabs and scrolling chrome; this adapter
 /// selects data/state only, and the shared page/section/record owners lay it out.
-class HostEventsTimelinePage extends StatelessWidget
+class HostEventsTimelineBody extends StatelessWidget
     implements CatchRootScreenPageOwner {
-  const HostEventsTimelinePage({
+  const HostEventsTimelineBody({
     super.key,
     required this.organizerId,
     required this.view,

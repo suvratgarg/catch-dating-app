@@ -280,7 +280,7 @@ test("flags host-visible communication route pickers", () => {
 test("flags manual-send queues outside Sends", () => {
   const findings = scanPresentationFile({
     relativePath: "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-    source: "const HostManualSendQueue()",
+    source: "const HostManualSendList()",
   });
   assert.match(findings[0].reason, /Sends workspace/u);
 });

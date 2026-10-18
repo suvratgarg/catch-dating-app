@@ -7,6 +7,7 @@ import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -30,6 +31,63 @@ import 'preview.dart';
 )
 Widget blockedAccountsSectionStates(BuildContext context) =>
     settingsScreenStates(context);
+
+@widgetbook.UseCase(
+  name: 'Account profile states',
+  type: AccountProfileSection,
+  path: '[P3 utility surfaces]/Settings',
+)
+Widget accountProfileSectionStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'AccountProfileSection',
+    contractId: 'screen.settings.account_profile',
+    children: [
+      for (final (label, profile) in [
+        (
+          'loaded',
+          const SettingsProfileState(
+            status: SettingsProfileStatus.loaded,
+            phoneNumber: '+91 98765 43210',
+            email: 'host@example.com',
+          ),
+        ),
+        (
+          'loading',
+          const SettingsProfileState(
+            status: SettingsProfileStatus.loading,
+            phoneNumber: '',
+            email: '',
+          ),
+        ),
+        (
+          'missing profile',
+          const SettingsProfileState(
+            status: SettingsProfileStatus.missing,
+            phoneNumber: '',
+            email: '',
+          ),
+        ),
+        (
+          'load error',
+          SettingsProfileState(
+            status: SettingsProfileStatus.error,
+            phoneNumber: '',
+            email: '',
+            error: Exception('offline'),
+          ),
+        ),
+      ])
+        WidgetbookPageStateCard(
+          label: label,
+          child: AccountProfileSection(
+            profile: profile,
+            onRetry: () {},
+            onReviewForms: () {},
+          ),
+        ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Screen states',

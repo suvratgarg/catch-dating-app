@@ -32,7 +32,7 @@ void main() {
         StatefulBuilder(
           builder: (context, setState) {
             rebuild = setState;
-            return CatchFormRowList<(int, int)>(
+            return CatchFormList<(int, int)>(
               fieldCopy: catchFieldCopy(AppLocalizationsEn()),
               accordion: accordion,
               rows: [
@@ -89,7 +89,7 @@ void main() {
             StatefulBuilder(
               builder: (context, setState) {
                 rebuild = setState;
-                return CatchFormRowList<List<int>>(
+                return CatchFormList<List<int>>(
                   key: const ValueKey('form'),
                   fieldCopy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Revision $unrelated',

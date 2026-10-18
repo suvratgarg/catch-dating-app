@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
-  "sourceDigest": "sha256:626649b9f8723f65739328f09d919d931bfad17572dd5be7fbc2f0cacf443d02",
-  "resolvedDigest": "sha256:ff6a6092ef4525a95d85f5a07ab674ee1b757cbc7a4c82f8fadfb296f2a11fee",
+  "sourceDigest": "sha256:309195a2129a367065a2c9b334b1135eff8d985998756250401dec4f52ab23ce",
+  "resolvedDigest": "sha256:345dfe85d4eae4fcf0ab28dc8f89c5d2e8d2dca20f29b3fb841e7691e2464473",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -47,8 +47,8 @@
           {
             "id": "country_selector",
             "language": "dart",
-            "file": "lib/auth/presentation/phone_page.dart",
-            "symbol": "CountryCodeSelector"
+            "file": "lib/auth/presentation/phone_step.dart",
+            "symbol": "PhoneCountryCodePicker"
           },
           {
             "id": "auth_controller",
@@ -274,7 +274,7 @@
             ],
             "previewIds": [
               "AuthScreen/Screen states",
-              "PhonePage/Phone entry states"
+              "PhoneStep/Phone entry states"
             ],
             "tests": [
               "test/auth/presentation/auth_screen_test.dart"
@@ -323,7 +323,7 @@
             ],
             "previewIds": [
               "AuthScreen/Screen states",
-              "CountryCodeSelector/Country code selector states"
+              "PhoneCountryCodePicker/Country code selector states"
             ],
             "tests": [
               "test/auth/presentation/auth_screen_test.dart"
@@ -371,7 +371,7 @@
             ],
             "previewIds": [
               "AuthScreen/Screen states",
-              "PhonePage/Phone entry states"
+              "PhoneStep/Phone entry states"
             ],
             "tests": [
               "test/auth/presentation/auth_input_test.dart",
@@ -421,7 +421,7 @@
             ],
             "previewIds": [
               "AuthScreen/Screen states",
-              "PhonePage/Phone entry states"
+              "PhoneStep/Phone entry states"
             ],
             "tests": [
               "test/auth/presentation/auth_screen_test.dart"
@@ -495,7 +495,7 @@
             ],
             "previewIds": [
               "AuthScreen/Screen states",
-              "OtpPage/OTP entry states"
+              "OtpStep/OTP entry states"
             ],
             "tests": [
               "test/auth/presentation/auth_screen_test.dart"
@@ -592,7 +592,7 @@
             ],
             "previewIds": [
               "AuthScreen/Screen states",
-              "OtpPage/OTP entry states"
+              "OtpStep/OTP entry states"
             ],
             "tests": [
               "test/auth/presentation/auth_screen_test.dart"
@@ -864,9 +864,9 @@
         ],
         "previews": [
           "AuthScreen/Screen states",
-          "CountryCodeSelector/Country code selector states",
-          "OtpPage/OTP entry states",
-          "PhonePage/Phone entry states"
+          "OtpStep/OTP entry states",
+          "PhoneCountryCodePicker/Country code selector states",
+          "PhoneStep/Phone entry states"
         ]
       }
     }

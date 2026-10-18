@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.25.1
+version: 0.26.0
 updated: 2026-10-17
 owner: web_platform
 status: active
@@ -225,9 +225,21 @@ implementation and proof fails strict mode.
 - `packages/web-config/` contains shared Vite, TypeScript, and token/base CSS
   plumbing for React web surfaces.
 - `packages/web-ui/` is the pure presentational React workspace. It has no
-  Firebase, router, query, or feature dependencies; both apps consume its
-  structural controls through surface-owned adapters so class names and visual
-  variants remain local.
+  Firebase, router, query, or feature dependencies. Today both apps consume its
+  structural `*Control` components through surface-owned adapters that keep
+  class names and visual variants local.
+- **Ratified target (2026-10-17, UI blueprint D9–D10).** `@catch/web-ui` ships
+  styled `Catch*` components that implement the registry contracts in
+  `design/components/catch.components.json`, under the same names and prop
+  names as Flutter (`CatchButton`, `variant`, `onPressed`). Surface
+  differences such as admin density become a prop or a scope, never a second
+  component. Surface adapters such as `AdminButton`, `StatusChip`, and
+  `AdminTextField` are deleted as each surface adopts the shared component, and
+  `*Control` exports become package internals. Blueprint Phase 7 owns the
+  migration; until it lands, the adapter split described below remains the
+  running architecture. Naming is binding in the Cross-Framework Names
+  subsection of `docs/app_architecture.md`, and parity tiers in
+  `design/components/README.md`.
 - `design/web-ui/shared_primitive_adoption.json` is the active
   cross-surface compatibility and improvement queue. The non-vacuous
   `web:shared-ui-adoption` gate classifies every exact-name primitive overlap,
@@ -239,8 +251,9 @@ implementation and proof fails strict mode.
   feature composition. `ToggleGroupControl`/`ToggleButtonControl` remain the
   reference implementation for this split.
 - Cross-stack labels deliberately separate hierarchy from status:
-  `catch.ui_label` binds `CatchSectionLabel`, website `UiLabel`, admin
-  `AdminEyebrow`, and web-ui `UiLabel`; `catch.badge` binds status adapters and
+  `catch.typography` binds `CatchKickerText`, website `UiLabel`, admin
+  `AdminEyebrow`, and web-ui `UiLabel` (the former `catch.ui_label` mapping
+  moved there when `CatchSectionLabel` was retired); `catch.badge` binds status adapters and
   `BadgeControl`. The lexicon test rejects future semantic collapse.
 - `website/` is a Vite + React + TypeScript marketing app.
 - `website/src/app/App.tsx` uses React Router for the client route shell and
@@ -1076,8 +1089,8 @@ Current canonical component layer under `website/src/components/` includes:
 
 Implemented website behavior:
 
-- Homepage discovery can render real event/search data from generated organizer
-  projections.
+- `/explore/` owns consumer discovery with generated organiser projections and
+  the live published-event feed. `/` is the short organiser-first introduction.
 - Directory filters are URL-backed for query, city, format, status, upcoming,
   rating, and sort.
 - Organizer listing pages support event-aware search results, claim pressure,
@@ -1094,9 +1107,13 @@ Implemented website behavior:
   persistent matching/chat, universal provider sync and exact external revenue
   are not prerequisites and must not be presented as current dependencies.
 
+The public sitemap, content destinations and retired URL redirects are owned by
+`docs/marketing_website_architecture.md#public-sitemap-and-conversion-ownership`.
+The real pilot form lives at `/host/apply/`; `/host/` owns product detail.
+
 Catch event discovery is live. `PublicEventListingsProvider` subscribes through
 `firebase.ts` to explicitly published events; `usePublicEventListingsController` owns the
-TanStack Query cache used by home, directory, organizer, and event-detail routes.
+TanStack Query cache used by discovery, directory, organiser, and event-detail routes.
 Cache-only snapshots, pending writes, subscription failures, and oversized feeds
 withhold Catch rows. The current bounded feed supports at most 400 published
 records; overflow fails closed and requires a paginated discovery service before
@@ -1114,8 +1131,8 @@ cannot retract historical browser caches or copies made while an event was publi
 
 Deferred website decisions:
 
-- Decide whether fabricated prototype organizers become real seed listings,
-  demo-only fixtures, or stay excluded.
+- Fabricated prototype organisers remain excluded from real listings. The old
+  marketing concept pages and their simulated sample rows are retired.
 - Add an Instagram DM code-verification backend path before promising that as
   an automated claim option.
 - Add new marketing capture slots only through

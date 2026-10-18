@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -32,7 +32,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
     final name = profile?.name ?? '…';
     final photoUrl = profile?.primaryPhotoThumbnailUrl;
 
-    return CatchCelebrationScreen(
+    return CelebrationScreen(
       kind: CelebrationMomentKind.match,
       eyebrow: context.l10n.matchesMatchCelebrationDialogEyebrowNewCatch,
       title: context.l10n.matchesMatchCelebrationDialogTitleItSACatch,

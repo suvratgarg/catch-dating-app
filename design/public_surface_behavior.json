@@ -1894,7 +1894,7 @@
         {
           "path": "test/clubs/club_detail_dock_test.dart",
           "contains": [
-            "DockBell retains toggle and pending semantics over icon chrome"
+            "ClubBellButton retains toggle and pending semantics over icon chrome"
           ]
         }
       ],

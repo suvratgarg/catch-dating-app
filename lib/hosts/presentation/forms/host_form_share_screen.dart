@@ -249,7 +249,6 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                   image: true,
                   child: CatchSurface(
                     backgroundColor: CatchTokens.editorialWhite,
-                    borderWidth: 0,
                     padding: CatchInsets.iconChipContent,
                     radius: CatchRadius.sm,
                     child: QrImageView(

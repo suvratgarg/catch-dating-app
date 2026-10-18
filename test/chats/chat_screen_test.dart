@@ -14,7 +14,7 @@ import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart
 import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -1433,7 +1433,7 @@ void main() {
         await tester.enterText(find.byType(TextField), 'Next thought');
         await tester.pump();
 
-        await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+        await tester.tap(find.byKey(ChatInput.sendButtonKey));
         await tester.pump();
 
         expect(conversationRepository.sendCalls, hasLength(1));

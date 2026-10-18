@@ -11,7 +11,7 @@ import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -45,7 +45,10 @@ void main() {
       isNull,
     );
     expect(
-      hostResponseSocialUri('https://instagram.com.evil.test/a', 'instagram.com'),
+      hostResponseSocialUri(
+        'https://instagram.com.evil.test/a',
+        'instagram.com',
+      ),
       isNull,
     );
     expect(
@@ -126,7 +129,7 @@ void main() {
             home: const Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostFormResponsesPanel(
+                  HostFormResponsesSection(
                     organizerId: 'org',
                     formId: 'form',
                     contactId: 'person',
@@ -225,7 +228,7 @@ void main() {
             path: '/',
             builder: (_, _) => const Scaffold(
               body: CustomScrollView(
-                slivers: [HostFormResponsesPanel(organizerId: 'org')],
+                slivers: [HostFormResponsesSection(organizerId: 'org')],
               ),
             ),
           ),
@@ -343,31 +346,36 @@ void main() {
     );
   });
 
-  test('review queue targets the shifted neighbor when the current row leaves', () {
-    final entries = [
-      for (final id in ['a', 'b', 'c'])
-        HostFormInboxEntry.fromResponse(_response(id, id)),
-    ];
-    const queue = HostResponseReviewQueue(
-      request: HostFormResponseListRequest(
-        organizerId: 'org',
-        formId: 'form',
-        versionId: 'form_v2',
-        answerFilters: {'city': {'Mumbai', 'Delhi'}},
-      ),
-      entryId: 'response:b',
-      index: 1,
-    );
-    expect(queue.targetIndex(entries, -1), 0);
-    expect(queue.targetIndex(entries, 1), 2);
-    final afterReview = [entries.first, entries.last];
-    expect(queue.targetIndex(afterReview, -1), 0);
-    expect(queue.targetIndex(afterReview, 1), 1);
-    expect(queue.targetIndex([entries.first], -1, hasMore: false), 0);
-    expect(queue.targetIndex([entries.first], 1, hasMore: false), 1);
-    expect(queue.request.versionId, 'form_v2');
-    expect(queue.request.answerFilters['city'], {'Mumbai', 'Delhi'});
-  });
+  test(
+    'review queue targets the shifted neighbor when the current row leaves',
+    () {
+      final entries = [
+        for (final id in ['a', 'b', 'c'])
+          HostFormInboxEntry.fromResponse(_response(id, id)),
+      ];
+      const queue = HostResponseReviewQueue(
+        request: HostFormResponseListRequest(
+          organizerId: 'org',
+          formId: 'form',
+          versionId: 'form_v2',
+          answerFilters: {
+            'city': {'Mumbai', 'Delhi'},
+          },
+        ),
+        entryId: 'response:b',
+        index: 1,
+      );
+      expect(queue.targetIndex(entries, -1), 0);
+      expect(queue.targetIndex(entries, 1), 2);
+      final afterReview = [entries.first, entries.last];
+      expect(queue.targetIndex(afterReview, -1), 0);
+      expect(queue.targetIndex(afterReview, 1), 1);
+      expect(queue.targetIndex([entries.first], -1, hasMore: false), 0);
+      expect(queue.targetIndex([entries.first], 1, hasMore: false), 1);
+      expect(queue.request.versionId, 'form_v2');
+      expect(queue.request.answerFilters['city'], {'Mumbai', 'Delhi'});
+    },
+  );
 }
 
 class _Inbox extends HostFormResponsesController {

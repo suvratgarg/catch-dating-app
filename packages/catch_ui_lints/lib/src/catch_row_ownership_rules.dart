@@ -98,7 +98,7 @@ class _RowVisitor extends SimpleAstVisitor<void> {
         '/lib/src/patterns/catch_row_viewport.dart',
       },
       'CatchSection' when element?.name == 'formRows' => const {
-        '/lib/src/patterns/catch_form_row_list.dart',
+        '/lib/src/patterns/catch_form_list.dart',
       },
       _ => null,
     };

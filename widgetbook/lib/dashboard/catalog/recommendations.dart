@@ -2,8 +2,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -130,18 +130,18 @@ Widget dashboardRecommendCardReviewStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Recommendation rail',
-  type: Recommendations,
+  type: ExploreRecommendationsSection,
   path: '[P1 product surfaces]/Explore feed',
 )
 Widget dashboardRecommendationsReview(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'Recommendations',
+    title: 'ExploreRecommendationsSection',
     contractId: 'explore.feed.recommendations',
     children: [
       WidgetbookPageStateCard(
         label: 'ranked events',
         child: WidgetbookDashboardPrimitiveFrame(
-          child: Recommendations(
+          child: ExploreRecommendationsSection(
             recommendations: [
               _dashboardRecommendation,
               ExploreEventRecommendation(

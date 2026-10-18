@@ -19,8 +19,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventMapView extends ConsumerStatefulWidget {
-  const EventMapView({
+class EventMap extends ConsumerStatefulWidget {
+  const EventMap({
     super.key,
     this.enableNetworkTiles = true,
     this.overlay,
@@ -60,10 +60,10 @@ class EventMapView extends ConsumerStatefulWidget {
   final String? initialSelectedEventId;
 
   @override
-  ConsumerState<EventMapView> createState() => _EventMapViewState();
+  ConsumerState<EventMap> createState() => _EventMapState();
 }
 
-class _EventMapViewState extends ConsumerState<EventMapView> {
+class _EventMapState extends ConsumerState<EventMap> {
   String? _selectedEventId;
 
   @override
@@ -73,7 +73,7 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
   }
 
   @override
-  void didUpdateWidget(covariant EventMapView oldWidget) {
+  void didUpdateWidget(covariant EventMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialSelectedEventId != widget.initialSelectedEventId &&
         _selectedEventId == oldWidget.initialSelectedEventId) {

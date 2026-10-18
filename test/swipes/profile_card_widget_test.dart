@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -42,7 +42,7 @@ Future<void> _scrollToProfileSection(WidgetTester tester, String title) async {
     300,
     scrollable: find
         .descendant(
-          of: find.byKey(CatchProfileView.scrollViewKey),
+          of: find.byKey(ProfileBody.scrollViewKey),
           matching: find.byType(Scrollable),
         )
         .first,
@@ -59,7 +59,7 @@ void main() {
       await tester.pumpWidget(_profileCardHarness(theme: AppTheme.light));
       await tester.pump();
 
-      expect(find.byType(EventActivityBackdrop), findsOneWidget);
+      expect(find.byType(EventBackdropImage), findsOneWidget);
       expect(
         find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
         findsOneWidget,
@@ -86,7 +86,7 @@ void main() {
     await tester.pumpWidget(_profileCardHarness(theme: AppTheme.dark));
     await tester.pump();
 
-    expect(find.byType(EventActivityBackdrop), findsOneWidget);
+    expect(find.byType(EventBackdropImage), findsOneWidget);
     expect(find.text('Manan, 26'), findsOneWidget);
     await _scrollToProfileSection(tester, 'RUNNING RHYTHM');
     expect(find.text('RUNNING RHYTHM'), findsOneWidget);
@@ -167,7 +167,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('Manan, 26'), findsOneWidget);
-      expect(find.byType(EventActivityBackdrop), findsOneWidget);
+      expect(find.byType(EventBackdropImage), findsOneWidget);
       expect(tester.takeException(), isNull);
     }
   });
@@ -286,7 +286,7 @@ void main() {
         300,
         scrollable: find
             .descendant(
-              of: find.byKey(CatchProfileView.scrollViewKey),
+              of: find.byKey(ProfileBody.scrollViewKey),
               matching: find.byType(Scrollable),
             )
             .first,
@@ -344,7 +344,7 @@ void main() {
       expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
       expect(find.text('You met at Thursday Morning Event'), findsOneWidget);
       await tester.drag(
-        find.byKey(CatchProfileView.scrollViewKey),
+        find.byKey(ProfileBody.scrollViewKey),
         const Offset(0, -360),
       );
       await tester.pump();

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:3e0b623bcaa9d47f629cb119c5fc8940d0e030191d692ad5f7ca3a3cd3eac4ad",
-  "resolvedDigest": "sha256:ce9d342d048b1bbb3545d8846e0f4bb6b5b74a19144253e53bf9e6e7485c5303",
+  "sourceDigest": "sha256:52e3fad548909da8fec584a7a2aa9310b236a103bf61c559991098c2776d3b5b",
+  "resolvedDigest": "sha256:f6a7038da52c766d6d7572abd57dd80d92e91f4213ac5a3d373b50aa3bb8f04c",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -584,8 +584,8 @@
               "event_detail_member_ticket"
             ],
             "previewIds": [
-              "EventDetailHeroAppBar/Catalog states",
-              "EventDetailTicketStubBand/Catalog states",
+              "EventDetailHeroTopBar/Catalog states",
+              "EventDetailTicketStubRow/Catalog states",
               "EventDetailScreen/Screen states"
             ],
             "tests": [
@@ -641,7 +641,7 @@
               "event_detail_member_spotlight"
             ],
             "previewIds": [
-              "EventDetailHeroAppBar/Catalog states",
+              "EventDetailHeroTopBar/Catalog states",
               "EventDetailScreen/Screen states"
             ],
             "tests": [
@@ -1644,10 +1644,10 @@
         "previews": [
           "EventBookingDock/BookingDock states",
           "EventDetailBody/Prompt states",
-          "EventDetailHeroAppBar/Catalog states",
+          "EventDetailHeroTopBar/Catalog states",
           "EventDetailScreen/Screen states",
           "EventDetailSocialSection/Social states",
-          "EventDetailTicketStubBand/Catalog states"
+          "EventDetailTicketStubRow/Catalog states"
         ]
       }
     },
@@ -2333,8 +2333,8 @@
           {
             "id": "map_overlay",
             "language": "dart",
-            "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
-            "symbol": "MapOverlayControls"
+            "file": "lib/events/presentation/widgets/map_overlay_top_bar.dart",
+            "symbol": "MapOverlayTopBar"
           },
           {
             "id": "external_links",
@@ -3113,10 +3113,10 @@
             "id": "catch.map_preview",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchMapPreview",
-              "file": "lib/locations/shared/catch_map_preview.dart",
+              "symbol": "MapPreview",
+              "file": "lib/locations/shared/map_preview.dart",
               "constructors": [
-                "CatchMapPreview"
+                "MapPreview"
               ]
             }
           },

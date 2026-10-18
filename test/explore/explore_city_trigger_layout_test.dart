@@ -71,7 +71,7 @@ void main() {
                     'Every city-name line must paint inside the label lane.',
               );
             }
-            final triggerRect = tester.getRect(find.byType(CityTrigger));
+            final triggerRect = tester.getRect(find.byType(ExploreCityButton));
             final headerRect = tester.getRect(find.byType(CatchTopBar));
             expect(labelRect.left, greaterThanOrEqualTo(triggerRect.left));
             expect(labelRect.right, lessThanOrEqualTo(triggerRect.right));

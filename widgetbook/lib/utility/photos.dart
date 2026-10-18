@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
-import 'package:catch_dating_app/image_uploads/shared/photo_slot.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_slot_tile.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -206,19 +206,19 @@ Widget orderedPhotoAddTileStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Slot states',
-  type: PhotoSlot,
+  type: PhotoSlotTile,
   path: '[P3 utility surfaces]/Image uploads',
 )
 Widget photoSlotStates(BuildContext context) {
   final photo = _profilePhotos.first;
   return WidgetbookPageCatalogFrame(
-    title: 'PhotoSlot',
+    title: 'PhotoSlotTile',
     contractId: 'component.image_uploads.photo_slot',
     children: [
       WidgetbookPageStateCard(
         label: 'active empty',
         child: _photoSlotFrame(
-          child: PhotoSlot(
+          child: PhotoSlotTile(
             index: 0,
             url: null,
             isLoading: false,
@@ -230,7 +230,7 @@ Widget photoSlotStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'uploading placeholder',
         child: _photoSlotFrame(
-          child: PhotoSlot(
+          child: PhotoSlotTile(
             index: 1,
             url: null,
             isLoading: true,
@@ -242,7 +242,7 @@ Widget photoSlotStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'main photo with prompt',
         child: _photoSlotFrame(
-          child: PhotoSlot(
+          child: PhotoSlotTile(
             index: 0,
             url: photo.url,
             prompt: photo.prompt,
@@ -260,21 +260,21 @@ Widget photoSlotStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Striped placeholder states',
-  type: StripedPhotoPlaceholder,
+  type: PhotoPlaceholderImage,
   path: '[P3 utility surfaces]/Image uploads',
 )
 Widget stripedPhotoPlaceholderStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'StripedPhotoPlaceholder',
+    title: 'PhotoPlaceholderImage',
     contractId: 'component.image_uploads.striped_photo_placeholder',
     children: [
       WidgetbookPageStateCard(
         label: 'first slot',
-        child: _photoSlotFrame(child: const StripedPhotoPlaceholder(index: 0)),
+        child: _photoSlotFrame(child: const PhotoPlaceholderImage(index: 0)),
       ),
       WidgetbookPageStateCard(
         label: 'sixth slot',
-        child: _photoSlotFrame(child: const StripedPhotoPlaceholder(index: 5)),
+        child: _photoSlotFrame(child: const PhotoPlaceholderImage(index: 5)),
       ),
     ],
   );

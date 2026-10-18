@@ -47,7 +47,7 @@ Widget eventSuccessStrictEventSuccessSetupBody(BuildContext context) {
 
 @widgetbook.UseCase(
   name: "Within setup body",
-  type: EventSuccessModuleRows,
+  type: EventSuccessModuleList,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
 )

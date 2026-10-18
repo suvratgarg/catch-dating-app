@@ -98,7 +98,7 @@
 }
 
 .operational-step-rail span {
-  color: var(--website-text-faint);
+  color: var(--website-text-muted);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
   font-size: 10px;
   font-weight: 800;
