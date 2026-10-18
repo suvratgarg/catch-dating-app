@@ -1636,7 +1636,11 @@ Flutter symbol (D9). The contract check rejects a `react` record on T3 or T4.
   2026-10-17 figure of 149 grouped entries by name family. The difference is
   20 name-family entries that no production code renders; together with four
   others, these 24 are Phase 7d deletion decisions. 65 entries have more than
-  one consumer and remain `shared-primitive`.
+  one consumer and remain `shared-primitive`. The root cause is a rule:
+  `web:admin-feature-exports` lets a feature folder export only `*Screen` and
+  `*Workspace` components and sends every other export to admin shared UI.
+  Before Phase 7e moves the 146, it changes that rule to accept the
+  `feature-component` entries a feature owns.
 - **Sync.** Design-sync mappings carry `reactSymbol`, `reactFile` and
   `reactApi`. The manifest's behavior source now names the registry contract,
   with Flutter as the reference implementation (D11).
