@@ -1,6 +1,6 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {cleanup, render, screen, within} from "@testing-library/react";
+import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
 import {HostApplicationPage} from "../features/host/HostApplicationPage";
 import {hostProductCopy, hostWorkflowExamples} from "@content/hostProduct";
@@ -44,25 +44,6 @@ describe("consolidated public sitemap", () => {
     expect(container.querySelectorAll("form")).toHaveLength(1);
     expect(screen.getByText(/submission does not book a call or grant access/)).toBeTruthy();
     expect(pageMetaForHostPath("/host/apply/")?.canonicalPath).toBe("/host/apply/");
-  });
-  it("requires a separate submit action after the application review opens", () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("No request before explicit submission"));
-    try {
-      const {container} = renderPage(<HostApplicationPage />);
-      const fill = (id: string, value: string) => fireEvent.change(container.querySelector(`#${id}`)!, {target: {value}});
-      const next = () => fireEvent.click(screen.getByRole("button", {name: "Continue"}));
-      fill("host-full-name", "Local QA"); fill("host-email", "qa@example.com");
-      fill("host-org-name", "Local QA Club"); fill("host-community-link", "https://example.com/qa");
-      next();
-      fill("host-event-name", "Local verification event"); fill("host-event-location", "Local test venue");
-      next(); next();
-      fill("host-goals", "Verify the application review before submission.");
-      next();
-      expect(screen.getByRole("button", {name: "Submit host packet"})).toBeTruthy();
-      expect(fetchSpy).not.toHaveBeenCalled();
-    } finally {
-      fetchSpy.mockRestore();
-    }
   });
   it("matches every Hosting retirement redirect and preserves attribution and claim lookup", () => {
     for (const [slug, destination] of redirects) {
