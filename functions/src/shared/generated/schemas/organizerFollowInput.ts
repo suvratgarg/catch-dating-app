@@ -21,6 +21,11 @@ export const organizerFollowCallablePayloadSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 } as const;

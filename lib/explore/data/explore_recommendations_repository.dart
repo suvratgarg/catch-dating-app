@@ -129,13 +129,17 @@ bool _isEligibleForRecommendation(
   DateTime now,
 ) {
   final viewerAge = viewer.ageOn(now);
-  if (viewerAge < event.constraints.minAge ||
-      viewerAge > event.constraints.maxAge) {
+  if (viewerAge != null &&
+      (viewerAge < event.constraints.minAge ||
+          viewerAge > event.constraints.maxAge)) {
     return false;
   }
-  final genderCap = event.constraints.maxForGender(viewer.gender);
+  final gender = viewer.gender;
+  final genderCap = gender == null
+      ? null
+      : event.constraints.maxForGender(gender);
   if (genderCap != null &&
-      (event.genderCounts[viewer.gender.name] ?? 0) >= genderCap) {
+      (event.genderCounts[gender?.name] ?? 0) >= genderCap) {
     return false;
   }
   return true;

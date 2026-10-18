@@ -1,6 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {isAccountReadyUserProfile} from "../shared/profileReadiness";
 import {requireAuth} from "../shared/auth";
 import type {
   OrganizerDocument,
@@ -45,11 +46,15 @@ export async function followOrganizerHandler(
   deps: OrganizerFollowDeps = defaultDeps
 ): Promise<{following: boolean}> {
   const uid = requireAuth(request);
-  const {organizerId} = validateCallableWithAjv<OrganizerFollowCallablePayload>(
-    request,
-    validateOrganizerFollowCallablePayload,
-    normalizeOrganizerIdPayload
-  );
+  const {organizerId, expectedUid} =
+    validateCallableWithAjv<OrganizerFollowCallablePayload>(
+      request,
+      validateOrganizerFollowCallablePayload,
+      normalizeOrganizerIdPayload
+    );
+  if (expectedUid !== undefined && expectedUid !== uid) {
+    throw new HttpsError("aborted", "Your signed-in account changed.");
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "followOrganizer");
   await db.runTransaction(async (tx) => {
@@ -97,11 +102,15 @@ export async function unfollowOrganizerHandler(
   deps: OrganizerFollowDeps = defaultDeps
 ): Promise<{following: boolean}> {
   const uid = requireAuth(request);
-  const {organizerId} = validateCallableWithAjv<OrganizerFollowCallablePayload>(
-    request,
-    validateOrganizerFollowCallablePayload,
-    normalizeOrganizerIdPayload
-  );
+  const {organizerId, expectedUid} =
+    validateCallableWithAjv<OrganizerFollowCallablePayload>(
+      request,
+      validateOrganizerFollowCallablePayload,
+      normalizeOrganizerIdPayload
+    );
+  if (expectedUid !== undefined && expectedUid !== uid) {
+    throw new HttpsError("aborted", "Your signed-in account changed.");
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "unfollowOrganizer");
   await db.runTransaction(async (tx) => {
@@ -187,10 +196,10 @@ function assertCanFollow(
     );
   }
   const user = requireDoc<UserProfileDocument>(userSnap, "UserProfileDocument");
-  if (user.profileComplete !== true) {
+  if (!isAccountReadyUserProfile(user, "organizerFollow")) {
     throw new HttpsError(
       "failed-precondition",
-      "Complete your profile before following organizers."
+      "Add your name and verified phone before following organizers."
     );
   }
 }

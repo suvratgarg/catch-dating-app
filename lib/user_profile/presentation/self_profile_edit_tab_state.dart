@@ -288,23 +288,26 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       validator: validateRequiredDisplayName,
       toFieldValue: (value) => value.trim(),
     ),
-    CatchFormReadRow<UpdateUserProfilePatch>(
-      id: 'dateOfBirth',
-      icon: CatchIcons.cakeOutlined,
-      label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
-      body: l10n.userProfileSelfProfileEditTabStateBodyPadleftPadleft2YearAgeon(
-        padLeft: user.dateOfBirth.day.toString().padLeft(2, '0'),
-        padLeft2: user.dateOfBirth.month.toString().padLeft(2, '0'),
-        year: user.dateOfBirth.year,
-        ageOn: user.ageOn(today),
+    if (user.dateOfBirth case final birthday?)
+      CatchFormReadRow<UpdateUserProfilePatch>(
+        id: 'dateOfBirth',
+        icon: CatchIcons.cakeOutlined,
+        label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
+        body: l10n
+            .userProfileSelfProfileEditTabStateBodyPadleftPadleft2YearAgeon(
+              padLeft: birthday.day.toString().padLeft(2, '0'),
+              padLeft2: birthday.month.toString().padLeft(2, '0'),
+              year: birthday.year,
+              ageOn: user.ageOn(today)!,
+            ),
       ),
-    ),
-    CatchFormReadRow<UpdateUserProfilePatch>(
-      id: 'gender',
-      icon: CatchIcons.wcOutlined,
-      label: l10n.userProfileSelfProfileEditTabStateLabelGender,
-      body: user.gender.label,
-    ),
+    if (user.gender case final gender?)
+      CatchFormReadRow<UpdateUserProfilePatch>(
+        id: 'gender',
+        icon: CatchIcons.wcOutlined,
+        label: l10n.userProfileSelfProfileEditTabStateLabelGender,
+        body: gender.label,
+      ),
     // Phone is the OTP identity credential; editing requires Auth
     // re-verification before Firestore can safely change.
     CatchFormReadRow<UpdateUserProfilePatch>(

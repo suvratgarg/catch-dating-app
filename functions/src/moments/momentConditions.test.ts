@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   evaluateCondition,
+  travelOccurrenceId,
   type TravelLegEvent,
 } from "./momentConditions";
 import type {AnchorFacts, MomentDefinition} from "./momentModel";
@@ -67,6 +68,7 @@ const arrived: TravelLegEvent = {
   programId: "prog",
   previousReadiness: "enRoute",
   readiness: "arrived",
+  source: "programTravelLegs", eventId: "event-1",
   observedAtMillis: 2_100_000,
 };
 
@@ -74,7 +76,7 @@ test("late arrival fires inside the targeted function window", () => {
   const result = evaluateCondition(lateArrival, arrived, facts, 2_100_000);
   assert.equal(result.kind, "fire");
   assert.deepEqual(result.kind === "fire" && result.run, {
-    runId: "mLate_leg1_arrived",
+    runId: travelOccurrenceId(lateArrival, arrived),
     momentId: "mLate",
     dueAtMillis: 2_100_000,
     anchorRevision: 7,
@@ -100,15 +102,17 @@ test("null functionId resolves the current function", () => {
 });
 
 test("arrival before start, with no live function, or cancelled", () => {
-  assert.deepEqual(evaluateCondition(lateArrival, arrived, facts,
-    1_950_000), {kind: "noFire", reason: "functionNotStarted"});
+  assert.deepEqual(evaluateCondition(lateArrival, {...arrived,
+    observedAtMillis: 1_950_000}, facts, 2_100_000),
+  {kind: "noFire", reason: "functionNotStarted"});
   const floating = {...lateArrival, initiation: {
     kind: "triggered" as const,
     triggerKind: "lateArrivalAtHotel" as const,
     functionId: null,
   }};
-  assert.deepEqual(evaluateCondition(floating, arrived, facts, 900_000),
-    {kind: "noFire", reason: "noCurrentFunction"});
+  assert.deepEqual(evaluateCondition(floating, {...arrived,
+    observedAtMillis: 900_000}, facts, 2_100_000),
+  {kind: "noFire", reason: "noCurrentFunction"});
   const deadFn = {...lateArrival, initiation: {
     kind: "triggered" as const,
     triggerKind: "lateArrivalAtHotel" as const,
@@ -141,12 +145,13 @@ test("flight disruption fires only on transition into the bad set", () => {
     const event: TravelLegEvent = {
       kind: "travelLegFlightStatusChanged", legId: "leg9",
       programId: "prog", previousFlightStatus: "delayed",
-      flightStatus, observedAtMillis: 2_100_000,
+      flightStatus, source: "programTravelLegs", eventId: "event-1",
+      observedAtMillis: 2_100_000,
     };
     const result = evaluateCondition(flightMoment, event, facts, 2_100_000);
     assert.equal(result.kind, "fire");
     if (result.kind === "fire") {
-      assert.equal(result.run.runId, `mLate_leg9_${flightStatus}`);
+      assert.equal(result.run.runId, travelOccurrenceId(flightMoment, event));
       assert.equal(result.run.anchorRevision, 0);
       assert.equal(result.run.targetFunctionId, undefined);
     }
@@ -154,7 +159,8 @@ test("flight disruption fires only on transition into the bad set", () => {
   const delayed: TravelLegEvent = {
     kind: "travelLegFlightStatusChanged", legId: "leg9",
     programId: "prog", previousFlightStatus: "scheduled",
-    flightStatus: "delayed", observedAtMillis: 2_100_000,
+    flightStatus: "delayed", source: "programTravelLegs",
+    eventId: "event-1", observedAtMillis: 2_100_000,
   };
   assert.deepEqual(evaluateCondition(flightMoment, delayed, facts,
     2_100_000), {kind: "noFire", reason: "eventNotMatching"});
@@ -180,3 +186,30 @@ test("condition runs are deterministic across evaluations", () => {
   const second = evaluateCondition(lateArrival, arrived, facts, 2_100_000);
   assert.deepEqual(first, second);
 });
+
+test("delayed event matches its original function window", () => {
+  const floating = {...lateArrival, initiation: {
+    kind: "triggered" as const, triggerKind: "lateArrivalAtHotel" as const,
+    functionId: null,
+  }};
+  assert.deepEqual(evaluateCondition(floating, arrived, facts, 9_000_000),
+    evaluateCondition(floating, arrived, facts, arrived.observedAtMillis));
+});
+
+test("identity separates events and kinds, preserves revision replay",
+  () => {
+    const id = travelOccurrenceId(lateArrival, arrived);
+    assert.match(id, /^travel_v1_[a-f0-9]{64}$/);
+    for (const change of [
+      {eventId: "another-event"}, {source: "another-source"},
+      {kind: "travelLegFlightStatusChanged" as const,
+        previousFlightStatus: "onTime", flightStatus: "cancelled"},
+    ]) {
+      assert.notEqual(travelOccurrenceId(lateArrival,
+        {...arrived, ...change} as TravelLegEvent), id);
+    }
+    assert.equal(travelOccurrenceId({...lateArrival, revision: 2}, arrived),
+      id);
+    assert.throws(() => evaluateCondition(lateArrival,
+      {...arrived, eventId: ""}, facts, 2_100_000), /authoritative identity/);
+  });

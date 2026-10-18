@@ -1,3 +1,5 @@
+import type {ManageWebsiteAccountCallablePayload} from "../../functions/src/shared/generated/manageWebsiteAccountCallablePayload";
+import type {ManageWebsiteAccountCallableResponse} from "../../functions/src/shared/generated/manageWebsiteAccountCallableResponse";
 import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
 import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
 import type {GetEventViewerStateCallableResponse} from "../../functions/src/shared/generated/getEventViewerStateCallableResponse";
@@ -943,12 +945,12 @@ export async function recordOrganizerAnalyticsEvent(
   return result.data;
 }
 
-export async function beginSalesDemoPhoneVerification(
+export async function beginWebsiteAccountPhoneVerification(
   phoneNumber: string, recaptchaContainerId: string
 ): Promise<PublicEventPhoneVerification> {
   const runtime = await getFirebaseRuntime();
   if (!runtime || !claimFirebaseConfigured) {
-    throw new Error("Sales demo verification is not configured for this build.");
+    throw new Error("Account verification is not configured for this build.");
   }
   const {RecaptchaVerifier} = await import("firebase/auth");
   const {beginClaimPhoneLink} = await import("./firebaseClaimAccountLinking");
@@ -1320,4 +1322,13 @@ export async function refreshGuestIdentity(uid: string): Promise<void> {
   await user.reload();
   if (runtime.auth.currentUser?.uid !== uid) throw new Error("Account changed");
   await user.getIdToken(true);
+}
+
+export const beginSalesDemoPhoneVerification = beginWebsiteAccountPhoneVerification;
+export const watchWebsiteAccountAuthState = watchSalesDemoAuthState;
+export function manageWebsiteAccount(payload: ManageWebsiteAccountCallablePayload): Promise<ManageWebsiteAccountCallableResponse> {
+  return invokeWebsiteCallable("manageWebsiteAccount", payload, claimFirebaseConfigured, "Website account");
+}
+export function setWebsiteOrganizerFollow(organizerId: string, following: boolean, expectedUid: string): Promise<{following: boolean}> {
+  return invokeWebsiteCallable(following ? "followOrganizer" : "unfollowOrganizer", {organizerId, expectedUid}, claimFirebaseConfigured, "Organizer following");
 }
