@@ -28,17 +28,19 @@ const surfaceConfig = {
   admin: {
     registry: "design/admin/components.json",
     defaultStorybook: "admin/storybook-static",
-    previewKey: "preview",
+    preview: (component) => component.preview,
   },
   website: {
     registry: "design/website/components.json",
     defaultStorybook: "website/storybook-static",
-    previewKey: "storybook",
+    preview: (component) => component.storybook,
   },
+  // @catch/web-ui stories are the React implementation records of the
+  // component registry.
   webui: {
-    registry: "design/web-ui/components.json",
+    registry: "design/components/catch.components.json",
     defaultStorybook: "website/storybook-static",
-    previewKey: "storybook",
+    preview: (component) => component.react?.storybook,
   },
 };
 const config = surfaceConfig[args.surface];
@@ -52,7 +54,7 @@ if (!fs.existsSync(indexPath)) {
 
 const registry = readJson(fromRepo(config.registry));
 const storyIndex = readJson(indexPath);
-const allReadyStories = readyStories(registry, config.previewKey);
+const allReadyStories = readyStories(registry, config.preview);
 let expectedStories;
 try {
   expectedStories = selectStories(allReadyStories, args.components);
@@ -362,11 +364,11 @@ async function waitForVisibleImages(page) {
   });
 }
 
-function readyStories(document, previewKey) {
+function readyStories(document, previewFor) {
   const stories = [];
   const seen = new Set();
   for (const component of document.components ?? []) {
-    const preview = component[previewKey];
+    const preview = previewFor(component);
     if (preview?.status !== "ready") continue;
     if (!preview.story || !preview.exportName) {
       fail(`${component.id}: ready visual entry needs a story path and export name`);

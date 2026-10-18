@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 101,
+  "version": 102,
   "updated": "2026-10-18",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -1652,8 +1652,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "UiLabel",
-      "lexicon": true,
-      "lexiconId": "catch.typography",
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/host.css",
@@ -1668,7 +1666,8 @@
           "metadata-label"
         ]
       },
-      "notes": "Shared website UI label primitive for the uppercase eyebrow/metadata label treatment used across route sections and legacy website display components; raw ui-label spans are blocked by web:react-component-governance."
+      "notes": "Shared website UI label primitive for the uppercase eyebrow/metadata label treatment used across route sections and legacy website display components; raw ui-label spans are blocked by web:react-component-governance.",
+      "componentId": "catch.typography"
     },
     {
       "id": "shared_field_grid",
@@ -1731,8 +1730,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout2.tsx",
       "exportName": "ChoiceChip",
-      "lexicon": true,
-      "lexiconId": "catch.chip",
       "css": [
         "website/src/styles/flows.css",
         "website/src/styles/responsive.css"
@@ -1746,7 +1743,8 @@
           "selected"
         ]
       },
-      "notes": "Shared website choice chip and chip-grid primitives used by host application and claim flows; raw choice-chip and choice-chip-grid shells are blocked by web:react-component-governance."
+      "notes": "Shared website choice chip and chip-grid primitives used by host application and claim flows; raw choice-chip and choice-chip-grid shells are blocked by web:react-component-governance.",
+      "componentId": "catch.chip"
     },
     {
       "id": "shared_choice_card_controls",
@@ -1758,8 +1756,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/layout2.tsx",
       "exportName": "ChoiceCard",
-      "lexicon": true,
-      "lexiconId": "catch.option_card",
       "css": [
         "website/src/styles/flows.css",
         "website/src/styles/responsive.css"
@@ -1773,7 +1769,8 @@
           "selected"
         ]
       },
-      "notes": "Shared explanatory choice-card primitive used by host application and claim verification flows; raw choice-card shells are blocked by web:react-component-governance."
+      "notes": "Shared explanatory choice-card primitive used by host application and claim verification flows; raw choice-card shells are blocked by web:react-component-governance.",
+      "componentId": "catch.option_card"
     },
     {
       "id": "shared_empty_state",
@@ -1809,8 +1806,7 @@
       },
       "notes": "Shared website EmptyState shell with named variants for home discovery, claim lookup, organizer search results, review-signal lanes, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance.",
       "exportName": "EmptyState",
-      "lexicon": true,
-      "lexiconId": "catch.empty_state"
+      "componentId": "catch.empty_state"
     },
     {
       "id": "shared_live_status",
@@ -1870,6 +1866,75 @@
       "notes": "Shared website lazy route fallback primitive for the route shell; raw route-loading shells are blocked by web:react-component-governance."
     },
     {
+      "id": "shared_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_assistance",
+        "event_booking",
+        "event_detail_canonical",
+        "event_invite",
+        "event_offer",
+        "event_runtime",
+        "host_apply",
+        "household_rsvp",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "visitor_discovery"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/actions.tsx",
+      "exportName": "Button",
+      "componentId": "catch.button",
+      "css": [
+        "website/src/styles/site-shell.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "primary",
+          "ghost",
+          "small",
+          "loading",
+          "disabled"
+        ]
+      },
+      "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
+    },
+    {
+      "id": "shared_text_field",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_booking",
+        "event_detail_canonical",
+        "event_invite",
+        "event_offer",
+        "event_runtime",
+        "host_apply",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "visitor_discovery"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
+      "exportName": "TextField",
+      "componentId": "catch.field",
+      "css": [
+        "website/src/styles/flows.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "described",
+          "invalid",
+          "required"
+        ]
+      },
+      "notes": "Website adapter of catch.field over the @catch/web-ui TextInputControl; Phase 7e replaces it with the styled CatchField. Route coverage is the 2026-10-18 TypeScript reference measurement."
+    },
+    {
       "id": "shared_status_badge",
       "kind": "supporting-component",
       "routeIds": [
@@ -1896,8 +1961,7 @@
       },
       "notes": "Shared website organizer/listing status badge primitive; raw status-badge shells are blocked by web:react-component-governance.",
       "exportName": "StatusBadge",
-      "lexicon": true,
-      "lexiconId": "catch.badge"
+      "componentId": "catch.badge"
     },
     {
       "id": "shared_review_signal_badge",
