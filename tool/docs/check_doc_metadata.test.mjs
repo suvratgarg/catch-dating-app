@@ -20,6 +20,7 @@ import {
   retiredDocumentReferences,
   headingAnchors,
   machineReferenceFindings,
+  uniqueRetiredNames,
 } from "./check_doc_metadata.mjs";
 
 const scriptPath = fileURLToPath(new URL("./check_doc_metadata.mjs", import.meta.url));
@@ -485,6 +486,7 @@ test("machine references to removed documents and headings fail; old gaps are ad
     {path: "tool/owner.json", line: 2, text: '"docs/guide.md#usage", "docs/guide.md#kept"'},
     {path: "tool/owner.json", line: 3, text: '"docs/guide.md#never-existed", "docs/guide.md"'},
     {path: "tool/other.json", line: 1, text: '"docs/untouched.md#anything"'},
+    {path: "lib/styles.dart", line: 9, text: "/// approved in `old.md` and `README.md`."},
   ];
   const sources = {
     base: {"docs/guide.md": "# Guide\n## Usage\n## Kept\n"},
@@ -493,6 +495,9 @@ test("machine references to removed documents and headings fail; old gaps are ad
   const result = machineReferenceFindings({
     matches,
     retiredPaths: ["docs/plans/old.md"],
+    retiredByName: uniqueRetiredNames(
+      ["docs/plans/old.md", "docs/README.md", "lib/README.md", "docs/guide.md"],
+      ["docs/plans/old.md", "docs/README.md"]),
     changedPaths: ["docs/guide.md"],
     readBase: (file) => sources.base[file],
     readTarget: (file) => sources.target[file],
@@ -501,6 +506,7 @@ test("machine references to removed documents and headings fail; old gaps are ad
     ["retired-document-machine-reference", "tool/policy/rules.json", 4, "docs/plans/old.md", undefined],
     ["retired-document-machine-reference", "tool/check.mjs", 7, "docs/plans/old.md", undefined],
     ["removed-document-anchor", "tool/owner.json", 2, "docs/guide.md", "usage"],
+    ["retired-document-machine-reference", "lib/styles.dart", 9, "docs/plans/old.md", undefined],
   ]);
   assert.deepEqual(result.advisories.map((row) => [row.kind, row.fragment]),
     [["unresolved-document-anchor", "never-existed"]]);
@@ -520,6 +526,7 @@ test("CLI rejects registry and code references to removed documents and headings
     write("docs/guide.md", "# Guide\n\n## Scope\n");
     write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#scope"}\n');
     write("tool/check.mjs", 'const owner = "docs/old.md";\n');
+    write("lib/styles.dart", "/// Approved in `old.md`.\n");
     git(repo, ["add", "."]);
     git(repo, ["commit", "-qm", "base"]);
     const base = git(repo, ["rev-parse", "HEAD"]).trim();
@@ -531,7 +538,8 @@ test("CLI rejects registry and code references to removed documents and headings
     write("docs/guide.md", "# Guide\n\n## Ownership\n");
     const bad = run();
     assert.equal(bad.status, 1, bad.stderr);
-    assert.deepEqual(kinds(bad), ["removed-document-anchor", "retired-document-machine-reference"]);
+    assert.deepEqual(kinds(bad), ["removed-document-anchor", "retired-document-machine-reference",
+      "retired-document-machine-reference"]);
 
     // Sparse CI working trees omit consumers; the index still binds them.
     git(repo, ["add", "-A"]);
@@ -539,13 +547,20 @@ test("CLI rejects registry and code references to removed documents and headings
     const broken = git(repo, ["rev-parse", "HEAD"]).trim();
     git(repo, ["update-index", "--skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
     fs.rmSync(path.join(repo, "tool"), {recursive: true});
-    assert.deepEqual(kinds(run()), ["removed-document-anchor", "retired-document-machine-reference"]);
+    assert.deepEqual(kinds(run()), ["removed-document-anchor", "retired-document-machine-reference",
+      "retired-document-machine-reference"]);
     git(repo, ["update-index", "--no-skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
     git(repo, ["checkout", "--", "tool"]);
-    assert.deepEqual(kinds(run("--ref", broken)), ["removed-document-anchor", "retired-document-machine-reference"]);
+    assert.deepEqual(kinds(run("--ref", broken)), ["removed-document-anchor", "retired-document-machine-reference",
+      "retired-document-machine-reference"]);
 
     write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#ownership"}\n');
     write("tool/check.mjs", 'const owner = "docs/guide.md";\n');
+    const bare = run();
+    assert.equal(bare.status, 1, bare.stderr);
+    assert.deepEqual(JSON.parse(bare.stdout).findings.map((row) => [row.path, row.target]),
+      [["lib/styles.dart", "docs/old.md"]]);
+    write("lib/styles.dart", "/// Approved by the owner.\n");
     const good = run();
     assert.equal(good.status, 0, good.stderr);
     assert.deepEqual(JSON.parse(good.stdout).advisories, []);

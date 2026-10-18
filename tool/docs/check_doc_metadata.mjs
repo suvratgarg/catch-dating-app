@@ -557,11 +557,14 @@ const machineDocumentPattern =
  * Registries, tools, workflows and code bind documents and headings by literal
  * path. A change that removes either must update those consumers in the same
  * change; otherwise the next unrelated pull request inherits the failure.
- * Headings that were already unresolved are advisory, not this change's break.
+ * A bare file name counts when exactly one removed document had it, as in a
+ * code comment that cites `some_spec.md`. Headings that were already
+ * unresolved are advisory, not this change's break.
  */
 export function machineReferenceFindings({
   matches,
   retiredPaths,
+  retiredByName = new Map(),
   changedPaths,
   readBase,
   readTarget,
@@ -578,7 +581,8 @@ export function machineReferenceFindings({
   const advisories = [];
   for (const {path: file, line, text} of matches) {
     for (const match of text.matchAll(machineDocumentPattern)) {
-      const [, target, fragment] = match;
+      const [, literal, fragment] = match;
+      const target = retired.has(literal) ? literal : retiredByName.get(literal) ?? literal;
       const at = `${file}:${line}`;
       if (retired.has(target)) {
         findings.push({kind: "retired-document-machine-reference", path: file, line, target,
@@ -597,6 +601,19 @@ export function machineReferenceFindings({
     }
   }
   return {findings, advisories};
+}
+
+/** Bare names that identify exactly one removed Markdown document. */
+export function uniqueRetiredNames(basePaths, retiredPaths) {
+  const counts = new Map();
+  for (const entry of basePaths) {
+    if (!entry.endsWith(".md")) continue;
+    const name = path.posix.basename(entry);
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return new Map(retiredPaths
+    .filter((entry) => counts.get(path.posix.basename(entry)) === 1)
+    .map((entry) => [path.posix.basename(entry), entry]));
 }
 
 /** Exact-string candidates in tracked non-Markdown text; binary files are skipped. */
@@ -811,10 +828,12 @@ function main() {
       comparison.findings.push(...retiredDocumentReferences({...target, retiredPaths}));
       const changedPaths = [...target.paths].filter((entry) => entry.endsWith(".md") &&
         base.paths.has(entry) && target.readSource(entry) !== base.readSource(entry));
+      const retiredByName = uniqueRetiredNames(base.paths, retiredPaths);
       const machine = machineReferenceFindings({
-        matches: grepMachineText({...target, needles: [
-          ...retiredPaths, ...changedPaths.map((entry) => `${entry}#`)]}),
+        matches: grepMachineText({...target, needles: [...new Set([
+          ...retiredPaths, ...retiredByName.keys(), ...changedPaths.map((entry) => `${entry}#`)])]}),
         retiredPaths,
+        retiredByName,
         changedPaths,
         readBase: base.readSource,
         readTarget: target.readSource,
