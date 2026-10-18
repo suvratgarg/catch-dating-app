@@ -10,20 +10,20 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchStepRowList,
+  type: CatchStepList,
   path: '[Core primitives]/Sections',
 )
 Widget catchStepRowListContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookContractFrame(
-    title: 'CatchStepRowList',
+    title: 'CatchStepList',
     contractId: 'catch.journey_steps',
     states: const ['numbered-trace', 'titles-only', 'accented', 'long-copy'],
     children: [
       const WidgetbookContractStateCard(
         label: 'numbered-trace',
-        child: CatchStepRowList(
+        child: CatchStepList(
           steps: [
             CatchStepRowData(
               title: 'Pick your room',
@@ -42,7 +42,7 @@ Widget catchStepRowListContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'titles-only',
-        child: CatchStepRowList(
+        child: CatchStepList(
           accent: t.success,
           steps: const [
             CatchStepRowData(title: 'Arrive'),
@@ -53,7 +53,7 @@ Widget catchStepRowListContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'accented',
-        child: CatchStepRowList(
+        child: CatchStepList(
           accent: t.like,
           steps: const [
             CatchStepRowData(
@@ -71,7 +71,7 @@ Widget catchStepRowListContractStates(BuildContext context) {
         label: 'long-copy',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchStepRowList(
+          child: CatchStepList(
             steps: [
               CatchStepRowData(
                 title:

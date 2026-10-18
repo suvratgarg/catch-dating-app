@@ -207,13 +207,13 @@ Reviewed decisions:
 
 | Candidate | Decision | Canonical direction |
 | --- | --- | --- |
-| CatchRosterTable: catalog vs contract | merge | `catch.roster_table` is already the canonical primitive. Catalog and contract previews should converge instead of remaining duplicate listings. |
+| ParticipantTable: catalog vs contract | merge | `catch.roster_table` is already the canonical primitive. Catalog and contract previews should converge instead of remaining duplicate listings. |
 | CatchRosterTiles: catalog vs contract | merge | `catch.roster_tiles` is already the canonical primitive. Catalog and contract previews should converge instead of remaining duplicate listings. |
-| CatchRosterRow: catalog vs contract | merge | `catch.roster_row` is already the canonical primitive. Catalog and contract previews should converge instead of remaining duplicate listings. |
+| ParticipantRow: catalog vs contract | merge | `catch.roster_row` is already the canonical primitive. Catalog and contract previews should converge instead of remaining duplicate listings. |
 
 Implementation target:
 
-- Keep `CatchRosterTable` in `lib/hosts/presentation/widgets/catch_roster_board.dart` as the global host-operations primitive.
+- Keep `ParticipantTable` in `lib/hosts/presentation/widgets/participant_table.dart` as the global host-operations primitive.
 - Preserve the richer contract states: populated, empty, partial-columns, and long-copy.
 - Keep `catch.roster_tiles`, `catch.roster_row`, and `catch.roster_table`
   contract previews as the canonical review surfaces.
@@ -277,7 +277,7 @@ Reviewed decisions:
 
 | Candidate | Decision | Canonical direction |
 | --- | --- | --- |
-| TopBar vs ClubHeroAppBar | separate concepts | App bars and hero app bars are different components. Keep `CatchTopBar` for route chrome, and keep club/event hero implementations as hero concepts rather than top-bar variants. |
+| TopBar vs ClubHeroTopBar | separate concepts | App bars and hero app bars are different components. Keep `CatchTopBar` for route chrome, and keep club/event hero implementations as hero concepts rather than top-bar variants. |
 
 Implementation target:
 

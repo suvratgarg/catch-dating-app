@@ -12,8 +12,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ActivitySignedOutState extends StatelessWidget {
-  const ActivitySignedOutState({super.key});
+class ActivitySignedOutEmptyState extends StatelessWidget {
+  const ActivitySignedOutEmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +129,7 @@ class ActivitySection extends ConsumerWidget {
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
         ] else if (sectionState is NotificationsContent) ...[
-          NotificationDayGroups(
+          NotificationDayList(
             groups: sectionState.groups,
             onOpenRoute: onOpenRoute,
           ),
@@ -141,8 +141,8 @@ class ActivitySection extends ConsumerWidget {
   }
 }
 
-class NotificationDayGroups extends StatelessWidget {
-  const NotificationDayGroups({
+class NotificationDayList extends StatelessWidget {
+  const NotificationDayList({
     super.key,
     required this.groups,
     this.onOpenRoute,

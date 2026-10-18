@@ -47,8 +47,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/whe
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_stepper_dock.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -146,7 +146,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _startTimeController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedStartTime;
-  int _durationMinutes = CatchBusinessRules.eventDefaultDurationMinutes;
+  int _durationMinutes = BusinessRules.eventDefaultDurationMinutes;
   String? _scheduleErrorText;
 
   // Step 1 — Where
@@ -429,7 +429,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ).ignore(),
             onStepOverview: wizardState.isLoading ? null : _showStepOverview,
           ),
-          body: StepperFooter(
+          body: HostStepperDock(
             expandSoloPrimary: true,
             body: _isReviewing
                 ? CatchFormReviewPageBody(
@@ -468,6 +468,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           _routePlan = RouteEventPlan.defaultForActivity(
                             activityKind,
                           );
+                          _itinerary = _itinerary
+                              .map(
+                                (item) =>
+                                    item.copyWith(routeDistanceMeters: null),
+                              )
+                              .toList();
                           if (!activityKind.isDistanceBased) {
                             _selectedPace = null;
                           }
@@ -491,8 +497,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         selectedPace: _selectedPace,
                         onPaceChanged: (p) => setState(() => _selectedPace = p),
                         routePlan: _routePlan,
-                        onRoutePlanChanged: (plan) =>
-                            setState(() => _routePlan = plan),
+                        onRoutePlanChanged: (plan) => setState(() {
+                          _routePlan = plan;
+                          if ((plan?.path.length ?? 0) < 2) {
+                            _itinerary = _itinerary
+                                .map(
+                                  (item) =>
+                                      item.copyWith(routeDistanceMeters: null),
+                                )
+                                .toList();
+                          }
+                        }),
                         itinerary: _itinerary,
                         onItineraryChanged: (items) =>
                             setState(() => _itinerary = items),

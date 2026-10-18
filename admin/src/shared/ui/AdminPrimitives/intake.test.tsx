@@ -174,6 +174,17 @@ describe("AdminIntakeStageRail", () => {
 });
 
 describe("AdminIntakeReviewWorkbench", () => {
+  it("names action columns and lets keyboard users reach scrolling metrics", async () => {
+    const user = userEvent.setup();
+    renderWorkbench();
+    for (const name of ["Select", "Review"]) {
+      expect(screen.getByRole("columnheader", {name}).textContent).toBe(name);
+    }
+    const metrics = screen.getByRole("group", {name: "Intake queue metrics"});
+    await user.tab();
+    expect(document.activeElement).toBe(metrics);
+  });
+
   it("supports mouse and keyboard navigation with an explicit inspector", async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();

@@ -14,13 +14,14 @@ import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart
 import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -1089,7 +1090,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                home: Consumer(
+            home: Consumer(
               builder: (context, ref, child) {
                 state = ref.watch(
                   chatRouteStateProvider(
@@ -1156,7 +1157,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(profile)),
           ],
           child: CatchNoticeTestApp(
-                home: Consumer(
+            home: Consumer(
               builder: (context, ref, child) {
                 state = ref.watch(
                   chatRouteStateProvider(
@@ -1209,14 +1210,13 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
         ),
       );
 
       await pumpFeatureUi(tester);
-
       expect(find.text('Taylor'), findsOneWidget);
       expect(find.text('Say hi to Taylor!'), findsOneWidget);
     });
@@ -1246,7 +1246,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
         ),
@@ -1284,7 +1284,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(
               matchId: 'match-1',
               initialDraftText: 'Holding this draft for review.',
@@ -1340,7 +1340,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
         ),
@@ -1373,7 +1373,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1433,7 +1433,7 @@ void main() {
         await tester.enterText(find.byType(TextField), 'Next thought');
         await tester.pump();
 
-        await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+        await tester.tap(find.byKey(ChatInput.sendButtonKey));
         await tester.pump();
 
         expect(conversationRepository.sendCalls, hasLength(1));
@@ -1574,7 +1574,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1625,7 +1625,7 @@ void main() {
             }),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1666,7 +1666,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1741,7 +1741,7 @@ void main() {
               ),
             ],
             child: CatchNoticeTestApp(
-                    theme: AppTheme.light,
+              theme: AppTheme.light,
               home: const ChatScreen(matchId: 'host-inquiry-1'),
             ),
           ),
@@ -1803,7 +1803,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1870,7 +1870,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
         ),
@@ -1933,7 +1933,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
         ),
@@ -2000,7 +2000,7 @@ void main() {
             ),
           ],
           child: CatchNoticeTestApp(
-                theme: AppTheme.light,
+            theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
         ),

@@ -193,8 +193,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.primary,
+              widget is CatchDock && widget.variant == CatchDockVariant.primary,
         ),
         findsOneWidget,
       );
@@ -203,8 +202,8 @@ void main() {
             .getBottomRight(
               find.byWidgetPredicate(
                 (widget) =>
-                    widget is CatchDockSurface &&
-                    widget.variant == CatchDockSurfaceVariant.primary,
+                    widget is CatchDock &&
+                    widget.variant == CatchDockVariant.primary,
               ),
             )
             .dy,
@@ -226,8 +225,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.primary,
+              widget is CatchDock && widget.variant == CatchDockVariant.primary,
         ),
         findsNothing,
       );
@@ -310,8 +308,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.primary,
+              widget is CatchDock && widget.variant == CatchDockVariant.primary,
         ),
         findsOneWidget,
       );
@@ -369,8 +366,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.primary,
+              widget is CatchDock && widget.variant == CatchDockVariant.primary,
         ),
         findsOneWidget,
       );

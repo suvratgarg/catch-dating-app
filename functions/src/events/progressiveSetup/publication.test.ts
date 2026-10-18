@@ -139,7 +139,7 @@ test("publication rejects stale, incomplete, past and hidden events",
     await assert.rejects(h.run({...h.command, expectedSetupRevision: 2}),
       errorCode("aborted"));
     for (const field of ["endTime", "meetingLocation", "capacityLimit",
-      "description", "priceInPaise", "eventFormat"]) {
+      "priceInPaise", "eventFormat"]) {
       const value = h.event[field];
       delete h.event[field];
       await assert.rejects(h.run(), errorCode("failed-precondition"));

@@ -29,7 +29,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_information_st
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
@@ -657,7 +657,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isAuthenticated) {
-      return GuestBookCta(onPressed: onGuestBook, darkSurface: darkSurface);
+      return GuestBookDock(onPressed: onGuestBook, darkSurface: darkSurface);
     }
 
     if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
@@ -667,7 +667,7 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
       );
     }
 
-    return EventDetailCta(
+    return EventDetailDock(
       event: event,
       userProfile: userProfile!,
       clubId: clubId,

@@ -2,11 +2,65 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {spawnSync} from "node:child_process";
+import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {
   scanFile,
   scanMutationErrorSurfaces,
 } from "./check_mutation_error_surfaces.mjs";
+
+test("actual scanner CLI rejects missing, non-directory and empty source scopes", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-mutation-scope-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const script = fileURLToPath(new URL("./check_mutation_error_surfaces.mjs", import.meta.url));
+  const roots = ["missing", "root-file", "missing-lib", "lib-file", "empty-lib", "generated-only"];
+  fs.writeFileSync(path.join(directory, "root-file"), "not a directory");
+  fs.mkdirSync(path.join(directory, "missing-lib"));
+  writeFile(directory, "lib-file/lib", "not a directory");
+  fs.mkdirSync(path.join(directory, "empty-lib/lib"), {recursive: true});
+  writeFile(directory, "generated-only/lib/state.g.dart", "class Generated {}");
+  for (const name of roots) {
+    const root = path.join(directory, name);
+    const result = scanMutationErrorSurfaces({root});
+    assert.equal(result.checkedFiles, 0, name);
+    assert.equal(result.findings.length, 1, name);
+    assert.equal(result.findings[0].path, "lib");
+    assert.equal(result.findings[0].line, null);
+    for (const json of [false, true]) {
+      const execution = spawnSync(process.execPath, [script, "--root", root, ...(json ? ["--json"] : [])],
+        {encoding: "utf8", cwd: directory});
+      assert.equal(execution.status, 1, `${name}: ${execution.stderr}`);
+      if (json) {
+        assert.deepEqual(JSON.parse(execution.stdout), result);
+      } else {
+        assert.match(execution.stderr, /Check --root and materialize the production lib source/);
+        assert.doesNotMatch(execution.stdout, /check passed/);
+      }
+    }
+  }
+});
+
+test("actual scanner CLI preserves nonempty clean and violating scopes", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-mutation-valid-scope-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const script = fileURLToPath(new URL("./check_mutation_error_surfaces.mjs", import.meta.url));
+  for (const [source, expectedStatus, expectedFindings] of [
+    ["class DomainModel {}", 0, 0],
+    ["class Screen { Widget build(context, ref) { final Mutation<void> save = ref.watch(Controller.saveMutation); return Text(save.isPending); } }", 1, 1],
+    ["class Screen { Widget build(context, ref) { final Mutation<void> save = ref.watch(Controller.saveMutation); if (save.hasError) return Text('Failed'); return Text(save.isPending); } }", 0, 0],
+  ]) {
+    writeFile(root, "lib/core/example.dart", source);
+    writeFile(root, "lib/core/example.g.dart", source);
+    const execution = spawnSync(process.execPath, [script, "--root", root, "--json"], {encoding: "utf8"});
+    assert.equal(execution.status, expectedStatus, execution.stderr);
+    const result = JSON.parse(execution.stdout);
+    assert.deepEqual(result, scanMutationErrorSurfaces({root}));
+    assert.equal(result.checkedFiles, 1);
+    assert.equal(result.findings.length, expectedFindings);
+    if (expectedFindings) assert.equal(result.findings[0].variableName, "save");
+  }
+});
 
 test("scanFile flags build methods that read mutation pending without errors", () => {
   const findings = scanFile({

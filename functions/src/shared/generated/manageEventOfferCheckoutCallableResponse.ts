@@ -15,6 +15,11 @@ export interface ManageEventOfferCheckoutCallableResponse {
       refundDeadlineMillis: number;
       eventStartsAtMillis: number;
     };
+    freeAdmission?: {
+      expectedOfferGeneration: number;
+      expectedOfferRevision: number;
+      expectedLedgerRevision: number;
+    };
   } | null;
   payment: {
     paymentId: string;
@@ -52,6 +57,11 @@ export interface ManageEventOfferCheckoutCallableResponse {
     cancellationQuote: {
       refundAmountPaise: number;
     } | null;
+    eventId?: string;
   } | null;
   serverTimeMillis: number;
+  admission?: {
+    eventId: string;
+    attendeeId: string;
+  };
 }

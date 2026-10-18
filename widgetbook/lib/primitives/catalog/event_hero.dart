@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -34,8 +35,8 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
             PhysicalShape(
               clipper: const CatchTicketShapeClipper(
                 cornerRadius: CatchRadius.lg,
-                notchRadius: CatchLayout.eventTicketNotchRadius,
-                notchDepth: CatchLayout.eventTicketNotchDepth,
+                notchRadius: CatchLayout.ticketNotchRadius,
+                notchDepth: CatchLayout.ticketNotchDepth,
                 notchCenterY: 86,
               ),
               color: t.surface,
@@ -45,7 +46,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
                 child: Column(
                   children: [
                     Expanded(
-                      child: EventActivityBackdrop(
+                      child: EventBackdropImage(
                         visual: eventActivityVisual(
                           ActivityKind.socialRun,
                           context: context,
@@ -71,13 +72,13 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventDetailHeroAppBar,
+  type: EventDetailHeroTopBar,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailHeroCatalogStates(BuildContext context) {
   final event = widgetbookCatalogEvent();
   return WidgetbookCatalogFrame(
-    title: 'EventDetailHeroAppBar',
+    title: 'EventDetailHeroTopBar',
     catalogId: 'events.widgets.event_detail_hero_app_bar',
     children: [
       WidgetbookCatalogStateCard(
@@ -86,7 +87,7 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.tallRouteViewportHeight,
           child: CustomScrollView(
             slivers: [
-              EventDetailHeroAppBar(
+              EventDetailHeroTopBar(
                 event: event,
                 isSaved: true,
                 savePending: false,
@@ -114,7 +115,7 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
               height: WidgetbookPreviewLayout.startupViewportHeight,
               child: CustomScrollView(
                 slivers: [
-                  EventDetailHeroAppBar(
+                  EventDetailHeroTopBar(
                     event: event,
                     isSaved: false,
                     savePending: true,
@@ -137,7 +138,7 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
               height: WidgetbookPreviewLayout.startupViewportHeight,
               child: CustomScrollView(
                 slivers: [
-                  EventDetailHeroAppBar(
+                  EventDetailHeroTopBar(
                     event: event,
                     isSaved: false,
                     savePending: false,
@@ -165,27 +166,27 @@ Widget eventDetailHeroCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventDetailTicketStubBand,
+  type: EventDetailTicketStubRow,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailTicketStubCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'EventDetailTicketStubBand',
+    title: 'EventDetailTicketStubRow',
     catalogId: 'events.widgets.event_detail_ticket_stub',
     children: [
       WidgetbookCatalogStateCard(
         label: 'band / three cells / dark notch',
         child: Column(
           children: [
-            EventDetailTicketStubBand(
+            EventDetailTicketStubRow(
               event: widgetbookCatalogEvent(),
               notchBackgroundColor: t.bg,
             ),
             gapH16,
             ColoredBox(
               color: t.ink,
-              child: EventDetailTicketStubBand(
+              child: EventDetailTicketStubRow(
                 event: widgetbookCatalogEvent(
                   activityKind: ActivityKind.dinner,
                   title: 'Dinner for six',

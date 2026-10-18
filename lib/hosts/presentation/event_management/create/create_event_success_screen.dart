@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';

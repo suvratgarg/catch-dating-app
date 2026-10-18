@@ -18,7 +18,7 @@
       "_hostWorkspaceDestinationRoutes",
       "workspaceRoute"
     ],
-    "imperativePageRouteCount": 12,
+    "imperativePageRouteCount": 13,
     "imperativePageTargetCount": 7
   },
   "routes": [
@@ -1881,9 +1881,9 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/events/presentation/widgets/event_detail_cta.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
+      "siteId": "material-page:lib/events/presentation/widgets/event_detail_dock.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);}))",
-      "sourcePath": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "sourcePath": "lib/events/presentation/widgets/event_detail_dock.dart",
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventJoinedCelebrationScreen",
@@ -1926,11 +1926,20 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:2f214d9cbc96746fe49d0e23370dd26c828a919f9b516074c693265442f47a32:1",
-      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName),fullscreenDialog:true)",
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_content_section.dart:1e1dddbe0b83e173e5f88f8f65fdc38b48abc65cb082d49f305a865d7af4c284:1",
+      "routeExpression": "MaterialPageRoute(fullscreenDialog:true,builder:(_)=>LocationPickerScreen(initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:LocationCoordinate(location?.latitude??city?.latitude??0,location?.longitude??city?.longitude??0),initialLabel:current?.name,countryIsoCode:city?.countryIsoCode))",
+      "sourcePath": "lib/hosts/presentation/event_management/create/private_event_content_section.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:LocationCoordinate(location?.latitude??city?.latitude??0,location?.longitude??city?.longitude??0),initialLabel:current?.name,countryIsoCode:city?.countryIsoCode)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:b2930c77989f03b56e9e4578c003c71f99071a69b44583458a9bd0ce0c1c8c15:1",
+      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??state.event?.eventDetails.venueName),fullscreenDialog:true)",
       "sourcePath": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName)",
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??state.event?.eventDetails.venueName)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },
@@ -1944,11 +1953,11 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_tab.dart:28a1de16f30d0a2b439e9852a73ba9c3dd57c0f593e6a3d3ff2b177d3a0d35cb:1",
-      "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
-      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_body.dart:28074c60b4b9a06cb7fa3ea65f290a17d8b8135b3ee306cce99eecbc309a013d:1",
+      "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:HostClubMediaManagerDock(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
+      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
+      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:HostClubMediaManagerDock(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
       "presentationTarget": "OrderedPhotoManagerScreen",
       "fullscreenDialogExpression": "true"
     },

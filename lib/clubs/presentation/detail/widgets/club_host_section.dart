@@ -41,7 +41,7 @@ class ClubHostSection extends StatelessWidget {
     final establishedLabel = clubEstablishedLabel(club);
 
     return CatchSurface(
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

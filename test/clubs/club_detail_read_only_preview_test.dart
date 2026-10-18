@@ -186,7 +186,7 @@ Future<void> _pumpPreview(
         home: Scaffold(
           body: CustomScrollView(
             slivers: [
-              ClubDetailReadOnlyPreviewSliver(
+              ClubDetailReadOnlyPreview(
                 initialClub: club,
                 currentUid: 'host-1',
               ),

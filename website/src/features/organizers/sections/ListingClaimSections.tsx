@@ -107,8 +107,8 @@ function ClaimListingPanel({
             {notConfiguredReason} {websiteCopy["listingclaimsections_0382"]}</p>
         </div>
         <ButtonLink
-          href="/host/#founding-hosts"
-          onClick={() => trackCtaClick("listing_claim_fallback", "/host/#founding-hosts")}
+          href="/host/apply/"
+          onClick={() => trackCtaClick("listing_claim_fallback", "/host/apply/")}
         >{websiteCopy["listingclaimsections_0365"]}</ButtonLink>
       </ClaimRequestPanel>
     );

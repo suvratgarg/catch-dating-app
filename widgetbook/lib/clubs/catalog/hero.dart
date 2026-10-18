@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_strip.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_top_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_rail.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -18,21 +18,21 @@ final _logoOnlyHeroClub = widgetbookClubMinimalClub.copyWith(
 
 @widgetbook.UseCase(
   name: 'Photo strip states',
-  type: ClubPhotoStrip,
+  type: ClubPhotoRail,
   path: '[Club Detail]/Sections',
 )
 Widget clubPhotoStripStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubPhotoStrip',
+    title: 'ClubPhotoRail',
     catalogId: 'section.club.photos',
     children: [
       WidgetbookPageStateCard(
         label: 'three photos',
-        child: ClubPhotoStrip(club: widgetbookClubClub),
+        child: ClubPhotoRail(club: widgetbookClubClub),
       ),
       WidgetbookPageStateCard(
         label: 'single photo',
-        child: ClubPhotoStrip(
+        child: ClubPhotoRail(
           club: widgetbookClubClub.copyWith(
             clubPhotos: [widgetbookClubClub.clubPhotos.first],
           ),
@@ -44,12 +44,12 @@ Widget clubPhotoStripStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Hero states',
-  type: ClubHeroAppBar,
+  type: ClubHeroTopBar,
   path: '[Club Detail]/Sections',
 )
 Widget clubHeroAppBarStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHeroAppBar',
+    title: 'ClubHeroTopBar',
     catalogId: 'section.club.hero',
     children: [
       WidgetbookPageStateCard(
@@ -57,7 +57,7 @@ Widget clubHeroAppBarStates(BuildContext context) {
         child: WidgetbookClubSliverFrame(
           height: WidgetbookPreviewLayout.profileExpandedEditorHeight,
           slivers: [
-            ClubHeroAppBar(
+            ClubHeroTopBar(
               club: widgetbookClubClub,
               isHost: false,
               onShareClub: _ignoreShare,
@@ -73,7 +73,7 @@ Widget clubHeroAppBarStates(BuildContext context) {
         child: WidgetbookClubSliverFrame(
           height: WidgetbookPreviewLayout.clubExpandedPreviewHeight,
           slivers: [
-            ClubHeroAppBar(
+            ClubHeroTopBar(
               club: _logoOnlyHeroClub,
               isHost: false,
               onShareClub: _ignoreShare,
@@ -89,7 +89,7 @@ Widget clubHeroAppBarStates(BuildContext context) {
         child: WidgetbookClubSliverFrame(
           height: WidgetbookPreviewLayout.profileExpandedEditorHeight,
           slivers: [
-            ClubHeroAppBar(
+            ClubHeroTopBar(
               club: widgetbookClubMinimalClub,
               isHost: false,
               onShareClub: _ignoreShare,
@@ -106,19 +106,19 @@ Widget clubHeroAppBarStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Hero module states',
-  type: ClubHeroModule,
+  type: ClubHeroHeader,
   path: '[Club Detail]/Sections',
 )
 Widget clubHeroModuleStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHeroModule',
+    title: 'ClubHeroHeader',
     catalogId: 'section.club.hero.module',
     children: [
       WidgetbookPageStateCard(
         label: 'photo polaroid module',
         child: WidgetbookClubDeviceFrame(
           height: WidgetbookPreviewLayout.tallRouteViewportHeight,
-          child: ClubHeroModule(
+          child: ClubHeroHeader(
             club: widgetbookClubClub,
             variant: ClubHeroVariant.poster,
             mediaHeight: 280,
@@ -132,7 +132,7 @@ Widget clubHeroModuleStates(BuildContext context) {
         label: 'logo masthead module',
         child: WidgetbookClubDeviceFrame(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
-          child: ClubHeroModule(
+          child: ClubHeroHeader(
             club: _logoOnlyHeroClub,
             variant: ClubHeroVariant.masthead,
             mediaHeight: 220,
@@ -146,7 +146,7 @@ Widget clubHeroModuleStates(BuildContext context) {
         label: 'art polaroid module',
         child: WidgetbookClubDeviceFrame(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
-          child: ClubHeroModule(
+          child: ClubHeroHeader(
             club: widgetbookClubMinimalClub,
             variant: ClubHeroVariant.poster,
             mediaHeight: 220,
@@ -160,7 +160,7 @@ Widget clubHeroModuleStates(BuildContext context) {
         label: 'full review module',
         child: WidgetbookClubDeviceFrame(
           height: WidgetbookPreviewLayout.tallRouteViewportHeight,
-          child: ClubHeroModule(
+          child: ClubHeroHeader(
             club: widgetbookClubClub,
             variant: ClubHeroVariant.full,
             mediaHeight: 280,

@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -153,7 +153,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
       time: EventFormatters.time(event.startTime),
     );
     return CatchSurface.card(
-      borderColor: t.line2,
+      borderRole: CatchBorderRole.boundary,
       padding: compact ? CatchInsets.tileContentCompact : CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +162,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              EventActivityStamp(
+              EventActivityBadge(
                 visual: visual,
                 size: compact ? 30 : 38,
                 iconSize: CatchIcon.sm,
@@ -273,7 +273,6 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
       heightFactor: 0.94,
       child: CatchSurface(
         backgroundColor: t.bg,
-        borderWidth: 0,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(CatchLayout.sheetTopRadius),
         ),

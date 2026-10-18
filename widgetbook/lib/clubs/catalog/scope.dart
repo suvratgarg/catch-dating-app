@@ -169,7 +169,7 @@ class WidgetbookClubClubReadOnlyPreview extends StatelessWidget {
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
-            ClubDetailReadOnlyPreviewSliver(
+            ClubDetailReadOnlyPreview(
               initialClub: widgetbookClubClub,
               currentUid: widgetbookClubViewer.uid,
             ),

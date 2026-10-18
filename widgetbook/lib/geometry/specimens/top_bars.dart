@@ -98,15 +98,13 @@ Widget _topBarSpecimen(
   required PreferredSizeWidget child,
   String? description,
 }) {
-  final t = CatchTokens.of(context);
-
   return widgetbookGeometrySpecimen(
     context,
     label: label,
     description: description,
     child: CatchSurface(
       tone: CatchSurfaceTone.raised,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       clipBehavior: Clip.antiAlias,
       width: widgetbookGeometryPhoneWidth,
       child: child,

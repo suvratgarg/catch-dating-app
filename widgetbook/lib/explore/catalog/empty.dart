@@ -156,12 +156,12 @@ Widget exploreClearActionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Feed empty sliver states',
-  type: ExploreEventsEmptySliver,
+  type: ExploreFeedEmptyState,
   path: '[Explore]/Sections',
 )
 Widget exploreEventsEmptySliverStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreEventsEmptySliver',
+    title: 'ExploreFeedEmptyState',
     catalogId: 'section.explore.empty_error',
     children: [
       WidgetbookPageStateCard(
@@ -170,7 +170,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
           height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
           child: CustomScrollView(
             slivers: [
-              ExploreEventsEmptySliver(
+              ExploreFeedEmptyState(
                 state: ExploreEventsEmptyState.from(
                   filters: const ExploreFilterSelection(),
                   searchQuery: 'pickleball supper',
@@ -189,7 +189,7 @@ Widget exploreEventsEmptySliverStates(BuildContext context) {
           height: WidgetbookPreviewLayout.exploreMediaPreviewHeight,
           child: CustomScrollView(
             slivers: [
-              ExploreEventsEmptySliver(
+              ExploreFeedEmptyState(
                 state: ExploreEventsEmptyState.from(
                   filters: const ExploreFilterSelection(
                     timeFilter: ExploreTimeFilter.tonight,

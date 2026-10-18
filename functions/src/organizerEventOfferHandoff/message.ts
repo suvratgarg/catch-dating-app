@@ -157,9 +157,12 @@ function renderMessage(
     /\{(name|event|time|paymentLink|paymentInstructions)\}/gu,
     "");
   if (/[{}]/u.test(validated)) return null;
-  const rendered = chosen.replace(
+  let rendered = chosen.replace(
     /\{(name|event|time|paymentLink|paymentInstructions)\}/gu,
     (_, key: Placeholder) => values[key]);
+  if (mode === "free" && values.paymentLink) {
+    rendered += `\nVerify your phone and accept: ${values.paymentLink}`;
+  }
   if (rendered.length > 2000) return null;
   return rendered;
 }
@@ -214,6 +217,11 @@ export function prepareOfferHandoff(
   } else if (payment.expectedAmountMinor === 0 &&
       payment.collectionMode === null) {
     mode = "free";
+    if (input.recipientCheckoutUrl) {
+      if (!/^https:\/\/catchdates\.com\/offer#[A-Za-z0-9_-]{43}$/u
+        .test(input.recipientCheckoutUrl)) blockers.push("paymentLinkInvalid");
+      else link = input.recipientCheckoutUrl;
+    }
     if (offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
   } else if (payment.expectedAmountMinor > 0 &&
       (payment.collectionMode === "reusablePage" ||

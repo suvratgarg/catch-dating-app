@@ -43,18 +43,18 @@ Widget exploreCityPickerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Trigger states',
-  type: CityTrigger,
+  type: ExploreCityButton,
   path: '[Explore]/Controls',
 )
 Widget exploreCityTriggerStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'CityTrigger',
+    title: 'ExploreCityButton',
     catalogId: 'control.explore.city_trigger',
     children: [
       WidgetbookPageStateCard(
         label: 'icon ready',
         child: Center(
-          child: CityTrigger(
+          child: ExploreCityButton(
             city: widgetbookExploreMumbai,
             focused: false,
             onTap: widgetbookNoop,
@@ -64,7 +64,7 @@ Widget exploreCityTriggerStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'icon focused',
         child: Center(
-          child: CityTrigger(
+          child: ExploreCityButton(
             city: widgetbookExploreDelhi,
             focused: true,
             onTap: widgetbookNoop,
@@ -74,7 +74,7 @@ Widget exploreCityTriggerStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'scope label disabled',
         child: Center(
-          child: CityTrigger(
+          child: ExploreCityButton(
             city: widgetbookExploreMumbai,
             focused: false,
             enabled: false,

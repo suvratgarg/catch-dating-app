@@ -13970,27 +13970,6 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_detail_design_primitives"
   },
-  "eventsEventDetailDesignPrimitivesVisiblecopySkill": "Skill",
-  "@eventsEventDetailDesignPrimitivesVisiblecopySkill": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyIntensity": "Intensity",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyIntensity": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
-  "eventsEventDetailDesignPrimitivesVisiblecopyEnergy": "Energy",
-  "@eventsEventDetailDesignPrimitivesVisiblecopyEnergy": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_design_primitives"
-  },
   "eventsEventDetailDesignPrimitivesVisiblecopyOpenSignUp": "Open sign-up",
   "@eventsEventDetailDesignPrimitivesVisiblecopyOpenSignUp": {
     "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
@@ -14880,29 +14859,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
-  },
-  "eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt": "A {distanceKm} {toLowerCase} at a {toLowerCase2} pace from {locationName}.",
-  "@eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).",
-    "placeholders": {
-      "distanceKm": {},
-      "toLowerCase": {},
-      "toLowerCase2": {},
-      "locationName": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_overview_section"
-  },
-  "eventsEventDetailOverviewSectionVisiblecopyAHostedTolowercaseBuilt": "A hosted {toLowerCase} built around a clear arrival, shared activity, and low-pressure follow-up.",
-  "@eventsEventDetailOverviewSectionVisiblecopyAHostedTolowercaseBuilt": {
-    "description": "Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).",
-    "placeholders": {
-      "toLowerCase": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.widgets.event_detail_overview_section"
   },
   "eventsEventDetailOverviewSectionTitleAttendanceMatters": "Attendance matters",
   "@eventsEventDetailOverviewSectionTitleAttendanceMatters": {
@@ -17235,13 +17191,6 @@
   },
   "hostsEventDetailsStepVisiblecopyRequired": "Required",
   "@hostsEventDetailsStepVisiblecopyRequired": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepVisiblecopyTooShort": "Too short",
-  "@hostsEventDetailsStepVisiblecopyTooShort": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
@@ -31927,5 +31876,45 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "programs.presentation.program_workspace"
-  }
+  },
+  "eventsItineraryRouteDistance": "At {distance} on the route",
+  "@eventsItineraryRouteDistance": {
+    "description": "At {distance} on the route",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "events",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "hostsItineraryRouteDistance": "Distance along route (meters)",
+  "@hostsItineraryRouteDistance": {
+    "description": "Distance along route (meters)",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "events"
+  },
+  "eventsRoutePaceGroup": "{label} · {pace}/km",
+  "@eventsRoutePaceGroup": {
+    "description": "Route pace group and optional target pace",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
+  "@hostsCreateEventPolicyStateLabelMembersSkipReview": {"description": "Admission preset label for member review exemption", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
+  "hostsCreateEventPolicyStateLabelMembersSkipReview": "Members skip review",
+  "@hostsCreateEventPolicyStateTitleMembersSkipReview": {"description": "Admission preset title for member review exemption", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
+  "hostsCreateEventPolicyStateTitleMembersSkipReview": "Members skip review",
+  "@hostsCreateEventPolicyStateDescriptionMembersSkipReview": {"description": "Explains that current approved members skip review but retain other booking requirements", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
+  "hostsCreateEventPolicyStateDescriptionMembersSkipReview": "Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply."
 }

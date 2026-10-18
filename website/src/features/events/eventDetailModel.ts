@@ -16,6 +16,9 @@ export type EventRegistrationState =
   | "webOtp";
 
 export interface EventDetailRecord {
+  photoUrl?: HostListingCatchEvent["photoUrl"];
+  meetingLocation?: HostListingCatchEvent["meetingLocation"];
+  itinerary?: HostListingCatchEvent["itinerary"];
   accessibility: string;
   activityKind: string;
   capacityLimit: number | null;
@@ -98,7 +101,7 @@ function catchEventRecord(
   event: HostListingCatchEvent,
   now: number
 ): EventRecordCandidate {
-  const end = Date.parse(event.endTime);
+  const end = Date.parse(event.endTime ?? event.startTime);
   const isUpcoming = event.timeline === "upcoming" && (
     !Number.isFinite(end) || end >= now
   );
@@ -112,6 +115,9 @@ function catchEventRecord(
         ? "full"
         : "catchApp";
   return {
+    photoUrl: event.photoUrl,
+    meetingLocation: event.meetingLocation,
+    itinerary: event.itinerary,
     accessibility: event.accessibility ?? "",
     activityKind: event.activityKind,
     capacityLimit: event.capacityLimit,
@@ -133,7 +139,7 @@ function catchEventRecord(
     sourceHref: null,
     sourceLabel: "Catch",
     startTime: event.startTime,
-    summary: event.summary || listing.description,
+    summary: event.summary,
     supply: "catchNative",
     timezone: event.timezone ?? "",
     title: event.title,
@@ -169,7 +175,7 @@ function externalEventRecord(
     sourceHref: event.sourceHref,
     sourceLabel: event.sourceLabel,
     startTime: event.startTime,
-    summary: event.summary || listing.description,
+    summary: event.summary,
     supply: "external",
     timezone: event.timezone ?? "",
     title: event.title,

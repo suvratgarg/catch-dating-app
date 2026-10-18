@@ -48,8 +48,8 @@
           {
             "id": "conversation_cue",
             "language": "dart",
-            "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-            "symbol": "StageCueLine"
+            "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
+            "symbol": "StageCueCard"
           }
         ],
         "componentContracts": [

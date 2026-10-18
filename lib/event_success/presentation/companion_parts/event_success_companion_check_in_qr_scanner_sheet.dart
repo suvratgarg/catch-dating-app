@@ -66,8 +66,11 @@ class _EventCheckInQrScannerSheetState
                     CatchSurface(
                       tone: CatchSurfaceTone.transparent,
                       radius: CatchRadius.sm,
-                      borderColor: t.primary,
-                      borderWidth: CatchStroke.selection,
+                      borderSpec: CatchBorderSpec(
+                        role: CatchBorderRole.selected,
+                        color: t.primary,
+                        width: CatchStroke.selection,
+                      ),
                       padding: EdgeInsets.zero,
                       duration: Duration.zero,
                       child: const SizedBox.expand(),
@@ -81,7 +84,6 @@ class _EventCheckInQrScannerSheetState
                           backgroundColor: t.ink.withValues(
                             alpha: CatchOpacity.eventSuccessQrErrorFill,
                           ),
-                          borderWidth: 0,
                           radius: CatchRadius.none,
                           child: Text(
                             _errorText!,

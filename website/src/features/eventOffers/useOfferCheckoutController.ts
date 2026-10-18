@@ -2,7 +2,8 @@ import {eventOfferCopy} from "../../content/eventOffer";
 import {useCallback, useEffect, useId, useRef, useState, type FormEvent} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {beginPublicEventPhoneVerification, manageEventOfferCheckout,
-  watchPublicFormAuthState, type User} from "../../firebase";
+  signOutGuestUser,
+  watchPublicFormAuthState, type EventOfferCheckoutResponse, type User} from "../../firebase";
 import {openRazorpayCheckout} from "../../shared/payments/razorpayCheckout";
 import type {FormStatus} from "../../shared/forms/types";
 import {rememberOfferPayment, rememberOfferGrant, type OfferCredential} from "./offerCredential";
@@ -17,6 +18,7 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
   const [code, setCode] = useState("");
   const [grant, setGrant] = useState<OfferGrant | null>(null);
   const [payment, setPayment] = useState<OfferPayment | null>(null);
+  const [admission, setAdmission] = useState<EventOfferCheckoutResponse["admission"]>();
   const [cancellationReview, setCancellationReview] = useState<{paymentId: string; refundAmountPaise: number} | null>(null);
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
   const recaptchaId = `offer-otp-${useId().replace(/[^a-zA-Z0-9_-]/gu, "")}`;
@@ -62,7 +64,7 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
       requestId.current = null;
       lastTime.current = 0;
       abortCheckout.current?.abort();
-      reset(); setGrant(null); setPayment(null); setCancellationReview(null);
+      reset(); setGrant(null); setPayment(null); setAdmission(undefined); setCancellationReview(null);
       setStatus({message: "", tone: ""});
       setUser(uid ? next : null);
       setPhase(uid ? "loading" : "phone");
@@ -85,8 +87,8 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
       lastTime.current = result.serverTimeMillis;
       if (result.grant) rememberOfferGrant(result.grant.grantId);
       if (result.payment) rememberOfferPayment(result.payment.paymentId);
-      setGrant(result.grant); setPayment(result.payment);
-      setPhase(result.grant || result.payment ? "ready" : "unavailable");
+      setGrant(result.grant); setPayment(result.payment); setAdmission(result.admission);
+      setPhase(result.grant || result.payment || result.admission ? "ready" : "unavailable");
       setStatus({message: "", tone: ""});
     } catch {
       if (current(epoch)) {
@@ -159,6 +161,17 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
     if (!user || !grant && !payment?.checkout) return;
     const epoch = scope.current.epoch;
     try {
+      if (grant?.freeAdmission) {
+        requestId.current ??= crypto.randomUUID();
+        const result = assertOfferResponse(await command({action: "acceptFree",
+          grantId: grant.grantId, requestId: requestId.current,
+          ...grant.freeAdmission}));
+        if (!result.admission || result.admission.eventId !== grant.eventId) {
+          throw new Error("Missing admission result");
+        }
+        if (current(epoch)) setAdmission(result.admission);
+        return;
+      }
       let ready = payment;
       if (!ready) {
         requestId.current ??= crypto.randomUUID();
@@ -207,10 +220,13 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
   };
   const changePhone = () => {
     if (busy.current) return;
+    if (user) {
+      void signOutGuestUser().catch(() => setStatus({message: eventOfferCopy.codeError, tone: "is-error"}));
+    }
     challenge.current?.clear(); challenge.current = null;
     setCode(""); setPhase("phone"); setStatus({message: "", tone: ""});
   };
-  return {hasInvitation: credential !== null, phase, phone, setPhone, code, setCode, grant, payment, pending, status,
+  return {hasInvitation: credential !== null, phase, phone, setPhone, code, setCode, grant, payment, admission, pending, status,
     cancellationReview, reviewCancellation, cancelAdmission, dismissCancellation,
     recaptchaId, sendCode, verifyCode, changePhone, pay, check, load};
 }
