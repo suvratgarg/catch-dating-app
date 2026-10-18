@@ -7,7 +7,7 @@
   "allowedFindings": [
     {
       "path": "lib/event_success/presentation/event_success_room_map.dart",
-      "maxLines": 1034
+      "maxLines": 964
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
@@ -19,7 +19,7 @@
     },
     {
       "path": "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
-      "maxLines": 2338
+      "maxLines": 2335
     },
     {
       "path": "packages/catch_ui/lib/src/components/catch_field.dart",

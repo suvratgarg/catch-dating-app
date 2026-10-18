@@ -1431,7 +1431,11 @@ Deviations and remaining 7b work:
   active task holds; move it after that task lands.
 - The splash screen's Widgetbook catalog id still reads
   `core.widgets.catch_startup_loading_screen` because `lib/l10n/app_en.arb`
-  references it and another active task holds that file.
+  references it and another active task holds that file. The same file's
+  string descriptions still cite six pre-rename source paths
+  (`catch_startup_loading_screen.dart`, `catch_cover_story.dart`,
+  `catch_roster_board.dart`, `catch_profile_view.dart`, `chat_input_bar.dart`,
+  `catch_event_activity_cards.dart`); update them with the catalog id.
 - Materials (2026-10-18): `CatchTable` (T1, with `CatchTableRow` and
   `CatchTableScope`) is extracted from the participant table shell, and
   `ParticipantTable` binds it through a shared `participantTableColumns`

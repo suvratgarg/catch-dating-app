@@ -573,7 +573,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessHostWorkspacePageBody</code> | <code>lib/event_success/presentation/event_success_host_workspace_page_body.dart:30</code> | — | — | No class documentation or registry summary. |
 | <code>CustomQuestionnaireFields</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessQuestionnaireConfigEditor</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart:37</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
+| <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart:38</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
 | <code>EventSuccessRoomSetupSection</code> | <code>lib/event_success/presentation/event_success_room_setup_section.dart:16</code> | — | — | Shared room-layout setup used by Create Event and post-creation Host Setup. |
 | <code>EventSuccessModuleRows</code> | <code>lib/event_success/presentation/event_success_setup_body.dart:326</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessSetupBody</code> | <code>lib/event_success/presentation/event_success_setup_body.dart:23</code> | — | — | Compact Event Success setup shared by create-event defaults and Host Manage. |

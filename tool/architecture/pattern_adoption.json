@@ -2226,7 +2226,7 @@
       "screenInventory": "design/screens/catch.screens.json",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-entity-material-001-entity-material-composition",
       "prototypeFiles": [
-        "lib/clubs/shared/catch_organizer_poster.dart",
+        "packages/catch_ui/lib/src/components/catch_poster.dart",
         "packages/catch_ui/lib/src/components/catch_polaroid.dart",
         "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
         "lib/swipes/shared/profile_surface/profile_body.dart",
@@ -2237,8 +2237,8 @@
       ],
       "adopters": [
         {
-          "path": "lib/clubs/shared/catch_organizer_poster.dart",
-          "role": "canonical provider-free organizer poster canvas with four bounded layouts, three treatments, media/overlay/footer slots, and deterministic no-photo artwork",
+          "path": "packages/catch_ui/lib/src/components/catch_poster.dart",
+          "role": "canonical provider-free poster material (CatchPoster) with four layout variants, three tones, media/overlay/footer slots, and registered image/header anatomy",
           "providerFree": true,
           "status": "aligned"
         },

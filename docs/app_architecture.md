@@ -3996,7 +3996,7 @@ missing canonical evidence, and records zero inferred grants.
 
 Reference files:
 
-- `lib/clubs/shared/catch_organizer_poster.dart`
+- `packages/catch_ui/lib/src/components/catch_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
 - `lib/swipes/shared/profile_surface/profile_body.dart`

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_seat_positions.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -808,7 +809,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
                           ),
                         ),
                       ),
-                      for (final indexed in _roomPositionAlignments(
+                      for (final indexed in roomSeatAlignments(
                         math.min(
                           unit.capacity,
                           CatchLayout.roomMapMaxVisiblePositions,
@@ -949,94 +950,6 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
     );
   }
 }
-
-List<Alignment> _roomPositionAlignments(
-  int count,
-  EventSuccessLayoutShape shape,
-) {
-  if (shape == EventSuccessLayoutShape.round) {
-    return switch (count) {
-      <= 0 => const [],
-      1 => const [Alignment.topCenter],
-      2 => const [Alignment.centerLeft, Alignment.centerRight],
-      3 => const [
-        Alignment.topCenter,
-        Alignment.bottomLeft,
-        Alignment.bottomRight,
-      ],
-      4 => const [
-        Alignment.topLeft,
-        Alignment.topRight,
-        Alignment.bottomLeft,
-        Alignment.bottomRight,
-      ],
-      5 => const [
-        Alignment.topCenter,
-        Alignment.topRight,
-        Alignment.bottomRight,
-        Alignment.bottomLeft,
-        Alignment.topLeft,
-      ],
-      6 => const [
-        Alignment(-0.62, -0.78),
-        Alignment(0.62, -0.78),
-        Alignment.centerRight,
-        Alignment(0.62, 0.78),
-        Alignment(-0.62, 0.78),
-        Alignment.centerLeft,
-      ],
-      _ => _roomGridPositionAlignments(count),
-    };
-  }
-  return _roomGridPositionAlignments(count);
-}
-
-List<Alignment> _roomGridPositionAlignments(int count) => switch (count) {
-  <= 0 => const [],
-  1 => const [Alignment.topCenter],
-  2 => const [Alignment.topLeft, Alignment.topRight],
-  3 => const [Alignment.topCenter, Alignment.bottomLeft, Alignment.bottomRight],
-  4 => const [
-    Alignment.topLeft,
-    Alignment.topRight,
-    Alignment.bottomLeft,
-    Alignment.bottomRight,
-  ],
-  5 => const [
-    Alignment.topCenter,
-    Alignment.centerLeft,
-    Alignment.centerRight,
-    Alignment.bottomLeft,
-    Alignment.bottomRight,
-  ],
-  6 => const [
-    Alignment.topLeft,
-    Alignment.topRight,
-    Alignment.centerLeft,
-    Alignment.centerRight,
-    Alignment.bottomLeft,
-    Alignment.bottomRight,
-  ],
-  7 => const [
-    Alignment.topLeft,
-    Alignment.topCenter,
-    Alignment.topRight,
-    Alignment.centerLeft,
-    Alignment.centerRight,
-    Alignment.bottomLeft,
-    Alignment.bottomRight,
-  ],
-  _ => const [
-    Alignment.topLeft,
-    Alignment.topCenter,
-    Alignment.topRight,
-    Alignment.centerLeft,
-    Alignment.centerRight,
-    Alignment.bottomLeft,
-    Alignment.bottomCenter,
-    Alignment.bottomRight,
-  ],
-};
 
 String _reasonLabel(
   BuildContext context,

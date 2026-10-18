@@ -136,7 +136,7 @@ Never spell a page gutter as `CatchSpacing.s5` or raw `screenPx` inside
   CatchSpacing.<y>)`. If the same LTRB tuple recurs 3+ times across the
   file, define ONE local `const` derived from the role via `copyWith` (a
   derivation, not new raw numbers).
-- `lib/swipes/shared/profile_surface/catch_profile_view.dart:87` and
+- `lib/swipes/shared/profile_surface/profile_body.dart` and
   `lib/swipes/shared/profile_surface/profile_surface.dart:124` — both
   `fromLTRB(s5, s7, s5, bottomPadding)` with a dynamic bottom:
   `CatchInsets.pageBody.copyWith(top: CatchSpacing.s7, bottom:
