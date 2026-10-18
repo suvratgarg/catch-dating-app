@@ -14217,6 +14217,32 @@ export interface ProgramDeliveryMessageDocument {
         [k: string]: string;
       };
     };
+    /**
+     * Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.
+     */
+    activity?:
+      | {
+          appRole: "host";
+          audienceDuty: string;
+          /**
+           * @maxItems 200
+           */
+          scopeIds: string[] | null;
+          actionKind: "push";
+          notificationType: string;
+          preferenceKey: string;
+        }
+      | {
+          appRole: "host";
+          audienceDuty: string;
+          /**
+           * @maxItems 200
+           */
+          scopeIds: string[] | null;
+          actionKind: "staffAttention";
+          actionDuty: string;
+          severity: "info" | "warning" | "urgent";
+        };
   };
   lifecycle: "active" | "cancelled" | "superseded" | "responded";
   /**
@@ -14239,7 +14265,11 @@ export interface ProgramDeliveryMessageDocument {
           kind: "unknown";
           at: number;
           providerMessageId: string | null;
-          reason: "timeout" | "connectionLost" | "workerInterrupted";
+          reason:
+            | "timeout"
+            | "connectionLost"
+            | "workerInterrupted"
+            | "sdkOutcomeUnknown";
           reconcileAfter: number;
         }
       | {
@@ -14304,6 +14334,10 @@ export interface ProgramDeliveryMessageDocument {
           bindingRevision: number;
           recipientEndpointId: string;
           fallbackOwner: "catch";
+          /**
+           * Frozen at reservation and claim for local activity only; never FCM submission evidence.
+           */
+          pushSuppressionReason?: "noEndpoint" | "preferenceOff";
         };
     authorization: {
       permissionRevision: string;
@@ -15052,6 +15086,14 @@ export interface OrganizerMomentRunDocument {
   } | null;
   suppressedNoEndpoint?: number | null;
   /**
+   * Immutable first-ingestion Moment revision, CloudEvent instant and committed recovery-window origin; never renewed by due-time deferral.
+   */
+  travelOccurrence?: {
+    momentRevision: number;
+    occurredAtMillis: number;
+    createdAtMillis: number;
+  };
+  /**
    * Occurrence binding for form-automation sends. Present only on runs materialized by the automation handoff; delivery evidence lives in automationDeliveryMessages.
    */
   automation?: {
@@ -15145,7 +15187,7 @@ export interface OrganizerMomentSendDocument {
    */
   deliveryMessageId?: string | null;
   /**
-   * Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery.
+   * Outbox evidence projected for this recipient. Unknown never implies confirmed delivery. notDispatched is a proven-unsent retry projection; the original run window and authority still apply.
    */
   deliveryState?:
     | "accepted"
@@ -15154,6 +15196,7 @@ export interface OrganizerMomentSendDocument {
     | "read"
     | "failed"
     | "revoked"
+    | "notDispatched"
     | null;
 }
 

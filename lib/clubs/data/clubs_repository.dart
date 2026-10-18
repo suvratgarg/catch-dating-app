@@ -356,17 +356,6 @@ class ClubsRepository {
       resource: _collectionPath,
     ),
   );
-
-  @Deprecated('Use startOrganizerConversation with organizerId.')
-  Future<String> startClubHostConversation({
-    required String clubId,
-    required String hostUid,
-    String? eventId,
-  }) => startOrganizerConversation(
-    organizerId: clubId,
-    hostUid: hostUid,
-    eventId: eventId,
-  );
 }
 
 // keepalive: club repository is a shared Firestore/Functions facade reused by

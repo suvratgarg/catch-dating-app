@@ -1,3 +1,4 @@
+import {createHash} from "node:crypto";
 import {
   requireMillis,
   sameScope,
@@ -7,6 +8,10 @@ import {
 } from "./momentModel";
 
 export type TravelLegEvent = {
+  /** Authoritative CloudEvent identity; never reconstructed from status. */
+  source: string;
+  eventId: string;
+} & ({
   kind: "travelLegReadinessChanged";
   legId: string;
   programId: string;
@@ -20,7 +25,7 @@ export type TravelLegEvent = {
   previousFlightStatus: string;
   flightStatus: string;
   observedAtMillis: number;
-};
+});
 
 export type ConditionResult = {
   kind: "fire";
@@ -42,6 +47,9 @@ export function evaluateCondition(
 ): ConditionResult {
   requireMillis(nowMillis);
   requireMillis(event.observedAtMillis);
+  if (!event.source.trim() || !event.eventId.trim()) {
+    throw new Error("Travel event requires authoritative identity");
+  }
   if (moment.initiation.kind !== "triggered") {
     return {kind: "noFire", reason: "notTriggered"};
   }
@@ -53,9 +61,9 @@ export function evaluateCondition(
     return {kind: "noFire", reason: "scopeMismatch"};
   }
   if (moment.initiation.triggerKind === "lateArrivalAtHotel") {
-    return evaluateLateArrival(moment, event, facts, nowMillis);
+    return evaluateLateArrival(moment, event, facts, event.observedAtMillis);
   }
-  return evaluateFlightDisruption(moment, event, facts, nowMillis);
+  return evaluateFlightDisruption(moment, event, facts, event.observedAtMillis);
 }
 
 function evaluateLateArrival(
@@ -74,7 +82,7 @@ function evaluateLateArrival(
     (facts.functions[trigger.functionId] === undefined ? null : {
       functionId: trigger.functionId,
       ...facts.functions[trigger.functionId],
-    }) : currentFunction(facts, nowMillis);
+    }) : currentFunction(facts, event.observedAtMillis);
   if (!target) return {kind: "noFire", reason: "noCurrentFunction"};
   if (target.cancelled) {
     return {kind: "noFire", reason: "functionCancelled"};
@@ -87,7 +95,7 @@ function evaluateLateArrival(
   return {
     kind: "fire",
     run: {
-      runId: `${moment.momentId}_${event.legId}_${event.readiness}`,
+      runId: travelOccurrenceId(moment, event),
       momentId: moment.momentId,
       dueAtMillis: nowMillis,
       anchorRevision: target.revision,
@@ -115,7 +123,7 @@ function evaluateFlightDisruption(
   return {
     kind: "fire",
     run: {
-      runId: `${moment.momentId}_${event.legId}_${event.flightStatus}`,
+      runId: travelOccurrenceId(moment, event),
       momentId: moment.momentId,
       dueAtMillis: nowMillis,
       anchorRevision: revision,
@@ -149,4 +157,19 @@ function currentFunction(
     }
   }
   return best;
+}
+
+/** Stable across delivery retries and later edits to the Moment. */
+export function travelOccurrenceId(
+  moment: MomentDefinition, event: TravelLegEvent,
+): string {
+  const hash = createHash("sha256").update(JSON.stringify([
+    event.source, event.eventId, event.kind, event.programId, event.legId,
+    moment.momentId,
+  ])).digest("hex");
+  return `travel_v1_${hash}`;
+}
+
+export function isTravelOccurrence(runId: string): boolean {
+  return /^travel_v1_[a-f0-9]{64}$/.test(runId);
 }

@@ -192540,7 +192540,7 @@ export const programDeliveryMessageDocumentSchema = {
         },
         "body": {
           "type": "string",
-          "minLength": 1,
+          "minLength": 0,
           "maxLength": 8000
         },
         "instructionRevision": {
@@ -192580,6 +192580,150 @@ export const programDeliveryMessageDocumentSchema = {
             }
           },
           "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
+        },
+        "activity": {
+          "description": "Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "appRole",
+                "audienceDuty",
+                "scopeIds",
+                "actionKind",
+                "notificationType",
+                "preferenceKey"
+              ],
+              "properties": {
+                "appRole": {
+                  "type": "string",
+                  "const": "host"
+                },
+                "audienceDuty": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "scopeIds": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "maxItems": 200
+                },
+                "actionKind": {
+                  "type": "string",
+                  "const": "push"
+                },
+                "notificationType": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "preferenceKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "appRole",
+                "audienceDuty",
+                "scopeIds",
+                "actionKind",
+                "actionDuty",
+                "severity"
+              ],
+              "properties": {
+                "appRole": {
+                  "type": "string",
+                  "const": "host"
+                },
+                "audienceDuty": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "scopeIds": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "maxItems": 200
+                },
+                "actionKind": {
+                  "type": "string",
+                  "const": "staffAttention"
+                },
+                "actionDuty": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "info",
+                    "warning",
+                    "urgent"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "if": {
+        "required": [
+          "activity"
+        ]
+      },
+      "then": {
+        "required": [
+          "activity"
+        ],
+        "properties": {
+          "permittedRoutes": {
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "const": "catchProgramActivity"
+            }
+          },
+          "recipient": {
+            "properties": {
+              "kind": {
+                "const": "staff"
+              }
+            }
+          }
+        },
+        "not": {
+          "required": [
+            "whatsapp"
+          ]
+        }
+      },
+      "else": {
+        "properties": {
+          "body": {
+            "minLength": 1
+          }
         }
       },
       "x-catch-ownership": "server-only"
@@ -192709,7 +192853,8 @@ export const programDeliveryMessageDocumentSchema = {
                     "enum": [
                       "timeout",
                       "connectionLost",
-                      "workerInterrupted"
+                      "workerInterrupted",
+                      "sdkOutcomeUnknown"
                     ]
                   },
                   "reconcileAfter": {
@@ -193038,6 +193183,31 @@ export const programDeliveryMessageDocumentSchema = {
                     "enum": [
                       "catch"
                     ]
+                  },
+                  "pushSuppressionReason": {
+                    "type": "string",
+                    "enum": [
+                      "noEndpoint",
+                      "preferenceOff"
+                    ],
+                    "description": "Frozen at reservation and claim for local activity only; never FCM submission evidence."
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "provider": {
+                      "const": "fcm"
+                    }
+                  },
+                  "required": [
+                    "provider"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "pushSuppressionReason"
+                    ]
                   }
                 }
               }
@@ -193072,6 +193242,37 @@ export const programDeliveryMessageDocumentSchema = {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "state": {
+              "properties": {
+                "reason": {
+                  "const": "sdkOutcomeUnknown"
+                }
+              },
+              "required": [
+                "reason"
+              ]
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "binding": {
+              "properties": {
+                "routeId": {
+                  "const": "catchProgramActivity"
+                },
+                "provider": {
+                  "const": "fcm"
+                }
               }
             }
           }
@@ -193406,7 +193607,7 @@ export const programDeliveryMessageIntentSchema = {
     },
     "body": {
       "type": "string",
-      "minLength": 1,
+      "minLength": 0,
       "maxLength": 8000
     },
     "instructionRevision": {
@@ -193446,6 +193647,150 @@ export const programDeliveryMessageIntentSchema = {
         }
       },
       "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
+    },
+    "activity": {
+      "description": "Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "appRole",
+            "audienceDuty",
+            "scopeIds",
+            "actionKind",
+            "notificationType",
+            "preferenceKey"
+          ],
+          "properties": {
+            "appRole": {
+              "type": "string",
+              "const": "host"
+            },
+            "audienceDuty": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "scopeIds": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "maxItems": 200
+            },
+            "actionKind": {
+              "type": "string",
+              "const": "push"
+            },
+            "notificationType": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "preferenceKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "appRole",
+            "audienceDuty",
+            "scopeIds",
+            "actionKind",
+            "actionDuty",
+            "severity"
+          ],
+          "properties": {
+            "appRole": {
+              "type": "string",
+              "const": "host"
+            },
+            "audienceDuty": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "scopeIds": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "maxItems": 200
+            },
+            "actionKind": {
+              "type": "string",
+              "const": "staffAttention"
+            },
+            "actionDuty": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "info",
+                "warning",
+                "urgent"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "if": {
+    "required": [
+      "activity"
+    ]
+  },
+  "then": {
+    "required": [
+      "activity"
+    ],
+    "properties": {
+      "permittedRoutes": {
+        "minItems": 1,
+        "maxItems": 1,
+        "items": {
+          "const": "catchProgramActivity"
+        }
+      },
+      "recipient": {
+        "properties": {
+          "kind": {
+            "const": "staff"
+          }
+        }
+      }
+    },
+    "not": {
+      "required": [
+        "whatsapp"
+      ]
+    }
+  },
+  "else": {
+    "properties": {
+      "body": {
+        "minLength": 1
+      }
     }
   },
   "title": "ProgramDeliveryMessageIntent"
@@ -193563,7 +193908,8 @@ export const programDeliveryAttemptSchema = {
               "enum": [
                 "timeout",
                 "connectionLost",
-                "workerInterrupted"
+                "workerInterrupted",
+                "sdkOutcomeUnknown"
               ]
             },
             "reconcileAfter": {
@@ -193892,6 +194238,31 @@ export const programDeliveryAttemptSchema = {
               "enum": [
                 "catch"
               ]
+            },
+            "pushSuppressionReason": {
+              "type": "string",
+              "enum": [
+                "noEndpoint",
+                "preferenceOff"
+              ],
+              "description": "Frozen at reservation and claim for local activity only; never FCM submission evidence."
+            }
+          },
+          "if": {
+            "properties": {
+              "provider": {
+                "const": "fcm"
+              }
+            },
+            "required": [
+              "provider"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "pushSuppressionReason"
+              ]
             }
           }
         }
@@ -193926,6 +194297,37 @@ export const programDeliveryAttemptSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "state": {
+        "properties": {
+          "reason": {
+            "const": "sdkOutcomeUnknown"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      }
+    },
+    "required": [
+      "state"
+    ]
+  },
+  "then": {
+    "properties": {
+      "binding": {
+        "properties": {
+          "routeId": {
+            "const": "catchProgramActivity"
+          },
+          "provider": {
+            "const": "fcm"
+          }
         }
       }
     }
@@ -197796,6 +198198,22 @@ export const organizerMomentRunDocumentSchema = {
     "anchorRevision",
     "status"
   ],
+  "if": {
+    "properties": {
+      "runId": {
+        "pattern": "^travel_v1_[a-f0-9]{64}$"
+      }
+    },
+    "required": [
+      "runId"
+    ]
+  },
+  "then": {
+    "required": [
+      "travelOccurrence",
+      "expiresAtMillis"
+    ]
+  },
   "properties": {
     "runId": {
       "type": "string",
@@ -197909,6 +198327,33 @@ export const organizerMomentRunDocumentSchema = {
         "null"
       ],
       "minimum": 0
+    },
+    "travelOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "momentRevision",
+        "occurredAtMillis",
+        "createdAtMillis"
+      ],
+      "properties": {
+        "momentRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Immutable first-ingestion Moment revision, CloudEvent instant and committed recovery-window origin; never renewed by due-time deferral."
     },
     "automation": {
       "type": [
@@ -198153,9 +198598,10 @@ export const organizerMomentSendDocumentSchema = {
         "read",
         "failed",
         "revoked",
+        "notDispatched",
         null
       ],
-      "description": "Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery."
+      "description": "Outbox evidence projected for this recipient. Unknown never implies confirmed delivery. notDispatched is a proven-unsent retry projection; the original run window and authority still apply."
     }
   }
 };
