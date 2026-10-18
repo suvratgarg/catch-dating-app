@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.22.0
+version: 1.23.0
 updated: 2026-10-18
 owner: app_architecture
 status: active
@@ -1591,6 +1591,67 @@ registry, and point admin and website registry entries for T1–T2
 responsibilities at `catch.*` ids. Reclassify the 149 admin feature-family
 entries from `shared-primitive` to feature components. DoD: one file assigns
 component identity; the lexicon, coverage and sync tools read the new records.
+
+**Phase 7c status (2026-10-18).** Landed on `codex/xf-react-registry-7c`. The
+`surfaces` map is gone. `dart` already named the Flutter symbol and file, so it
+stays the Flutter record, and a `react` record beside it names the
+`@catch/web-ui` symbol, file, `api` and Storybook coverage. Nine contracts have
+one, all `api: headless-control`: these nine records and their surface
+adapters are the set Phase 7e replaces, and a `styled` record must reuse the
+Flutter symbol (D9). The contract check rejects a `react` record on T3 or T4.
+
+- **web-ui registry merged and deleted.** Its eight entries became `react`
+  records, and its two readers now read the registry: the lexicon check, and
+  the `webui` surface of the Storybook visual check, which captures the same
+  seven stories. Two entries had no concept and now map to existing ones:
+  `CheckboxControl` to `catch.toggle`, because Flutter renders a single
+  boolean input as a switch and has no checkbox, and `DataTableControl` to
+  `catch.table`. `ToggleGroupControl` maps to `catch.chip.field`, and
+  `SelectControl` and `TextareaControl` are additional `catch.field` symbols.
+  `LottieAnimationControl` and `classNames` were never registered; Phase 7d
+  maps them.
+- **`tsType`.** 426 props on the T1 and T2 contracts at L2–L4 carry `tsType`
+  beside `dartType`. Thirteen are `null`: Flutter mechanisms such as `Key`,
+  `FocusNode` and controllers, which have no React prop. L5 bindings and L6
+  screen contracts carry none, because each framework binds its own domain
+  data (D14, D15). The mapping table lives in `design/components/README.md`.
+  The contract check enforces presence, the `null` list, enum names, and the
+  callback, widget and scalar shapes. On first run it rejected four values the
+  mechanical mapping produced: two builder typedefs, the menu trigger builder,
+  and `BoxFit`.
+- **Surface adapters point at registry ids.** `lexicon` plus `lexiconId`
+  became one `componentId` field: seven website entries and eight admin
+  entries. The website `Button` and `TextField` adapters existed only in the
+  old `surfaces` map, so they now have entries of their own. The lexicon check
+  proves each `componentId` names a T1 or T2 contract and that the export
+  exists. It also proves every `dart`, `react` and story symbol is declared in
+  its named file.
+- **Admin feature components.** The TypeScript checker traced every
+  `shared-primitive` entry's production consumers, following uses through
+  other shared components and excluding tests and stories. 129 have one
+  feature consumer: marketing 86, intake 29, overview 6, events 4,
+  organizers 3, cross-paths 1. Seventeen more render only in the app shell.
+  All 146 are now `feature-component` entries owned by that feature or `app`,
+  and still live in `admin/src/shared/ui` until Phase 7e moves them. The
+  2026-10-17 figure of 149 grouped entries by name family. The difference is
+  20 name-family entries that no production code renders; together with four
+  others, these 24 are Phase 7d deletion decisions. 65 entries have more than
+  one consumer and remain `shared-primitive`.
+- **Sync.** Design-sync mappings carry `reactSymbol`, `reactFile` and
+  `reactApi`. The manifest's behavior source now names the registry contract,
+  with Flutter as the reference implementation (D11).
+
+Deviations: `design/web-ui/shared_primitive_adoption.json` stays until Phase
+7d. Its rows form an adoption queue, not a component registry, and its
+classification gate (every package export and every exact-name overlap) is
+what the 7d inventory replaces. Two items wait on the task that holds
+`tool/tools_manifest.json`: listing the website and admin registries and
+`packages/web-ui/src` as `design:component-lexicon` impact paths, and a
+`root-npm` gate for the ownership measurement, which 7d's inventory check
+needs anyway. Drift surfaced but not fixed here: website `routeIds` are
+maintained by hand and are wrong. For example, `StatusBadge` lists `claim`,
+which never renders it, and omits `event_detail_canonical`, which does. Phase
+7d derives route coverage from the same reference graph.
 
 **Phase 7d — Generated React inventory.** A deterministic scan of
 `website/`, `admin/` and `packages/web-ui` maps every exported component to
