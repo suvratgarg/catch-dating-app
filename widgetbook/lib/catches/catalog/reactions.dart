@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -12,12 +12,12 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Reaction control states',
-  type: ProfileReactionControls,
+  type: ProfileReactionAction,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget catchesReactionControlStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ProfileReactionControls',
+    title: 'ProfileReactionAction',
     contractId: 'screen.catches.event.reaction_controls',
     children: [
       WidgetbookPageStateCard(
@@ -30,26 +30,26 @@ Widget catchesReactionControlStates(BuildContext context) {
               runSpacing: CatchSpacing.s4,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                ProfileReactionControls(
+                ProfileReactionAction(
                   target: _reactionTarget,
                   onReact: widgetbookCatchesNoopReaction,
                 ),
-                ProfileReactionControls(
+                ProfileReactionAction(
                   target: _reactionTarget,
                   onReact: widgetbookCatchesNoopReaction,
-                  style: ProfileReactionControlsStyle.overlay,
+                  style: ProfileReactionActionVariant.overlay,
                 ),
-                ProfileReactionControls(
+                ProfileReactionAction(
                   target: _reactionTarget,
                   onReact: widgetbookCatchesNoopReaction,
                   axis: Axis.vertical,
                 ),
-                ProfileReactionControls(
+                ProfileReactionAction(
                   target: _reactionTarget,
                   onReact: widgetbookCatchesNoopReaction,
                   enabled: false,
                 ),
-                ProfileReactionControls(
+                ProfileReactionAction(
                   target: _reactionTarget,
                   onReact: widgetbookCatchesNoopReaction,
                   isPending: true,
@@ -65,12 +65,12 @@ Widget catchesReactionControlStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Reaction button states',
-  type: ReactionControlButton,
+  type: ProfileReactionButton,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget reactionControlButtonStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ReactionControlButton',
+    title: 'ProfileReactionButton',
     contractId: 'screen.catches.event.reaction_button',
     children: [
       WidgetbookPageStateCard(
@@ -78,11 +78,11 @@ Widget reactionControlButtonStates(BuildContext context) {
         child: WidgetbookCatchesSectionFrame(
           height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Center(
-            child: ReactionControlButton(
+            child: ProfileReactionButton(
               tooltip: 'Like prompt',
               icon: CatchIcons.favoriteBorderRounded,
               onPressed: widgetbookNoop,
-              style: ProfileReactionControlsStyle.surface,
+              style: ProfileReactionActionVariant.surface,
             ),
           ),
         ),
@@ -95,18 +95,18 @@ Widget reactionControlButtonStates(BuildContext context) {
             child: Wrap(
               spacing: CatchSpacing.s3,
               children: [
-                ReactionControlButton(
+                ProfileReactionButton(
                   tooltip: 'Comment on photo',
                   icon: CatchIcons.chatBubbleOutlineRounded,
                   onPressed: widgetbookNoop,
-                  style: ProfileReactionControlsStyle.overlay,
+                  style: ProfileReactionActionVariant.overlay,
                   isPending: true,
                 ),
-                ReactionControlButton(
+                ProfileReactionButton(
                   tooltip: 'Like section unavailable',
                   icon: CatchIcons.favoriteBorderRounded,
                   onPressed: null,
-                  style: ProfileReactionControlsStyle.surface,
+                  style: ProfileReactionActionVariant.surface,
                 ),
               ],
             ),

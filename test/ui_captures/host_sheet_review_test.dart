@@ -15,7 +15,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ void main() {
       ),
       smsReadiness: HostCrmChannelReadiness.currentEventOnly,
     ),
-    'people-sort': (_) => HostCustomerDirectoryControls(
+    'people-sort': (_) => HostCustomerControlSection(
       sort: HostCustomerSort.lastSeen,
       onSortChanged: (_) {},
       onOpenFilters: () {},

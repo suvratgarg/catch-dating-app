@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
@@ -12,8 +15,97 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'private_event_details_test_support.dart';
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  test(
+    'photo upload locks duplicate edits and retries the exact attachment',
+    () async {
+      final upload = Completer<List<UploadedPhoto>>();
+      final sent = <PrivateEventDetailsUpdateRequest>[];
+      var picks = 0;
+      final controller = _reconciliationController(
+        (_) async => _progress,
+        pickAndUploadPhotos: (_) {
+          picks++;
+          return upload.future;
+        },
+        writeDetails: (request) async {
+          sent.add(request);
+          throw StateError('Response lost');
+        },
+      );
+      addTearDown(controller.dispose);
+      await controller.load();
+      final saving = controller.addPhotos();
+      expect(controller.uploading, isTrue);
+      expect(controller.canEdit, isFalse);
+      await controller.addPhotos();
+      expect(picks, 1);
+      upload.complete([
+        UploadedPhoto.fromUpload(
+          url: 'https://example.com/photo.jpg',
+          storagePath: 'events/event-1/media/p1/original.jpg',
+          position: 0,
+        ),
+      ]);
+      await saving;
+      expect(controller.pending?.details.eventPhotos, hasLength(1));
+      expect(controller.canEdit, isFalse);
+      final original = jsonEncode(sent.single.toJson());
+      await controller.retryPending();
+      expect(sent, hasLength(2));
+      expect(jsonEncode(sent.last.toJson()), original);
+      expect(picks, 1);
+    },
+  );
+
+  test(
+    'optional media and itinerary survive JSON journal and explicit clearing',
+    () {
+      final photo = UploadedPhoto.fromUpload(
+        url: 'https://example.com/photo.jpg',
+        storagePath: 'events/event1/media/photo/original.jpg',
+        position: 0,
+        now: DateTime(2026),
+      );
+      final patch = PrivateEventDetailsPatch(
+        eventPhotos: [photo],
+        itinerary: const [
+          EventItineraryItem(
+            id: 'stop1',
+            kind: EventItineraryKind.stop,
+            offsetMinutes: 10,
+            title: 'Water stop',
+            durationMinutes: 5,
+            routeDistanceMeters: 800,
+          ),
+        ],
+      );
+      final restored = PrivateEventDetailsPatch.fromJson(
+        Map<String, Object?>.from(
+          jsonDecode(jsonEncode(patch.toJson())) as Map,
+        ),
+      );
+      expect(restored.eventPhotos, [photo]);
+      expect(restored.itinerary, patch.itinerary);
+      expect(restored.toJson(), patch.toJson());
+      const clear = PrivateEventDetailsPatch(eventPhotos: [], itinerary: []);
+      expect(clear.isValid, isTrue);
+      expect(clear.toJson(), {'eventPhotos': [], 'itinerary': []});
+      final snapshot = PrivateEventDetailsSnapshot.fromResponse({
+        'endTimeMillis': null,
+        'venueName': null,
+        'sourceVenueId': null,
+        'eventFormat': null,
+        ...patch.toJson(),
+      });
+      expect(snapshot.eventPhotos, [photo]);
+      expect(snapshot.itinerary, patch.itinerary);
+    },
+  );
 
   test(
     'partial details preserve inherit, set and clear without implied values',
@@ -223,16 +315,14 @@ void main() {
         );
       }
 
-      PrivateEventDetailsController controller() =>
-          PrivateEventDetailsController(
-            userId: 'host-1',
-            organizerId: 'club-1',
-            eventId: 'event-1',
-            readEvent: ({required organizerId, required eventId}) async =>
-                read(),
-            readDefaults: (_) async => defaults,
-            write: write,
-          );
+      TestPrivateEventDetailsController controller() => createDetailsController(
+        userId: 'host-1',
+        organizerId: 'club-1',
+        eventId: 'event-1',
+        readEvent: ({required organizerId, required eventId}) async => read(),
+        readDefaults: (_) async => defaults,
+        write: write,
+      );
       final first = controller();
       await first.load();
       // Existing guests lock basic/format changes, not later venue or duration.
@@ -285,7 +375,7 @@ void main() {
   test('failed details reread disables stale editing', () async {
     final hash = List.filled(64, 'a').join();
     var denied = false;
-    final controller = PrivateEventDetailsController(
+    final controller = createDetailsController(
       userId: 'host-1',
       organizerId: 'club-1',
       eventId: 'event-1',
@@ -342,7 +432,7 @@ void main() {
       var cancelled = false;
       var currentUid = 'host-1';
       var writes = 0;
-      final controller = PrivateEventDetailsController(
+      final controller = createDetailsController(
         userId: 'host-1',
         organizerId: 'club-1',
         eventId: 'event-1',
@@ -656,22 +746,27 @@ const _progress = PrivateSeatReconciliationResult.pending(
     scannedRows: 25,
   ),
 );
-PrivateEventDetailsController _reconciliationController(
+TestPrivateEventDetailsController _reconciliationController(
   Future<PrivateSeatReconciliationResult> Function(
     PrivateEventDetailsUpdateRequest,
   )
   reconcile, {
   String? Function()? currentUserId,
+  WritePrivateEventDetails? writeDetails,
+  Future<List<UploadedPhoto>> Function(int)? pickAndUploadPhotos,
 }) {
   final hash = List.filled(64, 'a').join();
-  return PrivateEventDetailsController(
+  return createDetailsController(
     userId: 'host-1',
     organizerId: 'club-1',
     eventId: 'event-1',
     currentUserId: currentUserId,
     reconcile: reconcile,
-    write: (_) async =>
-        throw StateError('Admission terms must use reconciliation'),
+    pickAndUploadPhotos: pickAndUploadPhotos,
+    write:
+        writeDetails ??
+        (_) async =>
+            throw StateError('Admission terms must use reconciliation'),
     readEvent: ({required organizerId, required eventId}) async =>
         const PrivateEventBasicSummary(
           eventId: 'event-1',

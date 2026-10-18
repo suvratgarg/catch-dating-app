@@ -738,23 +738,22 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(find.text('+1'), findsOneWidget);
   });
 
-  testWidgets(
-    'CatchActivityMapPin renders selected flag and activity pigment pin',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const CatchActivityMapPin(
-            activityKind: ActivityKind.socialRun,
-            selected: true,
-            label: 'SOCIAL RUN · 6:30 AM',
-          ),
+  testWidgets('ActivityMapPin renders selected flag and activity pigment pin', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const ActivityMapPin(
+          activityKind: ActivityKind.socialRun,
+          selected: true,
+          label: 'SOCIAL RUN · 6:30 AM',
         ),
-      );
+      ),
+    );
 
-      expect(find.text('SOCIAL RUN · 6:30 AM'), findsOneWidget);
-      expect(find.byIcon(CatchIcons.pin), findsOneWidget);
-    },
-  );
+    expect(find.text('SOCIAL RUN · 6:30 AM'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.pin), findsOneWidget);
+  });
 
   testWidgets('CatchDistanceOverlay renders tappable map radius label', (
     tester,

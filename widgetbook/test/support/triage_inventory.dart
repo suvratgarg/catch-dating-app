@@ -272,6 +272,8 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
 // Preserve the migration denominator across shared UI and app adapters: every public
 // Catch* core class, including descriptors and controllers, remains inventoried
 // when moved into the package. Nonvisual classes need an explicit disposition.
+// App-coupled lib/core/widgets follow feature naming without the Catch prefix,
+// so their public widget classes are inventoried by base type instead.
 List<Map<String, Object?>> _coreSurface() {
   final files = [
     for (final root in [
@@ -291,7 +293,12 @@ List<Map<String, Object?>> _coreSurface() {
   return [
     for (final file in files)
       for (final node in _unit(file).declarations.whereType<ClassDeclaration>())
-        if (node.namePart.typeName.lexeme.startsWith('Catch'))
+        if (node.namePart.typeName.lexeme.startsWith('Catch') ||
+            (file.startsWith('lib/core/widgets/') &&
+                !node.namePart.typeName.lexeme.startsWith('_') &&
+                (node.extendsClause?.superclass.toSource() ?? '').endsWith(
+                  'Widget',
+                )))
           {
             'name': node.namePart.typeName.lexeme,
             'file': file,

@@ -10,7 +10,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         tester,
         Scaffold(
           body: SingleChildScrollView(
-            child: HostClubOrganizerOverviewController(club: club),
+            child: HostClubOrganizerSectionList(club: club),
           ),
         ),
         overrides: [
@@ -147,7 +147,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expectSharedChrome();
     expect(
       CatchFieldInteractionPlaneScope.outsetsOf(
-        tester.element(find.byType(HostClubEditTab)),
+        tester.element(find.byType(HostClubEditBody)),
       ),
       EdgeInsets.zero,
     );
@@ -206,11 +206,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(HostAnalyticsPeriodInput), findsOneWidget);
 
     expectSharedChrome();
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(find.byType(HostClubInsightsSection), findsOneWidget);
     final insightsBodyPadding = tester
         .widgetList<SliverPadding>(
           find.ancestor(
-            of: find.byType(HostClubInsightsPane),
+            of: find.byType(HostClubInsightsSection),
             matching: find.byType(SliverPadding),
           ),
         )
@@ -219,7 +219,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
               padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
         );
     expect(insightsBodyPadding, isEmpty);
-    expect(find.byType(HostAnalyticsTrendPanel), findsOneWidget);
+    expect(find.byType(HostAnalyticsTrendSection), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(CatchRootScreenScaffold),
@@ -338,7 +338,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         ],
       );
 
-      final editTab = find.byType(HostClubEditTab);
+      final editTab = find.byType(HostClubEditBody);
       expect(editTab, findsOneWidget);
       expect(
         tester.getSize(editTab).width,
@@ -349,7 +349,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         closeTo(CatchLayout.workspaceEditorWidth / 2, 0.1),
       );
       expect(
-        tester.getSize(find.byType(HostClubMediaSummary)).width,
+        tester.getSize(find.byType(HostClubMediaRail)).width,
         closeTo(
           CatchLayout.workspaceEditorWidth - CatchInsets.pageBody.horizontal,
           0.1,
@@ -626,7 +626,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       tester,
       Scaffold(
         body: SingleChildScrollView(
-          child: HostClubEditTab(
+          child: HostClubEditBody(
             club: club,
             currentUid: _hostUid,
             isOwner: true,
@@ -855,7 +855,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     await pumpFeatureUi(tester);
     expect(positionFor(insightsKey).pixels, 0);
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(find.byType(HostClubInsightsSection), findsOneWidget);
 
     final insightsPosition = positionFor(insightsKey);
     expect(insightsPosition.maxScrollExtent, greaterThan(0));
@@ -891,7 +891,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: HostAnalyticsTrendPanel(
+          body: HostAnalyticsTrendSection(
             points: points,
             granularity: HostAnalyticsGranularity.week,
           ),
@@ -899,7 +899,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
     );
 
-    expect(find.byType(HostAnalyticsDualBar), findsNWidgets(30));
+    expect(find.byType(HostAnalyticsBarTile), findsNWidgets(30));
     expect(find.byType(CatchSection), findsOneWidget);
   });
 

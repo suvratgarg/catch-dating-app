@@ -521,8 +521,11 @@ export async function prepareEventOfferHandoff(params: {
     return {reviewed, sourceResponseId: context.sourceResponseId};
   });
   const {reviewed, sourceResponseId} = prepared;
-  if (reviewed.payment.collectionMode !== "catchCheckout" ||
-      !params.issueInvitation) return prepareOfferHandoff(reviewed);
+  const recipientFlow = reviewed.payment.collectionMode === "catchCheckout" ||
+    reviewed.payment.expectedAmountMinor === 0;
+  if (!recipientFlow || !params.issueInvitation) {
+    return prepareOfferHandoff(reviewed);
+  }
   // Validate communication/template eligibility before creating a grant. This
   // syntactic placeholder is never returned or stored. Issuance then rereads
   // current manager, offer revision, source and phone in its own transaction.

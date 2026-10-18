@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -92,7 +92,7 @@ void main() {
     await tester.ensureVisible(promptLikeButton);
     await tester.pump();
     await tester.drag(
-      find.byKey(CatchProfileView.scrollViewKey),
+      find.byKey(ProfileBody.scrollViewKey),
       const Offset(0, -180),
     );
     await tester.pump();

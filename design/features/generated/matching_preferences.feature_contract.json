@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:e84ef75b600a870215df6cecd5f745315adf12cdebc98a39974fee83ce0ec655",
+  "sourceDigest": "sha256:7f7060196f0d75462b849080b8decdcde159751c0e7a211edef6cd7e6ece096e",
+  "resolvedDigest": "sha256:16733832afe40bd8fa8f7462afcfb2ab707062a7096635fb59bd68b9b1063abe",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -54,7 +54,7 @@
             "id": "filters_content",
             "language": "dart",
             "file": "lib/swipes/presentation/filters_screen.dart",
-            "symbol": "FiltersContent"
+            "symbol": "FiltersBody"
           },
           {
             "id": "filters_controller",
@@ -442,7 +442,7 @@
             ],
             "previewIds": [
               "FiltersScreen/Route states",
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ],
             "tests": [
               "test/swipes/filters_screen_test.dart"
@@ -489,7 +489,7 @@
               "filters_dirty_edit"
             ],
             "previewIds": [
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ],
             "tests": [
               "test/swipes/filters_screen_test.dart"
@@ -536,7 +536,7 @@
               "filters_reset_restored"
             ],
             "previewIds": [
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ],
             "tests": []
           },
@@ -581,7 +581,7 @@
               "filters_save_pending"
             ],
             "previewIds": [
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ],
             "tests": [
               "test/swipes/filters_screen_state_test.dart"
@@ -716,7 +716,7 @@
             ],
             "previewIds": [
               "FiltersScreen/Route states",
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ],
             "tests": []
           },
@@ -762,7 +762,7 @@
             ],
             "previewIds": [
               "FiltersScreen/Route states",
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ],
             "tests": []
           },
@@ -888,7 +888,7 @@
           }
         ],
         "previews": [
-          "FiltersContent/Content states",
+          "FiltersBody/Content states",
           "FiltersScreen/Route states"
         ]
       }

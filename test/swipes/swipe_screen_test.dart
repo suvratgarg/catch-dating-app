@@ -46,7 +46,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(CatchScaffold), findsOneWidget);
-    expect(find.byType(CatchesProfileReviewSkeleton), findsOneWidget);
+    expect(find.byType(CatchesProfileBodySkeleton), findsOneWidget);
     expect(find.byType(ProfileSurfaceSkeleton), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);

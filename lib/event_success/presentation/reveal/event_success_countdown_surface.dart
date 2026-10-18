@@ -77,7 +77,11 @@ class EventSuccessCountdownSurface extends StatelessWidget {
           Color.lerp(t.ink, t.primary, 0.42)!,
         ],
       ),
-      borderColor: t.gold.withValues(alpha: CatchOpacity.revealGoldBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.gold.withValues(alpha: CatchOpacity.revealGoldBorder),
+      ),
       boxShadow: CatchElevation.glow(
         t.primary.withValues(
           alpha:

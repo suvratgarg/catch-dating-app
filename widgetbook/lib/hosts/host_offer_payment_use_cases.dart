@@ -13,8 +13,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
-
 import '../support/page_preview.dart';
+import 'event_editor_preview.dart';
 import 'operations/preview.dart';
 
 @widgetbook.UseCase(
@@ -269,23 +269,12 @@ Widget hostOfferPaymentReviewSheetPreview(BuildContext context) {
 )
 Widget hostOfferPaymentSetupPageBodyPreview(BuildContext context) {
   final hash = List.filled(64, 'a').join();
-  EventOfferPreferencesController controller({
+  EventPreferencesEditorState controller({
     PrivateEventPreferencesSnapshot? preferences,
     ManagerEventSetupPreferences defaultPreferences =
         const ManagerEventSetupPreferences(),
   }) {
-    final controller = EventOfferPreferencesController(
-      userId: 'preview-host',
-      organizerId: 'preview-club',
-      eventId: 'preview-published-event',
-      displayName: 'Saturday mixer',
-      readConfiguration: ({required organizerId, required eventId}) async =>
-          throw StateError('Preview does not read offer settings'),
-      readDefaults: (_) async =>
-          throw StateError('Preview does not read defaults'),
-      write: (_) async => throw StateError('Preview does not submit settings'),
-    );
-    controller.configuration = EventOfferConfiguration(
+    final configuration = EventOfferConfiguration(
       organizerId: 'preview-club',
       eventId: 'preview-published-event',
       eventSourceRevision: 8,
@@ -295,7 +284,7 @@ Widget hostOfferPaymentSetupPageBodyPreview(BuildContext context) {
       preferencesRevision: preferences?.revision ?? 0,
       preferences: preferences,
     );
-    controller.defaults = ManagerEventSetupDefaults(
+    final defaults = ManagerEventSetupDefaults(
       organizerId: 'preview-club',
       cityId: 'in-mh-mumbai',
       marketId: 'in-mh-mumbai',
@@ -307,18 +296,20 @@ Widget hostOfferPaymentSetupPageBodyPreview(BuildContext context) {
       preferencesHash: hash,
       reviewedDefaultsHash: hash,
     );
-    return controller;
+    return EventPreferencesEditorState(
+      configuration: configuration,
+      defaults: defaults,
+      published: true,
+      displayName: 'Saturday mixer',
+    );
   }
 
-  Widget card(String label, EventOfferPreferencesController controller) =>
+  Widget card(String label, EventPreferencesEditorState controller) =>
       WidgetbookPageStateCard(
         label: label,
         child: WidgetbookHostDeviceFrame(
           child: ProviderScope(
-            child: HostOfferPaymentSetupPageBody(
-              controller: controller,
-              onBack: () {},
-            ),
+            child: eventPreferencesPreview(controller, onBack: () {}),
           ),
         ),
       );

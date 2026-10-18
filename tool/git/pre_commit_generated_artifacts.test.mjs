@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
@@ -40,6 +42,7 @@ test("ARB generation, Dart formatting, explicit staging, and freshness checks st
     graph,
     repoRoot: "/fixture",
     runCommand: (spec) => {
+      if (spec.encoding === "buffer") return {status: 0, stdout: ""};
       calls.push({command: spec.command, args: spec.args});
       return {status: 0, stderr: "", stdout: ""};
     },
@@ -150,6 +153,7 @@ test("Functions TypeScript changes require staged dependency closure", () => {
     graph,
     repoRoot: "/fixture",
     runCommand: (spec) => {
+      if (spec.encoding === "buffer") return {status: 0, stdout: ""};
       calls.push({command: spec.command, args: spec.args});
       return {status: 0, stderr: "", stdout: ""};
     },
@@ -181,6 +185,7 @@ test("schema-generated Dart keeps exact generator ownership while source formats
   const result = runPreCommitGeneratedArtifacts({
     fileExists: () => true, graph, repoRoot: "/fixture",
     runCommand: (spec) => {
+      if (spec.encoding === "buffer") return {status: 0, stdout: ""};
       calls.push({command: spec.command, args: spec.args});
       return {status: 0, stderr: "", stdout: ""};
     },
@@ -199,6 +204,7 @@ test("stale generated Dart still rejects the commit without a formatter rewrite"
   assert.throws(() => runPreCommitGeneratedArtifacts({
     fileExists: () => true, graph, repoRoot: "/fixture",
     runCommand: (spec) => {
+      if (spec.encoding === "buffer") return {status: 0, stdout: ""};
       calls.push(spec);
       return {status: 1, stderr: "stale schema output", stdout: ""};
     },
@@ -211,3 +217,258 @@ test("stale generated Dart still rejects the commit without a formatter rewrite"
   assert.deepEqual(calls[0].args,
     ["-c", "node tool/contracts/generate_schema_contracts.mjs --check"]);
 });
+
+test("admin exclusions match the planner while declared outputs still trigger", () => {
+  for (const candidate of ["admin/src/example.test.ts", "admin/src/example.stories.tsx"]) {
+    assert.equal(planPreCommitActions({graph, stagedPaths: [candidate]})
+      .triggeredGeneratorIds.includes("admin.callable-validators"), false, candidate);
+  }
+  for (const candidate of ["admin/src/example.ts", "admin/src/generated/validators/adminCallableValidators.ts"]) {
+    assert.equal(planPreCommitActions({graph, stagedPaths: [candidate]})
+      .triggeredGeneratorIds.includes("admin.callable-validators"), true, candidate);
+  }
+});
+
+const arb = "lib/l10n/app_en.arb";
+const output = "lib/l10n/generated/app_localizations.dart";
+const fixtureGraph = {compileCodegen: [{
+  id: "flutter.l10n", inputs: [arb, "l10n.yaml"], outputs: [output],
+  writeCommand: "fixture-generate", checkCommand: "fixture-check",
+}, {
+  id: "fixture.admin", inputs: ["admin/src/**"],
+  inputExcludes: ["admin/src/**/*.test.*", "admin/src/**/*.stories.*", "admin/src/generated/**"],
+  outputs: ["admin/src/generated/validators.ts"],
+  writeCommand: "fixture-admin-generate", checkCommand: "fixture-admin-check",
+}]};
+
+function gitFixture(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-hook-index-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const mutations = [];
+  const invokeGit = (...args) => spawnSync("git", args, {cwd: root,
+    env: {...process.env, GIT_OPTIONAL_LOCKS: "0", GIT_NO_LAZY_FETCH: "1"}});
+  const git = (...args) => {
+    const result = invokeGit(...args);
+    assert.equal(result.status, 0, result.stderr?.toString());
+    return result;
+  };
+  const write = (name, value) => {
+    fs.mkdirSync(path.dirname(path.join(root, name)), {recursive: true});
+    fs.writeFileSync(path.join(root, name), value);
+  };
+  git("init", "-q");
+  for (const [name, value] of Object.entries({[arb]: "original", [output]: "original",
+    "l10n.yaml": "config", "lib/example.dart": "original",
+    "admin/src/client.ts": "original", "admin/src/example.test.ts": "test",
+    "admin/src/generated/validators.ts": "original", ".gitignore": "*.ignored\n",
+    "tool/harness/component_graph.json": JSON.stringify(fixtureGraph)})) write(name, value);
+  git("add", "--", ".");
+  git("-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false",
+    "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "base");
+  const stage = (name, value) => { write(name, value); git("add", "--", name); };
+  const runCommand = (spec) => {
+    if (spec.command === "git") {
+      if (spec.encoding !== "buffer") mutations.push(spec);
+      return invokeGit(...spec.args);
+    }
+    mutations.push(spec);
+    if (spec.command === "/bin/sh" && spec.args[1] === "fixture-generate") {
+      write(output, fs.readFileSync(path.join(root, arb)));
+    }
+    if (spec.command === "/bin/sh" && spec.args[1] === "fixture-check") {
+      assert.deepEqual(fs.readFileSync(path.join(root, output)), fs.readFileSync(path.join(root, arb)));
+    }
+    return {status: 0};
+  };
+  const run = () => runPreCommitGeneratedArtifacts({repoRoot: root, runCommand});
+  const snapshot = () => {
+    const files = {};
+    const visit = (dir) => {
+      for (const entry of fs.readdirSync(path.join(root, dir), {withFileTypes: true})) {
+        if (entry.name === ".git") continue;
+        const relative = path.join(dir, entry.name);
+        if (entry.isDirectory()) visit(relative);
+        else files[relative] = entry.isSymbolicLink() ? {symlink: fs.readlinkSync(path.join(root, relative))} :
+          fs.readFileSync(path.join(root, relative));
+      }
+    };
+    visit("");
+    return {index: fs.readFileSync(path.join(root, ".git/index")), files};
+  };
+  const refusesWithoutWrites = () => {
+    const before = snapshot();
+    assert.throws(run, error => error instanceof PreCommitGeneratedArtifactError && /Refusing/.test(error.message));
+    assert.deepEqual(mutations, []);
+    assert.deepEqual(snapshot(), before);
+  };
+  return {root, git, write, stage, run, runCommand, mutations, snapshot, refusesWithoutWrites};
+}
+
+for (const [label, prepare] of [
+  ["partially staged ARB", f => f.write(arb, "unstaged")],
+  ["other selected input", f => f.write("l10n.yaml", "unstaged")],
+  ["unstaged input deletion", f => fs.unlinkSync(path.join(f.root, "l10n.yaml"))],
+  ["unstaged output", f => f.write(output, "unstaged")],
+  ["partially staged output", f => { f.stage(output, "staged"); f.write(output, "unstaged"); }],
+  ["unstaged output deletion", f => fs.unlinkSync(path.join(f.root, output))],
+  ["staged output deletion", f => f.git("rm", "--", output)],
+  ["reintroduced deleted output", f => { f.git("rm", "--", output); f.write(output, "untracked"); }],
+  ["reintroduced deleted input", f => { f.git("rm", "--", "l10n.yaml"); f.write("l10n.yaml", "untracked"); }],
+  ["untracked wildcard input", f => f.write("lib/l10n/app_fr.arb", "untracked")],
+  ["ignored wildcard input", f => { f.write(".git/info/exclude", "*.arb\n"); f.write("lib/l10n/app_fr.arb", "ignored"); }],
+  ["ignored output collision", f => { f.git("rm", "--", output); f.write(".git/info/exclude", "*.dart\n"); f.write(output, "ignored"); }],
+  ["hidden assume-unchanged input", f => { f.git("update-index", "--assume-unchanged", "l10n.yaml"); f.write("l10n.yaml", "hidden"); }],
+  ["hidden skip-worktree input", f => { f.git("update-index", "--skip-worktree", "l10n.yaml"); f.write("l10n.yaml", "hidden"); }],
+]) {
+  test(`${label} fails before generation, formatting, or staging`, t => {
+    const f = gitFixture(t);
+    f.stage(arb, "staged");
+    prepare(f);
+    f.refusesWithoutWrites();
+  });
+}
+
+test("clean staged ARB generates and stages its exact contents with unrelated dirt preserved", t => {
+  const f = gitFixture(t);
+  f.stage(arb, "staged");
+  f.write("unrelated.txt", "private");
+  f.write("lib/example.dart", "unstaged");
+  const result = f.run();
+  assert.deepEqual(result.generated, ["flutter.l10n"]);
+  assert.equal(f.git("show", `:${output}`).stdout.toString(), "staged");
+  assert.equal(fs.readFileSync(path.join(f.root, "lib/example.dart"), "utf8"), "unstaged");
+  assert.equal(f.git("show", ":lib/example.dart").stdout.toString(), "original");
+  assert.equal(fs.readFileSync(path.join(f.root, "unrelated.txt"), "utf8"), "private");
+});
+
+test("a new output absent from both index and worktree can be generated", t => {
+  const f = gitFixture(t);
+  f.git("rm", "--", output);
+  f.git("-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false",
+    "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "no output");
+  f.stage(arb, "staged");
+  f.run();
+  assert.equal(f.git("show", `:${output}`).stdout.toString(), "staged");
+});
+
+test("clean output-only change runs freshness checks without regeneration", t => {
+  const f = gitFixture(t);
+  f.stage("admin/src/generated/validators.ts", "staged");
+  assert.deepEqual(f.run().checked, ["fixture.admin"]);
+  assert.equal(f.mutations.some(spec => spec.command === "git"), false);
+});
+
+test("excluded tracked and untracked test/story inputs do not block selected admin checks", t => {
+  const f = gitFixture(t);
+  f.stage("admin/src/client.ts", "staged");
+  f.write("admin/src/example.test.ts", "unstaged");
+  f.write("admin/src/private.stories.tsx", "untracked");
+  assert.deepEqual(f.run().checked, ["fixture.admin"]);
+});
+
+test("check-only families reject unstaged outputs", t => {
+  const f = gitFixture(t);
+  f.stage("admin/src/client.ts", "staged");
+  f.write("admin/src/generated/validators.ts", "unstaged");
+  f.refusesWithoutWrites();
+});
+
+test("a staged Dart deletion stays deleted and a reintroduced file is preserved", t => {
+  const f = gitFixture(t);
+  f.git("rm", "--", "lib/example.dart");
+  assert.deepEqual(f.run().formattedDartPaths, []);
+  f.write("lib/example.dart", "untracked");
+  f.refusesWithoutWrites();
+});
+
+test("NUL-delimited names with spaces and newlines retain partial staging protection", t => {
+  const f = gitFixture(t);
+  f.stage("lib/space and\nnewline.dart", "staged");
+  f.write("lib/space and\nnewline.dart", "unstaged");
+  f.refusesWithoutWrites();
+});
+
+test("Git discovery errors and truncated path data fail before writes", t => {
+  const f = gitFixture(t);
+  f.stage(arb, "staged");
+  for (const response of [{status: 1, stderr: "discovery failed"},
+    {status: 0, stdout: "unterminated"}, {status: 0, error: new Error("spawn failed")}]) {
+    const before = f.snapshot();
+    assert.throws(() => runPreCommitGeneratedArtifacts({graph: fixtureGraph, repoRoot: f.root,
+      runCommand: spec => spec.command === "git" && spec.args[0] === "ls-files" ? response : f.runCommand(spec),
+    }), PreCommitGeneratedArtifactError);
+    assert.deepEqual(f.snapshot(), before);
+    assert.deepEqual(f.mutations, []);
+  }
+});
+
+for (const mode of ["unstaged", "assume-unchanged", "skip-worktree", "reintroduced"]) {
+  test(`${mode} catalog cannot disable selected checks`, t => {
+    const f = gitFixture(t);
+    const catalog = "tool/harness/component_graph.json";
+    f.stage(arb, "staged");
+    if (mode === "reintroduced") f.git("rm", "--", catalog);
+    else if (mode !== "unstaged") f.git("update-index", `--${mode}`, catalog);
+    f.write(catalog, JSON.stringify({compileCodegen: []}));
+    f.refusesWithoutWrites();
+  });
+}
+
+for (const candidate of ["l10n.yaml", output, "lib/example.dart", "tool/harness/component_graph.json"]) {
+  test(`indexed symlink at ${candidate} refuses indirect working-tree data`, t => {
+    const f = gitFixture(t);
+    const target = "private-target.txt";
+    f.stage(target, candidate.endsWith(".json") ? JSON.stringify(fixtureGraph) : "original");
+    fs.unlinkSync(path.join(f.root, candidate));
+    fs.symlinkSync(path.relative(path.dirname(path.join(f.root, candidate)), path.join(f.root, target)),
+      path.join(f.root, candidate));
+    f.git("add", "--", candidate);
+    f.stage(arb, "staged");
+    f.write(target, "unstaged indirect content");
+    f.refusesWithoutWrites();
+  });
+}
+
+test("symlink ancestor of a selected input family refuses traversal", t => {
+  const f = gitFixture(t);
+  f.git("rm", "-r", "--", "admin/src");
+  f.write("other/client.ts", "private");
+  fs.mkdirSync(path.join(f.root, "admin"), {recursive: true});
+  fs.symlinkSync("../other", path.join(f.root, "admin/src"));
+  f.git("add", "--", "admin/src");
+  f.stage(arb, "staged");
+  // Select the family through a catalogued output outside the symlink tree.
+  const selected = structuredClone(fixtureGraph);
+  selected.compileCodegen[1].outputs = ["admin/validators.ts"];
+  f.stage("tool/harness/component_graph.json", JSON.stringify(selected));
+  f.stage("admin/validators.ts", "staged");
+  f.refusesWithoutWrites();
+});
+
+test("docs-only staging permits an unrelated dirty catalog", t => {
+  const f = gitFixture(t);
+  f.stage("docs/example.md", "staged");
+  f.write("tool/harness/component_graph.json", JSON.stringify({compileCodegen: []}));
+  const before = f.snapshot();
+  assert.deepEqual(f.run(), {formattedDartPaths: [], generated: [], checked: []});
+  assert.deepEqual(f.snapshot(), before);
+  assert.deepEqual(f.mutations, []);
+});
+
+for (const obstruction of ["terminal directory", "file ancestor"]) {
+  test(`generated output ${obstruction} fails before any earlier output is written`, t => {
+    const f = gitFixture(t);
+    const blockedOutput = "lib/l10n/generated/blocked/second.dart";
+    const selected = structuredClone(fixtureGraph);
+    selected.compileCodegen[0].outputs.push(blockedOutput);
+    f.stage("tool/harness/component_graph.json", JSON.stringify(selected));
+    f.stage(arb, "staged");
+    if (obstruction === "terminal directory") {
+      fs.mkdirSync(path.join(f.root, blockedOutput), {recursive: true});
+    } else {
+      f.write("lib/l10n/generated/blocked", "private obstruction");
+    }
+    f.refusesWithoutWrites();
+    assert.equal(fs.readFileSync(path.join(f.root, output), "utf8"), "original");
+  });
+}

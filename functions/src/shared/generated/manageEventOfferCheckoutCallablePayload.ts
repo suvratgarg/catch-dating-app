@@ -6,6 +6,10 @@ export type ManageEventOfferCheckoutCallablePayload =
   | {
       action: "claim";
       token: string;
+      /**
+       * Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.
+       */
+      includeEventAccess?: boolean;
     }
   | {
       action: "prepare";
@@ -15,10 +19,18 @@ export type ManageEventOfferCheckoutCallablePayload =
         refundDeadlineMillis: number;
         eventStartsAtMillis: number;
       };
+      /**
+       * Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.
+       */
+      includeEventAccess?: boolean;
     }
   | {
       action: "find";
       grantId: string;
+      /**
+       * Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.
+       */
+      includeEventAccess?: boolean;
     }
   | {
       action: "status";
@@ -27,9 +39,29 @@ export type ManageEventOfferCheckoutCallablePayload =
         paymentId: string;
         signature: string;
       } | null;
+      /**
+       * Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.
+       */
+      includeEventAccess?: boolean;
     }
   | {
       action: "cancelAdmission";
       paymentId: string;
       expectedRefundAmountPaise: number;
+      /**
+       * Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.
+       */
+      includeEventAccess?: boolean;
+    }
+  | {
+      action: "acceptFree";
+      grantId: string;
+      requestId: string;
+      expectedOfferGeneration: number;
+      expectedOfferRevision: number;
+      expectedLedgerRevision: number;
+      /**
+       * Opt in to additive event access metadata; omitted clients retain the prior paid receipt shape.
+       */
+      includeEventAccess?: boolean;
     };

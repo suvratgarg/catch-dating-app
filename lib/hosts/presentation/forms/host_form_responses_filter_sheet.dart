@@ -1,6 +1,6 @@
-part of 'host_form_responses_panel.dart';
+part of 'host_form_responses_section.dart';
 
-extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
+extension _HostFormResponsesFilters on _HostFormResponsesSectionState {
   String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
       widget.formId == null
       ? context.l10n.hostAudienceAllForms

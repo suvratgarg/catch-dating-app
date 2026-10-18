@@ -44,16 +44,11 @@ writeRoute("/events/", {
 writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 writeRoute("/explore/", staticRouteMeta(websiteMeta, "visitor_discovery", baseUrl));
 
-writeRoute("/host/overview/", staticRouteMeta(websiteMeta, "host_overview", baseUrl));
-writeRoute("/host/platform/", staticRouteMeta(websiteMeta, "host_platform", baseUrl));
-writeRoute("/host/planners/", staticRouteMeta(websiteMeta, "host_planners", baseUrl));
-writeRoute("/host/mixers/", staticRouteMeta(websiteMeta, "host_mixers", baseUrl));
-writeRoute("/host/clubs/", staticRouteMeta(websiteMeta, "host_clubs", baseUrl));
-writeRoute("/host/directory/", staticRouteMeta(websiteMeta, "host_directory", baseUrl));
-writeRoute("/host/claim/", staticRouteMeta(websiteMeta, "host_claim", baseUrl));
+// Remove retired output even when postbuild reuses a previously built directory.
+for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "clubs", "stack", "directory", "claim", "preview"]) {
+  fs.rmSync(path.join(distRoot, "host", slug), {recursive: true, force: true});
+}
 writeRoute("/host/apply/", staticRouteMeta(websiteMeta, "host_apply", baseUrl));
-writeRoute("/host/stack/", staticRouteMeta(websiteMeta, "host_stack", baseUrl));
-writeRoute("/host/workflows/", staticRouteMeta(websiteMeta, "host_workflows", baseUrl));
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
 writeRoute("/join/", staticRouteMeta(websiteMeta, "event_runtime", baseUrl));
 writeRoute("/booking/", staticRouteMeta(websiteMeta, "event_booking", baseUrl));

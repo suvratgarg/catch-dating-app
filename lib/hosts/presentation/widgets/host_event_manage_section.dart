@@ -97,7 +97,6 @@ class HostFullCapacityBanner extends StatelessWidget {
       padding: CatchInsets.listBody,
       backgroundColor: t.ink,
       radius: CatchRadius.md,
-      borderWidth: 0,
       child: Row(
         children: [
           Icon(CatchIcons.lockRounded, color: t.surface, size: CatchIcon.md),

@@ -254,6 +254,10 @@ export type EventDocument = {
       inviteRequired: boolean;
       membershipRequired: boolean;
       manualApprovalRequired: boolean;
+      /**
+       * When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false.
+       */
+      approvedMembersSkipReview?: boolean;
       privateAccessPolicy: {
         mode: "none" | "inviteCode";
         inviteCodeHint: string | null;

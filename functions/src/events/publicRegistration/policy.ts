@@ -10,7 +10,7 @@ import {
   requireEventPolicyTerms,
 } from "../configuredEvent";
 import {eventPolicyFromEvent} from "../eventPolicy";
-import {assertUnpartitionedAdmission} from
+import {assertUnpartitionedInventory} from
   "../../organizerFormAdmission/admissionEligibility";
 import {eventCancellationPolicy} from
   "../../payments/eventCheckout/eventCancellationPolicy";
@@ -44,6 +44,23 @@ export function assertPublicRegistrationPolicy(
   organizer: OrganizerDocument,
   mode: Exclude<RegistrationMode, "closed">,
   nowMillis: number,
+  hasActiveCommunityMembership = false,
+): void {
+  assertPublicRegistrationAvailability(event, organizer, mode, nowMillis);
+  const admission = eventPolicyFromEvent(event).admission;
+  if ((admission.membershipRequired || admission.format === "membersOnly") &&
+      !hasActiveCommunityMembership ||
+      (admission.manualApprovalRequired ||
+        admission.format === "manualApproval") &&
+      !(admission.approvedMembersSkipReview && hasActiveCommunityMembership)) {
+    registrationUnavailable("This event requires its reviewed admission flow.");
+  }
+}
+
+/** Configuration checks capability; every guest action checks identity too. */
+export function assertPublicRegistrationAvailability(
+  event: EventDocument, organizer: OrganizerDocument,
+  mode: Exclude<RegistrationMode, "closed">, nowMillis: number,
 ): void {
   requirePublicConfiguredEvent(event);
   if (
@@ -66,16 +83,18 @@ export function assertPublicRegistrationTerms(
   mode: Exclude<RegistrationMode, "closed">,
 ): void {
   const configured = requireEventPolicyTerms(event);
-  assertUnpartitionedAdmission(event);
+  assertUnpartitionedInventory(event);
   const policy = eventPolicyFromEvent(configured);
   if (
     (mode === "paid" && (event.currency ?? "INR") !== "INR") ||
     event.eventPolicy?.admission.privateAccessPolicy?.mode ===
       "inviteCode" ||
-    policy.admission.format !== "open" ||
+    !["open", "manualApproval", "membersOnly"].includes(
+      policy.admission.format) ||
     policy.admission.inviteRequired ||
-    policy.admission.membershipRequired ||
-    policy.admission.manualApprovalRequired ||
+    (policy.admission.manualApprovalRequired ||
+      policy.admission.format === "manualApproval") &&
+      policy.admission.approvedMembersSkipReview !== true ||
     policy.admission.privateAccessPolicy?.mode !== "none" ||
     Object.keys(policy.pricing.cohortAdjustmentsInPaise ?? {}).length > 0 ||
     (policy.pricing.demandPricingRules ?? []).length > 0 ||
@@ -101,8 +120,10 @@ export function publicCheckoutQuote(
   event: EventDocument,
   organizer: OrganizerDocument,
   nowMillis: number,
+  hasActiveCommunityMembership = false,
 ): PublicCheckoutQuote {
-  assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis);
+  assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis,
+    hasActiveCommunityMembership);
   if (
     publicRegistrationMode(event) !== "paid" ||
     !Number.isSafeInteger(event.publicRegistrationRevision) ||
