@@ -901,6 +901,10 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
                 "manualApprovalRequired": {
                   "type": "boolean"
                 },
+                "approvedMembersSkipReview": {
+                  "type": "boolean",
+                  "description": "When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false."
+                },
                 "privateAccessPolicy": {
                   "type": "object",
                   "additionalProperties": false,

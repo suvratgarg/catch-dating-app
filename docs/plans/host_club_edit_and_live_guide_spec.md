@@ -26,7 +26,7 @@ with three tabs: **Edit / Insights / Preview**. The Edit tab body is
 4. **Event defaults** — activity, admission preset, age range, cancellation
    policy (same inline pattern).
 5. **Advanced defaults** (owner only) — `ClubPolicyDefaultsCard(advancedOnly:
-   true)` (cohort caps, demand pricing) + `EventSuccessDefaultsPanel` (the
+   true)` (cohort caps, demand pricing) + `EventSuccessDefaultsSection` (the
    entire live event guide config), sharing ONE dirty flag and ONE action bar
    at the very bottom of the section.
 6. **Payments** — `HostPaymentAccountControllerCard`.
@@ -35,12 +35,12 @@ with three tabs: **Edit / Insights / Preview**. The Edit tab body is
 
 The live event guide config UI is
 [`EventSuccessSetupBody`](../../lib/event_success/presentation/event_success_setup_body.dart),
-shared by three `EventSuccessDefaultsPanel` call sites (club edit tab, club
+shared by three `EventSuccessDefaultsSection` call sites (club edit tab, club
 create step, event create step) plus the per-event Manage → Setup tab
 ([`event_success_host_setup.dart`](../../lib/event_success/presentation/host_parts/event_success_host_setup.dart)).
 
 The consumer app's profile edit tab
-([`profile_tab.dart`](../../lib/user_profile/presentation/widgets/profile_tab.dart)
+([`profile_tab.dart`](../../lib/user_profile/presentation/widgets/profile_tab_body.dart)
 + [`self_profile_edit_tab_state.dart`](../../lib/user_profile/presentation/self_profile_edit_tab_state.dart))
 is the reference implementation: descriptor-driven rows, one save model
 (per-field inline commit), add-affordance rows, width-constrained content.
@@ -83,7 +83,7 @@ Non-goals:
 |---|---------|----------|
 | F1 | Three save models on one screen: per-field inline commit (identity/contact/defaults), staged media draft + action bar, and mixed advanced-defaults (toggles save immediately via an optimistic queue; everything else staged into a draft saved by an action bar below the whole section) | `host_club_profile.dart` — `_saveMedia` (~line 167), `_updateDefaultsImmediately`/`_flushImmediateDefaults` (~lines 206–264), `_saveDefaults` (~line 266), action bars at ~lines 386, 566 |
 | F2 | The advanced-defaults dirty machinery needs five state fields (`_defaultsDraft`, `_defaultsConfirmed`, `_defaultsOptimistic`, `_queuedImmediateDefaults`, `_flushingImmediateDefaults`) and reconciliation in `didUpdateWidget` | `host_club_profile.dart` ~lines 33–94 |
-| F3 | One action bar + one error slot serve BOTH `ClubPolicyDefaultsCard` and `EventSuccessDefaultsPanel`; errors render far from the failing field | `host_club_profile.dart` ~lines 556–572 |
+| F3 | One action bar + one error slot serve BOTH `ClubPolicyDefaultsCard` and `EventSuccessDefaultsSection`; errors render far from the failing field | `host_club_profile.dart` ~lines 556–572 |
 | F4 | Invisible cross-section coupling: cohort caps / demand pricing toggles in "Advanced defaults" only render under admission presets edited in the "Event defaults" section above; changing preset silently disables dynamic pricing | `club_host_defaults_step.dart` ~lines 260, 302; `host_club_profile.dart` `_admissionDefaultEntry` patch (~line 707) |
 | F5 | With preset = invite-only, the advanced policy card renders a section title + footer around zero rows | `club_host_defaults_step.dart` `advancedOnly` branches |
 | F6 | Nested section hierarchies: `CatchSectionList` inside `CatchSection.plain("Advanced defaults")`, which itself contains the policy card's own titled section ("Default event policy" + footer) | `host_club_profile.dart` ~lines 508–575 |
@@ -96,7 +96,7 @@ Non-goals:
 | F13 | Paired numeric inputs have three treatments: age min/max side-by-side halves (`host_inline_editors.dart` `HostInlineAgeRangeEditor` ~line 533), cohort caps and pricing stacked full-width contained rows (`club_host_defaults_step.dart`) | cited files |
 | F14 | Add host = tooltip-only `CatchIconButton` in the section header trailing slot; the DS already has the `CatchField.add` row constructor used by the consumer prompt editor | `host_team_management_section.dart` ~line 155; `catch_field.dart` ~line 844; `inline_editor_prompt.dart` ~line 343 |
 | F15 | Field expansion keys are LOCALIZED strings (`context.l10n.…Visiblecopy…` used as `fieldName` and compared against `initialExpandedEditField`); breaks on locale change and unstable for deep links. The organizer route never passes `initialExpandedEditField` (dead plumbing) | `host_club_profile.dart` ~line 318 etc.; `go_router.dart` organizer branch (~line 872) passes only `clubId` + `tab` |
-| F16 | Accordion behavior (single expanded field) duplicated verbatim in `_HostClubProfileCardState` and `_ProfileTabContentState` | both files, `_expandedField`/`_toggleField`/`_collapseField` |
+| F16 | Accordion behavior (single expanded field) duplicated verbatim in `_HostClubProfileCardState` and `_ProfileTabBodyState` | both files, `_expandedField`/`_toggleField`/`_collapseField` |
 | F17 | Historical audit finding, now superseded: `_maxClubPhotos = 6` was a widget-local const while the consumer cap lived in `profile_photo_policy.dart`; Host organizer galleries now intentionally have no product-level cap and consumer profiles retain their six-photo policy | `host_club_profile.dart` ~line 26 at audit time; current shared Host media editor and consumer policy |
 | F18 | `_capacitySummary` renders a bare "20-80" as `valueText` with no unit | `event_success_setup_body.dart` ~line 341 |
 | F19 | `HostClubProfileCard` is not a card; it is the entire tab body | naming only |
@@ -250,7 +250,7 @@ class CatchFieldAccordion extends ChangeNotifier {
 ```
 
 - Name ratified by owner via this spec.
-- Adopt in `_HostClubProfileCardState` and `_ProfileTabContentState`
+- Adopt in `_HostClubProfileCardState` and `_ProfileTabBodyState`
   (replace `_expandedField`/`_isExpanded`/`_toggleField`/`_collapseField`).
   Mechanical; zero behavior change. Add a unit test in `test/core/`.
 - Do not migrate other accordion-ish call sites in this pass.
@@ -453,7 +453,7 @@ take `clubId` as a query parameter and resolve the club the same way
 | Route enum | Path | Screen | Content (moved, not rewritten) |
 |---|---|---|---|
 | `hostClubEventDefaultsScreen` | `/host/organizers/event-defaults` | `HostClubEventDefaultsScreen` | The "Event defaults" inline rows (activity, admission, age range, cancellation) + `ClubPolicyDefaultsCard(advancedOnly: true)` merged into ONE section flow — the admission row and its dependent cohort-caps/demand-pricing disclosures finally live together (fixes F4/F5/F6: render caps/pricing as contained rows nested under the admission row, same pattern as §6.1.3) |
-| `hostClubLiveGuideScreen` | `/host/organizers/live-guide` | `HostClubLiveGuideScreen` | `EventSuccessDefaultsPanel` (title "Live event guide", subtitle per §5.2) |
+| `hostClubLiveGuideScreen` | `/host/organizers/live-guide` | `HostClubLiveGuideScreen` | `EventSuccessDefaultsSection` (title "Live event guide", subtitle per §5.2) |
 | `hostClubTeamScreen` | `/host/organizers/team` | `HostClubTeamScreen` | `HostTeamManagementSection` |
 | `hostClubPaymentsScreen` | `/host/organizers/payments` | `HostPaymentAccountControllerCard` |
 
@@ -472,7 +472,7 @@ take `clubId` as a query parameter and resolve the club the same way
 
 ### 7.2 Edit tab becomes the storefront
 
-`HostClubProfileCard` (rename → `HostClubEditTab`, file
+`HostClubProfileCard` (rename → `HostClubEditBody`, file
 `host_club_edit_tab.dart`, still `part of host_operations_screen.dart`; F19)
 keeps ONLY:
 
@@ -517,7 +517,7 @@ reusable state object so spokes share it:
 - **Every control commits through `apply`.** Toggles already do. Choice
   chips, steppers, and the questionnaire editor switch from the staged
   `onChanged` path to the immediate path. Concretely:
-  `EventSuccessDefaultsPanel` and `EventSuccessSetupBody` drop the dual
+  `EventSuccessDefaultsSection` and `EventSuccessSetupBody` drop the dual
   `onChanged` + `onImmediateChanged` API in favor of ONE functional-update
   callback `ValueChanged<EventSuccessDefaultsUpdate>` /
   `ValueChanged<EventSuccessHostDraftUpdate>`. In create flows the callback

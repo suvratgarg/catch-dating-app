@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {planAffected} from "../../tool/harness/lib/component_graph.mjs";
 import {fileURLToPath} from "node:url";
@@ -123,24 +125,70 @@ test("production snapshot materializes organizer projections before its one uncr
 });
 
 
-test("capture-only native edits validate in CI without triggering a production Marketing build", () => {
+test("native capture inputs publish exact-source media through the canonical producer and verifier", () => {
   const ci = fs.readFileSync(path.join(repoRoot, ".github/workflows/ci.yml"), "utf8");
-  const capture = fs.readFileSync(path.join(repoRoot, ".github/workflows/capture-freshness-ci.yml"), "utf8");
+  const capture = fs.readFileSync(path.join(repoRoot, ".github/workflows/marketing-captures.yml"), "utf8");
   const graph = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/harness/component_graph.json"), "utf8"));
   for (const input of ["lib/**", "test/**", "pubspec.yaml", "pubspec.lock",
     "packages/*/pubspec.yaml", "packages/*/lib/**", "packages/*/assets/**", "tool/ui_capture/**"]) {
-    assert.ok(!workflow.includes(`      - "${input}"`), `Capture-only input must not deploy: ${input}`);
+    assert.ok(workflow.includes(`      - "${input}"`), `Capture input must refresh published media: ${input}`);
     const changedPath = input.replace("packages/*", "packages/catch_ui").replace("**", "example.dart");
     const plan = planAffected({changedPaths: [changedPath], graph, mode: "main"});
     assert.ok(plan.complete, `Uncovered capture input: ${changedPath}`);
     assert.ok(plan.operations.ciTargets.includes("capture_freshness"), `Missing capture obligation: ${changedPath}`);
   }
-  assert.match(ci, /uses: \.\/\.github\/workflows\/capture-freshness-ci\.yml/u);
-  assert.match(capture, /run: node tool\/marketing\/sync_website_media\.mjs --check/u);
-  assert.match(capture, /run: node tool\/marketing\/export_app_screenshots\.mjs --check-design-json/u);
-  assert.doesNotMatch(capture, /continue-on-error|--update|--update-goldens/u);
-  const mediaStep = surfaceValidationWorkflow.split(/\n      - /u)
-    .find(step => step.startsWith("name: Check marketing media\n"));
-  assert.match(mediaStep, /!inputs\.capture_freshness_in_ci/u);
-  assert.match(mediaStep, /run: node tool\/marketing\/sync_website_media\.mjs --check/u);
+  const producer = ci.slice(ci.indexOf("\n  capture-freshness:"), ci.indexOf("\n  operations:"));
+  assert.match(producer, /uses: \.\/\.github\/workflows\/marketing-captures\.yml/u);
+  assert.match(producer, /automatic_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/u);
+  assert.match(capture, /run: node tool\/marketing\/export_hosted_captures\.mjs/u);
+  assert.doesNotMatch(capture, /continue-on-error|--update-goldens/u);
+  assert.doesNotMatch(surfaceValidationWorkflow, /capture_freshness_in_ci/u);
+  const importStep = surfaceValidationWorkflow.split(/\n      - /u)
+    .find(step => step.startsWith("name: Import verified exact-source marketing captures\n"));
+  assert.match(importStep, /CAPTURE_BINDING: \$\{\{ inputs\.capture_binding \}\}/u);
+  assert.match(importStep, /run: node tool\/marketing\/import_hosted_captures\.mjs --import/u);
+  const verifyStep = surfaceValidationWorkflow.split(/\n      - /u)
+    .find(step => step.startsWith("name: Verify built marketing capture bytes\n"));
+  assert.match(verifyStep, /run: node tool\/marketing\/import_hosted_captures\.mjs --check-dist/u);
+  assert.ok(surfaceValidationWorkflow.indexOf(importStep) < surfaceValidationWorkflow.indexOf("      - run: npm ci"));
+  assert.ok(surfaceValidationWorkflow.indexOf(verifyStep) > surfaceValidationWorkflow.indexOf("      - name: Build marketing website"));
+});
+
+
+test("selected marketing deploy-contract runs probe regressions and propagates failure", () => {
+  assert.equal(packageJson.scripts.pretypecheck.split(" && ")
+    .filter(command => command === "npm run check:deploy-contract").length, 1);
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "catch-probe-runner-"));
+  const env = {...process.env};
+  // A child CLI must start its own test runner, not inherit Node's child-test
+  // context and accidentally execute test files outside the selected runner.
+  delete env.NODE_TEST_CONTEXT;
+  const run = () => spawnSync("npm", ["--prefix", fixture, "run", "check:deploy-contract"], {
+    env, encoding: "utf8", timeout: 30_000,
+  });
+  try {
+    fs.mkdirSync(path.join(fixture, "scripts"));
+    fs.writeFileSync(path.join(fixture, "package.json"), JSON.stringify({
+      private: true,
+      type: "module",
+      scripts: {"check:deploy-contract": packageJson.scripts["check:deploy-contract"]},
+    }));
+    fs.writeFileSync(path.join(fixture, "scripts/marketingDeployWorkflow.test.mjs"),
+      'import test from "node:test"; test("workflow sentinel", () => {});\n');
+    const probePath = path.join(fixture, "scripts/probeProduction.test.mjs");
+    fs.writeFileSync(probePath,
+      'import test from "node:test"; test("probe failure sentinel", () => { throw new Error("CAT66 probe failure reached"); });\n');
+    const failing = run();
+    assert.equal(failing.error, undefined);
+    assert.equal(failing.status, 1, failing.stdout + failing.stderr);
+    assert.match(failing.stdout + failing.stderr, /CAT66 probe failure reached/u);
+    fs.writeFileSync(probePath,
+      'import test from "node:test"; test("probe passing sentinel", () => {});\n');
+    const passing = run();
+    assert.equal(passing.error, undefined);
+    assert.equal(passing.status, 0, passing.stdout + passing.stderr);
+    assert.match(passing.stdout, /probe passing sentinel/u);
+  } finally {
+    fs.rmSync(fixture, {recursive: true, force: true});
+  }
 });

@@ -6,85 +6,15 @@ part of 'event.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_EventOrigin _$EventOriginFromJson(Map<String, dynamic> json) => _EventOrigin(
-  mode: $enumDecode(_$EventOriginModeEnumMap, json['mode']),
-  bookingAuthority: _eventBookingAuthorityFromJson(
-    json['bookingAuthority'] as String,
-  ),
-  rosterAuthority: $enumDecode(
-    _$EventRosterAuthorityEnumMap,
-    json['rosterAuthority'],
-  ),
-  provider: _externalBookingProviderFromJson(json['provider'] as String),
-  externalEventId: json['externalEventId'] as String?,
-  externalEventUrl: json['externalEventUrl'] as String?,
-  sourceExternalEventId: json['sourceExternalEventId'] as String?,
-  adapterVersion: json['adapterVersion'] as String?,
-  connectedAt: const NullableTimestampConverter().fromJson(json['connectedAt']),
-  connectedBy: json['connectedBy'] as String?,
-);
-
-Map<String, dynamic> _$EventOriginToJson(
-  _EventOrigin instance,
-) => <String, dynamic>{
-  'mode': _$EventOriginModeEnumMap[instance.mode]!,
-  'bookingAuthority': _eventBookingAuthorityToJson(instance.bookingAuthority),
-  'rosterAuthority': _$EventRosterAuthorityEnumMap[instance.rosterAuthority]!,
-  'provider': _externalBookingProviderToJson(instance.provider),
-  'externalEventId': instance.externalEventId,
-  'externalEventUrl': instance.externalEventUrl,
-  'sourceExternalEventId': instance.sourceExternalEventId,
-  'adapterVersion': instance.adapterVersion,
-  'connectedAt': const NullableTimestampConverter().toJson(
-    instance.connectedAt,
-  ),
-  'connectedBy': instance.connectedBy,
-};
-
-const _$EventOriginModeEnumMap = {
-  EventOriginMode.catchNative: 'catchNative',
-  EventOriginMode.externalCompanion: 'externalCompanion',
-};
-
-const _$EventRosterAuthorityEnumMap = {
-  EventRosterAuthority.catchProjection: 'catchProjection',
-  EventRosterAuthority.hostImport: 'hostImport',
-  EventRosterAuthority.providerSync: 'providerSync',
-};
-
-_EventRuntimeAccess _$EventRuntimeAccessFromJson(Map<String, dynamic> json) =>
-    _EventRuntimeAccess(
-      enabled: json['enabled'] as bool,
-      publicRuntimeId: json['publicRuntimeId'] as String?,
-      walkInPolicy: $enumDecode(
-        _$EventRuntimeWalkInPolicyEnumMap,
-        json['walkInPolicy'],
-      ),
-      termsVersion: json['termsVersion'] as String,
-    );
-
-Map<String, dynamic> _$EventRuntimeAccessToJson(_EventRuntimeAccess instance) =>
-    <String, dynamic>{
-      'enabled': instance.enabled,
-      'publicRuntimeId': instance.publicRuntimeId,
-      'walkInPolicy': _$EventRuntimeWalkInPolicyEnumMap[instance.walkInPolicy]!,
-      'termsVersion': instance.termsVersion,
-    };
-
-const _$EventRuntimeWalkInPolicyEnumMap = {
-  EventRuntimeWalkInPolicy.deny: 'deny',
-  EventRuntimeWalkInPolicy.hostApproval: 'hostApproval',
-  EventRuntimeWalkInPolicy.autoCreate: 'autoCreate',
-};
-
 _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
   synthetic: json['synthetic'] as bool? ?? false,
   seedPrefix: json['seedPrefix'] as String?,
-  clubId: _readOrganizerId(json, 'organizerId') as String,
+  clubId: readEventOrganizerId(json, 'organizerId') as String,
   sourceVenueId: json['sourceVenueId'] as String?,
   name: json['name'] as String? ?? '',
   startTime: const TimestampConverter().fromJson(json['startTime']),
+  eventTimezone: json['eventTimezone'] as String?,
   endTime: const TimestampConverter().fromJson(json['endTime']),
   meetingPoint: json['meetingPoint'] as String,
   meetingLocation: json['meetingLocation'] == null
@@ -182,6 +112,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'sourceVenueId': ?instance.sourceVenueId,
   'name': instance.name,
   'startTime': const TimestampConverter().toJson(instance.startTime),
+  'eventTimezone': ?instance.eventTimezone,
   'endTime': const TimestampConverter().toJson(instance.endTime),
   'meetingPoint': instance.meetingPoint,
   'meetingLocation': ?instance.meetingLocation?.toJson(),
@@ -240,4 +171,75 @@ const _$EventPublicRegistrationModeEnumMap = {
   EventPublicRegistrationMode.closed: 'closed',
   EventPublicRegistrationMode.free: 'free',
   EventPublicRegistrationMode.paid: 'paid',
+};
+
+_EventOrigin _$EventOriginFromJson(Map<String, dynamic> json) => _EventOrigin(
+  mode: $enumDecode(_$EventOriginModeEnumMap, json['mode']),
+  bookingAuthority: eventBookingAuthorityFromJson(
+    json['bookingAuthority'] as String,
+  ),
+  rosterAuthority: $enumDecode(
+    _$EventRosterAuthorityEnumMap,
+    json['rosterAuthority'],
+  ),
+  provider: externalBookingProviderFromJson(json['provider'] as String),
+  externalEventId: json['externalEventId'] as String?,
+  externalEventUrl: json['externalEventUrl'] as String?,
+  sourceExternalEventId: json['sourceExternalEventId'] as String?,
+  adapterVersion: json['adapterVersion'] as String?,
+  connectedAt: const NullableTimestampConverter().fromJson(json['connectedAt']),
+  connectedBy: json['connectedBy'] as String?,
+);
+
+Map<String, dynamic> _$EventOriginToJson(
+  _EventOrigin instance,
+) => <String, dynamic>{
+  'mode': _$EventOriginModeEnumMap[instance.mode]!,
+  'bookingAuthority': eventBookingAuthorityToJson(instance.bookingAuthority),
+  'rosterAuthority': _$EventRosterAuthorityEnumMap[instance.rosterAuthority]!,
+  'provider': externalBookingProviderToJson(instance.provider),
+  'externalEventId': instance.externalEventId,
+  'externalEventUrl': instance.externalEventUrl,
+  'sourceExternalEventId': instance.sourceExternalEventId,
+  'adapterVersion': instance.adapterVersion,
+  'connectedAt': const NullableTimestampConverter().toJson(
+    instance.connectedAt,
+  ),
+  'connectedBy': instance.connectedBy,
+};
+
+const _$EventOriginModeEnumMap = {
+  EventOriginMode.catchNative: 'catchNative',
+  EventOriginMode.externalCompanion: 'externalCompanion',
+};
+
+const _$EventRosterAuthorityEnumMap = {
+  EventRosterAuthority.catchProjection: 'catchProjection',
+  EventRosterAuthority.hostImport: 'hostImport',
+  EventRosterAuthority.providerSync: 'providerSync',
+};
+
+_EventRuntimeAccess _$EventRuntimeAccessFromJson(Map<String, dynamic> json) =>
+    _EventRuntimeAccess(
+      enabled: json['enabled'] as bool,
+      publicRuntimeId: json['publicRuntimeId'] as String?,
+      walkInPolicy: $enumDecode(
+        _$EventRuntimeWalkInPolicyEnumMap,
+        json['walkInPolicy'],
+      ),
+      termsVersion: json['termsVersion'] as String,
+    );
+
+Map<String, dynamic> _$EventRuntimeAccessToJson(_EventRuntimeAccess instance) =>
+    <String, dynamic>{
+      'enabled': instance.enabled,
+      'publicRuntimeId': instance.publicRuntimeId,
+      'walkInPolicy': _$EventRuntimeWalkInPolicyEnumMap[instance.walkInPolicy]!,
+      'termsVersion': instance.termsVersion,
+    };
+
+const _$EventRuntimeWalkInPolicyEnumMap = {
+  EventRuntimeWalkInPolicy.deny: 'deny',
+  EventRuntimeWalkInPolicy.hostApproval: 'hostApproval',
+  EventRuntimeWalkInPolicy.autoCreate: 'autoCreate',
 };

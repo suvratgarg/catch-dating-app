@@ -52,7 +52,7 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
             },
             "amountPaise": {
               "type": "integer",
-              "minimum": 100,
+              "minimum": 0,
               "maximum": 100000000
             },
             "currency": {
@@ -77,6 +77,32 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
                   "maximum": 9007199254740991
                 },
                 "eventStartsAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "freeAdmission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expectedOfferGeneration",
+                "expectedOfferRevision",
+                "expectedLedgerRevision"
+              ],
+              "properties": {
+                "expectedOfferGeneration": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "expectedOfferRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "expectedLedgerRevision": {
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 9007199254740991
@@ -254,6 +280,12 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
                   "type": "null"
                 }
               ]
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9_:-]+$"
             }
           }
         },
@@ -266,6 +298,27 @@ export const manageEventOfferCheckoutCallableResponseSchema: Record<string, unkn
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "attendeeId"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9_:-]+$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
     }
   }
 } as const;

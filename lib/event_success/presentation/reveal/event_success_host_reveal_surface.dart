@@ -122,7 +122,6 @@ class _EventSuccessHostRevealSurfaceState
     );
     return CatchSurface(
       clipBehavior: Clip.antiAlias,
-      borderWidth: 0,
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

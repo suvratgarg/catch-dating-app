@@ -954,7 +954,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     final editSections = tester
         .widgetList<CatchSection>(
           find.descendant(
-            of: find.byType(HostClubEditTab),
+            of: find.byType(HostClubEditBody),
             matching: find.byType(CatchSection),
           ),
         )
@@ -997,7 +997,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.byTooltip('Host team'), findsNothing);
     expect(find.text('Trends · last 12 weeks'), findsNothing);
     expect(find.text('See insights'), findsNothing);
-    expect(find.byType(HostAnalyticsTrendPanel), findsNothing);
+    expect(find.byType(HostAnalyticsTrendSection), findsNothing);
     expect(find.text('Manage'), findsNothing);
     expect(find.text('Team · 2'), findsNothing);
     expect(find.text('Connect payouts to get paid'), findsNothing);

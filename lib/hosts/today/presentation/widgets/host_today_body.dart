@@ -49,7 +49,7 @@ class HostTodayBody extends StatelessWidget {
           ),
           HostTodayStatus.empty => SliverToBoxAdapter(
             child: CatchSection.content(
-              child: HostTodayQuietState(
+              child: HostTodayEmptyState(
                 onCreateEvent: onCreateEvent,
                 onViewEvents: onViewEvents,
                 onStartRehearsal: onStartRehearsal,
@@ -91,8 +91,8 @@ class HostTodayHeader extends StatelessWidget {
   }
 }
 
-class HostTodayQuietState extends StatelessWidget {
-  const HostTodayQuietState({
+class HostTodayEmptyState extends StatelessWidget {
+  const HostTodayEmptyState({
     super.key,
     required this.onCreateEvent,
     required this.onViewEvents,

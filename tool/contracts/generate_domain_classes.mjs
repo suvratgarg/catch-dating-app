@@ -3,8 +3,8 @@
 // Schema-derived Dart domain class generator (CONTRACT-DART-GEN-002).
 //
 // Emits freezed + json_serializable Dart domain classes FROM the JSON Schemas
-// under contracts/, so adding a schema field auto-extends the generated Dart
-// class instead of silently diverging from a parallel hand-maintained source.
+// under contracts/, so projected fields derive nullability and wire metadata
+// from their schema rather than a parallel hand-maintained Dart declaration.
 //
 // Run with:
 //   node tool/contracts/generate_domain_classes.mjs           # write
@@ -88,6 +88,512 @@ const IMPORT_LABELLED =
 // (NOT generated here; it must exist and is referenced for documentation only).
 
 const SPECS = [
+{
+  "className": "EventMeetingLocation",
+  "schema": "shared/event_common.schema.json",
+  "pointer": "/definitions/eventMeetingLocation",
+  "output": "lib/events/domain/event_meeting_location.dart",
+  "extensionFile": "lib/events/domain/event_meeting_location_extensions.dart",
+  "classes": [
+    {
+      "name": "EventMeetingLocation",
+      "fields": [
+        {
+          "name": "name",
+          "dartType": "String"
+        },
+        {
+          "name": "address",
+          "dartType": "String"
+        },
+        {
+          "name": "placeId",
+          "dartType": "String"
+        },
+        {
+          "name": "latitude",
+          "dartType": "double"
+        },
+        {
+          "name": "longitude",
+          "dartType": "double"
+        },
+        {
+          "name": "notes",
+          "dartType": "String"
+        }
+      ]
+    }
+  ]
+},
+{
+  "className": "EventItineraryItem",
+  "schema": "shared/event_common.schema.json",
+  "pointer": "/definitions/eventItineraryItem",
+  "output": "lib/events/domain/event_itinerary.dart",
+  "extensionFile": "lib/events/domain/event_itinerary_extensions.dart",
+  "imports": [
+    "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';"
+  ],
+  "enums": [
+    {
+      "name": "EventItineraryKind",
+      "schemaPointer": "/definitions/eventItineraryItem/properties/kind",
+      "renames": {
+        "break": "breakTime"
+      }
+    }
+  ],
+  "classes": [
+    {
+      "name": "EventItineraryItem",
+      "fields": [
+        {
+          "name": "id",
+          "dartType": "String"
+        },
+        {
+          "name": "kind",
+          "dartType": "EventItineraryKind"
+        },
+        {
+          "name": "offsetMinutes",
+          "dartType": "int"
+        },
+        {
+          "name": "durationMinutes",
+          "dartType": "int"
+        },
+        {
+          "name": "title",
+          "dartType": "String"
+        },
+        {
+          "name": "description",
+          "dartType": "String"
+        },
+        {
+          "name": "location",
+          "dartType": "EventMeetingLocation"
+        },
+        {
+          "name": "routeDistanceMeters",
+          "dartType": "int"
+        }
+      ]
+    }
+  ]
+},
+  // Published/legacy Event projection: private drafts use their own contract.
+  // Nullable legacy mirrors and unknown counters retain compatibility.
+  {
+  "className": "Event",
+  "schema": "firestore/events.schema.json",
+  "output": "lib/events/domain/event.dart",
+  "imports": [
+    "import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';",
+    "import 'package:catch_dating_app/core/country_markets.dart';",
+    "import 'package:catch_dating_app/core/firestore_converters.dart';",
+    "import 'package:catch_dating_app/core/media/uploaded_photo.dart';",
+    "import 'package:catch_dating_app/event_policies/domain/event_policy.dart';",
+    "import 'package:catch_dating_app/events/domain/event_constraints.dart';",
+    "import 'package:catch_dating_app/events/domain/event_itinerary.dart';",
+    "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';",
+    "import 'package:catch_dating_app/events/domain/event_types.dart';"
+  ],
+  "extensionFile": "lib/events/domain/event_extensions.dart",
+  "exports": [
+    "event_types.dart",
+    "event_meeting_location.dart"
+  ],
+  "enums": [
+  {
+    "name": "PaceLevel",
+    "schemaPointer": "/properties/pace",
+    "labelled": true,
+    "labels": {
+      "easy": "Easy",
+      "moderate": "Moderate",
+      "fast": "Fast",
+      "competitive": "Competitive"
+    }
+  },
+  {
+    "name": "EventLifecycleStatus",
+    "schemaPointer": "/properties/status"
+  },
+  {
+    "name": "EventPublicRegistrationMode",
+    "schemaPointer": "/properties/publicRegistrationMode"
+  },
+  {
+    "name": "EventOriginMode",
+    "schemaPointer": "/properties/eventOrigin/properties/mode"
+  },
+  {
+    "name": "EventBookingAuthority",
+    "schemaPointer": "/properties/eventOrigin/properties/bookingAuthority",
+    "renames": {
+      "catch": "catchPlatform"
+    }
+  },
+  {
+    "name": "EventRosterAuthority",
+    "schemaPointer": "/properties/eventOrigin/properties/rosterAuthority"
+  },
+  {
+    "name": "ExternalBookingProvider",
+    "schemaPointer": "/properties/eventOrigin/properties/provider",
+    "renames": {
+      "catch": "catchPlatform"
+    }
+  },
+  {
+    "name": "EventRuntimeWalkInPolicy",
+    "schemaPointer": "/properties/runtimeAccess/properties/walkInPolicy"
+  }
+],
+  "classes": [
+    {
+      "name": "Event",
+      "requiredPointer": "/allOf/0/else/required",
+      "fields": [
+        {
+          "name": "id",
+          "dartType": "String",
+          "synthetic": true,
+          "forceRequired": true,
+          "jsonKey": {
+            "includeToJson": false
+          }
+        },
+        {
+          "name": "synthetic",
+          "dartType": "bool",
+          "default": "false",
+          "jsonKey": {
+            "includeToJson": false
+          }
+        },
+        {
+          "name": "seedPrefix",
+          "dartType": "String",
+          "jsonKey": {
+            "includeToJson": false
+          }
+        },
+        {
+          "name": "clubId",
+          "dartType": "String",
+          "forceRequired": true,
+          "jsonKey": {
+            "name": "'organizerId'",
+            "readValue": "readEventOrganizerId"
+          }
+        },
+        {
+          "name": "sourceVenueId",
+          "dartType": "String",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "name",
+          "dartType": "String",
+          "default": "''"
+        },
+        {
+          "name": "startTime",
+          "timestamp": "required"
+        },
+        {
+          "name": "eventTimezone",
+          "dartType": "String",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "endTime",
+          "timestamp": "required"
+        },
+        {
+          "name": "meetingPoint",
+          "dartType": "String"
+        },
+        {
+          "name": "meetingLocation",
+          "dartType": "EventMeetingLocation",
+          "forceNullable": true,
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "startingPointLat",
+          "forceNullable": true,
+          "dartType": "double"
+        },
+        {
+          "name": "startingPointLng",
+          "forceNullable": true,
+          "dartType": "double"
+        },
+        {
+          "name": "locationDetails",
+          "dartType": "String"
+        },
+        {
+          "name": "itinerary",
+          "dartType": "List<EventItineraryItem>",
+          "default": "[]"
+        },
+        {
+          "name": "photoUrl",
+          "dartType": "String",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "eventPhotos",
+          "dartType": "List<UploadedPhoto>",
+          "default": "[]"
+        },
+        {
+          "name": "eventFormat",
+          "dartType": "EventFormatSnapshot",
+          "default": "EventFormatSnapshot.socialRun()"
+        },
+        {
+          "name": "distanceKm",
+          "dartType": "double"
+        },
+        {
+          "name": "pace",
+          "dartType": "PaceLevel"
+        },
+        {
+          "name": "capacityLimit",
+          "dartType": "int"
+        },
+        {
+          "name": "description",
+          "dartType": "String"
+        },
+        {
+          "name": "priceInPaise",
+          "dartType": "int"
+        },
+        {
+          "name": "currency",
+          "dartType": "String",
+          "default": "defaultCurrencyCode"
+        },
+        {
+          "name": "bookedCount",
+          "dartType": "int",
+          "forceNullable": true,
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "checkedInCount",
+          "dartType": "int",
+          "forceNullable": true,
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "waitlistedCount",
+          "dartType": "int",
+          "forceNullable": true,
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "crossPathsPairHeldCount",
+          "dartType": "int",
+          "default": "0"
+        },
+        {
+          "name": "crossPathsPairConfirmedCount",
+          "dartType": "int",
+          "default": "0"
+        },
+        {
+          "name": "crossPathsPairHeldCohortCounts",
+          "dartType": "Map<String, int>",
+          "default": "{}"
+        },
+        {
+          "name": "crossPathsDiscoveryEnabled",
+          "dartType": "bool",
+          "default": "false"
+        },
+        {
+          "name": "status",
+          "dartType": "EventLifecycleStatus",
+          "default": "EventLifecycleStatus.active"
+        },
+        {
+          "name": "cancelledAt",
+          "timestamp": "nullable"
+        },
+        {
+          "name": "cancellationReason",
+          "dartType": "String"
+        },
+        {
+          "name": "setupRevision",
+          "dartType": "int",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "publicRegistrationEnabled",
+          "dartType": "bool",
+          "default": "false"
+        },
+        {
+          "name": "publicRegistrationMode",
+          "dartType": "EventPublicRegistrationMode",
+          "jsonKey": {
+            "includeIfNull": false
+          },
+          "unknownEnumValue": "EventPublicRegistrationMode.closed"
+        },
+        {
+          "name": "publicRegistrationRevision",
+          "dartType": "int",
+          "default": "0"
+        },
+        {
+          "name": "constraints",
+          "dartType": "EventConstraints",
+          "default": "EventConstraints()"
+        },
+        {
+          "name": "eventPolicy",
+          "dartType": "EventPolicyBundle",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "eventOrigin",
+          "dartType": "EventOrigin",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "runtimeAccess",
+          "dartType": "EventRuntimeAccess",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
+          "name": "genderCounts",
+          "dartType": "Map<String, int>",
+          "default": "{}"
+        },
+        {
+          "name": "cohortCounts",
+          "dartType": "Map<String, int>",
+          "default": "{}"
+        },
+        {
+          "name": "waitlistedCohortCounts",
+          "dartType": "Map<String, int>",
+          "default": "{}"
+        }
+      ]
+    },
+    {
+      "name": "EventOrigin",
+      "pointer": "/properties/eventOrigin",
+      "fields": [
+        {
+          "name": "mode",
+          "dartType": "EventOriginMode"
+        },
+        {
+          "name": "bookingAuthority",
+          "dartType": "EventBookingAuthority",
+          "jsonKey": {
+            "fromJson": "eventBookingAuthorityFromJson",
+            "toJson": "eventBookingAuthorityToJson"
+          }
+        },
+        {
+          "name": "rosterAuthority",
+          "dartType": "EventRosterAuthority"
+        },
+        {
+          "name": "provider",
+          "dartType": "ExternalBookingProvider",
+          "jsonKey": {
+            "fromJson": "externalBookingProviderFromJson",
+            "toJson": "externalBookingProviderToJson"
+          }
+        },
+        {
+          "name": "externalEventId",
+          "dartType": "String"
+        },
+        {
+          "name": "externalEventUrl",
+          "dartType": "String"
+        },
+        {
+          "name": "sourceExternalEventId",
+          "dartType": "String"
+        },
+        {
+          "name": "adapterVersion",
+          "dartType": "String"
+        },
+        {
+          "name": "connectedAt",
+          "timestamp": "nullable"
+        },
+        {
+          "name": "connectedBy",
+          "dartType": "String"
+        }
+      ]
+    },
+    {
+      "name": "EventRuntimeAccess",
+      "pointer": "/properties/runtimeAccess",
+      "fields": [
+        {
+          "name": "enabled",
+          "dartType": "bool"
+        },
+        {
+          "name": "publicRuntimeId",
+          "dartType": "String"
+        },
+        {
+          "name": "walkInPolicy",
+          "dartType": "EventRuntimeWalkInPolicy"
+        },
+        {
+          "name": "termsVersion",
+          "dartType": "String"
+        }
+      ]
+    }
+  ]
+},
   {
     className: "Swipe",
     schema: "firestore/swipes.schema.json",
@@ -266,7 +772,7 @@ function main() {
 
 // ── File rendering ──────────────────────────────────────────────────────────
 
-function renderDartDomainFile(spec, bundled, rootSchema) {
+export function renderDartDomainFile(spec, bundled, rootSchema) {
   const partBase = path.basename(spec.output, ".dart");
   const usesLabelled = (spec.enums ?? []).some((e) => e.labelled);
 
@@ -285,7 +791,9 @@ function renderDartDomainFile(spec, bundled, rootSchema) {
       const classSchema = cls.pointer
         ? resolveJsonPointer(bundled, cls.pointer)
         : rootSchema;
-      return renderFreezedClass(spec, cls, classSchema);
+      return renderFreezedClass(spec, cls, cls.requiredPointer
+        ? {...classSchema, required: [...(classSchema.required ?? []), ...resolveJsonPointer(bundled, cls.requiredPointer)]}
+        : classSchema);
     })
     .join("\n\n");
 
@@ -301,7 +809,7 @@ function renderDartDomainFile(spec, bundled, rootSchema) {
 
   return `${dartGeneratedHeader(spec)}${importBlock}
 
-${exportLine}part '${partBase}.freezed.dart';
+${spec.exports ? [path.basename(spec.extensionFile), ...spec.exports].sort().map((file) => `export '${file}';\n`).join('') + '\n' : exportLine}part '${partBase}.freezed.dart';
 part '${partBase}.g.dart';
 
 ${enumBlock ? `${enumBlock}\n\n` : ""}${classBlock}\n`;
@@ -339,6 +847,10 @@ function enumMemberNames(spec, enumDef, bundled) {
 function renderEnum(spec, enumDef, bundled) {
   const names = enumMemberNames(spec, enumDef, bundled);
 
+  if (enumDef.renames) {
+    return `enum ${enumDef.name} {\n${names.map((wire) =>
+      enumDef.renames[wire] ? `  @JsonValue(${dartString(wire)})\n  ${enumDef.renames[wire]},` : `  ${wire},`).join("\n")}\n}`;
+  }
   if (!enumDef.labelled) {
     // dart format keeps a plain enum on one line when it fits in 80 columns,
     // otherwise one member per line. Match that so output is format-stable.
@@ -460,14 +972,17 @@ function renderCtorParam(field) {
   const jsonKeyParts = [];
   if (field.jsonKey) {
     for (const [key, value] of Object.entries(field.jsonKey)) {
-      jsonKeyParts.push(`${key}: ${value}`);
+      jsonKeyParts.push(`${key}: ${typeof value === "boolean" ? String(value) : value}`);
     }
   }
   if (field.unknownEnumValue) {
     jsonKeyParts.push(`unknownEnumValue: ${field.unknownEnumValue}`);
   }
   if (jsonKeyParts.length > 0) {
-    annotations.push(`@JsonKey(${jsonKeyParts.join(", ")})`);
+    const annotation = `@JsonKey(${jsonKeyParts.join(", ")})`;
+    annotations.push(annotation.length > 76
+      ? `@JsonKey(\n${jsonKeyParts.map((p) => `      ${p},`).join("\n")}\n    )`
+      : annotation);
   } else if (field.emptyJsonKey) {
     annotations.push("@JsonKey()");
   }
@@ -609,7 +1124,7 @@ function dartString(value) {
     .replace(/\n/g, "\\n")}'`;
 }
 
-main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
 
 // ── HAND_WRITTEN_NOTES ──────────────────────────────────────────────────────
 // Covered domain classes intentionally NOT generated, and why. These stay
@@ -622,13 +1137,9 @@ main();
 //     throwing. The generator emits neither member docs nor unknownEnumValue,
 //     and forcing it would silently drop that fail-safe — keep hand-written.
 //
-//   Event (lib/events/domain/event.dart)
-//     Heavy business logic and non-schema defaults: @Default(
-//     EventFormatSnapshot.socialRun()), @Default(EventConstraints()),
-//     effectiveEventPolicy/eligibilityFor/statusFor/priceInPaiseFor, plus
-//     legacy meetingPoint↔meetingLocation reconciliation. The data shape also
-//     embeds nested non-freezed types (EventFormatSnapshot) whose own fromJson
-//     has fallback logic the generator cannot synthesize.
+//   Event is generated as the published/legacy projection. Its defaults and
+//   nullable legacy mirrors are explicit projection choices; derived behavior
+//   and wire-name compatibility live in event_extensions.dart/event_types.dart.
 //
 //   PublicProfile (lib/public_profile/domain/public_profile.dart)
 //     fromJson wraps a hand-written _migratePublicProfileJson() that rewrites
@@ -649,10 +1160,6 @@ main();
 //     Tightly coupled to the prompt catalog (displayPrompt getters resolve via
 //     profilePromptTitle) and to a custom photoPromptSelectionToJson that drops
 //     empty captions — different from the freezed-generated toJson.
-//
-//   EventMeetingLocation (lib/events/domain/event_meeting_location.dart)
-//     Hand-rolled with legacy()/normalized() factories and sentinel copyWith;
-//     its toJson emits explicit nulls. freezed would change that behavior.
 //
 //   EventFormatSnapshot / EventPolicyBundle and friends
 //     Hand-rolled non-freezed value objects with enum-fallback fromJson and

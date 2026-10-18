@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -8,12 +8,12 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchRosterRow,
+  type: ParticipantRow,
   path: '[Core primitives]/Host operations',
 )
 Widget catchRosterRowContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchRosterRow',
+    title: 'ParticipantRow',
     contractId: 'catch.roster_row',
     states: const [
       'button-action',
@@ -27,12 +27,12 @@ Widget catchRosterRowContractStates(BuildContext context) {
     children: [
       WidgetbookContractStateCard(
         label: 'button-action',
-        child: CatchRosterRow(
+        child: ParticipantRow(
           person: 'Aanya Rao',
           meta: 'Paid - arrives 7:40 PM',
           signal: 'Checked in',
           tone: CatchBadgeTone.success,
-          action: CatchRosterButtonAction(
+          action: ParticipantButtonAction(
             label: 'View',
             icon: CatchIcons.eye,
             onPressed: widgetbookNoop,
@@ -41,12 +41,12 @@ Widget catchRosterRowContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'decision-action',
-        child: CatchRosterRow(
+        child: ParticipantRow(
           person: 'Dev Malhotra',
           meta: 'Request to join - first event',
           signal: 'Review',
           tone: CatchBadgeTone.warning,
-          action: CatchRosterDecideAction(
+          action: ParticipantDecideAction(
             onProfile: widgetbookNoop,
             onApprove: widgetbookNoop,
             onDecline: widgetbookNoop,
@@ -55,12 +55,12 @@ Widget catchRosterRowContractStates(BuildContext context) {
       ),
       const WidgetbookContractStateCard(
         label: 'badge-action',
-        child: CatchRosterRow(
+        child: ParticipantRow(
           person: 'Kabir Mehta',
           meta: 'Guest invite - +1',
           signal: 'Hosted',
           tone: CatchBadgeTone.gold,
-          action: CatchRosterBadgeAction(
+          action: ParticipantBadgeAction(
             label: 'VIP',
             tone: CatchBadgeTone.gold,
           ),
@@ -68,29 +68,29 @@ Widget catchRosterRowContractStates(BuildContext context) {
       ),
       const WidgetbookContractStateCard(
         label: 'text-action',
-        child: CatchRosterRow(
+        child: ParticipantRow(
           person: 'Mira Shah',
           meta: 'Ticket refunded',
           signal: 'Cancelled',
           tone: CatchBadgeTone.danger,
-          action: CatchRosterTextAction('Done'),
+          action: ParticipantTextAction('Done'),
         ),
       ),
       const WidgetbookContractStateCard(
         label: 'empty-signal',
-        child: CatchRosterRow(
+        child: ParticipantRow(
           person: 'Noor Khan',
           meta: 'Invite pending',
-          action: CatchRosterTextAction('Waiting'),
+          action: ParticipantTextAction('Waiting'),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'disabled-action',
-        child: CatchRosterRow(
+        child: ParticipantRow(
           person: 'Naina Bose',
           meta: 'Reminder already sent',
           signal: 'Pending',
-          action: CatchRosterButtonAction(
+          action: ParticipantButtonAction(
             label: 'Sent',
             disabled: true,
             onPressed: widgetbookNoop,
@@ -101,12 +101,12 @@ Widget catchRosterRowContractStates(BuildContext context) {
         label: 'truncated',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchRosterRow(
+          child: ParticipantRow(
             person: 'A very long guest name that should ellipsize cleanly',
             meta: 'VIP invite with a very long arrival note and payment status',
             signal: 'Needs help',
             tone: CatchBadgeTone.warning,
-            action: CatchRosterButtonAction(
+            action: ParticipantButtonAction(
               label: 'Open',
               onPressed: widgetbookNoop,
             ),
@@ -119,55 +119,55 @@ Widget catchRosterRowContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchRosterTable,
+  type: ParticipantTable,
   path: '[Core primitives]/Host operations',
 )
 Widget catchRosterTableContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchRosterTable',
+    title: 'ParticipantTable',
     contractId: 'catch.roster_table',
     states: const ['populated', 'empty', 'partial-columns', 'long-copy'],
     children: [
       WidgetbookContractStateCard(
         label: 'populated',
-        child: CatchRosterTable(
+        child: ParticipantTable(
           columns: const ['Guest', 'Signal', 'Action'],
           rows: [
-            CatchRosterRow(
+            ParticipantRow(
               person: 'Aanya Rao',
               meta: 'Paid - checked in 7:42 PM',
               signal: 'Here',
               tone: CatchBadgeTone.success,
-              action: CatchRosterButtonAction(
+              action: ParticipantButtonAction(
                 label: 'Open',
                 icon: CatchIcons.eye,
                 onPressed: widgetbookNoop,
               ),
             ),
-            CatchRosterRow(
+            ParticipantRow(
               person: 'Dev Malhotra',
               meta: 'Request to join',
               signal: 'Review',
               tone: CatchBadgeTone.warning,
-              action: CatchRosterDecideAction(
+              action: ParticipantDecideAction(
                 onProfile: widgetbookNoop,
                 onApprove: widgetbookNoop,
                 onDecline: widgetbookNoop,
               ),
             ),
-            const CatchRosterRow(
+            const ParticipantRow(
               person: 'Mira Shah',
               meta: 'Ticket refunded',
               signal: 'Cancelled',
               tone: CatchBadgeTone.danger,
-              action: CatchRosterBadgeAction(label: 'Closed'),
+              action: ParticipantBadgeAction(label: 'Closed'),
             ),
           ],
         ),
       ),
       const WidgetbookContractStateCard(
         label: 'empty',
-        child: CatchRosterTable(
+        child: ParticipantTable(
           columns: ['Guest', 'Signal', 'Action'],
           showEmpty: true,
           emptyTitle: 'No guests in this view',
@@ -177,30 +177,30 @@ Widget catchRosterTableContractStates(BuildContext context) {
       ),
       const WidgetbookContractStateCard(
         label: 'partial-columns',
-        child: CatchRosterTable(
+        child: ParticipantTable(
           columns: ['Guest', 'Signal'],
           rows: [
-            CatchRosterRow(
+            ParticipantRow(
               person: 'Noor Khan',
               meta: 'Invite pending',
               signal: 'Pending',
-              action: CatchRosterTextAction('Waiting'),
+              action: ParticipantTextAction('Waiting'),
             ),
           ],
         ),
       ),
       WidgetbookContractStateCard(
         label: 'long-copy',
-        child: CatchRosterTable(
+        child: ParticipantTable(
           columns: const ['Guest', 'Signal', 'Action'],
           rows: [
-            CatchRosterRow(
+            ParticipantRow(
               person: 'A very long guest name that should ellipsize cleanly',
               meta:
                   'VIP invite with a very long arrival note and payment status',
               signal: 'Needs help',
               tone: CatchBadgeTone.warning,
-              action: CatchRosterButtonAction(
+              action: ParticipantButtonAction(
                 label: 'Open',
                 onPressed: widgetbookNoop,
               ),

@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_approval_notification_receipts.schema.json",
+  "title": "EventApprovalNotificationReceiptDocument",
+  "$ref": "event_approval_notification_preferences.schema.json",
+  "x-firestore-collection": "eventApprovalNotificationReceipts",
+  "x-firestore-path": "eventApprovalNotificationReceipts/{id}",
+  "x-owner": "trusted event approval notification services"
+}

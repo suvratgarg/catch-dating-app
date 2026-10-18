@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
@@ -152,49 +152,43 @@ void main() {
         findsOneWidget,
       );
       expect(find.byKey(const ValueKey('whatsapp:wa-id/same')), findsOneWidget);
-      expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).onSend,
-        isNull,
-      );
+      expect(tester.widget<ChatInput>(find.byType(ChatInput)).onSend, isNull);
       await tester.tap(route('Catch'));
       await pumpFeatureUi(tester);
       await tester.enterText(find.byType(EditableText), 'Catch draft');
       await tester.tap(route('WhatsApp'));
       await pumpFeatureUi(tester);
       expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).controller.text,
+        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
         isEmpty,
       );
       await tester.enterText(find.byType(EditableText), 'WhatsApp draft');
       await tester.tap(route('Catch'));
       await pumpFeatureUi(tester);
       expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).controller.text,
+        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
         'Catch draft',
       );
-      await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+      await tester.tap(find.byKey(ChatInput.sendButtonKey));
       await pumpUntilFound(
         tester,
-        find.byWidgetPredicate((w) => w is ChatInputBar && w.sending),
+        find.byWidgetPredicate((w) => w is ChatInput && w.sending),
       );
       expect(conversations.sent.single.endpoint, 'source-id');
       expect(conversations.sent.single.body, 'Catch draft');
       expect(conversations.sent.single.operation, isNotEmpty);
       expect(whatsapp.sent, isEmpty);
-      expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).sending,
-        isTrue,
-      );
+      expect(tester.widget<ChatInput>(find.byType(ChatInput)).sending, isTrue);
       conversations.completion.complete();
       await pumpFeatureUi(tester);
       expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).controller.text,
+        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
         isEmpty,
       );
       await tester.tap(route('WhatsApp'));
       await pumpFeatureUi(tester);
       expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).controller.text,
+        tester.widget<ChatInput>(find.byType(ChatInput)).controller.text,
         'WhatsApp draft',
       );
       await tester.pumpWidget(const SizedBox.shrink());
@@ -220,10 +214,7 @@ void main() {
       expect(find.text('WhatsApp history'), findsNothing);
       expect(route('Catch'), findsNothing);
       expect(route('WhatsApp'), findsNothing);
-      expect(
-        tester.widget<ChatInputBar>(find.byType(ChatInputBar)).onSend,
-        isNull,
-      );
+      expect(tester.widget<ChatInput>(find.byType(ChatInput)).onSend, isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );

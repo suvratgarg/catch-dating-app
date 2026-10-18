@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
+import 'package:catch_dating_app/core/widgets/event_card.dart';
+import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -23,25 +24,25 @@ const _activitySamples = <ActivityKind>[
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchActivityMapPin,
+  type: ActivityMapPin,
   path: '[Core catalog]/Activity',
 )
 Widget catchActivityMapPinCatalogStates(BuildContext context) {
   return const WidgetbookCatalogFrame(
-    title: 'CatchActivityMapPin',
-    catalogId: 'core.widgets.catch_activity_map_pin',
+    title: 'ActivityMapPin',
+    catalogId: 'core.widgets.activity_map_pin',
     children: [
       WidgetbookCatalogStateCard(
         label: 'resting / selected / sized',
         child: WidgetbookContractWrap(
           children: [
-            CatchActivityMapPin(activityKind: ActivityKind.socialRun),
-            CatchActivityMapPin(
+            ActivityMapPin(activityKind: ActivityKind.socialRun),
+            ActivityMapPin(
               activityKind: ActivityKind.pickleball,
               selected: true,
               label: '6 PM',
             ),
-            CatchActivityMapPin(
+            ActivityMapPin(
               activityKind: ActivityKind.dinner,
               selected: true,
               size: 54,
@@ -117,13 +118,13 @@ Widget catchHeroImageCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchEventThumbnail,
+  type: EventThumbnail,
   path: '[Core catalog]/Media',
 )
 Widget catchEventThumbnailCatalogStates(BuildContext context) {
   return const WidgetbookCatalogFrame(
-    title: 'CatchEventThumbnail',
-    catalogId: 'core.widgets.catch_event_thumbnail',
+    title: 'EventThumbnail',
+    catalogId: 'core.widgets.event_thumbnail',
     children: [
       WidgetbookCatalogStateCard(
         label: 'fallback / scrims',
@@ -131,14 +132,14 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             _ThumbnailBox(
-              child: CatchEventThumbnail(
+              child: EventThumbnail(
                 photoUrl: null,
                 pace: PaceLevel.easy,
                 activityKind: ActivityKind.socialRun,
               ),
             ),
             _ThumbnailBox(
-              child: CatchEventThumbnail(
+              child: EventThumbnail(
                 photoUrl: null,
                 pace: PaceLevel.moderate,
                 activityKind: ActivityKind.dinner,
@@ -146,7 +147,7 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
               ),
             ),
             _ThumbnailBox(
-              child: CatchEventThumbnail(
+              child: EventThumbnail(
                 photoUrl: null,
                 pace: PaceLevel.fast,
                 activityKind: ActivityKind.pickleball,
@@ -186,13 +187,13 @@ Widget catchGradedImageCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventActivityBackdrop,
+  type: EventBackdropImage,
   path: '[Core catalog]/Event cards',
 )
 Widget eventActivityBackdropCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'EventActivityVisualSpec / EventActivityBackdrop',
-    catalogId: 'events.presentation.event_activity_visuals',
+    title: 'EventActivityVisualSpec / EventBackdropImage',
+    catalogId: 'core.widgets.event_backdrop_image',
     children: [
       WidgetbookCatalogStateCard(
         label: 'patterns / dense / icon alignment',
@@ -205,7 +206,7 @@ Widget eventActivityBackdropCatalogStates(BuildContext context) {
                 child: SizedBox(
                   width: WidgetbookPreviewLayout.narrowComponentWidth,
                   height: WidgetbookPreviewLayout.catalogThumbnailHeight,
-                  child: EventActivityBackdrop(
+                  child: EventBackdropImage(
                     visual: eventActivityVisual(kind, context: context),
                     dense: kind != ActivityKind.socialRun,
                     iconAlignment: kind == ActivityKind.dinner
@@ -223,20 +224,20 @@ Widget eventActivityBackdropCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchEventCard,
+  type: EventCard,
   path: '[Core catalog]/Event cards',
 )
 Widget catchEventCardCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchEventCard',
-    catalogId: 'core.widgets.catch_event_card',
+    title: 'EventCard',
+    catalogId: 'core.widgets.event_card',
     children: [
       WidgetbookCatalogStateCard(
         label: 'ticket / status / compact width',
         child: WidgetbookContractWrap(
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
-            CatchEventCard.ticket(
+            EventCard(
               width: WidgetbookPreviewLayout.compactComponentWidth,
               title: 'Bandra easy 5K',
               subtitle: 'Hosted by Catch Run Club',
@@ -248,7 +249,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
               statusLabel: "You're in",
               onTap: widgetbookNoop,
             ),
-            CatchEventCard.ticket(
+            EventCard(
               width: WidgetbookPreviewLayout.compactComponentWidth,
               title: 'Pickleball doubles mixer',
               subtitle: 'Courtside social rotations',
@@ -268,20 +269,20 @@ Widget catchEventCardCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventActivityStamp,
+  type: EventActivityBadge,
   path: '[Core catalog]/Event cards',
 )
 Widget eventVisualAtomsCatalogStates(BuildContext context) {
   final visual = eventActivityVisual(ActivityKind.pickleball, context: context);
   return WidgetbookCatalogFrame(
     title: 'Event visual atoms',
-    catalogId: 'events.widgets.event_visual_atoms',
+    catalogId: 'core.widgets.event_activity_badge',
     children: [
       WidgetbookCatalogStateCard(
         label: 'stamp / clock / status pill',
         child: WidgetbookContractWrap(
           children: [
-            EventActivityStamp(visual: visual),
+            EventActivityBadge(visual: visual),
             CatchClockIndicator(
               accent: visual.accent,
               time: const TimeOfDay(hour: 18, minute: 30),

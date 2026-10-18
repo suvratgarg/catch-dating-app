@@ -53,6 +53,31 @@ export function parseCommonArgs(argv, {
   return parsed;
 }
 
+// The four recompute CLIs predate common option syntax. Keep their narrower
+// public grammar, including dash-prefixed literal values, before normalizing.
+export function parseRecomputeArgs(argv) {
+  const normalized = [];
+  for (let index = 0; index < argv.length; index++) {
+    const arg = argv[index];
+    if (["--apply", "--json", "--help", "-h", "--emulator"].includes(arg)) {
+      normalized.push(arg);
+    } else if (["--env", "--project", "--emulator-host"].includes(arg)) {
+      const value = argv[++index];
+      if (!value || value.startsWith("--")) {
+        throw new Error(`${arg} requires a value.`);
+      }
+      // Equals syntax is internal only: raw --flag=value remains rejected.
+      normalized.push(`${arg}=${value}`);
+    } else {
+      throw new Error(`Unknown argument: ${arg}`);
+    }
+  }
+  const {env, project, emulatorHost, apply, json, help} = parseCommonArgs(
+    normalized, {allowPositionals: false},
+  );
+  return {env, project, emulatorHost, apply, json, help};
+}
+
 function customFieldName(option, customFieldCase) {
   if (customFieldCase === "camel") {
     return option.replace(/-([a-z0-9])/gu, (_, character) => character.toUpperCase());

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_page_body.dart';
@@ -183,7 +183,7 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
         gapH16,
         EventSuccessFunnelSection(brief: brief),
         gapH16,
-        EventSuccessPostEventReport(brief: brief),
+        EventSuccessReportSectionList(brief: brief),
       ],
     );
   }

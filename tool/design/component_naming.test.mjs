@@ -5,6 +5,10 @@ import Ajv2020 from "ajv/dist/2020.js";
 import {
   canonicalWidgetName,
   componentAxes,
+  featureWidgetNamingIssues,
+  reservedPrefixSymbolProblems,
+  roleNounRedirectAdvice,
+  topLevelDeclarations,
   componentNamingEntries,
   roleNouns,
   sharedWidgetNamingProblems,
@@ -295,4 +299,42 @@ test("async box and sliver protocols share one canonical role identity", () => {
     "A second registry ID cannot authorize duplicate async-state ownership");
   const qualified = {...async, dart: {...async.dart, symbol: "CatchRiverpodAsyncBoundary"}};
   assert.ok(problems([qualified]).some(p => p.includes("expected CatchAsyncBoundary")));
+});
+
+test("the reserved prefix is Catch plus a capital, not the Catches product word", () => {
+  const issues = (name, file) => featureWidgetNamingIssues({name, file, visibility: "public", classKind: "widget"});
+  assert.deepEqual(issues("CatchesTopOverlay", "lib/swipes/presentation/catches_top_overlay.dart"), []);
+  assert.ok(issues("CatchFooSection", "lib/swipes/presentation/catch_foo_section.dart")
+    .includes("reserved-feature-widget-prefix"));
+});
+
+test("app-coupled lib/core/widgets follow feature naming, and Workspace is a route suffix", () => {
+  const issues = (name, file) => featureWidgetNamingIssues({name, file, visibility: "public", classKind: "widget"});
+  assert.deepEqual(issues("CatchEventCard", "lib/core/widgets/catch_event_card.dart"), ["reserved-feature-widget-prefix"]);
+  assert.deepEqual(issues("EventCard", "lib/core/widgets/event_card.dart"), []);
+  assert.deepEqual(issues("SavedAudienceWorkspace", "lib/hosts/presentation/saved_audience_workspace.dart"), []);
+  assert.deepEqual(issues("CatchAsyncBoundary", "lib/core/riverpod_ui/catch_async_boundary.dart"), []);
+});
+
+test("off-vocabulary nouns name the role they are spelled as", () => {
+  const redirects = {Panel: ["Section", "Surface"], Content: ["Body"]};
+  assert.equal(roleNounRedirectAdvice("ProfilePanel", redirects), "Panel is spelled Section or Surface here");
+  assert.equal(roleNounRedirectAdvice("ProfileSection", redirects), null);
+});
+
+test("Catch-prefixed symbols are reported outside the design-system homes only", () => {
+  const source = [
+    "class CatchMapMarker {}",
+    "enum CatchMapType { normal }",
+    "extension CatchLocalizationsBuildContext on Object {}",
+    "class CatchesState {}",
+    "typedef MapMarkerId = String;",
+  ].join("\n");
+  const found = topLevelDeclarations("lib/locations/shared/map.dart", source);
+  assert.deepEqual(found.map((entry) => entry.kind), ["class", "enum", "extension", "class", "typedef"]);
+  assert.deepEqual(reservedPrefixSymbolProblems(found).map((entry) => entry.name),
+    ["CatchMapMarker", "CatchMapType", "CatchLocalizationsBuildContext"]);
+  for (const home of ["lib/core/riverpod_ui/x.dart", "packages/catch_ui/lib/src/x.dart", "lib/consumer_bootstrap.dart"]) {
+    assert.deepEqual(reservedPrefixSymbolProblems(topLevelDeclarations(home, "class CatchThing {}")), []);
+  }
 });

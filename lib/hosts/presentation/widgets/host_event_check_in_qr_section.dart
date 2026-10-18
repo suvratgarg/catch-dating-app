@@ -1,4 +1,4 @@
-part of 'host_event_attendance_panel.dart';
+part of 'host_event_participants_section.dart';
 
 class HostEventCheckInQrSection extends ConsumerStatefulWidget {
   const HostEventCheckInQrSection({super.key, required this.event});
@@ -63,7 +63,6 @@ class _HostEventCheckInQrSectionState
             data: (session) => CatchSurface(
               radius: CatchRadius.sm,
               backgroundColor: CatchTokens.editorialWhite,
-              borderWidth: 0,
               padding: CatchInsets.iconChipContent,
               child: QrImageView(
                 key: ValueKey('host_event_live_qr_${session.expiresAtMillis}'),

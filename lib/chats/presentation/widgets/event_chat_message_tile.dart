@@ -122,7 +122,7 @@ class EventChatMessageTile extends StatelessWidget {
             CatchSurface(
               padding: CatchInsets.chatBubbleContent,
               backgroundColor: isMe ? t.primary : t.surface,
-              borderColor: isMe ? null : t.line,
+              borderRole: isMe ? null : CatchBorderRole.separator,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

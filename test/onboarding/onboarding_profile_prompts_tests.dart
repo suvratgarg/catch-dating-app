@@ -1,7 +1,7 @@
 part of 'onboarding_widgets_test.dart';
 
 void _registerProfilePromptsPageTests() {
-  group('ProfilePromptsPage', () {
+  group('OnboardingProfilePromptsBody', () {
     test(
       'state derives prompt progress, available prompts, and submit intent',
       () {
@@ -184,7 +184,7 @@ void _registerProfilePromptsPageTests() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const ProfilePromptsPage(profileCompletionOnly: true),
+        child: const OnboardingProfilePromptsBody(profileCompletionOnly: true),
       );
 
       // The mode-specific copy now lives in the flow header (see
@@ -216,7 +216,7 @@ void _registerProfilePromptsPageTests() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const ProfilePromptsPage(),
+        child: const OnboardingProfilePromptsBody(),
       );
 
       final secondPrompt = find.byKey(

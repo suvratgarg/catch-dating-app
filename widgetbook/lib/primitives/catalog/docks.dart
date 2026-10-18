@@ -12,19 +12,19 @@ import '../../support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Utility states',
-  type: CatchDockSurface,
+  type: CatchDock,
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchDockUtilityCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchDockSurface',
+    title: 'CatchDock',
     catalogId: 'catch.bottom_action',
     children: [
       WidgetbookCatalogStateCard(
         label: 'safe-area utility dock',
         child: Column(
           children: [
-            CatchDockSurface(
+            CatchDock(
               child: Row(
                 children: [
                   Expanded(
@@ -42,7 +42,7 @@ Widget catchDockUtilityCatalogStates(BuildContext context) {
               ),
             ),
             gapH12,
-            CatchDockSurface(
+            CatchDock(
               includeSafeArea: false,
               child: CatchButton(
                 label: 'Apply filters',
@@ -59,27 +59,27 @@ Widget catchDockUtilityCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Primary action states',
-  type: CatchDockSurface,
+  type: CatchDock,
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchDockPrimaryCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchDockSurface.primary',
+    title: 'CatchDock.primary',
     catalogId: 'catch.bottom_action',
     children: [
       WidgetbookCatalogStateCard(
         label: 'platform-adaptive CTA variants',
         child: Column(
           children: [
-            CatchDockSurface.primary(
+            CatchDock.primary(
               label: 'Join event',
               onPressed: widgetbookNoop,
               catchLine: 'Matching opens after check-in',
               catchLineAccent: t.primary,
             ),
             gapH12,
-            CatchDockSurface.primary(
+            CatchDock.primary(
               label: 'Book spot',
               onPressed: widgetbookNoop,
               leading: Column(
@@ -95,13 +95,13 @@ Widget catchDockPrimaryCatalogStates(BuildContext context) {
               footnote: 'Refundable until 24 hours before start.',
             ),
             gapH12,
-            CatchDockSurface.primary(
+            CatchDock.primary(
               label: 'Joining',
               onPressed: widgetbookNoop,
               isLoading: true,
             ),
             gapH12,
-            const CatchDockSurface.primary(label: 'Sold out', onPressed: null),
+            const CatchDock.primary(label: 'Sold out', onPressed: null),
           ],
         ),
       ),
@@ -134,25 +134,25 @@ Widget catchDockPrimaryCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Embedded primary action states',
-  type: CatchDockSurface,
+  type: CatchDock,
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchDockEmbeddedPrimaryCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchDockSurface.primaryContent',
+    title: 'CatchDock.primaryContent',
     catalogId: 'catch.bottom_action',
     children: [
       WidgetbookCatalogStateCard(
         label: 'default',
-        child: CatchDockSurface.primaryContent(
+        child: CatchDock.primaryContent(
           label: 'Join event',
           onPressed: widgetbookNoop,
         ),
       ),
       WidgetbookCatalogStateCard(
         label: 'leading content / catch line / footnote',
-        child: CatchDockSurface.primaryContent(
+        child: CatchDock.primaryContent(
           label: 'Book spot',
           onPressed: widgetbookNoop,
           leading: Column(
@@ -172,13 +172,13 @@ Widget catchDockEmbeddedPrimaryCatalogStates(BuildContext context) {
         label: 'loading / disabled',
         child: Column(
           children: [
-            CatchDockSurface.primaryContent(
+            CatchDock.primaryContent(
               label: 'Joining',
               onPressed: null,
               isLoading: true,
             ),
             SizedBox(height: CatchSpacing.s3),
-            CatchDockSurface.primaryContent(label: 'Sold out', onPressed: null),
+            CatchDock.primaryContent(label: 'Sold out', onPressed: null),
           ],
         ),
       ),

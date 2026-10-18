@@ -72,7 +72,6 @@ class ClubPostHomeCard extends StatelessWidget {
 
     return CatchSurface(
       padding: CatchInsets.contentVerticalMedium,
-      borderWidth: 0,
       backgroundColor: Colors.transparent,
       onTap: onTap,
       child: Row(

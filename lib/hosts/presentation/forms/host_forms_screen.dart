@@ -21,7 +21,7 @@ import 'package:catch_dating_app/hosts/presentation/applications/host_applicatio
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -83,6 +83,12 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
   bool _accountBound = false;
   String? _boundAccountId;
   int _accountGeneration = 0;
+  String? _boundOrganizerId;
+  // Explicit route intent survives a retained shell choice until the next
+  // organizer selection. A later shell switch must not reuse old route IDs.
+  String? _preferredRouteOrganizerId;
+  bool _routeSyncNeeded = false;
+  Object? _importOperation;
 
   void _completeResponseImport() {
     setState(() {
@@ -101,17 +107,28 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
     super.initState();
     _responseFormId = widget.initialFormId;
     _responseContactId = widget.initialContactId;
+    _preferredRouteOrganizerId = widget.initialOrganizerId;
   }
 
   @override
   void didUpdateWidget(covariant HostFormsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialFormId != widget.initialFormId ||
-        oldWidget.initialOrganizerId != widget.initialOrganizerId) {
+    if (oldWidget.initialOrganizerId != widget.initialOrganizerId &&
+        widget.initialOrganizerId != _boundOrganizerId) {
+      _preferredRouteOrganizerId = widget.initialOrganizerId;
+    }
+    final routeMatchesWorkspace =
+        _boundOrganizerId == null ||
+        widget.initialOrganizerId == null ||
+        widget.initialOrganizerId == _boundOrganizerId;
+    if (routeMatchesWorkspace &&
+        (oldWidget.initialFormId != widget.initialFormId ||
+            oldWidget.initialOrganizerId != widget.initialOrganizerId)) {
       _responseFormId = widget.initialFormId;
     }
-    if (oldWidget.initialContactId != widget.initialContactId ||
-        oldWidget.initialOrganizerId != widget.initialOrganizerId) {
+    if (routeMatchesWorkspace &&
+        (oldWidget.initialContactId != widget.initialContactId ||
+            oldWidget.initialOrganizerId != widget.initialOrganizerId)) {
       _responseContactId = widget.initialContactId;
     }
     if (oldWidget.initialResponses != widget.initialResponses) {
@@ -135,6 +152,11 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Observe every settled transition, including A -> B -> A before a frame.
+    ref.listen(uidProvider, (_, next) {
+      final state = catchAsyncStateFromAsyncValue(next);
+      if (state.isSettledData) _bindAccount(state.value);
+    });
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
@@ -185,6 +207,12 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
       );
     }
 
+    ref.listen(hostOperableClubsProvider(uid), (_, next) {
+      final state = catchAsyncStateFromAsyncValue(next);
+      if (state.isSettledData) {
+        _bindAvailableOrganizer(uid, state.value ?? const <Club>[]);
+      }
+    });
     final clubsAsync = ref.watch(hostOperableClubsProvider(uid));
     final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
     if (clubsState.hasError) {
@@ -211,14 +239,29 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
     if (clubs.isEmpty) {
       return HostAudienceNoOrganizerEmptyState(selected: _view);
     }
+    ref.listen(hostOrganizerSelectionProvider(uid), (_, next) {
+      if (_boundAccountId != uid) return;
+      _preferredRouteOrganizerId = null;
+      final available = catchAsyncStateFromAsyncValue(
+        ref.read(hostOperableClubsProvider(uid)),
+      );
+      if (available.isSettledData) {
+        _bindAvailableOrganizer(uid, available.value ?? const <Club>[]);
+      }
+    });
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final selectedClub = resolveSelectedHostOrganizer(
       clubs,
       selectedOrganizerId: selectedOrganizerId,
-      preferredOrganizerId: selectedOrganizerId == null
-          ? widget.initialOrganizerId
-          : null,
+      preferredOrganizerId: _preferredRouteOrganizerId,
     )!;
+    if (_preferredRouteOrganizerId != null &&
+        _preferredRouteOrganizerId != selectedClub.id) {
+      if (_boundOrganizerId == selectedClub.id) _resetWorkspace();
+      _preferredRouteOrganizerId = null;
+    }
+    _bindOrganizer(selectedClub.id);
+    _scheduleWorkspaceRouteSync();
     final request = HostFormListRequest(
       organizerId: selectedClub.id,
       accountUid: uid,
@@ -287,7 +330,11 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                   key: const ValueKey('host-forms-create'),
                   label: context.l10n.hostFormsCreate,
                   icon: CatchIcons.add,
-                  onPressed: () => _openTemplates(selectedClub.id),
+                  onPressed: () {
+                    if (_directoryRequestCurrent(request)) {
+                      _openTemplates(selectedClub.id);
+                    }
+                  },
                 )
               : CatchTopBarPrimaryButton(
                   key: const ValueKey('host-responses-import'),
@@ -295,7 +342,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                   icon: CatchIcons.downloadRounded,
                   onPressed: _importing
                       ? null
-                      : () => _pickApplicationImport(selectedClub.id),
+                      : () => _pickApplicationImport(request),
                 ),
           search: CatchTopBarSearch(
             fieldKey: ValueKey('host-forms-search-${_view.name}'),
@@ -303,7 +350,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                 _searchExpanded ||
                 (activeSearchIsForms ? _query : _responseQuery) != null,
             onExpandedChanged: (expanded) {
-              if (_searchExpanded == expanded) return;
+              if (!_directoryRequestCurrent(request) ||
+                  _searchExpanded == expanded) {
+                return;
+              }
               setState(() => _searchExpanded = expanded);
             },
             copy: catchSearchFieldCopy(context.l10n),
@@ -318,15 +368,19 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
             semanticLabel: searchPlaceholder,
             autofocus: true,
             textInputAction: TextInputAction.search,
-            onChanged: (value) => _scheduleSearch(_view, value),
-            onSubmitted: (value) => _applySearch(_view, value),
+            onChanged: (value) => _scheduleSearch(_view, value, request),
+            onSubmitted: (value) => _applySearch(_view, value, request),
           ),
         ),
       ),
       actions: HostAudienceTabRail(
         selected: _view,
         selectionPosition: _view.index.toDouble(),
-        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+        onChanged: (view) {
+          if (_directoryRequestCurrent(request)) {
+            _selectAudienceView(view, selectedClub.id);
+          }
+        },
       ),
       body: CatchRootScreenBody.single(
         page: activeSearchIsForms
@@ -334,18 +388,47 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                 page: _HostFormsLibraryPage(
                   request: request,
                   directory: directory,
-                  onRetry: () => ref.invalidate(
-                    hostFormsAccountDirectoryProvider(directoryScope),
-                  ),
+                  onRetry: () {
+                    if (_directoryRequestCurrent(request)) {
+                      ref.invalidate(
+                        hostFormsAccountDirectoryProvider(directoryScope),
+                      );
+                    }
+                  },
+                  onLoadMore: () {
+                    if (_directoryRequestCurrent(request)) {
+                      unawaited(
+                        ref
+                            .read(
+                              hostFormsDirectoryControllerProvider(
+                                request,
+                              ).notifier,
+                            )
+                            .loadMore(),
+                      );
+                    }
+                  },
                   query: _query,
                   statuses: _statuses,
                   purposes: _purposes,
-                  onPurposesChanged: (values) =>
-                      setState(() => _purposes = values),
-                  onStatusesChanged: (values) =>
-                      setState(() => _statuses = values),
-                  onCreate: () => _openTemplates(selectedClub.id),
-                  onOpenForm: _openForm,
+                  onPurposesChanged: (values) {
+                    if (_directoryRequestCurrent(request)) {
+                      setState(() => _purposes = values);
+                    }
+                  },
+                  onStatusesChanged: (values) {
+                    if (_directoryRequestCurrent(request)) {
+                      setState(() => _statuses = values);
+                    }
+                  },
+                  onCreate: () {
+                    if (_directoryRequestCurrent(request)) {
+                      _openTemplates(selectedClub.id);
+                    }
+                  },
+                  onOpenForm: (form) {
+                    if (_directoryRequestCurrent(request)) _openForm(form);
+                  },
                   onRowAction: (action, form) =>
                       _handleRowAction(action, form, request),
                 ),
@@ -356,8 +439,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                     'host-forms-responses',
                   ),
                   children: [
-                    HostFormResponsesPanel(
-                      key: ValueKey('responses-$uid-import-$_importRevision'),
+                    HostFormResponsesSection(
+                      key: ValueKey(
+                        'responses-$uid-${selectedClub.id}-$_accountGeneration-import-$_importRevision',
+                      ),
                       organizerId: selectedClub.id,
                       accountId: uid,
                       requireAccount: true,
@@ -373,15 +458,18 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                       query: _responseQuery,
                       contactId: _responseContactId,
                       onClearContactFilter: () {
+                        if (!_directoryRequestCurrent(request)) return;
                         setState(() => _responseContactId = null);
                         _syncRoute();
                       },
                       formId: _responseFormId,
                       onFormChanged: (formId) {
+                        if (!_directoryRequestCurrent(request)) return;
                         setState(() => _responseFormId = formId);
                         _syncRoute();
                       },
                       onClearFormFilter: () {
+                        if (!_directoryRequestCurrent(request)) return;
                         setState(() => _responseFormId = null);
                         _syncRoute();
                       },
@@ -393,16 +481,25 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
     );
   }
 
-  void _scheduleSearch(HostAudienceView view, String value) {
+  void _scheduleSearch(
+    HostAudienceView view,
+    String value,
+    HostFormListRequest request,
+  ) {
+    if (!_directoryRequestCurrent(request)) return;
     _searchDebounce?.cancel();
     _searchDebounce = Timer(
       CatchMotion.searchDebounce,
-      () => _applySearch(view, value),
+      () => _applySearch(view, value, request),
     );
   }
 
-  void _applySearch(HostAudienceView view, String value) {
-    if (!mounted) return;
+  void _applySearch(
+    HostAudienceView view,
+    String value,
+    HostFormListRequest request,
+  ) {
+    if (!_directoryRequestCurrent(request) || view != _view) return;
     final normalized = value.trim();
     setState(() {
       final query = normalized.isEmpty ? null : normalized;
@@ -419,11 +516,16 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
   }
 
   void _syncRoute() {
+    if (!_workspaceCurrent) return;
     final router = GoRouter.maybeOf(context);
     if (router == null) return;
     final uri = router.routeInformationProvider.value.uri;
     if (uri.path != Routes.hostAudienceScreen.path) return;
-    final query = {...uri.queryParameters, 'view': _view.name};
+    final query = {
+      ...uri.queryParameters,
+      'view': _view.name,
+      'organizerId': _boundOrganizerId!,
+    };
     if (_responseFormId case final formId?) {
       query['formId'] = formId;
     } else {
@@ -475,6 +577,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
     required this.request,
     required this.directory,
     required this.onRetry,
+    required this.onLoadMore,
     required this.query,
     required this.statuses,
     required this.purposes,
@@ -488,6 +591,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
   final HostFormListRequest request;
   final AsyncValue<HostFormsDirectoryState> directory;
   final VoidCallback onRetry;
+  final VoidCallback onLoadMore;
   final String? query;
   final Set<HostFormLifecycleStatus> statuses;
   final Set<HostFormPurpose> purposes;
@@ -671,15 +775,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
                         fullWidth: true,
-                        onPressed: state.loadingMore
-                            ? null
-                            : () => ref
-                                  .read(
-                                    hostFormsDirectoryControllerProvider(
-                                      request,
-                                    ).notifier,
-                                  )
-                                  .loadMore(),
+                        onPressed: state.loadingMore ? null : onLoadMore,
                       ),
                     ),
                   ),
@@ -688,13 +784,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                     error,
                     context: AppErrorContext.forms,
                     fillRemaining: false,
-                    onRetry: () => ref
-                        .read(
-                          hostFormsDirectoryControllerProvider(
-                            request,
-                          ).notifier,
-                        )
-                        .loadMore(),
+                    onRetry: onLoadMore,
                   ),
               ],
             );

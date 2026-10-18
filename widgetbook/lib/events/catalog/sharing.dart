@@ -40,12 +40,12 @@ Widget eventShareCardStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Share pill',
-  type: EventSharePill,
+  type: EventShareChip,
   path: '[Event Detail]/Cards',
 )
 Widget eventSharePillState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: EventSharePill(label: '3 spots left'),
+    child: EventShareChip(label: '3 spots left'),
   );
 }

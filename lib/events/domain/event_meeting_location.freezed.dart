@@ -213,8 +213,8 @@ return $default(_that.name,_that.address,_that.placeId,_that.latitude,_that.long
 /// @nodoc
 @JsonSerializable()
 
-class _EventMeetingLocation extends EventMeetingLocation {
-  const _EventMeetingLocation({required this.name, this.address, this.placeId, required this.latitude, required this.longitude, this.notes}): super._();
+class _EventMeetingLocation implements EventMeetingLocation {
+  const _EventMeetingLocation({required this.name, this.address, this.placeId, required this.latitude, required this.longitude, this.notes});
   factory _EventMeetingLocation.fromJson(Map<String, dynamic> json) => _$EventMeetingLocationFromJson(json);
 
 @override final  String name;

@@ -320,3 +320,47 @@ test("map selection saves coordinates and clears saved venue provenance",
     assert.equal(event.sourceVenueId, undefined);
     assert.equal(event.publicationState, "private");
   });
+
+
+test("private content saves, replays and clears without publishing",
+  async () => {
+    const {store, command, save} = await setup();
+    const details = {
+      itinerary: [{id: "step1", kind: "gather" as const, offsetMinutes: 0,
+        title: "Meet", durationMinutes: 5}],
+      eventPhotos: [{id: "photo1", url: "https://example.com/photo.jpg",
+        storagePath: "events/event1/media/photo1/original.jpg", position: 0,
+        thumbnailUrl: null, thumbnailStoragePath: null,
+        createdAt: {_seconds: 1, _nanoseconds: 0},
+        updatedAt: {_seconds: 1, _nanoseconds: 0}}],
+    };
+    const request = {...command, details};
+    await save(request as unknown as UpdatePrivateEventDetailsCommand);
+    assert.equal((await save(request as unknown as
+    UpdatePrivateEventDetailsCommand)).replayed, true);
+    let event = store.rows.get("events/event1")!;
+    assert.equal(event.photoUrl, "https://example.com/photo.jpg");
+    const itinerary = event.itinerary as Array<{durationMinutes: number}>;
+    assert.equal(itinerary[0].durationMinutes, 5);
+    await save({...command, requestId: "clear-content",
+      expectedSetupRevision: 2,
+      details: {eventPhotos: [], itinerary: []}});
+    event = store.rows.get("events/event1")!;
+    assert.deepEqual(event.itinerary, []);
+    assert.deepEqual(event.eventPhotos, []);
+    assert.equal(event.photoUrl, null);
+    assert.equal(event.publicationState, "private");
+  });
+
+test("private itinerary enforces route and schedule validation", async () => {
+  const {store, command, save} = await setup();
+  const step = {id: "step1", kind: "stop" as const,
+    offsetMinutes: 20, title: "Stop"};
+  await assert.rejects(save({...command, details: {
+    itinerary: [{...step, routeDistanceMeters: 800}],
+  }}), (error) => code(error, "invalid-argument"));
+  await assert.rejects(save({...command, details: {
+    durationMinutes: {mode: "set", value: 15}, itinerary: [step],
+  }}), (error) => code(error, "invalid-argument"));
+  assert.deepEqual(store.writes, []);
+});

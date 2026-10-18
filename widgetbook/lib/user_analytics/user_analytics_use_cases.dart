@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
-import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
+import 'package:catch_dating_app/user_analytics/shared/user_analytics_section.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +14,12 @@ import '../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Panel states',
-  type: UserAnalyticsPanel,
+  type: UserAnalyticsSection,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsPanelStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsPanel',
+    title: 'UserAnalyticsSection',
     contractId: 'component.profile.user_analytics',
     children: [
       _StateCard(
@@ -64,23 +64,23 @@ Widget userAnalyticsPanelStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Report states',
-  type: UserAnalyticsReportView,
+  type: UserAnalyticsReportBody,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsReportViewStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsReportView',
+    title: 'UserAnalyticsReportBody',
     contractId: 'component.profile.user_analytics.report',
     children: [
       _StateCard(
         label: 'loaded',
-        child: UserAnalyticsReportView(
+        child: UserAnalyticsReportBody(
           report: ProfileSurfaceFixtures.analyticsReport,
         ),
       ),
       _StateCard(
         label: 'empty',
-        child: UserAnalyticsReportView(
+        child: UserAnalyticsReportBody(
           report: ProfileSurfaceFixtures.emptyAnalyticsReport,
         ),
       ),
@@ -120,17 +120,17 @@ Widget userAnalyticsReportSkeleton(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Trend panel states',
-  type: UserAnalyticsTrendPanel,
+  type: UserAnalyticsTrendSection,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsTrendPanelStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsTrendPanel',
+    title: 'UserAnalyticsTrendSection',
     contractId: 'component.profile.user_analytics.trend_panel',
     children: [
       _StateCard(
         label: 'trend',
-        child: UserAnalyticsTrendPanel(
+        child: UserAnalyticsTrendSection(
           points: ProfileSurfaceFixtures.analyticsReport.trend,
         ),
       ),
@@ -172,17 +172,17 @@ Widget userAnalyticsBarStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Tips panel states',
-  type: UserAnalyticsTipsPanel,
+  type: UserAnalyticsTipsSection,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsTipsPanelStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsTipsPanel',
+    title: 'UserAnalyticsTipsSection',
     contractId: 'component.profile.user_analytics.tips_panel',
     children: [
       _StateCard(
         label: 'coaching tips',
-        child: UserAnalyticsTipsPanel(
+        child: UserAnalyticsTipsSection(
           tips: ProfileSurfaceFixtures.analyticsReport.coachingTipRefs,
         ),
       ),
@@ -212,17 +212,17 @@ Widget userAnalyticsTipRowStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Data coverage panel states',
-  type: UserAnalyticsDataCoveragePanel,
+  type: UserAnalyticsDataCoverageSection,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsDataQualityPanelStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsDataCoveragePanel',
+    title: 'UserAnalyticsDataCoverageSection',
     contractId: 'component.profile.user_analytics.data_quality_panel',
     children: [
       _StateCard(
         label: 'known and fallback coverage sources',
-        child: UserAnalyticsDataCoveragePanel(
+        child: UserAnalyticsDataCoverageSection(
           rows: [
             const UserAnalyticsDataQuality(
               id: 'participant-signals',
@@ -284,7 +284,7 @@ class _UserAnalyticsScope extends StatelessWidget {
           body: SafeArea(
             child: SingleChildScrollView(
               padding: CatchInsets.pageBody,
-              child: const UserAnalyticsPanel(),
+              child: const UserAnalyticsSection(),
             ),
           ),
         ),

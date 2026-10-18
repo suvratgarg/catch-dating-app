@@ -611,6 +611,11 @@ function normalizePath(value) {
 function runGit(repo, args) {
   const result = spawnSync("git", args, {
     cwd: repo,
+    env: {
+      ...process.env,
+      GIT_OPTIONAL_LOCKS: "0",
+      GIT_NO_LAZY_FETCH: "1",
+    },
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
   });

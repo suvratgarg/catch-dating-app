@@ -28,6 +28,7 @@ import {resolveInviteAttributionToken} from "../inviteLinks";
 import {
   assertCurrentPublicGuest,
   readPublicEventSource,
+  publicGuestMembership,
   readRegistrationManager,
 } from "./authority";
 import {publicCheckoutQuote, registrationUnavailable} from "./policy";
@@ -96,6 +97,8 @@ export async function managePublicEventCheckoutHandler(
         event,
         organizer,
         deps.now(),
+        await publicGuestMembership({db, tx, event, uid,
+          nowMillis: deps.now()}),
       );
     });
   } else if (data.action === "find") {
@@ -147,6 +150,8 @@ export async function managePublicEventCheckoutHandler(
             source.event,
             source.organizer,
             deps.now(),
+            await publicGuestMembership({db, tx, event: source.event, uid,
+              nowMillis: deps.now()}),
           );
           return {organizerId: source.event.organizerId!, quote};
         });
