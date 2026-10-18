@@ -23,8 +23,7 @@ in [`docs/event_success.md`](../event_success.md), implemented by
 [`EventSuccessHostPanel`](../../lib/event_success/presentation/event_success_host_screen.dart)
 and its `host_parts`, plus the attendee runtime implemented under
 [`website/src/features/eventRuntime/`](../../website/src/features/eventRuntime/).
-The host-facing product name remains **Live event guide**, following
-[`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md).
+The host-facing product name remains **Live event guide**.
 “Event Success” remains an internal architecture/domain label.
 
 ---

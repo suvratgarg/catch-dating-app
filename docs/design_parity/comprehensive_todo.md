@@ -17,7 +17,6 @@ ledgers as the source of truth when counts differ:
 - `docs/design_parity/state_matrix.json`
 - `tool/ui_capture/capture_coverage.json`
 - `design/components/catch.components.json`
-- `docs/design_parity/claude_widgetbook_inventory.md`
 
 ## Current Snapshot
 
@@ -433,8 +432,7 @@ design-system migration goal is complete.
 ### P5. Tokens, Components, And Cross-Surface Design Data
 
 - [ ] Reconcile Claude Design primitives against Flutter source,
-  `design/components/catch.components.json`, Widgetbook, and
-  `docs/design_parity/claude_widgetbook_inventory.md`.
+  `design/components/catch.components.json`, and Widgetbook.
 - [ ] Classify every local Flutter-only primitive as keep, rename, deprecate,
   reject, or needs-design-review.
 - [ ] Add foundation specimen pages for color, typography, spacing, radius,
@@ -846,8 +844,7 @@ tests, captures, Widgetbook, Git, and CI.
 ### 2. Tokens, Primitives, And Component Contracts
 
 - [ ] `TODO-MASTER-DS-001` Reconcile the Claude Design inventory against
-  `design/components/catch.components.json`, Widgetbook, Flutter source, and
-  `docs/design_parity/claude_widgetbook_inventory.md`.
+  `design/components/catch.components.json`, Widgetbook, and Flutter source.
 - [ ] `TODO-MASTER-DS-002` Classify each local Flutter primitive absent from
   Claude Design as keep, rename, deprecate, reject, or needs-design-review.
 - [ ] `TODO-MASTER-DS-003` Expand component contracts beyond the 18 formal core
@@ -1047,8 +1044,8 @@ tests, captures, Widgetbook, Git, and CI.
 5. [ ] `TODO-NEXT-005` Reconcile component and token inventory while screen
    work exposes gaps.
    - Reconcile every Claude Design primitive against
-     `design/components/catch.components.json`, Widgetbook, Flutter source,
-     and `docs/design_parity/claude_widgetbook_inventory.md`.
+     `design/components/catch.components.json`, Widgetbook, and Flutter
+     source.
    - Classify local-only Flutter primitives as keep, rename, deprecate, reject,
      or needs-design-review.
    - Add foundation specimen pages for color, type, spacing, radius, elevation,
@@ -1236,8 +1233,7 @@ tests, captures, Widgetbook, Git, and CI.
 - [x] `TODO-DS-003` Keep Flutter implementation of tokens/theme under
   `lib/core/theme`.
 - [ ] `TODO-DS-004` Reconcile every Claude Design primitive against Flutter
-  source, component contracts, Widgetbook entries, and
-  `docs/design_parity/claude_widgetbook_inventory.md`.
+  source, component contracts, and Widgetbook entries.
   - Foundation-token Widgetbook specimens now cover color roles, activity
     pigments/glyphs, spacing/gaps/insets, radius, elevation, opacity,
     typography roles, icon scale, aspect ratios, stroke widths, motion

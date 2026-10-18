@@ -94,8 +94,8 @@ and Widgetbook identities without requiring a separate hand-authored table.
 
 [CatchField doctrine](design_language.md#73-catchfield-doctrine) owns labelled
 field behavior. [App architecture](app_architecture.md) owns layering and
-naming; the [consolidation worklog](design_parity/widget_consolidation/codex_worklog.md)
-owns active keep, replace and delete decisions. Git preserves former inventory
+naming; the [consolidation decisions](design_parity/widget_consolidation/decisions.json)
+own active keep, replace and delete decisions. Git preserves former inventory
 and candidate discussions; this document has no parallel status ledger.
 
 <!-- BEGIN GENERATED WIDGET INVENTORY -->
