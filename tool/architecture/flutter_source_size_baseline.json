@@ -10,12 +10,8 @@
       "maxLines": 964
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-      "maxLines": 1298
-    },
-    {
       "path": "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
-      "maxLines": 2333
+      "maxLines": 2331
     },
     {
       "path": "packages/catch_ui/lib/src/components/catch_field.dart",

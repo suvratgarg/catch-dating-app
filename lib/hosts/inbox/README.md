@@ -51,11 +51,11 @@ Typed handoffs:
 | `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Feature-contract actions: select_broadcast_audience, select_broadcast_template. |
 | `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Feature-contract actions: send_broadcast. |
 | `_HostSendsPageBodySliverState` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Feature-contract actions: open_event_announcement_composer. |
-| `HostManualSendQueue` | `lib/hosts/presentation/inbox/host_manual_send_queue.dart` | Feature-contract actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
+| `HostManualSendList` | `lib/hosts/presentation/inbox/host_manual_send_list.dart` | Feature-contract actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
 | `showHostFollowerUpdateComposer` | `lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart` | Feature-contract actions: send_follower_update. |
 | `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner from feature.host_inbox. |
 | `HostWhatsappSetupSection` | `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart` | Feature-contract actions: manage_whatsapp_sender. |
-| `HostCampaignComposer` | `lib/hosts/presentation/inbox/host_campaign_composer.dart` | Structural owner from feature.host_inbox. |
+| `HostCampaignEditor` | `lib/hosts/presentation/inbox/host_campaign_editor.dart` | Structural owner from feature.host_inbox. |
 | `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Feature-contract actions: manage_campaign. |
 | `HostWhatsappThreadSheet` | `lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart` | Feature-contract actions: open_whatsapp_thread, send_whatsapp_reply. |
 

@@ -383,7 +383,7 @@ class _HostSendsHistory extends ConsumerWidget {
         ),
         gapH16,
         CatchSection.content(
-          child: HostManualSendQueue(organizerId: organizerId),
+          child: HostManualSendList(organizerId: organizerId),
         ),
         gapH16,
         sends.when(
@@ -546,7 +546,7 @@ class _HostSendsComposer extends StatelessWidget {
     children: [
       HostSendsBackButton(onPressed: onBack),
       gapH12,
-      HostCampaignComposer(
+      HostCampaignEditor(
         club: club,
         initialSavedAudienceId: initialSavedAudienceId,
         onBusyChanged: onBusyChanged,
@@ -582,7 +582,7 @@ class _HostSendsCampaignReport extends StatelessWidget {
       gapH12,
       CatchSection.divided(
         title: context.l10n.hostSendsCampaignType,
-        child: HostCampaignReport(
+        child: HostCampaignReportSection(
           campaign: campaign,
           busy: busy,
           onApprove: onApprove,

@@ -1541,21 +1541,42 @@ file cannot re-enter the legacy baseline): the trend section and bar tile moved
 to `host_analytics_trend_section.dart`, and the insights section is 709 lines
 and off the ratchet.
 
-Slice 4b (open): ten hosts files carry private widget classes or widget helpers
-that the gate requires to be inlined or promoted once the file moves, so their
-renames wait for that work: `host_club_edit_tab.dart`,
-`host_operational_roster_panel.dart`, `host_manual_send_queue.dart`,
-`host_form_renderer.dart`, `host_organizer.dart`, `host_contact_merge_review.dart`,
-`host_customer_detail_cards.dart`, `host_customer_timeline.dart`,
-`host_campaign_composer.dart` and `host_event_attendance_panel.dart`. Two more
-need provider fixtures for their previews first:
-`host_form_responses_panel.dart` and `host_event_live_location_control.dart`.
-Separately, 17 Widgetbook functions stack several `@UseCase` annotations, and
-the generator emits only the first, so the rest never render (for example
-`HostTeamManagementSection` and `HostOrganizerMetricGrid` have no entries);
-split them into one function each.
+Slice 4b (2026-10-18): the twelve hosts files 4a left; the ratchet fell from
+37 to 11, and every remaining entry waits on another active task (below).
+Queue and Bar took the role they render (`HostManualSendList`,
+`HostRuntimeClaimList`, `HostRosterInsightRail`, `HostClubMediaRail`),
+Composer is Editor (`HostCampaignEditor`), Control and Disclosure are Field
+(`HostEventLiveLocationField`, `HostGuestIntakeSettingsField`), Renderer is
+Body (`HostFormBody`), and the overview adapter is
+`HostClubOrganizerSectionList`. `HostFormBody`'s no-op `_HostFormSchemaBoundary`
+existed only to satisfy `catch_field_requires_section_context`, which exempted
+any ancestor whose type name contained `FormSchema`; its question fields now
+return through `CatchFieldLanes.single`, the canonical single-row boundary,
+and the name exemption is deleted from the lint. The moved files brought 16
+private widget classes to the gate: that boundary was deleted,
+`_HostClubMediaRoleBadge` and `_HostManualSendReplanSheet` were inlined, and
+13 became public, previewed widgets (for example `HostCrmAudienceCard`,
+`HostManualSendTaskSheet`, `HostDismissedMergeCandidateCard`). `host_club_edit_tab.dart` (1,298 lines,
+on the size ratchet) split into `host_club_edit_body.dart` (705),
+`host_club_edit_rows.dart` and `host_club_media_rail.dart`, and is off the
+ratchet. The 25 new Widgetbook use cases render offline: the stateful owners
+(merge review, form responses, manual sends, roster, live location) get
+provider overrides beside their fixtures, `widgetbookHostComponentStates`
+is the shared host component catalog, and
+`widgetbook/test/host_component_previews_test.dart` pumps every one of them so
+a provider the overrides miss fails a test instead of a preview.
 
-Deferred: `DashboardFullSliverBody`'s file rename and the
+Open: seven Widgetbook functions stack `@UseCase` annotations and the
+generator emits only the first of each, so 14 entries never render (for
+example `HostTeamManagementSection`); split them into one function each.
+Slice 4b replaced the stacked entries for `HostOrganizerMetricGrid`,
+`HostOrganizerMetricRow` and `HostClubOrganizerSectionList` with exact use
+cases.
+
+Deferred: `CatchAsyncState`, `CatchAsyncPhase` and `CatchAsyncStatus` (app
+symbols under the reserved `Catch` prefix) wait on the task holding
+`lib/hosts/today/presentation/host_today_view_model.dart`;
+`DashboardFullSliverBody`'s file rename and the
 `EventCheckInQrScanner` rename both touch
 `test/dashboard/dashboard_screen_test.dart`, which another active task holds;
 `HostTodayLoadedRoute`, `HostTodayOverview` and `HostTodayAttentionSection`

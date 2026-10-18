@@ -11,8 +11,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HostEventLiveLocationControl extends ConsumerStatefulWidget {
-  const HostEventLiveLocationControl({
+class HostEventLiveLocationField extends ConsumerStatefulWidget {
+  const HostEventLiveLocationField({
     super.key,
     required this.event,
     this.clock = DateTime.now,
@@ -22,12 +22,12 @@ class HostEventLiveLocationControl extends ConsumerStatefulWidget {
   final DateTime Function() clock;
 
   @override
-  ConsumerState<HostEventLiveLocationControl> createState() =>
-      _HostEventLiveLocationControlState();
+  ConsumerState<HostEventLiveLocationField> createState() =>
+      _HostEventLiveLocationFieldState();
 }
 
-class _HostEventLiveLocationControlState
-    extends ConsumerState<HostEventLiveLocationControl>
+class _HostEventLiveLocationFieldState
+    extends ConsumerState<HostEventLiveLocationField>
     with WidgetsBindingObserver {
   StreamSubscription<EventLivePositionSample>? _subscription;
   bool _sharing = false;

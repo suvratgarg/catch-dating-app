@@ -11,7 +11,7 @@ import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -129,7 +129,7 @@ void main() {
             home: const Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostFormResponsesPanel(
+                  HostFormResponsesSection(
                     organizerId: 'org',
                     formId: 'form',
                     contactId: 'person',
@@ -228,7 +228,7 @@ void main() {
             path: '/',
             builder: (_, _) => const Scaffold(
               body: CustomScrollView(
-                slivers: [HostFormResponsesPanel(organizerId: 'org')],
+                slivers: [HostFormResponsesSection(organizerId: 'org')],
               ),
             ),
           ),

@@ -41,19 +41,25 @@ class _ExportFixture extends StatefulWidget {
 }
 
 class _ExportFixtureState extends State<_ExportFixture> {
-  late final HostResponseQueryController _query =
-      HostResponseQueryController(_FixtureQuery());
+  late final HostResponseQueryController _query = HostResponseQueryController(
+    _FixtureQuery(),
+  );
   bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
-    _query.apply(const HostResponseQueryRequest(
-      organizerId: 'org_demo', formId: 'form_demo',
-      versionId: 'version_2',
-    )).then((_) {
-      if (mounted) setState(() => _loaded = true);
-    });
+    _query
+        .apply(
+          const HostResponseQueryRequest(
+            organizerId: 'org_demo',
+            formId: 'form_demo',
+            versionId: 'version_2',
+          ),
+        )
+        .then((_) {
+          if (mounted) setState(() => _loaded = true);
+        });
   }
 
   @override
@@ -63,27 +69,40 @@ class _ExportFixtureState extends State<_ExportFixture> {
   }
 
   @override
-  Widget build(BuildContext context) => ProviderScope(child: SizedBox(
-    width: 580,
-    child: _loaded ? HostResponseExportAction(
-      accountId: 'manager_demo', organizerId: 'org_demo',
-      formId: 'form_demo', queryController: _query,
-      gateway: _FixtureExport(widget.mode),
-      currentAccountId: () => 'manager_demo',
-      openDownload: (_) async => true,
-    ) : const Center(child: CircularProgressIndicator()),
-  ));
+  Widget build(BuildContext context) => ProviderScope(
+    child: SizedBox(
+      width: 580,
+      child: _loaded
+          ? HostResponseExportAction(
+              accountId: 'manager_demo',
+              organizerId: 'org_demo',
+              formId: 'form_demo',
+              queryController: _query,
+              gateway: _FixtureExport(widget.mode),
+              currentAccountId: () => 'manager_demo',
+              openDownload: (_) async => true,
+            )
+          : const Center(child: CircularProgressIndicator()),
+    ),
+  );
 }
 
 class _FixtureQuery implements HostResponseQueryGateway {
   @override
   Future<HostResponseQueryPage> query(HostResponseQueryRequest request) async =>
       const HostResponseQueryPage(
-        form: HostResponseQueryForm(formId: 'form_demo',
-          title: 'Saturday Social application', versionId: 'version_2',
-          version: 2),
-        items: [], nextCursor: null, total: 0, selectedIds: {},
-        queryHash: 'fixture-query-hash', resultHash: 'fixture-result-hash',
+        form: HostResponseQueryForm(
+          formId: 'form_demo',
+          title: 'Saturday Social application',
+          versionId: 'version_2',
+          version: 2,
+        ),
+        items: [],
+        nextCursor: null,
+        total: 0,
+        selectedIds: {},
+        queryHash: 'fixture-query-hash',
+        resultHash: 'fixture-result-hash',
         fieldCatalog: [],
       );
 }
@@ -93,32 +112,47 @@ class _FixtureExport implements HostResponseExportGateway {
   final _ExportMode mode;
 
   @override
-  Future<HostResponseExportCommand?> pending({required String accountId,
-    required String organizerId, required String formId}) async {
+  Future<HostResponseExportCommand?> pending({
+    required String accountId,
+    required String organizerId,
+    required String formId,
+  }) async {
     if (mode == _ExportMode.readyOnClick) return null;
     return HostResponseExportCommand(
-      accountId: accountId, organizerId: organizerId, formId: formId,
-      versionId: 'version_2', requestId: 'fixture_export_request',
-      format: HostFormExportFormat.csv, statuses: const ['submitted'],
+      accountId: accountId,
+      organizerId: organizerId,
+      formId: formId,
+      versionId: 'version_2',
+      requestId: 'fixture_export_request',
+      format: HostFormExportFormat.csv,
+      statuses: const ['submitted'],
       responseQuery: const HostResponseQueryRequest(
-        organizerId: 'org_demo', formId: 'form_demo',
-        versionId: 'version_2').toJson(),
+        organizerId: 'org_demo',
+        formId: 'form_demo',
+        versionId: 'version_2',
+      ).toJson(),
       expectedQueryHash: 'fixture-query-hash',
       expectedResultHash: mode == _ExportMode.stale
-          ? 'old-result-hash' : 'fixture-result-hash',
+          ? 'old-result-hash'
+          : 'fixture-result-hash',
       createdAtMillis: 1000,
     );
   }
 
   @override
-  Future<HostFormExportReceipt> execute(HostResponseExportCommand command) async =>
-      HostFormExportReceipt(
-        exportId: 'formexport_fixture',
-        status: mode == _ExportMode.pending
-            ? HostFormExportStatus.pending : HostFormExportStatus.completed,
-        format: command.format, rowCount: 0,
-        downloadUrl: mode == _ExportMode.pending
-            ? null : 'https://catch.example/fixture-export.csv',
-        expiresAt: DateTime.utc(2026, 10, 1), errorMessage: null,
-      );
+  Future<HostFormExportReceipt> execute(
+    HostResponseExportCommand command,
+  ) async => HostFormExportReceipt(
+    exportId: 'formexport_fixture',
+    status: mode == _ExportMode.pending
+        ? HostFormExportStatus.pending
+        : HostFormExportStatus.completed,
+    format: command.format,
+    rowCount: 0,
+    downloadUrl: mode == _ExportMode.pending
+        ? null
+        : 'https://catch.example/fixture-export.csv',
+    expiresAt: DateTime.utc(2026, 10, 1),
+    errorMessage: null,
+  );
 }

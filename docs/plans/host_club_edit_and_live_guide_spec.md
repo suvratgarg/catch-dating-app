@@ -472,7 +472,7 @@ take `clubId` as a query parameter and resolve the club the same way
 
 ### 7.2 Edit tab becomes the storefront
 
-`HostClubProfileCard` (rename → `HostClubEditTab`, file
+`HostClubProfileCard` (rename → `HostClubEditBody`, file
 `host_club_edit_tab.dart`, still `part of host_operations_screen.dart`; F19)
 keeps ONLY:
 

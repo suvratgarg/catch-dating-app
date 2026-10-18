@@ -22,8 +22,8 @@ abstract final class HostClubMediaKeys {
 
 typedef HostClubSettingsNavigation = void Function(Routes route, String clubId);
 
-class HostClubEditTab extends ConsumerStatefulWidget {
-  const HostClubEditTab({
+class HostClubEditBody extends ConsumerStatefulWidget {
+  const HostClubEditBody({
     super.key,
     required this.club,
     required this.currentUid,
@@ -39,10 +39,10 @@ class HostClubEditTab extends ConsumerStatefulWidget {
   final HostClubSettingsNavigation? onOpenSettingsRoute;
 
   @override
-  ConsumerState<HostClubEditTab> createState() => _HostClubEditTabState();
+  ConsumerState<HostClubEditBody> createState() => _HostClubEditBodyState();
 }
 
-class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
+class _HostClubEditBodyState extends ConsumerState<HostClubEditBody> {
   late final CatchAccordionController _fieldAccordion;
   late List<_HostClubMediaDraft> _mediaDrafts;
   HostPickedClubLogo? _pickedLogo;
@@ -82,7 +82,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   }
 
   @override
-  void didUpdateWidget(covariant HostClubEditTab oldWidget) {
+  void didUpdateWidget(covariant HostClubEditBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
       _setExpandedField(widget.initialExpandedField);
@@ -212,7 +212,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           onAddPhotosInManager: _pickPhotosInManager,
           photosListenable: _mediaManagerPhotos,
           canAdd: true,
-          header: _HostClubLogoManagerHeader(
+          header: HostClubLogoManagerHeader(
             imageBytes: _pickedLogo?.bytes,
             existingImageUrl: _removeLogoOnSave
                 ? null
@@ -220,7 +220,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             onPickLogo: _pickLogo,
             onRemoveLogo: _removeLogo,
           ),
-          footer: _HostClubMediaManagerActions(
+          footer: HostClubMediaManagerDock(
             onSave: _saveMedia,
             errorText: _mediaErrorText,
           ),
@@ -501,7 +501,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
               meta: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _HostClubPublicationChannelRow(
+                  HostClubPublicationChannelRow(
                     key: const ValueKey('host-publication-catch-app'),
                     label: context.l10n.hostsHostClubPublicationChannelCatch,
                     status: publicationState.catchAppVisible
@@ -510,7 +510,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                     visible: publicationState.catchAppVisible,
                   ),
                   gapH8,
-                  _HostClubPublicationChannelRow(
+                  HostClubPublicationChannelRow(
                     key: const ValueKey('host-publication-website'),
                     label: context.l10n.hostsHostClubPublicationChannelWebsite,
                     status: publicationState.websiteEnabled
@@ -563,7 +563,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              HostClubMediaSummary(
+              HostClubMediaRail(
                 logoImageBytes: _pickedLogo?.bytes,
                 logoImageUrl: _removeLogoOnSave ? null : club.profileImageUrl,
                 photos: visibleMediaPreviews,
@@ -639,198 +639,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     );
   }
 
-  List<CatchFormRowDescriptor<UpdateClubPatch>> _identityRows(
-    BuildContext context,
-    Club club,
-    List<_HostClubCityOption> cityOptions,
-  ) {
-    final organizerTypeOptions = [
-      for (final type in OrganizerType.values)
-        _HostOrganizerTypeOption(
-          value: type,
-          label: _hostOrganizerTypeLabel(context, type),
-        ),
-    ];
-    final selectedOrganizerType = organizerTypeOptions.firstWhere(
-      (option) => option.value == club.organizerType,
-    );
-    if (!widget.isOwner) {
-      return [
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.organizerType,
-          icon: CatchIcons.groups3Outlined,
-          label: context.l10n.hostsOrganizerTypeLabel,
-          body: selectedOrganizerType.label,
-        ),
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.name,
-          icon: CatchIcons.groups3Outlined,
-          label: context.l10n.hostsHostClubProfileLabelClubName,
-          body: club.name,
-        ),
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.location,
-          icon: CatchIcons.locationCityOutlined,
-          label: context.l10n.hostsHostClubProfileLabelCity,
-          body: cityLabel(club.location),
-        ),
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.area,
-          icon: CatchIcons.locationOnOutlined,
-          label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
-          body: _valueOrDash(club.area),
-        ),
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.description,
-          icon: CatchIcons.descriptionOutlined,
-          label: context.l10n.hostsHostClubProfileLabelDescription,
-          body: _valueOrDash(club.description),
-        ),
-      ];
-    }
-    return [
-      CatchFormSingleChoiceRow<UpdateClubPatch, _HostOrganizerTypeOption>(
-        itemLabel: (value) => value.label,
-        id: HostClubEditFieldKeys.organizerType,
-        icon: CatchIcons.groups3Outlined,
-        label: context.l10n.hostsOrganizerTypeLabel,
-        values: organizerTypeOptions,
-        value: selectedOrganizerType,
-        allowEmptySelection: false,
-        contract: CatchContractConstraints.updateClubPatchOrganizerType,
-        contractValue: (option) => option.value.name,
-        patchForValue: (value) => UpdateClubPatch(organizerType: value!.value),
-      ),
-      CatchFormTextRow<UpdateClubPatch>(
-        validationCopy: catchFormValidationCopy(context.l10n),
-        id: HostClubEditFieldKeys.name,
-        icon: CatchIcons.groups3Outlined,
-        label: context.l10n.hostsHostClubProfileLabelClubName,
-        currentValue: club.name,
-        currentFieldValue: club.name,
-        placeholder: club.name,
-        normalizeInput: _normalizeSingleLineInput,
-        contract: CatchContractConstraints.updateClubPatchName,
-        patchForValue: (value) => UpdateClubPatch(name: value as String),
-      ),
-      CatchFormSingleChoiceRow<UpdateClubPatch, _HostClubCityOption>(
-        itemLabel: (value) => value.label,
-        id: HostClubEditFieldKeys.location,
-        icon: CatchIcons.locationCityOutlined,
-        label: context.l10n.hostsHostClubProfileLabelCity,
-        values: cityOptions,
-        value: cityOptions.firstWhere((city) => city.value == club.location),
-        allowEmptySelection: false,
-        contract: CatchContractConstraints.updateClubPatchLocation,
-        contractValue: (option) => option.value,
-        patchForValue: (value) => UpdateClubPatch(location: value!.value),
-      ),
-      CatchFormTextRow<UpdateClubPatch>(
-        validationCopy: catchFormValidationCopy(context.l10n),
-        id: HostClubEditFieldKeys.area,
-        icon: CatchIcons.locationOnOutlined,
-        label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
-        currentValue: club.area,
-        currentFieldValue: club.area,
-        placeholder: _valueOrDash(club.area),
-        normalizeInput: _normalizeSingleLineInput,
-        contract: CatchContractConstraints.updateClubPatchArea,
-        patchForValue: (value) => UpdateClubPatch(area: value as String),
-      ),
-      CatchFormTextRow<UpdateClubPatch>(
-        validationCopy: catchFormValidationCopy(context.l10n),
-        id: HostClubEditFieldKeys.description,
-        icon: CatchIcons.descriptionOutlined,
-        label: context.l10n.hostsHostClubProfileLabelDescription,
-        currentValue: club.description,
-        currentFieldValue: club.description,
-        placeholder: _valueOrDash(club.description),
-        keyboardType: TextInputType.multiline,
-        maxLines: 3,
-        minLines: 2,
-        normalizeInput: _normalizeMultilineInput,
-        contract: CatchContractConstraints.updateClubPatchDescription,
-        patchForValue: (value) => UpdateClubPatch(description: value as String),
-      ),
-    ];
-  }
-
-  List<CatchFormRowDescriptor<UpdateClubPatch>> _contactRows(
-    BuildContext context,
-    Club club,
-  ) {
-    if (!widget.isOwner) {
-      return [
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.instagramHandle,
-          icon: CatchIcons.alternateEmailRounded,
-          label: context.l10n.hostsHostClubProfileLabelInstagram,
-          body: _valueOrDash(club.instagramHandle),
-        ),
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.phoneNumber,
-          icon: CatchIcons.phoneOutlined,
-          label: context.l10n.hostsHostClubProfileLabelPhone,
-          body: _valueOrDash(club.phoneNumber),
-        ),
-        CatchFormReadRow<UpdateClubPatch>(
-          id: HostClubEditFieldKeys.email,
-          icon: CatchIcons.emailOutlined,
-          label: context.l10n.hostsHostClubProfileLabelEmail,
-          body: _valueOrDash(club.email),
-        ),
-      ];
-    }
-    return [
-      CatchFormTextRow<UpdateClubPatch>(
-        validationCopy: catchFormValidationCopy(context.l10n),
-        id: HostClubEditFieldKeys.instagramHandle,
-        icon: CatchIcons.alternateEmailRounded,
-        label: context.l10n.hostsHostClubProfileLabelInstagram,
-        currentValue: club.instagramHandle ?? '',
-        currentFieldValue: club.instagramHandle,
-        placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub
-            .replaceFirst(RegExp(r'^@'), ''),
-        keyboardType: TextInputType.text,
-        normalizeInput: (value) =>
-            _normalizeSingleLineInput(value).replaceFirst(RegExp(r'^@'), ''),
-        toFieldValue: _optionalStringFieldValue,
-        contract: CatchContractConstraints.updateClubPatchInstagramHandle,
-        patchForValue: (value) => UpdateClubPatch(instagramHandle: value),
-      ),
-      CatchFormTextRow<UpdateClubPatch>(
-        validationCopy: catchFormValidationCopy(context.l10n),
-        id: HostClubEditFieldKeys.phoneNumber,
-        icon: CatchIcons.phoneOutlined,
-        label: context.l10n.hostsHostClubProfileLabelPhone,
-        currentValue: club.phoneNumber ?? '',
-        currentFieldValue: club.phoneNumber,
-        placeholder: '98765 43210',
-        keyboardType: TextInputType.phone,
-        normalizeInput: _normalizeSingleLineInput,
-        toFieldValue: _optionalStringFieldValue,
-        contract: CatchContractConstraints.updateClubPatchPhoneNumber,
-        patchForValue: (value) => UpdateClubPatch(phoneNumber: value),
-      ),
-      CatchFormTextRow<UpdateClubPatch>(
-        validationCopy: catchFormValidationCopy(context.l10n),
-        id: HostClubEditFieldKeys.email,
-        icon: CatchIcons.emailOutlined,
-        label: context.l10n.hostsHostClubProfileLabelEmail,
-        currentValue: club.email ?? '',
-        currentFieldValue: club.email,
-        placeholder:
-            context.l10n.hostsHostClubProfilePlaceholderHelloYourclubCom,
-        keyboardType: TextInputType.emailAddress,
-        normalizeInput: _normalizeSingleLineInput,
-        validator: (value) => _optionalEmailValidator(value, context.l10n),
-        toFieldValue: _optionalStringFieldValue,
-        contract: CatchContractConstraints.updateClubPatchEmail,
-        patchForValue: (value) => UpdateClubPatch(email: value),
-      ),
-    ];
-  }
-
   Future<bool> _savePatch(UpdateClubPatch patch) async {
     if (patch.isEmpty) return true;
     if (ref.read(HostClubEditController.updateClubMutation).isPending) {
@@ -858,8 +666,8 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   }
 }
 
-class _HostClubPublicationChannelRow extends StatelessWidget {
-  const _HostClubPublicationChannelRow({
+class HostClubPublicationChannelRow extends StatelessWidget {
+  const HostClubPublicationChannelRow({
     super.key,
     required this.label,
     required this.status,
@@ -894,405 +702,4 @@ class _HostClubPublicationChannelRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class HostClubMediaSummary extends StatelessWidget {
-  const HostClubMediaSummary({
-    super.key,
-    required this.logoImageBytes,
-    required this.logoImageUrl,
-    required this.photos,
-    required this.logoBadgeLabel,
-    required this.addPhotosLabel,
-    required this.onManageMedia,
-  });
-
-  final Uint8List? logoImageBytes;
-  final String? logoImageUrl;
-  final List<OrderedPhotoPreview> photos;
-  final String logoBadgeLabel;
-  final String addPhotosLabel;
-  final VoidCallback? onManageMedia;
-
-  @override
-  Widget build(BuildContext context) {
-    const extent = CatchLayout.hostMediaThumbnailExtent;
-
-    return SizedBox(
-      key: HostClubMediaKeys.summaryStrip,
-      height: extent,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: photos.length + 2,
-        separatorBuilder: (_, _) => gapW8,
-        itemBuilder: (_, index) {
-          if (index == 0) {
-            return SizedBox.square(
-              dimension: extent,
-              child: Stack(
-                key: HostClubMediaKeys.logoTile,
-                fit: StackFit.expand,
-                children: [
-                  ClubProfileImageTile(
-                    imageBytes: logoImageBytes,
-                    existingImageUrl: logoImageUrl,
-                    onTap: onManageMedia,
-                    size: extent,
-                  ),
-                  Positioned(
-                    top: CatchSpacing.s1,
-                    left: CatchSpacing.s1,
-                    child: IgnorePointer(
-                      child: _HostClubMediaRoleBadge(label: logoBadgeLabel),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-          if (index == photos.length + 1) {
-            return SizedBox.square(
-              dimension: extent,
-              child: OrderedPhotoAddTile(
-                label: addPhotosLabel,
-                onTap: onManageMedia,
-              ),
-            );
-          }
-
-          final photoIndex = index - 1;
-          final photo = photos[photoIndex];
-          final isCover = photoIndex == 0;
-          return SizedBox(
-            width:
-                extent *
-                (isCover
-                    ? CatchAspectRatio.organizerCover
-                    : CatchAspectRatio.organizerGallery),
-            height: extent,
-            child: OrderedPhotoTile(
-              key: ValueKey('host-media-summary-photo-${photo.id}'),
-              photo: photo,
-              index: photoIndex,
-              canReorder: false,
-              showCoverBadge: isCover,
-              showReorderHandle: false,
-              statusActionKey: isCover
-                  ? OrderedPhotoPickerKeys.coverRetryAction
-                  : null,
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _HostClubMediaRoleBadge extends StatelessWidget {
-  const _HostClubMediaRoleBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface.tinted(
-      radius: CatchRadius.pill,
-      backgroundColor: t.ink.withValues(
-        alpha: CatchOpacity.photoSlotDeleteChrome,
-      ),
-      padding: CatchInsets.mediaRoleBadgeContent,
-      child: Text(
-        label,
-        style: CatchTextStyles.monoLabel(context, color: t.surface),
-      ),
-    );
-  }
-}
-
-class _HostClubLogoManagerHeader extends StatefulWidget {
-  const _HostClubLogoManagerHeader({
-    required this.imageBytes,
-    required this.existingImageUrl,
-    required this.onPickLogo,
-    required this.onRemoveLogo,
-  });
-
-  final Uint8List? imageBytes;
-  final String? existingImageUrl;
-  final Future<HostPickedClubLogo?> Function() onPickLogo;
-  final Future<void> Function() onRemoveLogo;
-
-  @override
-  State<_HostClubLogoManagerHeader> createState() =>
-      _HostClubLogoManagerHeaderState();
-}
-
-class _HostClubLogoManagerHeaderState
-    extends State<_HostClubLogoManagerHeader> {
-  late Uint8List? _imageBytes;
-  late String? _existingImageUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _imageBytes = widget.imageBytes;
-    _existingImageUrl = widget.existingImageUrl;
-  }
-
-  Future<void> _pickLogo() async {
-    final logo = await widget.onPickLogo();
-    if (!mounted || logo == null) return;
-    setState(() {
-      _imageBytes = logo.bytes;
-      _existingImageUrl = null;
-    });
-  }
-
-  Future<void> _removeLogo() async {
-    await widget.onRemoveLogo();
-    if (!mounted) return;
-    setState(() {
-      _imageBytes = null;
-      _existingImageUrl = null;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CreateClubProfileImagePicker(
-      imageBytes: _imageBytes,
-      existingImageUrl: _existingImageUrl,
-      onTap: () => unawaited(_pickLogo()),
-      onRemove: _imageBytes != null || _existingImageUrl != null
-          ? () => unawaited(_removeLogo())
-          : null,
-      variant: CreateClubProfileImagePickerVariant.editLogo,
-    );
-  }
-}
-
-class _HostClubMediaManagerActions extends StatefulWidget {
-  const _HostClubMediaManagerActions({
-    required this.onSave,
-    required this.errorText,
-  });
-
-  final Future<bool> Function() onSave;
-  final String? Function(BuildContext context) errorText;
-
-  @override
-  State<_HostClubMediaManagerActions> createState() =>
-      _HostClubMediaManagerActionsState();
-}
-
-class _HostClubMediaManagerActionsState
-    extends State<_HostClubMediaManagerActions> {
-  bool _saving = false;
-  bool _showError = false;
-
-  Future<void> _save() async {
-    if (_saving) return;
-    setState(() {
-      _saving = true;
-      _showError = false;
-    });
-    final saved = await widget.onSave();
-    if (!mounted) return;
-    if (saved) {
-      Navigator.of(context).pop(true);
-      return;
-    }
-    setState(() {
-      _saving = false;
-      _showError = true;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final error = _showError ? widget.errorText(context) : null;
-    return SafeArea(
-      top: false,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: CatchTokens.of(context).bg,
-          border: Border(top: BorderSide(color: CatchTokens.of(context).line)),
-        ),
-        child: Padding(
-          padding: CatchInsets.pageHorizontal.copyWith(
-            top: CatchSpacing.s2,
-            bottom: CatchSpacing.s2,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                key: const ValueKey('host-media-action-bar'),
-                children: [
-                  Expanded(
-                    child: CatchButton(
-                      key: const ValueKey('host-media-discard'),
-                      label:
-                          context.l10n.hostsHostClubEditTabActionDiscardMedia,
-                      onPressed: _saving
-                          ? null
-                          : () => Navigator.of(context).pop(false),
-                      variant: CatchButtonVariant.secondary,
-                      fullWidth: true,
-                    ),
-                  ),
-                  gapW8,
-                  Expanded(
-                    child: CatchButton(
-                      key: const ValueKey('host-media-save'),
-                      label: context.l10n.hostsHostClubEditTabActionSaveMedia,
-                      onPressed: _saving ? null : () => unawaited(_save()),
-                      status: (_saving)
-                          ? CatchButtonStatus.loading
-                          : CatchButtonStatus.idle,
-                      fullWidth: true,
-                    ),
-                  ),
-                ],
-              ),
-              if (error != null) ...[
-                gapH8,
-                CatchFieldSupportRow(
-                  text: error,
-                  color: CatchTokens.of(context).danger,
-                  showErrorIcon: true,
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-final class _HostClubCityOption implements Labelled {
-  const _HostClubCityOption({required this.value, required this.label});
-
-  final String value;
-  @override
-  final String label;
-}
-
-final class _HostOrganizerTypeOption implements Labelled {
-  const _HostOrganizerTypeOption({required this.value, required this.label});
-
-  final OrganizerType value;
-  @override
-  final String label;
-}
-
-String _hostOrganizerTypeLabel(BuildContext context, OrganizerType type) =>
-    switch (type) {
-      OrganizerType.club => context.l10n.hostsOrganizerTypeClub,
-      OrganizerType.community => context.l10n.hostsOrganizerTypeCommunity,
-      OrganizerType.individual => context.l10n.hostsOrganizerTypeIndividual,
-      OrganizerType.eventProducer =>
-        context.l10n.hostsOrganizerTypeEventProducer,
-      OrganizerType.venue => context.l10n.hostsOrganizerTypeVenue,
-      OrganizerType.brand => context.l10n.hostsOrganizerTypeBrand,
-    };
-
-sealed class _HostClubMediaDraft {
-  const _HostClubMediaDraft();
-
-  String get id;
-  OrderedPhotoPreview get preview;
-  HostClubMediaInput get input;
-}
-
-final class _HostExistingClubMediaDraft extends _HostClubMediaDraft {
-  const _HostExistingClubMediaDraft(this.photo);
-
-  final UploadedPhoto photo;
-
-  @override
-  String get id => photo.id;
-
-  @override
-  OrderedPhotoPreview get preview => OrderedPhotoPreview(
-    id: 'existing-${photo.id}',
-    imageUrl: photo.thumbnailOrUrl,
-  );
-
-  @override
-  HostClubMediaInput get input => HostExistingClubPhotoInput(photo);
-}
-
-final class _HostPickedClubMediaDraft extends _HostClubMediaDraft {
-  const _HostPickedClubMediaDraft(
-    this.photo, {
-    this.uploadedPhoto,
-    this.job = const ImageUploadJobState.queued(),
-  });
-
-  final HostPickedClubPhoto photo;
-  final UploadedPhoto? uploadedPhoto;
-  final ImageUploadJobState job;
-
-  @override
-  String get id => photo.id;
-
-  _HostPickedClubMediaDraft withJob(ImageUploadJobState job) =>
-      _HostPickedClubMediaDraft(photo, uploadedPhoto: uploadedPhoto, job: job);
-
-  _HostPickedClubMediaDraft withResolvedInput(
-    HostClubMediaInput? resolved, {
-    Object? error,
-  }) {
-    final uploaded = switch (resolved) {
-      HostNewClubPhotoInput(:final uploadedPhoto) => uploadedPhoto,
-      _ => uploadedPhoto,
-    };
-    return _HostPickedClubMediaDraft(
-      photo,
-      uploadedPhoto: uploaded,
-      job: error == null
-          ? const ImageUploadJobState(stage: ImageUploadJobStage.complete)
-          : ImageUploadJobState(
-              stage: ImageUploadJobStage.failed,
-              error: error,
-            ),
-    );
-  }
-
-  _HostPickedClubMediaDraft clearUpload(Object error) =>
-      _HostPickedClubMediaDraft(
-        photo,
-        job: ImageUploadJobState(
-          stage: ImageUploadJobStage.failed,
-          error: error,
-        ),
-      );
-
-  @override
-  OrderedPhotoPreview get preview => OrderedPhotoPreview(
-    id: id,
-    bytes: photo.bytes,
-    status: switch (job.stage) {
-      ImageUploadJobStage.failed => OrderedPhotoStatus.failed,
-      ImageUploadJobStage.preparing ||
-      ImageUploadJobStage.uploading ||
-      ImageUploadJobStage.attaching => OrderedPhotoStatus.uploading,
-      ImageUploadJobStage.queued ||
-      ImageUploadJobStage.picking => OrderedPhotoStatus.queued,
-      _ => OrderedPhotoStatus.ready,
-    },
-    progress: job.progress,
-    error: job.error,
-  );
-
-  @override
-  HostNewClubPhotoInput get input => HostNewClubPhotoInput(
-    id: id,
-    image: photo.image,
-    uploadedPhoto: uploadedPhoto,
-  );
 }

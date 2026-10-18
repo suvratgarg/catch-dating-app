@@ -34,8 +34,8 @@ export 'host_response_query_capability.dart'
 
 part 'host_form_responses_filter_sheet.dart';
 
-class HostFormResponsesPanel extends ConsumerStatefulWidget {
-  const HostFormResponsesPanel({
+class HostFormResponsesSection extends ConsumerStatefulWidget {
+  const HostFormResponsesSection({
     super.key,
     required this.organizerId,
     this.query,
@@ -68,12 +68,12 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
   final bool requireAccount;
 
   @override
-  ConsumerState<HostFormResponsesPanel> createState() =>
-      _HostFormResponsesPanelState();
+  ConsumerState<HostFormResponsesSection> createState() =>
+      _HostFormResponsesSectionState();
 }
 
-class _HostFormResponsesPanelState
-    extends ConsumerState<HostFormResponsesPanel> {
+class _HostFormResponsesSectionState
+    extends ConsumerState<HostFormResponsesSection> {
   HostResponseQueryController? _queryController;
   JournalHostResponseExportGateway? _exportGateway;
   String? _queryAccountId;
@@ -111,7 +111,7 @@ class _HostFormResponsesPanelState
   }
 
   @override
-  void didUpdateWidget(covariant HostFormResponsesPanel oldWidget) {
+  void didUpdateWidget(covariant HostFormResponsesSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.queryCapability?.gateway != widget.queryCapability?.gateway ||
         oldWidget.queryCapability?.versionId !=

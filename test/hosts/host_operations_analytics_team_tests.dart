@@ -10,7 +10,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         tester,
         Scaffold(
           body: SingleChildScrollView(
-            child: HostClubOrganizerOverviewController(club: club),
+            child: HostClubOrganizerSectionList(club: club),
           ),
         ),
         overrides: [
@@ -147,7 +147,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expectSharedChrome();
     expect(
       CatchFieldInteractionPlaneScope.outsetsOf(
-        tester.element(find.byType(HostClubEditTab)),
+        tester.element(find.byType(HostClubEditBody)),
       ),
       EdgeInsets.zero,
     );
@@ -338,7 +338,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         ],
       );
 
-      final editTab = find.byType(HostClubEditTab);
+      final editTab = find.byType(HostClubEditBody);
       expect(editTab, findsOneWidget);
       expect(
         tester.getSize(editTab).width,
@@ -349,7 +349,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         closeTo(CatchLayout.workspaceEditorWidth / 2, 0.1),
       );
       expect(
-        tester.getSize(find.byType(HostClubMediaSummary)).width,
+        tester.getSize(find.byType(HostClubMediaRail)).width,
         closeTo(
           CatchLayout.workspaceEditorWidth - CatchInsets.pageBody.horizontal,
           0.1,
@@ -626,7 +626,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       tester,
       Scaffold(
         body: SingleChildScrollView(
-          child: HostClubEditTab(
+          child: HostClubEditBody(
             club: club,
             currentUid: _hostUid,
             isOwner: true,

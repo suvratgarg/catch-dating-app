@@ -44,8 +44,8 @@ part 'host_roster_filter_header.dart';
 
 enum HostEventParticipantsMode { setup, live, report }
 
-class HostEventParticipantsPanel extends ConsumerStatefulWidget {
-  const HostEventParticipantsPanel({
+class HostEventParticipantsSection extends ConsumerStatefulWidget {
+  const HostEventParticipantsSection({
     super.key,
     required this.eventId,
     required this.mode,
@@ -61,12 +61,12 @@ class HostEventParticipantsPanel extends ConsumerStatefulWidget {
   final String initialSearchQuery;
 
   @override
-  ConsumerState<HostEventParticipantsPanel> createState() =>
-      _HostEventParticipantsPanelState();
+  ConsumerState<HostEventParticipantsSection> createState() =>
+      _HostEventParticipantsSectionState();
 }
 
-class _HostEventParticipantsPanelState
-    extends ConsumerState<HostEventParticipantsPanel> {
+class _HostEventParticipantsSectionState
+    extends ConsumerState<HostEventParticipantsSection> {
   List<String> _stableProfileIds = const [];
 
   List<String> _profileIdsFor(List<String> nextProfileIds) {
@@ -177,44 +177,68 @@ class _HostEventParticipantsPanelState
           bulkWaitlistOfferPending: bulkOfferMutation.isPending,
           opsReportPending: opsExportMutation.isPending,
           revenueReportPending: revenueExportMutation.isPending,
-          markAttendanceError: _firstMutationErrorForIds(
-            participantIds,
-            (uid) => HostEventBookingController.markAttendanceMutation(
-              HostEventBookingController.markAttendanceMutationKey(
-                eventId: viewModel.event.id,
-                userId: uid,
-              ),
-            ),
-          ),
-          approveJoinRequestError: _firstMutationErrorForIds(
-            participantIds,
-            (uid) => HostEventBookingController.approveJoinRequestMutation(
-              HostEventBookingController.approveJoinRequestMutationKey(
-                eventId: viewModel.event.id,
-                userId: uid,
-              ),
-            ),
-          ),
-          declineJoinRequestError: _firstMutationErrorForIds(
-            participantIds,
-            (uid) => HostEventBookingController.declineJoinRequestMutation(
-              HostEventBookingController.declineJoinRequestMutationKey(
-                eventId: viewModel.event.id,
-                userId: uid,
-              ),
-            ),
-          ),
-          createWaitlistOfferError:
-              bulkOfferError ??
-              _firstMutationErrorForIds(
-                participantIds,
-                (uid) => HostEventBookingController.createWaitlistOfferMutation(
-                  HostEventBookingController.waitlistOfferMutationKey(
-                    eventId: viewModel.event.id,
-                    userId: uid,
+          markAttendanceError: participantIds
+              .map(
+                (uid) => _mutationError(
+                  ref.watch(
+                    HostEventBookingController.markAttendanceMutation(
+                      HostEventBookingController.markAttendanceMutationKey(
+                        eventId: viewModel.event.id,
+                        userId: uid,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              )
+              .nonNulls
+              .firstOrNull,
+          approveJoinRequestError: participantIds
+              .map(
+                (uid) => _mutationError(
+                  ref.watch(
+                    HostEventBookingController.approveJoinRequestMutation(
+                      HostEventBookingController.approveJoinRequestMutationKey(
+                        eventId: viewModel.event.id,
+                        userId: uid,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .nonNulls
+              .firstOrNull,
+          declineJoinRequestError: participantIds
+              .map(
+                (uid) => _mutationError(
+                  ref.watch(
+                    HostEventBookingController.declineJoinRequestMutation(
+                      HostEventBookingController.declineJoinRequestMutationKey(
+                        eventId: viewModel.event.id,
+                        userId: uid,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .nonNulls
+              .firstOrNull,
+          createWaitlistOfferError:
+              bulkOfferError ??
+              participantIds
+                  .map(
+                    (uid) => _mutationError(
+                      ref.watch(
+                        HostEventBookingController.createWaitlistOfferMutation(
+                          HostEventBookingController.waitlistOfferMutationKey(
+                            eventId: viewModel.event.id,
+                            userId: uid,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .nonNulls
+                  .firstOrNull,
           opsReportError: opsReportError,
           revenueReportError: revenueReportError,
         );
@@ -402,17 +426,6 @@ class _HostEventParticipantsPanelState
       for (final uid in ids)
         if (ref.watch(mutationFor(uid)).isPending) uid,
     };
-  }
-
-  Object? _firstMutationErrorForIds(
-    Iterable<String> ids,
-    Mutation<void> Function(String uid) mutationFor,
-  ) {
-    for (final uid in ids) {
-      final error = _mutationError(ref.watch(mutationFor(uid)));
-      if (error != null) return error;
-    }
-    return null;
   }
 }
 

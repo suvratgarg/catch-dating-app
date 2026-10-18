@@ -73,8 +73,8 @@
           {
             "id": "manual_send_queue",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
-            "symbol": "HostManualSendQueue"
+            "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
+            "symbol": "HostManualSendList"
           },
           {
             "id": "follower_update_composer",
@@ -97,8 +97,8 @@
           {
             "id": "campaign_composer",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
-            "symbol": "HostCampaignComposer"
+            "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
+            "symbol": "HostCampaignEditor"
           },
           {
             "id": "campaign_controller",
@@ -180,7 +180,7 @@
             "test/hosts/host_whatsapp_setup_pane_test.dart"
           ],
           "customer_campaign_draft": [
-            "test/hosts/host_campaign_composer_test.dart",
+            "test/hosts/host_campaign_editor_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ],
           "customer_campaign_active": [

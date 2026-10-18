@@ -108,7 +108,7 @@ class _HostContactMergeReviewSheetState
               ),
               gapH12,
               for (final candidate in _dismissed) ...[
-                _DismissedMergeCandidateCard(
+                HostDismissedMergeCandidateCard(
                   organizerId: widget.organizerId,
                   candidate: candidate,
                   onChanged: _reload,
@@ -311,8 +311,10 @@ class _HostContactMergeCandidateCardState
   }
 }
 
-class _DismissedMergeCandidateCard extends ConsumerStatefulWidget {
-  const _DismissedMergeCandidateCard({
+/// A merge candidate the host dismissed, with the action to restore it.
+class HostDismissedMergeCandidateCard extends ConsumerStatefulWidget {
+  const HostDismissedMergeCandidateCard({
+    super.key,
     required this.organizerId,
     required this.candidate,
     required this.onChanged,
@@ -323,12 +325,12 @@ class _DismissedMergeCandidateCard extends ConsumerStatefulWidget {
   final VoidCallback onChanged;
 
   @override
-  ConsumerState<_DismissedMergeCandidateCard> createState() =>
-      _DismissedMergeCandidateCardState();
+  ConsumerState<HostDismissedMergeCandidateCard> createState() =>
+      _HostDismissedMergeCandidateCardState();
 }
 
-class _DismissedMergeCandidateCardState
-    extends ConsumerState<_DismissedMergeCandidateCard> {
+class _HostDismissedMergeCandidateCardState
+    extends ConsumerState<HostDismissedMergeCandidateCard> {
   bool _saving = false;
 
   @override

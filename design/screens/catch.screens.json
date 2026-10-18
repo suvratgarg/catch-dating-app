@@ -10958,8 +10958,8 @@
             "symbol": "HostClubsScreen"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-            "symbol": "HostClubEditTab"
+            "file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
+            "symbol": "HostClubEditBody"
           },
           {
             "file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
@@ -11056,7 +11056,7 @@
             "symbol": "HostPaymentAccountController"
           }
         ],
-        "notes": "HostClubsScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostClubEditTab owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostClubDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state."
+        "notes": "HostClubsScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostClubEditBody owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostClubDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state."
       },
       "designRefs": [
         {
@@ -12026,7 +12026,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostClubsScreen resolves auth and host club streams, HostClubsScaffold owns selected-club and tab state, HostClubEditTab composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
+        "currentLayout": "HostClubsScreen resolves auth and host club streams, HostClubsScaffold owns selected-club and tab state, HostClubEditBody composes Media, Identity, Contact, and Club settings, and four top-level spoke screens own Event defaults, Live event guide, Host team, and owner-only Payments. HostClubDefaultsSaver serializes optimistic defaults mutations.",
         "targetLayout": "Keep Host Clubs as a thin route adapter over provider-free tab and spoke sections, with repository writes owned by controllers and one canonical CatchSection/CatchField composition per concern.",
         "sections": [
           {
@@ -12070,7 +12070,7 @@
               "MetricGrid"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+              "file": "lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart",
               "symbol": "HostOrganizerMetricGrid"
             },
             "currentOwner": "HostClubInsightsSection",
@@ -12160,11 +12160,11 @@
               "HostClubMetaRow"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-              "symbol": "HostClubEditTab"
+              "file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
+              "symbol": "HostClubEditBody"
             },
             "currentOwner": "HostClubsScaffold",
-            "targetOwner": "HostClubEditTab",
+            "targetOwner": "HostClubEditBody",
             "dependencies": [
               "catch.badge",
               "catch.chip",
@@ -12196,7 +12196,7 @@
               "file": "packages/catch_ui/lib/src/patterns/catch_form_list.dart",
               "symbol": "CatchFormList"
             },
-            "currentOwner": "HostClubEditTab",
+            "currentOwner": "HostClubEditBody",
             "targetOwner": "CatchFormList with Host-owned UpdateClubPatch descriptors",
             "dependencies": [
               "catch.field",
@@ -14904,7 +14904,7 @@
         "symbol": "HostEventManageRouteScreen"
       },
       "stateController": {
-        "primary": "uidProvider + fetchClubProvider + watchEventProvider + ARCH-SCREEN-001C HostEventManageRouteScreen + HostEventManageScreenState + HostEventManageScreen + HostEventParticipantsPanel + EventSuccessHostSection",
+        "primary": "uidProvider + fetchClubProvider + watchEventProvider + ARCH-SCREEN-001C HostEventManageRouteScreen + HostEventManageScreenState + HostEventManageScreen + HostEventParticipantsSection + EventSuccessHostSection",
         "files": [
           {
             "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
@@ -14959,8 +14959,8 @@
             "symbol": "AttendanceSheetViewModel"
           },
           {
-            "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-            "symbol": "HostEventParticipantsPanel"
+            "file": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
+            "symbol": "HostEventParticipantsSection"
           },
           {
             "file": "lib/event_success/presentation/event_success_host_screen.dart",
@@ -15349,7 +15349,7 @@
           "id": "attendance_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "attendanceSheetViewModelProvider loading renders HostRosterSkeleton inside HostEventParticipantsPanel.",
+          "source": "attendanceSheetViewModelProvider loading renders HostRosterSkeleton inside HostEventParticipantsSection.",
           "nextAction": "Add section preview/capture for roster loading while Host Manage chrome remains visible.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -15397,7 +15397,7 @@
           "id": "attendee_profiles_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "HostEventParticipantsPanel shows HostRosterSkeleton while batched attendee profile lookup loads.",
+          "source": "HostEventParticipantsSection shows HostRosterSkeleton while batched attendee profile lookup loads.",
           "nextAction": "Add roster preview where participation data is loaded but public profiles are still loading.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -15448,7 +15448,7 @@
           "id": "attendance_mutation_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "Attendance, approval, decline, and waitlist-offer mutations are watched by HostEventParticipantsPanel and drive pending row affordances.",
+          "source": "Attendance, approval, decline, and waitlist-offer mutations are watched by HostEventParticipantsSection and drive pending row affordances.",
           "nextAction": "Captured by host_manage_attendance_mutation_pending; remaining Host Manage coverage is Event Success live/report substates, deeper offline variants, and reference-specific variants.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -16306,7 +16306,7 @@
               "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
               "symbol": "HostEventRosterSection"
             },
-            "currentOwner": "HostEventRosterSection + HostOperationalRosterPanel + HostEventParticipantsPanel",
+            "currentOwner": "HostEventRosterSection + HostOperationalRosterSection + HostEventParticipantsSection",
             "targetOwner": "stable overlay drawer fed by provider-free roster adapters",
             "dependencies": [
               "catch.badge",
@@ -16516,7 +16516,7 @@
               "file": "lib/event_success/presentation/event_success_host_screen.dart",
               "symbol": "EventSuccessHostSection"
             },
-            "currentOwner": "HostEventManageScreen + HostEventParticipantsPanel + EventSuccessHostSection",
+            "currentOwner": "HostEventManageScreen + HostEventParticipantsSection + EventSuccessHostSection",
             "targetOwner": "provider-free report workspace fed by roster/report/Event Success adapters",
             "dependencies": [
               "catch.badge",
@@ -17527,7 +17527,7 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+              "file": "lib/hosts/presentation/customers/host_customer_detail_card.dart",
               "symbol": "HostCustomerIdentityCard"
             },
             "currentOwner": "hosts.presentation.customers",
@@ -17582,7 +17582,7 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+              "file": "lib/hosts/presentation/customers/host_customer_detail_card.dart",
               "symbol": "HostCustomerRevenueCard"
             },
             "currentOwner": "hosts.presentation.customers",
@@ -17727,16 +17727,16 @@
             "symbol": "HostWhatsappSetupSection"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
-            "symbol": "HostCampaignComposer"
+            "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
+            "symbol": "HostCampaignEditor"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_sends_page_body.dart",
             "symbol": "HostSendsPageBody"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
-            "symbol": "HostManualSendQueue"
+            "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
+            "symbol": "HostManualSendList"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
@@ -18171,7 +18171,7 @@
           "id": "manual_handoff_queue",
           "kind": "populated",
           "status": "tested",
-          "source": "HostManualSendQueue + hostManualSendTasksProvider render durable organizer-scoped queued and handoffOpened tasks independently of managed Sends history.",
+          "source": "HostManualSendList + hostManualSendTasksProvider render durable organizer-scoped queued and handoffOpened tasks independently of managed Sends history.",
           "tests": [
             "functions/src/organizers/organizerManualSendTasks.test.ts",
             "test/hosts/host_crm_repository_test.dart",
@@ -18183,7 +18183,7 @@
           "id": "manual_handoff_opened_unconfirmed",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostManualSendQueue records device acceptance as handoffOpened, labels it Not confirmed sent, and enables the separate I sent this host assertion only after that state.",
+          "source": "HostManualSendList records device acceptance as handoffOpened, labels it Not confirmed sent, and enables the separate I sent this host assertion only after that state.",
           "tests": [
             "functions/src/organizers/organizerManualSendTasks.test.ts",
             "test/hosts/host_inbox_screen_test.dart"
@@ -18194,7 +18194,7 @@
           "id": "manual_handoff_replan_advisory",
           "kind": "permission",
           "status": "tested",
-          "source": "replanOrganizerManualSendTasks + HostManualSendQueue Check options surface current route advice without mutating, dispatching, completing, removing, or superseding tasks.",
+          "source": "replanOrganizerManualSendTasks + HostManualSendList Check options surface current route advice without mutating, dispatching, completing, removing, or superseding tasks.",
           "tests": [
             "functions/src/organizers/organizerManualSendTasks.test.ts",
             "test/hosts/host_crm_repository_test.dart"
@@ -18231,7 +18231,7 @@
           "source": "HostWhatsappSetupSection provider notice on the dedicated organizer messaging route.",
           "nextAction": "Keep provider-gate copy aligned with backend capability state.",
           "previewIds": [
-            "HostCampaignComposer/Campaign and sender states"
+            "HostCampaignEditor/Campaign and sender states"
           ]
         },
         {
@@ -18241,7 +18241,7 @@
           "source": "HostWhatsappSetupSection sender connection setup on the dedicated organizer messaging route.",
           "nextAction": "Add a deterministic native-to-web handoff capture.",
           "previewIds": [
-            "HostCampaignComposer/Campaign and sender states"
+            "HostCampaignEditor/Campaign and sender states"
           ],
           "tests": [
             "test/hosts/host_whatsapp_setup_pane_test.dart"
@@ -18261,7 +18261,7 @@
           "source": "HostWhatsappSetupSection renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
           "nextAction": "Keep sender mutation coverage aligned with the HostCrmRepository contract and add a dedicated-route capture only after baseline approval.",
           "previewIds": [
-            "HostCampaignComposer/Campaign and sender states"
+            "HostCampaignEditor/Campaign and sender states"
           ],
           "captureIds": [
             "host_messaging_campaigns"
@@ -18275,13 +18275,13 @@
           "id": "customer_campaign_draft",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostCampaignComposer in the Messaging Sends workspace.",
+          "source": "HostCampaignEditor in the Messaging Sends workspace.",
           "nextAction": "Add rendered draft variable validation coverage.",
           "previewIds": [
-            "HostCampaignComposer/Campaign and sender states"
+            "HostCampaignEditor/Campaign and sender states"
           ],
           "tests": [
-            "test/hosts/host_campaign_composer_test.dart",
+            "test/hosts/host_campaign_editor_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ]
         },
@@ -18289,17 +18289,17 @@
           "id": "customer_campaign_previewed",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostCampaignComposer campaign preview in the Messaging Sends workspace.",
+          "source": "HostCampaignEditor campaign preview in the Messaging Sends workspace.",
           "nextAction": "Add a deterministic preview capture."
         },
         {
           "id": "customer_campaign_active",
           "kind": "mutation",
           "status": "tested",
-          "source": "HostCampaignComposer and HostAudienceController own revision-checked campaign lifecycle controls in Messaging.",
+          "source": "HostCampaignEditor and HostAudienceController own revision-checked campaign lifecycle controls in Messaging.",
           "nextAction": "Add focused dispatch and cancel rendered coverage when the campaign lifecycle fixture is expanded.",
           "previewIds": [
-            "HostCampaignComposer/Campaign and sender states"
+            "HostCampaignEditor/Campaign and sender states"
           ],
           "tests": [
             "test/hosts/host_crm_repository_test.dart"
@@ -18782,7 +18782,7 @@
             ],
             "migration": "Remains in the host-operations audience library and is composed by the selected-organizer Messaging Sends workspace.",
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ]
           },
           {
@@ -18792,8 +18792,8 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
-              "symbol": "HostCampaignComposer"
+              "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
+              "symbol": "HostCampaignEditor"
             },
             "currentOwner": "hosts.presentation.inbox",
             "targetOwner": "hosts.presentation.inbox",
@@ -18811,7 +18811,7 @@
             ],
             "migration": "Extracted into a standalone composer with initialSegments support; HostAudienceController and revision gates remain authoritative.",
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ]
           },
           {

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_emai
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_record_menu.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_whatsapp_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -69,26 +69,26 @@ Widget hostCustomerDetailsSectionComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerRecentEvents,
+  type: HostCustomerRecentEventsList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerRecentEventsComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
       detailBuilder: (customer) =>
-          HostCustomerRecentEvents(customer: customer, onOpenEvent: (_) {}),
+          HostCustomerRecentEventsList(customer: customer, onOpenEvent: (_) {}),
     );
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerRevenueBreakdown,
+  type: HostCustomerRevenueList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerRevenueBreakdownComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
       detailBuilder: (customer) =>
-          HostCustomerRevenueBreakdown(customer: customer, onOpenEvent: (_) {}),
+          HostCustomerRevenueList(customer: customer, onOpenEvent: (_) {}),
     );
 
 @widgetbook.UseCase(
@@ -105,13 +105,13 @@ Widget hostCustomerMemoryPreviewComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerHistoryFilters,
+  type: HostCustomerHistoryFilterSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerHistoryFiltersComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => HostCustomerHistoryFilters(
+      detailBuilder: (customer) => HostCustomerHistoryFilterSection(
         builder: (filter) => HostCustomerTimelineSection(
           customer: customer,
           filter: filter,
@@ -447,4 +447,42 @@ Widget hostCustomerWhatsappHandoffSheetStates(BuildContext context) =>
       context,
       detailBuilder: (customer) =>
           HostCustomerWhatsappHandoffSheet(customer: customer),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerIdentitySection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerIdentitySectionStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerIdentitySection(
+        customer: customer,
+        displayName: customer.displayName,
+        phoneE164: customer.phoneE164,
+        phonePlaceholder: context.l10n.hostCustomersNotSaved,
+        email: customer.email,
+        emailPlaceholder: context.l10n.hostCustomersNotSaved,
+        onEdit: () {},
+        showName: true,
+        showContacts: true,
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Populated component',
+  type: HostCustomerTimelineList,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerTimelineListStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerTimelineList(
+        entries: customer.timeline,
+        onOpenFormResponse: (_) {},
+        onOpenEvent: (_) {},
+        onOpenCatchThread: (_) {},
+        onOpenWhatsappThread: (_) {},
+      ),
     );

@@ -181,7 +181,7 @@ Typed handoffs:
 | `HostCustomersController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Feature-contract actions: export_customers, create_customer, manage_customer, start_conversation. |
 | `HostCustomerDetailScreen` | `lib/hosts/presentation/customers/host_customer_detail_screen.dart` | Feature-contract actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
 | `HostCustomerMemorySection` | `lib/hosts/presentation/customers/host_customer_memory_section.dart` | Feature-contract actions: edit_contact_tags, create_contact_note, edit_contact_note. |
-| `HostContactMergeReviewSheet` | `lib/hosts/presentation/customers/host_contact_merge_review.dart` | Feature-contract actions: decide_duplicate_customer. |
+| `HostContactMergeReviewSheet` | `lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart` | Feature-contract actions: decide_duplicate_customer. |
 | `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
 | `HostFormsScreen` | `lib/hosts/presentation/forms/host_forms_screen.dart` | Forms and Responses route composition inside Audience. |
 | `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Organizer form inventory state. |
