@@ -1529,9 +1529,39 @@ rows and the reveal vignette were inlined, and `FirstHelloMissionEditor`,
 `CustomQuestionnaireFieldState` record replacing the `_inputField` helper)
 became public, previewed widgets.
 
+Slice 4a (2026-10-18): hosts, minus the files below; the ratchet fell from
+84 to 37. Panel and the adaptive-workspace Pane are Section
+(`HostCustomerHistorySection`, `CreateEventConsequenceSection`), the
+spoke-route resolver that selects loading, error and data states is
+`HostClubSpokeAsyncBoundary`, and `StepperFooter` is `HostStepperDock`. The
+pass-through `HostClubOrganizerOverview` was deleted in favour of the
+`HostOrganizerMetricGrid` it wrapped. Renaming `host_analytics.dart`, a
+938-line file on the source-size ratchet, required splitting it (a renamed
+file cannot re-enter the legacy baseline): the trend section and bar tile moved
+to `host_analytics_trend_section.dart`, and the insights section is 709 lines
+and off the ratchet.
+
+Slice 4b (open): ten hosts files carry private widget classes or widget helpers
+that the gate requires to be inlined or promoted once the file moves, so their
+renames wait for that work: `host_club_edit_tab.dart`,
+`host_operational_roster_panel.dart`, `host_manual_send_queue.dart`,
+`host_form_renderer.dart`, `host_organizer.dart`, `host_contact_merge_review.dart`,
+`host_customer_detail_cards.dart`, `host_customer_timeline.dart`,
+`host_campaign_composer.dart` and `host_event_attendance_panel.dart`. Two more
+need provider fixtures for their previews first:
+`host_form_responses_panel.dart` and `host_event_live_location_control.dart`.
+Separately, 17 Widgetbook functions stack several `@UseCase` annotations, and
+the generator emits only the first, so the rest never render (for example
+`HostTeamManagementSection` and `HostOrganizerMetricGrid` have no entries);
+split them into one function each.
+
 Deferred: `DashboardFullSliverBody`'s file rename and the
 `EventCheckInQrScanner` rename both touch
-`test/dashboard/dashboard_screen_test.dart`, which another active task holds.
+`test/dashboard/dashboard_screen_test.dart`, which another active task holds;
+`HostTodayLoadedRoute`, `HostTodayOverview` and `HostTodayAttentionSection`
+wait on the task holding the Host Today files; `host_audience_view.dart` waits
+on the task holding `lib/routing/go_router.dart`; `HostEventReviewsPanel` waits
+on the task holding `tool/tools_manifest.json`.
 
 **Phase 7c — One registry for React identity.** Replace the `surfaces` name
 map with per-framework implementation records (symbol and file), add

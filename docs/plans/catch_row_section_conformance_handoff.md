@@ -159,7 +159,7 @@ behavior are separate evidence states.
 | Cause | Evidence from the pre-migration audit | Required correction |
 |---|---|---|
 | Multiple interaction owners | `packages/catch_ui/lib/src/components/catch_record_row.dart`, `catch_person_row.dart` delegate to `src/primitives/catch_row_press_surface.dart`. The surface paints a rectangular parent-sized overlay. | Layouts become passive; Field owns row interaction. |
-| Wrong section role | `lib/hosts/events/presentation/widgets/host_events_list.dart`, `HostEventsTimelinePage`, still constructs `CatchSection.plain` around `HostEventLifecycleRow`/`CatchRecordRow`. | Typed row sections supply header rule and text-lane sibling separators. The month label already uses shared section infrastructure; a different label widget alone cannot fix it. |
+| Wrong section role | `lib/hosts/events/presentation/widgets/host_events_list.dart`, `HostEventsTimelineBody`, still constructs `CatchSection.plain` around `HostEventLifecycleRow`/`CatchRecordRow`. | Typed row sections supply header rule and text-lane sibling separators. The month label already uses shared section infrastructure; a different label widget alone cannot fix it. |
 | Field bypass and incomplete hover | The original audit found Add delegating through legacy row anatomy and a press/focus path without hover-enter tint. Those families moved into package Field renderers. | Audit every extracted mode, including Add, using the same interaction test matrix; do not assume merely wrapping the old rows in today's Field is enough. |
 | Geometry inferred through widget shape | Current section/lane rendering has used direct-child type inspection, fallback icon insets, and separate single/divided lane wrappers. Form and feature adapters obscure actual text lanes. | Typed entries expose package-derived layout metrics independent of wrapper shape. |
 | Paint can exceed input | Original Field overlays paint horizontal outsets around locally bounded gesture content. | Test both visible extent and edge activation; changing only the overlay is insufficient. |
@@ -568,7 +568,7 @@ so a future implementer can map these roles onto the extracted package.
 
 Sources: `lib/hosts/events/presentation/host_events_screen.dart` and
 `lib/hosts/events/presentation/widgets/host_events_list.dart`, especially
-`HostEventsClubCard`, `HostEventsClubSection`, `HostEventsTimelinePage` and
+`HostEventsClubCard`, `HostEventsClubSection`, `HostEventsTimelineBody` and
 `HostEventLifecycleRow`. Root source already uses canonical scaffold/rail/page
 owners, stable organizer/view keys and separate lifecycle loading states.
 Preserve its event-entry/draft/repeat capability and stable pagination boundary.
@@ -578,7 +578,7 @@ Preserve its event-entry/draft/repeat capability and stable pagination boundary.
 - `HostEventsClubCard` loads data; it is not a card. Rename to
   `HostEventsWorkspaceAdapter` or absorb into the existing route adapter.
   `HostEventsClubSection` composes the entire workspace; rename to
-  `HostEventsWorkspaceView`. `HostEventsTimelinePage` is an appropriate page
+  `HostEventsWorkspaceView`. `HostEventsTimelineBody` is an appropriate page
   adapter name. Prefer organizer vocabulary for new feature names without
   forcing a domain-model migration.
 - The rail options and pages are independently enumerated. Use one stable

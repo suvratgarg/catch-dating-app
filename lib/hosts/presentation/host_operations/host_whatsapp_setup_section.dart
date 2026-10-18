@@ -1,7 +1,7 @@
 part of '../host_operations_screen.dart';
 
-class HostWhatsappSetupPane extends ConsumerStatefulWidget {
-  const HostWhatsappSetupPane({
+class HostWhatsappSetupSection extends ConsumerStatefulWidget {
+  const HostWhatsappSetupSection({
     super.key,
     required this.club,
     this.onBusyChanged,
@@ -11,11 +11,12 @@ class HostWhatsappSetupPane extends ConsumerStatefulWidget {
   final ValueChanged<bool>? onBusyChanged;
 
   @override
-  ConsumerState<HostWhatsappSetupPane> createState() =>
-      _HostWhatsappSetupPaneState();
+  ConsumerState<HostWhatsappSetupSection> createState() =>
+      _HostWhatsappSetupSectionState();
 }
 
-class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
+class _HostWhatsappSetupSectionState
+    extends ConsumerState<HostWhatsappSetupSection> {
   final _testPhoneController = TextEditingController();
   bool _busy = false;
 

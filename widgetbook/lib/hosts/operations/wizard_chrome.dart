@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_stepper_dock.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -40,7 +40,7 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Footer states',
-  type: StepperFooter,
+  type: HostStepperDock,
   path: '[P1 product surfaces]/Host shared',
 )
 Widget stepperFooterCatalogStates(BuildContext context) {
@@ -73,13 +73,13 @@ Widget stepperFooterCatalogStates(BuildContext context) {
   );
 
   return WidgetbookPageCatalogFrame(
-    title: 'StepperFooter',
+    title: 'HostStepperDock',
     contractId: 'component.host.stepper_footer',
     children: [
       WidgetbookPageStateCard(
         label: 'previous and next',
         child: WidgetbookHostDeviceFrame(
-          child: StepperFooter(
+          child: HostStepperDock(
             body: scrollingBody('Event basics'),
             isLastStep: false,
             isLoading: false,
@@ -91,7 +91,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'review needs information',
         child: WidgetbookHostDeviceFrame(
-          child: StepperFooter(
+          child: HostStepperDock(
             body: CatchFormReviewPageBody(
               fieldCopy: catchFieldCopy(context.l10n),
               statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
@@ -128,7 +128,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'last step loading',
         child: WidgetbookHostDeviceFrame(
-          child: StepperFooter(
+          child: HostStepperDock(
             body: scrollingBody('Event success'),
             isLastStep: true,
             isLoading: true,

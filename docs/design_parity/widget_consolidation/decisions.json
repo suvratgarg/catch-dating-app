@@ -1853,11 +1853,11 @@
           "action": "keep"
         },
         {
-          "name": "HostEventToolsCarousel",
+          "name": "HostEventToolsRail",
           "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: EventFocusRail is member dashboard event-focus navigation while HostEventToolsCarousel is host management tooling with different data and action contracts.",
+      "rationale": "K2 domain fork: EventFocusRail is member dashboard event-focus navigation while HostEventToolsRail is host management tooling with different data and action contracts.",
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
@@ -1920,11 +1920,11 @@
       "canonicalSymbol": "CatchField.nav"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendSection",
+      "clusterId": "ranked-pair: HostAnalyticsTrendSection/UserAnalyticsTrendSection",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostAnalyticsTrendPanel",
+          "name": "HostAnalyticsTrendSection",
           "action": "keep"
         },
         {
@@ -2771,7 +2771,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsReviewDiscoveryPanel/HostAnalyticsTrendPanel",
+      "clusterId": "ranked-pair: HostAnalyticsReviewDiscoveryPanel/HostAnalyticsTrendSection",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2779,7 +2779,7 @@
           "action": "keep"
         },
         {
-          "name": "HostAnalyticsTrendPanel",
+          "name": "HostAnalyticsTrendSection",
           "action": "keep"
         }
       ],
@@ -3205,7 +3205,7 @@
       "status": "implemented-WO-020 (footer extraction only)"
     },
     {
-      "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteStateView",
+      "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteBody",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3213,7 +3213,7 @@
           "action": "keep"
         },
         {
-          "name": "HostCreateEventRouteStateView",
+          "name": "HostCreateEventRouteBody",
           "action": "keep"
         }
       ],
@@ -4097,11 +4097,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostClubInsightsPane/HostClubPreviewPane",
+      "clusterId": "ranked-pair: HostClubInsightsSection/HostClubPreviewPane",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostClubInsightsPane",
+          "name": "HostClubInsightsSection",
           "action": "keep"
         },
         {
@@ -4367,11 +4367,11 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportBody",
+      "clusterId": "ranked-pair: HostAnalyticsReportBody/UserAnalyticsReportBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostAnalyticsReportView",
+          "name": "HostAnalyticsReportBody",
           "action": "keep"
         },
         {

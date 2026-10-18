@@ -251,7 +251,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                 SliverToBoxAdapter(
                   child: SizedBox(
                     width: double.infinity,
-                    child: HostClubInsightsPane(
+                    child: HostClubInsightsSection(
                       key: ValueKey('host-club-${selectedClub.id}-insights'),
                       club: selectedClub,
                       refreshController: _insightsRefreshController,

@@ -35,7 +35,7 @@ class _HostSavedAudienceWorkspaceState
             _editing = false;
           }),
         )
-      : HostSavedAudienceOverview(
+      : HostSavedAudienceSection(
           audience: _audience,
           onEdit: (audience) {
             setState(() {
@@ -46,8 +46,8 @@ class _HostSavedAudienceWorkspaceState
         );
 }
 
-class HostSavedAudienceOverview extends ConsumerWidget {
-  const HostSavedAudienceOverview({
+class HostSavedAudienceSection extends ConsumerWidget {
+  const HostSavedAudienceSection({
     super.key,
     required this.audience,
     required this.onEdit,

@@ -512,7 +512,7 @@ class HostTeamProfileSection extends StatelessWidget {
           ),
         ],
       ),
-      HostTeamProfileContent(:final profile) => HostTeamProfileRows(
+      HostTeamProfileContent(:final profile) => HostTeamProfileList(
         profile: profile,
         editMode: editMode,
         displayNameController: displayNameController,
@@ -525,8 +525,8 @@ class HostTeamProfileSection extends StatelessWidget {
   }
 }
 
-class HostTeamProfileRows extends StatefulWidget {
-  const HostTeamProfileRows({
+class HostTeamProfileList extends StatefulWidget {
+  const HostTeamProfileList({
     super.key,
     required this.profile,
     required this.editMode,
@@ -546,10 +546,10 @@ class HostTeamProfileRows extends StatefulWidget {
   final Future<bool> Function()? onSaveProfile;
 
   @override
-  State<HostTeamProfileRows> createState() => _HostTeamProfileRowsState();
+  State<HostTeamProfileList> createState() => _HostTeamProfileListState();
 }
 
-class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
+class _HostTeamProfileListState extends State<HostTeamProfileList> {
   static const _displayNameField = 'displayName';
   static const _roleTitleField = 'roleTitle';
   static const _bioField = 'bio';

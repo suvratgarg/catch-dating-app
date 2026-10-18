@@ -138,7 +138,7 @@
       "routeIds": ["hostClubTeamScreen"],
       "semanticFieldCount": 3,
       "bindings": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileRows"}
+        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileList"}
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "CatchField.inputActions", "expected": 3}

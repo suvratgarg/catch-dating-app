@@ -3,8 +3,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Event roster content. The Host router owns its parent and pane placement.
-class HostEventRosterPanel extends StatelessWidget {
-  const HostEventRosterPanel({
+class HostEventRosterSection extends StatelessWidget {
+  const HostEventRosterSection({
     super.key,
     required this.bookedCount,
     required this.onClose,

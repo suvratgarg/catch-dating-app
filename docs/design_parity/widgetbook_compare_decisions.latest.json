@@ -469,7 +469,7 @@
     "decision": "separate concepts",
     "note": "the report view should be composed host analytics sections",
     "recommended": "catch.analytics_panel",
-    "left": "HostAnalyticsReportView",
+    "left": "HostAnalyticsReportBody",
     "right": "HostAnalyticsSection"
   },
   {

@@ -19,7 +19,7 @@ import 'package:catch_dating_app/events/presentation/widgets/who_is_going_sectio
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_stepper_dock.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -718,7 +718,7 @@ void main() {
         await pumpEventsTestApp(
           tester,
           Scaffold(
-            body: StepperFooter(
+            body: HostStepperDock(
               body: ListView(
                 padding: CatchInsets.formStepBodyWithBottomActions,
                 children: const [

@@ -5,8 +5,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CreateClubContactFields extends StatelessWidget {
-  const CreateClubContactFields({
+class CreateClubContactSection extends StatelessWidget {
+  const CreateClubContactSection({
     super.key,
     required this.instagramController,
     required this.phoneController,

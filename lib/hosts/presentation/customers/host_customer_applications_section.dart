@@ -14,8 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Loads organizer-scoped submissions only when the Details tab is mounted.
-class HostCustomerApplicationsPanel extends ConsumerWidget {
-  const HostCustomerApplicationsPanel({
+class HostCustomerApplicationsSection extends ConsumerWidget {
+  const HostCustomerApplicationsSection({
     super.key,
     required this.organizerId,
     required this.contactId,
@@ -125,7 +125,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
                   titleMaxLines: 4,
                   contractExemption:
                       'Read-only disclosure of a grant-filtered application snapshot; no scalar value is persisted.',
-                  child: HostCustomerApplicationSnapshot(
+                  child: HostCustomerApplicationCard(
                     organizerId: organizerId,
                     applicationId: state.applications.first.applicationId,
                     onOpen: () => onOpenApplication(
@@ -145,8 +145,8 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
 
 /// Displays the same grant-filtered answers as the application detail route.
 /// These remain a dated submission rather than becoming editable CRM fields.
-class HostCustomerApplicationSnapshot extends ConsumerWidget {
-  const HostCustomerApplicationSnapshot({
+class HostCustomerApplicationCard extends ConsumerWidget {
+  const HostCustomerApplicationCard({
     super.key,
     required this.organizerId,
     required this.applicationId,

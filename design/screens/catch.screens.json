@@ -361,7 +361,7 @@
             "hostClubLiveGuideScreen",
             "hostClubPaymentsScreen"
           ],
-          "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+          "file": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
           "symbol": "HostClubSpokeScaffold",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -506,8 +506,8 @@
             "hostAppAttendanceSheet",
             "hostAppEventSuccessScreen"
           ],
-          "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-          "symbol": "HostEventRosterPanel",
+          "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+          "symbol": "HostEventRosterSection",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "full-bleed",
@@ -566,8 +566,8 @@
           "routes": [
             "hostSavedAudienceDetailScreen"
           ],
-          "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-          "symbol": "HostSavedAudienceOverview",
+          "file": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
+          "symbol": "HostSavedAudienceSection",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
@@ -1931,8 +1931,8 @@
           "routes": [
             "hostEventRosterScreen"
           ],
-          "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-          "symbol": "HostEventRosterPanel",
+          "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+          "symbol": "HostEventRosterSection",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "full-bleed",
@@ -10436,7 +10436,7 @@
           "id": "club_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
+          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelineBody renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
           "nextAction": "Add nested event-list offline capture if event-specific offline copy diverges from club-load offline.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -10704,7 +10704,7 @@
               "HostOrganizerAvatar"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_organizer_switcher.dart",
+              "file": "lib/hosts/presentation/widgets/host_organizer_switcher_sheet.dart",
               "symbol": "HostOrganizerAvatar"
             },
             "currentOwner": "HostTodayHeader + HostEventsClubSection + HostAppShell",
@@ -10759,7 +10759,7 @@
               "cancelled_filtered",
               "long_titles"
             ],
-            "migration": "HostEventsClubCard maps the paginated event timeline into HostEventsWorkspaceState. The controller independently merges both paging lanes and guards refreshed sessions. HostEventsClubSection supplies a canonical sticky rail and typed page owners. HostEventsTimelinePage selects day-grouped Upcoming or month-grouped Past and page-local loading/error/empty states. Shared section and record primitives own geometry; Today remains separate.",
+            "migration": "HostEventsClubCard maps the paginated event timeline into HostEventsWorkspaceState. The controller independently merges both paging lanes and guards refreshed sessions. HostEventsClubSection supplies a canonical sticky rail and typed page owners. HostEventsTimelineBody selects day-grouped Upcoming or month-grouped Past and page-local loading/error/empty states. Shared section and record primitives own geometry; Today remains separate.",
             "previewIds": [
               "hostHomeRouteStates",
               "hostHomeEventSectionStates"
@@ -10776,9 +10776,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-              "symbol": "HostEventsTimelinePage"
+              "symbol": "HostEventsTimelineBody"
             },
-            "currentOwner": "HostEventsTimelinePage + hostEventRecordLayout",
+            "currentOwner": "HostEventsTimelineBody + hostEventRecordLayout",
             "targetOwner": "CatchSection.sliverRows -> CatchField -> CatchRecordLayout",
             "dependencies": [
               "catch.field"
@@ -10793,7 +10793,7 @@
             "migration": "Event-owned projection formats activity, schedule, location and attendance facts as passive RecordLayout values. Section owns month headers and sibling rules; Field owns navigation and interaction.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostEventsTimelinePage/Exact catalog"
+              "HostEventsTimelineBody/Exact catalog"
             ]
           },
           {
@@ -11657,7 +11657,7 @@
           "source": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
           "nextAction": "Keep the canonical tab loading capture and Widgetbook scorecard state synced.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_loading"
@@ -11667,10 +11667,10 @@
           "id": "insights_report",
           "kind": "populated",
           "status": "captured",
-          "source": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews.",
+          "source": "HostAnalyticsReportBody renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews.",
           "nextAction": "Keep client-owned labels, tab navigation, partial/missing quality badges, narrow and text-scale variants, and backend response compatibility covered.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_report"
@@ -11680,10 +11680,10 @@
           "id": "insights_coach",
           "kind": "populated",
           "status": "implemented",
-          "source": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; the block is absent when no rule fires.",
+          "source": "HostAnalyticsReportBody shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; the block is absent when no rule fires.",
           "nextAction": "Keep rule thresholds, copy, report/defaults links, and the hidden no-recommendation state pinned by tests and Widgetbook.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ]
         },
         {
@@ -11693,7 +11693,7 @@
           "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query.",
           "nextAction": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_error",
@@ -11879,7 +11879,7 @@
             "host_team_save_profile_offline"
           ],
           "previewIds": [
-            "HostTeamProfileRows/Covered by host team route states"
+            "HostTeamProfileList/Covered by host team route states"
           ]
         },
         {
@@ -11911,7 +11911,7 @@
             "host_team_save_profile_offline"
           ],
           "previewIds": [
-            "HostTeamProfileRows/Covered by host team route states"
+            "HostTeamProfileList/Covered by host team route states"
           ]
         },
         {
@@ -12071,9 +12071,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-              "symbol": "HostClubOrganizerOverview"
+              "symbol": "HostOrganizerMetricGrid"
             },
-            "currentOwner": "HostClubInsightsPane",
+            "currentOwner": "HostClubInsightsSection",
             "targetOwner": "provider-free host insights metric summary",
             "dependencies": [
               "catch.surface"
@@ -12328,12 +12328,12 @@
             "layer": "section",
             "claudeComponents": [
               "HostClubInsightsState",
-              "HostAnalyticsReportView",
-              "HostAnalyticsTrendPanel"
+              "HostAnalyticsReportBody",
+              "HostAnalyticsTrendSection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-              "symbol": "HostClubInsightsPane"
+              "file": "lib/hosts/presentation/host_operations/host_club_insights_section.dart",
+              "symbol": "HostClubInsightsSection"
             },
             "currentOwner": "HostClubsScaffold",
             "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
@@ -12360,10 +12360,10 @@
               "payment_issues",
               "text_scale"
             ],
-            "migration": "HostClubInsightsState owns only the selected club and one of three range presets; granularity is derived and event scoping/custom dates are absent from the host surface. HostClubInsightsPane owns device-IANA query resolution, ten-minute provider reuse, pull-to-refresh invalidation, and navigation from recent events to the existing per-event Report. HostAnalyticsReportView is provider-free and Widgetbook covers loaded, empty, partial-data, Coach, and text-scale scorecard states.",
+            "migration": "HostClubInsightsState owns only the selected club and one of three range presets; granularity is derived and event scoping/custom dates are absent from the host surface. HostClubInsightsSection owns device-IANA query resolution, ten-minute provider reuse, pull-to-refresh invalidation, and navigation from recent events to the existing per-event Report. HostAnalyticsReportBody is provider-free and Widgetbook covers loaded, empty, partial-data, Coach, and text-scale scorecard states.",
             "previewIds": [
               "HostClubsScreen/Route states",
-              "HostClubInsightsPane/Insights scorecard states"
+              "HostClubInsightsSection/Insights scorecard states"
             ]
           },
           {
@@ -12541,13 +12541,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostTeamProfileRows"
+              "HostTeamProfileList"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-              "symbol": "HostTeamProfileRows"
+              "symbol": "HostTeamProfileList"
             },
-            "currentOwner": "HostTeamProfileRows inline form",
+            "currentOwner": "HostTeamProfileList inline form",
             "targetOwner": "provider-free host profile editor form",
             "dependencies": [
               "catch.field",
@@ -12558,9 +12558,9 @@
               "save_profile_mutation",
               "create_profile_mutation"
             ],
-            "migration": "HostTeamProfileRows renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
+            "migration": "HostTeamProfileList renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
             "previewIds": [
-              "HostTeamProfileRows/Covered by host team route states"
+              "HostTeamProfileList/Covered by host team route states"
             ]
           },
           {
@@ -14174,8 +14174,8 @@
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateEventController.submitMutation pending drives StepperFooter loading and disables scheduling.",
-          "nextAction": "CreateEventController.submitMutation pending drives StepperFooter loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
+          "source": "CreateEventController.submitMutation pending drives HostStepperDock loading and disables scheduling.",
+          "nextAction": "CreateEventController.submitMutation pending drives HostStepperDock loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
           ],
@@ -14475,7 +14475,7 @@
             "layer": "section",
             "claudeComponents": [
               "CreateEventWizardShell",
-              "StepperFooter"
+              "HostStepperDock"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
@@ -14919,8 +14919,8 @@
             "symbol": "HostEventManageScreenState"
           },
           {
-            "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-            "symbol": "HostEventRosterPanel"
+            "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+            "symbol": "HostEventRosterSection"
           },
           {
             "file": "lib/hosts/presentation/host_invite_link_state.dart",
@@ -14993,7 +14993,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterPanel while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterPanel is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterSection while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterSection is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
       },
       "designRefs": [
         {
@@ -15333,7 +15333,7 @@
           "id": "attendance_setup_roster",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventRosterPanel opens beside the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
+          "source": "HostEventRosterSection opens beside the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -16199,7 +16199,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterPanel renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterSection renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
         "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, deep-link inputs, and event-scoped navigation effects. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker, inventing event-scoped Forms, or duplicating the lifecycle resolver.",
         "sections": [
           {
@@ -16303,10 +16303,10 @@
               "HostReportTable"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-              "symbol": "HostEventRosterPanel"
+              "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+              "symbol": "HostEventRosterSection"
             },
-            "currentOwner": "HostEventRosterPanel + HostOperationalRosterPanel + HostEventParticipantsPanel",
+            "currentOwner": "HostEventRosterSection + HostOperationalRosterPanel + HostEventParticipantsPanel",
             "targetOwner": "stable overlay drawer fed by provider-free roster adapters",
             "dependencies": [
               "catch.badge",
@@ -16330,7 +16330,7 @@
               "profile_error",
               "mutation_error"
             ],
-            "migration": "HostEventRosterPanel contains roster content while the Host workspace owns pane presentation and retains the event ancestor. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The roster keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
+            "migration": "HostEventRosterSection contains roster content while the Host workspace owns pane presentation and retains the event ancestor. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The roster keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
@@ -16833,7 +16833,7 @@
             "symbol": "HostCustomersDirectoryState"
           },
           {
-            "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "symbol": "HostCustomerMemorySection"
           },
           {
@@ -16845,8 +16845,8 @@
             "symbol": "HostSavedAudienceEditorScreen"
           },
           {
-            "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-            "symbol": "HostSavedAudienceOverview"
+            "file": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
+            "symbol": "HostSavedAudienceSection"
           },
           {
             "file": "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart",
@@ -16933,21 +16933,21 @@
           "id": "customers_error",
           "kind": "error",
           "status": "implemented",
-          "source": "CatchErrorState in HostCustomersDirectory",
+          "source": "CatchErrorState in HostCustomersList",
           "nextAction": "Add retry interaction test."
         },
         {
           "id": "customers_empty",
           "kind": "empty",
           "status": "implemented",
-          "source": "HostCustomersDirectory empty branch",
+          "source": "HostCustomersList empty branch",
           "nextAction": "Capture the first-customer path."
         },
         {
           "id": "customers_populated",
           "kind": "populated",
           "status": "captured",
-          "source": "HostCustomersSummary selected filters + HostCustomersDirectory + HostCustomerRow",
+          "source": "HostCustomersSummarySection selected filters + HostCustomersList + HostCustomerRow",
           "previewIds": [
             "hostCustomersStates"
           ],
@@ -16964,7 +16964,7 @@
           "id": "customers_filtered_empty",
           "kind": "empty",
           "status": "implemented",
-          "source": "HostCustomersDirectory filtered branch",
+          "source": "HostCustomersList filtered branch",
           "tests": [
             "test/hosts/host_customers_screen_state_test.dart"
           ],
@@ -17013,7 +17013,7 @@
           "id": "customer_filter_manual_tag",
           "kind": "populated",
           "status": "tested",
-          "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummary",
+          "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummarySection",
           "tests": [
             "test/hosts/host_customer_filter_summary_test.dart",
             "test/hosts/host_crm_contact_memory_test.dart"
@@ -17024,7 +17024,7 @@
           "id": "customer_campaign_bridge_ready",
           "kind": "populated",
           "status": "tested",
-          "source": "HostCustomerFilterSummary enabled Message these N action + HostSaveAudienceSheet",
+          "source": "HostCustomerFilterSummarySection enabled Message these N action + HostSaveAudienceSheet",
           "tests": [
             "test/hosts/host_customer_filter_summary_test.dart",
             "test/hosts/host_campaign_segment_eligibility_test.dart",
@@ -17036,7 +17036,7 @@
           "id": "customer_campaign_bridge_blocked",
           "kind": "permission",
           "status": "tested",
-          "source": "HostCustomerFilterSummary blocker copy with optional dedicated sender-setup recovery",
+          "source": "HostCustomerFilterSummarySection blocker copy with optional dedicated sender-setup recovery",
           "tests": [
             "test/hosts/host_customer_filter_summary_test.dart",
             "test/hosts/host_campaign_segment_eligibility_test.dart",
@@ -17104,7 +17104,7 @@
           "id": "customer_saved_audience_detail",
           "kind": "populated",
           "status": "tested",
-          "source": "HostSavedAudienceOverview member and rule overview with explicit editing",
+          "source": "HostSavedAudienceSection member and rule overview with explicit editing",
           "tests": [
             "test/hosts/host_saved_audience_workflows_test.dart"
           ],
@@ -17470,7 +17470,7 @@
             "claudeComponents": [],
             "flutter": {
               "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
-              "symbol": "HostCustomersDirectory"
+              "symbol": "HostCustomersList"
             },
             "currentOwner": "hosts.presentation.customers",
             "targetOwner": "hosts.presentation.customers",
@@ -17556,7 +17556,7 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+              "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
               "symbol": "HostCustomerMemorySection"
             },
             "currentOwner": "hosts.presentation.customers",
@@ -17723,8 +17723,8 @@
             "symbol": "ChatsEmptyState"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostWhatsappSetupPane"
+            "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+            "symbol": "HostWhatsappSetupSection"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
@@ -17739,7 +17739,7 @@
             "symbol": "HostManualSendQueue"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
             "symbol": "showHostFollowerUpdateComposer"
           },
           {
@@ -18207,7 +18207,7 @@
           "status": "tested",
           "source": "HostSendsPageBody + showHostFollowerUpdateComposer + HostClubPostController",
           "tests": [
-            "test/hosts/host_follower_update_composer_test.dart",
+            "test/hosts/host_follower_update_composer_sheet_test.dart",
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -18228,7 +18228,7 @@
           "id": "customer_messaging_provider_unavailable",
           "kind": "permission",
           "status": "implemented",
-          "source": "HostWhatsappSetupPane provider notice on the dedicated organizer messaging route.",
+          "source": "HostWhatsappSetupSection provider notice on the dedicated organizer messaging route.",
           "nextAction": "Keep provider-gate copy aligned with backend capability state.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
@@ -18238,7 +18238,7 @@
           "id": "customer_messaging_disconnected",
           "kind": "empty",
           "status": "tested",
-          "source": "HostWhatsappSetupPane sender connection setup on the dedicated organizer messaging route.",
+          "source": "HostWhatsappSetupSection sender connection setup on the dedicated organizer messaging route.",
           "nextAction": "Add a deterministic native-to-web handoff capture.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
@@ -18251,14 +18251,14 @@
           "id": "customer_messaging_connecting",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostWhatsappSetupPane pending sender mutation freezes workspace switching and request-defining controls.",
+          "source": "HostWhatsappSetupSection pending sender mutation freezes workspace switching and request-defining controls.",
           "nextAction": "Add a deterministic pending capture."
         },
         {
           "id": "customer_messaging_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "HostWhatsappSetupPane renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
+          "source": "HostWhatsappSetupSection renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
           "nextAction": "Keep sender mutation coverage aligned with the HostCrmRepository contract and add a dedicated-route capture only after baseline approval.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
@@ -18763,8 +18763,8 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-              "symbol": "HostWhatsappSetupPane"
+              "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+              "symbol": "HostWhatsappSetupSection"
             },
             "currentOwner": "hosts.presentation.inbox",
             "targetOwner": "hosts.presentation.inbox",
@@ -23757,7 +23757,7 @@
               "details_step",
               "text_scale_2"
             ],
-            "migration": "Keep optional contact fields in shared CreateClubContactFields and add filled/empty previews."
+            "migration": "Keep optional contact fields in shared CreateClubContactSection and add filled/empty previews."
           },
           {
             "id": "section.host.club_create.defaults_steps",
@@ -23793,10 +23793,10 @@
               "CreateClubFooter"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/stepper_footer.dart",
-              "symbol": "StepperFooter"
+              "file": "lib/hosts/presentation/widgets/host_stepper_dock.dart",
+              "symbol": "HostStepperDock"
             },
-            "currentOwner": "StepperFooter + CreateClubScreen",
+            "currentOwner": "HostStepperDock + CreateClubScreen",
             "targetOwner": "provider-free wizard footer",
             "dependencies": [
               "catch.button"
@@ -23807,7 +23807,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "StepperFooter now renders labels, loading, enabled state, and next/save/create intents from HostClubCreateFooterState while CreateClubScreen executes the typed intents. HostClubSubmitOutcomeState owns close-after-submit-success policy before the route performs Navigator.pop."
+            "migration": "HostStepperDock now renders labels, loading, enabled state, and next/save/create intents from HostClubCreateFooterState while CreateClubScreen executes the typed intents. HostClubSubmitOutcomeState owns close-after-submit-success policy before the route performs Navigator.pop."
           }
         ]
       },

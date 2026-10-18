@@ -1,7 +1,7 @@
 part of '../host_operations_screen.dart';
 
-class HostClubSpokeResolver extends ConsumerWidget {
-  const HostClubSpokeResolver._({
+class HostClubSpokeAsyncBoundary extends ConsumerWidget {
+  const HostClubSpokeAsyncBoundary._({
     required this.clubId,
     required this.title,
     required this.builder,
@@ -241,8 +241,8 @@ class _HostClubDefaultsEditorState
   }
 }
 
-class HostClubReadOnlyEventDefaults extends StatelessWidget {
-  const HostClubReadOnlyEventDefaults._({
+class HostClubReadOnlyDefaultsSection extends StatelessWidget {
+  const HostClubReadOnlyDefaultsSection._({
     required this.club,
     required this.progressiveDefaultsAvailable,
   });
@@ -257,19 +257,22 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
       first: true,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       children: [
-        if (progressiveDefaultsAvailable) CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.hostsPrivateEventCity,
-          body: club.location,
-          icon: CatchIcons.locationOnOutlined,
-        ),
-        if (progressiveDefaultsAvailable) CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.hostsPrivateEventTimezone,
-          body: club.hostDefaults.timezone ??
-              context.l10n.hostsEventDefaultsChooseEachEvent,
-          icon: CatchIcons.languageOutlined,
-        ),
+        if (progressiveDefaultsAvailable)
+          CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostsPrivateEventCity,
+            body: club.location,
+            icon: CatchIcons.locationOnOutlined,
+          ),
+        if (progressiveDefaultsAvailable)
+          CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostsPrivateEventTimezone,
+            body:
+                club.hostDefaults.timezone ??
+                context.l10n.hostsEventDefaultsChooseEachEvent,
+            icon: CatchIcons.languageOutlined,
+          ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleDefaultActivity,

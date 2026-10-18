@@ -19,11 +19,6 @@ import 'shell_fixture.dart';
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostClubOrganizerOverview,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
   type: HostClubOrganizerOverviewController,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )

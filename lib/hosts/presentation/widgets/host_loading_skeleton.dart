@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 export 'host_analytics_report_loading_indicator.dart';
 
 /// A leaf placeholder used where only an inline icon is unresolved.
-class HostInlineSkeletonIcon extends StatelessWidget {
-  const HostInlineSkeletonIcon({super.key, this.size = CatchIcon.md});
+class HostInlineIconSkeleton extends StatelessWidget {
+  const HostInlineIconSkeleton({super.key, this.size = CatchIcon.md});
 
   final double size;
 

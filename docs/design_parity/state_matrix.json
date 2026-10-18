@@ -4662,7 +4662,7 @@
               "id": "club_events_error",
               "kind": "error",
               "status": "captured",
-              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
+              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelineBody renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4696,7 +4696,7 @@
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
-                "HostEventsTimelinePage/Exact catalog"
+                "HostEventsTimelineBody/Exact catalog"
               ],
               "captureIds": [
                 "host_home_dashboard",
@@ -4767,7 +4767,7 @@
               "notes": "HostTodayScreen and HostEventsRouteScaffold own independent lifecycle-aware event callbacks and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. Provider-free Today and Events rows delegate taps to their owning route edges.",
               "previewIds": [
                 "hostHomeRouteStates",
-                "HostEventsTimelinePage/Exact catalog"
+                "HostEventsTimelineBody/Exact catalog"
               ]
             },
             {
@@ -4897,13 +4897,13 @@
             "lib/hosts/presentation/customers/host_customer_editor.dart",
             "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "lib/hosts/presentation/customers/host_contact_merge_review.dart",
-            "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
             "lib/hosts/data/crm/host_contacts_repository.dart",
             "lib/hosts/data/crm/host_saved_audience_repository.dart",
             "lib/hosts/data/crm/host_communication_repository.dart",
-            "lib/hosts/presentation/host_operations/host_audience.dart",
+            "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
             "lib/hosts/presentation/host_audience_controller.dart"
           ],
           "componentIds": [
@@ -5489,7 +5489,7 @@
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-            "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+            "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
             "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
             "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
             "lib/clubs/data/clubs_repository.dart",
@@ -5887,7 +5887,7 @@
               "status": "captured",
               "notes": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_loading"
@@ -5897,9 +5897,9 @@
               "id": "insights_report",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews. Labels are client-owned and incomplete metrics use compact localized status badges.",
+              "notes": "HostAnalyticsReportBody renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews. Labels are client-owned and incomplete metrics use compact localized status badges.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_report"
@@ -5909,9 +5909,9 @@
               "id": "insights_coach",
               "kind": "populated",
               "status": "implemented",
-              "notes": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; Widgetbook and tests also pin the normal hidden state.",
+              "notes": "HostAnalyticsReportBody shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; Widgetbook and tests also pin the normal hidden state.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ]
             },
             {
@@ -5920,7 +5920,7 @@
               "status": "captured",
               "notes": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_error",
@@ -6088,7 +6088,7 @@
                 "host_team_save_profile_offline"
               ],
               "previewIds": [
-                "HostTeamProfileRows/Covered by host team route states"
+                "HostTeamProfileList/Covered by host team route states"
               ]
             },
             {
@@ -6117,7 +6117,7 @@
                 "host_team_save_profile_offline"
               ],
               "previewIds": [
-                "HostTeamProfileRows/Covered by host team route states"
+                "HostTeamProfileList/Covered by host team route states"
               ]
             },
             {
@@ -6991,7 +6991,7 @@
               "id": "submit_pending",
               "kind": "mutation",
               "status": "captured",
-              "notes": "CreateEventController.submitMutation pending drives StepperFooter loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
+              "notes": "CreateEventController.submitMutation pending drives HostStepperDock loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -7517,7 +7517,7 @@
               "id": "lifecycle_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests routes to HostEventRosterPanel and cannot override the lifecycle phase.",
+              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests routes to HostEventRosterSection and cannot override the lifecycle phase.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7569,7 +7569,7 @@
               "id": "attendance_setup_roster",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventRosterPanel renders setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
+              "notes": "HostEventRosterSection renders setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7701,7 +7701,7 @@
               "id": "live_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through the routed HostEventRosterPanel, and the top bar carries only event title plus lifecycle subtitle.",
+              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through the routed HostEventRosterSection, and the top bar carries only event title plus lifecycle subtitle.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -8509,10 +8509,10 @@
             "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
             "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
             "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
-            "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
             "lib/hosts/presentation/inbox/host_sends_page_body.dart",
             "lib/hosts/presentation/host_operations_screen.dart",
-            "lib/hosts/presentation/host_operations/host_audience.dart",
+            "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
             "lib/hosts/data/crm/host_campaign_repository.dart",
             "lib/hosts/data/crm/host_communication_repository.dart",
             "lib/hosts/data/crm/host_saved_audience_repository.dart",
@@ -9041,7 +9041,7 @@
               "kind": "mutation",
               "status": "tested",
               "tests": [
-                "test/hosts/host_follower_update_composer_test.dart",
+                "test/hosts/host_follower_update_composer_sheet_test.dart",
                 "test/hosts/host_inbox_screen_test.dart",
                 "functions/src/organizers/organizerPosts.test.ts",
                 "functions/src/organizers/organizerSends.test.ts"

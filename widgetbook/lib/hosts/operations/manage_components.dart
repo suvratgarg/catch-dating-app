@@ -9,13 +9,13 @@ import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart'
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -150,10 +150,10 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       mode: HostEventParticipantsMode.setup,
     ),
     'HostEventCheckInQrSection' => HostEventCheckInQrSection(event: event),
-    'HostEventRosterPanel' => SizedBox(
+    'HostEventRosterSection' => SizedBox(
       width: 360,
       height: 520,
-      child: HostEventRosterPanel(
+      child: HostEventRosterSection(
         bookedCount: roster.bookedCount,
         onClose: () {},
         child: const Center(child: Text('Guest roster content')),
@@ -383,11 +383,11 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventRosterPanel,
+  type: HostEventRosterSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventRosterPanelCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventRosterPanel');
+    _hostEventManageExactCatalog(context, 'HostEventRosterSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

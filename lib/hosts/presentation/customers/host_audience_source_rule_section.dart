@@ -7,8 +7,8 @@ enum HostAudienceSourceRuleKind {
   spend,
 }
 
-class HostAudienceSourceRuleFields extends StatelessWidget {
-  const HostAudienceSourceRuleFields({
+class HostAudienceSourceRuleSection extends StatelessWidget {
+  const HostAudienceSourceRuleSection({
     super.key,
     required this.kind,
     required this.predicate,

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:3bea06be5e17cda80fffaff6a1e320236220a5ff99084b71c5b0c11d7eaba8c8",
+  "sourceDigest": "sha256:3d433771de7e982c60b0c951bb780edd1cf905acaf2e7c0e3cbae9270b9b3479",
   "resolvedDigest": "sha256:3d56cc89b38064a1e2b4754d69438b60811f36fa8ae228df72d52d2dd0eb2349",
   "feature": {
     "id": "feature.host_event_create",
@@ -47,7 +47,7 @@
             "id": "route_screen",
             "language": "dart",
             "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
-            "symbol": "HostCreateEventRouteStateView"
+            "symbol": "HostCreateEventRouteBody"
           },
           {
             "id": "wizard_state",

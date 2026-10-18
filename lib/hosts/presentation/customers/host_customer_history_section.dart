@@ -1,8 +1,8 @@
 part of 'host_customer_detail_screen.dart';
 
 /// Mounted only by the History tab, so operational joins cannot block Overview.
-class HostCustomerHistoryPanel extends ConsumerWidget {
-  const HostCustomerHistoryPanel({
+class HostCustomerHistorySection extends ConsumerWidget {
+  const HostCustomerHistorySection({
     super.key,
     required this.customer,
     required this.onOpenFormResponse,

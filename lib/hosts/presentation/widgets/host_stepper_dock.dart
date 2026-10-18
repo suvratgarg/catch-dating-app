@@ -3,8 +3,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class StepperFooter extends StatelessWidget {
-  const StepperFooter({
+class HostStepperDock extends StatelessWidget {
+  const HostStepperDock({
     super.key,
     required this.body,
     required this.isLastStep,

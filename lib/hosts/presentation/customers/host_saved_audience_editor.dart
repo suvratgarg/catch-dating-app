@@ -673,7 +673,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           _AudienceRuleKind.applicationStatus ||
           _AudienceRuleKind.formAnswer ||
           _AudienceRuleKind.attendedEvent => [
-            HostAudienceSourceRuleFields(
+            HostAudienceSourceRuleSection(
               kind: switch (draft.kind) {
                 _AudienceRuleKind.spend => HostAudienceSourceRuleKind.spend,
                 _AudienceRuleKind.applicationStatus =>

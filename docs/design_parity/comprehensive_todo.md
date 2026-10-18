@@ -598,7 +598,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   `HostRouteLoadingBody`, `HostSettingsRowsSkeleton`,
   `HostAnalyticsReportSkeleton`, `HostEventRowsSkeleton`, and
   `HostRosterSkeleton`.
-- [x] Host draft-picker inline loading state now uses `HostInlineSkeletonIcon`.
+- [x] Host draft-picker inline loading state now uses `HostInlineIconSkeleton`.
 - [x] Classify Dashboard health/recommendation inline progress and Event
   Success manual-QA action progress as either tiny inline exceptions or replace
   them with content-shaped skeleton/progress treatments. Dashboard inline

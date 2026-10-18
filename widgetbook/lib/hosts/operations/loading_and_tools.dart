@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools_rail.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -19,7 +19,7 @@ import 'preview.dart';
 )
 @widgetbook.UseCase(
   name: 'Inline icon loading',
-  type: HostInlineSkeletonIcon,
+  type: HostInlineIconSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 Widget hostLoadingStatesCatalog(BuildContext context) {
@@ -33,7 +33,7 @@ Widget hostLoadingStatesCatalog(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'unresolved icon',
-        child: HostInlineSkeletonIcon(),
+        child: HostInlineIconSkeleton(),
       ),
     ],
   );
@@ -86,7 +86,7 @@ Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Tool card states',
-  type: HostEventToolsCarousel,
+  type: HostEventToolsRail,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 @widgetbook.UseCase(
@@ -116,7 +116,7 @@ Widget hostToolCardCatalogStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'event tools carousel',
-        child: HostEventToolsCarousel(
+        child: HostEventToolsRail(
           tools: tools,
           onManageEvent: (_) {},
           onTakeAttendance: (_) {},
@@ -266,7 +266,7 @@ Widget hostStrictHostEventToolCardCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventToolsCarousel,
+  type: HostEventToolsRail,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventToolsCarouselCatalogStates(BuildContext context) =>
@@ -283,7 +283,7 @@ Widget hostStrictHostEventToolsPageIndicatorCatalogStates(
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostInlineSkeletonIcon,
+  type: HostInlineIconSkeleton,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostInlineSkeletonIconCatalogStates(BuildContext context) =>

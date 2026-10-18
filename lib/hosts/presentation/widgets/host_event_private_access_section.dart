@@ -15,7 +15,7 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -65,7 +65,7 @@ class HostPrivateAccessAsyncBoundary extends StatelessWidget {
       loadingBuilder: (_) => HostPrivateAccessSurface(
         child: Row(
           children: [
-            const HostInlineSkeletonIcon(),
+            const HostInlineIconSkeleton(),
             gapW12,
             Expanded(
               child: Text(

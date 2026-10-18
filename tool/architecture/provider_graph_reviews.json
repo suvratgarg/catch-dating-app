@@ -243,14 +243,14 @@
       "rationale": "GoRouter requires a Listenable refresh bridge. This exact class bridges routing invalidation, owns no feature loaded/business state, and must retain listener cleanup; it is not a business controller migration."
     },
     {
-      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteStateView.build:construct:ManagerEventSetupDefaultsRepository",
+      "id": "ownership-repository-construction:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteBody.build:construct:ManagerEventSetupDefaultsRepository",
       "path": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
-      "symbol": "HostCreateEventRouteStateView.build",
+      "symbol": "HostCreateEventRouteBody.build",
       "operation": "construct:ManagerEventSetupDefaultsRepository",
       "maxCallsites": 1,
       "status": "planned",
       "debtId": "CAT156",
-      "rationale": "HostCreateEventRouteStateView.build directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
+      "rationale": "HostCreateEventRouteBody.build directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences."
     },
     {
       "id": "ownership-repository-construction:lib/hosts/presentation/forms/host_form_responses_panel.dart#_HostFormResponsesPanelState._bindQueryAccount:construct:HostResponseQueryRepository",
@@ -403,14 +403,14 @@
       "rationale": "Existing bounded review signal at _HostPrivateEventSetupInventorySectionState._open (await:widget.openSaved). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/hosts/presentation/host_operations/host_audience.dart#_HostWhatsappSetupPaneState._run:await:action",
-      "path": "lib/hosts/presentation/host_operations/host_audience.dart",
-      "symbol": "_HostWhatsappSetupPaneState._run",
+      "id": "ownership-widget-async-callback:lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart#_HostWhatsappSetupSectionState._run:await:action",
+      "path": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+      "symbol": "_HostWhatsappSetupSectionState._run",
       "operation": "await:action",
       "maxCallsites": 1,
       "status": "watch",
       "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostWhatsappSetupPaneState._run (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
+      "rationale": "Existing bounded review signal at _HostWhatsappSetupSectionState._run (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
       "id": "ownership-widget-async-callback:lib/hosts/presentation/host_operations/host_club_edit_tab.dart#_HostClubLogoManagerHeaderState._pickLogo:await:widget.onPickLogo",
@@ -453,8 +453,8 @@
       "rationale": "Existing bounded review signal at _HostCampaignComposerState._run (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async-callback:lib/hosts/presentation/inbox/host_follower_update_composer.dart#_HostFollowerUpdateComposerSheetState._submit:await:widget.onSubmitPost",
-      "path": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+      "id": "ownership-widget-async-callback:lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart#_HostFollowerUpdateComposerSheetState._submit:await:widget.onSubmitPost",
+      "path": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
       "symbol": "_HostFollowerUpdateComposerSheetState._submit",
       "operation": "await:widget.onSubmitPost",
       "maxCallsites": 1,
@@ -703,8 +703,8 @@
       "rationale": "Existing bounded review signal at _HostAddCustomerScreenState._submit (await:hostCustomersControllerProvider.createCustomer). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_editor_sheets.dart#_HostSaveAudienceSheetState._save:await:hostAudienceControllerProvider.previewAudience",
-      "path": "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_save_audience_sheet.dart#_HostSaveAudienceSheetState._save:await:hostAudienceControllerProvider.previewAudience",
+      "path": "lib/hosts/presentation/customers/host_save_audience_sheet.dart",
       "symbol": "_HostSaveAudienceSheetState._save",
       "operation": "await:hostAudienceControllerProvider.previewAudience",
       "maxCallsites": 1,
@@ -713,8 +713,8 @@
       "rationale": "Existing bounded review signal at _HostSaveAudienceSheetState._save (await:hostAudienceControllerProvider.previewAudience). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_editor_sheets.dart#_HostSaveAudienceSheetState._save:await:hostAudienceControllerProvider.saveAudience",
-      "path": "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_save_audience_sheet.dart#_HostSaveAudienceSheetState._save:await:hostAudienceControllerProvider.saveAudience",
+      "path": "lib/hosts/presentation/customers/host_save_audience_sheet.dart",
       "symbol": "_HostSaveAudienceSheetState._save",
       "operation": "await:hostAudienceControllerProvider.saveAudience",
       "maxCallsites": 1,
@@ -743,8 +743,8 @@
       "rationale": "Existing bounded review signal at _HostCustomerEmailHandoffSheetState._open (await:hostCustomersControllerProvider.recordOutreach). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_memory.dart#_HostCustomerNoteSheetState._save:await:hostCustomersControllerProvider.createNote",
-      "path": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_memory_section.dart#_HostCustomerNoteSheetState._save:await:hostCustomersControllerProvider.createNote",
+      "path": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
       "symbol": "_HostCustomerNoteSheetState._save",
       "operation": "await:hostCustomersControllerProvider.createNote",
       "maxCallsites": 1,
@@ -753,8 +753,8 @@
       "rationale": "Existing bounded review signal at _HostCustomerNoteSheetState._save (await:hostCustomersControllerProvider.createNote). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_memory.dart#_HostCustomerNoteSheetState._save:await:hostCustomersControllerProvider.editNote",
-      "path": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_memory_section.dart#_HostCustomerNoteSheetState._save:await:hostCustomersControllerProvider.editNote",
+      "path": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
       "symbol": "_HostCustomerNoteSheetState._save",
       "operation": "await:hostCustomersControllerProvider.editNote",
       "maxCallsites": 1,
@@ -763,8 +763,8 @@
       "rationale": "Existing bounded review signal at _HostCustomerNoteSheetState._save (await:hostCustomersControllerProvider.editNote). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_memory.dart#_HostCustomerTagsSheetState._save:await:hostCustomersControllerProvider.mutateCustomer",
-      "path": "lib/hosts/presentation/customers/host_customer_memory.dart",
+      "id": "ownership-widget-async:lib/hosts/presentation/customers/host_customer_memory_section.dart#_HostCustomerTagsSheetState._save:await:hostCustomersControllerProvider.mutateCustomer",
+      "path": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
       "symbol": "_HostCustomerTagsSheetState._save",
       "operation": "await:hostCustomersControllerProvider.mutateCustomer",
       "maxCallsites": 1,
@@ -1363,14 +1363,14 @@
       "rationale": "Existing bounded review signal at _ProgramJournalRecoverySheetState._export (await:externalShareControllerProvider.shareJsonFile). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-backend:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteStateView.build:read:firebaseFunctionsProvider",
+      "id": "ownership-widget-backend:lib/hosts/presentation/event_management/host_create_event_screen.dart#HostCreateEventRouteBody.build:read:firebaseFunctionsProvider",
       "path": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
-      "symbol": "HostCreateEventRouteStateView.build",
+      "symbol": "HostCreateEventRouteBody.build",
       "operation": "read:firebaseFunctionsProvider",
       "maxCallsites": 1,
       "status": "planned",
       "debtId": "CAT156",
-      "rationale": "HostCreateEventRouteStateView.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
+      "rationale": "HostCreateEventRouteBody.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact."
     },
     {
       "id": "ownership-widget-backend:lib/hosts/presentation/forms/host_form_responses_panel.dart#_HostFormResponsesPanelState._bindQueryAccount:read:firebaseFunctionsProvider",

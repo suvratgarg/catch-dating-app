@@ -230,7 +230,7 @@
       "occurrences": 3
     },
     {
-      "path": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
+      "path": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -349,7 +349,7 @@
       "occurrences": 1
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "path": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
@@ -703,7 +703,7 @@
       "leading": "back"
     },
     {
-      "path": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
+      "path": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",

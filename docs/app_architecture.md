@@ -3938,7 +3938,7 @@ Preview is an exact server computation or an explicit failure. It refuses
 partial source coverage and refuses organizers above the bounded 2,500-contact
 evaluation limit rather than returning a plausible-looking subset. The client
 labels stored counts as last-preview facts and never presents them as live.
-`HostSavedAudienceOverview` owns rule summaries, evaluated time, reach, member
+`HostSavedAudienceSection` owns rule summaries, evaluated time, reach, member
 links and the scoped Inbox handoff. `HostSavedAudienceMembersController` pages
 exact membership; cursors bind organizer, audience revision and all ordered
 member ids. Membership changes require a refresh instead of mixing pages.

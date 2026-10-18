@@ -101,7 +101,7 @@ uses. Values/labels unchanged; skeleton follows.
 ### N4. Analytics info panels lose their boxes `[confirm]`
 
 `UserAnalyticsTrendSection`, `UserAnalyticsTipsSection`,
-`HostAnalyticsTrendPanel`, `HostAnalyticsReviewDiscoveryPanel`, and
+`HostAnalyticsTrendSection`, `HostAnalyticsReviewDiscoveryPanel`, and
 `HostAnalyticsEventList`'s empty-state surface: charts, tips, and stat
 pairs are information inside kicker sections — the border is an information
 box. Flatten: section kicker + flat content (chart bars, stat columns, tip

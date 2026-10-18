@@ -2,8 +2,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Form-workspace statistics composed from the canonical unboxed stat primitive.
-class HostFormMetrics extends StatelessWidget {
-  const HostFormMetrics({super.key, required this.items});
+class HostFormMetricRow extends StatelessWidget {
+  const HostFormMetricRow({super.key, required this.items});
 
   final List<({String value, String label})> items;
 

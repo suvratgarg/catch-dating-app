@@ -18,8 +18,8 @@ class HostEventToolItem {
       attendanceState == HostEventAttendanceState.open;
 }
 
-class HostEventToolsCarousel extends StatefulWidget {
-  const HostEventToolsCarousel({
+class HostEventToolsRail extends StatefulWidget {
+  const HostEventToolsRail({
     super.key,
     required this.tools,
     required this.onManageEvent,
@@ -36,10 +36,10 @@ class HostEventToolsCarousel extends StatefulWidget {
   final ValueChanged<Event> onViewReport;
 
   @override
-  State<HostEventToolsCarousel> createState() => _HostEventToolsCarouselState();
+  State<HostEventToolsRail> createState() => _HostEventToolsRailState();
 }
 
-class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
+class _HostEventToolsRailState extends State<HostEventToolsRail> {
   static const _minimumSwipeDistance = 56.0;
   static const _minimumSwipeVelocity = 360.0;
 
@@ -47,7 +47,7 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
   double _dragDistance = 0;
 
   @override
-  void didUpdateWidget(covariant HostEventToolsCarousel oldWidget) {
+  void didUpdateWidget(covariant HostEventToolsRail oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_selectedIndex >= widget.tools.length) {
       _selectedIndex = widget.tools.isEmpty ? 0 : widget.tools.length - 1;
@@ -65,7 +65,7 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
     final canAdvance = _selectedIndex < widget.tools.length - 1;
     final canRetreat = _selectedIndex > 0;
     return SizedBox(
-      key: HostEventToolsCarousel.railKey,
+      key: HostEventToolsRail.railKey,
       child: Semantics(
         label: context.l10n.hostsHostEventToolsLabelHostEventToolsCarousel,
         value: context.l10n.hostsHostEventToolsVisiblecopyHostedEventValue1Of(
@@ -254,7 +254,7 @@ class HostEventToolCard extends StatelessWidget {
       ],
       headerAccessory: cardCount > 1
           ? HostEventToolsPageIndicator(
-              key: HostEventToolsCarousel.pageIndicatorKey,
+              key: HostEventToolsRail.pageIndicatorKey,
               selectedIndex: cardIndex,
               itemCount: cardCount,
             )

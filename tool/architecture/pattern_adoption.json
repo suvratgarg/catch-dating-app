@@ -459,7 +459,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+          "path": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
           "role": "Host organizer settings spokes with canonical route surface and scroll-derived divider",
           "status": "aligned"
         },
@@ -2385,7 +2385,7 @@
         "lib/hosts/presentation/customers/host_customers_screen.dart",
         "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
         "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
-        "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+        "lib/hosts/presentation/customers/host_save_audience_sheet.dart",
         "lib/hosts/presentation/inbox/host_campaign_composer.dart",
         "test/hosts/host_crm_repository_test.dart",
         "test/hosts/host_campaign_composer_test.dart"
@@ -2422,7 +2422,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/customers/host_customer_editor_sheets.dart",
+          "path": "lib/hosts/presentation/customers/host_save_audience_sheet.dart",
           "role": "bounded naming bridge that persists the current exact People filter before handing composition to Messaging",
           "status": "aligned"
         },

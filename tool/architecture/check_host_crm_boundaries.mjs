@@ -529,7 +529,7 @@ function scanAudienceWorkspacePresentation(root) {
   const workspacePath =
     "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart";
   const editorSheetsPath =
-    "lib/hosts/presentation/customers/host_customer_editor_sheets.dart";
+    "lib/hosts/presentation/customers/host_save_audience_sheet.dart";
   const routeContractPath = "lib/routing/route_contract.dart";
   const paths = [
     audienceViewPath,

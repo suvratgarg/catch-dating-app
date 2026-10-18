@@ -33,7 +33,7 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
   @override
   Widget build(BuildContext context) => HostNavigationWorkspace(
     spec: HostEditorWorkspace(
-      editor: CreateEventWorkspaceFrame(
+      editor: CreateEventWorkspaceLayout(
         key: const ValueKey('host-create-event-form-lane'),
         header: header,
         body: body,
@@ -48,7 +48,7 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
             onStepSelected: onStepSelected,
           ),
           gapH4,
-          CreateEventConsequencePane(
+          CreateEventConsequenceSection(
             key: const ValueKey('host-create-event-consequence-pane'),
             title: summaryTitle,
             items: summaryItems,
@@ -59,8 +59,8 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
   );
 }
 
-class CreateEventWorkspaceFrame extends StatelessWidget {
-  const CreateEventWorkspaceFrame({
+class CreateEventWorkspaceLayout extends StatelessWidget {
+  const CreateEventWorkspaceLayout({
     super.key,
     required this.header,
     required this.body,
@@ -130,8 +130,8 @@ class CreateEventStepRail extends StatelessWidget {
   };
 }
 
-class CreateEventConsequencePane extends StatelessWidget {
-  const CreateEventConsequencePane({
+class CreateEventConsequenceSection extends StatelessWidget {
+  const CreateEventConsequenceSection({
     super.key,
     required this.title,
     required this.items,

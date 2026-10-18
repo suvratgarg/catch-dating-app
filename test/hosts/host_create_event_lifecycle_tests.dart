@@ -35,7 +35,7 @@ void runHostCreateEventLifecycleTests() {
     await _pumpHostActionFrame(tester);
 
     expect(find.text('Event preparation'), findsOneWidget);
-    expect(find.byType(HostEventRosterPanel), findsNothing);
+    expect(find.byType(HostEventRosterSection), findsNothing);
     expect(find.text('SETUP'), findsNothing);
     expect(find.text('GUESTS'), findsNothing);
     expect(find.text('LIVE'), findsNothing);
@@ -61,7 +61,7 @@ void runHostCreateEventLifecycleTests() {
     await tester.tap(find.byType(CatchTopBarPrimaryButton));
     await _pumpTestAnimation(tester);
 
-    final rosterPanel = find.byType(HostEventRosterPanel);
+    final rosterPanel = find.byType(HostEventRosterSection);
     expect(rosterPanel, findsOneWidget);
     expect(
       find.descendant(of: rosterPanel, matching: find.text('Guest roster')),
@@ -142,7 +142,7 @@ void runHostCreateEventLifecycleTests() {
     expect(find.text('GUESTS'), findsNothing);
     expect(find.text('LIVE'), findsNothing);
     expect(find.text('REPORT'), findsNothing);
-    expect(find.byType(HostEventRosterPanel), findsNothing);
+    expect(find.byType(HostEventRosterSection), findsNothing);
 
     await tester.scrollUntilVisible(
       find.text('Review event setup'),
@@ -153,7 +153,7 @@ void runHostCreateEventLifecycleTests() {
 
     await tester.tap(find.byType(CatchTopBarPrimaryButton));
     await _pumpTestAnimation(tester);
-    final rosterPanel = find.byType(HostEventRosterPanel);
+    final rosterPanel = find.byType(HostEventRosterSection);
     expect(rosterPanel, findsOneWidget);
     expect(
       find.descendant(of: rosterPanel, matching: find.text('Add walk-in')),

@@ -35,7 +35,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_loca
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -436,7 +436,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       errorContext: AppErrorContext.event,
     );
     if (widget.initialSection == HostEventManageSection.guests) {
-      return HostEventRosterPanel(
+      return HostEventRosterSection(
         bookedCount: bookedCount,
         onClose: onBackToSuccess,
         onMessageGuests: () => _openEventMessages(club, event),

@@ -23,63 +23,65 @@ void main() {
     setUpAll(loadCatchTestFonts);
   }
 
-  testWidgets('published version is selected and switching clears answer filters', (
-    tester,
-  ) async {
-    final requests = <HostFormResponseListRequest>[];
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          hostFormResponsesControllerProvider.overrideWith2(
-            (_) => _VersionedResponses(requests),
-          ),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                HostFormResponsesPanel(
-                  organizerId: 'org',
-                  formId: 'form',
-                  showFormContext: false,
-                ),
-              ],
+  testWidgets(
+    'published version is selected and switching clears answer filters',
+    (tester) async {
+      final requests = <HostFormResponseListRequest>[];
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            hostFormResponsesControllerProvider.overrideWith2(
+              (_) => _VersionedResponses(requests),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  HostFormResponsesPanel(
+                    organizerId: 'org',
+                    formId: 'form',
+                    showFormContext: false,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v2');
-    expect(find.text('Published version 2'), findsWidgets);
-    await tester.tap(find.text('Filters'));
-    await pumpFeatureUi(tester);
-    final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
-    await tester.ensureVisible(city);
-    await tester.tap(city);
-    await pumpFeatureUi(tester);
-    expect(requests.last.answerFilters['city'], {'Mumbai'});
-    final firstVersion =
-        find.byKey(const ValueKey('response-version-form_v1'));
-    await tester.ensureVisible(firstVersion);
-    await tester.tap(firstVersion);
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v1');
-    expect(requests.last.answerFilters, isEmpty);
-    await tester.tap(find.text('Reset all'));
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v2');
-    final allVersions = find.byKey(const ValueKey('response-version-'));
-    await tester.ensureVisible(allVersions);
-    await tester.tap(allVersions);
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, isNull);
-    expect(requests.last.answerFilters, isEmpty);
-    await tester.tap(find.text('Reset all'));
-    await pumpFeatureUi(tester);
-    expect(requests.last.versionId, 'form_v2');
-  });
+      );
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v2');
+      expect(find.text('Published version 2'), findsWidgets);
+      await tester.tap(find.text('Filters'));
+      await pumpFeatureUi(tester);
+      final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
+      await tester.ensureVisible(city);
+      await tester.tap(city);
+      await pumpFeatureUi(tester);
+      expect(requests.last.answerFilters['city'], {'Mumbai'});
+      final firstVersion = find.byKey(
+        const ValueKey('response-version-form_v1'),
+      );
+      await tester.ensureVisible(firstVersion);
+      await tester.tap(firstVersion);
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v1');
+      expect(requests.last.answerFilters, isEmpty);
+      await tester.tap(find.text('Reset all'));
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v2');
+      final allVersions = find.byKey(const ValueKey('response-version-'));
+      await tester.ensureVisible(allVersions);
+      await tester.tap(allVersions);
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, isNull);
+      expect(requests.last.answerFilters, isEmpty);
+      await tester.tap(find.text('Reset all'));
+      await pumpFeatureUi(tester);
+      expect(requests.last.versionId, 'form_v2');
+    },
+  );
   testWidgets(
     'city filters remain available during loading and empty scan pages',
     (tester) async {
@@ -139,9 +141,11 @@ void main() {
       await pumpFeatureUi(tester);
       expect(find.text('Load more responses'), findsOneWidget);
       expect(
-        tester.widget<CatchButton>(
-          find.widgetWithText(CatchButton, 'Load more responses'),
-        ).onPressed,
+        tester
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Load more responses'),
+            )
+            .onPressed,
         isNotNull,
       );
       expect(find.text('No matching responses'), findsNothing);
@@ -201,8 +205,10 @@ void main() {
     expect(requests.last.answerFilters['city'], {'Mumbai'});
     expect(find.text('Maya Test Guest'), findsOneWidget);
     expect(find.text('Rohan Test Guest'), findsOneWidget);
-    expect(find.byKey(const ValueKey('host-response-entry-response:maya')),
-        findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-response-entry-response:maya')),
+      findsOneWidget,
+    );
     await _captureFilters(tester, 'responses-populated-queue');
     expect(tester.takeException(), isNull);
   });

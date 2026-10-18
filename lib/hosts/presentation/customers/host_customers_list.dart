@@ -1,7 +1,7 @@
 part of 'host_customers_screen.dart';
 
-class HostCustomerDirectoryControls extends StatelessWidget {
-  const HostCustomerDirectoryControls({
+class HostCustomerControlSection extends StatelessWidget {
+  const HostCustomerControlSection({
     super.key,
     required this.sort,
     required this.onSortChanged,
@@ -54,8 +54,8 @@ class HostCustomerDirectoryControls extends StatelessWidget {
   }
 }
 
-class HostCustomerFilterSummary extends StatelessWidget {
-  const HostCustomerFilterSummary({
+class HostCustomerFilterSummarySection extends StatelessWidget {
+  const HostCustomerFilterSummarySection({
     super.key,
     required this.filter,
     this.manualTag,
@@ -166,8 +166,8 @@ class HostCustomerFilterSummary extends StatelessWidget {
 
 /// Sliver-native directory. The page owns scrolling; the section builds only
 /// visible people and preserves each contact's identity across filter changes.
-class HostCustomersDirectory extends StatelessWidget {
-  const HostCustomersDirectory({
+class HostCustomersList extends StatelessWidget {
+  const HostCustomersList({
     super.key,
     required this.state,
     required this.hasActiveQuery,
@@ -280,8 +280,8 @@ class HostCustomersDirectory extends StatelessWidget {
   }
 }
 
-class HostCustomersSummary extends StatelessWidget {
-  const HostCustomersSummary({
+class HostCustomersSummarySection extends StatelessWidget {
+  const HostCustomersSummarySection({
     super.key,
     required this.summary,
     required this.onRetry,
