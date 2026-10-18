@@ -16,12 +16,14 @@ import {org, actorUid} from "../organizerFormAdmission/admissionTestFixture";
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 
 /** Runs the complete race against a fresh synthetic Firestore namespace.
+ * @param {string} projectId Namespace, reused only by the negative control.
  * @return {Promise<void>} Resolves after both scenarios and client teardown.
  */
-async function runMembershipRace(): Promise<void> {
+async function runMembershipRace(
+  projectId = `demo-cm-${randomBytes(10).toString("hex")}`
+): Promise<void> {
   assert.ok(emulator && /^(127\.0\.0\.1|localhost):[0-9]{1,5}$/.test(emulator),
     "Only a local Firestore emulator may run this synthetic race.");
-  const projectId = `demo-cm-${randomBytes(10).toString("hex")}`;
   const app = initializeApp({projectId}, projectId);
   const db = getEmulatorFirestore(app);
   try {
@@ -62,6 +64,9 @@ async function runMembershipRace(): Promise<void> {
       } as CallableRequest<unknown>, {firestore: () => db,
         checkRateLimit: async () => undefined, nowMillis: Date.now});
     await decide(h.payload);
+    assert.equal((await db.doc(`organizerCommunityMemberships/${
+      h.membershipId}`).get()).data()?.state, "active",
+    "Fresh grant must create active membership before the race.");
     const [booking, revocation] = await Promise.allSettled([
       signUpUserForEvent(db, "event1", h.uid),
       decide({...h.payload, action: "revoke", requestId: "revoke-race",
@@ -118,6 +123,20 @@ test("real transactions serialize community revocation and last-seat booking", {
   skip: !emulator,
 }, async (t) => {
   // Reuse the same emulator session, with no reset between complete scenarios.
-  await t.test("first invocation", runMembershipRace);
-  await t.test("second invocation", runMembershipRace);
+  await t.test("first invocation", () => runMembershipRace());
+  await t.test("second invocation", () => runMembershipRace());
+  await t.test("reused project detects stale decisions", async () => {
+    const reusedProject = `demo-cm-${randomBytes(10).toString("hex")}`;
+    await runMembershipRace(reusedProject);
+    // Replaying grant1 cannot reverse the first run's completed revocation.
+    // Match that exact invariant so transport or setup failures cannot pass.
+    await assert.rejects(runMembershipRace(reusedProject), {
+      name: "AssertionError",
+      code: "ERR_ASSERTION",
+      actual: "revoked",
+      expected: "active",
+      operator: "strictEqual",
+      message: /Fresh grant must create active membership before the race/,
+    });
+  });
 });
