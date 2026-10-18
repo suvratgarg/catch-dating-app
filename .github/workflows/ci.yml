@@ -486,11 +486,25 @@ jobs:
       - name: Checkout ordinary-doc closure
         if: ${{ steps.docs-checkout.outcome == 'success' }}
         uses: actions/checkout@v6
-        timeout-minutes: ${{ fromJSON(steps.docs-checkout.outputs.timeout_minutes) }}
+        # Supplying sparse-checkout to checkout also enables blob:none. The
+        # offline metadata scanner needs current and historical document blobs.
+        timeout-minutes: 10
         with:
           fetch-depth: ${{ steps.docs-checkout.outputs.fetch_depth }}
-          sparse-checkout-cone-mode: ${{ steps.docs-checkout.outputs.cone_mode }}
-          sparse-checkout: ${{ steps.docs-checkout.outputs.paths }}
+
+      - name: Apply ordinary-doc working-tree closure
+        if: ${{ steps.docs-checkout.outcome == 'success' }}
+        env:
+          DOCS_CHECKOUT_PATHS: ${{ steps.docs-checkout.outputs.paths }}
+          DOCS_CHECKOUT_CONE_MODE: ${{ steps.docs-checkout.outputs.cone_mode }}
+        run: |
+          set -euo pipefail
+          case "$DOCS_CHECKOUT_CONE_MODE" in
+            true) cone_flag=--cone ;;
+            false) cone_flag=--no-cone ;;
+            *) echo "Invalid docs checkout cone mode."; exit 64 ;;
+          esac
+          printf '%s\n' "$DOCS_CHECKOUT_PATHS" | git sparse-checkout set "$cone_flag" --stdin
 
       - name: Checkout full policy closure
         if: >-
