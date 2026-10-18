@@ -1,7 +1,7 @@
 {
   "$schema": "./public_surface_behavior.schema.json",
   "version": 1,
-  "updated": "2026-09-23",
+  "updated": "2026-10-19",
   "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
   "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the design-parity state matrix; event eligibility remains owned by the viewer availability resolver.",
   "inventorySources": {
@@ -245,6 +245,7 @@
         "inviteRequired",
         "membershipRequired",
         "runPreferencesRequired",
+        "profileRequired",
         "ageRestricted",
         "past",
         "cancelled"
@@ -3069,6 +3070,69 @@
           ]
         },
         {
+          "id": "app.eventDetail.availabilityProfileRequired",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "bookingReady",
+            "viewer.relationship": "visitor",
+            "runtime.appRole": "consumer",
+            "organizer.appVisibility": "discoverable",
+            "organizer.ownershipState": "claimed",
+            "organizer.claimState": "claimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "organizer.hostIdentity": "present",
+            "event.lifecycle": "upcoming",
+            "event.availability": "profileRequired",
+            "event.paymentCapability": "notRequired",
+            "organizer.lifecycleAvailability": "active"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "routeAllowed"
+            },
+            "organizer.provenanceBadge": {
+              "disposition": "visibleReadOnly",
+              "variant": "claimed-source-backed"
+            },
+            "event.share": {
+              "disposition": "visibleNative"
+            },
+            "event.calendar": {
+              "disposition": "hidden"
+            },
+            "event.signup": {
+              "disposition": "visibleProfileGate",
+              "variant": "complete-event-details"
+            },
+            "event.save": {
+              "disposition": "visibleNative"
+            },
+            "review.write": {
+              "disposition": "hidden"
+            },
+            "event.location": {
+              "disposition": "visibleNative"
+            },
+            "event.companion": {
+              "disposition": "hidden"
+            },
+            "event.invite": {
+              "disposition": "hidden"
+            },
+            "organizer.openDetail": {
+              "disposition": "visibleNative"
+            },
+            "host.message": {
+              "disposition": "hidden"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "app.publicSurfaceBehavior"
+          ],
+          "notes": "An account may be complete while an age-restricted event still requires its optional birthday; photos and social preferences are not requested."
+        },
+        {
           "id": "app.eventDetail.availabilityAgeRestricted",
           "values": {
             "viewer.session": "signedIn",
@@ -4902,8 +4966,15 @@
         {
           "path": "lib/routing/route_destinations.dart",
           "contains": [
-            "if (onOnboarding) return null;",
+            "if (onOnboarding) {",
             "profileCompletionLocation("
+          ]
+        },
+        {
+          "path": "test/onboarding/onboarding_account_policy_test.dart",
+          "contains": [
+            "event completion resumes booking without requiring social readiness",
+            "account saves a single name and optional birthday"
           ]
         }
       ]
@@ -5239,7 +5310,7 @@
       "id": "web.organizerListing",
       "platform": "web",
       "coverageKind": "matrix",
-      "coverageRationale": "The canonical and legacy organizer listing families share claim, review, save, Catch-event, external-event, and provenance actions; they do not provide a standalone web Event Detail route.",
+      "coverageRationale": "The canonical organizer listing and legacy alias expose claim, review, account-backed follow, event navigation, and provenance actions. Following opens inline account completion when needed and persists under the authenticated account.",
       "routeIds": [
         "organizer_listing_canonical",
         "organizer_listing_legacy"
@@ -5313,7 +5384,7 @@
         {
           "id": "organizer.save",
           "kind": "action",
-          "description": "Persist a local browser save."
+          "description": "Follow the organizer using the authenticated account; complete minimal website onboarding inline when necessary."
         },
         {
           "id": "organizer.share",
@@ -5368,7 +5439,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5426,7 +5497,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5484,7 +5555,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5544,7 +5615,7 @@
               "target": ":sourceUrl"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5602,7 +5673,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5661,7 +5732,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5723,7 +5794,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5783,7 +5854,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5843,7 +5914,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -5903,7 +5974,7 @@
               "disposition": "hidden"
             },
             "organizer.save": {
-              "disposition": "visibleLocal"
+              "disposition": "visibleWeb"
             },
             "organizer.share": {
               "disposition": "visibleWeb"
@@ -6036,7 +6107,9 @@
         {
           "path": "website/src/features/organizers/useHostListingPageController.test.tsx",
           "contains": [
-            "persists organizer saves and exposes event-aware navigation"
+            "persists account-backed follows and exposes event-aware navigation",
+            "resumes the requested follow after account completion",
+            "reads an existing follow on a new page mount"
           ]
         },
         {
@@ -6723,6 +6796,7 @@
         "app.eventDetail.availabilityInviteRequired",
         "app.eventDetail.availabilityMembershipRequired",
         "app.eventDetail.availabilityRunPreferencesRequired",
+        "app.eventDetail.availabilityProfileRequired",
         "app.eventDetail.availabilityAgeRestricted",
         "app.eventDetail.availabilityPast",
         "app.eventDetail.availabilityCancelled",
