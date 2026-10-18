@@ -781,6 +781,20 @@
       "role": "step-flow",
       "owner": "CatchStepHeader",
       "reason": "Onboarding delegates progress and navigation chrome to the canonical step header."
+    },
+    {
+      "path": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "symbol": "PaymentCheckoutHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.headline",
+      "reason": "Checkout hero: event identity on the activity backdrop above the payment body; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
+    },
+    {
+      "path": "lib/swipes/presentation/event_recap_screen.dart",
+      "symbol": "RecapHeader",
+      "role": "legacy",
+      "owner": "CatchTextStyles.headline",
+      "reason": "Recap hero: event kicker and stats on the dark recap card; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
     }
   ]
 }
