@@ -609,7 +609,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             ),
           ),
         ),
-        footer: CatchDockSurface(
+        footer: CatchDock(
           child: CatchButton(
             key: EditHostedEventKeys.saveButton,
             label: screenState.footer.label,

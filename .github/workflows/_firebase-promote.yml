@@ -77,6 +77,11 @@ on:
         required: false
         default: false
         type: boolean
+      cat165_release:
+        description: Reviewed CAT165 62-Function and one-index projection; no full privacy acceptance or baseline.
+        required: false
+        default: false
+        type: boolean
       intake_pr596_release:
         description: One immutable PR596 Intake Function under recorded human PROD approval.
         required: false
@@ -121,7 +126,7 @@ permissions:
 
 jobs:
   promote:
-    if: ${{ !inputs.intake_pr596_release && !inputs.cat151_booking_release }}
+    if: ${{ !inputs.intake_pr596_release && !inputs.cat151_booking_release && !inputs.cat165_release }}
     name: Firebase ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
@@ -1515,7 +1520,7 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
           jq -e '
-            .intake_pr596_release == true and .operator_release == false and
+            .intake_pr596_release == true and (.cat165_release // false) == false and .operator_release == false and
             .whatsapp_five_release == false and .sales_pr543_release == false and
             .wedding_phone_import_release == false and .require_current_main == false and
             .environment == "prod" and (.approval_environment == "" or .approval_environment == "prod") and
@@ -1901,7 +1906,7 @@ jobs:
               .dev_completion_artifact_digest == "ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f" and
               .dev_completion_receipt_sha256 == "b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09"
             else .cat151_predeploy_recovery == false end) and
-            .cat151_booking_release == true and .intake_pr596_release == false and .operator_release == false and
+            .cat151_booking_release == true and (.cat165_release // false) == false and .intake_pr596_release == false and .operator_release == false and
             .whatsapp_five_release == false and .sales_pr543_release == false and
             .wedding_phone_import_release == false and .require_current_main == false and
             (.environment == "dev" or .environment == "prod") and .approval_environment == "" and
@@ -2308,5 +2313,416 @@ jobs:
             build/delivery/cat151-source-review.json
             build/delivery/cat151-params-binding.json
             build/delivery/cat151-selected/functions-deployment.json
+          if-no-files-found: warn
+          retention-days: 90
+
+  promote-cat165:
+    name: Protected CAT165 62-Function / one-index PROD promotion
+    if: ${{ inputs.cat165_release }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: prod
+    concurrency:
+      group: firebase-prod
+      cancel-in-progress: false
+    steps:
+      - name: Validate the fixed CAT165 caller and prohibit recovery or other modes
+        env:
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/selective-backend-release.yml@refs/heads/main"
+          jq -e '
+            .cat165_release == true and (.cat151_booking_release // false) == false and
+            (.cat151_predeploy_recovery // false) == false and .intake_pr596_release == false and .operator_release == false and
+            .whatsapp_five_release == false and .sales_pr543_release == false and
+            .wedding_phone_import_release == false and .require_current_main == false and
+            .environment == "prod" and (.approval_environment == "" or .approval_environment == "prod") and
+            .control_plane_sha == env.GITHUB_SHA and
+            .source_sha == "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a" and
+            .base_sha == "08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2" and
+            .source_ci_run_id == "38778849364" and .source_ci_run_attempt == "1" and
+            (.resume_delivery_run_id // "") == "" and .resume_delivery_attempt == "1" and
+            .dev_completion_artifact_id == "" and .dev_completion_artifact_digest == "" and
+            .dev_completion_receipt_sha256 == ""
+          ' <<< "$INPUTS" > /dev/null
+
+      - name: Require recorded human PROD environment approval for operator release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/prod")"
+          history="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/approvals")"
+          jq -en --argjson environment "$environment" --argjson history "$history" '
+            ([ $environment.protection_rules[]? | select(.type == "required_reviewers") |
+              .reviewers[]? | select(.type == "User") | .reviewer.id ]) as $reviewers |
+            ($reviewers | length) > 0 and
+            ([ $history[]? | select(any(.environments[]?; .id == $environment.id and .name == "prod")) ]
+              | length) > 0 and
+            ([ $history[]? | select(any(.environments[]?; .id == $environment.id and .name == "prod")) |
+              select(.state != "approved") ] | length) == 0 and
+            any($history[]?;
+              .state == "approved" and .user.id != null and
+              (.user.id as $reviewer_id | ($reviewers | index($reviewer_id)) != null) and
+              any(.environments[]?; .id == $environment.id and .name == "prod"))
+          ' > /dev/null
+
+
+      - name: Checkout the immutable CAT165 control plane
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.control_plane_sha }}
+          fetch-depth: 0
+      - name: Checkout the exact CI-approved CAT165 source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          path: build/delivery/source-checkout
+      - name: Verify current control plane, reviewed source compatibility and immutable producer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CONTROL_PLANE_SHA"
+          git fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+          test "$(git rev-parse refs/remotes/origin/main)" = "$CONTROL_PLANE_SHA"
+          test "$(git -C build/delivery/source-checkout rev-parse HEAD)" = 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a
+          git -C build/delivery/source-checkout fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+          node tool/ci/selective_backend_release.mjs cat165-source \
+            --current-main "$CONTROL_PLANE_SHA" --source-root build/delivery/source-checkout
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38778849364/attempts/1" | jq -e '
+            .status == "completed" and .conclusion == "success" and .event == "push" and
+            .head_branch == "main" and .head_sha == "25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a" and
+            .run_attempt == 1 and .workflow_id == 320377139
+          ' > /dev/null
+          mkdir -p build/delivery/source
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11995458204" > build/delivery/cat165-artifact.json
+          node tool/ci/selective_backend_release.mjs cat165-artifact --metadata build/delivery/cat165-artifact.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11995458204/zip" > build/delivery/cat165.zip
+          node tool/ci/selective_backend_release.mjs cat165-archive --archive build/delivery/cat165.zip
+          test "$(unzip -Z1 build/delivery/cat165.zip | LC_ALL=C sort)" = "$(printf '%s\n' firebase-backend.tar.gz firebase-provenance.json)"
+          unzip -q build/delivery/cat165.zip -d build/delivery/source
+          node tool/ci/selective_backend_release.mjs cat165-provenance --manifest build/delivery/source/firebase-provenance.json
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install the pinned source-analysis parser
+        run: npm ci --ignore-scripts --workspaces=false
+      - id: verify
+        name: Verify the complete immutable package and derive only the CAT165 target
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tool/ci/delivery_core.mjs verify \
+            --manifest build/delivery/source/firebase-provenance.json --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a --ci-run-id 38778849364 --ci-run-attempt 1
+          mkdir -p build/delivery/package
+          tar -tzf build/delivery/source/firebase-backend.tar.gz | awk '/(^\/|(^|\/)\.\.($|\/))/ { exit 64 }'
+          tar -xzf build/delivery/source/firebase-backend.tar.gz -C build/delivery/package
+          node tool/ci/package_firebase_delivery.mjs verify \
+            --source-root build/delivery/source-checkout --package-dir build/delivery/package \
+            --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a --base-sha 08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2 \
+            --ci-run-id 38778849364 --ci-run-attempt 1 --provenance-manifest build/delivery/source/firebase-provenance.json \
+            --affected-functions true > build/delivery/package-plan.json
+          node tool/ci/backend_source_review.mjs --source-root build/delivery/source-checkout \
+            --repository "$GITHUB_REPOSITORY" < build/delivery/package-plan.json > build/delivery/cat165-source-review.json
+          node tool/ci/selective_backend_release.mjs cat165-prepare \
+            --manifest build/delivery/source/firebase-provenance.json --package-plan build/delivery/package-plan.json \
+            --indexes build/delivery/package/firestore.indexes.json \
+            --selected-indexes build/delivery/cat165-index.json --output build/delivery/execution-plan.json
+          test "$(jq -er '.projects.prod' build/delivery/package/.firebaserc)" = catch-dating-app-64e51
+          test "$(jq -er '.projects.prod' .firebaserc)" = catch-dating-app-64e51
+          echo 'project_id=catch-dating-app-64e51' >> "$GITHUB_OUTPUT"
+          echo "targets=$(node tool/ci/selective_backend_release.mjs cat165-targets | jq -er '.targets | join(",")')" >> "$GITHUB_OUTPUT"
+          echo 'has_targets=true' >> "$GITHUB_OUTPUT"
+          echo 'has_functions=true' >> "$GITHUB_OUTPUT"
+
+      - name: Authenticate to Google Cloud after protected approval and provenance
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - name: Install authenticated Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v3
+      - name: Bind all 73 reviewed predecessors and capture retained resources
+        run: node tool/ci/selective_backend_release.mjs cat165-before --output build/delivery/cat165-before.json
+      - name: Retain the immutable predeployment proof
+        uses: actions/upload-artifact@v6
+        with:
+          name: cat165-before-${{ github.run_id }}-1
+          path: build/delivery/cat165-before.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Record names-only Functions parameter provenance
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          ALGOLIA_APPLICATION_ID: ${{ vars.ALGOLIA_APPLICATION_ID }}
+          RAZORPAY_PUBLIC_KEY_ID: ${{ vars.RAZORPAY_PUBLIC_KEY_ID }}
+          FLIGHT_PROVIDER_CONFIG_VERSION: ${{ vars.FLIGHT_PROVIDER_CONFIG_VERSION }}
+          FLIGHT_WEBHOOK_BASE_URL: ${{ vars.FLIGHT_WEBHOOK_BASE_URL }}
+          FORM_RAZORPAY_PARTNER_CONFIG_VERSION: ${{ vars.FORM_RAZORPAY_PARTNER_CONFIG_VERSION }}
+          RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION: ${{ vars.RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION }}
+          META_WHATSAPP_APP_ID: ${{ vars.META_WHATSAPP_APP_ID }}
+          META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: ${{ vars.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID }}
+          META_WHATSAPP_GRAPH_VERSION: ${{ vars.META_WHATSAPP_GRAPH_VERSION }}
+          META_WHATSAPP_ENABLED: ${{ vars.META_WHATSAPP_ENABLED }}
+          CATCH_WHATSAPP_WEBHOOK_ENABLED: ${{ vars.CATCH_WHATSAPP_WEBHOOK_ENABLED }}
+          # Non-secret scoped settings only; runtime readiness remains mandatory.
+          CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: ${{ vars.CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED }}
+          CATCH_WHATSAPP_REPLIES_ENABLED: ${{ vars.CATCH_WHATSAPP_REPLIES_ENABLED }}
+          CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: ${{ vars.CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY }}
+          CATCH_WHATSAPP_REPLY_ACTOR_UID: ${{ vars.CATCH_WHATSAPP_REPLY_ACTOR_UID }}
+          CATCH_WHATSAPP_REPLY_RECIPIENT_UID: ${{ vars.CATCH_WHATSAPP_REPLY_RECIPIENT_UID }}
+          CATCH_WHATSAPP_REPLY_RECIPIENT_E164: ${{ vars.CATCH_WHATSAPP_REPLY_RECIPIENT_E164 }}
+          CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION: ${{ vars.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION }}
+          CATCH_WHATSAPP_REPLY_GRAPH_VERSION: ${{ vars.CATCH_WHATSAPP_REPLY_GRAPH_VERSION }}
+          CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256: ${{ vars.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 }}
+          CATCH_WHATSAPP_WABA_ID: ${{ vars.CATCH_WHATSAPP_WABA_ID }}
+          CATCH_WHATSAPP_PHONE_NUMBER_ID: ${{ vars.CATCH_WHATSAPP_PHONE_NUMBER_ID }}
+          EVENT_ASSISTANCE_GUEST_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_GUEST_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_ENABLED }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED }}
+          EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: ${{ vars.EVENT_ASSISTANCE_SMS_REPORTS_ENABLED }}
+        run: |
+          set -euo pipefail
+          node tool/firebase/prepare_functions_params_for_deploy.mjs \
+            --provenance-only --project "${{ steps.verify.outputs.project_id }}" \
+            --source-sha "${{ inputs.source_sha }}" \
+            --output build/delivery/params-provenance.json
+
+      - name: Verify environment prerequisites for the approved targets
+        if: ${{ steps.verify.outputs.has_targets == 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          HAS_FUNCTIONS: ${{ steps.verify.outputs.has_functions }}
+        run: |
+          set -euo pipefail
+          args=(--env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS"
+            --source-root build/delivery/source-checkout --source-sha "$SOURCE_SHA")
+          if [[ "$HAS_FUNCTIONS" == "true" ]]; then
+            args+=(--phase candidate --params-provenance build/delivery/params-provenance.json
+              --write-candidate build/delivery/secret-bindings.json)
+          fi
+          node tool/firebase/check_environment_readiness.mjs "${args[@]}"
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
+
+      - name: Create a separate deploy tree
+        run: |
+          test ! -e build/delivery/deploy-tree
+          cp -a build/delivery/package build/delivery/deploy-tree
+
+      - name: Install runtime dependencies only in the deploy tree
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        run: >-
+          npm --prefix build/delivery/deploy-tree/functions ci
+          --omit=dev --ignore-scripts
+
+
+
+      - name: Reverify package, deploy bytes, current source and unchanged protected resources
+        env:
+          CATCH_DEPLOY_ALLOW_BEHIND: '1'
+          CATCH_DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
+          CATCH_FIREBASE_SOURCE_ROOT: build/delivery/source-checkout
+        run: |
+          set -euo pipefail
+          node tool/ci/delivery_core.mjs verify \
+            --manifest build/delivery/source/firebase-provenance.json --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a --ci-run-id 38778849364 --ci-run-attempt 1
+          node tool/ci/selective_backend_release.mjs cat165-provenance --manifest build/delivery/source/firebase-provenance.json
+          node tool/ci/package_firebase_delivery.mjs verify \
+            --source-root build/delivery/source-checkout --package-dir build/delivery/deploy-tree \
+            --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a --base-sha 08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2 \
+            --ci-run-id 38778849364 --ci-run-attempt 1 --provenance-manifest build/delivery/source/firebase-provenance.json \
+            --allow-runtime-dependencies true --trusted-package-dir build/delivery/package --affected-functions true \
+            > build/delivery/reverified-plan.json
+          cmp build/delivery/package-plan.json build/delivery/reverified-plan.json
+          node tool/ci/selective_backend_release.mjs cat165-prepare \
+            --manifest build/delivery/source/firebase-provenance.json --package-plan build/delivery/reverified-plan.json \
+            --indexes build/delivery/deploy-tree/firestore.indexes.json \
+            --selected-indexes build/delivery/cat165-reverified-index.json --output build/delivery/cat165-reverified-plan.json
+          cmp build/delivery/execution-plan.json build/delivery/cat165-reverified-plan.json
+
+      - name: Materialize non-secret Functions params in the deploy copy
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          ALGOLIA_APPLICATION_ID: ${{ vars.ALGOLIA_APPLICATION_ID }}
+          RAZORPAY_PUBLIC_KEY_ID: ${{ vars.RAZORPAY_PUBLIC_KEY_ID }}
+          FLIGHT_PROVIDER_CONFIG_VERSION: ${{ vars.FLIGHT_PROVIDER_CONFIG_VERSION }}
+          FLIGHT_WEBHOOK_BASE_URL: ${{ vars.FLIGHT_WEBHOOK_BASE_URL }}
+          FORM_RAZORPAY_PARTNER_CONFIG_VERSION: ${{ vars.FORM_RAZORPAY_PARTNER_CONFIG_VERSION }}
+          RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION: ${{ vars.RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION }}
+          META_WHATSAPP_APP_ID: ${{ vars.META_WHATSAPP_APP_ID }}
+          META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: ${{ vars.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID }}
+          META_WHATSAPP_GRAPH_VERSION: ${{ vars.META_WHATSAPP_GRAPH_VERSION }}
+          META_WHATSAPP_ENABLED: ${{ vars.META_WHATSAPP_ENABLED }}
+          CATCH_WHATSAPP_WEBHOOK_ENABLED: ${{ vars.CATCH_WHATSAPP_WEBHOOK_ENABLED }}
+          # Non-secret scoped settings only; runtime readiness remains mandatory.
+          CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: ${{ vars.CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED }}
+          CATCH_WHATSAPP_REPLIES_ENABLED: ${{ vars.CATCH_WHATSAPP_REPLIES_ENABLED }}
+          CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: ${{ vars.CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY }}
+          CATCH_WHATSAPP_REPLY_ACTOR_UID: ${{ vars.CATCH_WHATSAPP_REPLY_ACTOR_UID }}
+          CATCH_WHATSAPP_REPLY_RECIPIENT_UID: ${{ vars.CATCH_WHATSAPP_REPLY_RECIPIENT_UID }}
+          CATCH_WHATSAPP_REPLY_RECIPIENT_E164: ${{ vars.CATCH_WHATSAPP_REPLY_RECIPIENT_E164 }}
+          CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION: ${{ vars.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION }}
+          CATCH_WHATSAPP_REPLY_GRAPH_VERSION: ${{ vars.CATCH_WHATSAPP_REPLY_GRAPH_VERSION }}
+          CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256: ${{ vars.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 }}
+          CATCH_WHATSAPP_WABA_ID: ${{ vars.CATCH_WHATSAPP_WABA_ID }}
+          CATCH_WHATSAPP_PHONE_NUMBER_ID: ${{ vars.CATCH_WHATSAPP_PHONE_NUMBER_ID }}
+          EVENT_ASSISTANCE_GUEST_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_GUEST_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION }}
+          EVENT_ASSISTANCE_RCS_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_ENABLED }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED }}
+          EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: ${{ vars.EVENT_ASSISTANCE_SMS_REPORTS_ENABLED }}
+        run: |
+          set -euo pipefail
+          functions_dir=build/delivery/deploy-tree/functions
+          if [[ -d "$functions_dir" ]]; then
+            node tool/firebase/prepare_functions_params_for_deploy.mjs \
+              --functions-dir "$functions_dir" \
+              --project "${{ steps.verify.outputs.project_id }}" \
+              --source-sha "${{ inputs.source_sha }}" \
+              --provenance build/delivery/params-provenance.json
+          else
+            echo "Verified package has no Functions payload; skipping Functions parameter materialization."
+          fi
+
+          node tool/ci/selective_backend_release.mjs cat165-params \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51 \
+            --provenance build/delivery/params-provenance.json --output build/delivery/cat165-params-binding.json
+
+
+      - name: Gate Functions param coverage before any deploy mutation
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+        run: |
+          set -euo pipefail
+          functions_dir=build/delivery/deploy-tree/functions
+          if [[ -d "$functions_dir" ]]; then
+            node tool/firebase/check_functions_params_coverage.mjs \
+              --functions-dir build/delivery/source-checkout/functions \
+              --env-file "$functions_dir/.env.$PROJECT_ID"
+          else
+            echo "Verified package has no Functions payload; skipping Functions parameter coverage gate."
+          fi
+
+
+      - name: Recheck exact source, parameters and all retained resources at the mutation boundary
+        env:
+          CATCH_DEPLOY_ALLOW_BEHIND: '1'
+          CATCH_DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
+          CATCH_FIREBASE_SOURCE_ROOT: build/delivery/source-checkout
+        run: |
+          set -euo pipefail
+          node tool/ci/selective_backend_release.mjs cat165-verify-params \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51 \
+            --provenance build/delivery/params-provenance.json --binding build/delivery/cat165-params-binding.json
+          git -C build/delivery/source-checkout fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+          git -C build/delivery/source-checkout merge-base --is-ancestor "${{ inputs.control_plane_sha }}" refs/remotes/origin/main
+          node tool/ci/selective_backend_release.mjs cat165-source \
+            --current-main "$(git -C build/delivery/source-checkout rev-parse refs/remotes/origin/main)" \
+            --source-root build/delivery/source-checkout
+          ./tool/deploy_firebase_targets.sh --preflight prod "${{ steps.verify.outputs.targets }}"
+          node tool/ci/selective_backend_release.mjs cat165-verify-before --before build/delivery/cat165-before.json
+
+      - name: Create only the fixed additive index once and wait for READY
+        run: |
+          set -euo pipefail
+          node tool/firebase/check_environment_readiness.mjs --env prod --targets "${{ steps.verify.outputs.targets }}" \
+            --source-root build/delivery/source-checkout --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a \
+            --phase candidate --params-provenance build/delivery/params-provenance.json \
+            --write-candidate build/delivery/cat165-index-bindings.json
+          node tool/ci/selective_backend_release.mjs cat165-verify-config \
+            --before build/delivery/cat165-before.json \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51 \
+            --provenance build/delivery/params-provenance.json --binding build/delivery/cat165-params-binding.json \
+            --candidate build/delivery/cat165-index-bindings.json
+          gcloud firestore indexes composite create --project=catch-dating-app-64e51 --database='(default)' \
+            --collection-group=organizerPrograms --query-scope=COLLECTION \
+            --field-config=field-path=organizerId,order=ascending \
+            --field-config=field-path=createdBy,order=ascending \
+            --field-config=field-path=startsAt,order=descending --async --quiet
+          node tool/firebase/wait_firestore_indexes_ready.mjs --indexes build/delivery/cat165-index.json \
+            --project catch-dating-app-64e51 --timeout-seconds 1800 --poll-seconds 20
+
+      - name: Recheck the indexed boundary and deploy exactly 62 Functions once
+        env:
+          CATCH_DEPLOY_ALLOW_BEHIND: '1'
+          CATCH_DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
+          CATCH_FIREBASE_SOURCE_ROOT: build/delivery/source-checkout
+        run: |
+          set -euo pipefail
+          node tool/ci/selective_backend_release.mjs cat165-verify-params \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51 \
+            --provenance build/delivery/params-provenance.json --binding build/delivery/cat165-params-binding.json
+          git -C build/delivery/source-checkout fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
+          git -C build/delivery/source-checkout merge-base --is-ancestor "${{ inputs.control_plane_sha }}" refs/remotes/origin/main
+          node tool/ci/selective_backend_release.mjs cat165-source \
+            --current-main "$(git -C build/delivery/source-checkout rev-parse refs/remotes/origin/main)" \
+            --source-root build/delivery/source-checkout
+          targets="$(node tool/ci/selective_backend_release.mjs cat165-targets | jq -er '.targets | join(",")')"
+          test "$(jq -er '.targets[1]' build/delivery/execution-plan.json)" = "$targets"
+          test "$(jq -cer '.stages' build/delivery/execution-plan.json)" = '["firestore-indexes","functions"]'
+          ./tool/deploy_firebase_targets.sh --preflight prod "$targets"
+          node tool/ci/selective_backend_release.mjs cat165-verify-indexed --before build/delivery/cat165-before.json
+          node tool/firebase/check_environment_readiness.mjs --env prod --targets "${{ steps.verify.outputs.targets }}" \
+            --source-root build/delivery/source-checkout --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a \
+            --phase candidate --params-provenance build/delivery/params-provenance.json \
+            --write-candidate build/delivery/cat165-functions-bindings.json
+          node tool/ci/selective_backend_release.mjs cat165-verify-config \
+            --before build/delivery/cat165-before.json \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51 \
+            --provenance build/delivery/params-provenance.json --binding build/delivery/cat165-params-binding.json \
+            --candidate build/delivery/cat165-functions-bindings.json
+          ./tool/firebase_with_env.sh prod deploy --only "$targets" \
+            --non-interactive --config build/delivery/deploy-tree/firebase.json
+
+      - name: Verify the selected runtime and every retained resource without repairs
+        run: |
+          set -euo pipefail
+          node tool/firebase/check_deploy_parity.mjs --env prod --repo-root build/delivery/source-checkout \
+            --targets "${{ steps.verify.outputs.targets }}"
+          node tool/firebase/check_environment_readiness.mjs --env prod --targets "${{ steps.verify.outputs.targets }}" \
+            --source-root build/delivery/source-checkout --source-sha 25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a \
+            --phase deployed --candidate build/delivery/cat165-functions-bindings.json
+          node tool/ci/selective_backend_release.mjs cat165-complete --before build/delivery/cat165-before.json \
+            --params-file build/delivery/deploy-tree/functions/.env.catch-dating-app-64e51 \
+            --params-provenance build/delivery/params-provenance.json --params-binding build/delivery/cat165-params-binding.json \
+            --manifest build/delivery/source/firebase-provenance.json --package-plan build/delivery/package-plan.json \
+            --indexes build/delivery/package/firestore.indexes.json --deployment-output build/delivery/cat165-selected/functions-deployment.json \
+            --output build/delivery/cat165-completion.json
+      - name: Retain isolated selected-only outcome and failure evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: cat165-selected-only-${{ github.run_id }}-1
+          path: |
+            build/delivery/cat165-before.json
+            build/delivery/cat165-completion.json
+            build/delivery/cat165-*-bindings.json
+            build/delivery/cat165-index.json
+            build/delivery/execution-plan.json
+            build/delivery/cat165-source-review.json
+            build/delivery/cat165-params-binding.json
+            build/delivery/cat165-selected/functions-deployment.json
           if-no-files-found: warn
           retention-days: 90

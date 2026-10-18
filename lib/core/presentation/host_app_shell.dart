@@ -5,8 +5,8 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -170,7 +170,7 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
         : null;
 
     return CatchWorkspaceHeaderLayout(
-      child: CatchAdaptiveTabScaffold(
+      child: AdaptiveTabScaffold(
         activeIndex: widget.navigationShell.currentIndex,
         navigationBar: bottomNavigation,
         mediumSideNavigation: railNavigation,

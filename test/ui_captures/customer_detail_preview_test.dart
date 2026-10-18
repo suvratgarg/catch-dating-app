@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,6 +52,7 @@ void main() {
               KeyedSubtree(key: ValueKey(view), child: entry.builder(context)),
           providerOverrides: [
             ...entry.providerOverrides,
+            firebaseAuthProvider.overrideWithValue(_CaptureAuth()),
             externalUrlLauncherProvider.overrideWithValue((
               uri, {
               mode = LaunchMode.platformDefault,
@@ -170,7 +173,7 @@ void main() {
               await tester.ensureVisible(breakdown);
               await tester.tap(breakdown);
               await pumpFeatureUi(tester);
-              expect(find.byType(HostCustomerRevenueBreakdown), findsOneWidget);
+              expect(find.byType(HostCustomerRevenueList), findsOneWidget);
             } else if (view == 'memory' || view.startsWith('history')) {
               final tab = find.text(view == 'memory' ? 'Notes' : 'History');
               await tester.ensureVisible(tab);
@@ -325,3 +328,13 @@ HostApplicationDetail _application(String organizerId) => HostApplicationDetail(
   reviewedAt: DateTime(2026, 5, 21),
   revision: 1,
 );
+
+class _CaptureAuth extends Fake implements FirebaseAuth {
+  @override
+  User get currentUser => _CaptureUser();
+}
+
+class _CaptureUser extends Fake implements User {
+  @override
+  String get uid => HostOperationsFixtures.hostUid;
+}

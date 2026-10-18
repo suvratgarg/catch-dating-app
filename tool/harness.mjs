@@ -42,12 +42,23 @@ export function projectPlanOutputs({plan, graph}) {
   }
   const selectedTargets = new Set(plan.operations.ciTargets);
   const appRoles = deriveAppRoles(plan);
+  // Generator freshness can be selected without its product's validation lane.
+  // Bootstrap from the same declared requirements that preflight verifies.
+  const generators = new Map(graph.compileCodegen.map(entry => [entry.id, entry]));
+  const codegen = (plan.operations.codegenIds ?? []).map(id => {
+    const entry = generators.get(id);
+    if (!entry) throw new Error(`Unknown required compile-codegen id "${id}".`);
+    return entry;
+  });
   return {
     ...Object.fromEntries(graph.targets.map((target) => [
       target,
       selectedTargets.has(target),
     ])),
     app_roles: JSON.stringify(appRoles),
+    preflight_functions_dependencies: codegen.some(entry =>
+      entry.checkRequirements.packages.some(dependency =>
+        dependency.kind === "node" && dependency.from === "functions/package.json")),
     build_targets: JSON.stringify([...plan.operations.buildTargets].sort()),
     release_targets: JSON.stringify(plan.validationOnly ? [] : [...plan.operations.releaseTargets].sort()),
     has_release_targets: !plan.validationOnly && plan.operations.releaseTargets.length > 0,

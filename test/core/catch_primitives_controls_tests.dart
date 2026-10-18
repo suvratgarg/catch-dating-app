@@ -239,12 +239,10 @@ void _registerCatchPrimitivesControlsTests() {
 
   _registerCatchPrimitivesButtonTests();
 
-  testWidgets('CatchDockSurface renders catch line and footnote', (
-    tester,
-  ) async {
+  testWidgets('CatchDock renders catch line and footnote', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        CatchDockSurface.primary(
+        CatchDock.primary(
           label: 'Confirm',
           onPressed: () {},
           catchLine: 'free to join',
@@ -848,13 +846,13 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchFormStepRowList renders status and opens a section', (
+  testWidgets('CatchFormStepList renders status and opens a section', (
     tester,
   ) async {
     int? selectedStep;
     await tester.pumpWidget(
       _wrap(
-        CatchFormStepRowList(
+        CatchFormStepList(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           statusLabelBuilder: catchFormStepStatusLabelBuilder(
             AppLocalizationsEn(),
@@ -863,17 +861,17 @@ void _registerCatchPrimitivesControlsTests() {
             CatchFormStepReviewItem(
               index: 0,
               title: 'Event basics',
-              status: CatchFormStepRowListStatus.complete,
+              status: CatchFormStepListStatus.complete,
             ),
             CatchFormStepReviewItem(
               index: 1,
               title: 'Meeting location',
-              status: CatchFormStepRowListStatus.needsInformation,
+              status: CatchFormStepListStatus.needsInformation,
             ),
             CatchFormStepReviewItem(
               index: 2,
               title: 'Live event guide',
-              status: CatchFormStepRowListStatus.optional,
+              status: CatchFormStepListStatus.optional,
             ),
           ],
           onStepSelected: (index) => selectedStep = index,

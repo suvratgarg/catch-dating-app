@@ -6,7 +6,8 @@ import type {ProgramAccess, ProgramDutyAssignment} from
   "../shared/programAuthority";
 import {baseSeed, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {dedupeDuties, grantDuties} from "./programStaffPolicy";
+import {dedupeDuties, grantDuties, validateDutyStations} from
+  "./programStaffPolicy";
 
 const expiry = now.toMillis() + 3600_000;
 const assignment = (pickup: string[], hotel: string[], end = expiry):
@@ -178,4 +179,40 @@ for (const marker of [{revokedAt: now}, {revokedBy: "manager-1"}]) {
     await assert.rejects(requireProgramAccess({db, programId: "program-1",
       actorUid: "dispatcher-1", now}), code("permission-denied"));
   });
+}
+
+
+for (const transactional of [false, true]) {
+  const phase = transactional ? "in transaction" : "before grant";
+  test(`function scope validates ownership ${phase}`,
+    async () => {
+      const store = new FakeFirestore({
+        "programFunctions/owned": {
+          programId: "program-1", organizerId: "org-1"},
+        "programFunctions/foreign-program": {
+          programId: "program-2", organizerId: "org-1"},
+        "programFunctions/foreign-organizer": {
+          programId: "program-1", organizerId: "org-2"},
+      });
+      const db = store as unknown as FirebaseFirestore.Firestore;
+      const validate = (functionIds: string[]) => {
+        const params = {db, programId: "program-1", organizerId: "org-1",
+          duties: [{duty: "functionCheckIn" as const, pickupPointIds: [],
+            hotelIds: [], functionIds}]};
+        return transactional ? db.runTransaction((transaction) =>
+          validateDutyStations({...params, transaction})) :
+          validateDutyStations(params);
+      };
+      for (const ids of [["missing"], ["foreign-program"],
+        ["foreign-organizer"], ["owned", "missing"]]) {
+        await assert.rejects(validate(ids), (error: unknown) => {
+          const failure = error as {code?: string; message?: string};
+          return failure.code === "invalid-argument" && failure.message ===
+            "Assigned functions must belong to this program.";
+        });
+      }
+      // Functions have a status lifecycle, not the active flag on stations.
+      await validate(["owned", "owned"]);
+      await validate([]);
+    });
 }

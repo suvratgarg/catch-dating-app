@@ -37,6 +37,14 @@ export const getEventViewerStateCallablePayloadSchema: Record<string, unknown> =
           "type": "null"
         }
       ]
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "native",
+        "guest"
+      ],
+      "description": "Defaults to native. Guest entry observes app-free roster, application and checkout sources without requiring a consumer profile."
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#",

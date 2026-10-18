@@ -30,7 +30,7 @@ The app currently uses:
 
 - `geolocator` for device location.
 - `google_maps_flutter` for in-app run maps and run-location picking.
-- `CatchMapPreview` for read-only compact Event Detail destination previews;
+- `MapPreview` for read-only compact Event Detail destination previews;
   it owns disabled gestures/controls, Google attribution clearance, automatic
   Android lite mode, and deterministic no-network fixtures.
 - `LocationCoordinate`, the app-owned coordinate value object, for domain
@@ -87,7 +87,7 @@ identity and labels.
 
 The direction is sound: canonical ids are separated from copy, exact profile
 coordinates stay private, `LocationCoordinate` keeps Google SDK types at the
-adapter edge, `CatchGoogleMap` owns native map integration, Places keys stay
+adapter edge, `LocationMap` owns native map integration, Places keys stay
 server-side, and passive location reads do not open a permission prompt. The
 current `DeviceLocationGateway` also gives device-location behavior a test seam
 and explicit recovery paths.
@@ -164,7 +164,7 @@ labels at rest.
 - Run detail location taps now open an in-app run location preview; the preview
   has an explicit Google Maps directions CTA.
 - Event Detail required exact locations render a real Google map tile through
-  `CatchMapPreview`; the caption/action row stays outside the map viewport, and
+  `MapPreview`; the caption/action row stays outside the map viewport, and
   deterministic tests use the neutral no-network fixture instead of painted
   fake geography.
 - Payment confirmation directions share the same Google Maps directions URL

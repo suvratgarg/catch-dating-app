@@ -2,11 +2,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {discoverFunctionExportNames} from "../firebase/function_binding_intent.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(toolDir, "../..");
+const args = process.argv.slice(2);
+if (args.length !== 0 && (args.length !== 2 || args[0] !== "--root" ||
+    !args[1] || args[1].startsWith("--"))) {
+  console.error("Usage: node tool/contracts/check_firestore_contract.mjs [--root <directory>]");
+  process.exit(64);
+}
+const repoRoot = args.length ? path.resolve(args[1]) : path.resolve(toolDir, "../..");
 
-const contractPath = path.join(toolDir, "firestore_contract.json");
+const contractPath = path.join(repoRoot, "tool/contracts/firestore_contract.json");
 const rulesPath = path.join(repoRoot, "firestore.rules");
 const generatedTypesPath = path.join(
   repoRoot,
@@ -27,6 +34,7 @@ const contract = readJson(contractPath);
 const rules = readText(rulesPath);
 const generatedTypes = readText(generatedTypesPath);
 const functionsIndex = readText(functionsIndexPath);
+const functionExports = new Set(discoverFunctionExportNames(functionsIndex));
 const schemaByCollectionId = loadFirestoreSchemas();
 
 const errors = [];
@@ -732,8 +740,5 @@ function validateRequiredStrings(values, source, label, sourceLabel) {
 }
 
 function hasNamedExport(functionName) {
-  const escapedName = functionName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`export \\{[^}]*\\b${escapedName}\\b[^}]*\\}`).test(
-    functionsIndex
-  );
+  return functionExports.has(functionName);
 }

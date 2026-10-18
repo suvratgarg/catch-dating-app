@@ -14,14 +14,14 @@ Widget formDescriptorStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Typed form descriptions',
   catalogId: 'catch.field.form_row_descriptor',
   children: [
-    for (final mode in CatchFormRowListMode.values)
+    for (final mode in CatchFormListMode.values)
       _FormDescriptorFields(mode: mode),
   ],
 );
 
 @widgetbook.UseCase(
   name: 'Typed rows and commit modes',
-  type: CatchFormRowList,
+  type: CatchFormList,
   path: '[Core patterns]/Form rows',
 )
 Widget formRowListStates(BuildContext context) => formDescriptorStates(context);
@@ -61,7 +61,7 @@ Widget formRangeFieldStates(BuildContext context) =>
 class _FormDescriptorFields extends StatefulWidget {
   const _FormDescriptorFields({required this.mode});
 
-  final CatchFormRowListMode mode;
+  final CatchFormListMode mode;
 
   @override
   State<_FormDescriptorFields> createState() => _FormDescriptorFieldsState();
@@ -82,9 +82,9 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchFormRowList<(String, Object?)>(
+  Widget build(BuildContext context) => CatchFormList<(String, Object?)>(
     fieldCopy: catchFieldCopy(context.l10n),
-    title: widget.mode == CatchFormRowListMode.explicit
+    title: widget.mode == CatchFormListMode.explicit
         ? 'Explicit confirmation'
         : 'Save text on blur',
     accordion: _accordion,

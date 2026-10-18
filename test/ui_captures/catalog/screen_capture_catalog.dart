@@ -16,7 +16,7 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
@@ -51,8 +51,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
@@ -85,7 +85,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_defaults_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
@@ -112,7 +112,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -124,7 +124,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
@@ -238,7 +238,7 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
@@ -273,8 +273,8 @@ import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -282,7 +282,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -309,6 +309,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../clubs/clubs_test_helpers.dart' as club_test;
 import '../../events/events_test_helpers.dart';
 import '../../test_pump_helpers.dart';
+import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
 
@@ -1325,7 +1326,7 @@ class _SwipeWriteFailureNoticeCaptureState
 Widget _swipeEventPendingActionCapture(
   CatchesProfileReviewActionState actionState,
 ) {
-  return CatchesProfileReview(
+  return CatchesProfileBody(
     profile: CatchesSurfaceFixtures.candidates.first,
     remainingCount: CatchesSurfaceFixtures.candidates.length,
     viewerProfile: CatchesSurfaceFixtures.viewer,
@@ -1563,8 +1564,8 @@ class _FiltersSaveErrorCaptureState
   Widget build(BuildContext context) => widget.child;
 }
 
-class _FiltersContentCapture extends StatelessWidget {
-  const _FiltersContentCapture({
+class _FiltersBodyCapture extends StatelessWidget {
+  const _FiltersBodyCapture({
     required this.ageRange,
     required this.interestedIn,
     this.saving = false,
@@ -1594,7 +1595,7 @@ class _FiltersContentCapture extends StatelessWidget {
           ),
         ],
       ),
-      body: FiltersContent(
+      body: FiltersBody(
         ageRange: ageRange,
         interestedIn: interestedIn,
         saving: saving,
@@ -2100,7 +2101,7 @@ List<Object> _publicProfileProviderOverrides({
 Widget _selfProfileCapture({SelfProfileTab initialTab = SelfProfileTab.edit}) =>
     ProfileScreen(initialTab: initialTab);
 
-Widget _editableSelfProfileCapture() => ProfileTabContent(
+Widget _editableSelfProfileCapture() => ProfileTabBody(
   user: ProfileSurfaceFixtures.viewer,
   uploadState: const PhotoUploadState(),
   builder: (context, children) => ListView(
@@ -3334,7 +3335,7 @@ Future<void> _driveCreateDisclosure(WidgetTester tester, String key) async {
   await tester.tap(target);
   await pumpFeatureUi(tester);
   if (key == 'host.create_event.customize_guide') {
-    await tester.ensureVisible(find.byType(EventSuccessDefaultsPanel));
+    await tester.ensureVisible(find.byType(EventSuccessDefaultsSection));
     await pumpFeatureUi(tester);
   }
 }
@@ -5840,7 +5841,6 @@ class _HostChatReportFailureNoticeCapture extends StatelessWidget {
               child: CatchSurface(
                 emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
-                borderColor: Colors.transparent,
                 backgroundColor: t.ink,
                 padding: const EdgeInsets.symmetric(
                   horizontal: CatchSpacing.s4,
@@ -6378,7 +6378,6 @@ class _MatchChatFeedbackNoticeCapture extends StatelessWidget {
               child: CatchSurface(
                 emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
-                borderColor: Colors.transparent,
                 backgroundColor: t.ink,
                 padding: const EdgeInsets.symmetric(
                   horizontal: CatchSpacing.s4,
@@ -6499,21 +6498,21 @@ class _ChatComposerStatesCaptureState
           child: Column(
             children: [
               const Spacer(),
-              ChatInputBar(
+              ChatInput(
                 controller: _readyController,
                 sending: false,
                 onSend: () {},
                 onSendImage: () {},
               ),
               const SizedBox(height: 12),
-              ChatInputBar(
+              ChatInput(
                 controller: _sendingController,
                 sending: true,
                 onSend: () {},
                 onSendImage: () {},
               ),
               const SizedBox(height: 12),
-              ChatInputBar(
+              ChatInput(
                 controller: _imagePendingController,
                 sending: false,
                 sendingImage: true,
@@ -6521,7 +6520,7 @@ class _ChatComposerStatesCaptureState
                 onSendImage: () {},
               ),
               const SizedBox(height: 12),
-              ChatInputBar(
+              ChatInput(
                 controller: _disabledController,
                 sending: false,
                 disabledReason: 'This chat is closed.',
@@ -8392,8 +8391,8 @@ final _authAustraliaProviderOverrides = <Object>[
 ];
 
 const _authHostBrandImages = <ImageProvider<Object>>[
-  AssetImage(CatchStartupLoadingScreen.hostLightIconAsset),
-  AssetImage(CatchStartupLoadingScreen.hostDarkIconAsset),
+  AssetImage(SplashScreen.hostLightIconAsset),
+  AssetImage(SplashScreen.hostDarkIconAsset),
   AssetImage('flags/in.png', package: 'country_code_picker'),
   AssetImage('flags/au.png', package: 'country_code_picker'),
 ];
@@ -9148,7 +9147,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewTall,
     precache: <ImageProvider<Object>>[_profileHeroImage],
     builder: (context) =>
-        CatchProfileView(data: _profileFixture, onReact: (target, comment) {}),
+        ProfileBody(data: _profileFixture, onReact: (target, comment) {}),
   ),
   ScreenCaptureEntry(
     id: 'profile_self_loading',
@@ -9285,14 +9284,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(playIntro: false),
+    builder: (context) => const OnboardingWelcomeBody(playIntro: false),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_animated_reel',
     routeIds: const <String>['startScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(),
+    builder: (context) => const OnboardingWelcomeBody(),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_reduced_motion',
@@ -9300,7 +9299,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     disableAnimations: true,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(),
+    builder: (context) => const OnboardingWelcomeBody(),
   ),
   ScreenCaptureEntry(
     id: 'start_welcome_text_scale_2',
@@ -9308,7 +9307,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     textScale: 2,
     providerOverrides: [_captureAnalyticsOverride],
-    builder: (context) => const WelcomePage(playIntro: false),
+    builder: (context) => const OnboardingWelcomeBody(playIntro: false),
   ),
   ScreenCaptureEntry(
     id: 'auth_phone_entry',
@@ -10563,7 +10562,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             ),
             child: Padding(
               padding: CatchInsets.fieldSectionChildTop,
-              child: HostClubMediaSummary(
+              child: HostClubMediaRail(
                 logoImageBytes: _profilePortraitBytes,
                 logoImageUrl: null,
                 photos: [
@@ -11721,7 +11720,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_dirty_edit',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => const _FiltersContentCapture(
+    builder: (context) => const _FiltersBodyCapture(
       ageRange: RangeValues(20, 60),
       interestedIn: {Gender.woman, Gender.nonBinary},
     ),
@@ -11730,7 +11729,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_reset_restored',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => _FiltersContentCapture(
+    builder: (context) => _FiltersBodyCapture(
       ageRange: filtersAgeRangeValues(_filtersCaptureProfile),
       interestedIn: _filtersCaptureProfile.interestedInGenders.toSet(),
     ),
@@ -11739,7 +11738,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_save_pending',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => const _FiltersContentCapture(
+    builder: (context) => const _FiltersBodyCapture(
       ageRange: RangeValues(25, 34),
       interestedIn: {Gender.man, Gender.woman},
       saving: true,
@@ -11949,7 +11948,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       child: SizedBox(
         width: double.infinity,
         height: CatchLayout.exploreDiscoveryCoverHeight,
-        child: CatchCoverStory(
+        child: FeaturedEventPoster(
           activityKind: ActivityKind.walking,
           kicker: 'Bright activity backdrop',
           title: 'Thursday Evening Walk',
@@ -15934,7 +15933,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       ..._audienceCaptureSources('org_1'),
       hostApplicationDetailProvider(
@@ -15956,7 +15955,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ..._audienceCaptureSources('org_1'),
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       hostApplicationDetailProvider(
         'org_1',
@@ -15977,7 +15976,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ..._audienceCaptureSources('org_1'),
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       hostApplicationDetailProvider(
         'org_1',
@@ -16000,7 +15999,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ..._audienceCaptureSources('org_1'),
       hostFormResponseDetailProvider(
         organizerId: 'org_1',
-        responseId: 'design-response-1',
+        responseId: _audienceCaptureJourney.responseId,
       ).overrideWith((_) async => _audienceCaptureResponse),
       hostApplicationDetailProvider(
         'org_1',
@@ -17471,8 +17470,8 @@ final _profileFixture = ProfileView(
   kicker: 'Was at - Sundowner 5K',
   kickerActivity: ActivityKind.socialRun,
   metaLine: 'Designer - Bandra',
-  sections: <ProfileSection>[
-    ProfileCompatibilitySection(
+  sections: <ProfileSectionData>[
+    ProfileCompatibilitySectionData(
       title: 'Why you might click',
       reasons: const <String>[
         'You both run at dawn around Bandra',
@@ -17496,7 +17495,7 @@ final _profileFixture = ProfileView(
         'A perfect Sunday',
       ),
     ),
-    ProfileRunningSection(
+    ProfileRunningSectionData(
       pace: '5:20-6:00 /km',
       distance: '5K, 10K',
       reasons: const <String>['Headspace miles'],
@@ -17512,12 +17511,12 @@ final _profileFixture = ProfileView(
         'Running rhythm',
       ),
     ),
-    ProfilePhotoSection(
+    ProfilePhotoSectionData(
       image: _profileHeroImage,
       caption: 'Sunday sea-face crew',
       reaction: _target('photo-2', SwipeReactionTargetType.photo, 'Photo 2'),
     ),
-    ProfileFactsSection(
+    ProfileFactsSectionData(
       title: 'Details',
       facts: <ProfileFact>[
         ProfileFact(

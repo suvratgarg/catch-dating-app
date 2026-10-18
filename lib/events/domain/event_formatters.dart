@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/time_zone_calendar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 
 class EventFormatters {
@@ -51,11 +52,22 @@ class EventFormatters {
 }
 
 extension EventFormattingX on Event {
-  String get shortDateLabel => EventFormatters.shortDate(startTime);
-  String get longDateLabel => EventFormatters.longDate(startTime);
-  String get timeRangeLabel => EventFormatters.timeRange(startTime, endTime);
+  DateTime localTime(DateTime instant) {
+    final zone = eventTimezone;
+    return zone != null && isIanaTimeZone(zone)
+        ? timeZoneCalendarDateAtInstant(instant, zone)
+        : instant;
+  }
+
+  DateTime get localStartTime => localTime(startTime);
+  DateTime get localEndTime => localTime(endTime);
+
+  String get shortDateLabel => EventFormatters.shortDate(localStartTime);
+  String get longDateLabel => EventFormatters.longDate(localStartTime);
+  String get timeRangeLabel =>
+      EventFormatters.timeRange(localStartTime, localEndTime);
   String get compactTimeRangeLabel =>
-      EventFormatters.timeRange(startTime, endTime, separator: '–');
+      EventFormatters.timeRange(localStartTime, localEndTime, separator: '–');
   String get distanceLabel => eventFormat.isDistanceBased
       ? EventFormatters.distanceKm(distanceKm)
       : eventFormat.label;

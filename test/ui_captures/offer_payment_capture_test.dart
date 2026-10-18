@@ -1,62 +1,58 @@
-// Temporary visual-capture harness for the offer payment setup step.
-// Runs the real screen inside the capture pump and writes PNGs to
-// artifacts/ui-captures/offer_payment_setup. Not a shipped test.
-
 import 'dart:io';
-
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../hosts/event_controller_test_support.dart';
 import '../test_pump_helpers.dart';
 import 'support/capture_device.dart';
 import 'support/capture_pump.dart';
+
+// Temporary visual-capture harness for the offer payment setup step.
+// Runs the real screen inside the capture pump and writes PNGs to
+// artifacts/ui-captures/offer_payment_setup. Not a shipped test.
 
 const _out = String.fromEnvironment('OFFER_PAYMENT_CAPTURE_OUTPUT');
 final _hash = List.filled(64, 'a').join();
 
 EventOfferConfiguration _config() => EventOfferConfiguration.fromResponse({
-      'organizerId': 'club-1',
-      'eventId': 'event-1',
-      'eventSourceRevision': 8,
-      // 2026-10-03 19:00 IST-ish; validity clamps the resolved expiry row.
-      'startsAtMillis': 1791043800000,
-      'nowMillis': 1790000000000,
-      'suggestedExpiresAtMillis': null,
-      'preferencesRevision': 0,
-      'preferences': null,
-      'paymentTerms': null,
-    });
+  'organizerId': 'club-1',
+  'eventId': 'event-1',
+  'eventSourceRevision': 8,
+  // 2026-10-03 19:00 IST-ish; validity clamps the resolved expiry row.
+  'startsAtMillis': 1791043800000,
+  'nowMillis': 1790000000000,
+  'suggestedExpiresAtMillis': null,
+  'preferencesRevision': 0,
+  'preferences': null,
+  'paymentTerms': null,
+});
 
 ManagerEventSetupDefaults _defaults({
   ManagerEventSetupPreferences preferences =
       const ManagerEventSetupPreferences(),
-}) =>
-    ManagerEventSetupDefaults(
-      organizerId: 'club-1',
-      cityId: 'in-mh-mumbai',
-      marketId: 'in-mh-mumbai',
-      timezone: 'Asia/Kolkata',
-      organizerDefaultsRevision: 1,
-      basicsReviewedHash: _hash,
-      preferencesRevision: 1,
-      preferences: preferences,
-      preferencesHash: _hash,
-      reviewedDefaultsHash: _hash,
-    );
+}) => ManagerEventSetupDefaults(
+  organizerId: 'club-1',
+  cityId: 'in-mh-mumbai',
+  marketId: 'in-mh-mumbai',
+  timezone: 'Asia/Kolkata',
+  organizerDefaultsRevision: 1,
+  basicsReviewedHash: _hash,
+  preferencesRevision: 1,
+  preferences: preferences,
+  preferencesHash: _hash,
+  reviewedDefaultsHash: _hash,
+);
 
-EventOfferPreferencesController _controller({
+TestEventOfferPreferencesController _controller({
   ManagerEventSetupPreferences? defaultPreferences,
   bool withPreview = false,
 }) {
-  final controller = EventOfferPreferencesController(
+  final controller = TestEventOfferPreferencesController(
     userId: 'host-1',
     organizerId: 'club-1',
     eventId: 'event-1',
@@ -64,29 +60,29 @@ EventOfferPreferencesController _controller({
     readConfiguration: ({required organizerId, required eventId}) async =>
         _config(),
     readDefaults: (_) async => _defaults(
-        preferences:
-            defaultPreferences ?? const ManagerEventSetupPreferences()),
+      preferences: defaultPreferences ?? const ManagerEventSetupPreferences(),
+    ),
     readPreview: withPreview
         ? (request) async => EventOfferPreferencesPreview(
-              request: request,
-              current: null,
-              candidate: PrivateEventPreferencesSnapshot(
-                revision: 1,
-                intents: request.intents,
-                resolvedValues: const {
-                  'expectedAmountMinor': 120000,
-                  'currency': 'INR',
-                  'collectionPreference': 'reusablePage',
-                  'reusablePaymentPage': {
-                    'url': 'https://rzp.io/l/saturday-social',
-                  },
-                  'offerValidityMinutes': 1440,
-                  'offerMessageTemplate':
-                      'Can\'t wait to meet you — see you Saturday!',
+            request: request,
+            current: null,
+            candidate: PrivateEventPreferencesSnapshot(
+              revision: 1,
+              intents: request.intents,
+              resolvedValues: const {
+                'expectedAmountMinor': 120000,
+                'currency': 'INR',
+                'collectionPreference': 'reusablePage',
+                'reusablePaymentPage': {
+                  'url': 'https://rzp.io/l/saturday-social',
                 },
-                paymentTerms: const {},
-              ),
-            )
+                'offerValidityMinutes': 1440,
+                'offerMessageTemplate':
+                    'Can\'t wait to meet you — see you Saturday!',
+              },
+              paymentTerms: const {},
+            ),
+          )
         : null,
     write: (_) async => const EventOfferPreferencesReceipt(
       eventId: 'event-1',
@@ -96,17 +92,13 @@ EventOfferPreferencesController _controller({
   );
   controller.configuration = _config();
   controller.defaults = _defaults(
-      preferences: defaultPreferences ?? const ManagerEventSetupPreferences());
+    preferences: defaultPreferences ?? const ManagerEventSetupPreferences(),
+  );
   return controller;
 }
 
-Widget _screen(EventOfferPreferencesController controller) =>
-    HostEventOfferPreferencesScreen(
-      organizerId: 'club-1',
-      eventId: 'event-1',
-      initialController: controller,
-      onBack: () {},
-    );
+Widget _screen(TestEventOfferPreferencesController controller) =>
+    testOfferPreferencesScreen(controller: controller, onBack: () {});
 
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
@@ -159,20 +151,29 @@ Future<void> _pickValidity(WidgetTester tester, String label) async {
 }
 
 Future<void> _fillReusablePage(WidgetTester tester) async {
-  await _tap(tester,
-      find.byKey(const ValueKey('offer-payment-mode-reusablePage')));
+  await _tap(
+    tester,
+    find.byKey(const ValueKey('offer-payment-mode-reusablePage')),
+  );
   await _enter(tester, 'offer-payment-amount', '1200');
   await _enter(
-      tester, 'offer-payment-page-url', 'https://rzp.io/l/saturday-social');
+    tester,
+    'offer-payment-page-url',
+    'https://rzp.io/l/saturday-social',
+  );
   final reuse = find.byKey(const ValueKey('offer-payment-page-reuse'));
   await tester.ensureVisible(reuse);
   await pumpFeatureUi(tester);
   await tester.tap(
-      find.descendant(of: reuse, matching: find.byType(CatchToggleInput)));
+    find.descendant(of: reuse, matching: find.byType(CatchToggleInput)),
+  );
   await pumpFeatureUi(tester);
   await _pickValidity(tester, '24 h');
-  await _enterCommitted(tester, 'offer-payment-message',
-      'Can\'t wait to meet you — see you Saturday!');
+  await _enterCommitted(
+    tester,
+    'offer-payment-message',
+    'Can\'t wait to meet you — see you Saturday!',
+  );
 }
 
 void main() {
@@ -208,12 +209,17 @@ void main() {
       device: CaptureDevice.reviewTall,
       builder: (_) => _screen(manual),
       drive: (tester) async {
-        await _tap(tester,
-            find.byKey(const ValueKey('offer-payment-mode-manualInstructions')));
+        await _tap(
+          tester,
+          find.byKey(const ValueKey('offer-payment-mode-manualInstructions')),
+        );
         await _enter(tester, 'offer-payment-amount', '850');
-        await _enterCommitted(tester, 'offer-payment-instructions',
-            'UPI: saturdaysocial@okhdfc or pay cash at the door. '
-            'Send the UPI reference when you pay.');
+        await _enterCommitted(
+          tester,
+          'offer-payment-instructions',
+          'UPI: saturdaysocial@okhdfc or pay cash at the door. '
+              'Send the UPI reference when you pay.',
+        );
         await _pickValidity(tester, '48 h');
       },
     );
@@ -226,8 +232,10 @@ void main() {
       device: CaptureDevice.reviewTall,
       builder: (_) => _screen(request),
       drive: (tester) async {
-        await _tap(tester,
-            find.byKey(const ValueKey('offer-payment-mode-personalRequest')));
+        await _tap(
+          tester,
+          find.byKey(const ValueKey('offer-payment-mode-personalRequest')),
+        );
         await _enter(tester, 'offer-payment-amount', '1200');
         await _pickValidity(tester, '72 h');
       },
@@ -248,10 +256,14 @@ void main() {
       device: CaptureDevice.reviewTall,
       builder: (_) => _screen(free),
       drive: (tester) async {
-        await _tap(tester,
-            find.byKey(const ValueKey('offer-payment-mode-change')));
         await _tap(
-            tester, find.byKey(const ValueKey('offer-payment-mode-free')));
+          tester,
+          find.byKey(const ValueKey('offer-payment-mode-change')),
+        );
+        await _tap(
+          tester,
+          find.byKey(const ValueKey('offer-payment-mode-free')),
+        );
       },
     );
 
@@ -263,10 +275,11 @@ void main() {
       device: CaptureDevice.reviewTall,
       builder: (_) => _screen(editor),
       drive: (tester) async {
-        await _tap(tester,
-            find.byKey(const ValueKey('offer-payment-mode-reusablePage')));
-        await _tap(tester,
-            find.byKey(const ValueKey('offer-payment-message')));
+        await _tap(
+          tester,
+          find.byKey(const ValueKey('offer-payment-mode-reusablePage')),
+        );
+        await _tap(tester, find.byKey(const ValueKey('offer-payment-message')));
         final editor = find.descendant(
           of: find.byKey(const ValueKey('offer-payment-message')),
           matching: find.byType(EditableText),
@@ -274,7 +287,9 @@ void main() {
         await tester.ensureVisible(editor);
         await pumpFeatureUi(tester);
         await tester.enterText(
-            editor, 'Can\'t wait to meet you — see you Saturday!');
+          editor,
+          'Can\'t wait to meet you — see you Saturday!',
+        );
         await pumpFeatureUi(tester);
       },
     );
@@ -289,7 +304,9 @@ void main() {
       drive: (tester) async {
         await _fillReusablePage(tester);
         await _tap(
-            tester, find.byKey(const ValueKey('offer-payment-setup-save')));
+          tester,
+          find.byKey(const ValueKey('offer-payment-setup-save')),
+        );
       },
     );
   });

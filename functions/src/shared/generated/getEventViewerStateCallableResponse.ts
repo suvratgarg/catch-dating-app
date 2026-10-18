@@ -16,7 +16,11 @@ export interface GetEventViewerStateCallableResponse {
       decisionId: string | null;
     };
     review: "none" | "pending" | "approved";
-    admission: "none" | "nativeParticipation" | "publicPaidRoster";
+    admission:
+      | "none"
+      | "nativeParticipation"
+      | "publicPaidRoster"
+      | "guestRoster";
     attendance: "notRecorded" | "attended";
     waitlisted: boolean;
     payment:
@@ -66,6 +70,40 @@ export interface GetEventViewerStateCallableResponse {
       inventoryRevision: number | null;
       capacityRevision: number | null;
       migrationRevision: number | null;
+    };
+    guest?: {
+      action:
+        | "registerFree"
+        | "bookPaid"
+        | "apply"
+        | "applicationPending"
+        | "applicationWaitlisted"
+        | "declined"
+        | "awaitingOffer"
+        | "offer"
+        | "registered"
+        | "seatWaitlisted"
+        | "recoverPayment"
+        | "closed"
+        | "unsupported"
+        | "unavailable";
+      publicFormId: string | null;
+      applicationStatus:
+        | (
+            | "submitted"
+            | "inReview"
+            | "approved"
+            | "waitlisted"
+            | "declined"
+            | "withdrawn"
+          )
+        | null;
+      offerGrantId: string | null;
+      publicPaymentId: string | null;
+      runtimeId: string | null;
+      attendeeId: string | null;
+      expiresAtMillis: number;
+      offerPaymentId: string | null;
     };
   };
 }

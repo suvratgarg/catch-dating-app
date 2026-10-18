@@ -28,8 +28,8 @@
           {
             "id": "country_selector",
             "language": "dart",
-            "file": "lib/auth/presentation/phone_page.dart",
-            "symbol": "CountryCodeSelector"
+            "file": "lib/auth/presentation/phone_step.dart",
+            "symbol": "PhoneCountryCodePicker"
           },
           {
             "id": "auth_controller",

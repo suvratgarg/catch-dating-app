@@ -90,9 +90,9 @@ class HostedEventScheduleSection extends StatelessWidget {
               CatchContractConstraints.mobileFormStateEventDurationMinutes,
           body: EventFormatters.durationMinutes(state.durationMinutes),
           value: state.durationMinutes,
-          min: CatchBusinessRules.eventMinDurationMinutes,
-          max: CatchBusinessRules.eventMaxDurationMinutes,
-          step: CatchBusinessRules.eventDurationStepMinutes,
+          min: BusinessRules.eventMinDurationMinutes,
+          max: BusinessRules.eventMaxDurationMinutes,
+          step: BusinessRules.eventDurationStepMinutes,
           valueLabelBuilder: (value) =>
               EventFormatters.durationMinutes(value.round()),
           decreaseSemanticLabel:

@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 17,
-  "updated": "2026-09-30",
+  "version": 18,
+  "updated": "2026-10-18",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -27,7 +27,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Organiser-first editorial entry with shared discovery, four job groups, solution previews, existing claim entry and supported walkthrough. Free management workspace remains proposed.",
+      "notes": "Short organiser-first introduction. Explore Catch Host is primary; event discovery and listing claims are separate handoffs.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -95,7 +95,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Canonical public Host beta page for standalone live-event tooling that begins with an external booking-platform guest-list export. Legacy /host/preview and nested paths redirect permanently to /host/.",
+      "notes": "Canonical Host product, workflows, use cases, existing tools and pricing/access page. Application lives only at /host/apply/. Retired marketing URLs redirect to sections.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -106,7 +106,7 @@
         "states": [
           "default",
           "beta-offer",
-          "host-application",
+          "application-link",
           "capture-placeholders"
         ],
         "stateCoverage": {
@@ -115,7 +115,7 @@
           ],
           "manual": [
             "beta-offer",
-            "host-application",
+            "application-link",
             "capture-placeholders"
           ]
         }
@@ -812,331 +812,39 @@
       }
     },
     {
-      "id": "host_overview",
-      "kind": "static",
-      "path": "/host/overview/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_overview",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_platform",
-      "kind": "static",
-      "path": "/host/platform/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_platform",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_planners",
-      "kind": "static",
-      "path": "/host/planners/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_planners",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_mixers",
-      "kind": "static",
-      "path": "/host/mixers/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_mixers",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_clubs",
-      "kind": "static",
-      "path": "/host/clubs/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_clubs",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_directory",
-      "kind": "static",
-      "path": "/host/directory/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_directory",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_claim",
-      "kind": "static",
-      "path": "/host/claim/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_claim",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
       "id": "host_apply",
       "kind": "static",
       "path": "/host/apply/",
       "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
+      "source": "website/src/features/host/HostApplicationPage.tsx",
       "metaKey": "host_apply",
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
+      "notes": "Single event-qualified Host pilot application. Submission uses the existing reviewed intake; no automatic account, booking or entitlement grant.",
       "review": {
         "priority": "p1",
-        "status": "manual",
+        "status": "ready",
         "viewports": [
           "desktop",
           "mobile"
         ],
         "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
+          "initial",
+          "interactive-steps",
+          "review",
+          "submitted",
+          "error"
         ],
         "stateCoverage": {
-          "storybook": [],
+          "storybook": [
+            "initial"
+          ],
           "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_stack",
-      "kind": "static",
-      "path": "/host/stack/",
-      "pageKey": "host",
-      "source": "website/src/features/host/concepts/HostConceptPage.tsx",
-      "metaKey": "host_stack",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
-          ]
-        }
-      }
-    },
-    {
-      "id": "host_workflows",
-      "kind": "static",
-      "path": "/host/workflows/",
-      "pageKey": "host",
-      "source": "website/src/features/host/HostContentReview.tsx",
-      "metaKey": "host_workflows",
-      "staticOutput": "postbuild",
-      "indexing": "noindex-follow",
-      "sitemap": "excluded",
-      "notes": "Canonical React port of retained concept material; local illustrative interactions and existing production handoffs remain distinct.",
-      "review": {
-        "priority": "p1",
-        "status": "manual",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "default",
-          "local-interaction",
-          "canonical-handoff"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "default",
-            "local-interaction",
-            "canonical-handoff"
+            "interactive-steps",
+            "review",
+            "submitted",
+            "error"
           ]
         }
       }
@@ -1152,6 +860,114 @@
     {
       "source": "/host/preview/**",
       "destination": "/host/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/overview",
+      "destination": "/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/overview/**",
+      "destination": "/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/platform",
+      "destination": "/host/#features",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/platform/**",
+      "destination": "/host/#features",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/workflows",
+      "destination": "/host/#how-it-works",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/workflows/**",
+      "destination": "/host/#how-it-works",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/planners",
+      "destination": "/host/#use-cases",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/planners/**",
+      "destination": "/host/#use-cases",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/mixers",
+      "destination": "/host/#use-cases",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/mixers/**",
+      "destination": "/host/#use-cases",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/clubs",
+      "destination": "/host/#use-cases",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/clubs/**",
+      "destination": "/host/#use-cases",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/stack",
+      "destination": "/host/#existing-tools",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/stack/**",
+      "destination": "/host/#existing-tools",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/directory",
+      "destination": "/organizers/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/directory/**",
+      "destination": "/organizers/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/claim",
+      "destination": "/claim/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/host/claim/**",
+      "destination": "/claim/",
       "status": 301,
       "preserveQuery": true
     }

@@ -55,8 +55,8 @@ const header = [
   "",
 ].join("\n");
 
-const dart = `${header}final class CatchBusinessRules {
-  const CatchBusinessRules._();
+const dart = `${header}final class BusinessRules {
+  const BusinessRules._();
 
   static const eventDefaultDurationMinutes = ${eventScheduling.defaultDurationMinutes};
   static const eventMinDurationMinutes = ${eventScheduling.minDurationMinutes};

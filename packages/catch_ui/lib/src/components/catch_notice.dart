@@ -75,7 +75,11 @@ class CatchNotice extends StatelessWidget {
                 notice.onOpen!();
               },
         emphasis: CatchSurfaceEmphasis.floating,
-        borderColor: palette.border,
+        borderSpec: CatchBorder.resolve(
+          CatchTokens.of(context),
+          CatchBorderRole.boundary,
+          color: palette.border,
+        ),
         backgroundColor: palette.background,
         padding: const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,

@@ -56,10 +56,11 @@ jobs:
             # GitHub can include the workflow_dispatch caller inputs alongside
             # workflow_call inputs. Admit only that exact fixed caller scope.
             ((keys - ["environment", "control_plane_sha", "dev_completion_artifact_id", "dev_completion_artifact_digest", "dev_completion_receipt_sha256",
-              "release_kind", "source_sha", "reason", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543", "confirm_booking_functions", "confirm_intake_pr596", "resume_delivery_run_id", "resume_delivery_attempt"]) | length) == 0 and
+              "release_kind", "source_sha", "reason", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543", "confirm_booking_functions", "confirm_intake_pr596", "confirm_cat165", "resume_delivery_run_id", "resume_delivery_attempt"]) | length) == 0 and
             (del(.environment, .control_plane_sha, .dev_completion_artifact_id, .dev_completion_artifact_digest, .dev_completion_receipt_sha256) as $caller |
               $caller == {} or (
                 .release_kind == "cat151-order-receipt" and .source_sha == "bbff52defd3c0dfb8df7c78c336c6549af7df47a" and
+                ((has("confirm_cat165") | not) or .confirm_cat165 == false) and
                 .confirm_booking_functions == false and .confirm_four_functions_five_indexes == false and
                 .confirm_whatsapp_five == false and .confirm_sales_pr543 == false and .confirm_intake_pr596 == false and
                 (.resume_delivery_run_id == null or .resume_delivery_run_id == "") and .resume_delivery_attempt == "1" and

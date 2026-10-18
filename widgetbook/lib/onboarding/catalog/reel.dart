@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -12,17 +12,17 @@ import '../../support/phone_preview.dart';
 
 @widgetbook.UseCase(
   name: 'Welcome scene states',
-  type: WelcomeScene,
+  type: WelcomeSceneLayout,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget welcomeSceneStates(BuildContext context) {
   return const WidgetbookWrapCatalogFrame(
-    title: 'WelcomeScene',
+    title: 'WelcomeSceneLayout',
     children: [
       WidgetbookPhoneStateCard(
         label: 'spinning',
         child: WidgetbookMaterialPhoneFrame(
-          child: WelcomeScene(
+          child: WelcomeSceneLayout(
             viewportWidth: 320,
             viewportHeight: 760,
             mediaPadding: EdgeInsets.only(
@@ -40,7 +40,7 @@ Widget welcomeSceneStates(BuildContext context) {
       WidgetbookPhoneStateCard(
         label: 'landed',
         child: WidgetbookMaterialPhoneFrame(
-          child: WelcomeScene(
+          child: WelcomeSceneLayout(
             viewportWidth: 320,
             viewportHeight: 760,
             mediaPadding: EdgeInsets.only(
@@ -61,7 +61,7 @@ Widget welcomeSceneStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Welcome focus lockup states',
-  type: WelcomeFocusLockup,
+  type: WelcomeFocusText,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget welcomeFocusLockupStates(BuildContext context) {
@@ -71,7 +71,7 @@ Widget welcomeFocusLockupStates(BuildContext context) {
   const maxWidth = WidgetbookPreviewLayout.onboardingWelcomeFocusWidth;
 
   return WidgetbookWrapCatalogFrame(
-    title: 'WelcomeFocusLockup',
+    title: 'WelcomeFocusText',
     children: [
       WidgetbookPhoneStateCard(
         label: 'static Catch_ handoff',
@@ -79,7 +79,7 @@ Widget welcomeFocusLockupStates(BuildContext context) {
           color: CatchTokens.light.bg,
           child: Padding(
             padding: const EdgeInsets.all(CatchSpacing.s4),
-            child: WelcomeFocusLockup(
+            child: WelcomeFocusText(
               catchColor: CatchTokens.light.ink,
               maxWidth: maxWidth,
               showBrandUnderscore: true,
@@ -93,7 +93,7 @@ Widget welcomeFocusLockupStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: Padding(
             padding: const EdgeInsets.all(CatchSpacing.s4),
-            child: WelcomeFocusLockup(
+            child: WelcomeFocusText(
               phrase: 'the sunset 5K',
               catchColor: CatchTokens.editorialDark.ink,
               maxWidth: maxWidth,
@@ -109,12 +109,12 @@ Widget welcomeFocusLockupStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Welcome reel band states',
-  type: ReelBand,
+  type: WelcomeReelList,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget welcomeReelBandStates(BuildContext context) {
   return WidgetbookWrapCatalogFrame(
-    title: 'ReelBand',
+    title: 'WelcomeReelList',
     children: [
       WidgetbookPhoneStateCard(
         label: 'spinning band',
@@ -122,7 +122,7 @@ Widget welcomeReelBandStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-            child: ReelBand(
+            child: WelcomeReelList(
               viewportWidth: 320,
               spinValue: 0.5,
               landingValue: 0,
@@ -137,7 +137,7 @@ Widget welcomeReelBandStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-            child: ReelBand(
+            child: WelcomeReelList(
               viewportWidth: 320,
               spinValue: 1,
               landingValue: 1,
@@ -152,12 +152,12 @@ Widget welcomeReelBandStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Welcome reel row states',
-  type: ReelRow,
+  type: WelcomeReelRow,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget welcomeReelRowStates(BuildContext context) {
   return WidgetbookWrapCatalogFrame(
-    title: 'ReelRow',
+    title: 'WelcomeReelRow',
     children: [
       WidgetbookPhoneStateCard(
         label: 'activity phrase',
@@ -165,7 +165,7 @@ Widget welcomeReelRowStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: WidgetbookPreviewLayout.onboardingReelRowPreviewHeight,
-            child: ReelRow(
+            child: WelcomeReelRow(
               viewportWidth: 320,
               phrase: WelcomePhrase('the long table', ActivityKind.dinner),
               phraseIndex: 2,
@@ -183,7 +183,7 @@ Widget welcomeReelRowStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: WidgetbookPreviewLayout.onboardingReelRowPreviewHeight,
-            child: ReelRow(
+            child: WelcomeReelRow(
               viewportWidth: 320,
               phrase: WelcomePhrase('the sunset 5K', ActivityKind.socialRun),
               phraseIndex: welcomeLandingIndex,
@@ -201,12 +201,12 @@ Widget welcomeReelRowStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Welcome reveal states',
-  type: RevealEntrance,
+  type: WelcomeRevealTransition,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget welcomeRevealEntranceStates(BuildContext context) {
   return WidgetbookWrapCatalogFrame(
-    title: 'RevealEntrance',
+    title: 'WelcomeRevealTransition',
     children: [
       WidgetbookPhoneStateCard(
         label: 'settling',
@@ -214,7 +214,7 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: Padding(
             padding: const EdgeInsets.all(CatchSpacing.s6),
-            child: RevealEntrance(
+            child: WelcomeRevealTransition(
               landingValue: 0.62,
               order: 0,
               child: Text(
@@ -234,7 +234,7 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
           color: CatchTokens.editorialDark.bg,
           child: Padding(
             padding: const EdgeInsets.all(CatchSpacing.s6),
-            child: RevealEntrance(
+            child: WelcomeRevealTransition(
               landingValue: 1,
               order: 1,
               child: Text(

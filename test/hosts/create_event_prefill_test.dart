@@ -70,6 +70,24 @@ void main() {
     expect(values.eventSuccessDefaults.enabled, isFalse);
   });
 
+  test('repeat preserves the explicit member review exemption', () {
+    final event = buildEvent(
+      eventPolicy: EventPolicyBundle.requestToJoinEvent(
+        capacityLimit: 20,
+        basePriceInPaise: 0,
+        approvedMembersSkipReview: true,
+      ),
+    );
+    expect(CreateEventPrefill.canRepeat(event), isTrue);
+    expect(
+      CreateEventPrefill.repeat(
+        event: event,
+        createdAt: DateTime(2026),
+      ).values.admissionPreset,
+      'requestToJoinMembersExempt',
+    );
+  });
+
   test('members-only source is not exposed as repeatable', () {
     final event = buildEvent(
       eventPolicy: EventPolicyBundle(

@@ -1,5 +1,6 @@
 import {expect, it, vi} from "vitest";
 import {projectLivePublicCatchEvent as project, projectPublicCatchEventSnapshot as snapshot} from "./publicCatchEventProjection";
+const itineraryTitle = "Fixture stop";
 const base = () => ({organizerId: "host", publicationState: "published", status: "active",
   startTime: {toMillis: () => 9e12}, endTime: {toMillis: () => 9e12 + 3600000},
   meetingLocation: {name: "Park"}, eventFormat: {activityKind: "socialRun"},
@@ -53,4 +54,40 @@ it("rejects cached, pending and oversized snapshots before decoding and handles 
   expect(data).not.toHaveBeenCalled();
   expect(snapshot(source)).toHaveLength(1);
   expect(snapshot({...source, size: 0, docs: []})).toEqual([]);
+});
+it("projects canonical optional media, venues and itinerary without private metadata", () => {
+  const venue = {name: "Park", latitude: 0, longitude: 0, notes: null};
+  const itinerary = [{id: "stop1", kind: "stop", offsetMinutes: 0, title: itineraryTitle, location: venue, description: null}];
+  const event = project("event", {...base(), meetingLocation: venue, itinerary,
+    photoUrl: "https://example.com/legacy.jpg", eventPhotos: [
+      {url: "https://example.com/later.jpg", position: 2},
+      {url: "https://example.com/rejected.jpg", position: 0, moderation: {status: "rejected"}},
+      {url: "https://example.com/first.jpg", position: 1, storagePath: "private/path"},
+    ]})?.event;
+  expect(event).toMatchObject({photoUrl: "https://example.com/first.jpg", meetingLocation: venue, itinerary});
+  expect(JSON.stringify(event)).not.toContain("private/path");
+});
+it("omits malformed optional values using the shared constraints", () => {
+  for (const change of [
+    {itinerary: [{id: "stop", kind: "stop", title: itineraryTitle, offsetMinutes: -1}]},
+    {itinerary: [{id: "bad/id", kind: "stop", title: itineraryTitle, offsetMinutes: 0}]},
+    {itinerary: [{id: "stop", kind: "stop", title: itineraryTitle, offsetMinutes: 0, location: {name: "Venue", latitude: 91, longitude: 0}}]},
+    {itinerary: null},
+  ]) expect(project("event", {...base(), ...change})?.event.itinerary).toBeUndefined();
+  for (const photoUrl of [null, "javascript:alert(1)", "http://example.com/a.jpg", "bad", "https://user:pass@example.com/a.jpg"]) {
+    expect(project("event", {...base(), photoUrl})?.event.photoUrl).toBeNull();
+  }
+});
+it("keeps a published event with no optional end time", () => {
+  const event = project("event", {...base(), endTime: undefined})?.event;
+  expect(event?.endTime).toBeNull();
+  expect(event?.date).not.toContain(" – ");
+});
+
+it("cannot restore moderated artwork through the legacy cover URL", () => {
+  for (const status of ["pending", "rejected"]) {
+    expect(project("event", {...base(), photoUrl: "https://example.com/cover.jpg", eventPhotos: [
+      {url: "https://example.com/cover.jpg", position: 0, moderation: {status}},
+    ]})?.event.photoUrl).toBeNull();
+  }
 });

@@ -28,11 +28,11 @@ import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
@@ -474,7 +474,7 @@ void main() {
     expect(find.text('Messaging'), findsOneWidget);
     expect(find.text('Choose what to send'), findsOneWidget);
     expect(find.text('WhatsApp Business settings'), findsOneWidget);
-    expect(find.byType(HostCampaignComposer), findsNothing);
+    expect(find.byType(HostCampaignEditor), findsNothing);
 
     await tester.tap(find.text('Choose what to send'));
     await pumpFeatureUi(tester);
@@ -500,12 +500,12 @@ void main() {
         reason: '$intent must remain represented in the intent chooser',
       );
     }
-    expect(find.byType(HostCampaignComposer), findsNothing);
+    expect(find.byType(HostCampaignEditor), findsNothing);
 
     await tester.tap(find.text('Message a saved audience'));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(HostCampaignComposer), findsOneWidget);
+    expect(find.byType(HostCampaignEditor), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
     expect(find.byType(HostInboxScopeMenu), findsNothing);
     expect(find.byType(HostInboxAudienceInput), findsNothing);
@@ -639,7 +639,7 @@ void main() {
     await tester.tap(find.text('Sends'));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(HostManualSendQueue), findsOneWidget);
+    expect(find.byType(HostManualSendList), findsOneWidget);
     expect(find.text('NEEDS YOUR SEND'), findsOneWidget);
     expect(find.text('Asha Manual'), findsOneWidget);
     expect(find.text('Waiting'), findsOneWidget);
@@ -880,7 +880,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(HostMessagingWorkspaceTabBar), findsNothing);
-    expect(find.byType(HostCampaignComposer), findsOneWidget);
+    expect(find.byType(HostCampaignEditor), findsOneWidget);
     expect(find.text('Lapsed customers · 12 people at last preview'), findsOne);
     await tester.tap(find.byTooltip('Back'));
     await pumpFeatureUi(tester);

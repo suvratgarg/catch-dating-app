@@ -1,3 +1,5 @@
+import {readCommunityMembership} from
+  "../../memberships/communityMembershipAuthority";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../../shared/generated/firestoreAdminTypes";
@@ -107,4 +109,17 @@ export async function readRegistrationManager(input: {
     throw new HttpsError("permission-denied", "Organizer access required.");
   }
   return source;
+}
+
+/** Resolve current membership from its entitlement and immutable decision. */
+export async function publicGuestMembership(input: {
+  db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
+  event: EventDocument; uid: string; nowMillis: number;
+}): Promise<boolean> {
+  const admission = input.event.eventPolicy?.admission;
+  if (!admission?.membershipRequired && admission?.format !== "membersOnly" &&
+      admission?.approvedMembersSkipReview !== true) return false;
+  return (await readCommunityMembership({...input,
+    organizerId: input.event.organizerId ?? input.event.clubId}))?.state ===
+      "active";
 }

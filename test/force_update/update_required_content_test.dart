@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('UpdateRequiredContent renders copy and delegates CTA', (
+  testWidgets('UpdateRequiredBody renders copy and delegates CTA', (
     tester,
   ) async {
     var taps = 0;
@@ -13,7 +13,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: UpdateRequiredContent(onUpdateNow: () => taps++),
+        home: UpdateRequiredBody(onUpdateNow: () => taps++),
       ),
     );
 

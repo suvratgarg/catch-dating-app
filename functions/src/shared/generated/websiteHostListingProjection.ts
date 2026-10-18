@@ -61,12 +61,44 @@ export interface WebsiteHostListingProjection {
     activityKind: string;
     timeline: "upcoming" | "past";
     startTime: string;
-    endTime: string;
+    endTime: string | null;
     timezone?: string;
     date: string;
     location: string;
     locationDetails?: string;
     summary: string;
+    photoUrl?: string | null;
+    /**
+     * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
+     */
+    meetingLocation?: {
+      name: string;
+      address?: string | null;
+      placeId?: string | null;
+      latitude: number;
+      longitude: number;
+      notes?: string | null;
+    };
+    /**
+     * @maxItems 40
+     */
+    itinerary?: {
+      id: string;
+      kind: "gather" | "activity" | "stop" | "break" | "transition" | "finish";
+      offsetMinutes: number;
+      durationMinutes?: number | null;
+      title: string;
+      description?: string | null;
+      location?: {
+        name: string;
+        address?: string | null;
+        placeId?: string | null;
+        latitude: number;
+        longitude: number;
+        notes?: string | null;
+      } | null;
+      routeDistanceMeters?: number | null;
+    }[];
     requirements?: string;
     accessibility?: string;
     capacityLimit: number;

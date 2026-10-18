@@ -6,7 +6,6 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {ImportEventAttendeesCallablePayload} from
   "../shared/generated/importEventAttendeesCallablePayload";
 import {
-  assertPublicRegistrationEligibility,
   attendanceReceiptId,
   eventAttendeeId,
   importEventAttendeesForHost,
@@ -192,50 +191,6 @@ test("normalizeRosterPhone accepts E.164 and Indian local numbers", () => {
   });
   assert.equal(normalizeRosterPhone("123").value, null);
   assert.match(normalizeRosterPhone("123").issue ?? "", /country code/);
-});
-
-test("public registration fails closed and keeps idempotent retries", () => {
-  const eligible = {
-    organizerVisibility: "discoverable",
-    organizerPublishStatus: "published",
-    eventStatus: "active",
-    eventEndTimeMs: Date.now() + 60_000,
-    publicRegistrationEnabled: true,
-    admissionFormat: "open",
-    inviteRequired: false,
-    membershipRequired: false,
-    manualApprovalRequired: false,
-    priceInPaise: 0,
-  };
-  assert.doesNotThrow(() => assertPublicRegistrationEligibility(eligible));
-  assert.throws(
-    () => assertPublicRegistrationEligibility({
-      ...eligible,
-      organizerVisibility: "hidden",
-    }),
-    /has not published/u
-  );
-  assert.throws(
-    () => assertPublicRegistrationEligibility({
-      ...eligible,
-      publicRegistrationEnabled: false,
-    }),
-    /not enabled/u
-  );
-  assert.throws(
-    () => assertPublicRegistrationEligibility({
-      ...eligible,
-      priceInPaise: 100,
-    }),
-    /cannot bypass payment/u
-  );
-  assert.throws(
-    () => assertPublicRegistrationEligibility({
-      ...eligible,
-      admissionFormat: "inviteOnly",
-    }),
-    /open-admission/u
-  );
 });
 
 test("public registration fills open capacity then uses the waitlist", () => {

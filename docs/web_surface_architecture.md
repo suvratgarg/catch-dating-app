@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.24.0
-updated: 2026-09-30
+version: 0.26.0
+updated: 2026-10-17
 owner: web_platform
 status: active
 ---
@@ -225,9 +225,21 @@ implementation and proof fails strict mode.
 - `packages/web-config/` contains shared Vite, TypeScript, and token/base CSS
   plumbing for React web surfaces.
 - `packages/web-ui/` is the pure presentational React workspace. It has no
-  Firebase, router, query, or feature dependencies; both apps consume its
-  structural controls through surface-owned adapters so class names and visual
-  variants remain local.
+  Firebase, router, query, or feature dependencies. Today both apps consume its
+  structural `*Control` components through surface-owned adapters that keep
+  class names and visual variants local.
+- **Ratified target (2026-10-17, UI blueprint D9–D10).** `@catch/web-ui` ships
+  styled `Catch*` components that implement the registry contracts in
+  `design/components/catch.components.json`, under the same names and prop
+  names as Flutter (`CatchButton`, `variant`, `onPressed`). Surface
+  differences such as admin density become a prop or a scope, never a second
+  component. Surface adapters such as `AdminButton`, `StatusChip`, and
+  `AdminTextField` are deleted as each surface adopts the shared component, and
+  `*Control` exports become package internals. Blueprint Phase 7 owns the
+  migration; until it lands, the adapter split described below remains the
+  running architecture. Naming is binding in the Cross-Framework Names
+  subsection of `docs/app_architecture.md`, and parity tiers in
+  `design/components/README.md`.
 - `design/web-ui/shared_primitive_adoption.json` is the active
   cross-surface compatibility and improvement queue. The non-vacuous
   `web:shared-ui-adoption` gate classifies every exact-name primitive overlap,
@@ -239,8 +251,9 @@ implementation and proof fails strict mode.
   feature composition. `ToggleGroupControl`/`ToggleButtonControl` remain the
   reference implementation for this split.
 - Cross-stack labels deliberately separate hierarchy from status:
-  `catch.ui_label` binds `CatchSectionLabel`, website `UiLabel`, admin
-  `AdminEyebrow`, and web-ui `UiLabel`; `catch.badge` binds status adapters and
+  `catch.typography` binds `CatchKickerText`, website `UiLabel`, admin
+  `AdminEyebrow`, and web-ui `UiLabel` (the former `catch.ui_label` mapping
+  moved there when `CatchSectionLabel` was retired); `catch.badge` binds status adapters and
   `BadgeControl`. The lexicon test rejects future semantic collapse.
 - `website/` is a Vite + React + TypeScript marketing app.
 - `website/src/app/App.tsx` uses React Router for the client route shell and
@@ -1076,8 +1089,8 @@ Current canonical component layer under `website/src/components/` includes:
 
 Implemented website behavior:
 
-- Homepage discovery can render real event/search data from generated organizer
-  projections.
+- `/explore/` owns consumer discovery with generated organiser projections and
+  the live published-event feed. `/` is the short organiser-first introduction.
 - Directory filters are URL-backed for query, city, format, status, upcoming,
   rating, and sort.
 - Organizer listing pages support event-aware search results, claim pressure,
@@ -1094,9 +1107,13 @@ Implemented website behavior:
   persistent matching/chat, universal provider sync and exact external revenue
   are not prerequisites and must not be presented as current dependencies.
 
+The public sitemap, content destinations and retired URL redirects are owned by
+`docs/marketing_website_architecture.md#public-sitemap-and-conversion-ownership`.
+The real pilot form lives at `/host/apply/`; `/host/` owns product detail.
+
 Catch event discovery is live. `PublicEventListingsProvider` subscribes through
 `firebase.ts` to explicitly published events; `usePublicEventListingsController` owns the
-TanStack Query cache used by home, directory, organizer, and event-detail routes.
+TanStack Query cache used by discovery, directory, organiser, and event-detail routes.
 Cache-only snapshots, pending writes, subscription failures, and oversized feeds
 withhold Catch rows. The current bounded feed supports at most 400 published
 records; overflow fails closed and requires a paginated discovery service before
@@ -1114,8 +1131,8 @@ cannot retract historical browser caches or copies made while an event was publi
 
 Deferred website decisions:
 
-- Decide whether fabricated prototype organizers become real seed listings,
-  demo-only fixtures, or stay excluded.
+- Fabricated prototype organisers remain excluded from real listings. The old
+  marketing concept pages and their simulated sample rows are retired.
 - Add an Instagram DM code-verification backend path before promising that as
   an automated claim option.
 - Add new marketing capture slots only through
@@ -1350,50 +1367,115 @@ history/profile and provider linking. These are product/recovery decisions, not
 delivered by sharing infrastructure. Local answers may precede verification when
 the existing form policy allows; current booking quote/history still require OTP.
 
-### Public event information and proposed dual entry
+### Public event guest entry
 
-`EventDetailRecord` currently projects title, summary, activityKind, date,
-startTime/endTime/timezone, location/locationDetails, accessibility, requirements,
-priceLabel, capacityLimit/remainingCapacity, listing/organiser, source attribution,
-reviews, isUpcoming, registrationState/mode and paidBookingAvailable. Event imagery
-and cancellation terms are not independently projected in this record; do not
-invent them. Static counts are informational, not a live seat promise.
+The public event page keeps informational listing data separate from the
+account-scoped `getEventViewerState` read. Its optional `surface: guest` adapter
+projects current linked attendees, native participation, application review,
+claimed offer recovery, public payment recovery and runtime entry. It requires a
+current verified Auth phone but no consumer profile. The generated response is
+shared with the website; the native adapter and its booking-readiness rules
+remain distinct. Guests never receive CRM notes, answers or invitation secrets.
 
-It has no public application form link, viewer application/membership/eligibility,
-current offer/grant/expiry or personalised payment recovery status. Manager-only
-application APIs cannot become consumer reads. Existing `/offer/` is the private
-recipient-bound approved-application checkout owner; public booking OTP explicitly
-denies manual-approval/membership/cohort/invite restrictions, and offer admission
-also denies unsupported partitioned admission. Membership approved is not event
-eligible, capacity reserved, payment captured or admission granted.
+The page routes to existing `/f/`, `/offer/`, `/booking/` and `/join/` owners.
+One current published event-targeted application form with a verified identity
+policy produces an application link. Ambiguous/unavailable linkage does not
+invent a destination. Review waitlists and seat waitlists are separate states;
+approval does not reserve seats. Existing account-owned payment recovery remains
+available after registration closes. Free registration and public paid checkout
+share publication, timing, price and restriction guards.
 
-Low-fidelity content/state structure for the next event-page increment:
+Shared phone verification links or reauthenticates an existing account instead
+of silently switching its UID. Explicit account switching signs out first.
+Guest queries are account-keyed, expire quickly and discard stale identity
+results. Free registration mutations live in a controller, separate from the
+form widgets. Public payment/offer controllers retain their own transaction and
+retry protocols while sharing authentication transport.
 
-1. Public event identity, summary, time, venue disclosure, host and source.
-2. Separate joining/policy action panel; identify only when the chosen action
-   needs it, keeping event information readable.
-3. Event facts/accessibility/requirements, host/provenance and genuine reviews.
-4. State projection from reviewed authority, never inferred from attendance:
+Cohort and pair-inventory guest admission remains explicitly host-managed.
+The event policy's optional `approvedMembersSkipReview` defaults to false.
+Host create/edit offers an explicit member-exempt request-to-join preset and
+preserves it through drafts and repeats. Native and public booking re-read the
+current community entitlement; free registration, paid quote/reservation and
+paid fulfillment share that check. Membership skips only review, never current
+capacity, invitation, pricing, or unsupported inventory requirements. Public
+registration configuration validates supported policy shape separately from
+recipient eligibility. Issued links retain their existing manual handoff; claimed
+offers can be recovered by authenticated non-secret reference. Free invitations
+use an explicit recipient-authorized call to the existing admission transaction,
+including current offer, response, identity, ledger and retry checks. The
+existing Host message preparation includes that free acceptance link. A free
+acceptance never creates a payment order; its owned receipt survives invitation
+expiry. Paid receipt recovery opts into its event access destination while
+older strict clients retain their receipt shape. Runtime account transitions
+clear private assignments, profile answers and account-scoped graph queries;
+late bootstrap responses cannot restore the prior account. Feature gates and
+provider/deployment readiness remain independent of
+source implementation. The invitation layout uses this same guest projection
+for its inline and mobile action, and the existing transaction owners in its
+registration dialog. See `marketing_website_architecture.md` for the shared
+presentation and optional-content contract.
 
-| State | Proposed content / existing owner |
-|---|---|
-| Signed out / checking | Public details plus actual joining route; suppress checkout while authority resolves. |
-| New guest | Application only with verified public form producer linkage; reuse `/f/`. |
-| Submitted / in review / application waitlisted | Authorised status/receipt, distinct from event seat waitlist; no checkout. |
-| Membership approved but event ineligible/restricted | Explain supported requirements safely; do not unlock public OTP booking. |
-| Approved + eligible + current recipient offer | Explicit review/checkout action using `/offer/`; payment requires a separate deliberate action, never background charging. |
-| Revoked / declined / withdrawn / expired | Safe unavailable state with permitted contact/retry; no stale browser approval recovery. |
-| Full / closed / past | No new booking, preserve existing receipt/refund recovery; unrestricted free event may keep server waitlist. |
-| Already booked / payment pending / failed / refund state | Exact UID-bound existing booking/payment controller; capture is separate from server admission proof. |
-| External event | Official source CTA and provenance; no Catch application/payment promise. |
+### Approval notification transport boundary
 
-Next implementation needs (a) canonical public form/event producer linkage and
-(b) a narrowly scoped consumer event-entry projection with safe reasons,
-membership versus admission distinction, version/expiry and identity isolation.
-These require explicit contract/authority approval. No broad manager read,
-new grant, source-rule bypass, OTP or payment was attempted in consolidation.
-The safe layout increment can reuse EventDetailHeroLayout/ActionPanel/FactGrid
-and existing controllers after that structure is reviewed.
+The selected transactional email transport is Resend, behind the server-only
+`TransactionalEmailProvider` port in `functions/src/email/emailProvider.ts`.
+Application code must depend on that port; provider-specific HTTP, credentials,
+response parsing and error classification remain in `ResendEmailProvider`.
+The adapter has no automatic retries, SDK client, subscription provisioning or
+billing upgrades. Each immutable message carries its own idempotency key and
+an authorization deadline. Acceptance is distinct from delivery; ambiguous
+submissions stay unknown. Quota exhaustion returns a bounded deferral.
+
+As verified on 2026-10-16, Resend's free plan allows 3,000 emails per month and
+100 per day without a monthly subscription. Recheck
+[provider pricing](https://resend.com/pricing) before activation; a free email
+plan does not make WhatsApp, SMS or infrastructure usage free.
+
+`events/approvalNotifications` now adapts approved applications to shared
+Operations work items and `FirestoreDeliveryOutbox`. A stable approval occurrence
+creates independent phone and email obligations. Review-note edits do not create
+another occurrence. Every reservation and claim rechecks the current application,
+response access, event publication/timing, deletion guard, Auth identity, verified
+contact, immutable opt-in receipt, sender configuration and atomic budget. No
+attendee authority or marketing permission is invented for an applicant.
+
+The guest page exposes two optional, initially unchecked choices and can verify
+an email on the current phone account through Firebase's verification action.
+The preferences callable fences the expected UID against current authentication;
+private contact evidence is removed during account deletion. Event-specific
+permission can be withdrawn without changing admission. A newer organizer
+event-operations withdrawal or WhatsApp STOP also suppresses the phone lane
+until fresh explicit opt-in; a newer SMS withdrawal blocks fallback.
+Marketing-only withdrawal does not change this service permission.
+
+Phone delivery attempts WhatsApp first and permits SMS only after confirmed
+technical failure. Accepted/unknown outcomes cannot start fallback. The shared
+signature-verified WhatsApp ingress is correlated to an immutable dispatch proof.
+Email and SMS API acceptance completes the submission obligation, not proof of
+inbox/handset delivery. WhatsApp pending outcomes remain unresolved and become
+Operations review work after the receipt deadline; signed late receipts can wake
+reconciliation. Quotas, unavailable senders and exhausted attempts hold work for
+review; they never upgrade billing or authorize duplicate sends. Recovery is
+bounded to ten due jobs per scheduled invocation and 100 evaluations per job.
+All messages return guests to the authenticated event page without bearer offer
+secrets, and explicitly separate approval from booking where the channel permits.
+
+Activation requires trusted, server-only
+`eventApprovalNotificationSettings/{organizerId}` (absent/disabled by default),
+current managed WhatsApp connection and approved UTILITY template with an
+`eventUrl` variable, Gupshup/DLT sender credentials and exact approved SMS copy,
+and a verified Resend sender domain. Credentials use pinned Secret Manager
+versions. The email credential envelope is
+`catch.transactional-email-credential/v1` with `provider`, stable `accountId`
+and `apiKey`; replacing `TransactionalEmailProvider` is the transport seam.
+Daily/monthly email caps are shared by provider account (100/3,000); phone count
+and cost caps are explicit. Unknown or rejected attempts conservatively retain
+budget debits. Deploy Functions, rules/indexes and website together, then verify
+real opt-in, approval, WhatsApp status/fallback and email acceptance. No provider
+account, domain, credentials, activation, live sends or deployment is implied by
+source completion. Email bounce/delivery webhooks and SMS delivery reports are
+not currently consumed by this application adapter; status remains API acceptance.
 
 ### Partner workspace in the React console
 

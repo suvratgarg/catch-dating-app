@@ -1,3 +1,5 @@
+import {claimGuidance} from "@content/claimGuidance";
+import {HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, ButtonLink, ActionGroup} from "../../shared/ui/primitives";
 import {DemoContinuationWorkspace} from "./DemoContinuationWorkspace";
 import {websiteCopy} from "@content/generated";
 import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
@@ -26,7 +28,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
           {href: "/host/", label: websiteCopy["claimpage_0027"]},
           {href: "/explore/#trust", label: websiteCopy["claimpage_0031"]},
         ]}
-        localActions={[{href: "/host/#founding-hosts", label: websiteCopy["claimpage_0030"]}]}
+        localActions={[{href: "/host/apply/", label: websiteCopy["claimpage_0030"]}]}
       />
 
       <ClaimFlowMain>
@@ -42,6 +44,11 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
         ) : (
           <ClaimWorkspaceSection controller={controller} />
         )}
+        <HostPreviewSection variant="faq">
+          <HostPreviewSectionHead titleId="claim-guidance-title" title={claimGuidance.title} body={claimGuidance.body} />
+          <HostPreviewFaqList items={[...claimGuidance.items]} />
+          <ActionGroup><ButtonLink href="/help/" variant="ghost">{claimGuidance.help}</ButtonLink><ButtonLink href="/host/apply/" variant="ghost">{claimGuidance.pilot}</ButtonLink></ActionGroup>
+        </HostPreviewSection>
       </ClaimFlowMain>
 
       <PublicSiteFooter

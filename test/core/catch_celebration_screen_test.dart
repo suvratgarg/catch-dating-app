@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: CatchCelebrationScreen(
+          home: CelebrationScreen(
             kind: CelebrationMomentKind.eventJoined,
             eyebrow: 'Booking confirmed',
             title: "You're in.",
@@ -105,7 +105,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: CatchCelebrationScreen(
+          home: CelebrationScreen(
             kind: CelebrationMomentKind.match,
             title: "It's a Catch.",
             message: 'You both liked each other.',
@@ -166,7 +166,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: CatchCelebrationScreen(
+          home: CelebrationScreen(
             kind: CelebrationMomentKind.eventJoined,
             eyebrow: 'Booking confirmed',
             title: "You're in.",
