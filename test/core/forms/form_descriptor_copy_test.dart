@@ -58,7 +58,7 @@ void main() {
         StatefulBuilder(
           builder: (context, setState) {
             rebuild = setState;
-            return CatchFormRowList<String>(
+            return CatchFormList<String>(
               fieldCopy: catchFieldCopy(AppLocalizationsEn()),
               rows: [
                 CatchFormTextRow<String>(
@@ -113,7 +113,7 @@ void main() {
       final saved = <Object?>[];
       await tester.pumpWidget(
         _app(
-          CatchFormRowList<Object?>(
+          CatchFormList<Object?>(
             fieldCopy: catchFieldCopy(AppLocalizationsEn()),
             rows: [
               CatchFormSingleChoiceRow<Object?, int>(

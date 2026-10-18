@@ -6,6 +6,7 @@ import type {ProgramAccess, ProgramAuthorization} from
   "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import type {
+  ProgramFunctionDocument,
   ProgramHotelDocument,
   ProgramPickupPointDocument,
   ProgramStaffGrantDocument,
@@ -71,21 +72,38 @@ export async function validateDutyStations(params: {
   const duties = dedupeDuties(params.duties);
   const pickupIds = new Set(duties.flatMap((duty) => duty.pickupPointIds));
   const hotelIds = new Set(duties.flatMap((duty) => duty.hotelIds));
-  const refs = [
-    ...[...pickupIds].map((id) =>
-      params.db.collection("programPickupPoints").doc(id)),
-    ...[...hotelIds].map((id) => params.db.collection("programHotels").doc(id)),
+  const functionIds = new Set(
+    duties.flatMap((duty) => duty.functionIds ?? []));
+  const checks = [
+    ...[...pickupIds].map((id) => ({
+      ref: params.db.collection("programPickupPoints").doc(id),
+      requireActive: true,
+      failure:
+        "Assigned resources must be active and belong to this program.",
+    })),
+    ...[...hotelIds].map((id) => ({
+      ref: params.db.collection("programHotels").doc(id),
+      requireActive: true,
+      failure:
+        "Assigned resources must be active and belong to this program.",
+    })),
+    ...[...functionIds].map((id) => ({
+      ref: params.db.collection("programFunctions").doc(id),
+      requireActive: false,
+      failure: "Assigned functions must belong to this program.",
+    })),
   ];
-  const snaps = await Promise.all(refs.map((ref) => params.transaction ?
-    params.transaction.get(ref) : ref.get()));
-  for (const snap of snaps) {
+  const snaps = await Promise.all(checks.map((check) => params.transaction ?
+    params.transaction.get(check.ref) : check.ref.get()));
+  for (const [index, snap] of snaps.entries()) {
     const resource = snap.data() as ProgramPickupPointDocument |
-      ProgramHotelDocument | undefined;
+      ProgramHotelDocument | ProgramFunctionDocument | undefined;
+    const check = checks[index];
     if (!resource || resource.programId !== params.programId ||
         resource.organizerId !== params.organizerId ||
-        resource.active !== true) {
-      throw new HttpsError("invalid-argument",
-        "Assigned resources must be active and belong to this program.");
+        (check.requireActive &&
+          (resource as ProgramPickupPointDocument).active !== true)) {
+      throw new HttpsError("invalid-argument", check.failure);
     }
   }
 }

@@ -5,9 +5,9 @@ import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
+import 'package:catch_dating_app/core/startup/native_splash.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -179,14 +179,14 @@ class _ForceUpdateGateState extends ConsumerState<ForceUpdateGate>
       );
     }
 
-    return const CatchStartupLoadingScreen();
+    return const SplashScreen();
   }
 
   void _scheduleNativeSplashRemoval() {
     if (_nativeSplashRemovalScheduled || kIsWeb) return;
     _nativeSplashRemovalScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      CatchNativeSplash.remove();
+      NativeSplash.remove();
     });
   }
 }

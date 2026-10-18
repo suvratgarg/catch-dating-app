@@ -29,11 +29,11 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
 - **R1 collection objects:** CatchPolaroid, EventDateRailCard,
   EventActionCard, AttendedEventTile, CatchCrossPathsCard (+
   CrossPathsPolaroidRail), ExploreFeedClubRow, ExploreExternalEventRow,
-  ActivityTypeRow/MoreActivityTypesRow (browse grid), VibeTile, PhotoSlot,
+  ActivityTypeRow/MoreActivityTypesRow (browse grid), VibeTile, PhotoSlotTile,
   ClubProfileImageTile, DraftCard, PlaceSuggestionRow, HostAnalyticsEventTile,
   HostCapacityTile, CatchRosterTileCell (+ roster table grammar),
   ChatShareCard/EventShareCard/ClubShareCard (+ pills as share-material),
-  MessageBubble/ShareCardBubble (chat material), RecapHero, ClubHeroModule,
+  MessageBubble/ShareCardBubble (chat material), RecapHeader, ClubHeroHeader,
   analytics metric-tile grids (kit v1).
 - **R2 actionable modules:** EventDetailHostCard (actions earn the box),
   EventDetailCalloutCard, EventDetailMapCard (whole-tap), ClubNextRunBanner,
@@ -43,16 +43,16 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
   LiveCheckInQrCard, HostCheckInQrPanel, HostPaymentAccount* cards,
   HostClubManagementPanel, HostOrganizerPayoutPrompt, BookingConflictEventRow,
   Group/RotationOverride editors, _SetupDisclosureSection, PromptField,
-  OnboardingRunningPrefsStep (form input modules), CountryCodeSelector
+  OnboardingRunningPrefsStep (form input modules), PhoneCountryCodePicker
   (control chrome), HostParticipationLifecycleBoard, TargetAttendeeControl.
 - **R3 plane changes:** all sheets (broadcast composer, QR scanner, reaction
   comment, draft picker, booking conflict, payment checkout),
-  PlaceSearchPanel/SelectedPointPanel + EventLocationMap overlay panels,
+  PlaceSearchSection/SelectedPointSection + EventLocationMap overlay panels,
   CatchesTopOverlay, MapPill, AppShellNavigationBar, LiveNowConsole,
   HostRosterSearchBar.
 - **R4 status tone:** NoticeCard, ReadinessIssues, IssueList,
   HostFullCapacityBanner, EditHostedEventScopeNotice, SwipeWindowBanner,
-  PaymentConfirmationHeadsUp, PaymentReferralBanner,
+  PaymentConfirmationNotice, PaymentReferralBanner,
   CompatibilitySignalHostCard, StageCard/PresetReviewCard (primarySoft
   setup signals), EventSuccessPrompt/ConversationCue/Recommendation cards,
   PlaybookSummaryCard.
@@ -62,7 +62,7 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
 - **Exempt classes:** every `*Pill`/`*Chip`/`*Badge`/`*Seal`/`*Dot`/marker
   (data-chip anatomy), every `*Skeleton` (follows subject), the entire
   stage/paper/live-reveal/celebration grammar (S5 calibration), HeroTime/
-  HeroActivity chips, PhotoCaption, MonthMarker.
+  HeroActivity chips, PhotoCaption, MonthDayTile.
 
 Depth check: no depth-2 bordered nesting found outside plane changes after
 the contained-flush work — record any encountered during execution.
@@ -73,7 +73,7 @@ the contained-flush work — record any encountered during execution.
 
 ### N1. Reviews become divided rows `[codex]` — the headline
 
-`ReviewCard` + `ReviewOwnerResponseBlock` (reviews_section.dart:293, :371)
+`ReviewCard` + `ReviewOwnerResponseCard` (reviews_section.dart:293, :371)
 render card-per-review. DS ReviewRow contract: rows inside ONE hairline
 container (R5), divider on every row after the first, inline list capped at
 2–3, closed with a quiet mono "ALL N REVIEWS →" row. Apply exactly that:
@@ -82,7 +82,7 @@ one `CatchSurface(borderColor: t.line)` list frame per reviews block,
 flat blocks inside their row (hairline-left or spacing — no nested border;
 depth ≤ 1). Surfaces affected: club detail, event social section, reviews
 history (history may keep uncapped list; the cap applies to inline
-previews). `ReviewHistoryItemSkeleton` follows. Stars stay ink (already
+previews). `ReviewHistoryRowSkeleton` follows. Stars stay ink (already
 aligned).
 
 ### N2. Filters screen adopts the flat form grammar `[codex]`
@@ -100,8 +100,8 @@ uses. Values/labels unchanged; skeleton follows.
 
 ### N4. Analytics info panels lose their boxes `[confirm]`
 
-`UserAnalyticsTrendPanel`, `UserAnalyticsTipsPanel`,
-`HostAnalyticsTrendPanel`, `HostAnalyticsReviewDiscoveryPanel`, and
+`UserAnalyticsTrendSection`, `UserAnalyticsTipsSection`,
+`HostAnalyticsTrendSection`, `HostAnalyticsReviewDiscoveryPanel`, and
 `HostAnalyticsEventList`'s empty-state surface: charts, tips, and stat
 pairs are information inside kicker sections — the border is an information
 box. Flatten: section kicker + flat content (chart bars, stat columns, tip
@@ -111,10 +111,10 @@ confirm before execution.
 
 ### N5. Informational empty/locked states go inline `[codex]`
 
-`UserAnalyticsEmptyState`, `EmptyRosterMessage`, and the Catches-hub
+`UserAnalyticsEmptyState`, `WhoIsGoingEmptyState`, and the Catches-hub
 explainer surface (`CatchesHubEmptyState`'s bordered how-it-works card):
 informational, not actionable — render flat (icon + title + supporting,
-CatchEmptyState inline layout, no border). `GuestWhoIsGoing`: verify tone —
+CatchEmptyState inline layout, no border). `GuestWhoIsGoingCard`: verify tone —
 if its fill is neutral it flattens the same way; if it deliberately reads
 as a locked/status treatment, re-tone it as an explicit R4 surface and
 record which.
@@ -142,7 +142,7 @@ them, record the rule the box earns. Same check covers
 ### N8. Form-step surface batch — box only the modules `[codex]`
 
 `HostProfileForm`, `EventPolicyStep` (six surfaces), `EventSuccessStep`,
-`ClubHostDefaultsStep`/`_PolicyDefaultsCard`, `EventSuccessDefaultsPanel`,
+`ClubHostDefaultsStep`/`_PolicyDefaultsCard`, `EventSuccessDefaultsSection`,
 `IntegrationNotesCard`, `ChatEventContextHeader`: per surface, apply the
 test — input/editor modules and pickers keep their box (R2); pure grouping
 or explainer text flattens to `CatchSection`/fieldRows grammar. Record the

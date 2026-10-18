@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
+import 'package:catch_dating_app/core/widgets/event_card.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -12,7 +12,7 @@ import 'package:go_router/go_router.dart';
 
 /// Explore recommendation card.
 ///
-/// Wraps [CatchEventCard.ticket] so the recommendation rail uses the same activity
+/// Wraps [EventCard] so the recommendation rail uses the same activity
 /// artwork and ticket shape as the Explore event feed. Recommendation reason
 /// stays visible in the media label while distance, pace, and capacity are
 /// folded into the ticket's bottom mono line.
@@ -80,7 +80,7 @@ class RecommendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = width;
-    final card = CatchEventCard.ticket(
+    final card = EventCard(
       title: event.title,
       subtitle: _buildSubtitle(),
       timeLabel: EventFormatters.time(event.startTime),

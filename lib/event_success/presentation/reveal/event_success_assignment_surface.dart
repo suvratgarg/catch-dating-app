@@ -21,7 +21,11 @@ class EventSuccessAssignmentSurface extends StatelessWidget {
       backgroundColor: t.success.withValues(
         alpha: CatchOpacity.revealGradientStart,
       ),
-      borderColor: t.success.withValues(alpha: CatchOpacity.subtleBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.success.withValues(alpha: CatchOpacity.subtleBorder),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -2,9 +2,24 @@ export interface OfferCredential {readonly token?: string; readonly paymentId?: 
 let current: OfferCredential | null = null;
 
 /** Strip the fragment synchronously, before rendering or loading analytics. */
-export function captureOfferCredential(location: Pick<Location, "pathname" | "hash">,
+export function captureOfferCredential(location: Pick<Location, "pathname" | "hash"> & {search?: string},
   replace: (path: string) => void, historyState?: unknown): OfferCredential | null {
   if (location.pathname !== "/offer" && location.pathname !== "/offer/") return null;
+  const queryPayment = new URLSearchParams(location.search ?? "").get("payment");
+  if (queryPayment !== null) {
+    current = /^ep_[a-f0-9]{32}$/u.test(queryPayment) ?
+      current?.paymentId === queryPayment ? current :
+        {paymentId: queryPayment, instance: crypto.randomUUID()} : null;
+    return current;
+  }
+  const queryGrant = new URLSearchParams(location.search ?? "").get("grant");
+  if (queryGrant !== null) {
+    // A non-secret recovery ID is useful only to its already-bound Auth UID.
+    current = /^[a-f0-9]{64}$/u.test(queryGrant) ?
+      current?.grantId === queryGrant ? current :
+        {grantId: queryGrant, instance: crypto.randomUUID()} : null;
+    return current;
+  }
   if (location.hash) {
     const token = location.hash.slice(1);
     current = token === current?.token ? current : /^[A-Za-z0-9_-]{43}$/u.test(token) ?

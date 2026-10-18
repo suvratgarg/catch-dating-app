@@ -73,13 +73,13 @@
           {
             "id": "manual_send_queue",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
-            "symbol": "HostManualSendQueue"
+            "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
+            "symbol": "HostManualSendList"
           },
           {
             "id": "follower_update_composer",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
             "symbol": "showHostFollowerUpdateComposer"
           },
           {
@@ -91,14 +91,14 @@
           {
             "id": "whatsapp_setup",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostWhatsappSetupPane"
+            "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+            "symbol": "HostWhatsappSetupSection"
           },
           {
             "id": "campaign_composer",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
-            "symbol": "HostCampaignComposer"
+            "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
+            "symbol": "HostCampaignEditor"
           },
           {
             "id": "campaign_controller",
@@ -180,7 +180,7 @@
             "test/hosts/host_whatsapp_setup_pane_test.dart"
           ],
           "customer_campaign_draft": [
-            "test/hosts/host_campaign_composer_test.dart",
+            "test/hosts/host_campaign_editor_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ],
           "customer_campaign_active": [
@@ -199,7 +199,7 @@
             "test/hosts/host_crm_repository_test.dart"
           ],
           "follower_update_composer": [
-            "test/hosts/host_follower_update_composer_test.dart",
+            "test/hosts/host_follower_update_composer_sheet_test.dart",
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -786,7 +786,7 @@
         {
           "id": "manage_whatsapp_sender",
           "owner": "whatsapp_setup",
-          "codeValue": "HostWhatsappSetupPane",
+          "codeValue": "HostWhatsappSetupSection",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",

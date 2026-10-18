@@ -63,8 +63,8 @@ class ActivitySwatch {
 /// Resolved activity design descriptor: the Flutter equivalent of the design
 /// pack's `getActivity(id)` result.
 @immutable
-class CatchActivity {
-  const CatchActivity({
+class ActivityStyle {
+  const ActivityStyle({
     required this.kind,
     required this.label,
     required this.glyph,
@@ -183,14 +183,14 @@ class ActivityPalette extends ThemeExtension<ActivityPalette> {
   ActivitySwatch forKind(ActivityKind kind) =>
       swatches[kind] ?? swatches[ActivityKind.openActivity] ?? _fallback;
 
-  CatchActivity getActivity(ActivityKind kind) => CatchActivity(
+  ActivityStyle getActivity(ActivityKind kind) => ActivityStyle(
     kind: kind,
     label: kind.label,
     glyph: glyphs[kind] ?? glyphs[ActivityKind.openActivity]!,
     swatch: forKind(kind),
   );
 
-  static CatchActivity resolve(BuildContext context, ActivityKind kind) =>
+  static ActivityStyle resolve(BuildContext context, ActivityKind kind) =>
       ActivityPalette.of(context).getActivity(kind);
 
   static final _fallback = ActivitySwatch._derive(

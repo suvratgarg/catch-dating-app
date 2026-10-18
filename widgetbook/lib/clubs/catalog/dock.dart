@@ -136,21 +136,21 @@ Widget clubDetailDockStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Dock count states',
-  type: DockCount,
+  type: ClubMemberCountText,
   path: '[Club Detail]/Dock',
 )
 Widget dockCountStates(BuildContext context) {
   return const WidgetbookScrollCatalogFrame(
-    title: 'DockCount',
+    title: 'ClubMemberCountText',
     catalogId: 'section.club.dock.count',
     children: [
       WidgetbookPageStateCard(
         label: 'member count',
-        child: DockCount(members: 214, label: 'MEMBERS'),
+        child: ClubMemberCountText(members: 214, label: 'MEMBERS'),
       ),
       WidgetbookPageStateCard(
         label: 'short label',
-        child: DockCount(members: 8, label: 'GOING'),
+        child: ClubMemberCountText(members: 8, label: 'GOING'),
       ),
     ],
   );
@@ -158,18 +158,18 @@ Widget dockCountStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Dock bell states',
-  type: DockBell,
+  type: ClubBellButton,
   path: '[Club Detail]/Dock',
 )
 Widget dockBellStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookScrollCatalogFrame(
-    title: 'DockBell',
+    title: 'ClubBellButton',
     catalogId: 'section.club.dock.bell',
     children: [
       WidgetbookPageStateCard(
         label: 'active',
-        child: DockBell(
+        child: ClubBellButton(
           active: true,
           accent: t.primary,
           isLoading: false,
@@ -178,7 +178,7 @@ Widget dockBellStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'inactive',
-        child: DockBell(
+        child: ClubBellButton(
           active: false,
           accent: t.primary,
           isLoading: false,
@@ -187,7 +187,7 @@ Widget dockBellStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'loading',
-        child: DockBell(
+        child: ClubBellButton(
           active: true,
           accent: t.primary,
           isLoading: true,

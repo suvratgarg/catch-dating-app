@@ -3,27 +3,27 @@ import 'dart:async';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_stepper_dock.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
+import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -146,7 +146,7 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              EventDetailItinerary(event: event),
+              EventDetailItineraryList(event: event),
               const SizedBox(height: 16),
               EventDetailMapCard(event: event, enableNetworkTiles: false),
               const SizedBox(height: 16),
@@ -244,9 +244,7 @@ void main() {
       );
 
       expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
-      final preview = tester.widget<CatchMapPreview>(
-        find.byType(CatchMapPreview),
-      );
+      final preview = tester.widget<MapPreview>(find.byType(MapPreview));
       expect(preview.coordinate, const LocationCoordinate(22.7196, 75.8577));
       expect(preview.path, const [
         LocationCoordinate(22.7196, 75.8577),
@@ -720,7 +718,7 @@ void main() {
         await pumpEventsTestApp(
           tester,
           Scaffold(
-            body: StepperFooter(
+            body: HostStepperDock(
               body: ListView(
                 padding: CatchInsets.formStepBodyWithBottomActions,
                 children: const [
@@ -743,8 +741,8 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchDockSurface &&
-                widget.variant == CatchDockSurfaceVariant.utility,
+                widget is CatchDock &&
+                widget.variant == CatchDockVariant.utility,
           ),
           findsNothing,
         );
@@ -1004,7 +1002,7 @@ void main() {
     testWidgets('who is going shows the empty upcoming state', (tester) async {
       await pumpEventsTestApp(
         tester,
-        Scaffold(body: WhoIsGoing(event: buildEvent(bookedCount: 0))),
+        Scaffold(body: WhoIsGoingSection(event: buildEvent(bookedCount: 0))),
       );
 
       expect(find.text("Who's going"), findsOneWidget);
@@ -1032,7 +1030,7 @@ void main() {
 
         await pumpEventsTestApp(
           tester,
-          Scaffold(body: WhoIsGoing(event: event)),
+          Scaffold(body: WhoIsGoingSection(event: event)),
           overrides: [
             swipeCandidateRepositoryProvider.overrideWith(
               (ref) => candidateRepository,

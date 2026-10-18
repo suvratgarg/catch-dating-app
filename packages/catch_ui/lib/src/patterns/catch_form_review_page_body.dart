@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// Final review page with summary fields and one resumable form-step list.
 ///
 /// Owns review copy, grouping, scrolling and clearance for the page's bottom
-/// actions. CatchFormStepRowList owns each navigable status row; the caller owns
+/// actions. CatchFormStepList owns each navigable status row; the caller owns
 /// step selection and submission.
 class CatchFormReviewPageBody extends StatelessWidget {
   const CatchFormReviewPageBody({
@@ -20,7 +20,7 @@ class CatchFormReviewPageBody extends StatelessWidget {
 
   final String message;
   final List<CatchFormStepReviewItem> items;
-  final String Function(CatchFormStepRowListStatus) statusLabelBuilder;
+  final String Function(CatchFormStepListStatus) statusLabelBuilder;
   final ValueChanged<int> onStepSelected;
   final List<CatchFormReviewSummaryItem> summaryItems;
 
@@ -54,7 +54,7 @@ class CatchFormReviewPageBody extends StatelessWidget {
             ),
           ],
           gapH16,
-          CatchFormStepRowList(
+          CatchFormStepList(
             fieldCopy: fieldCopy,
             items: items,
             statusLabelBuilder: statusLabelBuilder,

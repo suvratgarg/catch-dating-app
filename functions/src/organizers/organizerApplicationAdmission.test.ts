@@ -277,3 +277,19 @@ test("review contact actions use authorized identity endpoints before approval",
     assert.equal(withdrawn.outreach.phoneE164, null);
     assert.equal(withdrawn.outreach.email, null);
   });
+
+test("approval occurrence survives note edits and changes on reapproval",
+  async () => {
+    const h = harness();
+    await h.approve();
+    const basis = h.store.docs[appPath].approvalNotificationBasis;
+    assert.deepEqual(basis, {revision: 2, approvedAtMillis: now.toMillis()});
+    await reviewOrganizerApplicationHandler(h.request({expectedRevision: 2,
+      reviewStatus: "approved", reviewNote: "Updated note"}), h.deps);
+    assert.deepEqual(h.store.docs[appPath].approvalNotificationBasis, basis);
+    await reviewOrganizerApplicationHandler(h.request({expectedRevision: 3,
+      reviewStatus: "declined", reviewNote: null}), h.deps);
+    await h.approve(4);
+    assert.deepEqual(h.store.docs[appPath].approvalNotificationBasis,
+      {revision: 5, approvedAtMillis: now.toMillis()});
+  });

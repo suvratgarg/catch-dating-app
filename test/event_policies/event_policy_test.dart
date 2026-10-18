@@ -36,6 +36,44 @@ void main() {
     );
   }
 
+  test('member review exemption is explicit and retains capacity gates', () {
+    final policy = EventPolicyBundle.requestToJoinEvent(
+      capacityLimit: 1,
+      basePriceInPaise: 10000,
+      approvedMembersSkipReview: true,
+    );
+    final attendee = _attendee(Gender.man, {Gender.woman});
+    expect(
+      decide(policy: policy, attendee: attendee).type,
+      EventAdmissionDecisionType.manualReviewRequired,
+    );
+    expect(
+      decide(policy: policy, attendee: attendee, isClubMember: true).type,
+      EventAdmissionDecisionType.admitted,
+    );
+    expect(
+      decide(
+        policy: policy,
+        attendee: attendee,
+        isClubMember: true,
+        roster: const EventRosterSnapshot(
+          bookedCountsByCohort: {EventCohortIds.menInterestedInWomen: 1},
+        ),
+      ).isBookable,
+      isFalse,
+    );
+    final restored = EventPolicyBundle.fromJson(policy.toJson());
+    expect(restored.admissionPolicy.approvedMembersSkipReview, isTrue);
+    final ordinary = EventPolicyBundle.requestToJoinEvent(
+      capacityLimit: 1,
+      basePriceInPaise: 0,
+    );
+    expect(
+      decide(policy: ordinary, attendee: attendee, isClubMember: true).type,
+      EventAdmissionDecisionType.manualReviewRequired,
+    );
+  });
+
   group('EventCohortResolver', () {
     test(
       'keeps straight-balanced cohorts separate from queer/open cohorts',

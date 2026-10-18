@@ -916,3 +916,10 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from
   "./hostReadModels/triggers";
+
+export {manageEventApprovalNotifications} from
+  "./events/approvalNotifications/preferences";
+export {onEventApplicationApprovalNotification,
+  onEventApprovalNotificationPreference, onEventApprovalNotificationMessage,
+  onEventApprovalWhatsappReceipt, retryEventApprovalNotifications} from
+  "./events/approvalNotifications/triggers";

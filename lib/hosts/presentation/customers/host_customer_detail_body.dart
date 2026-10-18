@@ -33,6 +33,48 @@ class HostCustomerDetailBody extends StatelessWidget {
     required this.onUndoMerge,
   });
 
+  HostCustomerDetailBody.loading({
+    super.key,
+    required String organizerId,
+    required String contactId,
+    required String displayName,
+    required String manualTagLabel,
+    required String noteBody,
+    required this.currentUid,
+    required this.selectedView,
+    required this.onOpenMemory,
+  }) : customer = hostCustomerSkeletonDetail(
+         organizerId: organizerId,
+         contactId: contactId,
+         displayName: displayName,
+         manualTagLabel: manualTagLabel,
+         noteBody: noteBody,
+       ),
+       communicationPlan = null,
+       communicationPlanLoading = true,
+       communicationPlanFailed = false,
+       messageActionInHeader = false,
+       openingConversation = false,
+       updatingCustomer = false,
+       onSaveDetails = _noopSaveCustomerDetails,
+       onEditTags = _noop,
+       onAddNote = _noop,
+       onEditNote = ((_) {}),
+       onReviewDuplicates = _noop,
+       onMessage = _noop,
+       onRetryCommunicationPlan = _noop,
+       onMessagingEnabledChanged = ((_) {}),
+       onOpenFormResponse = ((_) {}),
+       onCall = null,
+       onEmail = null,
+       onOpenApplication = ((_) {}),
+       onOpenContact = ((_) {}),
+       onOpenRevenue = _noop,
+       onOpenEvent = ((_) {}),
+       onOpenCatchThread = ((_) {}),
+       onOpenWhatsappThread = ((_) {}),
+       onUndoMerge = ((_) {});
+
   final HostAudienceContactDetail customer;
   final String? currentUid;
   final HostCommunicationPlan? communicationPlan;
@@ -68,7 +110,7 @@ class HostCustomerDetailBody extends StatelessWidget {
       HostCustomerDetailView.overview => CatchSectionList(
         emptyStateOmitted: true,
         children: [
-          HostCustomerDetailOverview(
+          HostCustomerOverviewSectionList(
             customer: customer,
             onOpenRevenue: onOpenRevenue,
           ),
@@ -76,7 +118,7 @@ class HostCustomerDetailBody extends StatelessWidget {
             customer: customer,
             onOpenMemory: onOpenMemory ?? () {},
           ),
-          HostCustomerRecentEvents(
+          HostCustomerRecentEventsList(
             customer: customer,
             onOpenEvent: onOpenEvent,
           ),
@@ -112,7 +154,7 @@ class HostCustomerDetailBody extends StatelessWidget {
             customer: customer,
             onOpen: onOpenFormResponse,
           ),
-          HostCustomerApplicationsPanel(
+          HostCustomerApplicationsSection(
             organizerId: customer.organizerId,
             contactId: customer.contactId,
             onOpenApplication: onOpenApplication,
@@ -138,7 +180,7 @@ class HostCustomerDetailBody extends StatelessWidget {
           ),
         ],
       ),
-      HostCustomerDetailView.history => HostCustomerHistoryPanel(
+      HostCustomerDetailView.history => HostCustomerHistorySection(
         customer: customer,
         onOpenFormResponse: onOpenFormResponse,
         onOpenEvent: onOpenEvent,
@@ -170,8 +212,8 @@ class HostCustomerDetailBody extends StatelessWidget {
   );
 }
 
-class HostCustomerDetailOverview extends StatelessWidget {
-  const HostCustomerDetailOverview({
+class HostCustomerOverviewSectionList extends StatelessWidget {
+  const HostCustomerOverviewSectionList({
     super.key,
     required this.customer,
     required this.onOpenRevenue,
@@ -198,3 +240,11 @@ class HostCustomerDetailOverview extends StatelessWidget {
     ],
   );
 }
+
+void _noop() {}
+
+Future<void> _noopSaveCustomerDetails({
+  required String displayName,
+  String? phoneE164,
+  String? email,
+}) async {}

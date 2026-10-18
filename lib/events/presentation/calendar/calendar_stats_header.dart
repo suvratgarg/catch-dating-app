@@ -7,8 +7,6 @@ class CalendarStatsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Padding(
       padding: CatchInsets.pageBody.copyWith(
         top: CatchSpacing.micro2,
@@ -22,7 +20,7 @@ class CalendarStatsHeader extends StatelessWidget {
           child: CatchSurface(
             padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
-            borderColor: t.line,
+            borderRole: CatchBorderRole.separator,
             child: Row(
               children: [
                 Expanded(

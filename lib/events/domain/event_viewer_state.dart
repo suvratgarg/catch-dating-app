@@ -4,7 +4,12 @@ enum EventViewerMembership { notRequired, none, active, revoked, unavailable }
 
 enum EventViewerReview { none, pending, approved }
 
-enum EventViewerAdmission { none, nativeParticipation, publicPaidRoster }
+enum EventViewerAdmission {
+  none,
+  nativeParticipation,
+  publicPaidRoster,
+  guestRoster,
+}
 
 enum EventViewerAttendance { notRecorded, attended }
 

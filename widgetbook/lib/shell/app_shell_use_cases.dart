@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/contract_preview.dart';
 
 import '../preview_layout_contracts.dart';
 
@@ -23,6 +25,34 @@ Widget appShellGuestState(BuildContext context) {
     title: 'AppShell',
     contractId: 'app.shell.consumer',
     child: _DeviceFrame(child: _ShellRouteScope()),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Bottom navigation',
+  type: AdaptiveTabScaffold,
+  path: '[App shell]',
+)
+Widget adaptiveTabScaffoldState(BuildContext context) {
+  return _ShellCatalog(
+    title: 'AdaptiveTabScaffold',
+    contractId: 'app.shell.adaptive_tab_scaffold',
+    child: _DeviceFrame(
+      child: AdaptiveTabScaffold(
+        activeIndex: 0,
+        body: Center(
+          child: CatchMetadataText(
+            'Explore tab body',
+            color: CatchTokens.of(context).ink2,
+          ),
+        ),
+        navigationBar: CatchTabBar<String>(
+          items: widgetbookContractTabItems,
+          active: 'explore',
+          onChanged: widgetbookIgnoreString,
+        ),
+      ),
+    ),
   );
 }
 
@@ -307,7 +337,10 @@ class _ShellCatalog extends StatelessWidget {
                   style: CatchTextStyles.supporting(context, color: t.ink3),
                 ),
                 gapH20,
-                CatchSurface(borderColor: t.line, child: child),
+                CatchSurface(
+                  borderRole: CatchBorderRole.separator,
+                  child: child,
+                ),
               ],
             ),
           ),

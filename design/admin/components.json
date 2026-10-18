@@ -713,7 +713,7 @@
           "honest-preview-analytics"
         ]
       },
-      "notes": "URL-owned Safety list route backed by an explicit SafetyTriageController fixture. Metric cards and queue-composition bars use aggregate open counts; priority and age disclose their capped returned-preview scope. Opening a row navigates to a separate encoded target-path route instead of stacking detail below the table."
+      "notes": "URL-owned Safety list route backed by an explicit SafetyTriageController fixture. Metric cards use aggregate open counts and disclose returned preview row counts separately. Queue filtering and search apply only to the loaded preview; priority and age distributions are not implemented. Opening a row navigates to a separate encoded target-path route instead of stacking detail below the table."
     },
     {
       "id": "workspace_safety_triage",

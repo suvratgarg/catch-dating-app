@@ -143,13 +143,13 @@ function writeFile(root, relativePath, source) {
 
 test("horizontal named recipe cannot escape the chrome scanner", () => {
   const result = scanSourceForRailContracts({
-    relativePath: "lib/explore/presentation/widgets/recommendations.dart",
+    relativePath: "lib/explore/presentation/widgets/explore_recommendations_section.dart",
     source: "Widget build(context) => CatchSection . horizontal(headerPadding: EdgeInsets.zero);",
   });
   assert.equal(result.inventory.railCalls, 1);
   assert.equal(result.findings[0].rule, "RAIL-CONTRACT-001");
   const otherRecipe = scanSourceForRailContracts({
-    relativePath: "lib/explore/presentation/widgets/recommendations.dart",
+    relativePath: "lib/explore/presentation/widgets/explore_recommendations_section.dart",
     source: "Widget build(context) => CatchSection.plain(padding: EdgeInsets.zero, child: Text('x'));",
   });
   assert.equal(otherRecipe.inventory.railCalls, 0);

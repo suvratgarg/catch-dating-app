@@ -55,7 +55,7 @@ void _registerExploreErrorsAndCreationTests() {
       ExploreDistanceFilter.any,
     );
     expect(find.byType(CatchDistanceOverlay), findsNothing);
-    expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+    expect(find.byType(EventPinsFallbackMap), findsOneWidget);
     expect(find.bySemanticsLabel('Select Carter Road'), findsOneWidget);
   });
 

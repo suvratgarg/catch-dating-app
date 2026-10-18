@@ -1,0 +1,88 @@
+{
+  "owner": "app_architecture",
+  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7b2--naming-sweep",
+  "schemaVersion": 1,
+  "policy": "feature_widget_names_and_reserved_catch_prefix_debt_cannot_grow",
+  "allowedFindings": [
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncPhase",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncState",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/core/presentation/catch_async_state.dart",
+      "name": "CatchAsyncStatus",
+      "issues": [
+        "reserved-symbol-prefix"
+      ]
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+      "name": "DashboardFullSliverBody",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/events/shared/event_check_in_qr_scanner.dart",
+      "name": "EventCheckInQrScanner",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_audience_view.dart",
+      "name": "HostAudienceStateScaffold",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/host_audience_view.dart",
+      "name": "HostAudienceTabRail",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
+      "name": "HostEventReviewsPanel",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/host_today_screen.dart",
+      "name": "HostTodayLoadedRoute",
+      "issues": [
+        "noncanonical-feature-widget-name"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+      "name": "HostTodayAttentionSection",
+      "issues": [
+        "noncanonical-feature-widget-file"
+      ]
+    },
+    {
+      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
+      "name": "HostTodayOverview",
+      "issues": [
+        "noncanonical-feature-widget-file",
+        "noncanonical-feature-widget-name"
+      ]
+    }
+  ]
+}

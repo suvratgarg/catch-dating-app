@@ -4,7 +4,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
   Future<void> _pickDate() async {
     if (_savePending) return;
     final today = DateUtils.dateOnly(_now);
-    final lastDate = today.add(CatchBusinessRules.eventEditDatePickerWindow);
+    final lastDate = today.add(BusinessRules.eventEditDatePickerWindow);
     final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
     final picked = await showCatchDatePicker(
       copy: catchDatePickerCopy(context.l10n),

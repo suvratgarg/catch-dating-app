@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,8 +30,8 @@ void main() {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchOrganizerPoster(
-              media: OrganizerPosterArtwork(club: _organizer),
+            CatchPoster(
+              media: ClubPlaceholderCover(club: _organizer),
               kicker: 'Run club · Mumbai',
               title: _organizer.name,
               tagline: _organizer.description,

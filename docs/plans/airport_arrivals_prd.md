@@ -1170,7 +1170,7 @@ do not invent a second durable engine or a tracked evidence registry.
 
 | Need | Reuse first | New feature-level piece / extension rule |
 |---|---|---|
-| Phone/tablet station | `CatchAdaptiveTabScaffold`, `CatchWindowSize`, `CatchScaffold`, root/route scaffolds | New `HostWorkShell`; do not add hidden manager branch indices |
+| Phone/tablet station | `AdaptiveTabScaffold`, `CatchWindowSize`, `CatchScaffold`, root/route scaffolds | New `HostWorkShell`; do not add hidden manager branch indices |
 | Header/search | `CatchTopBar`, `CatchSearchField`, canonical search capability | Program/airport/hotel context in semantic title/subtitle; no custom typography knobs |
 | Time-band roster | `CatchSection`, `CatchFieldLanes`, canonical field/content rows | `ArrivalGuestRow` composes flight, readiness, party and destination; not a CRM row with hidden private fields |
 | Filter and status controls | `CatchSection.controls`, `CatchChip`, `CatchBadge` | Typed flight/transport view state, text/icon plus color; no color-only delay signal |
@@ -1179,7 +1179,7 @@ do not invent a second durable engine or a tracked evidence registry.
 | Hotel inbound board | Existing adaptive master-detail recipes and field sections | Inbound list + selected trip/stay pane, same data controller on phone/tablet |
 | Connectivity/stale data | `CatchBanner.statuses`, async boundary and localized error adapters | One durable pending/stale/conflict banner; distinguish cached data from provider freshness |
 | Planner totals | `CatchMetricSection.grid` / `.dataQuality` | Exact vs stale/partial coverage and unpriced trips are explicit |
-| Location | Existing `CatchMapPreview` and app location adapter | Optional context, never required to use the roster or substituted with fake map geometry |
+| Location | Existing `MapPreview` and app location adapter | Optional context, never required to use the roster or substituted with fake map geometry |
 | Guest import/forms | Existing parser, preview/field controls and Forms builder | Program-specific semantic column mapping and household identity review |
 
 No reusable primitive currently needs wedding-specific properties. First compose

@@ -121,7 +121,7 @@ Widget savedEventsScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Agenda sliver states',
-  type: SavedEventsAgendaSliver,
+  type: SavedEventsAgendaList,
   path: '[Events]/Sections',
 )
 Widget savedEventsAgendaSliverStates(BuildContext context) {
@@ -130,7 +130,7 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
     height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
     child: CustomScrollView(
       slivers: [
-        SavedEventsAgendaSliver(
+        SavedEventsAgendaList(
           state: SavedEventsListState.from(events, now: widgetbookEventsNow),
           clubNames: {
             for (final event in events) event.clubId: widgetbookEventsClub.name,
@@ -144,7 +144,7 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Club names error sliver',
-  type: SavedEventsClubNamesErrorSliver,
+  type: SavedEventsClubNamesErrorState,
   path: '[Events]/Sections',
 )
 Widget savedEventsClubNamesErrorSliverState(BuildContext context) {
@@ -152,7 +152,7 @@ Widget savedEventsClubNamesErrorSliverState(BuildContext context) {
     height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
     child: CustomScrollView(
       slivers: [
-        SavedEventsClubNamesErrorSliver(
+        SavedEventsClubNamesErrorState(
           error: StateError('Club names failed'),
           onRetry: widgetbookNoop,
         ),

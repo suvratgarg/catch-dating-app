@@ -1,13 +1,11 @@
 import 'package:catch_dating_app/hosts/data/event_publication_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../test_pump_helpers.dart';
+import 'event_controller_test_support.dart';
 import 'event_publication_test.dart' show publicationEvent;
 
 void main() {
@@ -22,7 +20,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
     EventPublicationRequest? sent;
-    final controller = EventPublicationController(
+    final controller = TestEventPublicationController(
       userId: 'host1',
       organizerId: 'org1',
       eventId: 'event1',
@@ -43,7 +41,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: MediaQuery(
           data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-          child: EventPublicationScreen(controller: controller, onBack: () {}),
+          child: controller.screen(onBack: () {}),
         ),
       ),
     );

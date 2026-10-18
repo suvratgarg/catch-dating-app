@@ -1,11 +1,14 @@
-import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart'
     show HostEventOfferGateway, HostOfferCommitOutbox, HostOfferMutationOutbox;
+part 'host_event_offer_controller.g.dart';
 
 /// The gateway is bound to manager-only callables after shared contracts land.
 /// No client-supplied authority flags, seat holds or provider state are accepted.
@@ -27,6 +30,7 @@ class HostOfferFlowView {
     this.receipt,
     this.pendingRequestId,
     this.error,
+    this.actorAvailable = true,
   });
 
   final HostOfferFlowStatus status;
@@ -35,65 +39,108 @@ class HostOfferFlowView {
   final HostOfferCommitReceipt? receipt;
   final String? pendingRequestId;
   final Object? error;
+  final bool actorAvailable;
 
   bool get canCommit =>
-      status == HostOfferFlowStatus.review && draft != null && preview != null;
+      actorAvailable &&
+      status == HostOfferFlowStatus.review &&
+      draft != null &&
+      preview != null;
 }
 
 /// Holds one reviewed batch from preview through idempotent commit. A changed
 /// source, CRM contact, event or terms requires a fresh preview.
-class HostEventOfferController extends ChangeNotifier {
-  HostEventOfferController(
-    this._gateway, {
+typedef HostEventOfferScope = ({
+  String? accountId,
+  String organizerId,
+  Object sourceId,
+});
+
+class HostEventOfferDependencies {
+  const HostEventOfferDependencies({
+    required this.gateway,
     this.outbox,
     this.mutationOutbox,
-    this.accountId,
+    this.currentAccountId,
   });
-
-  /// Callers still gate this feature until the server integration is live.
-  factory HostEventOfferController.forCallables({
-    required FirebaseFunctions functions,
-    required Future<CommandJournalStorage> Function() storage,
-    required String? Function() currentAccountId,
-  }) {
-    final gateway = CallableHostEventOfferGateway(functions);
-    final accountId = currentAccountId();
-    return HostEventOfferController(
-      gateway,
-      accountId: accountId,
-      outbox: JournalHostOfferCommitOutbox(
-        storage: storage,
-        currentAccountId: currentAccountId,
-        gateway: gateway,
-      ),
-      mutationOutbox: JournalHostOfferMutationOutbox.forGateway(
-        storage: storage,
-        currentAccountId: currentAccountId,
-        gateway: gateway,
-      ),
-    );
-  }
-
-  final HostEventOfferGateway _gateway;
+  final HostEventOfferGateway gateway;
   final HostOfferCommitOutbox? outbox;
   final HostOfferMutationOutbox? mutationOutbox;
-  final String? accountId;
-  int _generation = 0;
-  bool _disposed = false;
-  HostOfferFlowView _view = const HostOfferFlowView(
-    status: HostOfferFlowStatus.idle,
-  );
+  final String? Function()? currentAccountId;
+}
 
-  HostOfferFlowView get view => _view;
+@riverpod
+HostEventOfferDependencies hostEventOfferDependencies(Ref ref) {
+  final gateway = CallableHostEventOfferGateway(
+    ref.watch(firebaseFunctionsProvider),
+  );
+  final storage = ref.watch(commandJournalStorageProvider);
+  String? currentAccountId() =>
+      ref.mounted ? ref.read(firebaseAuthProvider).currentUser?.uid : null;
+  return HostEventOfferDependencies(
+    gateway: gateway,
+    currentAccountId: currentAccountId,
+    outbox: JournalHostOfferCommitOutbox(
+      storage: storage,
+      currentAccountId: currentAccountId,
+      gateway: gateway,
+    ),
+    mutationOutbox: JournalHostOfferMutationOutbox.forGateway(
+      storage: storage,
+      currentAccountId: currentAccountId,
+      gateway: gateway,
+    ),
+  );
+}
+
+@riverpod
+class HostEventOfferController extends _$HostEventOfferController {
+  @override
+  HostOfferFlowView build(HostEventOfferScope scope) {
+    ref.watch(hostEventOfferDependenciesProvider);
+    ref.listen(uidProvider, (_, next) {
+      if (next.asData?.value != scope.accountId) invalidateActor();
+    });
+    return const HostOfferFlowView(status: HostOfferFlowStatus.idle);
+  }
+
+  HostEventOfferDependencies get _dependencies =>
+      ref.read(hostEventOfferDependenciesProvider);
+  HostEventOfferGateway get _gateway => _dependencies.gateway;
+  HostOfferCommitOutbox? get _outbox => _dependencies.outbox;
+  HostOfferMutationOutbox? get _mutationOutbox => _dependencies.mutationOutbox;
+  String? get _accountId => scope.accountId;
+  HostOfferFlowView get _view => state;
+  int _generation = 0;
+  bool get _active {
+    if (!ref.mounted || !state.actorAvailable) return false;
+    final actor = _dependencies.currentAccountId;
+    if (actor != null && actor() != scope.accountId) {
+      invalidateActor();
+      return false;
+    }
+    return true;
+  }
+
+  void invalidateActor() {
+    if (!ref.mounted) return;
+    _generation++;
+    state = const HostOfferFlowView(
+      status: HostOfferFlowStatus.idle,
+      actorAvailable: false,
+    );
+  }
 
   Future<void> recoverPending({
     required String organizerId,
     required String eventId,
     bool Function()? isCurrent,
   }) async {
-    final outbox = this.outbox;
-    final accountId = this.accountId;
+    if (!_active) return;
+    final outbox = _outbox;
+    final accountId = _accountId;
     if (outbox == null || accountId == null) return;
+    if (!_active) return;
     final generation = ++_generation;
     final pending = await outbox.pending(
       accountId: accountId,
@@ -121,9 +168,10 @@ class HostEventOfferController extends ChangeNotifier {
     required DateTime now,
     required DateTime eventStartsAt,
   }) async {
+    if (!_active) return;
     final generation = ++_generation;
-    final outbox = this.outbox;
-    final accountId = this.accountId;
+    final outbox = _outbox;
+    final accountId = _accountId;
     if (outbox != null &&
         accountId != null &&
         await outbox.pending(
@@ -166,8 +214,9 @@ class HostEventOfferController extends ChangeNotifier {
   }
 
   Future<void> commit(String requestId) async {
-    final outbox = this.outbox;
-    final accountId = this.accountId;
+    if (!_active) return;
+    final outbox = _outbox;
+    final accountId = _accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required before committing.');
     }
@@ -236,6 +285,7 @@ class HostEventOfferController extends ChangeNotifier {
     required String reference,
     required String requestId,
   }) {
+    if (!_active) throw StateError('Offer session is no longer active.');
     final normalized = reference.trim();
     if (offer.manualPayment.status != HostManualPaymentStatus.none ||
         normalized.length < 3 ||
@@ -243,8 +293,9 @@ class HostEventOfferController extends ChangeNotifier {
         RegExp(r'^[a-z]+://', caseSensitive: false).hasMatch(normalized)) {
       throw ArgumentError('Enter a new payment reference, not a URL.');
     }
-    final outbox = mutationOutbox;
-    final accountId = this.accountId;
+    if (!_active) throw StateError('Offer session is no longer active.');
+    final outbox = _mutationOutbox;
+    final accountId = _accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required.');
     }
@@ -265,8 +316,9 @@ class HostEventOfferController extends ChangeNotifier {
     required String organizerId,
     required String eventId,
   }) {
-    final outbox = mutationOutbox;
-    final accountId = this.accountId;
+    if (!_active) throw StateError('Offer session is no longer active.');
+    final outbox = _mutationOutbox;
+    final accountId = _accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       return Future<HostOfferPendingMutation?>.value();
     }
@@ -281,8 +333,9 @@ class HostEventOfferController extends ChangeNotifier {
     required String organizerId,
     required String eventId,
   }) {
-    final outbox = mutationOutbox;
-    final accountId = this.accountId;
+    if (!_active) throw StateError('Offer session is no longer active.');
+    final outbox = _mutationOutbox;
+    final accountId = _accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required.');
     }
@@ -300,6 +353,7 @@ class HostEventOfferController extends ChangeNotifier {
     required bool bankReceiptChecked,
     required String requestId,
   }) {
+    if (!_active) throw StateError('Offer session is no longer active.');
     final normalized = note.trim();
     if (offer.manualPayment.status !=
             HostManualPaymentStatus.evidenceSubmitted ||
@@ -311,8 +365,9 @@ class HostEventOfferController extends ChangeNotifier {
             !bankReceiptChecked) {
       throw ArgumentError('Check bank evidence and record a review reason.');
     }
-    final outbox = mutationOutbox;
-    final accountId = this.accountId;
+    if (!_active) throw StateError('Offer session is no longer active.');
+    final outbox = _mutationOutbox;
+    final accountId = _accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required.');
     }
@@ -332,17 +387,8 @@ class HostEventOfferController extends ChangeNotifier {
   }
 
   void _publish(HostOfferFlowView next) {
-    if (_disposed) return;
-    _view = next;
-    notifyListeners();
+    if (_active) state = next;
   }
 
-  bool _isCurrent(int generation) => !_disposed && generation == _generation;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    ++_generation;
-    super.dispose();
-  }
+  bool _isCurrent(int generation) => _active && generation == _generation;
 }

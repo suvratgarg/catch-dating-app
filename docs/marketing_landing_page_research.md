@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_landing_page_research
-version: 0.4.0
-updated: 2026-06-30
+version: 0.4.1
+updated: 2026-10-18
 owner: marketing_website
 status: active
 ---
@@ -483,13 +483,13 @@ Avoid:
 
 ## Rejected Preview
 
-The isolated preview lives at:
-
-`website/research-preview/index.html`
-
-It is not wired into Firebase Hosting and does not replace the current site. As
-of the product-truth correction above, it is rejected. Do not use the generated
-"Dating opens after the run" preview as an approved visual or content direction.
+The rejected `website/research-preview/index.html` was deleted during the public
+sitemap consolidation on 2026-10-18. It was never wired into Firebase Hosting.
+Git history retains its source; the screenshots below remain historical evidence.
+Supported discovery, attendance, private mutual catches, host controls and access
+journeys are covered by `/explore/`, `/host/` and `/host/apply/`. Fictional counters,
+run-only positioning and fixed catch-window claims are not promoted as live facts.
+Do not reuse that preview as an approved visual or content direction.
 
 Reasons:
 
@@ -501,8 +501,8 @@ Reasons:
 - It treats the event as a background card instead of making the social room,
   host, and attendee energy the hero.
 
-The next preview must be rebuilt from the product truth above before production
-website files are edited.
+The current React pages and `docs/marketing_website_architecture.md` supersede
+this rejected preview; this section records the historical rejection.
 
 ## Proposed Page Structure
 

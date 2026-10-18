@@ -11,7 +11,7 @@ import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/events.dart'
     show
         EventMapItem,
-        EventMapView,
+        EventMap,
         EventMapViewModel,
         ExternalEventMapItem,
         hasEventMapPin,
@@ -22,7 +22,7 @@ import 'package:catch_dating_app/explore/presentation/explore_event_display_stat
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_event_row.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -246,7 +246,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: EventMapView(
+            child: EventMap(
               enableNetworkTiles: widget.enableNetworkTiles,
               viewModel: mapViewModel,
               deviceLocation: deviceLocationAsync,

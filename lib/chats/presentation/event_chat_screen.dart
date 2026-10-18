@@ -3,7 +3,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -782,7 +782,7 @@ class EventChatPageBody extends StatelessWidget {
             ),
           ),
         if (reacting == null && access.canPostMessages)
-          ChatInputBar(
+          ChatInput(
             controller: draft,
             sending: state.busy,
             showImageButton: false,

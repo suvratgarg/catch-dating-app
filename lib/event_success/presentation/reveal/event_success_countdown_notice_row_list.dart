@@ -52,7 +52,11 @@ class EventSuccessCountdownNotice extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.sm,
       backgroundColor: t.ink.withValues(alpha: CatchOpacity.revealCueFill),
-      borderColor: t.ink.withValues(alpha: CatchOpacity.revealCueBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.ink.withValues(alpha: CatchOpacity.revealCueBorder),
+      ),
       padding: CatchInsets.contentDense,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -382,8 +382,12 @@ class CompanionPrivacyText extends StatelessWidget {
       backgroundColor: stageTheme.foreground.withValues(
         alpha: CatchOpacity.clubCoverHighlightOverlay,
       ),
-      borderColor: stageTheme.foreground.withValues(
-        alpha: CatchOpacity.eventSuccessPrivacyBorder,
+      borderSpec: CatchBorder.resolve(
+        CatchTokens.of(context),
+        CatchBorderRole.boundary,
+        color: stageTheme.foreground.withValues(
+          alpha: CatchOpacity.eventSuccessPrivacyBorder,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,7 +462,11 @@ class CompanionStageActionSection extends StatelessWidget {
       backgroundColor: t.ink.withValues(
         alpha: CatchOpacity.eventSuccessActionDockFill,
       ),
-      borderColor: t.surface.withValues(alpha: CatchOpacity.warningFill),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.surface.withValues(alpha: CatchOpacity.warningFill),
+      ),
       child: Padding(padding: CatchInsets.iconChipContent, child: child),
     );
   }

@@ -596,3 +596,355 @@ test("Tools preflight and execution retain reverted files from the same exact co
   assert.notEqual(invalid.status, 0);
   assert.doesNotMatch(invalid.stdout, /==>/u);
 });
+
+
+for (const extension of ["swift", "cjs", "mjs"]) {
+  test(`manifest discovery requires exact ${extension} registration in every repository view`, context => {
+    const fixture = createRunnerFixture(context);
+    const relative = `tool/store/unknown.${extension}`;
+    const file = path.join(fixture, relative);
+    fs.mkdirSync(path.dirname(file), {recursive: true});
+    assert.equal(run(["check", "--manifest-only"], {cwd: fixture}).status, 0);
+    fs.writeFileSync(file, "// inert discovery fixture\n");
+    const assertUnmanaged = () => {
+      const result = run(["check", "--manifest-only"], {cwd: fixture});
+      assert.equal(result.status, 1, result.stdout + result.stderr);
+      assert.ok(result.stderr.includes(`Unmanaged tool script: ${relative}`));
+    };
+    assertUnmanaged(); // untracked
+    runGit(fixture, ["add", relative]);
+    assertUnmanaged(); // indexed
+    runGit(fixture, ["update-index", "--skip-worktree", relative]);
+    fs.unlinkSync(file);
+    assertUnmanaged(); // omitted sparse file, still present in the index
+    mutateFixtureManifest(fixture, manifest => manifest.tools.push({
+      id: "fixture:exact", category: "fixture", path: relative,
+      status: "internal", checks: [`node --check ${relative}`],
+    }));
+    const registered = run(["check", "--manifest-only"], {cwd: fixture});
+    assert.equal(registered.status, 0, registered.stderr);
+    fs.writeFileSync(path.join(path.dirname(file), `sibling.${extension}`), "// inert\n");
+    const sibling = run(["check", "--manifest-only"], {cwd: fixture});
+    assert.equal(sibling.status, 1);
+    assert.ok(sibling.stderr.includes(`Unmanaged tool script: tool/store/sibling.${extension}`));
+  });
+}
+
+test("new script formats retain existing helper exclusions", context => {
+  const fixture = createRunnerFixture(context);
+  for (const directory of ["lib", "fixtures", "contracts/generated"]) {
+    for (const extension of ["swift", "cjs"]) {
+      const file = path.join(fixture, "tool", directory, `helper.${extension}`);
+      fs.mkdirSync(path.dirname(file), {recursive: true});
+      fs.writeFileSync(file, "// inert helper\n");
+    }
+  }
+  const result = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(result.status, 0, result.stderr);
+});
+
+const nativeGenerators = [
+  ["branding:catch-icon", "tool/branding/generate_catch_icon.swift"],
+  ["marketing:catch-host-store-screenshots", "tool/store/generate_catch_host_app_store_screenshots.swift"],
+];
+
+for (const [id, sourcePath] of nativeGenerators) {
+  test(`${id} has exact ownership and platform-bounded parse-only dispatch`, context => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const owner = manifest.tools.find(tool => tool.id === id);
+    assert.ok(owner, id);
+    assert.equal(owner.path, sourcePath);
+    assert.equal(owner.status, "active");
+    assert.equal(owner.role, "generator");
+    assert.deepEqual(owner.platforms, ["darwin"]);
+    assert.equal(owner.command, `swift ${sourcePath}`);
+    assert.deepEqual(owner.checks, [`swiftc -parse ${sourcePath}`]);
+    const affected = run(["affected-tools", "--paths", sourcePath, "--json"]);
+    assert.equal(affected.status, 0, affected.stderr);
+    assert.deepEqual(JSON.parse(affected.stdout).ownersByPath[sourcePath], [id]);
+
+    const fixture = createRunnerFixture(context);
+    fs.mkdirSync(path.dirname(path.join(fixture, sourcePath)), {recursive: true});
+    fs.writeFileSync(path.join(fixture, sourcePath), "// inert Swift input\n");
+    mutateFixtureManifest(fixture, doc => doc.tools.push(owner));
+    const bin = path.join(fixture, "bin");
+    fs.mkdirSync(bin);
+    const receipt = path.join(fixture, "dispatch.jsonl");
+    for (const executable of ["swift", "swiftc"]) {
+      fs.writeFileSync(path.join(bin, executable), `#!${process.execPath}\n` +
+        `require('node:fs').appendFileSync(${JSON.stringify(receipt)}, JSON.stringify([${JSON.stringify(executable)}, ...process.argv.slice(2)]) + '\\n');\n`,
+      {mode: 0o755});
+    }
+    const preload = path.join(fixture, "platform.cjs");
+    for (const platform of ["darwin", "linux", "win32"]) {
+      fs.writeFileSync(preload, `Object.defineProperty(process, 'platform', {value: ${JSON.stringify(platform)}});\n`);
+      const env = {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+        NODE_OPTIONS: `--require=${preload}`};
+      const checked = run(["check", id], {cwd: fixture, env});
+      assert.equal(checked.status, 0, checked.stdout + checked.stderr);
+      const executed = run(["run", id, "two words", "it's-safe"], {cwd: fixture, env});
+      if (platform === "darwin") {
+        assert.equal(executed.status, 0, executed.stderr);
+        assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n").map(line => JSON.parse(line)), [
+          ["swiftc", "-parse", sourcePath], ["swift", sourcePath, "two words", "it's-safe"],
+        ]);
+        fs.unlinkSync(receipt);
+      } else {
+        assert.ok(checked.stdout.includes(`skipped on ${platform}`));
+        assert.equal(executed.status, 64, executed.stderr);
+        assert.ok(executed.stderr.includes(`unavailable on ${platform}`));
+        assert.equal(fs.existsSync(receipt), false);
+      }
+    }
+    // Only sentinels run here: this proves dispatch, not native Swift parsing.
+  });
+}
+
+test("RSVP CJS helper requires exact registration while retaining its active owner", context => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+  const owner = manifest.tools.find(tool => tool.id === "demo:rsvp-preview");
+  const helperPath = "tool/demo/rsvp_escape/build_fixture.cjs";
+  const helper = manifest.tools.find(tool => tool.path === helperPath);
+  assert.equal(helper?.status, "internal");
+  assert.equal(owner.command, `node ${helperPath}`);
+  assert.deepEqual(owner.checks, [`node --check ${helperPath}`, "node --test tool/demo/rsvp_escape/form_definition.test.mjs"]);
+  const affected = run(["affected-tools", "--paths", helperPath, "--json"]);
+  assert.equal(affected.status, 0, affected.stderr);
+  assert.deepEqual(JSON.parse(affected.stdout).ownersByPath[helperPath], [owner.id]);
+  const fixture = createRunnerFixture(context);
+  for (const file of [owner.path, helperPath]) {
+    fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
+    fs.writeFileSync(path.join(fixture, file), "// inert\n");
+  }
+  mutateFixtureManifest(fixture, doc => doc.tools.push(owner, helper));
+  assert.equal(run(["check", "--manifest-only"], {cwd: fixture}).status, 0);
+  mutateFixtureManifest(fixture, doc => {
+    doc.tools = doc.tools.filter(tool => tool.path !== helperPath);
+  });
+  const missing = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(missing.status, 1);
+  assert.ok(missing.stderr.includes(`Unmanaged tool script: ${helperPath}`));
+});
+
+test("capture preflight follows executable media checks and exact React delegation", context => {
+  const fixture = createRunnerFixture(context);
+  const graph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  graph.classifications = [];
+  graph.compileCodegen = [];
+  graph.operationProfiles = {fixture: {direct: {pr: {ciTargets: ["tools"]}}, affected: {}}};
+  graph.components = [
+    {id: "repo.harness", owner: "test", risk: "standard", pathType: "component",
+      operationProfile: "fixture", ownedPaths: {include: ["tool/run.mjs", "tool/harness/**"]}, dependsOn: [], alsoAffects: []},
+    {id: "fixture.tools", owner: "test", risk: "standard", pathType: "component",
+      operationProfile: "fixture", ownedPaths: {include: ["tool/check.mjs"]}, dependsOn: [], alsoAffects: []},
+  ];
+  fs.writeFileSync(path.join(fixture, "tool/harness/component_graph.json"), JSON.stringify(graph));
+  const outputPath = path.join(fixture, "capture-output");
+  const original = fixtureManifest();
+  const cases = [
+    ["marketing:hosted-capture-export", "node --test tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "node --check tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "node --test tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "dart analyze tool/check.mjs", false, false],
+    ["marketing:app-screenshot-export", "node tool/marketing/export_app_screenshots.mjs --check", false, true],
+    ["marketing:app-screenshot-export", "node tool/marketing/export_app_screenshots.mjs --check-design-json", true, true],
+    ["marketing:app-media-sync", "node tool/marketing/sync_website_media.mjs --check", true, true],
+    ["marketing:website-build", "npm --prefix website run build", false, true],
+    ["marketing:website-build", "npm --prefix website run build", true, false],
+    ["marketing:website-build", "npm --prefix website run build -- --changed", true, true],
+    ["marketing:website-storybook", "npm --workspace catch-marketing run build:storybook", true, false],
+    ["marketing:website-storybook-a11y", "npm --workspace catch-marketing run test:storybook:a11y", false, true],
+    ["web:storybook-visuals", "node tool/web/check_storybook_visuals.mjs --self-test", false, false],
+    ["web:storybook-visuals", "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check", false, true],
+  ];
+  for (const [id, command, shared, expected] of cases) {
+    for (const full of [false, true]) {
+      const manifest = structuredClone(original);
+      manifest.tools.push({...manifest.tools[0], id, checks: [command]});
+      fs.writeFileSync(path.join(fixture, "tool/tools_manifest.json"), JSON.stringify(manifest));
+      if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      const result = run(["affected-tools", "--paths", "tool/check.mjs", "--github-output", outputPath,
+        ...(full ? ["--full"] : []), ...(shared ? ["--marketing-checks-in-react"] : [])], {cwd: fixture});
+      assert.equal(result.status, 0, `${id}: ${result.stderr}`);
+      assert.match(fs.readFileSync(outputPath, "utf8"), new RegExp(`^capture_required=${expected}$`, "m"), `${id}: ${command}, shared=${shared}, full=${full}`);
+      assert.doesNotMatch(result.stdout, /==>/u, "selection must never execute the selected checks");
+    }
+  }
+});
+
+test("imported capture mode verifies before and after exact freshness substitutions", context => {
+  const root = createRunnerFixture(context);
+  const write = (file, contents) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), contents);
+  };
+  // This suite tests actual CLI dispatch; the exporter suite separately uses
+  // the real archive/import verifier and corrupts every materialized output.
+  write("tool/marketing/import_hosted_captures.mjs", `import fs from 'node:fs';
+    if (process.argv[2] !== '--verify-imported') throw new Error('Wrong proof command');
+    {
+      fs.appendFileSync('proof-calls', 'verified\\n');
+      if (fs.existsSync('invalid-proof')) throw new Error('proof sentinel refused');
+    }`);
+  for (const file of ["export_app_screenshots", "sync_website_media"]) {
+    write(`tool/marketing/${file}.mjs`, `console.log('freshness-executed:' + process.argv.slice(2).join(' '));`);
+  }
+  mutateFixtureManifest(root, doc => {
+    doc.tools.push({id: "fixture:proof", category: "fixture", status: "internal",
+      path: "tool/marketing/import_hosted_captures.mjs"});
+    doc.tools.push({...doc.tools[0], id: "marketing:app-screenshot-export",
+      path: "tool/marketing/export_app_screenshots.mjs", checks: [
+        "node --check tool/marketing/export_app_screenshots.mjs",
+        "node tool/check.mjs framing-sentinel",
+        "node tool/marketing/export_app_screenshots.mjs --check",
+        "node tool/marketing/export_app_screenshots.mjs --check-design-json",
+      ]});
+    doc.tools.push({...doc.tools[0], id: "marketing:app-media-sync",
+      path: "tool/marketing/sync_website_media.mjs",
+      checks: ["node tool/marketing/sync_website_media.mjs --check"]});
+  });
+  const binding = {repository: "owner/repo", sourceSha: "a".repeat(40), runId: "123", runAttempt: "2",
+    workflowRef: "owner/repo/.github/workflows/ci.yml@refs/pull/1/merge", workflowDefinitionSha: "b".repeat(40)};
+  const env = {...process.env, GITHUB_ACTIONS: "true", GITHUB_REPOSITORY: binding.repository,
+    GITHUB_SHA: binding.sourceSha, GITHUB_RUN_ID: binding.runId, GITHUB_RUN_ATTEMPT: binding.runAttempt,
+    GITHUB_WORKFLOW_REF: binding.workflowRef, GITHUB_WORKFLOW_SHA: binding.workflowDefinitionSha,
+    CAPTURE_BINDING: JSON.stringify(binding)};
+  const ids = ["marketing:app-screenshot-export", "marketing:app-media-sync"];
+  const invoke = (args = [], overrides = {}) => run(["check", ...ids, ...args], {cwd: root, env: {...env, ...overrides}});
+  const ordinary = invoke();
+  assert.equal(ordinary.status, 0, ordinary.stderr);
+  assert.equal((ordinary.stdout.match(/^freshness-executed:/gmu) ?? []).length, 3);
+  assert.equal(fs.existsSync(path.join(root, "proof-calls")), false);
+  const flag = ["--marketing-captures-imported"];
+  const verified = invoke(flag);
+  assert.equal(verified.status, 0, verified.stderr);
+  assert.doesNotMatch(verified.stdout, /freshness-executed:/u);
+  assert.equal((verified.stdout.match(/provided by the verified exact-source capture artifact/gmu) ?? []).length, 3);
+  assert.match(verified.stdout, /framing-sentinel/u);
+  assert.match(verified.stdout, /node --check tool\/marketing\/export_app_screenshots/u);
+  assert.equal(fs.readFileSync(path.join(root, "proof-calls"), "utf8"), "verified\nverified\n");
+  for (const overrides of [{GITHUB_ACTIONS: "false"}, {GITHUB_RUN_ID: "124"}, {GITHUB_RUN_ATTEMPT: "3"},
+    {GITHUB_SHA: "b".repeat(40)}, {GITHUB_REPOSITORY: "foreign/repo"}, {CAPTURE_BINDING: ""},
+    {GITHUB_WORKFLOW_REF: "owner/repo/.github/workflows/other.yml@refs/heads/main"}, {GITHUB_WORKFLOW_SHA: "c".repeat(40)}]) {
+    const refused = invoke(flag, overrides);
+    assert.equal(refused.status, 1, refused.stdout + refused.stderr);
+    assert.doesNotMatch(refused.stdout, /==>/u);
+  }
+  write("invalid-proof", "corrupt");
+  const corrupt = invoke(flag);
+  assert.equal(corrupt.status, 1);
+  assert.match(corrupt.stderr, /proof sentinel refused/u);
+  assert.doesNotMatch(corrupt.stdout, /==>/u);
+  fs.unlinkSync(path.join(root, "invalid-proof"));
+  mutateFixtureManifest(root, doc => {
+    doc.tools.find(t => t.id === "marketing:app-screenshot-export").checks.push(
+      "node tool/marketing/export_app_screenshots.mjs --check --changed");
+  });
+  const changedCommand = invoke(flag);
+  assert.equal(changedCommand.status, 0, changedCommand.stderr);
+  assert.match(changedCommand.stdout, /freshness-executed:--check --changed/u);
+  mutateFixtureManifest(root, doc => {
+    doc.tools.find(t => t.id === "marketing:app-screenshot-export").checks.push(
+      "node -e \"require('fs').writeFileSync('invalid-proof', 'mutated during checks')\"");
+  });
+  const lateMutation = invoke(flag);
+  assert.equal(lateMutation.status, 1);
+  assert.match(lateMutation.stderr, /CI producer checks were invalidated/u);
+  assert.doesNotMatch(lateMutation.stdout, /Tool checks passed/u);
+});
+
+test("materialized inventories replace only exact drift commands with checked current proof", context => {
+  const root = createRunnerFixture(context);
+  const write = (file, contents) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), contents);
+  };
+  // Actual generator/receipt/source/byte controls live in generated_inventories.test.
+  // Here the actual runner executes fixtures that expose dispatch and proof order.
+  write("tool/ci/generated_inventories.mjs", `import fs from 'node:fs';
+    if (process.argv[2] !== '--verify-materialized') throw new Error('Wrong proof command');
+    {
+      fs.appendFileSync('proof-calls', 'verified\\n');
+      if (process.env.GITHUB_ACTIONS !== 'true' || fs.existsSync('invalid-proof')) throw new Error('inventory proof refused');
+    }`);
+  const catalog = "tool/design/generate_widget_catalog.mjs";
+  const routes = "tool/ui_capture/check_route_inventory.mjs";
+  for (const file of [catalog, routes]) write(file, `console.log('drift-executed:' + process.argv.slice(2).join(' '));`);
+  const ids = ["design:widget-catalog", "ui-capture:route-inventory", "design:parity-gate"];
+  mutateFixtureManifest(root, doc => {
+    doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal", path: "tool/ci/generated_inventories.mjs"});
+    for (const id of ids) {
+      const file = id === "design:widget-catalog" ? catalog : routes;
+      doc.tools.push({...doc.tools[0], id, path: file, checks: [
+        `node --check ${file}`, "node tool/check.mjs authored-coverage-sentinel", `node ${file} --check`,
+      ]});
+    }
+  });
+  const flag = "--generated-inventories-materialized";
+  const env = {...process.env, GITHUB_ACTIONS: "true"};
+  const invoke = args => run(["check", ...ids, ...args], {cwd: root, env});
+  const normal = invoke([]);
+  assert.equal(normal.status, 0, normal.stderr);
+  assert.equal((normal.stdout.match(/^drift-executed:/gmu) ?? []).length, 2);
+  assert.equal(fs.existsSync(path.join(root, "proof-calls")), false);
+  const verified = invoke([flag]);
+  assert.equal(verified.status, 0, verified.stderr);
+  assert.doesNotMatch(verified.stdout, /drift-executed:/u);
+  assert.equal((verified.stdout.match(/provided by verified exact-source inventory generation/gmu) ?? []).length, 2);
+  assert.match(verified.stdout, /authored-coverage-sentinel/u);
+  assert.match(verified.stdout, /node --check tool\/ui_capture\/check_route_inventory.mjs/u);
+  assert.equal(fs.readFileSync(path.join(root, "proof-calls"), "utf8"), "verified\nverified\n");
+  const parity = run(["check", "design:parity-gate", flag], {cwd: root, env});
+  assert.equal(parity.status, 0, parity.stderr);
+  assert.doesNotMatch(parity.stdout, /drift-executed:/u);
+  write("invalid-proof", "missing or damaged receipt");
+  const refused = invoke([flag]);
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /inventory proof refused/u);
+  assert.doesNotMatch(refused.stdout, /==>/u);
+  fs.unlinkSync(path.join(root, "invalid-proof"));
+  mutateFixtureManifest(root, doc => {
+    doc.tools.push({...doc.tools[0], id: "fixture:other-owner", path: routes, checks: [`node ${routes} --check`]});
+    doc.tools.find(t => t.id === "design:widget-catalog").checks.push(`node ${catalog} --check --changed`);
+  });
+  const other = run(["check", "fixture:other-owner", flag], {cwd: root, env});
+  assert.equal(other.status, 0, other.stderr);
+  assert.match(other.stdout, /drift-executed:--check/u);
+  const changedCommand = invoke([flag]);
+  assert.equal(changedCommand.status, 0, changedCommand.stderr);
+  assert.match(changedCommand.stdout, /drift-executed:--check --changed/u);
+  mutateFixtureManifest(root, doc => {
+    doc.tools.find(t => t.id === "design:widget-catalog").checks.push(
+      "node -e \"require('fs').writeFileSync('invalid-proof', 'mutated during checks')\"");
+  });
+  const lateMutation = invoke([flag]);
+  assert.equal(lateMutation.status, 1);
+  assert.match(lateMutation.stderr, /CI producer checks were invalidated/u);
+  assert.doesNotMatch(lateMutation.stdout, /Tool checks passed/u);
+});
+
+
+test("sparse planner runs without loading or launching full-checkout producer verifiers", context => {
+  const root = createRunnerFixture(context);
+  fs.copyFileSync(path.join(repositoryRoot, "tool/harness/component_graph.json"),
+    path.join(root, "tool/harness/component_graph.json"));
+  const helpers = ["tool/marketing/import_hosted_captures.mjs", "tool/ci/generated_inventories.mjs"];
+  for (const helper of helpers) {
+    fs.mkdirSync(path.dirname(path.join(root, helper)), {recursive: true});
+    fs.writeFileSync(path.join(root, helper), "throw new Error('Planner launched producer verifier');\n");
+  }
+  mutateFixtureManifest(root, doc => {
+    for (const [i, helper] of helpers.entries()) doc.tools.push({id: `fixture:producer-${i}`,
+      category: "fixture", path: helper, status: "internal"});
+  });
+  runGit(root, ["add", "."]);
+  runGit(root, ["update-index", "--skip-worktree", ...helpers]);
+  for (const helper of helpers) fs.unlinkSync(path.join(root, helper));
+  const planned = run(["affected-tools", "--paths", "tool/check.mjs", "--json"], {cwd: root});
+  assert.equal(planned.status, 0, planned.stderr);
+  assert.deepEqual(JSON.parse(planned.stdout).toolIds, ["fixture:check"]);
+  const refused = run(["check", "fixture:check", "--generated-inventories-materialized"],
+    {cwd: root, env: {...process.env, GITHUB_ACTIONS: "true"}});
+  assert.equal(refused.status, 1);
+  assert.doesNotMatch(refused.stdout, /==>/u);
+});

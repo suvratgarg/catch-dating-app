@@ -1,8 +1,9 @@
-export 'inline_editor_choice.dart'
+export 'inline_editor_save.dart';
+export 'profile_inline_choice_editor.dart'
     show
         ProfileInlineMultiChoiceEntryEditor,
         ProfileInlineSingleChoiceEntryEditor;
-export 'inline_editor_height.dart' show ProfileInlineHeightEditor;
-export 'inline_editor_prompt.dart' show ProfileInlinePromptEntryEditor;
-export 'inline_editor_range.dart' show ProfileInlineRangeEditor;
-export 'inline_editor_save.dart';
+export 'profile_inline_height_editor.dart' show ProfileInlineHeightEditor;
+export 'profile_inline_prompt_entry_editor.dart'
+    show ProfileInlinePromptEntryEditor;
+export 'profile_inline_range_editor.dart' show ProfileInlineRangeEditor;

@@ -137,7 +137,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
           ],
         ),
         footer: profileState.isLoading
-            ? CatchDockSurface(
+            ? CatchDock(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
                 child: CatchSkeleton.content(
@@ -150,7 +150,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               )
             : preferencesState == null
             ? null
-            : CatchDockSurface(
+            : CatchDock(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
                 child: CatchButton(
@@ -167,7 +167,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               ),
         body: CatchRouteBody.standard(
           child: profileAsync.when(
-            loading: () => const FiltersContent.loading(),
+            loading: () => const FiltersBody.loading(),
             error: (error, _) => CatchLocalizedErrorState(
               error,
               context: AppErrorContext.profile,
@@ -197,7 +197,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                 );
               }
               final state = preferencesState!;
-              return FiltersContent._routeFromState(
+              return FiltersBody._routeFromState(
                 state: state.content,
                 onAgeRangeChanged: (values) =>
                     setState(() => _draftAgeRange = values),
@@ -215,8 +215,8 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   }
 }
 
-class FiltersContent extends StatelessWidget {
-  const FiltersContent({
+class FiltersBody extends StatelessWidget {
+  const FiltersBody({
     super.key,
     required this.ageRange,
     required this.interestedIn,
@@ -228,7 +228,7 @@ class FiltersContent extends StatelessWidget {
        _loading = false;
 
   /// Uses this screen's real controls and section layout as its loading shape.
-  const FiltersContent.loading({super.key})
+  const FiltersBody.loading({super.key})
     : ageRange = const RangeValues(18, 40),
       interestedIn = const {},
       saving = true,
@@ -238,9 +238,9 @@ class FiltersContent extends StatelessWidget {
       _routeOwned = true,
       _loading = true;
 
-  FiltersContent.fromState({
+  FiltersBody.fromState({
     super.key,
-    required FiltersContentState state,
+    required FiltersBodyState state,
     required this.onAgeRangeChanged,
     required this.onGenderToggled,
     required this.onApply,
@@ -250,8 +250,8 @@ class FiltersContent extends StatelessWidget {
        _routeOwned = false,
        _loading = false;
 
-  FiltersContent._routeFromState({
-    required FiltersContentState state,
+  FiltersBody._routeFromState({
+    required FiltersBodyState state,
     required this.onAgeRangeChanged,
     required this.onGenderToggled,
   }) : ageRange = state.ageRange,
@@ -281,7 +281,7 @@ class FiltersContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FiltersValue(
+                FiltersValueText(
                   value: context.l10n
                       .swipesFiltersScreenVisiblecopyRoundFormatpreferredmatchage(
                         round: ageRange.start.round(),
@@ -339,7 +339,7 @@ class FiltersContent extends StatelessWidget {
         Expanded(
           child: CatchPageBody.screen(pb: CatchSpacing.s5, child: fields),
         ),
-        CatchDockSurface(
+        CatchDock(
           includeSafeArea: false,
           padding: CatchInsets.pageBody.copyWith(
             top: CatchSpacing.s3,
@@ -371,7 +371,7 @@ class FiltersSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       padding: CatchInsets.tileVerticalCompact,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -387,8 +387,8 @@ class FiltersSection extends StatelessWidget {
   }
 }
 
-class FiltersValue extends StatelessWidget {
-  const FiltersValue({super.key, required this.value});
+class FiltersValueText extends StatelessWidget {
+  const FiltersValueText({super.key, required this.value});
 
   final String value;
 

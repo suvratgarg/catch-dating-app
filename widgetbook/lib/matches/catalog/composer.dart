@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -44,21 +44,21 @@ class _ComposerStatesPreviewState
         child: Column(
           children: [
             const Spacer(),
-            ChatInputBar(
+            ChatInput(
               controller: _readyController,
               sending: false,
               onSend: () {},
               onSendImage: () {},
             ),
             gapH12,
-            ChatInputBar(
+            ChatInput(
               controller: _sendingController,
               sending: true,
               onSend: () {},
               onSendImage: () {},
             ),
             gapH12,
-            ChatInputBar(
+            ChatInput(
               controller: _imagePendingController,
               sending: false,
               sendingImage: true,
@@ -66,7 +66,7 @@ class _ComposerStatesPreviewState
               onSendImage: () {},
             ),
             gapH12,
-            ChatInputBar(
+            ChatInput(
               controller: _disabledController,
               sending: false,
               disabledReason: 'This chat is closed.',

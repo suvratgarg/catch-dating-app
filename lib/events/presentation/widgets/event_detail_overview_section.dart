@@ -1,8 +1,9 @@
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_route_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -33,21 +34,20 @@ class EventDetailOverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.divided(
-          title: context.l10n.eventsEventDetailOverviewSectionTitleThePlan,
-          titleColor: ActivityPalette.resolve(
-            context,
-            event.activityKind,
-          ).accent,
-          first: true,
-          dividerColor: style?.dividerColor,
-          child: EventDescription(
-            description: description.isEmpty
-                ? _fallbackPlan(event, context.l10n)
-                : description,
-            surfaceStyle: style,
+        if (description.isNotEmpty)
+          CatchSection.divided(
+            title: context.l10n.eventsEventDetailOverviewSectionTitleThePlan,
+            titleColor: ActivityPalette.resolve(
+              context,
+              event.activityKind,
+            ).accent,
+            first: true,
+            dividerColor: style?.dividerColor,
+            child: EventDescriptionSection(
+              description: description,
+              surfaceStyle: style,
+            ),
           ),
-        ),
         CatchSection.divided(
           title: context
               .l10n
@@ -75,12 +75,14 @@ class EventDetailOverviewSection extends StatelessWidget {
             ],
           ),
         ),
+        if (event.eventFormat.routePlan case final plan?)
+          EventDetailRouteSection(plan: plan),
         if (event.itinerary.isNotEmpty)
           CatchSection.divided(
             title: context.l10n.eventsEventDetailOverviewSectionTitleItinerary,
             dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
-            child: EventDetailItinerary(
+            child: EventDetailItineraryList(
               event: event,
               titleColor: style?.headingColor,
               detailColor: style?.bodyColor,
@@ -92,18 +94,34 @@ class EventDetailOverviewSection extends StatelessWidget {
             title: context.l10n.eventsEventDetailOverviewSectionTitlePhotos,
             dividerColor: style?.dividerColor,
             titleColor: style?.headingColor,
-            child: EventDetailPhotoStrip(event: event),
+            child: EventDetailPhotoGrid(event: event),
           ),
         CatchSection.divided(
           title: context.l10n.eventsEventDetailOverviewSectionTitleWhere,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
-          child: EventDetailMapCard(
-            key: ValueKey<String>('event-detail-map-${event.id}'),
-            event: event,
-            onTap: onLocationTap,
-            borderColor: style?.borderColor,
-            enableNetworkTiles: enableMapNetworkTiles,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (event.effectiveMeetingLocation?.address?.trim()
+                  case final address? when address.isNotEmpty) ...[
+                Text(
+                  address,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: style?.bodyColor,
+                  ),
+                ),
+                gapH8,
+              ],
+              EventDetailMapCard(
+                key: ValueKey<String>('event-detail-map-${event.id}'),
+                event: event,
+                onTap: onLocationTap,
+                borderColor: style?.borderColor,
+                enableNetworkTiles: enableMapNetworkTiles,
+              ),
+            ],
           ),
         ),
         CatchSection.divided(
@@ -136,8 +154,8 @@ class EventDetailOverviewSection extends StatelessWidget {
   }
 }
 
-class EventDescription extends StatelessWidget {
-  const EventDescription({
+class EventDescriptionSection extends StatelessWidget {
+  const EventDescriptionSection({
     super.key,
     required this.description,
     this.surfaceStyle,
@@ -171,20 +189,4 @@ class EventDescription extends StatelessWidget {
       ],
     );
   }
-}
-
-String _fallbackPlan(Event event, AppLocalizations l10n) {
-  if (event.eventFormat.isDistanceBased) {
-    return l10n
-        .eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt(
-          distanceKm: EventFormatters.distanceKm(event.distanceKm),
-          toLowerCase: event.eventFormat.label.toLowerCase(),
-          toLowerCase2: event.pace.label.toLowerCase(),
-          locationName: event.locationName,
-        );
-  }
-  return l10n
-      .eventsEventDetailOverviewSectionVisiblecopyAHostedTolowercaseBuilt(
-        toLowerCase: event.eventFormat.label.toLowerCase(),
-      );
 }

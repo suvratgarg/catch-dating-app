@@ -36,13 +36,13 @@ Widget eventAgendaSliverListState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Agenda day group',
-  type: AgendaDayGroup,
+  type: AgendaDaySection,
   path: '[Events]/Lists',
 )
 Widget eventAgendaDayGroupState(BuildContext context) {
   return Padding(
     padding: CatchInsets.pageBody,
-    child: AgendaDayGroup(
+    child: AgendaDaySection(
       date: DateUtils.dateOnly(widgetbookEvent.startTime),
       today: DateUtils.dateOnly(widgetbookEventsNow),
       rows: [

@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:flutter/material.dart';
 
 /// Hero visual for the event detail screen.
 ///
-/// Wraps [CatchEventThumbnail] so real event photos lead when available, with
+/// Wraps [EventThumbnail] so real event photos lead when available, with
 /// the shared activity artwork retained as the no-photo fallback.
 class EventPhotoHeader extends StatelessWidget {
   const EventPhotoHeader({super.key, required this.event});
@@ -17,8 +17,8 @@ class EventPhotoHeader extends StatelessWidget {
     return Hero(
       tag: eventPhotoHeroTag(event.id),
       transitionOnUserGestures: true,
-      child: CatchEventThumbnail(
-        photoUrl: event.photoUrl,
+      child: EventThumbnail(
+        photoUrl: event.primaryPhotoUrl,
         pace: event.pace,
         activityKind: event.activityKind,
       ),

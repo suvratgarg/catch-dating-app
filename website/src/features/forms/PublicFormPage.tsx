@@ -1,3 +1,4 @@
+import {eventDetailCopy} from "../../content/events";
 import {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router";
 import {
@@ -148,6 +149,10 @@ function PublicFormStage({
           <FormStatus status={{message: publicFormsCopy.profileReviewHelp, tone: ""}} />
         ) : null}
         <PublicFormActions>
+          {controller.form?.definition.defaultTargetKind === "event" && controller.form.definition.defaultTargetId ?
+            <ButtonLink href={`/booking/${encodeURIComponent(controller.form.definition.defaultTargetId)}/`}>
+              {eventDetailCopy.hero.guestAction}
+            </ButtonLink> : null}
           {controller.pendingConsentResponseId ===
           controller.receipt.responseId ? (
             <Button

@@ -117,7 +117,7 @@ ProfileView widgetbookCatchesProfileView(BuildContext context) {
   );
 }
 
-T widgetbookCatchesProfileSection<T extends ProfileSection>(
+T widgetbookCatchesProfileSection<T extends ProfileSectionData>(
   BuildContext context,
 ) {
   return widgetbookCatchesProfileView(context).sections.whereType<T>().first;
