@@ -1,3 +1,4 @@
+import {missingProfileFields} from "./generated/profileRequirements";
 import {HttpsError} from "firebase-functions/v2/https";
 import {computeAge} from "./dates";
 import type {
@@ -19,6 +20,25 @@ const knownGenders = new Set<Gender>([
   "nonBinary",
   "other",
 ]);
+
+/** Account identity excludes age, photos and matching details. */
+export function isAccountReadyUserProfile(
+  user: Partial<UserProfileDocument>,
+  capability: "account" | "organizerFollow" = "account"
+): boolean {
+  if (user.deleted === true || user.deletedAt != null) return false;
+  return missingProfileFields(capability, (field) => {
+    switch (field) {
+    case "name":
+      return hasText(user.name) || hasText(user.firstName) ||
+        hasText(user.displayName);
+    case "phoneNumber":
+      return hasText(user.phoneNumber);
+    default:
+      return false;
+    }
+  }).length === 0;
+}
 
 /**
  * Whether a private profile has the minimum identity needed for booking.

@@ -1,9 +1,19 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 extension UserProfileReadiness on UserProfile {
+  bool get hasAccountReadyIdentity => missingProfileFields(
+    'account',
+    (field) => switch (field) {
+      'name' => hasBookingReadyName,
+      'phoneNumber' => validateRequiredPhoneNumber(phoneNumber) == null,
+      _ => false,
+    },
+  ).isEmpty;
+
   bool hasBookingReadyIdentityOn(DateTime today) {
     return hasBookingReadyName &&
         validateRequiredDateOfBirth(dateOfBirth, today: today) == null &&

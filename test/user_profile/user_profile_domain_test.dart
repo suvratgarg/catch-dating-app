@@ -76,6 +76,16 @@ void main() {
         ),
     ];
 
+    test('account readiness does not require social profile details', () {
+      final user = buildUser(
+        dateOfBirth: DateTime(2015),
+      ).copyWith(profileComplete: false, interestedInGenders: const []);
+      expect(user.hasAccountReadyIdentity, isTrue);
+      expect(user.hasSocialReadyProfileOn(today), isFalse);
+      expect(user.copyWith(phoneNumber: '').hasAccountReadyIdentity, isFalse);
+      expect(user.copyWith(name: '').hasAccountReadyIdentity, isFalse);
+    });
+
     test('booking-ready identity does not require photos or prompts', () {
       final user = buildUser(
         dateOfBirth: DateTime(1995, 6, 15),

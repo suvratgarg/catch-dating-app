@@ -1,6 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {isAccountReadyUserProfile} from "../shared/profileReadiness";
 import {requireAuth} from "../shared/auth";
 import type {
   OrganizerDocument,
@@ -187,10 +188,10 @@ function assertCanFollow(
     );
   }
   const user = requireDoc<UserProfileDocument>(userSnap, "UserProfileDocument");
-  if (user.profileComplete !== true) {
+  if (!isAccountReadyUserProfile(user, "organizerFollow")) {
     throw new HttpsError(
       "failed-precondition",
-      "Complete your profile before following organizers."
+      "Add your name and verified phone before following organizers."
     );
   }
 }
