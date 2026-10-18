@@ -413,7 +413,7 @@ void _registerExploreScreenFiltersTests() {
 
     expect(find.text('Organizer directory'), findsOneWidget);
     expect(find.text('Pace Social'), findsWidgets);
-    expect(find.byType(ExploreOrganizerPosterCard), findsOneWidget);
+    expect(find.byType(ClubCard), findsOneWidget);
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -280));
     await _pumpClubUi(tester);
     expect(_catchButtonWithLabel('Follow'), findsOneWidget);
@@ -747,7 +747,7 @@ void _registerExploreScreenFiltersTests() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.byType(CatchCoverStory), findsOneWidget);
+      expect(find.byType(FeaturedEventPoster), findsOneWidget);
       expect(find.byType(EventDateRailCard), findsOneWidget);
       expect(find.textContaining('1 PLAN'), findsOneWidget);
 
@@ -755,7 +755,7 @@ void _registerExploreScreenFiltersTests() {
       await tester.pump(CatchMotion.base);
       await tester.pump();
 
-      expect(find.byType(CatchCoverStory), findsNothing);
+      expect(find.byType(FeaturedEventPoster), findsNothing);
       expect(find.byType(EventDateRailCard), findsOneWidget);
       expect(
         find.descendant(
@@ -770,7 +770,7 @@ void _registerExploreScreenFiltersTests() {
       await tester.pump(CatchMotion.base);
       await tester.pump();
 
-      expect(find.byType(CatchCoverStory), findsOneWidget);
+      expect(find.byType(FeaturedEventPoster), findsOneWidget);
       expect(find.byType(EventDateRailCard), findsOneWidget);
     },
   );
@@ -824,7 +824,7 @@ void _registerExploreScreenFiltersTests() {
     await _pumpClubUi(tester);
 
     expect(find.text(event.title), findsWidgets);
-    expect(find.byType(CatchCoverStory), findsOneWidget);
+    expect(find.byType(FeaturedEventPoster), findsOneWidget);
     expect(find.text('Map'), findsOneWidget);
     expect(
       find.descendant(

@@ -1,6 +1,5 @@
 import type {HostListing} from "../features/organizers/types";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
-import {hostConceptRoutes} from "@content/hostConceptNavigation";
 import metaContent from "../content/meta.json";
 import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
@@ -42,9 +41,7 @@ export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, Page
 
 export function pageMetaForHostPath(pathname: string): PageMeta | null {
   const path = pathname.replace(/\/+$/, "") + "/";
-  if (path === "/host/workflows/") return websiteMeta.routes.host_workflows;
-  const route = hostConceptRoutes.find((candidate) => candidate.path === path);
-  return route ? websiteMeta.routes[route.id] : null;
+  return path === "/host/apply/" ? websiteMeta.routes.host_apply : null;
 }
 
 export function pageMetaForListing(
@@ -101,7 +98,7 @@ export function getPageKey(
   if (pathname.startsWith("/invite/")) return "event_invite";
   if (pathname.startsWith("/rsvp/")) return "household_rsvp";
   if (pathname.startsWith("/f/")) return "public_form";
-  if (pathname.startsWith("/host")) return "host";
+  if (["/host", "/host/", "/host/apply", "/host/apply/"].includes(pathname)) return "host";
   if (pathname.startsWith("/organizers")) return "organizers";
   if (pathname === "/explore" || pathname === "/explore/") return "visitor_discovery";
   if (pathname === "/" || pathname === "") return "home";

@@ -12,8 +12,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Live, consumer-facing Club Detail composition for an owner-facing read-only
 /// preview. The selected [initialClub] renders immediately while live detail
 /// data hydrates, matching the consumer route's initial-club fallback policy.
-class ClubDetailReadOnlyPreviewSliver extends ConsumerWidget {
-  const ClubDetailReadOnlyPreviewSliver({
+class ClubDetailReadOnlyPreview extends ConsumerWidget {
+  const ClubDetailReadOnlyPreview({
     super.key,
     required this.initialClub,
     required this.currentUid,

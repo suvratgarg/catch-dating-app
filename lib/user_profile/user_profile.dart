@@ -23,8 +23,8 @@ export 'presentation/self_profile_edit_tab_state.dart'; // public-api: provider-
 export 'presentation/self_profile_inline_edit_patch_factory.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/self_profile_photo_intent_factory.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/self_profile_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
-export 'presentation/widgets/preview_tab.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/profile_inline_editors.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/profile_preview_body.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/profile_sliver_header.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/profile_tab.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/profile_tab_body.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/profile_tab_skeleton.dart'; // public-api: shared presentation component used outside this feature

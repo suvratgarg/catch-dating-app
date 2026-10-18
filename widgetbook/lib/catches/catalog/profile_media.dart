@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -12,24 +12,24 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Raw profile view states',
-  type: CatchProfileView,
+  type: ProfileBody,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget catchProfileViewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CatchProfileView',
+    title: 'ProfileBody',
     contractId: 'screen.catches.profile.raw',
     children: [
       WidgetbookPageStateCard(
         label: 'read only',
         child: WidgetbookCatchesDeviceFrame(
-          child: CatchProfileView(data: widgetbookCatchesProfileView(context)),
+          child: ProfileBody(data: widgetbookCatchesProfileView(context)),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'reactable',
         child: WidgetbookCatchesDeviceFrame(
-          child: CatchProfileView(
+          child: ProfileBody(
             data: widgetbookCatchesProfileView(context),
             onReact: widgetbookCatchesNoopReaction,
           ),
@@ -41,27 +41,27 @@ Widget catchProfileViewStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Hero states',
-  type: ProfileHeroWidget,
+  type: ProfileHeader,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileHeroWidgetStates(BuildContext context) {
   final data = widgetbookCatchesProfileView(context);
   return WidgetbookPageCatalogFrame(
-    title: 'ProfileHeroWidget',
+    title: 'ProfileHeader',
     contractId: 'screen.catches.profile.hero',
     children: [
       WidgetbookPageStateCard(
         label: 'read only',
         child: WidgetbookCatchesSectionFrame(
           height: CatchLayout.maxContentWithDockHeight,
-          child: ProfileHeroWidget(data: data),
+          child: ProfileHeader(data: data),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'reactable',
         child: WidgetbookCatchesSectionFrame(
           height: CatchLayout.maxContentWithDockHeight,
-          child: ProfileHeroWidget(
+          child: ProfileHeader(
             data: data,
             onReact: widgetbookCatchesNoopReaction,
           ),
@@ -126,27 +126,29 @@ Widget profilePhotoStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Photo block states',
-  type: ProfilePhotoBlock,
+  type: ProfilePhotoSection,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profilePhotoBlockStates(BuildContext context) {
-  final section = widgetbookCatchesProfileSection<ProfilePhotoSection>(context);
+  final section = widgetbookCatchesProfileSection<ProfilePhotoSectionData>(
+    context,
+  );
   return WidgetbookPageCatalogFrame(
-    title: 'ProfilePhotoBlock',
+    title: 'ProfilePhotoSection',
     contractId: 'screen.catches.profile.photo_block',
     children: [
       WidgetbookPageStateCard(
         label: 'caption',
         child: WidgetbookCatchesSectionFrame(
           height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
-          child: ProfilePhotoBlock(section: section),
+          child: ProfilePhotoSection(section: section),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'reactable',
         child: WidgetbookCatchesSectionFrame(
           height: WidgetbookPreviewLayout.defaultPhonePreviewHeight,
-          child: ProfilePhotoBlock(
+          child: ProfilePhotoSection(
             section: section,
             onReact: widgetbookCatchesNoopReaction,
           ),
@@ -158,12 +160,12 @@ Widget profilePhotoBlockStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Photo caption states',
-  type: PhotoCaption,
+  type: ProfileCaptionText,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget photoCaptionStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'PhotoCaption',
+    title: 'ProfileCaptionText',
     contractId: 'screen.catches.profile.photo_caption',
     children: [
       WidgetbookPageStateCard(
@@ -173,7 +175,9 @@ Widget photoCaptionStates(BuildContext context) {
             alignment: Alignment.bottomLeft,
             child: Padding(
               padding: CatchInsets.content,
-              child: PhotoCaption(text: 'Post-run coffee is non-negotiable.'),
+              child: ProfileCaptionText(
+                text: 'Post-run coffee is non-negotiable.',
+              ),
             ),
           ),
         ),

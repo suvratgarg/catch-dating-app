@@ -14,7 +14,7 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Body sliver states',
-  type: ExploreFeedContentSliver,
+  type: ExploreFeedSliverBody,
   path: '[Explore]/Sections',
 )
 Widget exploreBodyStates(BuildContext context) {

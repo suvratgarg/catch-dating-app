@@ -147,7 +147,7 @@ class ReviewsHistoryList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var index = 0; index < rows.length; index++) ...[
-          ReviewHistoryItem(row: rows[index], onEditReview: onEditReview),
+          ReviewHistoryRow(row: rows[index], onEditReview: onEditReview),
           if (index < rows.length - 1) gapH14,
         ],
       ],
@@ -155,8 +155,8 @@ class ReviewsHistoryList extends StatelessWidget {
   }
 }
 
-class ReviewHistoryItem extends StatelessWidget {
-  const ReviewHistoryItem({
+class ReviewHistoryRow extends StatelessWidget {
+  const ReviewHistoryRow({
     super.key,
     required this.row,
     required this.onEditReview,
@@ -198,7 +198,7 @@ class ReviewsHistorySkeleton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var index = 0; index < 4; index++) ...[
-          const ReviewHistoryItemSkeleton(),
+          const ReviewHistoryRowSkeleton(),
           if (index < 3) gapH14,
         ],
       ],
@@ -206,19 +206,18 @@ class ReviewsHistorySkeleton extends StatelessWidget {
   }
 }
 
-class ReviewHistoryItemSkeleton extends StatelessWidget {
-  const ReviewHistoryItemSkeleton({super.key});
+class ReviewHistoryRowSkeleton extends StatelessWidget {
+  const ReviewHistoryRowSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
         gapH8,
         CatchSurface(
-          borderColor: t.line,
+          borderRole: CatchBorderRole.separator,
           padding: CatchInsets.tileContentCompact,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

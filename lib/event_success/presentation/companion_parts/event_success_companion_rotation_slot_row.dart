@@ -23,7 +23,6 @@ class RotationSlotRow extends StatelessWidget {
       child: CatchSurface(
         backgroundColor: t.primarySoft,
         radius: CatchRadius.sm,
-        borderWidth: 0,
         padding: CatchInsets.contentDense,
         child: Row(
           children: [

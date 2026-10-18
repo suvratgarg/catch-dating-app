@@ -41,8 +41,8 @@ declare(`${ui}components/catch_top_bar.dart`, `${ui}components/catch_top_bar.dar
   "_CatchTopBarState", ["_buildBar", "_searchField", "_selectorControls"], ["Widget"]);
 // Typed factories return the canonical component itself, preventing an outer
 // GestureDetector, inset, or alternate interaction shell around their result.
-declare("lib/hosts/presentation/customers/host_customer_timeline.dart",
-  "lib/hosts/presentation/customers/host_customer_timeline.dart", null,
+declare("lib/hosts/presentation/customers/host_customer_timeline_section.dart",
+  "lib/hosts/presentation/customers/host_customer_timeline_section.dart", null,
   ["hostCustomerTimelineField"], ["CatchField"]);
 declare("lib/programs/presentation/program_events_row.dart",
   "lib/programs/presentation/program_events_row.dart", null,

@@ -3,13 +3,13 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart' show listEquals;
@@ -64,14 +64,13 @@ class EventPinsMap extends StatefulWidget {
 }
 
 class _EventPinsMapState extends State<EventPinsMap> {
-  CatchGoogleMapController? _mapController;
-  final Map<_EventMapPinIconKey, CatchMapMarkerBitmap> _pinBitmaps =
-      <_EventMapPinIconKey, CatchMapMarkerBitmap>{};
+  LocationMapController? _mapController;
+  final Map<_EventMapPinIconKey, MapMarkerBitmap> _pinBitmaps =
+      <_EventMapPinIconKey, MapMarkerBitmap>{};
   final Set<_EventMapPinIconKey> _pendingPinBitmapKeys =
       <_EventMapPinIconKey>{};
   final Set<_EventMapPinIconKey> _failedPinBitmapKeys = <_EventMapPinIconKey>{};
-  final Map<int, CatchMapMarkerBitmap> _clusterBitmaps =
-      <int, CatchMapMarkerBitmap>{};
+  final Map<int, MapMarkerBitmap> _clusterBitmaps = <int, MapMarkerBitmap>{};
   final Set<int> _pendingClusterBitmapCounts = <int>{};
   final Set<int> _failedClusterBitmapCounts = <int>{};
   late LocationCoordinate _lastAppliedCenter;
@@ -146,7 +145,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
     final pinnedItems = _pinnedItems;
 
     if (!widget.enableNetworkTiles) {
-      return EventPinsMapPlaceholder(
+      return EventPinsFallbackMap(
         items: pinnedItems,
         selectedEventId: widget.selectedEventId,
         userLocation: widget.userLocation,
@@ -167,7 +166,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
     return Stack(
       children: [
         Positioned.fill(
-          child: CatchGoogleMap(
+          child: LocationMap(
             initialCenter: widget.initialCenter,
             initialZoom: widget.initialZoom,
             markers: _markersFor(markerGroups).toSet(),
@@ -229,7 +228,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
     );
   }
 
-  Iterable<CatchMapMarker> _markersFor(List<_MapMarkerGroup> groups) sync* {
+  Iterable<MapMarker> _markersFor(List<_MapMarkerGroup> groups) sync* {
     for (final group in groups) {
       final marker = _markerFor(group);
       if (marker != null) yield marker;
@@ -239,14 +238,14 @@ class _EventPinsMapState extends State<EventPinsMap> {
   List<EventMapPinItem> get _pinnedItems =>
       List.unmodifiable([...widget.items, ...widget.externalItems]);
 
-  Set<CatchMapCircle> _mapCircles(BuildContext context) {
+  Set<MapCircle> _mapCircles(BuildContext context) {
     final userLocation = widget.userLocation;
-    if (userLocation == null) return const <CatchMapCircle>{};
+    if (userLocation == null) return const <MapCircle>{};
     final t = CatchTokens.of(context);
     final ringRadiusKm = widget.distanceRingRadiusKm;
     return {
       if (ringRadiusKm != null && ringRadiusKm > 0)
-        CatchMapCircle(
+        MapCircle(
           id: 'event-map-distance-ring',
           center: userLocation,
           radiusMeters: ringRadiusKm * 1000,
@@ -256,7 +255,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
           consumeTapEvents: widget.onDistanceRingTapped != null,
           onTap: widget.onDistanceRingTapped,
         ),
-      CatchMapCircle(
+      MapCircle(
         id: 'event-map-user-location',
         center: userLocation,
         radiusMeters: 42,
@@ -269,14 +268,14 @@ class _EventPinsMapState extends State<EventPinsMap> {
     };
   }
 
-  CatchMapMarker? _markerFor(_MapMarkerGroup group) {
+  MapMarker? _markerFor(_MapMarkerGroup group) {
     if (group.isCluster) {
       final bitmap = _clusterBitmaps[group.items.length];
       if (bitmap == null &&
           !_failedClusterBitmapCounts.contains(group.items.length)) {
         return null;
       }
-      return CatchMapMarker(
+      return MapMarker(
         id: group.id,
         position: group.center,
         bitmap: bitmap,
@@ -303,7 +302,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
       rasterFailed: _failedPinBitmapKeys.contains(iconKey),
     );
     if (!bitmapState.publish) return null;
-    return CatchMapMarker(
+    return MapMarker(
       id: item.mapId,
       position: item.coordinate,
       bitmap: bitmapState.bitmap,
@@ -375,7 +374,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
     }
   }
 
-  void _handleCameraMove(CatchMapCameraPosition position) {
+  void _handleCameraMove(MapCameraPosition position) {
     _pendingCameraCenter = position.center;
     _pendingCameraZoom = position.zoom;
     if (_distanceRingLabelOffset != null) {
@@ -627,17 +626,17 @@ String eventMapMarkerSemanticLabel(EventMapPinItem item) =>
     item.markerSemanticLabel;
 
 @visibleForTesting
-({CatchMapMarkerBitmap? bitmap, bool publish}) eventMapPinBitmapState({
-  required CatchMapMarkerBitmap? selectedBitmap,
-  required CatchMapMarkerBitmap? restingBitmap,
+({MapMarkerBitmap? bitmap, bool publish}) eventMapPinBitmapState({
+  required MapMarkerBitmap? selectedBitmap,
+  required MapMarkerBitmap? restingBitmap,
   required bool rasterFailed,
 }) {
   final bitmap = selectedBitmap ?? restingBitmap;
   return (bitmap: bitmap, publish: bitmap != null || rasterFailed);
 }
 
-class EventPinsMapPlaceholder extends StatelessWidget {
-  const EventPinsMapPlaceholder({
+class EventPinsFallbackMap extends StatelessWidget {
+  const EventPinsFallbackMap({
     super.key,
     required this.items,
     required this.selectedEventId,
@@ -745,7 +744,7 @@ class EventPinsMapPlaceholder extends StatelessWidget {
                                       onExternalEventSelected,
                                 ),
                           child: Center(
-                            child: CatchActivityMapPin(
+                            child: ActivityMapPin(
                               activityKind: indexed.$2.activityKind,
                               selected: selectedEventId == indexed.$2.mapId,
                               label: selectedEventId == indexed.$2.mapId

@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -71,12 +71,12 @@ Widget eventDetailHintListCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventDetailItinerary,
+  type: EventDetailItineraryList,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailItineraryCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'EventDetailItinerary',
+    title: 'EventDetailItineraryList',
     catalogId: 'events.widgets.event_detail_itinerary',
     children: [
       WidgetbookCatalogStateCard(
@@ -86,11 +86,11 @@ Widget eventDetailItineraryCatalogStates(BuildContext context) {
           children: [
             SizedBox(
               width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
-              child: EventDetailItinerary(event: widgetbookCatalogEvent()),
+              child: EventDetailItineraryList(event: widgetbookCatalogEvent()),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.eventDetailPreviewWidth,
-              child: EventDetailItinerary(
+              child: EventDetailItineraryList(
                 event: widgetbookCatalogEvent(
                   id: 'dinner-itinerary',
                   activityKind: ActivityKind.dinner,
@@ -108,12 +108,12 @@ Widget eventDetailItineraryCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventDetailPhotoStrip,
+  type: EventDetailPhotoGrid,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailPhotoStripCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'EventDetailPhotoStrip',
+    title: 'EventDetailPhotoGrid',
     catalogId: 'events.widgets.event_detail_photo_strip',
     children: [
       WidgetbookCatalogStateCard(
@@ -121,18 +121,18 @@ Widget eventDetailPhotoStripCatalogStates(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            EventDetailPhotoStrip(
+            EventDetailPhotoGrid(
               event: widgetbookCatalogEvent(eventPhotos: _eventDetailPhotos(3)),
             ),
             gapH16,
-            EventDetailPhotoStrip(
+            EventDetailPhotoGrid(
               event: widgetbookCatalogEvent(
                 id: 'partial-photo-strip',
                 eventPhotos: _eventDetailPhotos(1),
               ),
             ),
             gapH16,
-            EventDetailPhotoStrip(
+            EventDetailPhotoGrid(
               event: widgetbookCatalogEvent(id: 'empty-strip'),
             ),
           ],
@@ -335,7 +335,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
             EventBookingDock(
               label: 'Join event - 3 spots left',
               onPressed: widgetbookNoop,
-              leadingContent: const PriceLeading(
+              leadingContent: const EventPriceText(
                 price: 'Free',
                 note: '3 spots left',
                 warn: true,
@@ -348,7 +348,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
             EventBookingDock(
               label: 'Cancel booking',
               onPressed: widgetbookNoop,
-              leadingContent: EventCtaStatusLeading(
+              leadingContent: EventDockStatusText(
                 icon: CatchIcons.checkCircleRounded,
                 label: "You're in!",
               ),
@@ -359,7 +359,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
             EventBookingDock(
               label: 'You attended this event',
               onPressed: null,
-              leadingContent: EventCtaStatusLeading(
+              leadingContent: EventDockStatusText(
                 icon: CatchIcons.directionsRunRounded,
                 label: 'Completed',
               ),

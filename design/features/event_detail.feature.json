@@ -853,8 +853,8 @@
           {
             "id": "map_overlay",
             "language": "dart",
-            "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
-            "symbol": "MapOverlayControls"
+            "file": "lib/events/presentation/widgets/map_overlay_top_bar.dart",
+            "symbol": "MapOverlayTopBar"
           },
           {
             "id": "external_links",

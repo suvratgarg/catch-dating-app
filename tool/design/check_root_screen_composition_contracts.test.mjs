@@ -58,7 +58,7 @@ test("flags a shell that bypasses the shared adaptive scaffold", () => {
       (finding) =>
         finding.code === "missing-required-text" &&
         finding.path === "lib/core/presentation/app_shell.dart" &&
-        finding.message.includes("CatchAdaptiveTabScaffold"),
+        finding.message.includes("AdaptiveTabScaffold"),
     ),
   );
 });
@@ -118,7 +118,7 @@ test("Host shell requires both aligned headers and the adaptive scaffold", () =>
     "../../lib/core/presentation/host_app_shell.dart", import.meta.url), "utf8");
   write(root, shell.path, source);
   assert.deepEqual(checkRootScreenCompositionContracts({root}).findings, []);
-  for (const marker of ["return CatchWorkspaceHeaderLayout(", "child: CatchAdaptiveTabScaffold("]) {
+  for (const marker of ["return CatchWorkspaceHeaderLayout(", "child: AdaptiveTabScaffold("]) {
     write(root, shell.path, source.replace(marker, "removed("));
     assert.ok(checkRootScreenCompositionContracts({root}).findings.some((finding) =>
       finding.code === "missing-required-text" && finding.message.includes(marker)));
@@ -149,7 +149,7 @@ test("accepts the directory contract and rejects a removed required owner", () =
 
 function fixtureRoot({
   ownerSource,
-  shellSource = "return CatchAdaptiveTabScaffold(body: navigationShell);",
+  shellSource = "return AdaptiveTabScaffold(body: navigationShell);",
   extraRouterSource = "",
   stateSource,
   routerBranchKey = "_homeShellKey",
@@ -181,7 +181,7 @@ function fixtureRoot({
       shells: [
         {
           path: "lib/core/presentation/app_shell.dart",
-          requires: [{text: "CatchAdaptiveTabScaffold", minimumOccurrences: 1}],
+          requires: [{text: "AdaptiveTabScaffold", minimumOccurrences: 1}],
         },
       ],
       branches: [

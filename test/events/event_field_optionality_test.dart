@@ -6,7 +6,7 @@ import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
@@ -69,9 +69,9 @@ void main() {
           enableMapNetworkTiles: false,
         ),
       );
-      expect(find.byType(EventDescription), findsNothing);
-      expect(find.byType(EventDetailItinerary), findsNothing);
-      expect(find.byType(EventDetailPhotoStrip), findsNothing);
+      expect(find.byType(EventDescriptionSection), findsNothing);
+      expect(find.byType(EventDetailItineraryList), findsNothing);
+      expect(find.byType(EventDetailPhotoGrid), findsNothing);
     },
   );
 
@@ -81,11 +81,11 @@ void main() {
     final event = buildEvent().copyWith(
       eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.dinner),
     );
-    await pump(tester, EventDetailTicketStubBand(event: event));
+    await pump(tester, EventDetailTicketStubRow(event: event));
     expect(find.text(event.pace.label), findsNothing);
-    expect(find.byType(TicketStubCell), findsNWidgets(2));
-    await pump(tester, EventDetailTicketStubBand(event: buildEvent()));
-    expect(find.byType(TicketStubCell), findsNWidgets(3));
+    expect(find.byType(TicketStubTile), findsNWidgets(2));
+    await pump(tester, EventDetailTicketStubRow(event: buildEvent()));
+    expect(find.byType(TicketStubTile), findsNWidgets(3));
   });
 
   testWidgets(
@@ -103,8 +103,8 @@ void main() {
         eventPhotos: photos,
         photoUrl: 'https://example.test/old.jpg',
       );
-      await pump(tester, EventDetailPhotoStrip(event: event));
-      expect(find.byType(EventDetailPhotoStripTile), findsNWidgets(5));
+      await pump(tester, EventDetailPhotoGrid(event: event));
+      expect(find.byType(EventDetailPhotoTile), findsNWidgets(5));
       expect(event.primaryPhotoUrl, photos.first.url);
     },
   );
@@ -122,7 +122,7 @@ void main() {
         ),
       ],
     );
-    await pump(tester, EventDetailItinerary(event: event));
+    await pump(tester, EventDetailItineraryList(event: event));
     expect(find.text('Water stop'), findsOneWidget);
     expect(find.textContaining('10m'), findsOneWidget);
     expect(find.textContaining('At 1km on the route'), findsOneWidget);

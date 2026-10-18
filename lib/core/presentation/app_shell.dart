@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -139,7 +139,7 @@ class AppShell extends ConsumerWidget {
             unreadCount: unreadCount,
           )
         : null;
-    return CatchAdaptiveTabScaffold(
+    return AdaptiveTabScaffold(
       activeIndex: navigationShell.currentIndex,
       navigationBar: authenticatedNavigationBar,
       anchoredFallback: showGuestAuthCta ? const GuestAuthCtaBar() : null,
@@ -163,7 +163,7 @@ class GuestAuthCtaBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchDockSurface(
+    return CatchDock(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s4,
         CatchSpacing.micro10,
