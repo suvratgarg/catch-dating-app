@@ -28,7 +28,7 @@ The organizer workspace (`HostClubsScaffold`) Insights tab renders
 - The response carries 10 summary cards (labels/captions baked server-side in
   English), a 14-metric trend (UI renders 2), 25 most-recent event rows (UI
   renders 5), review + discovery summaries, and an ops "data quality" block.
-- The pane renders: all-time overview grid (`HostClubOrganizerOverviewController`)
+- The pane renders: all-time overview grid (`HostClubOrganizerSectionList`)
   → range/granularity chip rows → metric card grid → hand-rolled dual-bar
   trend → "Top events" tile list (tap re-scopes the whole report to that
   event) → "Reviews and saves" 2×2 → "Data quality" list.

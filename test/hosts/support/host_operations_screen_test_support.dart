@@ -249,7 +249,7 @@ void registerHostWorkspacePagingTest() {
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
     );
-    expect(find.byType(HostClubEditTab), findsOneWidget);
+    expect(find.byType(HostClubEditBody), findsOneWidget);
     expect(find.byType(HostClubInsightsSection), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
@@ -259,7 +259,7 @@ void registerHostWorkspacePagingTest() {
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsOneWidget,
     );
-    expect(find.byType(HostClubEditTab), findsNothing);
+    expect(find.byType(HostClubEditBody), findsNothing);
 
     await tester.drag(pager, const Offset(-320, 0));
     await pumpFeatureUi(tester);
@@ -275,7 +275,7 @@ void registerHostWorkspacePagingTest() {
 
     await tester.drag(pager, const Offset(320, 0));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostClubEditTab), findsOneWidget);
+    expect(find.byType(HostClubEditBody), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
       findsNothing,
@@ -725,7 +725,11 @@ Future<void> _pumpHostClubEditTab(
     tester,
     Scaffold(
       body: SingleChildScrollView(
-        child: HostClubEditTab(club: club, currentUid: _hostUid, isOwner: true),
+        child: HostClubEditBody(
+          club: club,
+          currentUid: _hostUid,
+          isOwner: true,
+        ),
       ),
     ),
     overrides: [hostClubEditControllerProvider.overrideWithValue(actions)],

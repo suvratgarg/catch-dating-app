@@ -35,7 +35,7 @@ class HostCustomerHistorySection extends ConsumerWidget {
       builder: (context, loaded) => CatchSectionList(
         emptyStateOmitted: true,
         children: [
-          HostCustomerHistoryFilters(
+          HostCustomerHistoryFilterSection(
             builder: (filter) => HostCustomerTimelineSection(
               customer: loaded,
               filter: filter,

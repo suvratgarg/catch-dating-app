@@ -554,7 +554,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerOverviewSectionList), findsOneWidget);
     expect(find.byType(HostCustomerReachSection), findsNothing);
-    expect(find.byType(HostCustomerRecentEvents), findsOneWidget);
+    expect(find.byType(HostCustomerRecentEventsList), findsOneWidget);
     expect(find.byType(HostCustomerTimelineSection), findsNothing);
     expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
   });

@@ -43,7 +43,7 @@
     },
     "organizers": {
       "title": "Organizer directory | Catch",
-      "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",
+      "description": "Find singles-event organizers across India \u2014 clubs, venues, and independent hosts \u2014 with verified guest reviews and upcoming events.",
       "canonicalPath": "/organizers/",
       "twitterDescription": "Search Catch organizer and club profiles.",
       "robots": "noindex, follow"
@@ -115,74 +115,11 @@
       "canonicalPath": "/demo/",
       "robots": "noindex, follow"
     },
-    "host_overview": {
-      "title": "Overview | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/overview/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_platform": {
-      "title": "Platform | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/platform/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_planners": {
-      "title": "Planners | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/planners/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_mixers": {
-      "title": "Mixers | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/mixers/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_clubs": {
-      "title": "Clubs | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/clubs/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_directory": {
-      "title": "Directory | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/directory/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_claim": {
-      "title": "Claim | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/claim/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
     "host_apply": {
-      "title": "Apply | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
+      "title": "Apply for a pilot | Catch Host",
+      "description": "Apply with your next event, guest-list size and current tools. Catch reviews each pilot application before agreeing access and setup.",
       "canonicalPath": "/host/apply/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_stack": {
-      "title": "Stack | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/stack/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
-      "robots": "noindex, follow"
-    },
-    "host_workflows": {
-      "title": "Workflows | Catch Host content preview",
-      "description": "Explore Catch Host workflow and retained concept content. Illustrative capabilities are separate from the supported pilot.",
-      "canonicalPath": "/host/workflows/",
-      "twitterDescription": "Catch Host workflow and concept preview.",
+      "twitterDescription": "Apply for a supported Catch Host pilot.",
       "robots": "noindex, follow"
     },
     "visitor_discovery": {

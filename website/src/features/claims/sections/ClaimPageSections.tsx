@@ -152,12 +152,12 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                 <EmptyState variant="claim">
                   <strong>{websiteCopy["claimpagesections_0067"]}</strong>
                   <p>{websiteCopy["claimpagesections_0089"]}</p>
-                  <ButtonLink variant="ghost" href="/host/#founding-hosts">{websiteCopy["claimpagesections_0090"]}</ButtonLink>
+                  <ButtonLink variant="ghost" href="/host/apply/">{websiteCopy["claimpagesections_0090"]}</ButtonLink>
                 </EmptyState>
               ) : null}
             </ClaimListingResults>
             <ActionGroup>
-              <ButtonLink variant="ghost" href="/host/#founding-hosts">{websiteCopy["claimpagesections_0064"]}</ButtonLink>
+              <ButtonLink variant="ghost" href="/host/apply/">{websiteCopy["claimpagesections_0064"]}</ButtonLink>
               <Button
                 disabled={!listing}
                 type="button"
@@ -398,7 +398,7 @@ export function ClaimUrlStateSection({
         actions={[
           {href: listing.path, label: websiteCopy["claimpagesections_0099"], variant: "primary"},
           {href: "/claim/", label: websiteCopy["claimpagesections_0084"], variant: "secondary"},
-          {href: "/host/#founding-hosts", label: websiteCopy["claimpagesections_0090"], variant: "secondary"},
+          {href: "/host/apply/", label: websiteCopy["claimpagesections_0090"], variant: "secondary"},
         ]}
       />
     );
@@ -429,7 +429,7 @@ export function ClaimUrlStateSection({
         actions={[
           {href: listing.path, label: websiteCopy["claimpagesections_0099"], variant: "primary"},
           {href: "/claim/", label: websiteCopy["claimpagesections_0084"], variant: "secondary"},
-          {href: "/host/#founding-hosts", label: websiteCopy["claimpagesections_0034"], variant: "secondary"},
+          {href: "/host/apply/", label: websiteCopy["claimpagesections_0034"], variant: "secondary"},
         ]}
       />
     );
@@ -479,7 +479,7 @@ export function ClaimUrlStateSection({
       actions={[
         {href: "/claim/", label: websiteCopy["claimpagesections_0084"], variant: "primary"},
         {href: "/organizers/", label: websiteCopy["claimpagesections_0070"], variant: "secondary"},
-        {href: "/host/#founding-hosts", label: websiteCopy["claimpagesections_0090"], variant: "secondary"},
+        {href: "/host/apply/", label: websiteCopy["claimpagesections_0090"], variant: "secondary"},
       ]}
     />
   );

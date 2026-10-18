@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

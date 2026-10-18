@@ -209,7 +209,7 @@
           "paths": [
             "lib/hosts/presentation/host_event_manage_screen.dart",
             "lib/hosts/presentation/host_event_manage_controller.dart",
-            "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+            "lib/hosts/presentation/widgets/host_event_participants_section.dart",
             "test/hosts/host_create_event_screen_test.dart",
             "test/hosts/host_event_manage_controller_test.dart",
             "test/ui_captures/catalog/screen_capture_catalog.dart",
@@ -275,7 +275,7 @@
         },
         {
           "id": "ARCH-SCREEN-001-HOST-ATTENDANCE-PANEL-REFS",
-          "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+          "path": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
           "reason": "HostEventAttendancePanel remains a large widget with WidgetRef parameter debt and should receive route-owned attendance display state, mutation intents, and callbacks before the Host Event Manage workspace can be promoted."
         }
       ],
@@ -291,7 +291,7 @@
         "flutter test test/events/saved_events_screen_test.dart",
         "flutter analyze --no-fatal-infos lib/events/presentation/saved_events_screen.dart lib/events/presentation/saved_events_state.dart test/events/saved_events_screen_test.dart",
         "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart",
-        "flutter analyze --no-fatal-infos lib/hosts/presentation/host_event_manage_screen.dart lib/hosts/presentation/host_event_manage_controller.dart lib/hosts/presentation/widgets/host_event_attendance_panel.dart test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
+        "flutter analyze --no-fatal-infos lib/hosts/presentation/host_event_manage_screen.dart lib/hosts/presentation/host_event_manage_controller.dart lib/hosts/presentation/widgets/host_event_participants_section.dart test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
         "node tool/design/check_new_widget_inventory.mjs --no-write",
         "node tool/architecture/check_mutation_error_surfaces.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
@@ -1750,7 +1750,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "path": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
           "role": "Host Club Identity and Contact adopter with typed UpdateClubPatch descriptors, schema-derived constraints, and one save delegate",
           "status": "aligned"
         },
@@ -1786,7 +1786,7 @@
       "requiredBackPropagation": "When descriptor fields, save semantics, accordion ownership, or error mapping change, update the About You prototype, core descriptor tests, architecture exhibit, and every promoted adopter before broad rollout.",
       "requiredChecks": [
         "flutter test --concurrency=1 test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart test/profile/profile_widgets_test.dart test/hosts/host_operations_screen_test.dart",
-        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab_body.dart lib/hosts/presentation/host_operations/host_club_edit_tab.dart test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart lib/user_profile/presentation/self_profile_edit_tab_state.dart lib/user_profile/presentation/widgets/profile_tab_body.dart lib/hosts/presentation/host_operations/host_club_edit_body.dart test/core/forms/catch_form_descriptors_test.dart test/core/forms/contract_alignment_test.dart test/profile/self_profile_edit_tab_state_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "Consumer Profile About You and Host Club Identity/Contact are promoted. Text commit behavior belongs to CatchFormList: explicit Cancel/Done is the default, while Consumer About You carries one deliberate on-blur compatibility override. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
@@ -2308,7 +2308,7 @@
         "lib/hosts/data/crm/host_communication_repository.dart",
         "lib/hosts/domain/crm/host_communication_plan.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-        "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+        "lib/hosts/presentation/customers/host_customer_detail_card.dart",
         "test/hosts/host_crm_repository_test.dart",
         "test/hosts/host_operations_screen_test.dart"
       ],
@@ -2334,7 +2334,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
+          "path": "lib/hosts/presentation/customers/host_customer_detail_card.dart",
           "role": "provider-free rendering of server-provided route consequences and blocker copy with no local capability inference",
           "status": "aligned"
         },
@@ -2386,9 +2386,9 @@
         "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
         "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
         "lib/hosts/presentation/customers/host_save_audience_sheet.dart",
-        "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+        "lib/hosts/presentation/inbox/host_campaign_editor.dart",
         "test/hosts/host_crm_repository_test.dart",
-        "test/hosts/host_campaign_composer_test.dart"
+        "test/hosts/host_campaign_editor_test.dart"
       ],
       "adopters": [
         {
@@ -2427,7 +2427,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+          "path": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
           "role": "Sends-owned campaign editor that selects an existing audience id and cannot author a competing filter",
           "status": "aligned"
         }
@@ -2444,7 +2444,7 @@
       "requiredChecks": [
         "./tool/check_data_contract.sh",
         "npm --prefix functions run lint && npm --prefix functions run build && node --test functions/lib/organizers/organizerSavedAudiences.test.js",
-        "flutter test test/hosts/host_crm_repository_test.dart test/hosts/host_campaign_composer_test.dart test/hosts/host_customer_filter_summary_test.dart test/hosts/host_inbox_screen_test.dart test/routing/router_widgets_test.dart",
+        "flutter test test/hosts/host_crm_repository_test.dart test/hosts/host_campaign_editor_test.dart test/hosts/host_customer_filter_summary_test.dart test/hosts/host_inbox_screen_test.dart test/routing/router_widgets_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "bash tool/check_catch_ui_lints.sh"
@@ -2550,7 +2550,7 @@
         "lib/hosts/data/crm/host_communication_repository.dart",
         "lib/hosts/domain/crm/host_manual_send_task.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-        "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+        "lib/hosts/presentation/inbox/host_manual_send_list.dart",
         "test/hosts/host_crm_repository_test.dart",
         "test/hosts/host_inbox_screen_test.dart"
       ],
@@ -2581,7 +2581,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+          "path": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
           "role": "Sends-owned independent async queue that revalidates every stored endpoint before launch and provides unconfirmed-opened copy, explicit host assertion, skip, pagination and non-mutating route advice",
           "status": "aligned"
         }

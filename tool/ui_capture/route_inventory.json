@@ -1953,11 +1953,11 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_tab.dart:28a1de16f30d0a2b439e9852a73ba9c3dd57c0f593e6a3d3ff2b177d3a0d35cb:1",
-      "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
-      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_body.dart:28074c60b4b9a06cb7fa3ea65f290a17d8b8135b3ee306cce99eecbc309a013d:1",
+      "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:HostClubMediaManagerDock(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
+      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
+      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:HostClubMediaManagerDock(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
       "presentationTarget": "OrderedPhotoManagerScreen",
       "fullscreenDialogExpression": "true"
     },

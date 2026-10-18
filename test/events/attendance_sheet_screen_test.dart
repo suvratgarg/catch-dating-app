@@ -8,7 +8,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           mode: HostEventParticipantsMode.live,
           eventId: event.id,
         ),
@@ -64,7 +64,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           eventId: event.id,
           mode: HostEventParticipantsMode.setup,
         ),
@@ -101,7 +101,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           eventId: event.id,
           mode: HostEventParticipantsMode.report,
         ),
@@ -180,7 +180,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           eventId: event.id,
           mode: HostEventParticipantsMode.report,
         ),
@@ -241,7 +241,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           mode: HostEventParticipantsMode.live,
           eventId: event.id,
         ),
@@ -264,7 +264,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           mode: HostEventParticipantsMode.live,
           eventId: event.id,
         ),
@@ -298,7 +298,7 @@ void main() {
       Scaffold(
         body: SingleChildScrollView(
           // The panel is embedded in the event workspace's scroll owner.
-          child: HostEventParticipantsPanel(
+          child: HostEventParticipantsSection(
             mode: HostEventParticipantsMode.live,
             eventId: event.id,
           ),
@@ -377,7 +377,7 @@ void main() {
         body: _PendingHostAttendanceMutation(
           eventId: event.id,
           uid: 'runner-1',
-          child: HostEventParticipantsPanel(
+          child: HostEventParticipantsSection(
             eventId: event.id,
             mode: HostEventParticipantsMode.live,
           ),
@@ -425,7 +425,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           eventId: event.id,
           mode: HostEventParticipantsMode.setup,
         ),
@@ -494,7 +494,7 @@ void main() {
         // Embedded panels delegate scrolling to the roster drawer's ListView.
         body: ListView(
           children: [
-            HostEventParticipantsPanel(
+            HostEventParticipantsSection(
               eventId: event.id,
               mode: HostEventParticipantsMode.setup,
             ),
@@ -562,7 +562,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        body: HostEventParticipantsPanel(
+        body: HostEventParticipantsSection(
           eventId: event.id,
           mode: HostEventParticipantsMode.setup,
         ),

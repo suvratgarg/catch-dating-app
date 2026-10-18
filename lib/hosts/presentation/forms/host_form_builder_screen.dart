@@ -15,7 +15,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_viewp
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payments_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_questions_page_body.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
@@ -279,7 +279,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                     _selectedQuestion = question;
                   }),
                 ),
-                HostFormWorkspaceView.responses => HostFormResponsesPanel(
+                HostFormWorkspaceView.responses => HostFormResponsesSection(
                   key: ValueKey(
                     'form-responses-${widget.organizerId}-'
                     '${widget.formId}-$responseAccountId',

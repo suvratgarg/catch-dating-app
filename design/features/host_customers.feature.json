@@ -91,7 +91,7 @@
           {
             "id": "customer_merge_review",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart",
+            "file": "lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart",
             "symbol": "HostContactMergeReviewSheet"
           }
         ],
