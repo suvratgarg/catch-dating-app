@@ -116,7 +116,7 @@
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart", "symbol": "CatchFormList<UpdateClubPatch>", "expected": 2},
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_rows.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
       ],
       "targetModes": ["CatchFormList", "CatchField.choices"],
       "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
