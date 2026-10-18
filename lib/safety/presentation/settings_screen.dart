@@ -259,7 +259,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               CatchSection.fieldRows(
                 first: true,
                 title: context.l10n.safetySettingsScreenTitleAccount,
-                footer: AccountProfileStatus(
+                footer: AccountProfileSection(
                   profile: state.profile,
                   onRetry: operationPending
                       ? null
@@ -660,8 +660,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
 enum _SettingsExternalLinkAction { hostApp, privacyPolicy, helpSupport, terms }
 
-class AccountProfileStatus extends StatelessWidget {
-  const AccountProfileStatus({
+class AccountProfileSection extends StatelessWidget {
+  const AccountProfileSection({
     super.key,
     required this.profile,
     required this.onRetry,

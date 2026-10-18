@@ -28,7 +28,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
@@ -40,7 +40,7 @@ import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_e
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -52,17 +52,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-part 'host_customer_detail_cards.dart';
+part 'host_customer_detail_card.dart';
 part 'host_customer_editor.dart';
-part 'host_customer_editor_sheets.dart';
+part 'host_save_audience_sheet.dart';
 part 'host_customer_filter_sheet.dart';
-part 'host_customers_directory.dart';
+part 'host_customers_list.dart';
 part 'host_customers_directory_actions.dart';
 part 'host_saved_audience_editor.dart';
 part 'host_saved_audience_rule_draft.dart';
 part 'host_static_audience_members_editor.dart';
-part 'host_saved_audience_source_rules.dart';
-part 'host_saved_audience_overview.dart';
+part 'host_audience_source_rule_section.dart';
+part 'host_saved_audience_section.dart';
 part 'host_saved_audiences_workspace.dart';
 
 class HostCustomersScreen extends ConsumerStatefulWidget {
@@ -286,7 +286,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
       builder: (context, viewport) {
         final screenSize = viewport.sizeClass;
         final activeQuery = peopleView ? _search : _audienceSearch;
-        final directoryControls = HostCustomerDirectoryControls(
+        final directoryControls = HostCustomerControlSection(
           sort: _sort,
           activeFilters: effectiveFilters.isEmpty && _manualTags.isEmpty
               ? null
@@ -399,7 +399,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                HostCustomersSummary(
+                                HostCustomersSummarySection(
                                   summary: summary,
                                   newCustomerCount: newCustomerCount,
                                   onRetry: () =>
@@ -441,7 +441,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                           CatchPageBody.sliver(
                             child: SliverList.list(
                               children: [
-                                HostCustomerFilterSummary(
+                                HostCustomerFilterSummarySection(
                                   filter: effectiveFilter,
                                   selectionLabel: selectionLabel,
                                   count: directoryState.matchCount,
@@ -491,7 +491,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                 context: AppErrorContext.customers,
                                 onRetry: onBoundaryRetry,
                               ),
-                          builder: (context, state) => HostCustomersDirectory(
+                          builder: (context, state) => HostCustomersList(
                             state: state,
                             selectedContactId: _selectedContactId,
                             hasActiveQuery:

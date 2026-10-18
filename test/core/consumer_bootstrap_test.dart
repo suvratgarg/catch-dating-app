@@ -5,7 +5,7 @@ import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -241,7 +241,7 @@ void main() {
     );
 
     final staticFinder = find.byKey(CatchConsumerBootScreen.markKey);
-    final reelFinder = find.byKey(WelcomeScene.catchWordKey);
+    final reelFinder = find.byKey(WelcomeSceneLayout.catchWordKey);
     expect(tester.getTopLeft(staticFinder), tester.getTopLeft(reelFinder));
     expect(
       tester.getTopLeft(staticFinder).dy,
@@ -251,13 +251,13 @@ void main() {
     final staticText = tester.widget<Text>(
       find.descendant(
         of: staticFinder,
-        matching: find.byKey(WelcomeFocusLockup.textKey),
+        matching: find.byKey(WelcomeFocusText.textKey),
       ),
     );
     final reelText = tester.widget<Text>(
       find.descendant(
         of: reelFinder,
-        matching: find.byKey(WelcomeFocusLockup.textKey),
+        matching: find.byKey(WelcomeFocusText.textKey),
       ),
     );
     expect(staticText.textSpan!.toPlainText(), 'Catch_');

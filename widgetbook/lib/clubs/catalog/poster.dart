@@ -1,5 +1,7 @@
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -9,60 +11,60 @@ import 'fixtures.dart';
 
 @widgetbook.UseCase(
   name: 'Poster states',
-  type: CatchOrganizerPoster,
+  type: CatchPoster,
   path: '[Club Discovery]/Cards',
 )
 Widget catchOrganizerPosterStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'CatchOrganizerPoster',
+    title: 'CatchPoster',
     catalogId: 'card.organizer.poster',
     children: [
       WidgetbookPageStateCard(
         label: 'editorial paper',
-        child: CatchOrganizerPoster(
-          media: OrganizerPosterArtwork(club: widgetbookClubClub),
+        child: CatchPoster(
+          media: ClubPlaceholderCover(club: widgetbookClubClub),
           kicker: 'Run club · Mumbai',
           title: widgetbookClubClub.name,
           tagline: widgetbookClubClub.description,
           meta: 'Every Wednesday · 6:45 AM',
-          footer: ClubTagWrap(
+          footer: ClubTagList(
             tags: visibleClubTags(widgetbookClubClub, limit: 3),
           ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'photo ink',
-        child: CatchOrganizerPoster(
-          media: OrganizerPosterArtwork(club: widgetbookClubClub),
+        child: CatchPoster(
+          media: ClubPlaceholderCover(club: widgetbookClubClub),
           kicker: 'Run club · Mumbai',
           title: widgetbookClubClub.name,
           tagline: widgetbookClubClub.description,
           meta: 'Every Wednesday · 6:45 AM',
-          layout: OrganizerPosterLayout.photo,
-          treatment: OrganizerPosterTreatment.ink,
+          variant: CatchPosterVariant.photo,
+          tone: CatchPosterTone.ink,
         ),
       ),
       WidgetbookPageStateCard(
         label: 'split signal',
-        child: CatchOrganizerPoster(
-          media: OrganizerPosterArtwork(club: widgetbookClubClub),
+        child: CatchPoster(
+          media: ClubPlaceholderCover(club: widgetbookClubClub),
           kicker: 'Run club · Mumbai',
           title: widgetbookClubClub.name,
           tagline: widgetbookClubClub.description,
           meta: 'Every Wednesday · 6:45 AM',
-          layout: OrganizerPosterLayout.split,
-          treatment: OrganizerPosterTreatment.signal,
+          variant: CatchPosterVariant.split,
+          tone: CatchPosterTone.signal,
         ),
       ),
       WidgetbookPageStateCard(
         label: 'minimal paper',
-        child: CatchOrganizerPoster(
-          media: OrganizerPosterArtwork(club: widgetbookClubClub),
+        child: CatchPoster(
+          media: ClubPlaceholderCover(club: widgetbookClubClub),
           kicker: 'Run club · Mumbai',
           title: widgetbookClubClub.name,
           tagline: widgetbookClubClub.description,
           meta: 'Every Wednesday · 6:45 AM',
-          layout: OrganizerPosterLayout.minimal,
+          variant: CatchPosterVariant.minimal,
         ),
       ),
     ],
@@ -71,29 +73,103 @@ Widget catchOrganizerPosterStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Poster artwork states',
-  type: OrganizerPosterArtwork,
+  type: ClubPlaceholderCover,
   path: '[Club Discovery]/Cards',
 )
-Widget organizerPosterArtworkStates(BuildContext context) {
+Widget clubPlaceholderCoverStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'OrganizerPosterArtwork',
+    title: 'ClubPlaceholderCover',
     catalogId: 'card.organizer.poster_artwork',
     children: [
       WidgetbookPageStateCard(
         label: 'standard',
         child: AspectRatio(
           aspectRatio: 1,
-          child: OrganizerPosterArtwork(club: widgetbookClubClub),
+          child: ClubPlaceholderCover(club: widgetbookClubClub),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'compact',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.clubAvatarPreviewExtent,
-          child: OrganizerPosterArtwork(
+          child: ClubPlaceholderCover(
             club: widgetbookClubMinimalClub,
             compact: true,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Image states',
+  type: CatchPosterImage,
+  path: '[Club Discovery]/Cards',
+)
+Widget catchPosterImageStates(BuildContext context) {
+  return WidgetbookScrollCatalogFrame(
+    title: 'CatchPosterImage',
+    catalogId: 'card.organizer.poster.image',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'rounded media',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
+          child: CatchPosterImage(
+            media: ClubPlaceholderCover(club: widgetbookClubClub),
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'square media',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
+          child: CatchPosterImage(
+            media: ClubPlaceholderCover(club: widgetbookClubClub),
+            radius: 0,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: CatchPosterHeader,
+  path: '[Club Discovery]/Cards',
+)
+Widget catchPosterHeaderStates(BuildContext context) {
+  CatchPosterHeader header(CatchPosterHeaderMode mode, CatchPosterTone tone) =>
+      CatchPosterHeader(
+        kicker: 'Run club · Mumbai',
+        title: widgetbookClubClub.name,
+        tagline: widgetbookClubClub.description,
+        meta: 'Every Wednesday · 6:45 AM',
+        mode: mode,
+        tone: tone,
+      );
+  return WidgetbookScrollCatalogFrame(
+    title: 'CatchPosterHeader',
+    catalogId: 'card.organizer.poster.header',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'regular paper',
+        child: header(CatchPosterHeaderMode.regular, CatchPosterTone.paper),
+      ),
+      WidgetbookPageStateCard(
+        label: 'compact signal',
+        child: ColoredBox(
+          color: CatchTokens.of(context).primary,
+          child: header(CatchPosterHeaderMode.compact, CatchPosterTone.signal),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'on photo ink',
+        child: ColoredBox(
+          color: CatchTokens.of(context).ink,
+          child: header(CatchPosterHeaderMode.onPhoto, CatchPosterTone.ink),
         ),
       ),
     ],

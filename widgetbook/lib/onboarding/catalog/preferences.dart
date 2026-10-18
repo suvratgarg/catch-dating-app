@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -7,24 +7,24 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Run preferences form',
-  type: RunningPrefsPage,
+  type: OnboardingRunningPrefsBody,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget runningPrefsPageStates(BuildContext context) {
   return const WidgetbookWrapCatalogFrame(
-    title: 'RunningPrefsPage',
+    title: 'OnboardingRunningPrefsBody',
     children: [
       WidgetbookPhoneStateCard(
         label: 'onboarding completion',
         child: WidgetbookMaterialPhoneFrame(
-          child: WidgetbookOnboardingScope(child: RunningPrefsPage()),
+          child: WidgetbookOnboardingScope(child: OnboardingRunningPrefsBody()),
         ),
       ),
       WidgetbookPhoneStateCard(
         label: 'booking resume',
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
-            child: RunningPrefsPage(runPreferencesOnly: true),
+            child: OnboardingRunningPrefsBody(runPreferencesOnly: true),
           ),
         ),
       ),
@@ -33,7 +33,7 @@ Widget runningPrefsPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.completePending,
-            child: RunningPrefsPage(runPreferencesOnly: true),
+            child: OnboardingRunningPrefsBody(runPreferencesOnly: true),
           ),
         ),
       ),
@@ -42,7 +42,7 @@ Widget runningPrefsPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             mode: WidgetbookOnboardingMode.completeError,
-            child: RunningPrefsPage(runPreferencesOnly: true),
+            child: OnboardingRunningPrefsBody(runPreferencesOnly: true),
           ),
         ),
       ),
@@ -52,7 +52,7 @@ Widget runningPrefsPageStates(BuildContext context) {
           child: WidgetbookPhoneMediaOverride(
             textScale: 2,
             child: WidgetbookOnboardingScope(
-              child: RunningPrefsPage(runPreferencesOnly: true),
+              child: OnboardingRunningPrefsBody(runPreferencesOnly: true),
             ),
           ),
         ),

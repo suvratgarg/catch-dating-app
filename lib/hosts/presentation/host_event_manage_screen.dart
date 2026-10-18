@@ -30,14 +30,14 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_roster_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_control.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -318,7 +318,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             true) ...[
           CatchSection.fieldRows(
             first: true,
-            children: [HostEventLiveLocationControl(event: event)],
+            children: [HostEventLiveLocationField(event: event)],
           ),
           gapH20,
         ],
@@ -397,7 +397,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
         gapH20,
       ],
-      HostOperationalRosterPanel(
+      HostOperationalRosterSection(
         eventId: event.id,
         organizerId: event.clubId,
         allowManualGuest: screenState.phase == HostEventWorkspacePhase.runtime,
@@ -408,7 +408,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       ),
       if (!event.isExternalCompanion) ...[
         gapH20,
-        HostEventParticipantsPanel(
+        HostEventParticipantsSection(
           eventId: event.id,
           mode: rosterMode,
           initialSearchQuery: widget.initialParticipantSearchQuery,
@@ -436,7 +436,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       errorContext: AppErrorContext.event,
     );
     if (widget.initialSection == HostEventManageSection.guests) {
-      return HostEventRosterPanel(
+      return HostEventRosterSection(
         bookedCount: bookedCount,
         onClose: onBackToSuccess,
         onMessageGuests: () => _openEventMessages(club, event),

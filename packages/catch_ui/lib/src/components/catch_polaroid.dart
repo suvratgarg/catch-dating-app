@@ -42,7 +42,7 @@ class CatchPolaroid extends StatelessWidget {
     return CatchSurface(
       key: const ValueKey('person-polaroid'),
       onTap: onTap,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       radius: CatchLayout.personPolaroidRadius,
       emphasis: CatchSurfaceEmphasis.subtle,
       backgroundColor: t.surface,

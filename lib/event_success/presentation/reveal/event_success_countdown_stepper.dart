@@ -53,17 +53,21 @@ class EventSuccessCountdownStepper extends StatelessWidget {
                     alpha: CatchOpacity.revealBeatFillInactive,
                   ),
                 },
-                borderColor: switch (entry.$2.state) {
-                  EventSuccessProgressStatus.current => t.gold.withValues(
-                    alpha: CatchOpacity.revealBeatBorderActive,
-                  ),
-                  EventSuccessProgressStatus.complete => t.success.withValues(
-                    alpha: CatchOpacity.revealBeatBorderInactive,
-                  ),
-                  EventSuccessProgressStatus.future => t.ink3.withValues(
-                    alpha: CatchOpacity.revealBeatBorderInactive,
-                  ),
-                },
+                borderSpec: CatchBorder.resolve(
+                  t,
+                  CatchBorderRole.boundary,
+                  color: switch (entry.$2.state) {
+                    EventSuccessProgressStatus.current => t.gold.withValues(
+                      alpha: CatchOpacity.revealBeatBorderActive,
+                    ),
+                    EventSuccessProgressStatus.complete => t.success.withValues(
+                      alpha: CatchOpacity.revealBeatBorderInactive,
+                    ),
+                    EventSuccessProgressStatus.future => t.ink3.withValues(
+                      alpha: CatchOpacity.revealBeatBorderInactive,
+                    ),
+                  },
+                ),
                 padding: _revealBeatPadding,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

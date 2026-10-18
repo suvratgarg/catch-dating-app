@@ -181,7 +181,7 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'pass pending',
         child: WidgetbookCatchesDeviceFrame(
-          child: CatchesProfileReview(
+          child: CatchesProfileBody(
             profile: CatchesSurfaceFixtures.candidates.first,
             remainingCount: CatchesSurfaceFixtures.candidates.length,
             viewerProfile: CatchesSurfaceFixtures.viewer,
@@ -197,7 +197,7 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'reaction pending',
         child: WidgetbookCatchesDeviceFrame(
-          child: CatchesProfileReview(
+          child: CatchesProfileBody(
             profile: CatchesSurfaceFixtures.candidates.first,
             remainingCount: CatchesSurfaceFixtures.candidates.length,
             viewerProfile: CatchesSurfaceFixtures.viewer,

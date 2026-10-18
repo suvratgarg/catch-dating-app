@@ -1,5 +1,5 @@
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
+import 'package:catch_ui/src/patterns/catch_form_list.dart';
 import 'package:flutter/material.dart';
 
 /// Form-owned bounded range draft with explicit confirmation and patch saves.

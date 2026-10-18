@@ -1,4 +1,4 @@
-part of 'event_success_feature_blocks.dart';
+part of 'event_success_conversation_cue_card.dart';
 
 class ConversationCueRow extends StatelessWidget {
   const ConversationCueRow({super.key, required this.cue});

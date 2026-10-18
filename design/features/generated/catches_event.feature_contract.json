@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:2238acec04a6cb5d08772e1d2b8364c3913e67bf7db9e0ec497b716f7b1f6bb4",
-  "resolvedDigest": "sha256:ef7212afdec7a870f044168b4bef3cee3b653a4915af54c7fe5463038101d612",
+  "resolvedDigest": "sha256:f5588d8be65561b593584b500325808621eefe65a9bf3dd579694f506e4ca6b1",
   "feature": {
     "id": "feature.catches_event",
     "name": "Catches Event Deck",
@@ -374,12 +374,12 @@
             ],
             "previewIds": [
               "SwipeScreen/Event deck route states",
-              "CatchesProfileReview/Deck composition",
+              "CatchesProfileBody/Deck composition",
               "ProfileSurface/Catches profile states",
               "CatchesTopOverlay/Top overlay states",
-              "CatchesBottomScrim/Bottom scrim states",
+              "CatchesScrimOverlay/Bottom scrim states",
               "CatchesPassButton/Pass button states",
-              "ProfileReactionControls/Reaction control states"
+              "ProfileReactionAction/Reaction control states"
             ],
             "tests": []
           },
@@ -480,7 +480,7 @@
             ],
             "previewIds": [
               "SwipeScreen/Event deck route states",
-              "ProfileReactionControls/Reaction control states",
+              "ProfileReactionAction/Reaction control states",
               "ProfileReactionCommentSheet/Reaction comment sheet states"
             ],
             "tests": [
@@ -1268,12 +1268,12 @@
           }
         ],
         "previews": [
-          "CatchesBottomScrim/Bottom scrim states",
           "CatchesPassButton/Pass button states",
-          "CatchesProfileReview/Deck composition",
+          "CatchesProfileBody/Deck composition",
+          "CatchesScrimOverlay/Bottom scrim states",
           "CatchesTopOverlay/Top overlay states",
+          "ProfileReactionAction/Reaction control states",
           "ProfileReactionCommentSheet/Reaction comment sheet states",
-          "ProfileReactionControls/Reaction control states",
           "ProfileSurface/Catches profile states",
           "SwipeEmptyState/Deck empty states",
           "SwipeScreen/Event deck route states"

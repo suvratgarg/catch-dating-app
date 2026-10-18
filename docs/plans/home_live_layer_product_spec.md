@@ -107,11 +107,11 @@ that the analytics calls fire from the home controller path).
 
 ## Phase 1B — Explore absorbs the evergreen content (app-only)
 
-### 1B.1 Recommendations move to Explore `[codex]`
+### 1B.1 ExploreRecommendationsSection move to Explore `[codex]`
 
-Remove the `Recommendations` module from home;
+Remove the `ExploreRecommendationsSection` module from home;
 `buildExploreBodySlivers` gains a "For you" cluster (reuse
-`Recommendations` + `RecommendCard` + `dashboardRecommendedEventsProvider`
+`ExploreRecommendationsSection` + `RecommendCard` + `dashboardRecommendedEventsProvider`
 — rename provider/repository to `explore*` naming in the same change,
 with the repo's deprecated-alias convention if referenced widely).
 Placement: after the first feed cluster, before the club directory.

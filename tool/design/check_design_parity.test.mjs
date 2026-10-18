@@ -61,7 +61,7 @@ for (const [path, required] of [
 });
 
 test("ordinary app logic does not invoke snapshot or handoff export checks", () => {
-  const plan = planAffectedToolChecks({changedPaths: ["lib/events/presentation/widgets/event_detail_cta.dart", "tool/design/check_design_parity.test.mjs"], manifest, componentGraph: graph});
+  const plan = planAffectedToolChecks({changedPaths: ["lib/events/presentation/widgets/event_detail_dock.dart", "tool/design/check_design_parity.test.mjs"], manifest, componentGraph: graph});
   assert.equal(plan.mode, "affected", plan.fullReasons?.join("\n"));
   for (const id of ["design:figma-library-snapshot", "design:sync-manifest", "design:context-pack"]) {
     assert.ok(!plan.toolIds.includes(id), id);
@@ -69,7 +69,7 @@ test("ordinary app logic does not invoke snapshot or handoff export checks", () 
 });
 
 test("Flutter handoff selection uses real inputs and retains conservative control/full runs", () => {
-  assert.deepEqual(selectedHandoffChecks(manifest, ["lib/events/presentation/widgets/event_detail_cta.dart"]), []);
+  assert.deepEqual(selectedHandoffChecks(manifest, ["lib/events/presentation/widgets/event_detail_dock.dart"]), []);
   const context = "node tool/design/build_context_pack.mjs --check";
   for (const file of ["lib/core/theme/app_theme.dart", "assets/fonts/Fixture.ttf", "packages/catch_tokens/lib/token.dart",
     "test/ui_captures/catalog/screen_capture_catalog.dart", "test/ui_captures/support/capture_device.dart", "pubspec.lock"]) {
