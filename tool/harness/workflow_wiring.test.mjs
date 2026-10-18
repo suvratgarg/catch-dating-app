@@ -579,10 +579,18 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
 
   const ordinaryDocs = namedStep(ci, "Checkout ordinary-doc closure");
   assert.match(ordinaryDocs, /steps\.docs-checkout\.outcome == 'success'/);
-  assert.match(ordinaryDocs, /steps\.docs-checkout\.outputs\.paths/);
   assert.match(ordinaryDocs, /steps\.docs-checkout\.outputs\.fetch_depth/);
-  assert.match(ordinaryDocs, /steps\.docs-checkout\.outputs\.cone_mode/);
-  assert.match(ordinaryDocs, /fromJSON\(steps\.docs-checkout\.outputs\.timeout_minutes\)/);
+  assert.match(ordinaryDocs, /timeout-minutes: 10/u);
+  assert.doesNotMatch(ordinaryDocs, /^\s+(?:sparse-checkout(?:-cone-mode)?|filter):/mu);
+  assert.equal(graph.ciCheckout.targetOverrides.docs.fetchDepth, 0);
+  const prepare = namedStep(ci, "Apply ordinary-doc working-tree closure");
+  assert.match(prepare, /steps\.docs-checkout\.outcome == 'success'/u);
+  assert.match(prepare, /DOCS_CHECKOUT_PATHS: \$\{\{ steps\.docs-checkout\.outputs\.paths \}\}/u);
+  assert.match(prepare, /DOCS_CHECKOUT_CONE_MODE: \$\{\{ steps\.docs-checkout\.outputs\.cone_mode \}\}/u);
+  assert.match(prepare, /git sparse-checkout set "\$cone_flag" --stdin/u);
+  const order = [ordinaryDocs, prepare,
+    namedStep(ci, "Check source-owned document metadata")].map((step) => ci.indexOf(step));
+  assert.deepEqual(order, [...order].sort((a, b) => a - b));
 
   const fullPolicy = namedStep(ci, "Checkout full policy closure");
   assert.match(fullPolicy, /needs\.plan\.outputs\.policy_docs == 'true'/);
@@ -594,6 +602,107 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
     new RegExp(`fetch-depth: ${graph.ciCheckout.default.fetchDepth}`),
   );
 });
+
+for (const filtered of [true, false]) {
+  test(`ordinary-doc ${filtered ? "partial" : "complete"} objects keep metadata reads offline`, (t) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-doc-checkout-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const source = path.join(root, "source");
+    const checkout = path.join(root, "checkout");
+    const receipt = path.join(root, "remote-invoked");
+    const env = {...process.env, GIT_CONFIG_GLOBAL: os.devNull,
+      GIT_CONFIG_NOSYSTEM: "1", GIT_TERMINAL_PROMPT: "0",
+      GIT_AUTHOR_NAME: "Fixture", GIT_AUTHOR_EMAIL: "fixture@example.invalid",
+      GIT_COMMITTER_NAME: "Fixture", GIT_COMMITTER_EMAIL: "fixture@example.invalid",
+      PATH: `${root}${path.delimiter}${process.env.PATH}`, CATCH_DOC_TEST_RECEIPT: receipt};
+    const git = (cwd, args) => {
+      const result = spawnSync("git", args, {cwd, env, encoding: "utf8", timeout: 10000});
+      assert.equal(result.status, 0, result.stderr);
+      return result.stdout.trim();
+    };
+    const write = (relative, content) => {
+      const file = path.join(source, relative);
+      fs.mkdirSync(path.dirname(file), {recursive: true});
+      fs.writeFileSync(file, content);
+    };
+    const doc = (id, version) => `---\ndoc_id: ${id}\nversion: ${version}\nupdated: 2026-10-17\nowner: fixture\nstatus: active\n---\n\n# ${id}\n`;
+    fs.mkdirSync(source);
+    git(source, ["init", "-q"]);
+    git(source, ["config", "core.hooksPath", os.devNull]);
+    git(source, ["config", "commit.gpgSign", "false"]);
+    git(source, ["config", "uploadpack.allowFilter", "true"]);
+    write("tool/docs/check_doc_metadata.mjs", repositorySnapshot.readText(
+      "tool/docs/check_doc_metadata.mjs", {required: true}));
+    write("AGENTS.md", doc("agents_fixture", "1.0.0"));
+    write("docs/current.md", doc("current_fixture", "1.0.0"));
+    write("docs/old-name.md", doc("renamed_fixture", "1.0.0"));
+    write("docs/base-only.md", doc("deleted_fixture", "1.0.0"));
+    git(source, ["add", "."]);
+    git(source, ["commit", "-qm", "base"]);
+    const base = git(source, ["rev-parse", "HEAD"]);
+    write("docs/current.md", doc("current_fixture", "1.1.0"));
+    fs.renameSync(path.join(source, "docs/old-name.md"), path.join(source, "docs/new-name.md"));
+    fs.unlinkSync(path.join(source, "docs/base-only.md"));
+    git(source, ["add", "-A"]);
+    git(source, ["commit", "-qm", "current"]);
+    const head = git(source, ["rev-parse", "HEAD"]);
+    write("docs/current.md", doc("current_fixture", "0.9.0"));
+    git(source, ["add", "docs/current.md"]);
+    git(source, ["commit", "-qm", "invalid decrease"]);
+    const invalid = git(source, ["rev-parse", "HEAD"]);
+    const blobs = ["HEAD:AGENTS.md", `${head}:docs/current.md`,
+      `${base}:docs/current.md`, `${base}:docs/base-only.md`, `${base}:docs/old-name.md`]
+      .map((ref) => git(source, ["rev-parse", ref]));
+    const clone = ["clone", "--no-checkout", ...(filtered ? ["--filter=blob:none"] : []),
+      new URL(`file://${source}`).href, checkout];
+    git(root, clone);
+    const prepare = extractSteps(workflow("ci.yml")).find(
+      (step) => step.name === "Apply ordinary-doc working-tree closure");
+    assert.ok(prepare?.run);
+    // Old checkout sparsified before materialization. The corrected ordinary
+    // checkout fetches complete objects and only then narrows its working tree.
+    if (!filtered) git(checkout, ["checkout", "--detach", head]);
+    const prepared = spawnSync("bash", ["-e", "-c", prepare.run], {
+      cwd: checkout, encoding: "utf8", env: {...env,
+        DOCS_CHECKOUT_PATHS: graph.ciCheckout.targetOverrides.docs.paths.join("\n"),
+        DOCS_CHECKOUT_CONE_MODE: String(graph.ciCheckout.targetOverrides.docs.coneMode)},
+    });
+    assert.equal(prepared.status, 0, prepared.stderr);
+    if (filtered) git(checkout, ["checkout", "--detach", head]);
+    fs.writeFileSync(path.join(root, "git-remote-denydocs"),
+      '#!/bin/sh\nprintf invoked > "$CATCH_DOC_TEST_RECEIPT"\nexit 1\n', {mode: 0o755});
+    git(checkout, ["remote", "set-url", "origin", "denydocs::fixture"]);
+    for (const blob of blobs) {
+      const exists = spawnSync("git", ["cat-file", "-e", blob], {
+        cwd: checkout, env: {...env, GIT_NO_LAZY_FETCH: "1"}, encoding: "utf8"});
+      assert.equal(exists.status === 0, !filtered, blob);
+    }
+    const preserved = [".git/index", ".git/config", ".git/HEAD", "tool/docs/check_doc_metadata.mjs"];
+    const before = preserved.map((relative) => fs.readFileSync(path.join(checkout, relative)));
+    const run = (...extra) => spawnSync(process.execPath,
+      ["tool/docs/check_doc_metadata.mjs", "--base", base, "--json", ...extra],
+      {cwd: checkout, env, encoding: "utf8", timeout: 10000});
+    const result = run();
+    assert.equal(result.status, filtered ? 1 : 0, result.stderr);
+    if (filtered) {
+      assert.match(result.stderr, /bad object|unable to read|missing|invalid object/u);
+    } else {
+      const report = JSON.parse(result.stdout);
+      assert.equal(report.pass, true);
+      assert.ok(report.deletions.some((row) => row.id === "deleted_fixture"));
+      assert.ok(report.increases.some((row) => row.id === "current_fixture"));
+      const bad = run("--ref", invalid);
+      assert.equal(bad.status, 1, bad.stderr);
+      assert.ok(JSON.parse(bad.stdout).findings.some((row) => row.kind === "version-decrease"));
+    }
+    assert.equal(fs.existsSync(receipt), false, "scanner must never invoke the remote");
+    for (const [index, relative] of preserved.entries()) {
+      assert.deepEqual(fs.readFileSync(path.join(checkout, relative)), before[index], relative);
+    }
+    assert.equal(fs.existsSync(path.join(checkout, "AGENTS.md")), false);
+    assert.equal(fs.existsSync(path.join(checkout, "docs")), false);
+  });
+}
 
 test("policy-only CI wiring has one Harness owner with its required dependencies", () => {
   const ci = workflow("ci.yml");
