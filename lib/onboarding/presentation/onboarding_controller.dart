@@ -392,8 +392,9 @@ class OnboardingController extends _$OnboardingController {
             ),
           );
       if (!ref.mounted ||
-          ref.read(authRepositoryProvider).currentUser?.uid != uid)
+          ref.read(authRepositoryProvider).currentUser?.uid != uid) {
         return;
+      }
       if (eventRequirements == null) {
         state = state.copyWith(
           step: profile.hasMinimumSocialPhotos
@@ -433,8 +434,9 @@ class OnboardingController extends _$OnboardingController {
         );
 
     if (!ref.mounted ||
-        ref.read(authRepositoryProvider).currentUser?.uid != uid)
+        ref.read(authRepositoryProvider).currentUser?.uid != uid) {
       return;
+    }
     await _deleteDraftNow();
   }
 

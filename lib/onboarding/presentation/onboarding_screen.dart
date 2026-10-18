@@ -13,8 +13,8 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profil
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {

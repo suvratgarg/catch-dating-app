@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -8,6 +8,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step_state.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_ui/catch_ui.dart';
