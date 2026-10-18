@@ -22,7 +22,7 @@ UserProfile _identityIncompleteUser() => UserProfile(
   name: 'New Runner',
   dateOfBirth: DateTime(1995, 6, 15),
   gender: Gender.man,
-  phoneNumber: '+910000000000',
+  phoneNumber: '',
   profileComplete: false,
 );
 
