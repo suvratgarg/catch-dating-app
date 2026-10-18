@@ -1508,17 +1508,17 @@ class _RouteLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) {
-        const loading = CatchStateViewport.loading(
-          accountForBottomOverlay: false,
-        );
-        final uidAsync = ref.watch(uidProvider);
-        final needsProfile =
-            !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
-        return CatchScaffold.standalone(
-          backgroundColor: CatchTokens.of(context).bg,
-          body: needsProfile
+    return CatchScaffold.standalone(
+      backgroundColor: CatchTokens.of(context).bg,
+      body: Consumer(
+        builder: (context, ref, _) {
+          const loading = CatchStateViewport.loading(
+            accountForBottomOverlay: false,
+          );
+          final uidAsync = ref.watch(uidProvider);
+          final needsProfile =
+              !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
+          return needsProfile
               ? CatchStateViewport(
                   accountForBottomOverlay: false,
                   child: CatchAsyncBoundary<UserProfile?>(
@@ -1531,9 +1531,9 @@ class _RouteLoadingScreen extends StatelessWidget {
                     builder: (_, _) => loading,
                   ),
                 )
-              : loading,
-        );
-      },
+              : loading;
+        },
+      ),
     );
   }
 }
