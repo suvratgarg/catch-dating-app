@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {verifyRecomputeCli} from "./lib/recompute_cli_test_support.mjs";
 import {
   applyReviewAuthorProfileRepairPlan,
   buildReviewAuthorProfileRepairPlan,
@@ -124,3 +125,7 @@ function docSnapshot(collectionName, id, value) {
     data: () => ({...value}),
   };
 }
+
+test("CLI shared helpers preserve project precedence and dry-run policy", (t) => {
+  verifyRecomputeCli(t, new URL("./recompute_review_author_profiles.mjs", import.meta.url), {reviews: {review: {reviewerUserId: "user", reviewerName: "Old"}}, users: {user: {displayName: "New"}}});
+});
