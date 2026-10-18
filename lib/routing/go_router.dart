@@ -1501,33 +1501,39 @@ ClubDetailScreen _clubDetailScreen(GoRouterState state) => ClubDetailScreen(
   initialClub: _clubDetailInitialClub(state),
 );
 
-class _RouteLoadingScreen extends ConsumerWidget {
+class _RouteLoadingScreen extends StatelessWidget {
   const _RouteLoadingScreen({required this.isHostApp});
 
   final bool isHostApp;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const loading = CatchStateViewport.loading(accountForBottomOverlay: false);
-    final uidAsync = ref.watch(uidProvider);
-    final needsProfile =
-        !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
-    return CatchScaffold.standalone(
-      backgroundColor: CatchTokens.of(context).bg,
-      body: needsProfile
-          ? CatchStateViewport(
-              accountForBottomOverlay: false,
-              child: CatchAsyncBoundary<UserProfile?>(
-                value: ref.watch(watchUserProfileProvider),
-                errorContext: AppErrorContext.profile,
-                retainDataOn: const {},
-                onRetry: () => ref.invalidate(watchUserProfileProvider),
-                loadingBuilder: (_) => loading,
-                // The router refresh resumes the destination once resolved.
-                builder: (_, _) => loading,
-              ),
-            )
-          : loading,
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, _) {
+        const loading = CatchStateViewport.loading(
+          accountForBottomOverlay: false,
+        );
+        final uidAsync = ref.watch(uidProvider);
+        final needsProfile =
+            !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
+        return CatchScaffold.standalone(
+          backgroundColor: CatchTokens.of(context).bg,
+          body: needsProfile
+              ? CatchStateViewport(
+                  accountForBottomOverlay: false,
+                  child: CatchAsyncBoundary<UserProfile?>(
+                    value: ref.watch(watchUserProfileProvider),
+                    errorContext: AppErrorContext.profile,
+                    retainDataOn: const {},
+                    onRetry: () => ref.invalidate(watchUserProfileProvider),
+                    loadingBuilder: (_) => loading,
+                    // The router refresh resumes the destination once resolved.
+                    builder: (_, _) => loading,
+                  ),
+                )
+              : loading,
+        );
+      },
     );
   }
 }
