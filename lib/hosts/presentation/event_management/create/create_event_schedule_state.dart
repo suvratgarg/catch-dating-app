@@ -8,7 +8,7 @@ class CreateEventScheduleState {
   const CreateEventScheduleState({
     required this.selectedDate,
     required this.selectedStartTime,
-    this.durationMinutes = CatchBusinessRules.eventDefaultDurationMinutes,
+    this.durationMinutes = BusinessRules.eventDefaultDurationMinutes,
   });
 
   final DateTime? selectedDate;
@@ -34,10 +34,10 @@ class CreateEventScheduleState {
   }
 
   bool get canDecreaseDuration =>
-      durationMinutes > CatchBusinessRules.eventMinDurationMinutes;
+      durationMinutes > BusinessRules.eventMinDurationMinutes;
 
   bool get canIncreaseDuration =>
-      durationMinutes < CatchBusinessRules.eventMaxDurationMinutes;
+      durationMinutes < BusinessRules.eventMaxDurationMinutes;
 
   CreateEventSchedulePickerResult selectDate(
     DateTime selectedDate, {
@@ -86,16 +86,14 @@ class CreateEventScheduleState {
   CreateEventScheduleState decreaseDuration() {
     if (!canDecreaseDuration) return this;
     return _copyWith(
-      durationMinutes:
-          durationMinutes - CatchBusinessRules.eventDurationStepMinutes,
+      durationMinutes: durationMinutes - BusinessRules.eventDurationStepMinutes,
     );
   }
 
   CreateEventScheduleState increaseDuration() {
     if (!canIncreaseDuration) return this;
     return _copyWith(
-      durationMinutes:
-          durationMinutes + CatchBusinessRules.eventDurationStepMinutes,
+      durationMinutes: durationMinutes + BusinessRules.eventDurationStepMinutes,
     );
   }
 

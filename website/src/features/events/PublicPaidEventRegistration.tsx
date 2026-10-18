@@ -304,6 +304,9 @@ export function PublicPaidRegistrationView(
                     {text.refresh}
                   </Button>
                 ) : null}
+                {admission ? <ButtonLink href={`/booking/${encodeURIComponent(admission.eventId)}/`}>
+                  {copy.eventAccess}
+                </ButtonLink> : null}
                 {admission && payment?.cancellationQuote ? (
                   <Button
                     type="button"

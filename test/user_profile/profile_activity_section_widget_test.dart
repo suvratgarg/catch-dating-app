@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -41,7 +41,7 @@ void main() {
                   child: child!,
                 ),
                 home: Scaffold(
-                  body: ProfileTabContent(
+                  body: ProfileTabBody(
                     user: buildUser(name: 'Sara Demo'),
                     uploadState: const PhotoUploadState(),
                     builder: (context, children) => ListView(

@@ -39,7 +39,7 @@ final class EventRecapReady extends EventRecapScreenState {
     required this.openDeckActionEnabled,
   });
 
-  final EventRecapHeroState hero;
+  final EventRecapHeaderState hero;
   final List<EventRecapAttendeeRow> attendeeRows;
   final List<String> attendeeIds;
   final EventRecapProfileLookupStatus profileLookupStatus;
@@ -51,8 +51,8 @@ final class EventRecapReady extends EventRecapScreenState {
   bool get hasAttendees => attendeeIds.isNotEmpty;
 }
 
-class EventRecapHeroState {
-  const EventRecapHeroState({
+class EventRecapHeaderState {
+  const EventRecapHeaderState({
     required this.kicker,
     required this.distanceLabel,
     required this.activityCheckedInLabel,
@@ -68,7 +68,7 @@ class EventRecapHeroState {
   final String timeLabel;
   final String windowLabel;
 
-  factory EventRecapHeroState.fromEvent({
+  factory EventRecapHeaderState.fromEvent({
     required Event event,
     required int checkedInCount,
     required DateTime now,
@@ -81,7 +81,7 @@ class EventRecapHeroState {
           )
         : l10n.swipesEventRecapScreenStateVisiblecopyCatchWindowClosed;
 
-    return EventRecapHeroState(
+    return EventRecapHeaderState(
       kicker: l10n.swipesEventRecapScreenStateKickerTouppercaseComplete(
         toUpperCase: event.title.toUpperCase(),
       ),
@@ -213,7 +213,7 @@ EventRecapScreenState _eventRecapDataState({
   };
 
   return EventRecapReady(
-    hero: EventRecapHeroState.fromEvent(
+    hero: EventRecapHeaderState.fromEvent(
       event: viewModel.event,
       checkedInCount: viewModel.checkedInCount,
       now: now,

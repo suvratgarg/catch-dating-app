@@ -1,15 +1,112 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import {
   activityNotificationId,
   allowsPushPreference,
   buildFcmMessage,
+  createActivityNotificationIfAbsent,
   eventActivityNotificationCopy,
   eventCompanionReadyNotificationCopy,
   notificationProfileAvatar,
 } from "./notifications";
 import type {EventDocument, PublicProfileDocument} from
   "./generated/firestoreAdminTypes";
+
+// Model only transaction callback replay: discarded attempts stage writes,
+// but only the final successful callback's writes and return value commit.
+function activityTransaction(existsByAttempt: boolean[], commitError?: Error) {
+  type Write = {path: string; data: Record<string, unknown>};
+  const attempts: Write[][] = [];
+  const committed: Write[] = [];
+  const ref = {path: "notifications/recipient/items/reminder"};
+  const db = {
+    collection: (collection: string) => {
+      assert.equal(collection, "notifications");
+      return {doc: (uid: string) => {
+        assert.equal(uid, "recipient");
+        return {collection: (items: string) => {
+          assert.equal(items, "items");
+          return {doc: (id: string) => {
+            assert.equal(id, "reminder");
+            return ref;
+          }};
+        }};
+      }};
+    },
+    runTransaction: async (
+      callback: (tx: FirebaseFirestore.Transaction) => Promise<unknown>,
+    ) => {
+      let result: unknown;
+      for (const exists of existsByAttempt) {
+        const writes: Write[] = [];
+        attempts.push(writes);
+        result = await callback({
+          get: async (target: unknown) => {
+            assert.equal(target, ref);
+            return {exists};
+          },
+          create: (target: typeof ref, data: Record<string, unknown>) => {
+            assert.equal(target, ref);
+            writes.push({path: target.path, data});
+          },
+        } as unknown as FirebaseFirestore.Transaction);
+      }
+      if (commitError) throw commitError;
+      committed.push(...attempts.at(-1)!);
+      return result;
+    },
+  } as unknown as FirebaseFirestore.Firestore;
+  return {db, attempts, committed};
+}
+
+const activity = {
+  id: "reminder", uid: "recipient", type: "eventReminder" as const,
+  title: "Reminder", body: "Starts soon", eventId: "event",
+  organizerId: "organizer", createdAt: Timestamp.fromMillis(1234),
+};
+
+test("activity creation reports the committed new notification", async () => {
+  const store = activityTransaction([false]);
+  assert.equal(await createActivityNotificationIfAbsent(store.db, activity),
+    true);
+  assert.deepEqual(store.committed, [{
+    path: "notifications/recipient/items/reminder",
+    data: {uid: activity.uid, type: activity.type, title: activity.title,
+      body: activity.body, eventId: activity.eventId,
+      organizerId: activity.organizerId, createdAt: activity.createdAt,
+      readAt: null},
+  }]);
+});
+
+test("existing activity reports false without overwriting it", async () => {
+  const store = activityTransaction([true]);
+  assert.equal(await createActivityNotificationIfAbsent(store.db, activity),
+    false);
+  assert.deepEqual(store.attempts, [[]]);
+  assert.deepEqual(store.committed, []);
+});
+
+test("aborted create then existing retry reports the committed false result",
+  async () => {
+    const store = activityTransaction([false, true]);
+    assert.equal(await createActivityNotificationIfAbsent(store.db, activity),
+      false);
+    assert.equal(store.attempts.length, 2);
+    assert.equal(store.attempts[0].length, 1);
+    assert.deepEqual(store.attempts[1], []);
+    assert.deepEqual(store.committed, []);
+  });
+
+test("failed activity commit rejects instead of reporting creation",
+  async () => {
+    const failure = new Error("commit failed");
+    const store = activityTransaction([false], failure);
+    await assert.rejects(createActivityNotificationIfAbsent(store.db, activity),
+      (error: unknown) => error === failure);
+    assert.equal(store.attempts[0].length, 1);
+    assert.deepEqual(store.committed, []);
+  });
 
 test("arrival wire preserves role, recipient, identity and ids", () => {
   const message = buildFcmMessage({

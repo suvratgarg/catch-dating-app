@@ -110,18 +110,18 @@
       "routeIds": ["hostClubsScreen"],
       "semanticFieldCount": 8,
       "bindings": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "HostClubEditTab"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart", "symbol": "HostClubEditBody"},
         {"file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart", "symbol": "HostClubEventDefaultsScreen"},
         {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormRowList<UpdateClubPatch>", "expected": 2},
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart", "symbol": "CatchFormList<UpdateClubPatch>", "expected": 2},
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_rows.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
       ],
-      "targetModes": ["CatchFormRowList", "CatchField.choices"],
+      "targetModes": ["CatchFormList", "CatchField.choices"],
       "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
       "verification": [
-        "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
+        "Host Club Identity and Contact sections render through two typed CatchFormList<UpdateClubPatch> instances",
         "Contract alignment test covers all eight editable Host Club patch fields, including organizer type",
         "Deleted HostInline editors leave zero production legacy call sites"
       ],
@@ -138,7 +138,7 @@
       "routeIds": ["hostClubTeamScreen"],
       "semanticFieldCount": 3,
       "bindings": [
-        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileRows"}
+        {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "HostTeamProfileList"}
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart", "symbol": "CatchField.inputActions", "expected": 3}
@@ -179,11 +179,11 @@
       "semanticFieldCount": 5,
       "bindings": [
         {"file": "lib/event_success/presentation/event_success_companion_body_screen.dart", "symbol": "EventSuccessCompanionScreen"},
-        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "EventSuccessFeedbackForm"}
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart", "symbol": "EventSuccessFeedbackForm"}
       ],
       "anchors": [
-        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "CatchField.toggle", "expected": 1},
-        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart", "symbol": "CatchField.input", "expected": 1}
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart", "symbol": "CatchField.toggle", "expected": 1},
+        {"file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart", "symbol": "CatchField.input", "expected": 1}
       ],
       "targetModes": ["CatchField.control", "CatchField.choices", "CatchField.stepper"],
       "preserve": ["privacy rules", "feedback state", "specialized rating interaction"],
@@ -247,12 +247,12 @@
       "routeIds": ["authScreen"],
       "semanticFieldCount": 2,
       "bindings": [
-        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "PhonePage"},
-        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "OtpPage"}
+        {"file": "lib/auth/presentation/phone_step.dart", "symbol": "PhoneStep"},
+        {"file": "lib/auth/presentation/otp_step.dart", "symbol": "OtpStep"}
       ],
       "anchors": [
-        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFieldLabelText", "expected": 1},
-        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchCodeInput", "expected": 2}
+        {"file": "lib/auth/presentation/phone_step.dart", "symbol": "CatchFieldLabelText", "expected": 1},
+        {"file": "lib/auth/presentation/otp_step.dart", "symbol": "CatchCodeInput", "expected": 2}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control"],
       "preserve": ["country picker", "OTP semantics", "autofill", "auth timing and focus behavior"],

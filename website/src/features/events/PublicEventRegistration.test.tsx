@@ -1,8 +1,10 @@
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import type {PropsWithChildren} from "react";
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
-const api = vi.hoisted(() => ({begin: vi.fn(), register: vi.fn(), confirm: vi.fn(), clear: vi.fn()}));
+const api = vi.hoisted(() => ({begin: vi.fn(), register: vi.fn(), confirm: vi.fn(), clear: vi.fn(), watch: vi.fn()}));
 vi.mock("../../firebase", () => ({beginPublicEventPhoneVerification: api.begin,
-  registerPublicEvent: api.register}));
+  registerPublicEvent: api.register, watchPublicFormAuthState: api.watch}));
 vi.mock("../eventMessaging/EventSmsPreferencePanel", () => ({
   EventSmsPreferencePanel: ({eventId, attendeeId}: {eventId: string; attendeeId: string}) =>
     <section aria-label="Event text preferences">{eventId}:{attendeeId}</section>,
@@ -19,13 +21,19 @@ import {PublicEventRegistration} from "./PublicEventRegistration";
 import {eventDetailCopy} from "../../content/events";
 const copy = eventDetailCopy.hero.webRegistration;
 afterEach(cleanup);
+let client: QueryClient;
+function wrapper({children}: PropsWithChildren) {
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+}
 beforeEach(() => {
+  client = new QueryClient({defaultOptions: {queries: {retry: false}}});
   vi.clearAllMocks();
   api.begin.mockResolvedValue({confirm: api.confirm, clear: api.clear});
-  api.confirm.mockResolvedValue(undefined);
+  api.confirm.mockResolvedValue({uid: "guest", phoneNumber: "+919999999999"});
+  api.watch.mockImplementation((next) => { next(null); return () => undefined; });
 });
 async function register() {
-  render(<PublicEventRegistration eventId="event-1" />);
+  render(<PublicEventRegistration eventId="event-1" />, {wrapper});
   expect(screen.queryByRole("region", {name: "Event text preferences"})).toBeNull();
   expect(screen.queryByRole("region", {name: "Event RCS preferences"})).toBeNull();
   expect(screen.queryByRole("region", {name: "Event WhatsApp preferences"})).toBeNull();

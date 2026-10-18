@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart'
     show EventSuccessCountdownStepper;
-import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart'
     show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';

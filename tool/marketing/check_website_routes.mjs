@@ -328,7 +328,7 @@ function validatePageKey(route) {
     privacy: "pathname.startsWith(\"/privacy\")",
     terms: "pathname.startsWith(\"/terms\")",
     help: "pathname.startsWith(\"/help\")",
-    host: "pathname.startsWith(\"/host\")",
+    host: '["/host", "/host/", "/host/apply", "/host/apply/"].includes(pathname)',
     event_runtime: "pathname.startsWith(\"/join/\")",
     sales_demo: "pathname.startsWith(\"/demo/\")",
     event_assistance: "pathname.startsWith(\"/event-update/\")",
@@ -922,16 +922,7 @@ export const OrganizerSearch = {
         "home",
     "visitor_discovery",
         "host",
-        "host_overview",
-        "host_platform",
-        "host_planners",
-        "host_mixers",
-        "host_clubs",
-        "host_directory",
-        "host_claim",
         "host_apply",
-        "host_stack",
-        "host_workflows",
         "public_form",
         "event_runtime",
         "event_rehearsal",
@@ -994,10 +985,10 @@ export const OrganizerSearch = {
     validateWebsiteMeta({
       ...validMeta,
       routes: Object.fromEntries(
-        Object.entries(validMeta.routes).filter(([key]) => key !== "host_workflows")
+        Object.entries(validMeta.routes).filter(([key]) => key !== "host_apply")
       ),
     }).join("\n"),
-    /routes is missing host_workflows/u
+    /routes is missing host_apply/u
   );
   assert.match(
     validateWebsiteMeta({

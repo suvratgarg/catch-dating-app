@@ -60,12 +60,12 @@ Widget clubDetailBodyComposition(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Embedded read-only preview',
-  type: ClubDetailReadOnlyPreviewSliver,
+  type: ClubDetailReadOnlyPreview,
   path: '[Club Detail]/Sections',
 )
 Widget clubDetailReadOnlyPreviewComposition(BuildContext context) {
   return const WidgetbookScrollCatalogFrame(
-    title: 'ClubDetailReadOnlyPreviewSliver',
+    title: 'ClubDetailReadOnlyPreview',
     catalogId: 'screen.club.detail.sections.read_only_preview',
     children: [
       WidgetbookPageStateCard(

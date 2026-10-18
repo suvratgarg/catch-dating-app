@@ -8,6 +8,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
+import {scanDartSource, tokenizeDartSyntax} from "../lib/dart_source.mjs";
 import {
   baselineFromOrphans,
   evaluateOrphanRatchet,
@@ -169,6 +170,28 @@ test("inventory generation is deterministic JSON", () => {
   assert.equal(firstCli.status, 0, firstCli.stderr);
   assert.equal(secondCli.status, 0, secondCli.stderr);
   assert.equal(firstCli.stdout, secondCli.stdout);
+});
+
+test("shared tokenizer preserves l10n APIs and UTF-16 offsets through nested interpolation", () => {
+  const source = [
+    "// 😀 l10n.commentOnly",
+    "final message = '''😀 ${ {'value': \"${l10n?.nestedKey}\"} }''';",
+    "/* nested /* l10n.hidden */ comment */ final direct = l10n.directKey;",
+    "final raw = r'${l10n.rawOnly}';",
+    String.raw`final escaped = '\${l10n.escapedOnly}';`,
+  ].join("\r\n");
+  const expected = ["nestedKey", "directKey"].map((key) => ({
+    key, offset: source.indexOf(key),
+    receiverOffset: source.lastIndexOf("l10n", source.indexOf(key)),
+    operator: key === "nestedKey" ? "?." : ".",
+  }));
+  assert.deepEqual(findL10nMemberReferences(source), expected);
+  assert.deepEqual(tokenizeDartIdentifiers(source), tokenizeDartSyntax(source)
+    .filter((token) => token.kind === "identifier")
+    .map(({identifier, offset}) => ({identifier, offset})));
+  assert.deepEqual(scanDartSource(source).tokens, tokenizeDartSyntax(source));
+  for (const {identifier, offset} of tokenizeDartIdentifiers(source))
+    assert.equal(source.slice(offset, offset + identifier.length), identifier);
 });
 
 test("CLI fails the new-orphan fixture and passes the reduction fixture", () => {

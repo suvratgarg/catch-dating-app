@@ -60,7 +60,7 @@ class HostEventEditSaveRequest {
     final startTime = scheduleLocked ? event.startTime : selectedStartDateTime;
     final endTime = scheduleLocked
         ? event.endTime
-        : startTime.add(CatchBusinessRules.eventDuration(durationMinutes));
+        : startTime.add(BusinessRules.eventDuration(durationMinutes));
     final meetingLocation = EventMeetingLocation(
       name: meetingPoint.trim(),
       address: meetingLocationAddress,
@@ -165,7 +165,8 @@ EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
     EventAdmissionPreset.openCapacity =>
       EventAdmissionDefaultPreset.openCapacity,
     EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
-    EventAdmissionPreset.requestToJoin =>
+    EventAdmissionPreset.requestToJoin ||
+    EventAdmissionPreset.requestToJoinMembersExempt =>
       EventAdmissionDefaultPreset.openCapacity,
     EventAdmissionPreset.balancedSingles =>
       EventAdmissionDefaultPreset.balancedSingles,
@@ -186,8 +187,10 @@ EventPolicyBundle _eventPolicyForDefaults({
   required int crossPathsPairCapacity,
 }) {
   EventPolicyBundle policy;
-  if (admissionPreset == EventAdmissionPreset.requestToJoin) {
+  if (admissionPreset.requiresReview) {
     policy = EventPolicyBundle.requestToJoinEvent(
+      approvedMembersSkipReview:
+          admissionPreset == EventAdmissionPreset.requestToJoinMembersExempt,
       capacityLimit: capacityLimit,
       basePriceInPaise: basePriceInPaise,
       cancellationPolicy: defaults.cancellationPolicy,

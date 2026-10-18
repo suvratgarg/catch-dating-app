@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -33,8 +33,8 @@ Widget eventSuccessStrictEventSuccessConversationCueCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessPostEventReport",
-  type: EventSuccessPostEventReport,
+  name: "EventSuccessReportSectionList",
+  type: EventSuccessReportSectionList,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
 )
@@ -42,7 +42,7 @@ Widget eventSuccessStrictEventSuccessPostEventReport(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessPostEventReport",
+    componentName: "EventSuccessReportSectionList",
   );
 }
 

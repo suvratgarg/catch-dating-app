@@ -161,8 +161,8 @@ Widget eventSuccessStrictStageConversationCueCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "StageCueLine",
-  type: StageCueLine,
+  name: "StageCueCard",
+  type: StageCueCard,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
@@ -170,7 +170,7 @@ Widget eventSuccessStrictStageCueLine(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageCueLine",
+    componentName: "StageCueCard",
   );
 }
 
@@ -245,8 +245,8 @@ Widget eventSuccessStrictStagePromptCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "StageSectionLabel",
-  type: StageSectionLabel,
+  name: "StageSectionHeader",
+  type: StageSectionHeader,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
@@ -254,7 +254,7 @@ Widget eventSuccessStrictStageSectionLabel(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageSectionLabel",
+    componentName: "StageSectionHeader",
   );
 }
 

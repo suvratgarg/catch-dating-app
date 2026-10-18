@@ -53,7 +53,7 @@ describe("organizer presence sections", () => {
     const localNav = screen.getByRole("navigation", {name: "On this page"});
     const globalNav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(globalNav).getAllByRole("link").map((link) => link.textContent))
-      .toEqual(["Product", "Solutions", "Explore", "Resources"]);
+      .toEqual(["Find events", "Organisers", "Catch Host", "Pricing and access"]);
     for (const label of ["Events", "About", "Reviews"]) {
       expect(within(localNav).getByRole("link", {name: label})).toBeTruthy();
       expect(within(globalNav).queryByRole("link", {name: label})).toBeNull();

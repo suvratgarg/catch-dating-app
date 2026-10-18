@@ -58,8 +58,8 @@
           {
             "id": "edit_tab",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-            "symbol": "HostClubEditTab"
+            "file": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
+            "symbol": "HostClubEditBody"
           },
           {
             "id": "edit_controller",
@@ -70,8 +70,8 @@
           {
             "id": "spoke_resolver",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-            "symbol": "HostClubSpokeResolver"
+            "file": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
+            "symbol": "HostClubSpokeAsyncBoundary"
           },
           {
             "id": "defaults_saver",
@@ -82,8 +82,8 @@
           {
             "id": "insights",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-            "symbol": "HostClubInsightsPane"
+            "file": "lib/hosts/presentation/host_operations/host_club_insights_section.dart",
+            "symbol": "HostClubInsightsSection"
           },
           {
             "id": "payout_adapter",

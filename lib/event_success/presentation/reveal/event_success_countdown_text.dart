@@ -21,8 +21,10 @@ class EventSuccessCountdownText extends StatelessWidget {
         backgroundColor: t.surface.withValues(
           alpha: CatchOpacity.revealSurfaceFill,
         ),
-        borderColor: t.surface.withValues(
-          alpha: CatchOpacity.revealSurfaceBorder,
+        borderSpec: CatchBorder.resolve(
+          t,
+          CatchBorderRole.boundary,
+          color: t.surface.withValues(alpha: CatchOpacity.revealSurfaceBorder),
         ),
         padding: CatchInsets.listBody,
         child: Column(

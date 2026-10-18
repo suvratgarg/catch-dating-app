@@ -1,13 +1,28 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        UpdatePrivateEventDetailsCallableRequest,
+        ReconcilePrivateEventSeatsCallableRequest;
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/events/domain/event_content_validation.dart';
+import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
-final _detailIdPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
-final _detailRequestPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$');
-final _detailHashPattern = RegExp(r'^[a-f0-9]{64}$');
+bool _validDetailId(String value) => acceptsContractValue(
+  CatchContractConstraints.updatePrivateEventDetailsCallablePayloadEventId,
+  value,
+);
+final _detailRequestPattern = RegExp(
+  CatchContractConstraints
+      .updatePrivateEventDetailsCallablePayloadRequestId
+      .pattern!,
+);
 
 /// A partial command. Missing keys leave the event field unchanged; clear is
 /// explicit. Organizer suggestions are copied only by an inherit command.
@@ -18,11 +33,15 @@ class PrivateEventDetailsPatch {
     this.meetingLocation,
     this.eventFormat,
     this.description,
+    this.itinerary,
+    this.eventPhotos,
     this.admissionTerms,
     this.distanceKm,
     this.pace,
   });
 
+  final List<EventItineraryItem>? itinerary;
+  final List<UploadedPhoto>? eventPhotos;
   final String? description;
   final PrivateEventAdmissionTerms? admissionTerms;
   final double? distanceKm;
@@ -38,51 +57,76 @@ class PrivateEventDetailsPatch {
         meetingLocation == null &&
         eventFormat == null &&
         description == null &&
+        itinerary == null &&
+        eventPhotos == null &&
         admissionTerms == null &&
         distanceKm == null &&
         pace == null) {
       return false;
     }
-    if ((description != null && description!.length > 2000) ||
-        (admissionTerms != null && !admissionTerms!.isValid) ||
-        (distanceKm != null &&
-            (!distanceKm!.isFinite || distanceKm! < 0 || distanceKm! > 100)) ||
-        (pace != null &&
-            !const {
-              'easy',
-              'moderate',
-              'fast',
-              'competitive',
-            }.contains(pace))) {
+    if (itinerary != null && !isValidEventItinerary(itinerary!)) return false;
+    if (description != null &&
+            !acceptsContractValue(
+              CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsDescription,
+              description,
+            ) ||
+        admissionTerms != null && !admissionTerms!.isValid ||
+        distanceKm != null &&
+            !acceptsContractValue(
+              CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsDistanceKm,
+              distanceKm,
+            ) ||
+        pace != null &&
+            !acceptsContractValue(
+              CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsPace,
+              pace,
+            ) ||
+        eventPhotos != null &&
+            !acceptsContractValue(
+              CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsEventPhotos,
+              eventPhotos,
+            )) {
       return false;
     }
     final duration = durationMinutes;
     if (duration?.mode == EventSetupValueMode.set &&
-        (duration!.value == null ||
-            duration.value! < 15 ||
-            duration.value! > 240)) {
+        !acceptsContractValue(
+          CatchContractConstraints
+              .updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesValue,
+          duration!.value,
+        )) {
       return false;
     }
-    final location = meetingLocation;
-    if (location != null &&
-        (venue != null ||
-            location.name.trim().isEmpty ||
-            location.name.length > 240 ||
-            !location.latitude.isFinite ||
-            location.latitude.abs() > 90 ||
-            !location.longitude.isFinite ||
-            location.longitude.abs() > 180)) {
+    if (meetingLocation != null &&
+        (venue != null || !isValidEventMeetingLocation(meetingLocation!))) {
       return false;
     }
     final place = venue;
     if (place?.mode == EventSetupValueMode.set &&
         (place!.value == null ||
             place.value!.trim() != place.value ||
-            place.value!.isEmpty ||
-            place.value!.length > 240)) {
+            !acceptsContractValue(
+              CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsVenueValueName,
+              place.value,
+            ))) {
       return false;
     }
     final format = eventFormat;
+    final label = format?.value?.customActivityLabel;
+    if (label != null &&
+        (label.trim().isEmpty ||
+            !acceptsContractValue(
+              CatchContractConstraints
+                  .updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueCustomActivityLabel,
+              label,
+            ))) {
+      return false;
+    }
     if (format?.mode == EventSetupValueMode.inherit ||
         (format?.mode == EventSetupValueMode.set &&
             (format!.value == null || format.value!.version != 1))) {
@@ -93,6 +137,26 @@ class PrivateEventDetailsPatch {
 
   Map<String, Object?> toJson() => {
     if (description != null) 'description': description,
+    if (itinerary != null)
+      'itinerary': itinerary!.map((item) => item.toJson()).toList(),
+    if (eventPhotos != null)
+      'eventPhotos': eventPhotos!
+          .map(
+            (photo) => {
+              ...photo.toJson(),
+              'createdAt': {
+                '_seconds': photo.createdAt.millisecondsSinceEpoch ~/ 1000,
+                '_nanoseconds':
+                    (photo.createdAt.microsecondsSinceEpoch % 1000000) * 1000,
+              },
+              'updatedAt': {
+                '_seconds': photo.updatedAt.millisecondsSinceEpoch ~/ 1000,
+                '_nanoseconds':
+                    (photo.updatedAt.microsecondsSinceEpoch % 1000000) * 1000,
+              },
+            },
+          )
+          .toList(),
     if (admissionTerms != null) 'admissionTerms': admissionTerms!.toJson(),
     if (distanceKm != null) 'distanceKm': distanceKm,
     if (pace != null) 'pace': pace,
@@ -111,6 +175,8 @@ class PrivateEventDetailsPatch {
       'venue',
       'eventFormat',
       'description',
+      'itinerary',
+      'eventPhotos',
       'admissionTerms',
       'distanceKm',
       'pace',
@@ -146,6 +212,24 @@ class PrivateEventDetailsPatch {
             rawLocation.containsKey('longitude'));
     final patch = PrivateEventDetailsPatch(
       description: json['description'] as String?,
+      itinerary: json['itinerary'] == null
+          ? null
+          : (json['itinerary'] as List)
+                .map(
+                  (item) => EventItineraryItem.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList(),
+      eventPhotos: json['eventPhotos'] == null
+          ? null
+          : (json['eventPhotos'] as List)
+                .map(
+                  (item) => privateEventPhotoFromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList(),
       distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       pace: json['pace'] as String?,
       admissionTerms: json['admissionTerms'] == null
@@ -239,25 +323,41 @@ class PrivateEventDetailsUpdateRequest {
       );
 
   bool get isValid =>
-      _detailIdPattern.hasMatch(organizerId) &&
-      _detailIdPattern.hasMatch(eventId) &&
+      _validDetailId(organizerId) &&
+      _validDetailId(eventId) &&
       _detailRequestPattern.hasMatch(requestId) &&
-      expectedSetupRevision >= 1 &&
-      expectedSetupRevision <= 999999999 &&
-      _detailHashPattern.hasMatch(reviewedDefaultsHash) &&
+      acceptsContractValue(
+        CatchContractConstraints
+            .updatePrivateEventDetailsCallablePayloadExpectedSetupRevision,
+        expectedSetupRevision,
+      ) &&
+      acceptsContractValue(
+        CatchContractConstraints
+            .updatePrivateEventDetailsCallablePayloadReviewedDefaultsHash,
+        reviewedDefaultsHash,
+      ) &&
       details.isValid &&
       (!discard ||
           (details.admissionTerms != null && details.toJson().length == 1));
 
-  Map<String, Object?> toJson() => {
-    'organizerId': organizerId,
-    'eventId': eventId,
-    'requestId': requestId,
-    'expectedSetupRevision': expectedSetupRevision,
-    'reviewedDefaultsHash': reviewedDefaultsHash,
-    'details': details.toJson(),
-    if (discard) 'discard': true,
-  };
+  Map<String, Object?> toJson() => discard
+      ? ReconcilePrivateEventSeatsCallableRequest(
+          organizerId: organizerId,
+          eventId: eventId,
+          requestId: requestId,
+          expectedSetupRevision: expectedSetupRevision,
+          reviewedDefaultsHash: reviewedDefaultsHash,
+          details: details.toJson(),
+          discard: true,
+        ).toJson()
+      : UpdatePrivateEventDetailsCallableRequest(
+          organizerId: organizerId,
+          eventId: eventId,
+          requestId: requestId,
+          expectedSetupRevision: expectedSetupRevision,
+          reviewedDefaultsHash: reviewedDefaultsHash,
+          details: details.toJson(),
+        ).toJson();
 
   factory PrivateEventDetailsUpdateRequest.fromJson(Map<String, dynamic> json) {
     if (json.keys.toSet().difference({
@@ -392,7 +492,7 @@ class PrivateSeatReconciliationResult {
         raw.length == 3 &&
         raw['kind'] == 'discarded' &&
         raw['eventId'] is String &&
-        _detailIdPattern.hasMatch(raw['eventId'] as String) &&
+        _validDetailId(raw['eventId'] as String) &&
         raw['requestId'] is String &&
         _detailRequestPattern.hasMatch(raw['requestId'] as String)) {
       return PrivateSeatReconciliationResult.discarded(
@@ -415,7 +515,7 @@ class PrivateSeatReconciliationResult {
         progress is! Map ||
         progress.length != 7 ||
         progress['eventId'] is! String ||
-        !_detailIdPattern.hasMatch(progress['eventId'] as String) ||
+        !_validDetailId(progress['eventId'] as String) ||
         !const {
           'scan',
           'plan',

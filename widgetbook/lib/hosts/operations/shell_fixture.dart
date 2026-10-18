@@ -37,6 +37,22 @@ import '../../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'role_theme.dart';
 
+/// The organizer CRM rollup every host shell preview reads.
+HostCrmSummary widgetbookHostCrmSummary(String organizerId) => HostCrmSummary(
+  organizerId: organizerId,
+  contactCount: 214,
+  pastAttendeeCount: 148,
+  repeatAttendeeCount: 37,
+  linkedAccountCount: 92,
+  importedContactCount: 61,
+  whatsappOptInCount: 74,
+  smsOptInCount: 29,
+  truncated: false,
+  inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
+  whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
+  smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
+);
+
 class WidgetbookHostShellScope extends StatelessWidget {
   const WidgetbookHostShellScope({
     super.key,
@@ -173,24 +189,9 @@ class WidgetbookHostShellScope extends StatelessWidget {
                 HostOperationsFixtures.eventsByClub[clubId] ?? const [],
               ),
         ),
-        hostCrmSummaryProvider(clubId).overrideWithValue(
-          AsyncData(
-            HostCrmSummary(
-              organizerId: clubId,
-              contactCount: 214,
-              pastAttendeeCount: 148,
-              repeatAttendeeCount: 37,
-              linkedAccountCount: 92,
-              importedContactCount: 61,
-              whatsappOptInCount: 74,
-              smsOptInCount: 29,
-              truncated: false,
-              inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
-              whatsappReadiness: HostCrmChannelReadiness.providerSetupRequired,
-              smsReadiness: HostCrmChannelReadiness.providerAndDltSetupRequired,
-            ),
-          ),
-        ),
+        hostCrmSummaryProvider(
+          clubId,
+        ).overrideWithValue(AsyncData(widgetbookHostCrmSummary(clubId))),
       ]);
     }
 
