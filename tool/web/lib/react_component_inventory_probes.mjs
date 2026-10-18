@@ -1,4 +1,55 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {buildReactComponentGraph} from "./react_component_graph.mjs";
 import {buildReactComponentInventory} from "./react_component_inventory.mjs";
+
+const graphFixture = {
+  "tsconfig.json": JSON.stringify({
+    compilerOptions: {jsx: "preserve", module: "esnext", moduleResolution: "bundler", target: "es2022", noEmit: true},
+    include: ["src"],
+  }),
+  "src/shared/Button.tsx": "export function Button() { return <button />; }\nexport function formatLabel() { return 'x'; }\n",
+  "src/shared/Panel.tsx": "import {Button} from './Button';\nfunction Inner() { return <Button />; }\nexport function Panel() { return <Inner />; }\n",
+  "src/shared/index.ts": "export * from './Panel';\n",
+  "src/features/a/Page.tsx": "import {Panel} from '../../shared';\nexport function Page() { return <Panel />; }\n",
+  "src/features/b/LazyRoute.tsx": "export default function LazyRoute() { return <div />; }\n",
+  "src/app.tsx": "import {Page} from './features/a/Page';\nexport const routes = [() => import('./features/b/LazyRoute')];\nexport function App() { return <Page />; }\n",
+  "src/shared/Dead.tsx": "export function Dead() { return <span />; }\n",
+  "src/shared/Dead.stories.tsx": "import {Dead} from './Dead';\nexport const Story = () => <Dead />;\n",
+};
+
+/** The graph follows barrels, private helpers and dynamic imports, and ignores stories. */
+export function graphProbeProblems() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "react-component-graph-probe-"));
+  try {
+    for (const [file, source] of Object.entries(graphFixture)) {
+      fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+      fs.writeFileSync(path.join(root, file), source);
+    }
+    const graph = buildReactComponentGraph({
+      repoRoot: root,
+      surfaces: [{id: "website", root: "src", tsconfig: "tsconfig.json"}],
+    });
+    const failures = [];
+    const names = graph.components.map((component) => component.name).sort();
+    if (JSON.stringify(names) !== JSON.stringify(["App", "Button", "Dead", "LazyRoute", "Page", "Panel"])) {
+      failures.push(`components should be the JSX-rendering exports, found ${names.join(", ")}`);
+    }
+    const has = (from, to) => graph.references.some((reference) => reference.from === from && reference.to === to);
+    if (!has("src/shared/Panel.tsx::Inner", "src/shared/Button.tsx::Button")) failures.push("a private helper's use was dropped");
+    if (!has("src/shared/Panel.tsx::Panel", "src/shared/Panel.tsx::Inner")) failures.push("a use of a private helper was dropped");
+    if (!has("src/features/a/Page.tsx::Page", "src/shared/Panel.tsx::Panel")) failures.push("a barrel re-export was not resolved");
+    if (!has("src/app.tsx::routes", "src/features/b/LazyRoute.tsx::LazyRoute")) failures.push("a dynamic import of a default export was missed");
+    const deadUses = graph.references.filter((reference) => reference.to === "src/shared/Dead.tsx::Dead");
+    if (deadUses.length !== 1 || deadUses[0].file !== "src/shared/Dead.stories.tsx") {
+      failures.push("story uses must stay visible as the only, non-production use of an export");
+    }
+    return failures;
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+}
 
 // Seeded known-bad inventory: each rule of the Phase 7d gate must fire once,
 // and the decided and derived cases must stay quiet.

@@ -32,7 +32,8 @@ export function isComponentName(name) {
  * consumers can be followed through them.
  */
 export function buildReactComponentGraph({repoRoot, surfaces = reactComponentSurfaces} = {}) {
-  const root = path.resolve(repoRoot);
+  // Source files are compared by real path, so the root must be one too.
+  const root = realPath(path.resolve(repoRoot));
   const components = new Map();
   const references = new Map();
   const scannedFiles = new Set();

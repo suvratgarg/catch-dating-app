@@ -9,7 +9,7 @@ import path from "node:path";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {buildReactComponentGraph} from "./lib/react_component_graph.mjs";
 import {buildReactComponentInventory} from "./lib/react_component_inventory.mjs";
-import {inventoryProbeProblems} from "./lib/react_component_inventory_probes.mjs";
+import {graphProbeProblems, inventoryProbeProblems} from "./lib/react_component_inventory_probes.mjs";
 
 const inventoryOutput = "build/react_component_inventory.json";
 const args = new Set(process.argv.slice(2));
@@ -134,7 +134,7 @@ function readRepoSource(relativePath) {
 }
 
 function runSelfTest() {
-  const probeProblems = inventoryProbeProblems();
+  const probeProblems = [...graphProbeProblems(), ...inventoryProbeProblems()];
   if (probeProblems.length > 0) {
     throw new Error(`inventory self-test failed:\n${probeProblems.join("\n")}`);
   }
