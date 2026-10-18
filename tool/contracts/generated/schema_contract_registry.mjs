@@ -137111,10 +137111,9 @@ export const mobileFormStateSchema = {
     },
     "onboardingDateOfBirthText": {
       "type": "string",
-      "minLength": 11,
       "maxLength": 11,
-      "pattern": "^\\d{2} [A-Z][a-z]{2} \\d{4}$",
-      "description": "Read-only date text rendered by the onboarding date picker before it is saved as a timestamp."
+      "pattern": "^(?:\\d{2} [A-Z][a-z]{2} \\d{4})?$",
+      "description": "Optional account date text. Social discovery requires a birthday through the profile requirements catalog."
     },
     "suvbotTesterPhoneNumber": {
       "type": "string",

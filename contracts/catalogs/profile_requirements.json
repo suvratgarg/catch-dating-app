@@ -17,12 +17,17 @@
       "extends": "account",
       "required": []
     },
-    "socialDiscovery": {
+    "socialIdentity": {
       "extends": "account",
       "required": [
         "dateOfBirth",
         "gender",
-        "interestedInGenders",
+        "interestedInGenders"
+      ]
+    },
+    "socialDiscovery": {
+      "extends": "socialIdentity",
+      "required": [
         "profilePhotos",
         "profilePrompts",
         "profileComplete"

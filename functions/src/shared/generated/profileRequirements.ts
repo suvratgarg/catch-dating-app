@@ -13,6 +13,13 @@ export const profileRequiredFields = {
     "name",
     "phoneNumber"
   ],
+  "socialIdentity": [
+    "name",
+    "phoneNumber",
+    "dateOfBirth",
+    "gender",
+    "interestedInGenders"
+  ],
   "socialDiscovery": [
     "name",
     "phoneNumber",

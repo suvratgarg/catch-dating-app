@@ -101574,10 +101574,8 @@ abstract final class CatchContractConstraints {
   static const mobileFormStateOnboardingDateOfBirthText = CatchContractFieldConstraints(
     path: 'mobileFormState.onboardingDateOfBirthText',
     maxLength: 11,
-    minLength: 11,
-    required: true,
     valueTypes: <String>['string'],
-    pattern: '^\\d{2} [A-Z][a-z]{2} \\d{4}\$',
+    pattern: '^(?:\\d{2} [A-Z][a-z]{2} \\d{4})?\$',
   );
 
   static const mobileFormStateSuvbotTesterPhoneNumber = CatchContractFieldConstraints(

@@ -6,6 +6,13 @@ const profileRequiredFields = <String, List<String>>{
   'account': <String>['name', 'phoneNumber'],
   'organizerFollow': <String>['name', 'phoneNumber'],
   'eventBooking': <String>['name', 'phoneNumber'],
+  'socialIdentity': <String>[
+    'name',
+    'phoneNumber',
+    'dateOfBirth',
+    'gender',
+    'interestedInGenders',
+  ],
   'socialDiscovery': <String>[
     'name',
     'phoneNumber',
