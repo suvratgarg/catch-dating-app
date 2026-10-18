@@ -67,6 +67,7 @@ jobs:
       app_roles: ${{ steps.plan.outputs.app_roles }}
       capture_freshness: ${{ steps.plan.outputs.capture_freshness }}
       contracts: ${{ steps.plan.outputs.contracts }}
+      preflight_functions_dependencies: ${{ steps.plan.outputs.preflight_functions_dependencies }}
       docs: ${{ steps.plan.outputs.docs }}
       docs_checkout: ${{ steps.plan.outputs.docs_checkout }}
       firestore_rules: ${{ steps.plan.outputs.firestore_rules }}
@@ -317,7 +318,7 @@ jobs:
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get --enforce-lockfile
       - name: Install selected contract generator dependencies
-        if: ${{ needs.plan.outputs.contracts == 'true' }}
+        if: ${{ needs.plan.outputs.preflight_functions_dependencies == 'true' }}
         run: npm --prefix functions ci --ignore-scripts
       - name: Execute complete source and generation preflight
         env:

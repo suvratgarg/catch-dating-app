@@ -434,7 +434,8 @@ test("CI packages one immutable backend from its exact plan and tested Functions
   const preflight = ciJob(ci, "source-preflight");
   // Source generation needs the schema compiler, but cannot build or publish
   // a second Functions payload. Packaging still consumes only the tested one.
-  assert.match(preflight, /name: Install selected contract generator dependencies\n        if: \$\{\{ needs\.plan\.outputs\.contracts == 'true' \}\}\n        run: npm --prefix functions ci --ignore-scripts\n/u);
+  assert.match(ci, /preflight_functions_dependencies: \$\{\{ steps\.plan\.outputs\.preflight_functions_dependencies \}\}/u);
+  assert.match(preflight, /name: Install selected contract generator dependencies\n        if: \$\{\{ needs\.plan\.outputs\.preflight_functions_dependencies == 'true' \}\}\n        run: npm --prefix functions ci --ignore-scripts\n/u);
   assert.equal((preflight.match(/npm --prefix functions ci/gu) ?? []).length, 1);
   assert.doesNotMatch(preflight, /npm --prefix functions (?:test|run build)|functions-lib-|package_firebase_delivery|firebase deploy/u);
   assert.doesNotMatch(ci.replace(preflight, ""), /npm --prefix functions (?:ci|test|run build)/);
