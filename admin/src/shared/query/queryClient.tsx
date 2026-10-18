@@ -1,25 +1,16 @@
-import {CancelledError, MutationCache, QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {createWebQueryClient} from "@catch/web-config/query";
+import {CancelledError, MutationCache, QueryClientProvider} from "@tanstack/react-query";
 import {type ReactNode, useLayoutEffect, useRef, useState} from "react";
 
 function createAdminQueryClient(requireCurrentSession: () => void) {
-  return new QueryClient({
+  return createWebQueryClient({
+    staleTime: 60 * 1000,
     mutationCache: new MutationCache({
       // Clearing MutationCache does not cancel an already-running mutation.
       // Fence its result and any follow-up mutation after this client retires.
       onMutate: requireCurrentSession,
       onSuccess: requireCurrentSession,
     }),
-    defaultOptions: {
-      mutations: {
-        retry: 0,
-      },
-      queries: {
-        gcTime: 10 * 60 * 1000,
-        refetchOnWindowFocus: false,
-        retry: 1,
-        staleTime: 60 * 1000,
-      },
-    },
   });
 }
 

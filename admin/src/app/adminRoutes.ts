@@ -1,0 +1,111 @@
+import {matchPath, matchRoutes, type NonIndexRouteObject} from "react-router";
+
+export const adminSections = {
+  overview: {path: "/overview", title: "Overview"},
+  safety: {path: "/safety", title: "Safety"},
+  access: {path: "/access", title: "Launch access"},
+  "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
+  growth: {path: "/growth", title: "Growth"},
+  "marketing-ops": {path: "/marketing", title: "Marketing"},
+  sales: {path: "/sales/today", title: "Sales"},
+  "organizer-intake": {path: "/intake/organizers", title: "Intake"},
+  organizers: {path: "/organizers", title: "Organizers"},
+  events: {path: "/events", title: "Events"},
+  users: {path: "/users", title: "Users"},
+  finance: {path: "/finance", title: "Finance"},
+  quality: {path: "/quality", title: "Data quality"},
+  operations: {path: "/operations", title: "Agent activity"},
+  "admin-roles": {path: "/admin-roles", title: "Admin roles"},
+} as const;
+
+export type AdminNavId = keyof typeof adminSections;
+type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
+  "diagnostics" | "draft";
+type MarketingStep = "source" | "copy" | "compliance" | "export";
+
+interface RouteState {
+  nav: AdminNavId | null;
+  title?: string;
+  salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
+  organizerWorkspace?: "directory" | "claims";
+  eventWorkspace?: "directory" | "external" | "readiness";
+  marketingTab?: MarketingTab;
+  composerStep?: MarketingStep;
+}
+
+type AdminRoute = Omit<NonIndexRouteObject, "handle"> & {handle: RouteState};
+function route(path: string, nav: AdminNavId, state: Omit<RouteState, "nav"> = {}): AdminRoute {
+  return {path, caseSensitive: true, handle: {nav, ...state}};
+}
+
+// React Router ranks static workspace names ahead of dynamic record IDs.
+// Workspace fallbacks retain existing links without selecting an unrelated record.
+export const adminRoutes: AdminRoute[] = [
+  route("/", "overview"),
+  ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
+    `/${path.split("/")[1]}/*`, nav as AdminNavId
+  )),
+  route("/marketing-ops/*", "marketing-ops"),
+  route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
+  route("/safety/:targetPath", "safety", {title: "Safety case"}),
+  route("/access/:applicationUid", "access"),
+  route("/organizers/:clubId", "organizers"),
+  route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
+  route("/organizers/claims/:claimRequestId", "organizers", {organizerWorkspace: "claims"}),
+  route("/events/:eventId", "events", {title: "Event detail"}),
+  route("/events/external/*", "events", {eventWorkspace: "external", title: "External inventory"}),
+  route("/events/external/:externalEventId", "events", {eventWorkspace: "external", title: "External event"}),
+  route("/events/readiness/*", "events", {eventWorkspace: "readiness", title: "Event readiness"}),
+  route("/events/readiness/:readinessActionId", "events", {eventWorkspace: "readiness", title: "Event readiness review"}),
+  route("/growth/signals/:growthSignalId", "growth", {title: "Growth signal"}),
+  route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
+  route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
+  route("/admin-roles/:adminRoleTargetUid", "admin-roles", {title: "Admin role assignment"}),
+  ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
+    .map((salesArea) => route(`/sales/${salesArea}/*`, "sales", {salesArea})),
+  route("/sales/hosts/:salesOrganizerId", "sales", {salesArea: "hosts"}),
+  route("/intake/*", "organizer-intake", {title: "Organizer intake"}),
+  route("/intake/events/*", "organizer-intake", {title: "Event intake"}),
+  route("/intake/operations/*", "organizer-intake", {title: "Supply intake operations"}),
+  ...(["posts", "new", "events", "media", "activity", "diagnostics"] as const)
+    .map((marketingTab) => route(`/marketing/${marketingTab}/*`, "marketing-ops", {marketingTab})),
+  route("/marketing/drafts/:draftId/*", "marketing-ops", {marketingTab: "draft", title: "Marketing draft"}),
+  ...(["source", "copy", "compliance", "export"] as const).map((composerStep) =>
+    route(`/marketing/drafts/:draftId/${composerStep}`, "marketing-ops", {
+      marketingTab: "draft", composerStep, title: "Marketing draft",
+    })),
+  {path: "*", handle: {nav: null}},
+];
+
+export function resolveAdminRoute(pathname: string) {
+  const match = matchRoutes(adminRoutes, {pathname})?.at(-1);
+  const state = match?.route.handle;
+  // matchRoutes decodes a path before matching, including an additional %2F
+  // replacement. Read parameters from the original path to preserve literal
+  // percent-encoded text in opaque IDs (e.g. an ID containing "%2F").
+  const rawParams = match?.route.path ? matchPath({
+    path: match.route.path, caseSensitive: true,
+  }, pathname)?.params ?? {} : {};
+  const params = Object.fromEntries(Object.entries(rawParams).map(([key, value]) => {
+    try { return [key, value === undefined ? undefined : decodeURIComponent(value)]; }
+    catch { return [key, value]; }
+  }));
+  return {
+    nav: state?.nav ?? null,
+    title: state?.title,
+    params,
+    salesArea: state?.salesArea ?? "today",
+    organizerWorkspace: state?.organizerWorkspace ?? "directory",
+    eventWorkspace: state?.eventWorkspace ?? "directory",
+    marketingTab: state?.marketingTab ?? "posts",
+    composerStep: state?.composerStep ?? "source",
+  };
+}
+
+export function adminPathForNav(nav: AdminNavId): string {
+  return adminSections[nav].path;
+}
+
+export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string {
+  return `/marketing/${tab}`;
+}
