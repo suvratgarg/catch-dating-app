@@ -50,7 +50,7 @@ test("source-derived widget classification passes its structural and semantic co
 
 test("classification reports existing feature naming debt without treating app bootstraps as feature UI", () => {
   const legacyFeature = classification.widgets.find((widget) =>
-    widget.file === "lib/auth/presentation/otp_page.dart" && widget.name === "OtpPage");
+    widget.file === "lib/auth/presentation/otp_step.dart" && widget.name === "OtpStep");
   assert.ok(legacyFeature);
   assert.ok(legacyFeature.flags.includes("noncanonical-feature-widget-name"));
   assert.ok(legacyFeature.flags.includes("noncanonical-feature-widget-file"));

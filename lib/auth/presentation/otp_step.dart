@@ -5,7 +5,7 @@ import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
 import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
-import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
+import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -18,8 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OtpPage extends ConsumerStatefulWidget {
-  const OtpPage({
+class OtpStep extends ConsumerStatefulWidget {
+  const OtpStep({
     super.key,
     this.presentation = AuthPagePresentation.standalone,
     this.initialCode = '',
@@ -31,10 +31,10 @@ class OtpPage extends ConsumerStatefulWidget {
   final int? initialSecondsUntilResend;
 
   @override
-  ConsumerState<OtpPage> createState() => _OtpPageState();
+  ConsumerState<OtpStep> createState() => _OtpStepState();
 }
 
-class _OtpPageState extends ConsumerState<OtpPage> {
+class _OtpStepState extends ConsumerState<OtpStep> {
   late final TextEditingController _otpController;
   Timer? _resendTimer;
   late int _secondsUntilResend;
@@ -171,14 +171,41 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       final countryIso = countryIsoForDialCode(data.countryCode);
       final reflowPhoneSummary =
           MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-      final phoneIdentity = _HostPhoneIdentity(
-        countryIso: countryIso,
-        countryCode: data.countryCode,
-        nationalPhoneNumber: viewState.maskedNationalPhoneNumber.isEmpty
-            ? l10n.authYourNumber
-            : viewState.maskedNationalPhoneNumber,
+      final phoneIdentity = Row(
+        children: [
+          Image.asset(
+            'flags/${countryIso.toLowerCase()}.png',
+            package: 'country_code_picker',
+            width: CatchSpacing.s6,
+          ),
+          gapW8,
+          Text(
+            data.countryCode,
+            style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
+          ),
+          gapW8,
+          SizedBox(
+            height: CatchSpacing.s6,
+            child: VerticalDivider(
+              width: CatchStroke.emphasis,
+              thickness: CatchStroke.hairline,
+              color: t.line2,
+            ),
+          ),
+          gapW8,
+          Expanded(
+            child: Text(
+              viewState.maskedNationalPhoneNumber.isEmpty
+                  ? l10n.authYourNumber
+                  : viewState.maskedNationalPhoneNumber,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
+            ),
+          ),
+        ],
       );
-      CatchButton editNumberButton({bool fullWidth = false}) => CatchButton(
+      final editNumberButton = CatchButton(
         key: AuthFormKeys.changeNumber,
         label: l10n.authHostEditNumberAction,
         semanticsLabel: l10n.authChangeNumberAction,
@@ -190,7 +217,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         variant: CatchButtonVariant.secondary,
         size: CatchButtonSize.sm,
         mode: CatchButtonMode.rounded,
-        fullWidth: fullWidth,
+        fullWidth: reflowPhoneSummary,
       );
 
       return HostAuthCard(
@@ -206,13 +233,13 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             if (reflowPhoneSummary) ...[
               phoneIdentity,
               gapH12,
-              editNumberButton(fullWidth: true),
+              editNumberButton,
             ] else
               Row(
                 children: [
                   Expanded(child: phoneIdentity),
                   gapW8,
-                  editNumberButton(),
+                  editNumberButton,
                 ],
               ),
             gapH16,
@@ -368,55 +395,6 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               foregroundColor: t.ink2,
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class _HostPhoneIdentity extends StatelessWidget {
-  const _HostPhoneIdentity({
-    required this.countryIso,
-    required this.countryCode,
-    required this.nationalPhoneNumber,
-  });
-
-  final String countryIso;
-  final String countryCode;
-  final String nationalPhoneNumber;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Image.asset(
-          'flags/${countryIso.toLowerCase()}.png',
-          package: 'country_code_picker',
-          width: CatchSpacing.s6,
-        ),
-        gapW8,
-        Text(
-          countryCode,
-          style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
-        ),
-        gapW8,
-        SizedBox(
-          height: CatchSpacing.s6,
-          child: VerticalDivider(
-            width: CatchStroke.emphasis,
-            thickness: CatchStroke.hairline,
-            color: t.line2,
-          ),
-        ),
-        gapW8,
-        Expanded(
-          child: Text(
-            nationalPhoneNumber,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
-          ),
         ),
       ],
     );

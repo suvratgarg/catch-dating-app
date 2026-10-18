@@ -72,7 +72,7 @@ void main() {
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.text('Filters'), findsOneWidget);
-    expect(find.byType(FiltersContent), findsOneWidget);
+    expect(find.byType(FiltersBody), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);

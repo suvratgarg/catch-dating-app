@@ -157,7 +157,7 @@ class EventRecapReadyBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              RecapHero(state: state.hero),
+              RecapHeader(state: state.hero),
               gapH24,
               Text(
                 context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
@@ -288,7 +288,7 @@ class EventRecapLoadingBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const RecapHeroSkeleton(),
+              const RecapHeaderSkeleton(),
               gapH24,
               CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
               gapH8,
@@ -314,8 +314,8 @@ class EventRecapLoadingBody extends StatelessWidget {
   }
 }
 
-class RecapHeroSkeleton extends StatelessWidget {
-  const RecapHeroSkeleton({super.key});
+class RecapHeaderSkeleton extends StatelessWidget {
+  const RecapHeaderSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -335,9 +335,9 @@ class RecapHeroSkeleton extends StatelessWidget {
           gapH18,
           const Row(
             children: [
-              Expanded(child: RecapStatSkeleton()),
-              Expanded(child: RecapStatSkeleton()),
-              Expanded(child: RecapStatSkeleton()),
+              Expanded(child: RecapStatTileSkeleton()),
+              Expanded(child: RecapStatTileSkeleton()),
+              Expanded(child: RecapStatTileSkeleton()),
             ],
           ),
         ],
@@ -346,8 +346,8 @@ class RecapHeroSkeleton extends StatelessWidget {
   }
 }
 
-class RecapStatSkeleton extends StatelessWidget {
-  const RecapStatSkeleton({super.key});
+class RecapStatTileSkeleton extends StatelessWidget {
+  const RecapStatTileSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -407,10 +407,10 @@ class _VibeGridSkeletonLayout extends StatelessWidget {
   }
 }
 
-class RecapHero extends StatelessWidget {
-  const RecapHero({super.key, required this.state});
+class RecapHeader extends StatelessWidget {
+  const RecapHeader({super.key, required this.state});
 
-  final EventRecapHeroState state;
+  final EventRecapHeaderState state;
 
   @override
   Widget build(BuildContext context) {
@@ -449,15 +449,15 @@ class RecapHero extends StatelessWidget {
           gapH18,
           Row(
             children: [
-              RecapStat(
+              RecapStatTile(
                 label: context.l10n.swipesEventRecapScreenLabelWhen,
                 value: state.whenLabel,
               ),
-              RecapStat(
+              RecapStatTile(
                 label: context.l10n.swipesEventRecapScreenLabelTime,
                 value: state.timeLabel,
               ),
-              RecapStat(
+              RecapStatTile(
                 label: context.l10n.swipesEventRecapScreenLabelCatches,
                 value: state.windowLabel,
               ),
@@ -469,8 +469,8 @@ class RecapHero extends StatelessWidget {
   }
 }
 
-class RecapStat extends StatelessWidget {
-  const RecapStat({super.key, required this.label, required this.value});
+class RecapStatTile extends StatelessWidget {
+  const RecapStatTile({super.key, required this.label, required this.value});
 
   final String label;
   final String value;

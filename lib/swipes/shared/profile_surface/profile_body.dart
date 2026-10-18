@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -151,10 +151,10 @@ class ProfileHeader extends StatelessWidget {
                   Positioned(
                     top: CatchSpacing.s3,
                     right: CatchSpacing.s3,
-                    child: ProfileReactionControls(
+                    child: ProfileReactionAction(
                       target: reaction,
                       onReact: onReact!,
-                      style: ProfileReactionControlsStyle.overlay,
+                      style: ProfileReactionActionVariant.overlay,
                       enabled: reactionsEnabled,
                       isPending: reactionsPending,
                     ),
@@ -255,7 +255,7 @@ class ProfileSection extends StatelessWidget {
         gapH3,
         Align(
           alignment: Alignment.centerLeft,
-          child: ProfileReactionControls(
+          child: ProfileReactionAction(
             target: reaction,
             onReact: onReact!,
             enabled: reactionsEnabled,
@@ -521,10 +521,10 @@ class ProfilePhotoSection extends StatelessWidget {
               Positioned(
                 top: CatchSpacing.s3,
                 right: CatchSpacing.s3,
-                child: ProfileReactionControls(
+                child: ProfileReactionAction(
                   target: reaction,
                   onReact: onReact!,
-                  style: ProfileReactionControlsStyle.overlay,
+                  style: ProfileReactionActionVariant.overlay,
                   enabled: reactionsEnabled,
                   isPending: reactionsPending,
                 ),

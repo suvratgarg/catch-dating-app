@@ -135,8 +135,8 @@
           "routeId": "authScreen",
           "implementationPaths": [
             "lib/auth/presentation/auth_screen.dart",
-            "lib/auth/presentation/phone_page.dart",
-            "lib/auth/presentation/otp_page.dart",
+            "lib/auth/presentation/phone_step.dart",
+            "lib/auth/presentation/otp_step.dart",
             "lib/core/widgets/splash_screen.dart"
           ],
           "componentIds": [
@@ -198,7 +198,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "PhonePage renders a country-code selector bound to AuthController.countryCode; deterministic captures cover the picker dialog and a non-default +61 market."
+              "notes": "PhoneStep renders a country-code selector bound to AuthController.countryCode; deterministic captures cover the picker dialog and a non-default +61 market."
             },
             {
               "id": "otp_entry",
@@ -214,7 +214,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "After codeSent, Host AuthScreen retains the same logo and card while OtpPage reveals the masked-number summary, distinct Edit number control, compact OTP cells, auto-verification state, and full-width resend control. Empty, partial, resend-ready, mutation, text-scale, reduced-motion, and light/dark captures are current; the historical manifest reference remains advisory."
+              "notes": "After codeSent, Host AuthScreen retains the same logo and card while OtpStep reveals the masked-number summary, distinct Edit number control, compact OTP cells, auto-verification state, and full-width resend control. Empty, partial, resend-ready, mutation, text-scale, reduced-motion, and light/dark captures are current; the historical manifest reference remains advisory."
             },
             {
               "id": "validation_error",
@@ -1463,9 +1463,9 @@
             "lib/clubs/presentation/detail/club_detail_view_model.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
             "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-            "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+            "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_host_section.dart",
-            "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
+            "lib/clubs/presentation/detail/widgets/club_photo_rail.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
             "lib/reviews/shared/reviews_section.dart"
@@ -1885,7 +1885,7 @@
           "implementationPaths": [
             "lib/dashboard/presentation/dashboard_screen.dart",
             "lib/dashboard/presentation/dashboard_full_view_model.dart",
-            "lib/dashboard/presentation/widgets/dashboard_empty.dart",
+            "lib/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart",
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
             "lib/dashboard/presentation/widgets/empty_hero_card.dart",
@@ -2817,7 +2817,7 @@
             "lib/swipes/presentation/swipe_queue_controller.dart",
             "lib/swipes/presentation/swipe_empty_content.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart",
-            "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
+            "lib/swipes/shared/profile_surface/profile_reaction_action.dart",
             "lib/swipes/presentation/widgets/catches_pass_button.dart",
             "lib/swipes/presentation/widgets/swipe_empty_state.dart"
           ],
@@ -2861,7 +2861,7 @@
               "id": "queue_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "Captured queue loading state now renders CatchesProfileReviewSkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
+              "notes": "Captured queue loading state now renders CatchesProfileBodySkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
               "tests": [
                 "test/swipes/swipe_screen_test.dart"
               ],
@@ -2897,12 +2897,12 @@
               "notes": "CatchesEventScreenState maps non-empty queue data to active deck display data; SwipeScreen renders profile deck, top overlay, reaction controls, pass control, and route-owned CatchesProfileReviewActionState for write-pending display. post_run_catch_window now has a manifest-registered active-profile design reference.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
-                "CatchesProfileReview/Deck composition",
+                "CatchesProfileBody/Deck composition",
                 "ProfileSurface/Catches profile states",
                 "CatchesTopOverlay/Top overlay states",
-                "CatchesBottomScrim/Bottom scrim states",
+                "CatchesScrimOverlay/Bottom scrim states",
                 "CatchesPassButton/Pass button states",
-                "ProfileReactionControls/Reaction control states"
+                "ProfileReactionAction/Reaction control states"
               ]
             },
             {
@@ -2934,7 +2934,7 @@
               "notes": "Section reactions and comments persist through SwipeQueueNotifier; Widgetbook covers disabled/pending reaction controls and empty/filled comment-sheet states, and captures cover reaction-pending deck state plus empty/filled sheet regions.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
-                "ProfileReactionControls/Reaction control states",
+                "ProfileReactionAction/Reaction control states",
                 "ProfileReactionCommentSheet/Reaction comment sheet states"
               ],
               "captureIds": [
@@ -3468,7 +3468,7 @@
             "lib/chats/presentation/widgets/message_bubble.dart",
             "lib/chats/presentation/widgets/chat_input.dart",
             "lib/chats/presentation/widgets/chat_share_card.dart",
-            "lib/chats/presentation/widgets/suvbot_action_bar.dart"
+            "lib/chats/presentation/widgets/suvbot_dock.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -3744,7 +3744,7 @@
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
-              "notes": "Suvbot conversations replace the normal composer with SuvbotActionBar controls.",
+              "notes": "Suvbot conversations replace the normal composer with SuvbotDock controls.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -3759,7 +3759,7 @@
               "tests": [
                 "test/chats/suvbot_controller_test.dart"
               ],
-              "notes": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotActionBar handles pending/error/retry states.",
+              "notes": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotDock handles pending/error/retry states.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -6261,7 +6261,7 @@
             "lib/clubs/presentation/detail/club_detail_screen_state.dart",
             "lib/clubs/presentation/detail/club_detail_view_model.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-            "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+            "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/reviews/shared/reviews_section.dart"
           ],
@@ -6501,7 +6501,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ClubHeroAppBar keeps the icon-only share affordance in host public view; ClubDetailScreen now supplies the share callback and owns the ExternalShareController side effect.",
+              "notes": "ClubHeroTopBar keeps the icon-only share affordance in host public view; ClubDetailScreen now supplies the share callback and owns the ExternalShareController side effect.",
               "previewIds": [
                 "ClubDetailScreen/Public preview states"
               ],
@@ -10602,7 +10602,7 @@
               "notes": "Filters default preferences now has a manifest-registered design reference and deterministic capture. Add loading/error, dirty/reset, save mutation, text-scale, reduced-motion, and light/dark captures before promoting beyond captured.",
               "previewIds": [
                 "FiltersScreen/Route states",
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10617,7 +10617,7 @@
               ],
               "notes": "Local draft state updates age range and gender chip selections before persistence.",
               "previewIds": [
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10629,7 +10629,7 @@
               ],
               "notes": "The top-bar Reset action restores the local draft from the profile while not saving.",
               "previewIds": [
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10641,7 +10641,7 @@
               ],
               "notes": "FiltersController.saveFiltersMutation pending drives Apply filters loading and disables reset/apply duplicate work.",
               "previewIds": [
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10675,7 +10675,7 @@
               "notes": "Text-scale 2.0 Filters capture covers range value, slider, chips, top bar, and bottom dock.",
               "previewIds": [
                 "FiltersScreen/Route states",
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10688,7 +10688,7 @@
               "notes": "Widgetbook and deterministic route captures render Filters with MediaQuery.disableAnimations enabled.",
               "previewIds": [
                 "FiltersScreen/Route states",
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             }
           ],
@@ -11265,7 +11265,7 @@
               "captureIds": [
                 "notifications_signed_out"
               ],
-              "notes": "A successfully resolved null uid alone renders ActivitySignedOutState with No activity yet copy.",
+              "notes": "A successfully resolved null uid alone renders ActivitySignedOutEmptyState with No activity yet copy.",
               "previewIds": [
                 "ActivityScreen/Screen states"
               ]

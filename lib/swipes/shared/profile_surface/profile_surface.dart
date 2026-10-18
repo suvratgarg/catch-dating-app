@@ -4,7 +4,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -139,11 +139,11 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
               sliver: SliverList.list(
                 children: const [
                   ProfileSurfaceSectionSkeleton(lines: 3),
-                  ProfileSurfaceRule(),
+                  ProfileSurfaceDivider(),
                   ProfileSurfaceRunningSkeleton(),
-                  ProfileSurfaceRule(),
+                  ProfileSurfaceDivider(),
                   ProfileSurfacePhotoSkeleton(),
-                  ProfileSurfaceRule(),
+                  ProfileSurfaceDivider(),
                   ProfileSurfaceFactsSkeleton(),
                 ],
               ),
@@ -320,8 +320,8 @@ class ProfileSurfaceFactsSkeleton extends StatelessWidget {
   }
 }
 
-class ProfileSurfaceRule extends StatelessWidget {
-  const ProfileSurfaceRule({super.key});
+class ProfileSurfaceDivider extends StatelessWidget {
+  const ProfileSurfaceDivider({super.key});
 
   @override
   Widget build(BuildContext context) {

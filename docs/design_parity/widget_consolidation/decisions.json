@@ -663,7 +663,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareArtwork), else keep a media param.",
+      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareCover), else keep a media param.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-014"
@@ -829,7 +829,7 @@
           "action": "keep"
         },
         {
-          "name": "ReviewHistoryItemSkeleton",
+          "name": "ReviewHistoryRowSkeleton",
           "action": "keep"
         }
       ],
@@ -2067,11 +2067,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubPhotoStrip/EventDetailPhotoStrip",
+      "clusterId": "ranked-pair: ClubPhotoRail/EventDetailPhotoStrip",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubPhotoStrip",
+          "name": "ClubPhotoRail",
           "action": "keep"
         },
         {
@@ -2122,11 +2122,11 @@
       "canonicalSymbol": "CatchSectionHeader"
     },
     {
-      "clusterId": "ranked-pair: ClubHeroAppBar/EventDetailHeroAppBar",
+      "clusterId": "ranked-pair: ClubHeroTopBar/EventDetailHeroAppBar",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubHeroAppBar",
+          "name": "ClubHeroTopBar",
           "action": "keep"
         },
         {
@@ -2212,7 +2212,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: CatchEmptyStateContent/EmptyHeroContent",
+      "clusterId": "ranked-pair: CatchEmptyStateContent/EmptyHeroBody",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2220,11 +2220,11 @@
           "action": "keep"
         },
         {
-          "name": "EmptyHeroContent",
+          "name": "EmptyHeroBody",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroContent is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment. REVIEW (claude, 2026-07-03): EmptyHeroContent is bespoke dashboard editorial hero copy, not generic empty-state content.",
+      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroBody is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment. REVIEW (claude, 2026-07-03): EmptyHeroBody is bespoke dashboard editorial hero copy, not generic empty-state content.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -3494,15 +3494,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: RecapHeroSkeleton/RecapStatSkeleton",
+      "clusterId": "ranked-pair: RecapHeaderSkeleton/RecapStatTileSkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "RecapHeroSkeleton",
+          "name": "RecapHeaderSkeleton",
           "action": "keep"
         },
         {
-          "name": "RecapStatSkeleton",
+          "name": "RecapStatTileSkeleton",
           "action": "keep"
         }
       ],
@@ -3822,7 +3822,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ProfileHeightStepperControls/ProfileReactionControls",
+      "clusterId": "ranked-pair: ProfileHeightStepperControls/ProfileReactionAction",
       "decision": "keep-distinct",
       "members": [
         {
@@ -3830,7 +3830,7 @@
           "action": "keep"
         },
         {
-          "name": "ProfileReactionControls",
+          "name": "ProfileReactionAction",
           "action": "keep"
         }
       ],
@@ -4187,11 +4187,11 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: CatchesProfileReviewSkeleton/CatchesTopOverlaySkeleton",
+      "clusterId": "ranked-pair: CatchesProfileBodySkeleton/CatchesTopOverlaySkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CatchesProfileReviewSkeleton",
+          "name": "CatchesProfileBodySkeleton",
           "action": "keep"
         },
         {
@@ -4313,19 +4313,19 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: PaymentConfirmationBodyController/PaymentPendingCheckoutController",
+      "clusterId": "ranked-pair: PaymentConfirmedBody/PaymentPendingBody",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "PaymentConfirmationBodyController",
+          "name": "PaymentConfirmedBody",
           "action": "keep"
         },
         {
-          "name": "PaymentPendingCheckoutController",
+          "name": "PaymentPendingBody",
           "action": "keep"
         }
       ],
-      "rationale": "K1 composition is not duplication: PaymentPendingCheckoutController owns pending/failed payment state and delegates to PaymentConfirmationBodyController after completion.",
+      "rationale": "K1 composition is not duplication: PaymentPendingBody owns pending/failed payment state and delegates to PaymentConfirmedBody after completion.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
@@ -5258,11 +5258,11 @@
           "action": "keep"
         },
         {
-          "name": "ActivityScreenLoading",
+          "name": "ActivityScreenSkeleton",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): CatchAsyncScreen/SliverLoading are intentional box/sliver duals of the async-view kit (both compose CatchSkeletonList). ActivityScreenLoading is a feature loading composition over its own section skeleton.",
+      "rationale": "Name-family review (batch 2): CatchAsyncScreen/SliverLoading are intentional box/sliver duals of the async-view kit (both compose CatchSkeletonList). ActivityScreenSkeleton is a feature loading composition over its own section skeleton.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5463,7 +5463,7 @@
           "action": "keep"
         },
         {
-          "name": "ClubShareArtwork",
+          "name": "ClubShareCover",
           "action": "keep"
         },
         {
@@ -5475,7 +5475,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: ClubShareArtwork composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
+      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: ClubShareCover composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5619,7 +5619,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "PaymentHistoryListController",
+          "name": "PaymentHistoryBody",
           "action": "keep"
         },
         {
@@ -6014,12 +6014,12 @@
           "note": "shared cover/profile/fallback media atom"
         },
         {
-          "name": "MembershipTrailingController",
+          "name": "ClubJoinAction",
           "action": "keep",
           "note": "join mutation/auth redirect seam reused by ClubIndexRow"
         },
         {
-          "name": "MembershipTrailing",
+          "name": "ClubJoinButton",
           "action": "keep",
           "note": "provider-free joined badge/join button leaf"
         }
@@ -6257,7 +6257,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ClubTagWrap",
+          "name": "ClubTagList",
           "action": "keep"
         },
         {
@@ -6349,7 +6349,7 @@
           "action": "review"
         },
         {
-          "name": "ReactionControlButton",
+          "name": "ProfileReactionButton",
           "action": "review"
         }
       ],
@@ -6430,7 +6430,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionControls. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
+      "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionAction. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
       "decidedBy": "codex-rule:K3",
       "date": "2026-07-18",
       "status": "recorded-concept-reconciliation"
@@ -6553,7 +6553,7 @@
           "note": "retain pass semantics and SwipeKeys.passButton"
         },
         {
-          "name": "ReactionControlButton",
+          "name": "ProfileReactionButton",
           "action": "unify",
           "note": "retain reaction palette and pending semantics"
         }

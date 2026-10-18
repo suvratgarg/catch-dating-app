@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -61,7 +61,7 @@ class ClubShareCard extends StatelessWidget {
               flex: 4,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(CatchRadius.md),
-                child: ClubShareArtwork(club: club),
+                child: ClubShareCover(club: club),
               ),
             ),
             gapH14,
@@ -101,7 +101,7 @@ class ClubShareCard extends StatelessWidget {
                     icon: CatchIcons.group,
                     label: clubMemberCountLabel(club),
                   ),
-                  if (tags.isNotEmpty) ...[gapH10, ClubTagWrap(tags: tags)],
+                  if (tags.isNotEmpty) ...[gapH10, ClubTagList(tags: tags)],
                   const Spacer(),
                   CatchAttributionRow(
                     brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
@@ -119,8 +119,8 @@ class ClubShareCard extends StatelessWidget {
   }
 }
 
-class ClubShareArtwork extends StatelessWidget {
-  const ClubShareArtwork({super.key, required this.club});
+class ClubShareCover extends StatelessWidget {
+  const ClubShareCover({super.key, required this.club});
 
   final Club club;
 

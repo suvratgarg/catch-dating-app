@@ -5,8 +5,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class PhotoSlot extends StatelessWidget {
-  const PhotoSlot({
+class PhotoSlotTile extends StatelessWidget {
+  const PhotoSlotTile({
     super.key,
     required this.index,
     required this.url,
@@ -80,7 +80,7 @@ class PhotoSlot extends StatelessWidget {
         ),
       );
     } else if (isPendingPhoto) {
-      content = StripedPhotoPlaceholder(index: index);
+      content = PhotoPlaceholderImage(index: index);
     } else if (isActive) {
       content = Center(
         child: Icon(CatchIcons.addRounded, size: CatchIcon.hero, color: t.ink3),
@@ -247,8 +247,8 @@ class PhotoSlot extends StatelessWidget {
   }
 }
 
-class StripedPhotoPlaceholder extends StatelessWidget {
-  const StripedPhotoPlaceholder({super.key, required this.index});
+class PhotoPlaceholderImage extends StatelessWidget {
+  const PhotoPlaceholderImage({super.key, required this.index});
 
   final int index;
 

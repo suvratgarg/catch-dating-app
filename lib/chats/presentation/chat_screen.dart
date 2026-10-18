@@ -18,7 +18,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_h
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/suvbot_dock.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -386,7 +386,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
             ),
             if (routeState.showSuvbotActionBar)
-              SuvbotActionBar(
+              SuvbotDock(
                 actions: _asyncValue(routeState.suvbotActionsAsync),
                 pending: routeState.suvbotPending,
                 onAction: _runSuvbotAction,

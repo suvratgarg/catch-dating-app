@@ -36,13 +36,13 @@ export 'presentation/detail/club_membership_controller.dart'; // public-api: com
 // ── Presentation — widgets commonly reused outside the feature ──────────────
 export 'presentation/detail/widgets/club_detail_body.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/detail/widgets/club_detail_dock.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/detail/widgets/club_hero_app_bar.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/detail/widgets/club_hero_top_bar.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/detail/widgets/club_schedule_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/detail/widgets/club_share_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/discovery/widgets/club_avatar_rail.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/discovery/widgets/club_discover_list.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/discovery/widgets/club_list_tile.dart'; // public-api: shared presentation component used outside this feature
-export 'shared/club_identity_atoms.dart';
+export 'shared/club_host_identity_row.dart';
 export 'shared/club_placeholder_cover.dart';
 export 'shared/club_transition_tags.dart';
 

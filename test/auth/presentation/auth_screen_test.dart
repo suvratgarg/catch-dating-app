@@ -4,7 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
-import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
+import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/splash_screen.dart';
@@ -235,7 +235,7 @@ void main() {
       await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
 
       expect(find.byType(CatchScaffold), findsOneWidget);
-      expect(find.byType(HostAuthFlowFrame), findsOneWidget);
+      expect(find.byType(HostAuthScaffold), findsOneWidget);
       expect(find.byType(StartupBrandHeader), findsOneWidget);
       expect(find.byType(HostAuthCard), findsOneWidget);
       expect(find.text('Sign in with your phone'), findsOneWidget);
@@ -299,7 +299,7 @@ void main() {
       await tester.pump(CatchMotion.pageStep);
       await tester.pump(CatchMotion.fast);
 
-      expect(find.byType(HostAuthFlowFrame), findsOneWidget);
+      expect(find.byType(HostAuthScaffold), findsOneWidget);
       expect(find.text('Enter the code'), findsOneWidget);
       expect(find.text('+91'), findsOneWidget);
       expect(find.text('•••••• 9999'), findsOneWidget);

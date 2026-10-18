@@ -40,6 +40,26 @@ if grep -Fq "'/generated/'" "$sizing_rule_source"; then
   exit 1
 fi
 
+# Rules scope owners and exemptions to exact files by path suffix. A renamed or
+# deleted file leaves a dead entry behind, which silently stops enforcing (or
+# exempting) anything, so every exact file a rule names must still exist.
+rule_file_suffixes="$(grep -ohE "'/(lib|packages|apps|widgetbook|test)/[A-Za-z0-9_/.]+[.]dart'" \
+  packages/catch_ui_lints/lib/src/*.dart | tr -d "'" | sort -u)"
+if [[ -z "$rule_file_suffixes" ]]; then
+  echo "Catch UI enforcement names no exact files; the path pattern in this check is stale." >&2
+  exit 1
+fi
+tracked_dart_files="$(git ls-files '*.dart' | sed 's#^#/#')"
+dead_rule_files=""
+while IFS= read -r suffix; do
+  grep -Fq -- "$suffix" <<< "$tracked_dart_files" ||
+    dead_rule_files+="  $suffix"$'\n'
+done <<< "$rule_file_suffixes"
+if [[ -n "$dead_rule_files" ]]; then
+  printf 'Catch UI enforcement names files that no longer exist:\n%s' "$dead_rule_files" >&2
+  exit 1
+fi
+
 cleanup() {
   rm -rf "$probe_root"
 }
@@ -765,7 +785,6 @@ expect_probe exact catch_notification_delivery_is_service_owned 0
 
 for status_owner in \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart" \
-  "lib/core/widgets/catch_tabbed_screen.dart" \
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_scaffold.dart"; do
   probe_path="$probe_root/$status_owner"

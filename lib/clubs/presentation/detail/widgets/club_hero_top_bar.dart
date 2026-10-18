@@ -44,8 +44,8 @@ final EdgeInsets _clubHeroActionPadding = CatchInsets.pageHorizontal.copyWith(
   left: 0,
 );
 
-class ClubHeroAppBar extends StatelessWidget {
-  const ClubHeroAppBar({
+class ClubHeroTopBar extends StatelessWidget {
+  const ClubHeroTopBar({
     super.key,
     required this.club,
     required this.isHost,
@@ -83,7 +83,7 @@ class ClubHeroAppBar extends StatelessWidget {
             mediaHeight + (clubInteractionMediaInset * 2) + captionExtent;
         final heroModule = Material(
           color: Colors.transparent,
-          child: ClubHeroModule(
+          child: ClubHeroHeader(
             club: club,
             variant: variant,
             mediaHeight: mediaHeight,
@@ -269,8 +269,8 @@ double _heroCaptionExtentFor(
       CatchLayout.clubDetailHeroCaptionSlack;
 }
 
-class ClubHeroModule extends StatelessWidget {
-  const ClubHeroModule({
+class ClubHeroHeader extends StatelessWidget {
+  const ClubHeroHeader({
     super.key,
     required this.club,
     required this.variant,

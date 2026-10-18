@@ -127,8 +127,6 @@ const _manualAsyncSnapshotMembers = <String>{
 const _lowLevelTypographyRoles = <String>{'bodyS', 'bodyM', 'titleS'};
 
 const _lowLevelTypographyOwnerPaths = <String>{
-  '/packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart',
-  '/packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart',
   '/packages/catch_ui/lib/src/components/catch_empty_state.dart',
   '/packages/catch_ui/lib/src/components/catch_search_field.dart',
 };
@@ -666,7 +664,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   bool _isRawChromeExceptionPath(String path) {
     return path.endsWith(
-          '/lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart',
+          '/lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart',
         ) ||
         path.endsWith(
           '/lib/events/presentation/widgets/event_detail_hero_app_bar.dart',

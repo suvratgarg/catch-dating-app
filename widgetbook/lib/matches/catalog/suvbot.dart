@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/suvbot_dock.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -15,19 +15,19 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Primitive states',
-  type: SuvbotActionBar,
+  type: SuvbotDock,
   path: '[P1 product surfaces]/Matches and chat/Primitives',
 )
 Widget suvbotActionBarPrimitiveStates(BuildContext context) {
   return WidgetbookMatchesAppRoleBoundary(
     role: AppRole.consumer,
     child: WidgetbookPageCatalogFrame(
-      title: 'SuvbotActionBar',
+      title: 'SuvbotDock',
       contractId: 'primitive.messaging.suvbot_action_bar',
       children: [
         WidgetbookPageStateCard(
           label: 'loaded actions',
-          child: _SuvbotActionBarPrimitiveFrame(
+          child: _SuvbotDockPrimitiveFrame(
             actions: AsyncData<List<SuvbotActionItem>>(
               MatchesChatSurfaceFixtures.suvbotActions,
             ),
@@ -35,7 +35,7 @@ Widget suvbotActionBarPrimitiveStates(BuildContext context) {
         ),
         WidgetbookPageStateCard(
           label: 'pending action',
-          child: _SuvbotActionBarPrimitiveFrame(
+          child: _SuvbotDockPrimitiveFrame(
             actions: AsyncData<List<SuvbotActionItem>>(
               MatchesChatSurfaceFixtures.suvbotActions,
             ),
@@ -44,13 +44,13 @@ Widget suvbotActionBarPrimitiveStates(BuildContext context) {
         ),
         const WidgetbookPageStateCard(
           label: 'loading',
-          child: _SuvbotActionBarPrimitiveFrame(
+          child: _SuvbotDockPrimitiveFrame(
             actions: AsyncLoading<List<SuvbotActionItem>>(),
           ),
         ),
         WidgetbookPageStateCard(
           label: 'load error',
-          child: _SuvbotActionBarPrimitiveFrame(
+          child: _SuvbotDockPrimitiveFrame(
             actions: AsyncError<List<SuvbotActionItem>>(
               StateError('Suvbot controls unavailable'),
               StackTrace.empty,
@@ -100,8 +100,8 @@ Widget suvbotResetActionRowPrimitiveStates(BuildContext context) {
   );
 }
 
-class _SuvbotActionBarPrimitiveFrame extends StatelessWidget {
-  const _SuvbotActionBarPrimitiveFrame({
+class _SuvbotDockPrimitiveFrame extends StatelessWidget {
+  const _SuvbotDockPrimitiveFrame({
     required this.actions,
     this.pending = false,
   });
@@ -122,7 +122,7 @@ class _SuvbotActionBarPrimitiveFrame extends StatelessWidget {
               child: Column(
                 children: [
                   const Spacer(),
-                  SuvbotActionBar(
+                  SuvbotDock(
                     actions: actions,
                     pending: pending,
                     onAction: (_) async {},

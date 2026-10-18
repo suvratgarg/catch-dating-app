@@ -121,6 +121,14 @@
     "AppBar": [
       "TopBar"
     ],
+    "Artwork": [
+      "Cover",
+      "Image"
+    ],
+    "Block": [
+      "Card",
+      "Section"
+    ],
     "BottomBar": [
       "Dock"
     ],
@@ -142,6 +150,10 @@
     "Content": [
       "Body"
     ],
+    "Controls": [
+      "Action",
+      "Dock"
+    ],
     "Cta": [
       "Button",
       "Dock"
@@ -161,6 +173,14 @@
     "Frame": [
       "Scaffold",
       "Layout"
+    ],
+    "Group": [
+      "List",
+      "Section"
+    ],
+    "Groups": [
+      "List",
+      "Section"
     ],
     "Hero": [
       "Header",
@@ -182,6 +202,10 @@
       "Row"
     ],
     "Loader": [
+      "Indicator"
+    ],
+    "Loading": [
+      "Skeleton",
       "Indicator"
     ],
     "Modal": [
@@ -213,6 +237,12 @@
     "Rows": [
       "List"
     ],
+    "Scrim": [
+      "Overlay"
+    ],
+    "Selector": [
+      "Picker"
+    ],
     "Shell": [
       "Scaffold",
       "Layout"
@@ -231,6 +261,10 @@
     "Stack": [
       "Layout",
       "SectionList"
+    ],
+    "Stat": [
+      "Tile",
+      "Text"
     ],
     "Strip": [
       "Rail"
@@ -254,9 +288,15 @@
     "Topbar": [
       "TopBar"
     ],
+    "Value": [
+      "Text"
+    ],
     "View": [
       "Body",
       "Map"
+    ],
+    "Wrap": [
+      "List"
     ],
     "Wrapper": [
       "Surface"

@@ -25,4 +25,4 @@ export 'presentation/widgets/chat_share_card.dart'; // public-api: shared presen
 export 'presentation/widgets/event_chat_entry_section.dart'
     show EventChatEntrySection;
 export 'presentation/widgets/message_bubble.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/suvbot_action_bar.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/suvbot_dock.dart'; // public-api: shared presentation component used outside this feature

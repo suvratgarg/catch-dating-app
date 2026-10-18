@@ -5,184 +5,6 @@
   "policy": "feature_widget_names_and_reserved_catch_prefix_debt_cannot_grow",
   "allowedFindings": [
     {
-      "file": "lib/auth/presentation/auth_screen.dart",
-      "name": "HostAuthFlowFrame",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/auth/presentation/host_auth_widgets.dart",
-      "name": "HostAuthCard",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/auth/presentation/host_auth_widgets.dart",
-      "name": "HostAuthHeader",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/auth/presentation/host_auth_widgets.dart",
-      "name": "HostAuthProgressButton",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/auth/presentation/otp_page.dart",
-      "name": "OtpPage",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/auth/presentation/phone_page.dart",
-      "name": "CountryCodeSelector",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/auth/presentation/phone_page.dart",
-      "name": "PhonePage",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/chats/presentation/widgets/chat_share_card.dart",
-      "name": "ShareCardBubble",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/chats/presentation/widgets/message_bubble.dart",
-      "name": "MediaMessageBody",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/chats/presentation/widgets/message_bubble.dart",
-      "name": "MessageBubble",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "name": "MatchTesterSheet",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "name": "SuvbotActionBar",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "name": "SuvbotResetActionRow",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
-      "name": "ClubDetailReadOnlyPreviewSliver",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "name": "DockBell",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "name": "DockCount",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
-      "name": "ClubHeroAppBar",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
-      "name": "ClubHeroModule",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
-      "name": "ClubPhotoStrip",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
-      "name": "ClubShareArtwork",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "name": "MembershipTrailing",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "name": "MembershipTrailingController",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "name": "ClubHostIdentityLine",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "name": "ClubTagWrap",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
       "file": "lib/core/presentation/catch_async_state.dart",
       "name": "CatchAsyncPhase",
       "issues": [
@@ -204,45 +26,10 @@
       ]
     },
     {
-      "file": "lib/dashboard/presentation/activity_screen.dart",
-      "name": "ActivityScreenLoading",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/dashboard/presentation/widgets/activity_section.dart",
-      "name": "ActivitySignedOutState",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/dashboard/presentation/widgets/activity_section.dart",
-      "name": "NotificationDayGroups",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/dashboard/presentation/widgets/dashboard_empty.dart",
-      "name": "DashboardEmptySliverBody",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "name": "DashboardFullSliverBody",
       "issues": [
         "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-      "name": "EmptyHeroContent",
-      "issues": [
-        "noncanonical-feature-widget-name"
       ]
     },
     {
@@ -320,8 +107,7 @@
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
       "name": "EventSuccessFeedbackForm",
       "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
+        "noncanonical-feature-widget-file"
       ]
     },
     {
@@ -954,13 +740,6 @@
       ]
     },
     {
-      "file": "lib/force_update/presentation/update_required_screen.dart",
-      "name": "UpdateRequiredContent",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
       "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
       "name": "HostEventsTimelinePage",
       "issues": [
@@ -1554,37 +1333,6 @@
       ]
     },
     {
-      "file": "lib/image_uploads/shared/photo_slot.dart",
-      "name": "PhotoSlot",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/image_uploads/shared/photo_slot.dart",
-      "name": "StripedPhotoPlaceholder",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
-      "name": "LaunchAccessApplicationForm",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/notifications/presentation/foreground_notification_listener.dart",
-      "name": "ForegroundNotificationListener",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
       "file": "lib/onboarding/presentation/onboarding_screen.dart",
       "name": "OnboardingStepContent",
       "issues": [
@@ -1732,148 +1480,6 @@
       "name": "WelcomeScene",
       "issues": [
         "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "PaymentCheckoutEventBackdrop",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "PaymentConfirmationBodyController",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "PaymentConfirmationHeadsUp",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "name": "PaymentPendingCheckoutController",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "name": "PaymentHistoryListController",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "name": "ReviewHistoryItem",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/reviews/shared/reviews_section.dart",
-      "name": "ReviewOwnerResponseBlock",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/reviews/shared/star_rating.dart",
-      "name": "StarRating",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/reviews/shared/star_rating.dart",
-      "name": "StarRatingPicker",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/safety/presentation/settings_screen.dart",
-      "name": "AccountProfileStatus",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/presentation/event_recap_screen.dart",
-      "name": "RecapHero",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/presentation/event_recap_screen.dart",
-      "name": "RecapStat",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/presentation/filters_screen.dart",
-      "name": "FiltersContent",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/presentation/filters_screen.dart",
-      "name": "FiltersValue",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/presentation/swipe_screen.dart",
-      "name": "CatchesBottomScrim",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/presentation/swipe_screen.dart",
-      "name": "CatchesProfileReview",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
-      "name": "ProfileReactionCommentSheet",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
-      "name": "ProfileReactionControls",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
-      "name": "ReactionControlButton",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "name": "ProfileSurfaceRule",
-      "issues": [
         "noncanonical-feature-widget-name"
       ]
     },

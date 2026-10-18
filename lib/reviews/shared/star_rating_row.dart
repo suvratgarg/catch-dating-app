@@ -4,8 +4,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Read-only star row. [rating] is 1-5 (integers for filled stars).
-class StarRating extends StatelessWidget {
-  const StarRating({super.key, required this.rating, this.size = 16});
+class StarRatingRow extends StatelessWidget {
+  const StarRatingRow({super.key, required this.rating, this.size = 16});
 
   final int rating;
   final double size;

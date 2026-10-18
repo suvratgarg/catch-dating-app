@@ -189,7 +189,7 @@ visual/semantic distinction — users will tap them and learn by failure.
 More consequential than any literal: hero and inset photos use raw
 `Image(image: NetworkImage(url))` (`profile_view_mapper.dart:204-210`,
 `catch_profile_view.dart:238-240`), bypassing `CatchNetworkImage`'s decode-size
-cap and branded error state — the edit grid's `PhotoSlot` does it correctly
+cap and branded error state — the edit grid's `PhotoSlotTile` does it correctly
 (`photo_slot.dart:71-88`). The flagship should not be the surface that skips
 the primitive.
 
@@ -236,7 +236,7 @@ renders it, which is also the cheapest people-signal for Explore's §2.2 gap.
 ### 4.2 Duplication inventory
 
 - Three hairline rules: `ProfileRule` (`catch_profile_view.dart:590`),
-  `ProfileSurfaceRule` (`profile_surface.dart:326`), core `CatchDivider`.
+  `ProfileSurfaceDivider` (`profile_surface.dart:326`), core `CatchDivider`.
 - `ProfileSectionKicker` (`catch_profile_view.dart:306-320`) hand-rolls
   `CatchKicker`; the hero kicker is a third copy.
 - `_trimToNull` × 3; `_migrateActivityPreferences` + `_stringKeyedMap` verbatim

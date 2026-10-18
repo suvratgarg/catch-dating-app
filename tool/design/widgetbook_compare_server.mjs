@@ -1311,13 +1311,13 @@ function buildCandidates() {
 
   add({
     id: "topbar-vs-club-hero-appbar",
-    title: "TopBar vs ClubHeroAppBar",
+    title: "TopBar vs ClubHeroTopBar",
     bucket: "unify",
     reason:
-      "Claude names this concept AppBar/ClubHero; repo has CatchTopBar and ClubHeroAppBar. Decide whether ClubHeroAppBar is a real component or a TopBar variant/section.",
+      "Claude names this concept AppBar/ClubHero; repo has CatchTopBar and ClubHeroTopBar. Decide whether ClubHeroTopBar is a real component or a TopBar variant/section.",
     recommended: "catch.top_bar + catch.club_hero",
     left: findFirst(byName, "CatchTopBar"),
-    right: findFirst(byName, "ClubHeroAppBar"),
+    right: findFirst(byName, "ClubHeroTopBar"),
     tags: ["header", "club"],
   });
   add({
@@ -1477,7 +1477,7 @@ function buildCandidates() {
       recommended: "catch.hero_chrome",
       tags: ["hero", "chrome"],
       names: [
-        "ClubHeroAppBar",
+        "ClubHeroTopBar",
         "EventDetailHeroAppBar",
         "CatchHeroImage",
         "CatchHeroViewport",
@@ -1581,7 +1581,7 @@ function buildCandidates() {
         "EventAgendaSliverSkeleton",
         "FiltersContentSkeleton",
         "ProfileSurfaceSkeleton",
-        "CatchesProfileReviewSkeleton",
+        "CatchesProfileBodySkeleton",
         "HostSummarySkeleton",
         "HostRosterSkeleton",
         "EventPreviewHeroSkeleton",
@@ -1616,7 +1616,7 @@ function buildCandidates() {
         "CatchBanner",
         "EventSuccessSetupNoticeBanner",
         "EditHostedEventScopeNotice",
-        "PaymentConfirmationHeadsUp",
+        "PaymentConfirmationNotice",
         "IntegrationNotesCard",
         "CompanionActionsEmptyState",
       ],
@@ -1661,7 +1661,7 @@ function buildCandidates() {
         "CatchAvatar",
         "ClubHostAvatar",
         "HostTodayAvatarDot",
-        "ClubHostIdentityLine",
+        "ClubHostIdentityRow",
       ],
     },
     {
@@ -2027,7 +2027,7 @@ function buildCandidates() {
         "HostRosterSearchBar",
         "ExploreFilterRail",
         "ExploreFilterSheet",
-        "FiltersContent",
+        "FiltersBody",
         "FiltersSection",
         "HostRosterFilterHeader",
         "MapOverlayControls",
@@ -2075,7 +2075,7 @@ function buildCandidates() {
       tags: ["media", "forms"],
       names: [
         "OrderedPhotoPicker",
-        "PhotoSlot",
+        "PhotoSlotTile",
         "PhotoGrid",
         "CreateClubPhotosPicker",
         "CreateClubProfileImagePicker",
@@ -2230,8 +2230,8 @@ function buildCandidates() {
       names: [
         "ReviewCard",
         "ReviewsPreviewSection",
-        "ReviewHistoryItem",
-        "ReviewOwnerResponseBlock",
+        "ReviewHistoryRow",
+        "ReviewOwnerResponseCard",
         "ReviewResponseSheet",
         "WriteReviewSheet",
         "ClubReviewsSection",

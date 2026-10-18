@@ -270,7 +270,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                 'host-club-${selectedClub.id}-preview-scroll',
               ),
               children: [
-                ClubDetailReadOnlyPreviewSliver(
+                ClubDetailReadOnlyPreview(
                   initialClub: selectedClub,
                   currentUid: state.currentUid,
                 ),
@@ -293,7 +293,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               'host-club-${selectedClub.id}-persistent-preview',
             ),
             slivers: [
-              ClubDetailReadOnlyPreviewSliver(
+              ClubDetailReadOnlyPreview(
                 initialClub: selectedClub,
                 currentUid: state.currentUid,
               ),

@@ -647,6 +647,13 @@ write without steering them), and adding every noun agents use (Panel, Page,
 View and Content are synonyms of existing roles and would recreate the
 synonym problem the grammar removed).
 
+Phase 7b.2 (2026-10-18) applied the same test to the 174 remaining name
+failures. Bubble (`MessageBubble`), Form (`LaunchAccessApplicationForm`) and
+Listener (`ForegroundNotificationListener`) are what agents write and no
+existing role covers them, so they join the list. The other tails are synonyms
+and became redirects: Selector, Scrim, Block, Controls, Loading, Wrap, Group,
+Stat, Value and Artwork.
+
 ## Part 4 — Delivery Program
 
 Codex executes all phases. Claude/owner review gates sit between phases.
@@ -1475,6 +1482,31 @@ slice until it reaches zero. The ratchet lives in
 `design/components/widget_naming_baseline.json`, checked by
 `node tool/design/generate_widget_catalog.mjs --check`; `--write` only removes
 fixed entries.
+
+Slice 1 (2026-10-18): auth, chats, clubs, dashboard, force update, image
+uploads, launch access, notifications, payments, reviews, safety and swipes;
+the ratchet fell from 276 to 222 entries. Rules applied, and to apply in later
+slices:
+
+- Thin `ConsumerWidget` adapters that were named `*Controller` take the role
+  they fill: `PaymentHistoryListController` is `PaymentHistoryBody`,
+  `MembershipTrailingController` is `ClubJoinAction`.
+- A predicted name that collides with a dependency's widget gets the feature
+  prefix: the wrapper of `country_code_picker`'s `CountryCodePicker` is
+  `PhoneCountryCodePicker`.
+- Symbols derived from a renamed widget follow it (private `State` classes,
+  its skeleton, its provider-free state object, its style enum, which also
+  takes an axis name: `ProfileReactionControlsStyle` became
+  `ProfileReactionActionVariant`). Names of a domain concept stay (the photo
+  slot painters, `StarRatingPicker`, the catches profile-review action state),
+  and so do l10n keys.
+- Renaming or moving a file brings its widgets to the gate's standard in the
+  same slice: previews for every public widget it holds, and private widget
+  classes or widget helpers inlined (the OTP step's phone row and edit
+  button).
+
+Deferred: `DashboardFullSliverBody`'s file rename touches
+`test/dashboard/dashboard_screen_test.dart`, which another active task holds.
 
 **Phase 7c — One registry for React identity.** Replace the `surfaces` name
 map with per-framework implementation records (symbol and file), add

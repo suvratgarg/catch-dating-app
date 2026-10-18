@@ -33,8 +33,8 @@ List<String> visibleClubTags(
   return tags.take(limit).toList(growable: false);
 }
 
-class ClubTagWrap extends StatelessWidget {
-  const ClubTagWrap({
+class ClubTagList extends StatelessWidget {
+  const ClubTagList({
     super.key,
     required this.tags,
     this.tone = CatchBadgeTone.brand,
@@ -57,8 +57,8 @@ class ClubTagWrap extends StatelessWidget {
   }
 }
 
-class ClubHostIdentityLine extends StatelessWidget {
-  const ClubHostIdentityLine({
+class ClubHostIdentityRow extends StatelessWidget {
+  const ClubHostIdentityRow({
     super.key,
     required this.hostName,
     this.hostAvatarUrl,

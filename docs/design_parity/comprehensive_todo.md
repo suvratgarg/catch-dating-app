@@ -619,7 +619,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   `lib/image_uploads/presentation/widgets/photo_slot.dart` media-slot upload
   overlay, `lib/public_profile/presentation/public_profile_screen.dart`
   report/block overlay over rendered content,
-  `lib/chats/presentation/widgets/suvbot_action_bar.dart`,
+  `lib/chats/presentation/widgets/suvbot_dock.dart`,
   `lib/chats/presentation/widgets/chat_input.dart`, and
   `lib/chats/presentation/widgets/message_bubble.dart` inline action/media
   progress, `lib/events/presentation/location_picker_screen.dart` search
@@ -1498,7 +1498,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `loading`, `not_found`, `fatal_error`, `member_default`, `visitor_not_member`, `guest_join`, `host_public_view`, `empty_schedule`, `join_leave_pending`, `join_leave_failed`, `offline`, `text_scale_2`, `reduced_motion`
   - DP-CLUB-DETAIL-001: Closed by the consumer-only dock decision; shared public Club Detail sections are reused by Host Club Detail, while provider-backed `ClubMembershipDock` stays screen-local and `CatchClubDock` promotion is deferred until another host/member action-dock contract exists.
   - DP-CLUB-DETAIL-002: Closed by `ClubDetailBodyState`; route async/loading/error/not-found, initial-club fallback, next-event selection, host-message eligibility, contact actions, event-route target, review visibility, and membership dock state are derived outside visual sections.
-  - DS-CLUB-DETAIL-003: Closed by provider-free `ClubHostSection`, `ClubHostRow`, `ClubContactSection`, and `ClubPhotoStrip` files plus direct Widgetbook states and widget catalog entries.
+  - DS-CLUB-DETAIL-003: Closed by provider-free `ClubHostSection`, `ClubHostRow`, `ClubContactSection`, and `ClubPhotoRail` files plus direct Widgetbook states and widget catalog entries.
   - DP-CLUB-DETAIL-003: Closed by `club_detail_loading`, `club_detail_initial_loading`, and `club_detail_empty_schedule` captures plus the existing exported/masked Club Detail member reference.
   - DP-CLUB-DETAIL-004: Closed by advisory comparison of `club_detail_member` against the Claude Club Detail V2 member-default reference; divergence is concentrated in hero media/chrome, next-event/stat-strip treatment, and below-fold schedule/dock composition.
 - [x] `explore.map` (6 state follow-ups, 0 open gaps)

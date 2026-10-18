@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.78.0
-updated: 2026-10-17
+version: 1.79.0
+updated: 2026-10-18
 owner: app_architecture
 status: active
 ---
@@ -2191,7 +2191,7 @@ Reference files:
 
 - `lib/auth/presentation/auth_controller.dart`
 - `lib/auth/presentation/auth_presentation_state.dart`
-- `lib/auth/presentation/phone_page.dart`
+- `lib/auth/presentation/phone_step.dart`
 - `test/auth/presentation/auth_controller_test.dart`
 - `test/auth/presentation/auth_screen_test.dart`
 
@@ -2669,7 +2669,7 @@ or implementation technique cannot justify a second shared implementation.
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
-  Preview, Dock, Map, Pin, Thumbnail.
+  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a
@@ -2695,6 +2695,12 @@ or implementation technique cannot justify a second shared implementation.
   view. Pin: a mark anchored to a map coordinate. Thumbnail: a small
   representative image of one entity, with a fallback. `Workspace` joins
   `Screen` as a route-level suffix.
+- **Nouns added 2026-10-18 (blueprint Phase 7b.2).** Bubble: one chat message
+  aligned to its sender. Form: a set of fields submitted together, owning
+  validation and submit state. Listener: a non-visual widget that subscribes
+  its subtree to an app event source and reacts (a notice, a navigation); it
+  paints only its child, and unlike Scope it publishes nothing to
+  descendants.
 - **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
   containment); Page is Step (a flow stage) or Body (a tab or pager page);
   Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
@@ -2703,9 +2709,12 @@ or implementation technique cannot justify a second shared implementation.
   Tile or Card; Container, Box, Wrapper, Shell and Frame are Surface, Scaffold
   or Layout; Modal and Popup are Dialog or Sheet; Toast and Snackbar are
   Notice; Spinner and Loader are Indicator; Tag and Pill are Chip; Label,
-  Eyebrow and Caption are Text; Stack is Layout or SectionList; Sliver is the
-  role's `.sliver` named constructor; Controller is reserved for state
-  controllers, never a widget.
+  Eyebrow and Caption are Text; Stack is Layout or SectionList; Selector is
+  Picker; Scrim is Overlay; Block is Card or Section; Controls is Action or
+  Dock; Loading is Skeleton or Indicator; Wrap, Group and Groups are List or
+  Section; Stat is Tile or Text; Value is Text; Artwork is Cover or Image;
+  Sliver is the role's `.sliver` named constructor; Controller is reserved for
+  state controllers, never a widget.
 - **Materials and bindings.** A domain-free visual material (`CatchTicket`,
   `CatchPoster`, `CatchTable`) lives in the design system in both
   frameworks. A feature binding maps domain data onto it under the name an
@@ -3998,7 +4007,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
-- `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
+- `lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart`
 - `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
 - `widgetbook/lib/clubs/catalog/poster.dart`
@@ -4044,10 +4053,10 @@ child: CatchPolaroid(
             Positioned(
               top: CatchSpacing.s3,
               right: CatchSpacing.s3,
-              child: ProfileReactionControls(
+              child: ProfileReactionAction(
                 target: reaction,
                 onReact: onReact!,
-                style: ProfileReactionControlsStyle.overlay,
+                style: ProfileReactionActionVariant.overlay,
                 enabled: reactionsEnabled,
                 isPending: reactionsPending,
               ),

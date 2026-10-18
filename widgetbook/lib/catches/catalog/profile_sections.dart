@@ -216,19 +216,19 @@ Widget profileRuleStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Profile surface rule states',
-  type: ProfileSurfaceRule,
+  type: ProfileSurfaceDivider,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget profileSurfaceRuleStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ProfileSurfaceRule',
+    title: 'ProfileSurfaceDivider',
     contractId: 'screen.catches.profile.surface_rule',
     children: [
       WidgetbookPageStateCard(
         label: 'section divider',
         child: WidgetbookCatchesSectionFrame(
           height: WidgetbookPreviewLayout.skeletonListItemHeight,
-          child: ProfileSurfaceRule(),
+          child: ProfileSurfaceDivider(),
         ),
       ),
     ],

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
@@ -49,7 +49,7 @@ class ClubCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (state.hasHostIdentity)
-            ClubHostIdentityLine(
+            ClubHostIdentityRow(
               hostName: state.hostName,
               hostAvatarUrl: state.hostAvatarUrl,
               eyebrow: state.hostEyebrow,
@@ -181,6 +181,6 @@ class ExploreClubTagList extends StatelessWidget {
         color: t.ink3,
       );
     }
-    return ClubTagWrap(tags: state.tags);
+    return ClubTagList(tags: state.tags);
   }
 }

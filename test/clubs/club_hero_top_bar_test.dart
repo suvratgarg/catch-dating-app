@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_top_bar.dart';
 import 'package:catch_dating_app/clubs/shared/club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'clubs_test_helpers.dart';
 
 void main() {
-  group('ClubHeroAppBar', () {
+  group('ClubHeroTopBar', () {
     test('resolves default hero variants from club media state', () {
       final clubPhoto = _photo('cover', 0);
       final logoPhoto = _photo('logo', 0);
@@ -95,7 +95,7 @@ void main() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                ClubHeroAppBar(
+                ClubHeroTopBar(
                   club: club,
                   isHost: false,
                   presentationMode:
@@ -137,7 +137,7 @@ Future<void> _pumpHeroModule(
           child: SizedBox(
             width: 390,
             height: moduleHeight,
-            child: ClubHeroModule(
+            child: ClubHeroHeader(
               club: club,
               variant: variant,
               mediaHeight: mediaHeight,

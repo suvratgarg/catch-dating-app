@@ -274,7 +274,7 @@ import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -1326,7 +1326,7 @@ class _SwipeWriteFailureNoticeCaptureState
 Widget _swipeEventPendingActionCapture(
   CatchesProfileReviewActionState actionState,
 ) {
-  return CatchesProfileReview(
+  return CatchesProfileBody(
     profile: CatchesSurfaceFixtures.candidates.first,
     remainingCount: CatchesSurfaceFixtures.candidates.length,
     viewerProfile: CatchesSurfaceFixtures.viewer,
@@ -1564,8 +1564,8 @@ class _FiltersSaveErrorCaptureState
   Widget build(BuildContext context) => widget.child;
 }
 
-class _FiltersContentCapture extends StatelessWidget {
-  const _FiltersContentCapture({
+class _FiltersBodyCapture extends StatelessWidget {
+  const _FiltersBodyCapture({
     required this.ageRange,
     required this.interestedIn,
     this.saving = false,
@@ -1595,7 +1595,7 @@ class _FiltersContentCapture extends StatelessWidget {
           ),
         ],
       ),
-      body: FiltersContent(
+      body: FiltersBody(
         ageRange: ageRange,
         interestedIn: interestedIn,
         saving: saving,
@@ -11720,7 +11720,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_dirty_edit',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => const _FiltersContentCapture(
+    builder: (context) => const _FiltersBodyCapture(
       ageRange: RangeValues(20, 60),
       interestedIn: {Gender.woman, Gender.nonBinary},
     ),
@@ -11729,7 +11729,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_reset_restored',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => _FiltersContentCapture(
+    builder: (context) => _FiltersBodyCapture(
       ageRange: filtersAgeRangeValues(_filtersCaptureProfile),
       interestedIn: _filtersCaptureProfile.interestedInGenders.toSet(),
     ),
@@ -11738,7 +11738,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'filters_save_pending',
     routeIds: const <String>['filtersScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => const _FiltersContentCapture(
+    builder: (context) => const _FiltersBodyCapture(
       ageRange: RangeValues(25, 34),
       interestedIn: {Gender.man, Gender.woman},
       saving: true,

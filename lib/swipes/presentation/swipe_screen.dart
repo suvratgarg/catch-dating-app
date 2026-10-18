@@ -16,7 +16,7 @@ import 'package:catch_dating_app/swipes/presentation/catches_event_screen_state.
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -125,7 +125,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     return CatchScaffold.workspace(
       backgroundColor: t.bg,
       body: switch (state) {
-        CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),
+        CatchesEventQueueLoading() => const CatchesProfileBodySkeleton(),
         CatchesEventQueueError(:final error) => CatchLocalizedErrorState(
           error,
           context: AppErrorContext.swipes,
@@ -140,7 +140,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
           :final viewerProfile,
           :final sharedRunTitle,
         ) =>
-          CatchesProfileReview(
+          CatchesProfileBody(
             profile: profile,
             remainingCount: remainingCount,
             viewerProfile: viewerProfile,
@@ -170,8 +170,8 @@ CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return catchAsyncStateFromAsyncValue(value);
 }
 
-class CatchesProfileReviewSkeleton extends StatelessWidget {
-  const CatchesProfileReviewSkeleton({super.key});
+class CatchesProfileBodySkeleton extends StatelessWidget {
+  const CatchesProfileBodySkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +183,7 @@ class CatchesProfileReviewSkeleton extends StatelessWidget {
           ),
         ),
         CatchesTopOverlaySkeleton(),
-        CatchesBottomScrim(),
+        CatchesScrimOverlay(),
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
@@ -216,8 +216,8 @@ class CatchesProfileReviewActionState {
       status == CatchesProfileReviewActionStatus.reactionPending;
 }
 
-class CatchesProfileReview extends StatelessWidget {
-  const CatchesProfileReview({
+class CatchesProfileBody extends StatelessWidget {
+  const CatchesProfileBody({
     super.key,
     required this.profile,
     required this.remainingCount,
@@ -281,7 +281,7 @@ class CatchesProfileReview extends StatelessWidget {
           onBack: onBack,
           onFilters: onFilters,
         ),
-        const CatchesBottomScrim(),
+        const CatchesScrimOverlay(),
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
@@ -439,8 +439,8 @@ class CatchesTopOverlay extends StatelessWidget {
   }
 }
 
-class CatchesBottomScrim extends StatelessWidget {
-  const CatchesBottomScrim({super.key});
+class CatchesScrimOverlay extends StatelessWidget {
+  const CatchesScrimOverlay({super.key});
 
   @override
   Widget build(BuildContext context) {

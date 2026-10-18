@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
-import 'package:catch_dating_app/auth/presentation/otp_page.dart';
-import 'package:catch_dating_app/auth/presentation/phone_page.dart';
+import 'package:catch_dating_app/auth/presentation/otp_step.dart';
+import 'package:catch_dating_app/auth/presentation/phone_step.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -29,7 +29,7 @@ class AuthScreen extends ConsumerWidget {
     final resolvedRole = appRole ?? AppConfig.appRole;
 
     if (resolvedRole == AppRole.host) {
-      return HostAuthFlowFrame(
+      return HostAuthScaffold(
         child: AnimatedSwitcher(
           duration: _authMotionDuration(context, CatchMotion.pageStep),
           switchInCurve: CatchMotion.standardCurve,
@@ -49,12 +49,12 @@ class AuthScreen extends ConsumerWidget {
             );
           },
           child: switch (step) {
-            AuthStep.phone => PhonePage(
+            AuthStep.phone => PhoneStep(
               key: const ValueKey<AuthStep>(AuthStep.phone),
               presentation: AuthPagePresentation.hostInline,
               initialPhoneNumber: initialPhoneNumber,
             ),
-            AuthStep.otp => OtpPage(
+            AuthStep.otp => OtpStep(
               key: const ValueKey<AuthStep>(AuthStep.otp),
               presentation: AuthPagePresentation.hostInline,
               initialCode: initialOtpCode,
@@ -67,8 +67,8 @@ class AuthScreen extends ConsumerWidget {
 
     return CatchScaffold.standalone(
       body: switch (step) {
-        AuthStep.phone => const PhonePage(),
-        AuthStep.otp => OtpPage(
+        AuthStep.phone => const PhoneStep(),
+        AuthStep.otp => OtpStep(
           initialCode: initialOtpCode,
           initialSecondsUntilResend: initialResendSeconds,
         ),
@@ -80,8 +80,8 @@ class AuthScreen extends ConsumerWidget {
 /// Host auth frame shares its initial brand anchor with Flutter startup.
 /// The inset card enters below it, and one scroll owner can reveal any focused
 /// control on short screens or when the keyboard reduces the available height.
-class HostAuthFlowFrame extends StatelessWidget {
-  const HostAuthFlowFrame({super.key, required this.child});
+class HostAuthScaffold extends StatelessWidget {
+  const HostAuthScaffold({super.key, required this.child});
 
   static const contentKey = ValueKey<String>('host-auth-content');
 

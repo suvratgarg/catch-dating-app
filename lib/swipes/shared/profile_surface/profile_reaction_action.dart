@@ -13,14 +13,14 @@ import 'package:flutter/services.dart';
 typedef ProfileReactionCallback =
     FutureOr<void> Function(ProfileReactionTarget target, String? comment);
 
-enum ProfileReactionControlsStyle { surface, overlay }
+enum ProfileReactionActionVariant { surface, overlay }
 
-class ProfileReactionControls extends StatelessWidget {
-  const ProfileReactionControls({
+class ProfileReactionAction extends StatelessWidget {
+  const ProfileReactionAction({
     super.key,
     required this.target,
     required this.onReact,
-    this.style = ProfileReactionControlsStyle.surface,
+    this.style = ProfileReactionActionVariant.surface,
     this.axis = Axis.horizontal,
     this.enabled = true,
     this.isPending = false,
@@ -28,7 +28,7 @@ class ProfileReactionControls extends StatelessWidget {
 
   final ProfileReactionTarget target;
   final ProfileReactionCallback onReact;
-  final ProfileReactionControlsStyle style;
+  final ProfileReactionActionVariant style;
   final Axis axis;
   final bool enabled;
   final bool isPending;
@@ -37,7 +37,7 @@ class ProfileReactionControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final actionsEnabled = enabled && !isPending;
     final children = [
-      ReactionControlButton(
+      ProfileReactionButton(
         tooltip: context.l10n.swipesProfileReactionControlsTooltipLikeLabel(
           label: target.label,
         ),
@@ -48,7 +48,7 @@ class ProfileReactionControls extends StatelessWidget {
         style: style,
         isPending: isPending,
       ),
-      ReactionControlButton(
+      ProfileReactionButton(
         tooltip: context.l10n
             .swipesProfileReactionControlsTooltipCommentOnLabel(
               label: target.label,
@@ -214,8 +214,8 @@ class _ProfileReactionCommentSheetState
   }
 }
 
-class ReactionControlButton extends StatelessWidget {
-  const ReactionControlButton({
+class ProfileReactionButton extends StatelessWidget {
+  const ProfileReactionButton({
     super.key,
     required this.tooltip,
     required this.icon,
@@ -227,13 +227,13 @@ class ReactionControlButton extends StatelessWidget {
   final String tooltip;
   final IconData icon;
   final VoidCallback? onPressed;
-  final ProfileReactionControlsStyle style;
+  final ProfileReactionActionVariant style;
   final bool isPending;
 
   @override
   Widget build(BuildContext context) {
     final palette = ProfileCardPalette.of(context);
-    final isOverlay = style == ProfileReactionControlsStyle.overlay;
+    final isOverlay = style == ProfileReactionActionVariant.overlay;
     final background = isOverlay
         ? CatchTokens.editorialWhite.withValues(
             alpha: CatchOpacity.reactionOverlayFill,

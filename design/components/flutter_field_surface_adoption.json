@@ -247,12 +247,12 @@
       "routeIds": ["authScreen"],
       "semanticFieldCount": 2,
       "bindings": [
-        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "PhonePage"},
-        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "OtpPage"}
+        {"file": "lib/auth/presentation/phone_step.dart", "symbol": "PhoneStep"},
+        {"file": "lib/auth/presentation/otp_step.dart", "symbol": "OtpStep"}
       ],
       "anchors": [
-        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFieldLabelText", "expected": 1},
-        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchCodeInput", "expected": 2}
+        {"file": "lib/auth/presentation/phone_step.dart", "symbol": "CatchFieldLabelText", "expected": 1},
+        {"file": "lib/auth/presentation/otp_step.dart", "symbol": "CatchCodeInput", "expected": 2}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control"],
       "preserve": ["country picker", "OTP semantics", "autofill", "auth timing and focus behavior"],

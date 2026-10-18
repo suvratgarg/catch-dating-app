@@ -14,7 +14,7 @@ class EmptyHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final content = EmptyHeroContent(
+    final content = EmptyHeroBody(
       onFindEvent: onFindEvent ?? () => context.go(Routes.exploreScreen.path),
       showWelcomeEyebrow: fullBleed,
     );
@@ -51,8 +51,8 @@ class EmptyHeroCard extends StatelessWidget {
   }
 }
 
-class EmptyHeroContent extends StatelessWidget {
-  const EmptyHeroContent({
+class EmptyHeroBody extends StatelessWidget {
+  const EmptyHeroBody({
     super.key,
     required this.onFindEvent,
     this.showWelcomeEyebrow = false,

@@ -361,7 +361,7 @@
           "rationale": "Its filled/unfilled notification mapping is useful evidence, but its only production caller can configure the shared counted icon action directly."
         },
         {
-          "symbol": "DockBell",
+          "symbol": "ClubBellButton",
           "disposition": "register",
           "preview": "required",
           "rationale": "Keep this feature adapter because it adds toggled and pending semantics while already delegating visual rendering to CatchIconAction."
@@ -617,14 +617,14 @@
     {
       "id": "swipe-reaction-control-boundary",
       "title": "Swipe reaction control boundary",
-      "intent": "Determine whether CatchesPassButton and ReactionControlButton need independent rendering or should configure the existing CatchIconAction concept while retaining pass/reaction behavior in feature adapters.",
+      "intent": "Determine whether CatchesPassButton and ProfileReactionButton need independent rendering or should configure the existing CatchIconAction concept while retaining pass/reaction behavior in feature adapters.",
       "priority": "P0",
       "status": "implemented",
       "targetContract": "CatchIconAction plus feature-owned pass/reaction adapters",
       "qualityReference": "CatchIconAction",
       "decisionSource": "owner-approved:2026-07-19",
       "acceptedVisualDelta": [
-        "CatchesPassButton now uses CatchIconAction's canonical floating-action shadow instead of feature-local Material elevation; ReactionControlButton retains its no-shadow bordered treatment. Both retain feature palettes, sizes, semantics, pending states, and stable test keys."
+        "CatchesPassButton now uses CatchIconAction's canonical floating-action shadow instead of feature-local Material elevation; ProfileReactionButton retains its no-shadow bordered treatment. Both retain feature palettes, sizes, semantics, pending states, and stable test keys."
       ],
       "reviewQuestions": [
         {
@@ -634,7 +634,7 @@
           "selectedOption": "Share CatchIconAction rendering and keep only behavior-bearing feature adapters.",
           "options": [
             "Share CatchIconAction rendering and keep only behavior-bearing feature adapters.",
-            "Keep independent CatchesPassButton and ReactionControlButton renderers."
+            "Keep independent CatchesPassButton and ProfileReactionButton renderers."
           ]
         }
       ],
@@ -653,7 +653,7 @@
           "rationale": "Retains pass localization, pending semantics, SwipeKeys.passButton, palette, and 56px geometry while delegating rendering to CatchIconAction."
         },
         {
-          "symbol": "ReactionControlButton",
+          "symbol": "ProfileReactionButton",
           "disposition": "unify",
           "target": "CatchIconAction",
           "preview": "required",

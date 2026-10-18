@@ -20,8 +20,8 @@ const EdgeInsets _demoActionSheetPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s4,
 );
 
-class SuvbotActionBar extends StatelessWidget {
-  const SuvbotActionBar({
+class SuvbotDock extends StatelessWidget {
+  const SuvbotDock({
     super.key,
     required this.actions,
     required this.pending,

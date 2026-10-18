@@ -71,7 +71,7 @@ class ClubDetailDock extends StatelessWidget {
           Row(
             children: [
               if (showCount) ...[
-                DockCount(members: members!, label: membersLabel),
+                ClubMemberCountText(members: members!, label: membersLabel),
                 const SizedBox(width: CatchSpacing.s3),
               ],
               _ClubDetailDockControls(
@@ -159,7 +159,7 @@ class _ClubDetailDockControls extends StatelessWidget {
         ),
         ClubDetailDockRole.member => Row(
           children: [
-            DockBell(
+            ClubBellButton(
               active: notificationsEnabled,
               accent: activity.accent,
               isLoading: isBellLoading,
@@ -210,8 +210,12 @@ class _ClubDetailDockControls extends StatelessWidget {
   }
 }
 
-class DockCount extends StatelessWidget {
-  const DockCount({super.key, required this.members, required this.label});
+class ClubMemberCountText extends StatelessWidget {
+  const ClubMemberCountText({
+    super.key,
+    required this.members,
+    required this.label,
+  });
 
   final int members;
   final String label;
@@ -244,8 +248,8 @@ class DockCount extends StatelessWidget {
 
 /// Member notifications bell — the active state fills with the club's activity
 /// accent (not the raw Material color scheme).
-class DockBell extends StatelessWidget {
-  const DockBell({
+class ClubBellButton extends StatelessWidget {
+  const ClubBellButton({
     super.key,
     required this.active,
     required this.accent,

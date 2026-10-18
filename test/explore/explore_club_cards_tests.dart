@@ -300,7 +300,7 @@ void _registerExploreClubCardsTests() {
           theme: AppTheme.light,
           home: Scaffold(
             body: CustomScrollView(
-              slivers: [ClubHeroAppBar(club: club, isHost: false)],
+              slivers: [ClubHeroTopBar(club: club, isHost: false)],
             ),
           ),
         ),

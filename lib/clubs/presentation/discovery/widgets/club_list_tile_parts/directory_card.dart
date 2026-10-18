@@ -80,7 +80,7 @@ class ClubIndexRow extends StatelessWidget {
               ),
             ),
             gapW12,
-            MembershipTrailingController(clubId: club.id, isJoined: isJoined),
+            ClubJoinAction(clubId: club.id, isJoined: isJoined),
           ],
         ),
       ),
@@ -100,8 +100,8 @@ String _clubIndexMetaLabel(Club club) {
   return '$location · ${clubMemberCountLabel(club)}'.toUpperCase();
 }
 
-class MembershipTrailingController extends ConsumerWidget {
-  const MembershipTrailingController({
+class ClubJoinAction extends ConsumerWidget {
+  const ClubJoinAction({
     super.key,
     required this.clubId,
     required this.isJoined,
@@ -124,7 +124,7 @@ class MembershipTrailingController extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     if (actionState == ExploreOrganizerMembershipActionState.following) {
-      return const MembershipTrailing(
+      return const ClubJoinButton(
         isJoined: true,
         isPending: false,
         onJoinPressed: null,
@@ -149,7 +149,7 @@ class MembershipTrailingController extends ConsumerWidget {
                   .logError(
                     error,
                     stackTrace,
-                    reason: 'MembershipTrailingController._joinClub failed',
+                    reason: 'ClubJoinAction._joinClub failed',
                   );
             }),
       );
@@ -161,7 +161,7 @@ class MembershipTrailingController extends ConsumerWidget {
       mutations: [joinMutation],
       errorContext: AppErrorContext.club,
     );
-    return MembershipTrailing(
+    return ClubJoinButton(
       isJoined: false,
       isPending: joinMutationState.isPending,
       onJoinPressed: () {
@@ -180,8 +180,8 @@ class MembershipTrailingController extends ConsumerWidget {
   }
 }
 
-class MembershipTrailing extends StatelessWidget {
-  const MembershipTrailing({
+class ClubJoinButton extends StatelessWidget {
+  const ClubJoinButton({
     super.key,
     required this.isJoined,
     required this.isPending,

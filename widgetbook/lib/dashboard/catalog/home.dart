@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';

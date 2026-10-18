@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -27,7 +27,7 @@ Widget catchOrganizerPosterStates(BuildContext context) {
           title: widgetbookClubClub.name,
           tagline: widgetbookClubClub.description,
           meta: 'Every Wednesday · 6:45 AM',
-          footer: ClubTagWrap(
+          footer: ClubTagList(
             tags: visibleClubTags(widgetbookClubClub, limit: 3),
           ),
         ),

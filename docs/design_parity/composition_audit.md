@@ -306,14 +306,14 @@ copy uses `CatchTextStyles.proseL` instead of overriding `bodyLead`'s weight.
 341 lines hand-rolling its own SafeArea/ColoredBox dock shell while the
 event side then used the now-retired `CatchBottomDock.cta`. Rebuild the club
 utility surface on `CatchBottomDock` (keep
-DockCount/DockBell content). LEXICON: `Catch*` is reserved for core
+ClubMemberCountText/ClubBellButton content). LEXICON: `Catch*` is reserved for core
 primitives; this is a clubs feature widget — rename to `ClubDetailDock`
 (with the usual deprecated typedef for one release if usages are wide).
 
 Done: `CatchClubDock` moved to feature-owned `ClubDetailDock` in
 `club_detail_dock.dart`, delegates sticky footer chrome, the top divider, and
-bottom safe-area handling to `CatchBottomDock`, keeps `DockCount` and
-`DockBell` as feature content, and carries deprecated `CatchClubDock` /
+bottom safe-area handling to `CatchBottomDock`, keeps `ClubMemberCountText` and
+`ClubBellButton` as feature content, and carries deprecated `CatchClubDock` /
 `CatchClubDockState` typedefs for one release. Its full state matrix now lives
 under `[Club Detail]/Dock` in Widgetbook instead of Core primitives.
 Primary screen CTAs separately route through `CatchBottomAction`; the duplicate
@@ -751,7 +751,7 @@ history-specific review shell.
 ### RH1. Loading/list shells are intentional mirrors — keep
 
 `ReviewsHistoryList` and `ReviewsHistorySkeleton` both use the same relaxed
-page padding and row gap. The skeleton rows mimic `ReviewHistoryItem` and
+page padding and row gap. The skeleton rows mimic `ReviewHistoryRow` and
 `ReviewCard` anatomy with shared `CatchSkeleton`/`CatchSurface` pieces. This is
 not enough repetition to justify a new public history-list primitive.
 
@@ -772,7 +772,7 @@ Files: `lib/payments/presentation/payment_history_screen.dart`,
 `lib/payments/presentation/payment_history_view_model.dart`.
 
 Overall: also acceptable for this composition pass. `PaymentHistoryScreen`
-owns uid access and the route shell, `PaymentHistoryListController` adapts the
+owns uid access and the route shell, `PaymentHistoryBody` adapts the
 payment-history provider, `paymentHistoryViewModelProvider` performs the
 batched event-title display join, and `PaymentHistoryList`/`PaymentHistoryTile`
 render provider-free rows. The receipt detail sheet is provider-free and uses

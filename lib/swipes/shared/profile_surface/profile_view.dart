@@ -48,7 +48,7 @@ class ProfileView {
 }
 
 /// One body block. [reaction] is non-null only where the Catches flow allows a
-/// like/comment; the surface renders [ProfileReactionControls] for it when the
+/// like/comment; the surface renders [ProfileReactionAction] for it when the
 /// surface itself is reactable (`onReact != null`).
 @immutable
 sealed class ProfileSectionData {

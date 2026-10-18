@@ -5,7 +5,7 @@ import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
 import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
-import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
+import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -20,8 +20,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PhonePage extends ConsumerStatefulWidget {
-  const PhonePage({
+class PhoneStep extends ConsumerStatefulWidget {
+  const PhoneStep({
     super.key,
     this.presentation = AuthPagePresentation.standalone,
     this.initialPhoneNumber = '',
@@ -31,10 +31,10 @@ class PhonePage extends ConsumerStatefulWidget {
   final String initialPhoneNumber;
 
   @override
-  ConsumerState<PhonePage> createState() => _PhonePageState();
+  ConsumerState<PhoneStep> createState() => _PhoneStepState();
 }
 
-class _PhonePageState extends ConsumerState<PhonePage> {
+class _PhoneStepState extends ConsumerState<PhoneStep> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
 
@@ -81,7 +81,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
     if (widget.presentation == AuthPagePresentation.hostInline) {
       final reflowPhoneInput = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-      final countrySelector = CountryCodeSelector(
+      final countrySelector = PhoneCountryCodePicker(
         countryCode: viewState.countryCode,
         enabled: viewState.requestControlsEnabled,
         embedded: true,
@@ -237,7 +237,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CountryCodeSelector(
+                PhoneCountryCodePicker(
                   countryCode: viewState.countryCode,
                   enabled: viewState.requestControlsEnabled,
                   onChanged: (code) {
@@ -302,8 +302,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
   }
 }
 
-class CountryCodeSelector extends StatelessWidget {
-  const CountryCodeSelector({
+class PhoneCountryCodePicker extends StatelessWidget {
+  const PhoneCountryCodePicker({
     super.key,
     required this.countryCode,
     required this.onChanged,
