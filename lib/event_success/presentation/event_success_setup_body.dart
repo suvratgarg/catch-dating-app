@@ -244,7 +244,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                     liveTools,
                     bucket,
                   ))
-                    EventSuccessModuleRows._(
+                    EventSuccessModuleList._(
                       recommendation: recommendation,
                       draft: draft,
                       editable: widget.editable,
@@ -323,8 +323,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
   }
 }
 
-class EventSuccessModuleRows extends StatelessWidget {
-  const EventSuccessModuleRows._({
+class EventSuccessModuleList extends StatelessWidget {
+  const EventSuccessModuleList._({
     required this._recommendation,
     required this._draft,
     required this._editable,

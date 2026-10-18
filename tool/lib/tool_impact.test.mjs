@@ -281,6 +281,108 @@ test("feature coverage and context manifests select executable owners without fu
   }).mode, "full");
 });
 
+const layoutOwners = new Map([
+  ["design:rail-contracts", ["tool/design/check_rail_contracts.mjs",
+    "tool/design/check_rail_contracts.test.mjs"]],
+  ["design:terminal-padding", ["tool/design/check_terminal_padding.mjs",
+    "tool/design/check_terminal_padding.test.mjs"]],
+  ["design:screen-gutters", ["tool/design/check_screen_gutters.mjs",
+    "tool/design/check_screen_gutters.test.mjs",
+    "tool/design/fixtures/screen_gutters/bad_presentation_widget.dart"]],
+]);
+const layoutPaths = [...layoutOwners.values()].flat();
+const layoutPlan = (changedPaths, toolManifest = productionManifest, mode = "pr", full = false) =>
+  planAffectedToolChecks({changedPaths, manifest: toolManifest,
+    componentGraph: productionGraph, mode, full});
+
+for (const [owner, paths] of layoutOwners) {
+  for (const changedPath of paths) {
+    test(`layout input selects its Node-only full-source owner: ${changedPath}`, () => {
+      for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+        const plan = layoutPlan([changedPath], productionManifest, mode);
+        assert.equal(plan.mode, "affected", mode);
+        assert.deepEqual(plan.fullReasons, []);
+        assert.deepEqual(plan.unmappedPaths, []);
+        assert.deepEqual(plan.ownersByPath[changedPath], [owner]);
+        assert.deepEqual(plan.toolIds, [...productionManifest.ciImpact.mandatoryCheckIds, owner].sort());
+        assert.equal(plan.repositoryView, "full");
+        assert.deepEqual(plan.setupRequirements, ["node"]);
+      }
+    });
+  }
+}
+
+test("layout ownership removal and missing setup retain conservative fallbacks", () => {
+  for (const [owner, [source, ...companions]] of layoutOwners) {
+    for (const companion of companions) {
+      const broken = structuredClone(productionManifest);
+      const entry = broken.tools.find(tool => tool.id === owner);
+      entry.impactPaths = (entry.impactPaths ?? []).filter(path => path !== companion);
+      const plan = layoutPlan([companion], broken);
+      assert.equal(plan.mode, "full", companion);
+      assert.deepEqual(plan.unmappedPaths, [companion]);
+      assert.deepEqual(plan.setupRequirements, supportedToolSetupRequirements);
+    }
+    const unannotated = structuredClone(productionManifest);
+    delete unannotated.tools.find(tool => tool.id === owner).ciRequirements;
+    const plan = layoutPlan([source], unannotated);
+    assert.equal(plan.mode, "affected");
+    assert.equal(plan.repositoryView, "full");
+    assert.deepEqual(plan.toolIds, layoutPlan([source]).toolIds);
+    assert.deepEqual(plan.setupRequirements, supportedToolSetupRequirements);
+  }
+});
+
+test("combined layout inputs preserve all owner checks and mixed runtime requirements", () => {
+  const combined = layoutPlan(layoutPaths);
+  const expectedIds = [...layoutOwners.keys(), ...productionManifest.ciImpact.mandatoryCheckIds].sort();
+  assert.equal(combined.mode, "affected");
+  assert.deepEqual(combined.toolIds, expectedIds);
+  assert.equal(combined.repositoryView, "full");
+  assert.deepEqual(combined.setupRequirements, ["node"]);
+  const unannotated = structuredClone(productionManifest);
+  for (const tool of unannotated.tools) {
+    if (layoutOwners.has(tool.id)) delete tool.ciRequirements;
+  }
+  assert.deepEqual(layoutPlan(layoutPaths, unannotated).toolIds, combined.toolIds);
+  for (const [paths, setup] of [
+    [["tool/design/context_pack_builder_test.dart"], ["node", "flutter", "flutter-pub"]],
+    [["tool/design/check_feature_coverage.test.mjs"], ["node", "root-npm"]],
+    [["tool/design/context_pack_builder_test.dart", "tool/design/check_feature_coverage.test.mjs"],
+      ["node", "flutter", "flutter-pub", "root-npm"]],
+  ]) {
+    const companion = layoutPlan(paths);
+    assert.equal(companion.mode, "affected");
+    const mixed = layoutPlan([...layoutPaths, ...paths]);
+    assert.equal(mixed.mode, "affected");
+    assert.deepEqual(mixed.toolIds, [...new Set([...combined.toolIds, ...companion.toolIds])].sort());
+    assert.equal(mixed.repositoryView, "full");
+    assert.deepEqual(mixed.setupRequirements, setup);
+  }
+});
+
+test("layout siblings, shared controls and explicit full cannot borrow narrow ownership", () => {
+  for (const path of [
+    "tool/design/unknown_companion.test.mjs",
+    "tool/design/fixtures/screen_gutters/unreviewed.dart",
+    "tool/lib/repo_paths.mjs", "tool/lib/tool_impact.mjs", "tool/tools_manifest.json",
+    "tool/harness/component_graph.json", ".github/workflows/ci.yml",
+  ]) {
+    const plan = layoutPlan([...layoutPaths, path]);
+    assert.equal(plan.mode, "full", path);
+    assert.ok(plan.fullReasons.length > 0);
+    assert.equal(plan.repositoryView, "full");
+    assert.deepEqual(plan.setupRequirements, supportedToolSetupRequirements);
+    if (path.includes("unknown_companion") || path.includes("unreviewed")) {
+      assert.ok(plan.unmappedPaths.includes(path));
+    }
+  }
+  const explicit = layoutPlan(layoutPaths, productionManifest, "nightly", true);
+  assert.equal(explicit.mode, "full");
+  assert.ok(explicit.fullReasons.includes("full execution was explicitly requested"));
+  assert.deepEqual(explicit.setupRequirements, supportedToolSetupRequirements);
+});
+
 test("l10n usage changes keep the full source view with Node-only setup", () => {
   for (const changedPath of [
     "tool/copy/check_l10n_key_usage.mjs",

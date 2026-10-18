@@ -88,9 +88,9 @@ class WhenStep extends StatelessWidget {
                   CatchContractConstraints.mobileFormStateEventDurationMinutes,
               body: formatDuration(durationMinutes),
               value: durationMinutes,
-              min: CatchBusinessRules.eventMinDurationMinutes,
-              max: CatchBusinessRules.eventMaxDurationMinutes,
-              step: CatchBusinessRules.eventDurationStepMinutes,
+              min: BusinessRules.eventMinDurationMinutes,
+              max: BusinessRules.eventMaxDurationMinutes,
+              step: BusinessRules.eventDurationStepMinutes,
               valueLabelBuilder: (value) => formatDuration(value.round()),
               decreaseSemanticLabel:
                   context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,

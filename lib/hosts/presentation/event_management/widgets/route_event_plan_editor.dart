@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/events/shared/event_route_labels.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_path_builder_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -81,29 +82,32 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
     return CatchSection.fieldRows(
       title: context.l10n.hostsRouteEventPlanSectionTitle,
       children: [
-        if (widget.activityKind == ActivityKind.openActivity)
-          CatchField.toggle(
-            copy: catchFieldCopy(context.l10n),
-            key: CreateEventFormKeys.routePlanEnabled,
-            title: context.l10n.hostsRouteEventPlanOptInTitle,
-            body: context.l10n.hostsRouteEventPlanOptInBody,
-            contractExemption:
-                'Controls optional routePlan presence; nested fields use generated bindings.',
-            value: plan != null,
-            onChanged: (enabled) =>
-                widget.onChanged(enabled ? RouteEventPlan.customWalk : null),
-            icon: CatchIcons.routeOutlined,
-            iconColor: accent,
+        CatchField.toggle(
+          copy: catchFieldCopy(context.l10n),
+          key: CreateEventFormKeys.routePlanEnabled,
+          title: context.l10n.hostsRouteEventPlanOptInTitle,
+          body: context.l10n.hostsRouteEventPlanOptInBody,
+          contractExemption:
+              'Controls optional routePlan presence; nested fields use generated bindings.',
+          value: plan != null,
+          onChanged: (enabled) => widget.onChanged(
+            enabled
+                ? (RouteEventPlan.defaultForActivity(widget.activityKind) ??
+                      RouteEventPlan.customWalk)
+                : null,
           ),
+          icon: CatchIcons.routeOutlined,
+          iconColor: accent,
+        ),
         if (plan != null)
           CatchField.control(
             copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.routePlanSummary,
             title: context.l10n.hostsRouteEventPlanSummaryTitle,
             body: [
-              _movementLabel(context, plan.movementMode),
-              _groupLabel(context, plan.groupStrategy),
-              _cadenceLabel(context, plan.stopCadence),
+              routeMovementLabel(context.l10n, plan.movementMode),
+              routeGroupLabel(context.l10n, plan.groupStrategy),
+              routeCadenceLabel(context.l10n, plan.stopCadence),
             ].join(' · '),
             contractExemption:
                 'Disclosure for nested routePlan fields with generated bindings.',
@@ -119,7 +123,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode,
                   contractValueBuilder: (value) => value.name,
                   values: RouteMovementMode.values,
-                  itemLabelBuilder: (value) => _movementLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      routeMovementLabel(context.l10n, value),
                   selected: {plan.movementMode},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(movementMode: selection.single),
@@ -139,7 +144,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanRouteShape,
                   contractValueBuilder: (value) => value.name,
                   values: RouteShape.values,
-                  itemLabelBuilder: (value) => _shapeLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      routeShapeLabel(context.l10n, value),
                   selected: {plan.routeShape},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(routeShape: selection.single),
@@ -159,7 +165,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy,
                   contractValueBuilder: (value) => value.name,
                   values: RouteGroupStrategy.values,
-                  itemLabelBuilder: (value) => _groupLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      routeGroupLabel(context.l10n, value),
                   selected: {plan.groupStrategy},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(groupStrategy: selection.single),
@@ -179,7 +186,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopCadence,
                   contractValueBuilder: (value) => value.name,
                   values: RouteStopCadence.values,
-                  itemLabelBuilder: (value) => _cadenceLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      routeCadenceLabel(context.l10n, value),
                   selected: {plan.stopCadence},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(stopCadence: selection.single),
@@ -199,7 +207,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKinds,
                   contractValueBuilder: (value) => value.name,
                   values: RouteStopKind.values,
-                  itemLabelBuilder: (value) => _stopLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      routeStopLabel(context.l10n, value),
                   selected: plan.stopKinds.toSet(),
                   mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
@@ -276,6 +285,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   values: _PacePreset.values,
                   itemLabelBuilder: (value) => _pacePresetLabel(context, value),
                   selected: _selectedPacePresets(plan),
+                  allowEmptySelection: true,
                   mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(paceGroups: _paceGroupsFor(selection)),
@@ -376,55 +386,6 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
         RouteLiveTrackingMode.authorizedOperators =>
           context.l10n.hostsRouteEventPlanTrackingOperators,
       };
-
-  String _movementLabel(BuildContext context, RouteMovementMode value) =>
-      switch (value) {
-        RouteMovementMode.run => context.l10n.hostsRouteEventPlanMovementRun,
-        RouteMovementMode.walk => context.l10n.hostsRouteEventPlanMovementWalk,
-        RouteMovementMode.ride => context.l10n.hostsRouteEventPlanMovementRide,
-        RouteMovementMode.mixed =>
-          context.l10n.hostsRouteEventPlanMovementMixed,
-      };
-
-  String _shapeLabel(BuildContext context, RouteShape value) => switch (value) {
-    RouteShape.loop => context.l10n.hostsRouteEventPlanShapeLoop,
-    RouteShape.outAndBack => context.l10n.hostsRouteEventPlanShapeOutAndBack,
-    RouteShape.pointToPoint =>
-      context.l10n.hostsRouteEventPlanShapePointToPoint,
-  };
-
-  String _groupLabel(BuildContext context, RouteGroupStrategy value) =>
-      switch (value) {
-        RouteGroupStrategy.together =>
-          context.l10n.hostsRouteEventPlanGroupTogether,
-        RouteGroupStrategy.paceGroups =>
-          context.l10n.hostsRouteEventPlanGroupPaceGroups,
-        RouteGroupStrategy.selfDirected =>
-          context.l10n.hostsRouteEventPlanGroupSelfDirected,
-      };
-
-  String _cadenceLabel(BuildContext context, RouteStopCadence value) =>
-      switch (value) {
-        RouteStopCadence.continuous =>
-          context.l10n.hostsRouteEventPlanCadenceContinuous,
-        RouteStopCadence.flexibleStops =>
-          context.l10n.hostsRouteEventPlanCadenceFlexible,
-        RouteStopCadence.hostedStops =>
-          context.l10n.hostsRouteEventPlanCadenceHosted,
-      };
-
-  String _stopLabel(
-    BuildContext context,
-    RouteStopKind value,
-  ) => switch (value) {
-    RouteStopKind.water => context.l10n.hostsRouteEventPlanStopWater,
-    RouteStopKind.regroup => context.l10n.hostsRouteEventPlanStopRegroup,
-    RouteStopKind.venue => context.l10n.hostsRouteEventPlanStopVenue,
-    RouteStopKind.photoSpot => context.l10n.hostsRouteEventPlanStopPhoto,
-    RouteStopKind.viewpoint => context.l10n.hostsRouteEventPlanStopViewpoint,
-    RouteStopKind.hazard => context.l10n.hostsRouteEventPlanStopHazard,
-    RouteStopKind.turnaround => context.l10n.hostsRouteEventPlanStopTurnaround,
-  };
 
   String _roleLabel(BuildContext context, RouteRoleKind value) =>
       switch (value) {

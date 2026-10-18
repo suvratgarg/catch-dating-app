@@ -1,6 +1,46 @@
 part of 'host_create_event_screen_test.dart';
 
 void _registerCreateEventWizardFlowTests() {
+  testWidgets('custom format can be created with its optional label skipped', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 9, 4, 12);
+    final repository = FakeEventRepository();
+    await _pumpCreateEventFlow(
+      tester,
+      now: () => now,
+      initialStep: 2,
+      initialDraft: EventDraft(
+        id: 'custom-optional',
+        clubId: 'club-1',
+        savedAt: now,
+        name: 'Meet the neighborhood',
+        activityKind: 'openActivity',
+        capacity: '24',
+        price: '0',
+        meetingPoint: 'Garden room',
+        startingPointLat: 19.1,
+        startingPointLng: 72.9,
+        selectedDateMillis: now
+            .add(const Duration(days: 1))
+            .millisecondsSinceEpoch,
+        selectedStartHour: 19,
+        selectedStartMinute: 0,
+      ),
+      overrides: [eventRepositoryProvider.overrideWith((ref) => repository)],
+    );
+    await _openCreateEventFlow(tester);
+    await _tapPrimaryButton(tester, 'Review event');
+    await _tapPrimaryButton(tester, 'Create event');
+    expect(repository.createdEvent, isNotNull);
+    expect(repository.createdEvent!.eventFormat.customActivityLabel, isNull);
+    expect(
+      repository.createdEvent!.eventFormat.activityKind,
+      ActivityKind.openActivity,
+    );
+    expect(repository.createdEvent!.description, isEmpty);
+  });
+
   testWidgets(
     'runtime-only creation needs no roster or presentation and ignores hidden booking rules',
     (tester) async {

@@ -1,4 +1,4 @@
-part of 'host_operational_roster_panel.dart';
+part of 'host_operational_roster_section.dart';
 
 class HostManualAttendeeSheet extends StatefulWidget {
   const HostManualAttendeeSheet({super.key});

@@ -350,3 +350,24 @@ describe("useEventRuntimeController", () => {
     expect(result.current.selectedConversationUids).toEqual(["guest-2"]);
   });
 });
+
+it("discards private runtime bootstrap that completes after sign-out", async () => {
+  getEventRuntimeBootstrap.mockReset().mockResolvedValue(bootstrap());
+  let auth!: (user: typeof runtime.user) => void;
+  let resolve!: (value: unknown) => void;
+  runtime.user = {uid: "first"};
+  watchEventRuntimeAuthState.mockImplementationOnce((callback) => {
+    auth = callback; callback(runtime.user); return vi.fn();
+  });
+  getEventRuntimeBootstrap.mockImplementationOnce(() => new Promise((done) => {resolve = done;}));
+  const {result} = renderHook(() => useEventRuntimeController("runtime-one"), {wrapper: wrapper()});
+  act(() => auth(null));
+  await waitFor(() => expect(result.current.stage).toBe("phone"));
+  await act(async () => resolve(bootstrap({eventId: "event-1", runtimeProfile: {
+    displayName: "Private guest", gender: "woman", interestedInGenders: [],
+  }})));
+  expect(result.current.bootstrap?.participant).toBeNull();
+  expect(result.current.displayName).toBe("");
+  expect(result.current.liveState.assignments).toEqual([]);
+  expect(result.current.stage).toBe("phone");
+});

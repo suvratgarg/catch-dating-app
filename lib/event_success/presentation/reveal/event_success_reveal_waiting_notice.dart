@@ -15,8 +15,10 @@ class EventSuccessRevealWaitingNotice extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.sm,
       backgroundColor: t.primarySoft,
-      borderColor: t.primary.withValues(
-        alpha: CatchOpacity.revealSurfaceBorder,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.primary.withValues(alpha: CatchOpacity.revealSurfaceBorder),
       ),
       padding: CatchInsets.contentDense,
       child: Row(

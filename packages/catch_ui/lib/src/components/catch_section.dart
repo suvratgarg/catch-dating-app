@@ -15,11 +15,11 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
 import 'package:catch_ui/src/components/catch_row_section.dart';
+import 'package:catch_ui/src/components/catch_section_body.dart';
+import 'package:catch_ui/src/components/catch_section_body_mode.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
 import 'package:catch_ui/src/components/catch_section_header_placement.dart';
-import 'package:catch_ui/src/components/catch_section_row_list.dart';
-import 'package:catch_ui/src/components/catch_section_row_list_mode.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
@@ -518,7 +518,7 @@ class CatchSection extends StatelessWidget {
     ),
   );
 
-  /// Package-owned form adapter; external features use CatchFormRowList.
+  /// Package-owned form adapter; external features use CatchFormList.
   @internal
   factory CatchSection.formRows({
     String? title,

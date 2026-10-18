@@ -78,7 +78,7 @@ void main() {
           drive: (tester) async {
             await pumpFeatureUi(tester);
             final target = switch (view) {
-              'reviews' => find.byType(HostAnalyticsReviewsPanel),
+              'reviews' => find.byType(HostAnalyticsReviewsSection),
               'all_time' => find.byType(HostOrganizerMetricGrid),
               'audience' => find.textContaining(
                 RegExp(r'^(AUDIENCE|Past attendee CRM)$'),

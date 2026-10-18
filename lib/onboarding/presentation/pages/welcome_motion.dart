@@ -1,4 +1,4 @@
-part of 'welcome_page.dart';
+part of 'onboarding_welcome_body.dart';
 
 double _welcomeTrackOffset({required double spinValue, required bool landed}) {
   final trackH =

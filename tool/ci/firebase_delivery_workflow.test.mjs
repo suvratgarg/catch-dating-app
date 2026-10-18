@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import vm from "node:vm";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -76,6 +77,319 @@ test("main CI starts validation immediately and serializes only proven publicati
   assert.match(required, /^      - finalize-plan$/m);
 });
 
+test("CI fences plan consumers and sends Rules retries to executable refusal", () => {
+  const ci = workflow("ci.yml");
+  const guard = "needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt)";
+  const consumers = ["source-preflight", "tools", "contracts", "functions", "firestore-rules",
+    "flutter", "visual-integration", "admin", "marketing", "capture-freshness", "operations",
+    "docs-policy", "app-builds", "finalize-plan", "package-firebase"];
+  assert.deepEqual([...ci.slice(ci.indexOf("\njobs:\n")).matchAll(/^  ([a-z][a-z-]*):$/gm)].map((match) => match[1]),
+    ["admission", "plan", ...consumers, "required"], "New jobs need an explicit retry decision.");
+  for (const name of consumers) {
+    const job = ciJob(ci, name);
+    const condition = job.match(/^    if: (.*(?:\n      [^\n]*)*)/m)?.[1];
+    if (name === "firestore-rules") {
+      assert.match(condition, /!cancelled\(\) && !failure\(\)/);
+      assert.match(job, /^    needs: \[plan, source-preflight\]$/m);
+    } else {
+      assert.ok(condition?.includes(guard), `${name} must reject a reused planner before starting.`);
+    }
+    if (["tools", "marketing"].includes(name)) {
+      assert.match(job, /^    needs: \[plan, source-preflight, capture-freshness\]$/m);
+    } else {
+      assert.match(job, /needs: (?:plan|\[plan, source-preflight\])|^      - plan$/m);
+    }
+  }
+  for (const name of ["docs-policy", "app-builds"]) {
+    const job = ciJob(ci, name);
+    assert.ok(job.includes(`${guard} &&\n      (needs.plan.outputs.`), "All OR selections must remain inside the attempt fence.");
+  }
+  for (const name of ["finalize-plan", "package-firebase"]) {
+    assert.match(ciJob(ci, name), /!cancelled\(\)/);
+    assert.match(ciJob(ci, name), /needs.plan.result == 'success'/);
+  }
+  const required = ciJob(ci, "required");
+  assert.match(required, /if: \$\{\{ !cancelled\(\)/);
+  assert.ok(!required.includes(guard), "Required CI must run after incompatible leaves skip.");
+  const steps = extractSteps(required).filter((step) => step.run || step.uses);
+  assert.equal(steps[0].name, "Refuse deferred PR validation");
+  assert.equal(steps[1].name, "Require this attempt's planner");
+  const plan = ciJob(ci, "plan");
+  assert.match(plan, /producer_attempt: \$\{\{ steps.plan.outputs.producer_attempt \}\}/);
+  // Evaluate this workflow's existing boolean-expression subset, as the
+  // cancellation wiring tests do. This is not a GitHub scheduler emulator.
+  for (const producerAttempt of ["1", "2", ""]) {
+    const outputs = {producer_attempt: producerAttempt, source_sha: "a".repeat(40)};
+    for (const match of ci.matchAll(/needs\.plan\.outputs\.([a-z_]+) == 'true'/g)) outputs[match[1]] = "true";
+    const needs = {plan: {result: "success", outputs}, "source-preflight": {result: "success"},
+      "capture-freshness": {result: "success"}, "finalize-plan": {result: "success", outputs: {deploy_required: "true"}}};
+    for (const name of consumers) {
+      const expression = ciJob(ci, name).match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
+        .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
+        .replaceAll("needs.*.result", "results")
+        .replaceAll("needs.finalize-plan", 'needs["finalize-plan"]')
+        .replaceAll("needs.source-preflight", 'needs["source-preflight"]')
+        .replaceAll("needs.capture-freshness", 'needs["capture-freshness"]');
+      const context = {needs, github: {run_attempt: 2, sha: "a".repeat(40), event_name: "push", ref: "refs/heads/main"},
+        cancelled: () => false, failure: () => false, contains: (values, value) => values.includes(value),
+        format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
+        results: ["success", "skipped"]};
+      assert.equal(vm.runInNewContext(expression, context), name === "firestore-rules" || producerAttempt === "2",
+        `${name} planner attempt ${producerAttempt || "missing"}`);
+      if (name === "firestore-rules") {
+        outputs.firestore_rules = "false";
+        assert.equal(vm.runInNewContext(expression, context), producerAttempt !== "2",
+          "Only a fresh plan can skip unselected Rules; stale bindings must reach refusal");
+        outputs.firestore_rules = "true";
+      }
+      if (name === "tools") {
+        // Tools overrides implicit success(), so exercise its actual dependencies.
+        for (const result of ["failure", "cancelled", "skipped"]) {
+          needs["capture-freshness"].result = result;
+          assert.equal(vm.runInNewContext(expression, context),
+            producerAttempt === "2" && result === "skipped",
+            `${name} planner attempt ${producerAttempt || "missing"}, capture ${result}`);
+        }
+        needs["capture-freshness"].result = "success";
+        needs["source-preflight"].result = "failure";
+        assert.equal(vm.runInNewContext(expression, context), false, "Tools rejects failed preflight");
+        needs["source-preflight"].result = "success";
+        outputs.tools = "false";
+        assert.equal(vm.runInNewContext(expression, context), false, "Tools must be selected");
+        outputs.tools = "true";
+        context.cancelled = () => true;
+        assert.equal(vm.runInNewContext(expression, context), false, "Cancelled Tools must not run");
+        context.cancelled = () => false;
+      }
+      if (["finalize-plan", "package-firebase"].includes(name)) {
+        needs["finalize-plan"].result = "failure";
+        context.results = ["success", "failure"];
+        assert.equal(vm.runInNewContext(expression, context), false, `${name} preserves failed dependency refusal`);
+        needs["finalize-plan"].result = "success";
+      }
+    }
+  }
+});
+
+test("Rules caller preserves fresh selection and routes unusable bindings to actual refusal", () => {
+  const caller = ciJob(workflow("ci.yml"), "firestore-rules");
+  const expression = caller.match(/^    if: (.*(?:\n      [^\n]*)*)/m)[1]
+    .replace(/^>-\s*/, "").trim().replace(/^\$\{\{ | \}\}$/g, "")
+    .replaceAll("needs.source-preflight", 'needs["source-preflight"]');
+  const sha = "a".repeat(40);
+  // Actual expression + actual Bash guard; no GitHub scheduler simulation.
+  const evaluate = ({attempt = "2", source = sha, selected = "true", plan = "success",
+    preflight = "success", cancelled = false, failedAncestor = false} = {}) =>
+    vm.runInNewContext(expression, {
+      needs: {plan: {result: plan, outputs: {producer_attempt: attempt, source_sha: source,
+        ...(selected === null ? {} : {firestore_rules: selected})}},
+        "source-preflight": {result: preflight}},
+      github: {run_attempt: 2, sha}, cancelled: () => cancelled, failure: () => failedAncestor,
+      format: (pattern, value) => { assert.equal(pattern, "{0}"); return String(value); },
+    });
+  assert.equal(evaluate(), true, "Fresh full rerun2 with matching plan2 remains valid");
+  for (const selected of ["false", "", null]) {
+    assert.equal(evaluate({selected}), false, "Fresh unselected/missing selection stays skipped");
+  }
+  for (const prerequisite of ["plan", "preflight"]) {
+    for (const result of ["failure", "cancelled", "skipped", ""]) {
+      assert.equal(evaluate({[prerequisite]: result}), false, `Fresh ${prerequisite}: ${result || "missing"}`);
+    }
+  }
+  const gate = extractSteps(workflow("firestore-rules-ci.yml"))
+    .find((step) => step.name === "Require the originating CI plan");
+  const bindings = [
+    {attempt: "2", source: sha}, {attempt: "1", source: sha},
+    {attempt: "", source: sha}, {attempt: "2", source: ""},
+    {attempt: "2", source: "b".repeat(40)}, {attempt: "3", source: sha},
+    {attempt: "02", source: sha}, {attempt: "", source: ""},
+  ];
+  for (const [index, binding] of bindings.entries()) {
+    const fresh = index === 0;
+    if (!fresh) {
+      for (const selected of ["true", "false", "", null]) {
+        for (const plan of ["success", "skipped", ""]) {
+          for (const preflight of ["success", "skipped", ""]) {
+            assert.equal(evaluate({...binding, selected, plan, preflight}), true,
+              `Unusable binding ${JSON.stringify(binding)} must reach refusal despite selection/prerequisite metadata`);
+          }
+        }
+      }
+    }
+    for (const prerequisite of ["plan", "preflight"]) {
+      for (const result of ["failure", "cancelled"]) {
+        assert.equal(evaluate({...binding, [prerequisite]: result}), false, `${prerequisite}: ${result}`);
+      }
+    }
+    assert.equal(evaluate({...binding, cancelled: true}), false, "Canceled workflow stays stopped");
+    assert.equal(evaluate({...binding, failedAncestor: true}), false, "Failed ancestor stays blocked");
+    const result = spawnSync("bash", ["-c", gate.run], {encoding: "utf8", env: {
+      ...process.env, GITHUB_REPOSITORY: "owner/catch",
+      GITHUB_WORKFLOW_REF: "owner/catch/.github/workflows/ci.yml@refs/heads/main",
+      GITHUB_SHA: sha, GITHUB_RUN_ATTEMPT: "2",
+      CI_PLAN_ATTEMPT: binding.attempt, CI_PLAN_SOURCE_SHA: binding.source,
+    }});
+    assert.equal(result.status, fresh ? 0 : 64, result.stderr || JSON.stringify(binding));
+    if (!fresh) assert.match(result.stdout, /CI plan binding does not match this run/);
+  }
+});
+
+test("Rules retries forward the original plan and refuse before checkout", () => {
+  const caller = ciJob(workflow("ci.yml"), "firestore-rules");
+  assert.match(caller, /^    needs: \[plan, source-preflight\]$/m);
+  assert.match(caller, /needs\.plan\.outputs\.firestore_rules == 'true'/);
+  assert.match(caller, /ci_plan_attempt: \$\{\{ needs\.plan\.outputs\.producer_attempt \}\}/);
+  assert.match(caller, /ci_plan_source_sha: \$\{\{ needs\.plan\.outputs\.source_sha \}\}/);
+  assert.doesNotMatch(caller, /always\(|success\(/);
+  assert.doesNotMatch(caller.slice(caller.indexOf("    with:")), /github\.run_attempt|github\.sha/);
+  const rules = workflow("firestore-rules-ci.yml");
+  const inputs = rules.slice(rules.indexOf("  workflow_call:"), rules.indexOf("  workflow_dispatch:"));
+  for (const name of ["ci_plan_attempt", "ci_plan_source_sha"]) {
+    assert.match(inputs, new RegExp(`${name}:\\n        type: string\\n        required: false`));
+  }
+  assert.doesNotMatch(inputs, /default:/);
+  // extractSteps intentionally omits unnamed action steps and their ids.
+  const beforeCheckout = rules.slice(rules.indexOf("    steps:"), rules.indexOf("      - uses: actions/checkout@"));
+  assert.match(beforeCheckout, /^    steps:\n      - name: Require the originating CI plan\n        id: ci-plan\n        shell: bash\n/);
+  assert.equal((beforeCheckout.match(/^      - /gm) ?? []).length, 1);
+  assert.match(beforeCheckout, /CI_PLAN_ATTEMPT: \$\{\{ inputs\.ci_plan_attempt \}\}/);
+  assert.match(beforeCheckout, /CI_PLAN_SOURCE_SHA: \$\{\{ inputs\.ci_plan_source_sha \}\}/);
+  assert.doesNotMatch(beforeCheckout, /continue-on-error/);
+  const gate = extractSteps(rules).find((step) => step.name === "Require the originating CI plan");
+  assert.ok(gate?.run);
+  assert.doesNotMatch(gate.run, /\$\{\{/);
+  assert.equal(gate.if, null, "The leaf refusal itself must not be skipped.");
+});
+
+test("actual Rules guard preserves independent callers and rejects stale plan bindings", () => {
+  const gate = extractSteps(workflow("firestore-rules-ci.yml"))
+    .find((step) => step.name === "Require the originating CI plan");
+  assert.ok(gate?.run);
+  const sha = "a".repeat(40);
+  const root = "owner/catch/.github/workflows/";
+  const environment = {
+    ...process.env, GITHUB_REPOSITORY: "owner/catch", GITHUB_WORKFLOW_REF: `${root}ci.yml@refs/heads/main`,
+    GITHUB_RUN_ATTEMPT: "1", GITHUB_SHA: sha, CI_PLAN_ATTEMPT: "1", CI_PLAN_SOURCE_SHA: sha,
+    GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_WORKFLOW: "Arbitrary display name",
+    // These are not authoritative: PR merge source must remain GITHUB_SHA.
+    PR_HEAD_SHA: "b".repeat(40), WORKFLOW_CONTROLLER_SHA: "c".repeat(40),
+  };
+  const cases = [
+    ["first attempt", {}, true],
+    ["fresh full retry", {CI_PLAN_ATTEMPT: "2", GITHUB_RUN_ATTEMPT: "2"}, true],
+    ["PR merge source", {GITHUB_WORKFLOW_REF: `${root}ci.yml@refs/pull/123/merge`}, true],
+    ["tag ref", {GITHUB_WORKFLOW_REF: `${root}ci.yml@refs/tags/release@2`}, true],
+    ["old producer", {GITHUB_RUN_ATTEMPT: "2"}, false],
+    ["future producer", {CI_PLAN_ATTEMPT: "2"}, false],
+    ["manual CI missing pair", {CI_PLAN_ATTEMPT: "", CI_PLAN_SOURCE_SHA: ""}, false],
+    ["wrong source", {CI_PLAN_SOURCE_SHA: "b".repeat(40)}, false],
+    ["missing repository", {GITHUB_REPOSITORY: ""}, false],
+    ["foreign repository", {GITHUB_WORKFLOW_REF: `other/catch/.github/workflows/ci.yml@refs/heads/main`}, false],
+  ];
+  for (const value of ["", "0", "01", "-1", "1.5", "x", "1\n"]) {
+    cases.push([`invalid producer ${JSON.stringify(value)}`, {CI_PLAN_ATTEMPT: value}, false]);
+    cases.push([`invalid current ${JSON.stringify(value)}`, {GITHUB_RUN_ATTEMPT: value}, false]);
+    cases.push([`equally invalid attempts ${JSON.stringify(value)}`, {CI_PLAN_ATTEMPT: value, GITHUB_RUN_ATTEMPT: value}, false]);
+  }
+  for (const value of ["", "A".repeat(40), "a".repeat(39), "a".repeat(41), `${sha}\n`, "x".repeat(40)]) {
+    cases.push([`invalid producer source ${JSON.stringify(value)}`, {CI_PLAN_SOURCE_SHA: value}, false]);
+    cases.push([`equally invalid source ${JSON.stringify(value)}`, {CI_PLAN_SOURCE_SHA: value, GITHUB_SHA: value}, false]);
+  }
+  for (const ref of ["", "ci.yml", `${root}ci.yml@`, `${root}ci.yml@main`,
+    `${root}ci.yml@refs/heads/`, `${root}ci.yml@refs/pull/0/merge`, `${root}ci.yml@refs/heads/main\n`]) {
+    cases.push([`invalid root cannot bypass ${JSON.stringify(ref)}`,
+      {GITHUB_WORKFLOW_REF: ref, CI_PLAN_ATTEMPT: "", CI_PLAN_SOURCE_SHA: ""}, false]);
+  }
+  for (const name of ["firestore-rules-ci.yml", "backend-staging.yml", "_backend-rebaseline.yml", "ci.yml-backup.yml"]) {
+    const caller = {GITHUB_WORKFLOW_REF: `${root}${name}@refs/heads/main`};
+    cases.push([`${name} independent`, {...caller, CI_PLAN_ATTEMPT: "", CI_PLAN_SOURCE_SHA: ""}, true]);
+    cases.push([`${name} supplied valid pair`, caller, true]);
+    cases.push([`${name} partial pair`, {...caller, CI_PLAN_SOURCE_SHA: ""}, false]);
+    cases.push([`${name} stale supplied pair`, {...caller, GITHUB_RUN_ATTEMPT: "2"}, false]);
+    cases.push([`${name} wrong supplied source`, {...caller, CI_PLAN_SOURCE_SHA: "b".repeat(40)}, false]);
+  }
+  for (const [name, patch, accepted] of cases) {
+    const execution = spawnSync("bash", ["-c", gate.run + '\nprintf "next-step-sentinel\\n"'], {
+      encoding: "utf8", timeout: 5000, env: {...environment, ...patch},
+    });
+    assert.equal(execution.status, accepted ? 0 : 64, `${name}: ${execution.stderr}\n${execution.stdout}`);
+    assert.equal(execution.stdout.includes("next-step-sentinel"), accepted, name);
+    if (!accepted) assert.match(execution.stdout, /Re-run all jobs/, name);
+  }
+});
+
+test("Rules receipts survive test failure but cannot run after plan refusal", () => {
+  const rules = workflow("firestore-rules-ci.yml");
+  const steps = extractSteps(rules);
+  const upload = steps.find((step) => step.name === "Retain selected and executed backend tests");
+  assert.equal(upload?.uses, "actions/upload-artifact@v7");
+  assert.match(upload.if, /always\(\)/);
+  const expression = upload.if.replaceAll("steps.ci-plan", 'steps["ci-plan"]');
+  for (const outcome of ["success", "failure", "skipped", "cancelled"]) {
+    for (const laterTestResult of ["success", "failure"]) {
+      const actual = vm.runInNewContext(expression, {
+        always: () => true, success: () => laterTestResult === "success",
+        failure: () => laterTestResult === "failure", steps: {"ci-plan": {outcome}},
+      });
+      assert.equal(actual, outcome === "success", `${outcome}/${laterTestResult}`);
+    }
+  }
+  assert.match(rules, /name: backend-integration-execution-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}-\$\{\{ github.sha \}\}/);
+  assert.match(rules, /path: build\/ci\/backend-integration-execution.json\n          if-no-files-found: error/);
+  assert.equal(steps.filter((step) => step.if && /always\(|failure\(|!cancelled\(/.test(step.if)).length, 1);
+});
+
+test("actual CI retry refusal accepts full reruns and stops incompatible attempts before further work", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-retry-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const ci = workflow("ci.yml");
+  const publish = ciJob(ci, "plan").match(/^          echo "producer_attempt=.*$/m)?.[0];
+  assert.ok(publish);
+  const output = path.join(directory, "output");
+  const producer = spawnSync("bash", ["-c", publish], {encoding: "utf8", env: {
+    ...process.env, GITHUB_OUTPUT: output, GITHUB_RUN_ATTEMPT: "1",
+  }});
+  assert.equal(producer.status, 0, producer.stderr);
+  assert.equal(fs.readFileSync(output, "utf8"), "producer_attempt=1\n");
+  const gate = extractSteps(ciJob(ci, "required")).find((step) => step.name === "Require this attempt's planner");
+  assert.ok(gate?.run);
+  assert.match(ciJob(ci, "required"), /PRODUCER_ATTEMPT: \$\{\{ needs.plan.outputs.producer_attempt \}\}/);
+  for (const [prior, current, compatible] of [
+    ["1", "1", true], ["2", "2", true], ["1", "2", false], ["2", "1", false],
+    ["", "2", false], ["2", "", false], ["0", "0", false], ["01", "01", false],
+    ["x", "x", false], ["2\n", "2", false],
+  ]) {
+    const execution = spawnSync("bash", ["-c", gate.run + '\nprintf "work-sentinel\\n"'], {
+      encoding: "utf8", env: {...process.env, PRODUCER_ATTEMPT: prior, GITHUB_RUN_ATTEMPT: current},
+    });
+    assert.equal(execution.status, compatible ? 0 : 64, `${prior}/${current}: ${execution.stderr}`);
+    assert.equal(execution.stdout.includes("work-sentinel"), compatible);
+    if (!compatible) assert.match(execution.stdout, /Re-run all jobs/);
+  }
+});
+
+test("current-attempt Required CI still distinguishes selected failure from unaffected skips", () => {
+  const steps = extractSteps(ciJob(workflow("ci.yml"), "required"));
+  const guard = steps.find((step) => step.name === "Require this attempt's planner")?.run;
+  assert.ok(guard);
+  const selected = steps.find((step) => step.name === "Require every selected lane").run;
+  const keys = ["admin", "capture_freshness", "contracts", "docs", "policy_docs", "firestore_rules",
+    "flutter", "functions", "marketing", "operations", "tools", "visual_integration",
+    "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke"];
+  for (const [chosen, result, success] of [
+    ["false", "skipped", true], ["true", "success", true], ["true", "skipped", false],
+    ["true", "failure", false], ["true", "cancelled", false], ["", "success", false],
+  ]) {
+    const needs = {plan: {result: "success", outputs: {...Object.fromEntries(keys.map((key) => [key, "false"])), functions: chosen}},
+      "source-preflight": {result: "success"}, functions: {result}, "finalize-plan": {result: "skipped"}};
+    const execution = spawnSync("bash", ["-c", guard + "\n" + selected], {encoding: "utf8", env: {
+      ...process.env, PRODUCER_ATTEMPT: "2", GITHUB_RUN_ATTEMPT: "2", NEEDS_JSON: JSON.stringify(needs),
+      EVENT_NAME: "pull_request", DEPLOY_REQUIRED: "false",
+    }});
+    assert.equal(execution.status === 0, success, `${chosen}/${result}: ${execution.stderr}`);
+  }
+});
+
 test("a successful main CI attempt must own its exact planner and backend artifacts", () => {
   const ci = workflow("ci.yml");
   for (const name of ["backend-rebaseline.yml", "backend-staging.yml"]) {
@@ -120,7 +434,8 @@ test("CI packages one immutable backend from its exact plan and tested Functions
   const preflight = ciJob(ci, "source-preflight");
   // Source generation needs the schema compiler, but cannot build or publish
   // a second Functions payload. Packaging still consumes only the tested one.
-  assert.match(preflight, /name: Install selected contract generator dependencies\n        if: \$\{\{ needs\.plan\.outputs\.contracts == 'true' \}\}\n        run: npm --prefix functions ci --ignore-scripts\n/u);
+  assert.match(ci, /preflight_functions_dependencies: \$\{\{ steps\.plan\.outputs\.preflight_functions_dependencies \}\}/u);
+  assert.match(preflight, /name: Install selected contract generator dependencies\n        if: \$\{\{ needs\.plan\.outputs\.preflight_functions_dependencies == 'true' \}\}\n        run: npm --prefix functions ci --ignore-scripts\n/u);
   assert.equal((preflight.match(/npm --prefix functions ci/gu) ?? []).length, 1);
   assert.doesNotMatch(preflight, /npm --prefix functions (?:test|run build)|functions-lib-|package_firebase_delivery|firebase deploy/u);
   assert.doesNotMatch(ci.replace(preflight, ""), /npm --prefix functions (?:ci|test|run build)/);
@@ -1006,7 +1321,7 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
     /indexes=build\/delivery\/deploy-tree\/firestore\.indexes\.json[\s\S]*if \[\[ -f "\$indexes" \]\][\s\S]*--indexes "\$indexes"[\s\S]*--current-indexes firestore\.indexes\.json/,
   );
   assert.doesNotMatch(
-    promotion,
+    ciJob(promotion, "promote"),
     /--indexes build\/delivery\/package\/firestore\.indexes\.json/,
   );
   const promoteStep = promotion.slice(
@@ -1704,7 +2019,7 @@ test("Functions retries stop on missing params or secrets and retain transient r
 
 test("Intake PR596 uses the protected fixed-scope job and cannot enter generic mutation routes", () => {
   const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-intake-pr596");
-  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release && !inputs\.cat151_booking_release \}\}/);
+  assert.match(ciJob(source, "promote"), /if: \$\{\{ !inputs\.intake_pr596_release && !inputs\.cat151_booking_release && !inputs\.cat165_release \}\}/);
   assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
   assert.match(workflow("selective-backend-release.yml"), /group: backend-delivery\n  cancel-in-progress: false/);
   assert.ok(job.indexOf("Require recorded human") < job.indexOf("google-github-actions/auth@v3"));
@@ -1786,4 +2101,139 @@ test("Intake PR596 caller accepts GitHub-omitted empty recovery and rejects any 
     {reason: "bad"}, {reason: "line\nbreak reason"}]) {
     assert.equal(accepted({...inputs, ...patch}), false);
   }
+});
+
+import {CAT165_RELEASE} from "./selective_backend_release.mjs";
+import {RELEASE as CAT151_RELEASE} from "./cat151_booking_release.mjs";
+test("CAT151 ordinary and recovery admission reject mixed CAT165 authority", () => {
+  const caller = extractSteps(ciJob(workflow("selective-backend-release.yml"), "authorize-cat151-booking"))
+    .find((step) => step.name === "Verify immutable source, producer and operator scope").run;
+  const promoter = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat151-booking"))[0].run;
+  const accepts = (body, inputs) => {
+    const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+    return spawnSync("jq", ["-e", filter], {input: JSON.stringify(inputs), encoding: "utf8",
+      env: {...process.env, GITHUB_SHA: "a".repeat(40)}}).status === 0;
+  };
+  for (const recovery of [false, true]) {
+    const dispatch = {release_kind: recovery ? "cat151-booking-prod-recovery" : "cat151-booking",
+      confirm_booking_functions: true, confirm_cat165: false, confirm_intake_pr596: false,
+      confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
+      resume_delivery_attempt: "1"};
+    assert.equal(accepts(caller, dispatch), true);
+    assert.equal(accepts(caller, {...dispatch, confirm_cat165: true}), false);
+    const inputs = {cat151_booking_release: true, cat151_predeploy_recovery: recovery, cat165_release: false,
+      intake_pr596_release: false, operator_release: false, whatsapp_five_release: false,
+      sales_pr543_release: false, wedding_phone_import_release: false, require_current_main: false,
+      environment: recovery ? "prod" : "dev", approval_environment: "", control_plane_sha: "a".repeat(40),
+      source_sha: CAT151_RELEASE.sourceSha, base_sha: CAT151_RELEASE.baseSha,
+      source_ci_run_id: CAT151_RELEASE.sourceCiRunId, source_ci_run_attempt: "1",
+      resume_delivery_run_id: "", resume_delivery_attempt: "1",
+      dev_completion_artifact_id: recovery ? "12051195096" : "",
+      dev_completion_artifact_digest: recovery ? "ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f" : "",
+      dev_completion_receipt_sha256: recovery ? "b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09" : ""};
+    assert.equal(accepts(promoter, inputs), true);
+    assert.equal(accepts(promoter, {...inputs, cat165_release: true}), false);
+  }
+});
+test("CAT165 uses protected approval, fixed artifact proofs and isolated selected-only completion", () => {
+  const source = workflow("_firebase-promote.yml"), job = ciJob(source, "promote-cat165");
+  assert.match(ciJob(source, "promote"), /!inputs\.cat165_release/);
+  assert.match(job, /environment: prod/); assert.match(job, /group: firebase-prod\n      cancel-in-progress: false/);
+  for (const proof of ["Require recorded human", "cat165-archive", "cat165-artifact", "cat165-provenance", "package_firebase_delivery.mjs verify"]) {
+    assert.ok(job.indexOf(proof) > 0 && job.indexOf(proof) < job.indexOf("google-github-actions/auth@v3"), proof);
+  }
+  assert.doesNotMatch(job, /firebase_functions_checkpoint\.mjs record|delivery_core\.mjs checkpoint/);
+  assert.match(job, /cat165-complete/); assert.match(job, /cat165-selected\/functions-deployment\.json/);
+  assert.doesNotMatch(job, /--force|--functions-postconditions-only|sync:callable-invokers|restore-decision|checkpoint restore|delivery_core\.mjs next|backend-delivery-cursor|adminListCAT165Operations/);
+  assert.equal((job.match(/firebase_with_env\.sh prod deploy/g) ?? []).length, 1);
+  assert.equal((job.match(/gcloud firestore indexes composite create/g) ?? []).length, 1);
+  const capture = extractSteps(job).find((step) => step.name === "Bind all 73 reviewed predecessors and capture retained resources");
+  assert.equal(capture.run.trim(), "node tool/ci/selective_backend_release.mjs cat165-before --output build/delivery/cat165-before.json");
+  assert.ok(job.indexOf("cat165-before --output") < job.indexOf("gcloud firestore indexes composite create"));
+  assert.match(job, /--collection-group=organizerPrograms --query-scope=COLLECTION/);
+  assert.match(job, /field-path=organizerId,order=ascending[\s\S]*field-path=createdBy,order=ascending[\s\S]*field-path=startsAt,order=descending/);
+  assert.ok(job.indexOf("wait_firestore_indexes_ready.mjs") < job.indexOf("firebase_with_env.sh prod deploy"));
+  assert.equal((job.match(/cat165-verify-config/g) ?? []).length, 2);
+  assert.equal((job.match(/--write-candidate build\/delivery\/cat165-(?:index|functions)-bindings.json/g) ?? []).length, 2);
+  assert.match(job, /--phase deployed --candidate build\/delivery\/cat165-functions-bindings\.json/);
+});
+test("CAT165 reusable input predicate rejects every other mode, authority drift and recovery", () => {
+  const job = ciJob(workflow("_firebase-promote.yml"), "promote-cat165");
+  const body = extractSteps(job).find((step) => step.name === "Validate the fixed CAT165 caller and prohibit recovery or other modes").run;
+  assert.match(body, /test "\$GITHUB_RUN_ATTEMPT" = 1/);
+  assert.match(body, /selective-backend-release\.yml@refs\/heads\/main/);
+  const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+  const inputs = {cat165_release: true, intake_pr596_release: false, operator_release: false, whatsapp_five_release: false,
+    sales_pr543_release: false, wedding_phone_import_release: false, require_current_main: false,
+    environment: "prod", approval_environment: "prod", control_plane_sha: "a".repeat(40),
+    source_sha: CAT165_RELEASE.sourceSha, base_sha: CAT165_RELEASE.baseSha,
+    source_ci_run_id: CAT165_RELEASE.sourceCiRunId, source_ci_run_attempt: "1", resume_delivery_run_id: "", resume_delivery_attempt: "1",
+    dev_completion_artifact_id: "", dev_completion_artifact_digest: "", dev_completion_receipt_sha256: ""};
+  const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8",
+    env: {...process.env, GITHUB_SHA: "a".repeat(40)}}).status === 0;
+  assert.equal(accepted(inputs), true);
+  for (const key of ["cat151_booking_release", "cat151_predeploy_recovery", "intake_pr596_release", "operator_release", "whatsapp_five_release", "sales_pr543_release", "wedding_phone_import_release", "require_current_main"]) {
+    assert.equal(accepted({...inputs, [key]: true}), false, key);
+  }
+  for (const patch of [{environment: "dev"}, {approval_environment: "prod-backend"}, {source_ci_run_attempt: "2"},
+    {source_sha: "b".repeat(40)}, {base_sha: "b".repeat(40)}, {source_ci_run_id: "123"}, {control_plane_sha: "b".repeat(40)},
+    {resume_delivery_run_id: "123"}, {dev_completion_artifact_id: "123"}, {cat165_release: false}]) assert.equal(accepted({...inputs, ...patch}), false);
+});
+test("CAT165 caller rejects missing consent, mixed release confirmations and malformed recovery", () => {
+  const job = ciJob(workflow("selective-backend-release.yml"), "authorize-cat165");
+  const body = extractSteps(job).find((step) => step.name === "Bind the fixed CAT165 source, producer and operator confirmation").run;
+  const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
+  const inputs = {release_kind: "cat165", confirm_cat165: true, confirm_intake_pr596: false,
+    confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
+    resume_delivery_attempt: "1", source_sha: CAT165_RELEASE.sourceSha, reason: "Reviewed protected CAT165 release"};
+  const accepted = (value) => spawnSync("jq", ["-e", filter], {input: JSON.stringify(value), encoding: "utf8"}).status === 0;
+  assert.equal(accepted(inputs), true);
+  for (const key of ["confirm_booking_functions", "confirm_intake_pr596", "confirm_four_functions_five_indexes", "confirm_whatsapp_five", "confirm_sales_pr543"]) {
+    assert.equal(accepted({...inputs, [key]: true}), false);
+  }
+  for (const patch of [{confirm_cat165: false}, {release_kind: "intake-pr596"}, {resume_delivery_attempt: "2"},
+    {source_sha: "b".repeat(40)}, {reason: "short"}, {reason: "line\nbreak reason"}, {resume_delivery_run_id: false},
+    {resume_delivery_run_id: "123"}]) assert.equal(accepted({...inputs, ...patch}), false);
+});
+test("CAT165 rejects bypass approval and requires an explicitly configured human reviewer", () => {
+  const step = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat165"))
+    .find((entry) => entry.name === "Require recorded human PROD environment approval for operator release");
+  const filter = /--argjson history "\$history" '([\s\S]*?)' > \/dev\/null/.exec(step.run)[1];
+  const environment = {id: 5, protection_rules: [{type: "required_reviewers", reviewers: [{type: "User", reviewer: {id: 7}}]}]};
+  const approval = {state: "approved", user: {id: 7}, environments: [{id: 5, name: "prod"}]};
+  const accepted = (history, settings = environment) => spawnSync("jq", ["-en", "--argjson", "environment", JSON.stringify(settings),
+    "--argjson", "history", JSON.stringify(history), filter], {encoding: "utf8"}).status === 0;
+  assert.equal(accepted([approval]), true); assert.equal(accepted([]), false);
+  assert.equal(accepted([{...approval, user: {id: 99}}]), false);
+  assert.equal(accepted([approval, {...approval, state: "rejected"}]), false);
+  assert.equal(accepted([approval], {...environment, protection_rules: []}), false);
+});
+test("CAT165 executes one Functions invocation and no mutation after a preflight failure", (t) => {
+  const body = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat165"))
+    .find((step) => step.name === "Recheck the indexed boundary and deploy exactly 62 Functions once").run
+    .replaceAll("${{ inputs.control_plane_sha }}", "a".repeat(40)).replaceAll("${{ steps.verify.outputs.targets }}", CAT165_RELEASE.targets.join(","));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-once-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "build/delivery"), {recursive: true}); fs.mkdirSync(path.join(directory, "tool"));
+  fs.mkdirSync(path.join(directory, "bin"));
+  const targets = CAT165_RELEASE.targets.join(",");
+  fs.writeFileSync(path.join(directory, "build/delivery/execution-plan.json"), JSON.stringify({stages: ["firestore-indexes", "functions"], targets: ["firestore:indexes", targets]}));
+  fs.writeFileSync(path.join(directory, "bin/git"), '#!/bin/sh\nexit 0\n', {mode: 0o700});
+  fs.writeFileSync(path.join(directory, "bin/node"), `#!/bin/sh
+case "$*" in
+  *cat165-targets*) printf '%s\\n' '${JSON.stringify({targets: CAT165_RELEASE.targets})}' ;;
+  *cat165-verify-config*) exit "\${CONFIG_STATUS:-0}" ;;
+  *cat165-verify-indexed*) exit "\${INDEX_STATUS:-0}" ;;
+esac
+exit 0
+`, {mode: 0o700});
+  fs.writeFileSync(path.join(directory, "tool/deploy_firebase_targets.sh"), '#!/bin/sh\nexit 0\n', {mode: 0o700});
+  fs.writeFileSync(path.join(directory, "tool/firebase_with_env.sh"), '#!/bin/sh\nprintf "%s\\n" "$*" >> calls\nexit 9\n', {mode: 0o700});
+  const run = (extra) => spawnSync("bash", ["-c", body], {cwd: directory, encoding: "utf8", env: {...process.env, PATH: `${directory}/bin:${process.env.PATH}`, ...extra}});
+  for (const extra of [{CONFIG_STATUS: "7"}, {INDEX_STATUS: "8"}]) {
+    assert.notEqual(run(extra).status, 0); assert.equal(fs.existsSync(path.join(directory, "calls")), false);
+  }
+  const result = run({}); assert.equal(result.status, 9, result.stderr);
+  assert.deepEqual(fs.readFileSync(path.join(directory, "calls"), "utf8").trim().split("\n"),
+    [`prod deploy --only ${targets} --non-interactive --config build/delivery/deploy-tree/firebase.json`]);
 });

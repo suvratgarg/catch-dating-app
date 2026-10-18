@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
-    'DockBell retains toggle and pending semantics over icon chrome',
+    'ClubBellButton retains toggle and pending semantics over icon chrome',
     (tester) async {
       var taps = 0;
 
@@ -16,7 +16,7 @@ void main() {
             theme: AppTheme.light,
             home: Scaffold(
               body: Center(
-                child: DockBell(
+                child: ClubBellButton(
                   active: active,
                   accent: Colors.deepOrange,
                   isLoading: isLoading,

@@ -1,4 +1,4 @@
-part of 'host_customer_timeline.dart';
+part of 'host_customer_timeline_section.dart';
 
 /// Contact provenance is independent of current communication availability.
 class HostCustomerSourcesSection extends StatelessWidget {

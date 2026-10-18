@@ -61,7 +61,7 @@ Future<void> _boot(
         data: MediaQueryData(textScaler: TextScaler.linear(scale)),
         child: Scaffold(
           body: SingleChildScrollView(
-            child: CatchFormRowList<String?>(
+            child: CatchFormList<String?>(
               fieldCopy: _copy,
               rows:
                   rows ??

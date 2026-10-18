@@ -81,7 +81,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
           value: uidAsync,
           errorContext: AppErrorContext.auth,
           onRetry: () => ref.invalidate(uidProvider),
-          loadingBuilder: (_) => const ActivityScreenLoading(),
+          loadingBuilder: (_) => const ActivityScreenSkeleton(),
           errorBuilder: (context, error, _, onRetry) => ActivityScreenBody(
             state: NotificationsAccessError(error: error),
             onRetry: onRetry,
@@ -91,14 +91,16 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
             if (uid == null) {
               return const CatchSectionList.responsive(
                 emptyStateOmitted: true,
-                items: [CatchSectionListItem(child: ActivitySignedOutState())],
+                items: [
+                  CatchSectionListItem(child: ActivitySignedOutEmptyState()),
+                ],
               );
             }
             return CatchAsyncBoundary<List<ActivityNotification>>(
               value:
                   notificationsAsync ??
                   const AsyncLoading<List<ActivityNotification>>(),
-              loadingBuilder: (_) => const ActivityScreenLoading(),
+              loadingBuilder: (_) => const ActivityScreenSkeleton(),
               onRetry: () =>
                   ref.invalidate(watchActivityNotificationsProvider(uid)),
               errorBuilder: (context, error, _, onBoundaryRetry) =>
@@ -166,8 +168,8 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
   }
 }
 
-class ActivityScreenLoading extends StatelessWidget {
-  const ActivityScreenLoading({super.key});
+class ActivityScreenSkeleton extends StatelessWidget {
+  const ActivityScreenSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

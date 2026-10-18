@@ -11,7 +11,7 @@ const fixture: ReturnType<typeof useOfferCheckoutController> = {
   grant: {grantId: "a".repeat(64), eventId: "demo", eventName: "Sunday morning at Lodhi",
     cancellationPolicy: {refundDeadlineMillis: 1790989200000, eventStartsAtMillis: 1791075600000},
     startTimeMillis: 1791075600000, amountPaise: 85000, currency: "INR", expiresAtMillis: 9e12},
-  payment: null, pending: false, status: {message: "", tone: ""}, recaptchaId: "preview-otp",
+  payment: null, admission: undefined, pending: false, status: {message: "", tone: ""}, recaptchaId: "preview-otp",
   sendCode: async () => undefined, verifyCode: async () => undefined, changePhone: empty,
   cancellationReview: null, reviewCancellation: async () => undefined,
   cancelAdmission: async () => undefined, dismissCancellation: empty,
@@ -53,3 +53,9 @@ export const NoRefundReview: Story = {render: () => <EventOfferView {...fixture}
   cancellationReview={{paymentId: payment.paymentId, refundAmountPaise: 0}} />};
 export const GuestCancelled: Story = {render: () => <EventOfferView {...fixture} grant={null}
   payment={{...payment, status: "cancelled", cancellationReason: "guestCancelled"}} />};
+
+export const FreeInvitation: Story = {render: () => <EventOfferView {...fixture}
+  grant={{...fixture.grant!, amountPaise: 0, freeAdmission: {
+    expectedOfferGeneration: 1, expectedOfferRevision: 2, expectedLedgerRevision: 3}}} />};
+export const FreeAdmission: Story = {render: () => <EventOfferView {...fixture} grant={null}
+  admission={{eventId: "demo", attendeeId: "guest1"}} />};

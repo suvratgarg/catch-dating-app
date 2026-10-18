@@ -1,7 +1,7 @@
 part of 'onboarding_widgets_test.dart';
 
 void _registerWelcomePageTests() {
-  group('WelcomePage', () {
+  group('OnboardingWelcomeBody', () {
     testWidgets('reel phrase bank matches strings.json', (tester) async {
       final strings =
           jsonDecode(_welcomeStringsSource().readAsStringSync())
@@ -34,7 +34,11 @@ void _registerWelcomePageTests() {
           child: SizedBox(
             width: 320,
             height: 540,
-            child: ReelBand(spinValue: 0, landingValue: 0, landed: false),
+            child: WelcomeReelList(
+              spinValue: 0,
+              landingValue: 0,
+              landed: false,
+            ),
           ),
         ),
       );
@@ -59,7 +63,7 @@ void _registerWelcomePageTests() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const WelcomePage(playIntro: false),
+        child: const OnboardingWelcomeBody(playIntro: false),
       );
 
       expect(
@@ -97,7 +101,7 @@ void _registerWelcomePageTests() {
         container: container,
         child: const MediaQuery(
           data: MediaQueryData(disableAnimations: true),
-          child: WelcomePage(),
+          child: OnboardingWelcomeBody(),
         ),
       );
 
@@ -125,7 +129,7 @@ void _registerWelcomePageTests() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const WelcomePage(),
+        child: const OnboardingWelcomeBody(),
       );
 
       expect(
@@ -133,7 +137,7 @@ void _registerWelcomePageTests() {
         findsNothing,
       );
 
-      await tester.tap(find.byKey(WelcomePage.splashTapTargetKey));
+      await tester.tap(find.byKey(OnboardingWelcomeBody.splashTapTargetKey));
       await tester.pump(CatchMotion.welcomeLandingReveal);
       await tester.pump();
 
@@ -167,7 +171,7 @@ void _registerWelcomePageTests() {
         routes: [
           GoRoute(
             path: app_router.Routes.startScreen.path,
-            builder: (_, _) => const WelcomePage(playIntro: false),
+            builder: (_, _) => const OnboardingWelcomeBody(playIntro: false),
           ),
           GoRoute(
             path: app_router.Routes.exploreScreen.path,

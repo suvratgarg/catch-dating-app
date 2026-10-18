@@ -5,6 +5,10 @@ import path from "node:path";
 const schema = JSON.parse(fs.readFileSync(new URL(
   "../../../design/components/catch.components.schema.json", import.meta.url), "utf8"));
 export const roleNouns = Object.freeze(schema.$defs.roleNoun.enum);
+/** Route-level suffixes accepted alongside role nouns for feature UI. */
+export const routeSuffixes = Object.freeze(["Screen", "Workspace"]);
+/** `Catch` followed by an uppercase letter or digit; "Catches" is a product word. */
+export const reservedPrefixPattern = /^Catch[A-Z0-9]/u;
 export const componentLevels = Object.freeze(schema.$defs.componentLevel.enum);
 export const componentAxes = Object.freeze([
   "Variant", "Size", "Tone", "Emphasis", "Status", "Placement", "Mode",
@@ -25,24 +29,71 @@ export function sharedWidgetLevel(file) {
   return [...sharedHomes].find(([home]) => file.startsWith(home))?.[1] ?? null;
 }
 
-/** Feature UI is distinct from app bootstraps and the app-core adapter layer. */
+/**
+ * Feature UI is distinct from app bootstraps and the app-core adapter layer.
+ * `lib/core/widgets` holds app-coupled shared widgets, not design-system
+ * symbols, so it follows feature naming.
+ */
+export function isFeatureWidgetSource(file) {
+  return /^lib\/(?!core\/|l10n\/|routing\/)[^/]+\//u.test(file) ||
+    file.startsWith("lib/core/widgets/") ||
+    /^apps\/(?:consumer|host)\/lib\/[^/]+\//u.test(file);
+}
+
 export function featureWidgetNamingIssues(entry) {
   if (entry.visibility !== "public" || entry.classKind === "widget-state") return [];
-  const featureSource = /^lib\/(?!core\/|l10n\/|routing\/)[^/]+\//u.test(entry.file) ||
-    /^apps\/(?:consumer|host)\/lib\/[^/]+\//u.test(entry.file);
-  if (!featureSource || sharedWidgetLevel(entry.file)) return [];
+  if (!isFeatureWidgetSource(entry.file) || sharedWidgetLevel(entry.file)) return [];
   const issues = [];
-  if (entry.name.startsWith("Catch")) issues.push("reserved-feature-widget-prefix");
-  const role = [...roleNouns, "Screen"].sort((a, b) => b.length - a.length)
+  if (reservedPrefixPattern.test(entry.name)) issues.push("reserved-feature-widget-prefix");
+  const role = [...roleNouns, ...routeSuffixes].sort((a, b) => b.length - a.length)
     .find((candidate) => entry.name.endsWith(candidate));
   const feature = role ? entry.name.slice(0, -role.length) : "";
   if (!/^(?:[A-Z][a-z0-9]*)+$/u.test(feature)) issues.push("noncanonical-feature-widget-name");
   const file = path.basename(entry.file, ".dart");
-  const suffixes = [...roleNouns, "Screen", "Controller", "ViewModel", "State", "Repository", "Service", "Providers"];
+  const suffixes = [...roleNouns, ...routeSuffixes, "Controller", "ViewModel", "State", "Repository", "Service", "Providers"];
   if (!suffixes.some((suffix) => file.endsWith(`_${snakeCase(suffix)}`))) {
     issues.push("noncanonical-feature-widget-file");
   }
   return issues;
+}
+
+/**
+ * Names the role(s) an off-vocabulary noun is spelled as here, so a rejected
+ * name points somewhere instead of only failing.
+ */
+export function roleNounRedirectAdvice(name, redirects) {
+  const key = Object.keys(redirects ?? {}).sort((a, b) => b.length - a.length)
+    .find((candidate) => name.endsWith(candidate));
+  if (!key) return null;
+  return `${key} is spelled ${redirects[key].join(" or ")} here`;
+}
+
+/** Homes where the reserved `Catch` prefix is legal outside the design-system packages. */
+export function reservedPrefixAllowed(file) {
+  return file.startsWith("packages/catch_ui/") || file.startsWith("packages/catch_tokens/") ||
+    file.startsWith("lib/core/riverpod_ui/") ||
+    // App bootstrap files carry the product name, as the grammar exempts them.
+    /^lib\/[^/]+\.dart$/u.test(file) || /^apps\/(?:consumer|host)\/lib\/[^/]+\.dart$/u.test(file);
+}
+
+const topLevelDeclaration =
+  /^(?:(?:abstract|sealed|final|base|interface)\s+)*(class|enum|mixin|typedef|extension(?:\s+type)?)\s+([A-Za-z_][A-Za-z0-9_]*)/gmu;
+
+/** Top-level type-like declarations, for symbol-level naming rules. */
+export function topLevelDeclarations(file, source) {
+  return [...source.matchAll(topLevelDeclaration)].map((match) => ({
+    file,
+    kind: match[1].replace(/\s+/gu, " "),
+    name: match[2],
+    line: source.slice(0, match.index).split("\n").length,
+  }));
+}
+
+/** `Catch`-prefixed symbols outside the design-system homes. */
+export function reservedPrefixSymbolProblems(declarations) {
+  return declarations
+    .filter((entry) => reservedPrefixPattern.test(entry.name) && !reservedPrefixAllowed(entry.file))
+    .map((entry) => ({file: entry.file, name: entry.name, issues: ["reserved-symbol-prefix"]}));
 }
 
 export function componentNamingEntries(components) {

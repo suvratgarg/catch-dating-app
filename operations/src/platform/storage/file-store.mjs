@@ -866,5 +866,14 @@ async function atomicWriteJson(file, value) {
 
 async function exclusiveWriteJson(file, value) {
   await fs.mkdir(path.dirname(file), {recursive: true});
-  await fs.writeFile(file, `${stableStringify(value, {space: 2})}\n`, {flag: "wx", mode: 0o600});
+  const temporary = `${file}.${process.pid}.${crypto.randomUUID()}.tmp`;
+  try {
+    await fs.writeFile(temporary, `${stableStringify(value, {space: 2})}\n`, {flag: "wx", mode: 0o600});
+    // Publish only complete bytes, without replacing another writer's value.
+    await fs.link(temporary, file);
+  } finally {
+    // A leftover .tmp is not canonical state. Cleanup must not mask EEXIST or
+    // turn a successful publication into an apparent failed operation.
+    await fs.rm(temporary, {force: true}).catch(() => undefined);
+  }
 }

@@ -1219,6 +1219,10 @@ const schemaEventDocumentSchema = <String, Object?>{
             'manualApprovalRequired': <String, Object?>{
               'type': 'boolean',
             },
+            'approvedMembersSkipReview': <String, Object?>{
+              'type': 'boolean',
+              'description': 'When true, current approved organizer community members may skip event review. Does not waive invitation, capacity, cohort or payment rules. Missing means false.',
+            },
             'privateAccessPolicy': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,

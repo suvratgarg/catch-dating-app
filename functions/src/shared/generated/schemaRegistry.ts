@@ -483,6 +483,17 @@ export {participantOrganizerCardDocumentSchema} from "./schemas/participantOrgan
 export {participantProfileClaimReceiptDocumentSchema} from "./schemas/participantProfileClaimReceiptDocument";
 export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimParticipantFormProfileInput";
 export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
+export {eventApprovalPreferenceDocumentSchema} from "./schemas/eventApprovalPreferenceDocument";
+export {eventApprovalNotificationReceiptDocumentSchema} from "./schemas/eventApprovalNotificationReceiptDocument";
+export {eventApprovalNotificationSettingsDocumentSchema} from "./schemas/eventApprovalNotificationSettingsDocument";
+export {eventApprovalNotificationBudgetDocumentSchema} from "./schemas/eventApprovalNotificationBudgetDocument";
+export {eventApprovalNotificationMessageDocumentSchema} from "./schemas/eventApprovalNotificationMessageDocument";
+export {eventApprovalNotificationDispatchDocumentSchema} from "./schemas/eventApprovalNotificationDispatchDocument";
+export {eventApprovalNotificationIntentSchema} from "./schemas/eventApprovalNotificationIntent";
+export {eventApprovalNotificationWorkSchema} from "./schemas/eventApprovalNotificationWork";
+export {eventApprovalNotificationAttemptSchema} from "./schemas/eventApprovalNotificationAttempt";
+export {manageEventApprovalNotificationsCallablePayloadSchema} from "./schemas/manageEventApprovalNotificationsInput";
+export {manageEventApprovalNotificationsCallableResponseSchema} from "./schemas/manageEventApprovalNotificationsOutput";
 export {getEventViewerStateCallablePayloadSchema} from "./schemas/getEventViewerStateInput";
 export {getEventViewerStateCallableResponseSchema} from "./schemas/getEventViewerStateOutput";
 export {listParticipantActivityCallablePayloadSchema} from "./schemas/listParticipantActivityInput";

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_metric_row.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -50,7 +50,7 @@ class HostFormOverviewSectionList extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        HostFormMetrics(
+        HostFormMetricRow(
           key: const ValueKey('host-form-command-center-metrics'),
           items: [
             (
