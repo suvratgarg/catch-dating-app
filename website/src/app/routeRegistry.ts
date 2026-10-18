@@ -3,16 +3,7 @@ export type MarketingRouteId =
   | "home"
   | "visitor_discovery"
   | "host"
-  | "host_overview"
-  | "host_platform"
-  | "host_planners"
-  | "host_mixers"
-  | "host_clubs"
-  | "host_directory"
-  | "host_claim"
   | "host_apply"
-  | "host_stack"
-  | "host_workflows"
   | "organizer_search"
   | "organizer_listing"
   | "event_detail"
@@ -40,17 +31,8 @@ export const marketingRouteDefinitions = [
   {id: "sales_demo", path: "/demo/:invitationId"},
   {id: "home", path: "/"},
   {id: "visitor_discovery", path: "/explore/"},
-  {id: "host", path: "/host/*"},
-  {id: "host_overview", path: "/host/overview/"},
-  {id: "host_platform", path: "/host/platform/"},
-  {id: "host_planners", path: "/host/planners/"},
-  {id: "host_mixers", path: "/host/mixers/"},
-  {id: "host_clubs", path: "/host/clubs/"},
-  {id: "host_directory", path: "/host/directory/"},
-  {id: "host_claim", path: "/host/claim/"},
+  {id: "host", path: "/host/"},
   {id: "host_apply", path: "/host/apply/"},
-  {id: "host_stack", path: "/host/stack/"},
-  {id: "host_workflows", path: "/host/workflows/"},
 
   {id: "organizer_search", path: "/organizers"},
   {id: "organizer_listing", path: "/organizers/*"},

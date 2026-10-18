@@ -34,11 +34,11 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
           {href: "/organizers/", label: websiteCopy["homepage_0116"]},
           {href: "/host/", label: websiteCopy["homepage_0111"]},
         ]}
-        localActions={[{href: "#waitlist", label: websiteCopy["homepage_0114"]}]}
+        localActions={[{href: "#events", label: organiserHomeCopy.actions.attend.label}]}
       />
       <WebsitePageMain id="top">
         <HomeHeroSection captures={captures} />
-        <HomeDiscoverySection />
+        <HomeDiscoverySection showAll />
         <HomeFormatsSection />
         <HomeFeaturedOrganizersSection />
         <HomeMemberLoopSection />

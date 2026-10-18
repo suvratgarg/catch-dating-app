@@ -1,5 +1,5 @@
 import {hostPageCopy, hostSiteActions, hostSiteNavigation} from "@content/host";
-import {hostConceptCopy} from "@content/hostConceptNavigation";
+import {renderHostFeatures, renderHostWorkflows, renderHostUseCases, renderHostExistingTools, renderHostPricing} from "./sections/hostProductSections";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostCaptureMap} from "./sections/CaptureFrames";
 import {CreateEventWalkthrough} from "./sections/CreateEventWalkthrough";
@@ -11,7 +11,6 @@ import {
   HostTrustSection,
 } from "./sections/HostSupportingSections";
 import {
-  HostApplySection,
   HostHeroSection,
   HostLiveModulesSection,
   HostProofLedgerSection,
@@ -23,30 +22,31 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
     <>
       <PublicSiteHeader
         tone="dark"
-        localNav={[...hostSiteNavigation, hostConceptCopy.nav[0]]}
+        localNav={hostSiteNavigation}
         localActions={[{href: hostSiteActions.apply, label: hostPageCopy.nav.apply}]}
       />
       <WebsitePageMain id="top">
         <HostHeroSection captures={captures} />
+        {renderHostFeatures()}
         <HostWorkflowSection />
+        {renderHostWorkflows()}
+        {renderHostUseCases()}
         <CreateEventWalkthrough captures={captures} />
         <HostLiveModulesSection />
         <PlaybookShowcase captures={captures} />
         <HostComparisonSection />
+        {renderHostExistingTools()}
         <HostTrustSection />
         <HostProofLedgerSection />
         <HostFaqSection />
         <HostFoundingOfferSection />
-        <HostApplySection />
+        {renderHostPricing()}
       </WebsitePageMain>
       <PublicSiteFooter
         body={hostPageCopy.footer}
         links={[
           ...hostSiteNavigation.filter((item) => item.footer),
           {href: hostSiteActions.apply, label: hostPageCopy.nav.apply},
-          ...hostConceptCopy.nav,
-          ...hostConceptCopy.personaLinks,
-          ...hostConceptCopy.additionalLinks,
         ]}
       />
     </>

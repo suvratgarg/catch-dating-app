@@ -1277,11 +1277,6 @@ h3 {
 .surface-grid .button { margin-top: var(--catch-space-s6); justify-self: start; }
 
 /* Workbench content mockup adopts the same shared section and spacing system. */
-.host-content-review .story-section + .story-section { border-top: 1px solid var(--website-line); }
-.host-content-review .story-section > * + * { margin-top: var(--catch-space-s6); }
-.host-content-review h1 { font-size: clamp(36px, 6vw, 68px); max-width: 900px; line-height: 1.05; }
-.host-content-review .story-section > p { max-width: 780px; color: var(--website-copy-muted); line-height: 1.6; }
-.host-content-review .loop-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
 
 @media (min-width: 720px) {
   .marketing-content-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
