@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -32,24 +32,24 @@ Widget clubShareCardStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Share artwork states',
-  type: ClubShareArtwork,
+  type: ClubShareCover,
   path: '[Club Detail]/Cards',
 )
 Widget clubShareArtworkStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubShareArtwork',
+    title: 'ClubShareCover',
     catalogId: 'card.club.share.artwork',
     children: [
       WidgetbookPageStateCard(
         label: 'cover photo',
         child: WidgetbookClubClubMediaFrame(
-          child: ClubShareArtwork(club: widgetbookClubClub),
+          child: ClubShareCover(club: widgetbookClubClub),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'polaroid fallback',
         child: WidgetbookClubClubMediaFrame(
-          child: ClubShareArtwork(club: widgetbookClubMinimalClub),
+          child: ClubShareCover(club: widgetbookClubMinimalClub),
         ),
       ),
     ],

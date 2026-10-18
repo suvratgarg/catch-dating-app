@@ -12,6 +12,7 @@ import {
   MOMENT_RUNS_COLLECTION,
   MOMENT_SENDS_COLLECTION,
   MOMENTS_COLLECTION,
+  momentToDocument,
 } from "./momentDocuments";
 import type {MomentDefinition} from "./momentModel";
 
@@ -122,7 +123,8 @@ function makeDeps(db: FakeFirestore, now: number) {
 }
 
 function writeMoment(db: FakeFirestore, moment: MomentDefinition): void {
-  db.setDoc(`${MOMENTS_COLLECTION}/${moment.momentId}`, {...moment});
+  db.setDoc(`${MOMENTS_COLLECTION}/${moment.momentId}`,
+    momentToDocument(moment, 0, true));
 }
 
 test("sweep plans, fires, dedupes by household, honors consent", async () => {
@@ -651,6 +653,127 @@ test("triggered moments fire on travel-leg events and dedupe", async () => {
   const again = await ingestTravelLegEvent(deps, event);
   assert.equal(again.firedRuns, 0);
 });
+
+class TravelQueryFirestore extends FakeFirestore {
+  readonly momentQueries: Array<{
+    filters: Array<{field: string; op: string; value: unknown}>;
+    ids: string[];
+    limit: number | null;
+  }> = [];
+
+  override async runQuery(query: Parameters<FakeFirestore["runQuery"]>[0]) {
+    const result = await super.runQuery(query);
+    if (query.collectionPath === MOMENTS_COLLECTION) {
+      this.momentQueries.push({filters: query.wheres,
+        ids: result.docs.map((doc) => doc.id), limit: query.limitN});
+    }
+    return result;
+  }
+}
+
+const flightMoment: MomentDefinition = {
+  ...sangeetReminder, momentId: "m_flight",
+  initiation: {
+    kind: "triggered", triggerKind: "flightDisrupted", functionId: null,
+  },
+  audience: {kind: "subject"}, sense: "individual",
+};
+const flightEvent = {
+  kind: "travelLegFlightStatusChanged" as const,
+  legId: "leg-9", programId: "prog",
+  previousFlightStatus: "delayed", flightStatus: "cancelled",
+  observedAtMillis: 2_100_000,
+};
+
+function seedFlight(db: FakeFirestore): void {
+  seedProgram(db);
+  db.setDoc("programTravelLegs/leg-9", {
+    programId: "prog", organizerId: "org-1", guestId: "g1",
+    flightStatus: "cancelled", readiness: "expected", revision: 1,
+  });
+}
+
+for (const malformed of [false, true]) {
+  test(`travel ingestion excludes foreign armed rows, malformed=${malformed}`,
+    async () => {
+      const db = new TravelQueryFirestore({});
+      seedFlight(db);
+      for (const [id, scope] of [
+        ["foreign-program", {kind: "program", programId: "foreign"}],
+        ["foreign-event", {kind: "event", eventId: "prog"}],
+        ["foreign-organizer", {kind: "organizer", organizerId: "prog"}],
+      ] as const) {
+        writeMoment(db, {...flightMoment, momentId: id, scope});
+        if (malformed) {
+          db.updateDoc(`${MOMENTS_COLLECTION}/${id}`, {name: null});
+        }
+      }
+      writeMoment(db, flightMoment);
+      for (const status of ["draft", "paused", "done"] as const) {
+        writeMoment(db, {...flightMoment, momentId: status, status});
+      }
+      writeMoment(db, sangeetReminder);
+      const {deps, sent} = makeDeps(db, flightEvent.observedAtMillis);
+      assert.deepEqual(await ingestTravelLegEvent(deps, flightEvent),
+        {firedRuns: 1});
+      assert.deepEqual(db.momentQueries, [{filters: [
+        {field: "scopeKind", op: "==", value: "program"},
+        {field: "scopeId", op: "==", value: "prog"},
+        {field: "status", op: "==", value: "armed"},
+      ], ids: ["m_flight", "m_sangeet"], limit: null}]);
+      const runs = await db.collection(MOMENT_RUNS_COLLECTION).get();
+      assert.equal(runs.size, 1);
+      assert.equal(runs.docs[0].data()?.momentId, "m_flight");
+      assert.equal(runs.docs[0].data()?.dueAtMillis, 2_100_000);
+      assert.equal(runs.docs[0].data()?.status, "dispatched");
+      assert.equal(sent.length, 0); // Existing consent suppression survives.
+      assert.deepEqual(await ingestTravelLegEvent(deps, flightEvent),
+        {firedRuns: 0});
+    });
+}
+
+test("travel ingestion still verifies the selected row's nested scope",
+  async () => {
+    const db = new TravelQueryFirestore({});
+    seedFlight(db);
+    writeMoment(db, {...flightMoment,
+      scope: {kind: "program", programId: "foreign"}});
+    db.updateDoc(`${MOMENTS_COLLECTION}/m_flight`, {scopeId: "prog"});
+    const {deps} = makeDeps(db, flightEvent.observedAtMillis);
+    assert.deepEqual(await ingestTravelLegEvent(deps, flightEvent),
+      {firedRuns: 0});
+    assert.deepEqual(db.momentQueries[0].ids, ["m_flight"]);
+    assert.equal((await db.collection(MOMENT_RUNS_COLLECTION).get()).size, 0);
+  });
+
+test("travel ingestion preserves selected invalid-name rejection", async () => {
+  const db = new FakeFirestore({});
+  seedFlight(db);
+  writeMoment(db, flightMoment);
+  db.updateDoc(`${MOMENTS_COLLECTION}/m_flight`, {name: null});
+  const {deps} = makeDeps(db, flightEvent.observedAtMillis);
+  await assert.rejects(ingestTravelLegEvent(deps, flightEvent),
+    /Moment document name must be non-empty/);
+  assert.equal((await db.collection(MOMENT_RUNS_COLLECTION).get()).size, 0);
+});
+
+test("travel ingestion does not truncate matching moments at replan's cap",
+  async () => {
+    const db = new TravelQueryFirestore({});
+    seedFlight(db);
+    for (let index = 0; index < 201; index += 1) {
+      writeMoment(db, {...flightMoment, momentId: `flight_${index}`});
+    }
+    const {deps} = makeDeps(db, flightEvent.observedAtMillis);
+    assert.deepEqual(await ingestTravelLegEvent(deps, flightEvent),
+      {firedRuns: 201});
+    assert.equal(db.momentQueries.length, 1);
+    assert.equal(db.momentQueries[0].ids.length, 201);
+    assert.equal(db.momentQueries[0].limit, null);
+    const runs = await db.collection(MOMENT_RUNS_COLLECTION).get();
+    assert.equal(runs.size, 201);
+    assert.ok(runs.docs.every((doc) => doc.data()?.status === "dispatched"));
+  });
 
 test("manual moments fire once per request key", async () => {
   const db = new FakeFirestore({});

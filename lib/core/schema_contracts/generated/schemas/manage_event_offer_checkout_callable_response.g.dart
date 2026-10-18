@@ -54,7 +54,7 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
             },
             'amountPaise': <String, Object?>{
               'type': 'integer',
-              'minimum': 100,
+              'minimum': 0,
               'maximum': 100000000,
             },
             'currency': <String, Object?>{
@@ -79,6 +79,32 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
                   'maximum': 9007199254740991,
                 },
                 'eventStartsAtMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+            'freeAdmission': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'expectedOfferGeneration',
+                'expectedOfferRevision',
+                'expectedLedgerRevision',
+              ],
+              'properties': <String, Object?>{
+                'expectedOfferGeneration': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'expectedOfferRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'expectedLedgerRevision': <String, Object?>{
                   'type': 'integer',
                   'minimum': 1,
                   'maximum': 9007199254740991,
@@ -257,6 +283,12 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
                 },
               ],
             },
+            'eventId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9_:-]+\$',
+            },
           },
         },
         <String, Object?>{
@@ -268,6 +300,27 @@ const schemaManageEventOfferCheckoutCallableResponseSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'admission': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'eventId',
+        'attendeeId',
+      ],
+      'properties': <String, Object?>{
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+          'pattern': '^[A-Za-z0-9_:-]+\$',
+        },
+        'attendeeId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+      },
     },
   },
 };

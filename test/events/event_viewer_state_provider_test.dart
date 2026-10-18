@@ -4,7 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -24,7 +24,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        bottomNavigationBar: EventDetailCta(
+        bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -69,7 +69,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        bottomNavigationBar: EventDetailCta(
+        bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -94,7 +94,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        bottomNavigationBar: EventDetailCta(
+        bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -127,7 +127,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        bottomNavigationBar: EventDetailCta(
+        bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -147,7 +147,7 @@ void main() {
     await pumpUntilFound(tester, find.text('Join approved event'));
     expect(find.text('Join approved event'), findsOneWidget);
     final container = ProviderScope.containerOf(
-      tester.element(find.byType(EventDetailCta)),
+      tester.element(find.byType(EventDetailDock)),
     );
     container.invalidate(provider);
     await tester.pump();
@@ -181,7 +181,7 @@ void main() {
       Scaffold(
         bottomNavigationBar: ValueListenableBuilder<UserProfile>(
           valueListenable: profile,
-          builder: (context, user, child) => EventDetailCta(
+          builder: (context, user, child) => EventDetailDock(
             event: buildEvent(),
             userProfile: user,
             clubId: 'club-1',
@@ -229,7 +229,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        bottomNavigationBar: EventDetailCta(
+        bottomNavigationBar: EventDetailDock(
           event: event,
           userProfile: buildUser(),
           clubId: 'club-1',
@@ -268,7 +268,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       Scaffold(
-        bottomNavigationBar: EventDetailCta(
+        bottomNavigationBar: EventDetailDock(
           event: buildEvent(),
           userProfile: buildUser(),
           clubId: 'club-1',

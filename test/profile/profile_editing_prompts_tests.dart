@@ -16,7 +16,7 @@ void _registerProfileEditingPromptsTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: ProfileTabContent(
+            body: ProfileTabBody(
               user: user,
               uploadState: const PhotoUploadState(),
               builder: (context, children) => ListView(
@@ -359,7 +359,7 @@ void _registerProfileEditingPromptsTests() {
     await tester.pumpWidget(
       _profileWidgetHarness(
         StatefulBuilder(
-          builder: (context, setState) => ProfileMultiEnumEntry<Language>(
+          builder: (context, setState) => ProfileMultiEnumRow<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
             contract: CatchContractConstraints.updateUserProfilePatchLanguages,
@@ -405,7 +405,7 @@ void _registerProfileEditingPromptsTests() {
         StatefulBuilder(
           builder: (context, setState) {
             rebuild = setState;
-            return ProfileMultiEnumEntry<Language>(
+            return ProfileMultiEnumRow<Language>(
               icon: CatchIcons.languageOutlined,
               label: 'Languages',
               contract:

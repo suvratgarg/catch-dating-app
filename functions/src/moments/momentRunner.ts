@@ -101,6 +101,7 @@ export interface MomentRunnerDeps {
   ) => Promise<{title: string; body: string}>;
   sendPushToUid: (params: {
     uid: string;
+    appRole: "consumer" | "host";
     title: string;
     body: string;
     notificationType: string;
@@ -150,6 +151,9 @@ export interface MomentRunnerDeps {
   estimateTravelMinutes?: TravelEstimator;
 }
 
+type SweepFailureStage =
+  "momentDecode" | "momentReplan" | "runDecode" | "runDispatch";
+
 export interface SweepSummary {
   momentsReplanned: number;
   runsCreated: number;
@@ -157,10 +161,17 @@ export interface SweepSummary {
   runsFired: number;
   runsDeferred: number;
   runsSkipped: number;
+  /** Failed rows stay retryable; they are not counted as skipped or sent.
+   *  Mutation counts above cover completed operations, not partial replans. */
+  momentsFailed: number;
+  runsFailed: number;
+  /** Bounded correlation only: never include document or error payloads. */
+  failureSamples: Array<{stage: SweepFailureStage; documentHash: string}>;
 }
 
 const MAX_DUE_RUNS_PER_SWEEP = 200;
 const MOMENT_SWEEP_LIMIT = 500;
+const MAX_SWEEP_FAILURE_SAMPLES = 10;
 
 /** Durable pagination state for the armed-moment scan. */
 export const MOMENT_SWEEP_STATE = "organizerMomentSweepState";
@@ -377,6 +388,20 @@ export async function runMomentSweep(
     runsFired: 0,
     runsDeferred: 0,
     runsSkipped: 0,
+    momentsFailed: 0,
+    runsFailed: 0,
+    failureSamples: [],
+  };
+  const recordFailure = (stage: SweepFailureStage, documentId: string) => {
+    if (stage === "momentDecode" || stage === "momentReplan") {
+      summary.momentsFailed += 1;
+    } else {
+      summary.runsFailed += 1;
+    }
+    if (summary.failureSamples.length < MAX_SWEEP_FAILURE_SAMPLES) {
+      summary.failureSamples.push({stage, documentHash:
+        createHash("sha256").update(documentId).digest("hex")});
+    }
   };
 
   // Pass 1: one page of armed moments resuming at the durable cursor. A
@@ -403,16 +428,27 @@ export async function runMomentSweep(
   const estimator = deps.estimateTravelMinutes ?? haversineTravelMinutes;
   const moments: MomentDefinition[] = [];
   for (const doc of momentsSnap.docs) {
-    const moment = momentFromDocument(doc.data());
-    if (moment === null) continue;
-    moments.push(moment);
-    const counts = await replanMoment(db, moment, now,
-      {estimateTravelMinutes: estimator, caches});
-    summary.runsCreated += counts.created;
-    summary.runsSuperseded += counts.superseded;
-    summary.runsSkipped += counts.skipped;
-    if (counts.created + counts.superseded + counts.rescheduled > 0) {
-      summary.momentsReplanned += 1;
+    let stage: SweepFailureStage = "momentDecode";
+    try {
+      const moment = momentFromDocument(doc.data());
+      if (moment === null) {
+        recordFailure(stage, doc.id);
+        continue;
+      }
+      moments.push(moment);
+      stage = "momentReplan";
+      const counts = await replanMoment(db, moment, now,
+        {estimateTravelMinutes: estimator, caches});
+      summary.runsCreated += counts.created;
+      summary.runsSuperseded += counts.superseded;
+      summary.runsSkipped += counts.skipped;
+      if (counts.created + counts.superseded + counts.rescheduled > 0) {
+        summary.momentsReplanned += 1;
+      }
+    } catch {
+      // The durable cursor still advances. A later pass retries the row;
+      // neither a malformed definition nor unavailable facts block due work.
+      recordFailure(stage, doc.id);
     }
   }
 
@@ -424,27 +460,36 @@ export async function runMomentSweep(
     .orderBy("dueAtMillis")
     .limit(MAX_DUE_RUNS_PER_SWEEP)
     .get();
-  const due = dueSnap.docs.map((doc) => runFromDocument(doc.data()));
   const byId = new Map(moments.map((moment) => [moment.momentId, moment]));
-  for (const run of due) {
-    const moment = byId.get(run.momentId) ??
-      await loadMoment(db, run.momentId);
-    if (moment === null) {
-      await markRun(db, run, "skipped", {reason: "missingMoment"});
-      summary.runsSkipped += 1;
-      continue;
+  for (const doc of dueSnap.docs) {
+    let stage: SweepFailureStage = "runDecode";
+    try {
+      const run = runFromDocument(doc.data());
+      stage = "runDispatch";
+      const moment = byId.get(run.momentId) ??
+        await loadMoment(db, run.momentId);
+      if (moment === null) {
+        await markRun(db, run, "skipped", {reason: "missingMoment"});
+        summary.runsSkipped += 1;
+        continue;
+      }
+      const facts = await cachedFacts(db, caches, moment.scope);
+      if (facts === null) {
+        await markRun(db, run, "skipped", {reason: "missingScopeFacts"});
+        summary.runsSkipped += 1;
+        continue;
+      }
+      const outcome = await dispatchRun(db, deps, moment, run, facts, now,
+        await cachedTravel(db, caches, estimator, moment, facts));
+      if (outcome === "deferred") summary.runsDeferred += 1;
+      else if (outcome === "fired") summary.runsFired += 1;
+      else summary.runsSkipped += 1;
+    } catch {
+      // Preserve run/send journals, including partial delivery and unknown
+      // outcomes. Existing idempotency/reconciliation owns the next attempt;
+      // this boundary must not turn an exception into a terminal disposition.
+      recordFailure(stage, doc.id);
     }
-    const facts = await cachedFacts(db, caches, moment.scope);
-    if (facts === null) {
-      await markRun(db, run, "skipped", {reason: "missingScopeFacts"});
-      summary.runsSkipped += 1;
-      continue;
-    }
-    const outcome = await dispatchRun(db, deps, moment, run, facts, now,
-      await cachedTravel(db, caches, estimator, moment, facts));
-    if (outcome === "deferred") summary.runsDeferred += 1;
-    else if (outcome === "fired") summary.runsFired += 1;
-    else summary.runsSkipped += 1;
   }
   return summary;
 }
@@ -476,6 +521,8 @@ export async function ingestTravelLegEvent(
   const db = deps.firestore();
   const now = deps.nowMillis();
   const snap = await db.collection(MOMENTS_COLLECTION)
+    .where("scopeKind", "==", "program")
+    .where("scopeId", "==", event.programId)
     .where("status", "==", "armed")
     .get();
   const scope: MomentScope = {kind: "program", programId: event.programId};
@@ -768,10 +815,14 @@ async function deliver(
     return {kind: "suppressed", reason: "hostReview"};
   }
   if (action.kind === "push" && recipient.endpoint.kind === "uid") {
+    const appRole = moment.audience.kind === "eventParticipants" ?
+      "consumer" : moment.audience.kind === "staffDuty" ? "host" : null;
+    if (appRole === null) return {kind: "suppressed", reason: "hostReview"};
     // Copy is resolved from the scope at fire time by the wiring layer.
     const copy = await deps.pushCopyFor(moment, facts);
     await deps.sendPushToUid({
       uid: recipient.endpoint.uid,
+      appRole,
       title: copy.title,
       body: copy.body,
       notificationType: action.notificationType,

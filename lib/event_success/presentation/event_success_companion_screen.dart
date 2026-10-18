@@ -58,22 +58,22 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-part 'companion_parts/event_success_companion_afterglow.dart';
+part 'companion_parts/event_success_companion_afterglow_card.dart';
 part 'companion_parts/event_success_companion_arrival_section.dart';
-part 'companion_parts/event_success_companion_arrival_mission.dart';
-part 'companion_parts/event_success_companion_feedback.dart';
+part 'companion_parts/event_success_companion_arrival_card.dart';
+part 'companion_parts/event_success_companion_feedback_form.dart';
 part 'companion_parts/event_success_companion_check_in_qr_scanner_sheet.dart';
 part 'companion_parts/event_success_companion_group_rotation_slot_row.dart';
-part 'companion_parts/event_success_companion_live_cards.dart';
+part 'companion_parts/event_success_companion_live_card.dart';
 part 'companion_parts/event_success_companion_motion_viewport.dart';
 part 'companion_parts/event_success_companion_paper_section.dart';
 part 'companion_parts/event_success_companion_people_token_row.dart';
-part 'companion_parts/event_success_companion_questionnaire.dart';
-part 'companion_parts/event_success_companion_reveal_cinematic.dart';
+part 'companion_parts/event_success_companion_questionnaire_section.dart';
+part 'companion_parts/event_success_companion_reveal_overlay.dart';
 part 'companion_parts/event_success_companion_rotation_slot_row.dart';
 part 'companion_parts/event_success_companion_shared.dart';
 part 'companion_parts/event_success_companion_stage_viewport.dart';
-part 'companion_parts/event_success_companion_wingman.dart';
+part 'companion_parts/event_success_companion_wingman_section.dart';
 part 'event_success_companion_body_screen.dart';
 
 abstract final class EventSuccessCompanionKeys {
@@ -115,8 +115,8 @@ class CompanionScaffold extends StatelessWidget {
   }
 }
 
-class CompanionLoading extends StatelessWidget {
-  const CompanionLoading({super.key});
+class CompanionSkeleton extends StatelessWidget {
+  const CompanionSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +126,8 @@ class CompanionLoading extends StatelessWidget {
   }
 }
 
-class CompanionError extends StatelessWidget {
-  const CompanionError({
+class CompanionErrorState extends StatelessWidget {
+  const CompanionErrorState({
     super.key,
     required this.error,
     required this.errorContext,
@@ -156,8 +156,8 @@ class CompanionError extends StatelessWidget {
   }
 }
 
-class CompanionMessage extends StatelessWidget {
-  const CompanionMessage({
+class CompanionEmptyState extends StatelessWidget {
+  const CompanionEmptyState({
     super.key,
     required this.title,
     required this.message,
@@ -740,12 +740,12 @@ class _CompanionRouteGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (state.status) {
-    EventSuccessCompanionRouteStatus.loading => const CompanionLoading(),
-    EventSuccessCompanionRouteStatus.message => CompanionMessage(
+    EventSuccessCompanionRouteStatus.loading => const CompanionSkeleton(),
+    EventSuccessCompanionRouteStatus.message => CompanionEmptyState(
       title: state.message!.title,
       message: state.message!.message,
     ),
-    EventSuccessCompanionRouteStatus.error => CompanionError(
+    EventSuccessCompanionRouteStatus.error => CompanionErrorState(
       error: state.error!,
       errorContext: state.errorContext!,
       onRetry: onRetry,

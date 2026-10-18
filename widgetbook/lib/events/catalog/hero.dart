@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';

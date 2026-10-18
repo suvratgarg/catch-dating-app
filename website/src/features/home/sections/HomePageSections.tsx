@@ -75,8 +75,8 @@ export function HomeHeroSection({captures}: {captures: Record<string, CaptureRec
             variant="hero"
           >
             <ButtonLink
-              href="/organizers/"
-              onClick={() => trackCtaClick("home_hero_browse_events", "/organizers/")}
+              href="#events"
+              onClick={() => trackCtaClick("home_hero_browse_events", "#events")}
             >{websiteCopy["homepagesections_0124"]}</ButtonLink>
             <ButtonLink
               variant="ghost"
@@ -107,12 +107,15 @@ export function HomeHeroSection({captures}: {captures: Record<string, CaptureRec
 export function HomeDiscoverySection({
   events: suppliedEvents,
   copy,
+  showAll = false,
 }: {
   events?: PublicEventCardModel[];
+  showAll?: boolean;
   copy?: {eyebrow: string; title: string; body: string};
 } = {}) {
   const discovery = usePublicDiscoveryData();
-  const visibleEvents = (suppliedEvents ?? discovery.events).slice(0, 3);
+  const events = suppliedEvents ?? discovery.events;
+  const visibleEvents = showAll ? events : events.slice(0, 3);
   return (
     <MarketingSection variant="home-discovery" id="events" aria-labelledby="home-events-title">
       <SectionHeader

@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
-import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
+import 'package:catch_dating_app/core/startup/native_splash.dart';
+import 'package:catch_dating_app/core/startup/startup_animation_scope.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
@@ -41,7 +41,7 @@ Future<void> runCatchApp({
 
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   registerCatchFontLicenses();
-  CatchNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  NativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   if (_usesAnimatedConsumerBootstrap(
     appRole: appRole,
@@ -67,12 +67,12 @@ Future<void> runCatchApp({
                 if (appPackageInfo != null)
                   appPackageInfoProvider.overrideWith((ref) => appPackageInfo!),
               ],
-              child: CatchStartupAnimationScope(
+              child: StartupAnimationScope(
                 consumerWelcomeReelPlayed: true,
                 child: app,
               ),
             ),
-            onNativeSplashReady: CatchNativeSplash.remove,
+            onNativeSplashReady: NativeSplash.remove,
             onInitializationError: (error, stackTrace) {
               try {
                 container
@@ -107,7 +107,7 @@ Future<void> runCatchApp({
       container: container,
       child: _CatchProviderContainerOwner(
         container: container,
-        child: CatchStartupAnimationScope(
+        child: StartupAnimationScope(
           consumerWelcomeReelPlayed: false,
           child: app,
         ),

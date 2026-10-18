@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-22",
-  "sourceDigest": "sha256:1e81187819f603e812624cf806d2095d27f65ad4f7520e76de63f887d183e9c1",
+  "sourceDigest": "sha256:361fcc16e1efdde37adad0f929d53c2f229e37286e9d3d3ec40ee8e4543e60cd",
   "resolvedDigest": "sha256:75f6c4bb882acb101147e6d26a5fdecbaac1b12ae6d8fb7276e1ab9ee9b4814a",
   "feature": {
     "id": "feature.host_customers",
@@ -59,8 +59,8 @@
           {
             "id": "audience_overview",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-            "symbol": "HostSavedAudienceOverview"
+            "file": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
+            "symbol": "HostSavedAudienceSection"
           },
           {
             "id": "audience_members",
@@ -101,13 +101,13 @@
           {
             "id": "customer_memory",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "symbol": "HostCustomerMemorySection"
           },
           {
             "id": "customer_merge_review",
             "language": "dart",
-            "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart",
+            "file": "lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart",
             "symbol": "HostContactMergeReviewSheet"
           }
         ],

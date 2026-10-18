@@ -8,7 +8,7 @@ import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
 vi.mock("./siteTracking", () => ({slugForTracking: (value: string) => value, trackSiteCtaClick: vi.fn()}));
 beforeEach(() => {localStorage.clear(); window.dataLayer = [];});
 afterEach(() => {cleanup(); document.body.style.overflow = "";});
-const globalLabels = ["Product", "Solutions", "Explore", "Resources"];
+const globalLabels = ["Find events", "Organisers", "Catch Host", "Pricing and access"];
 
 describe("canonical public chrome", () => {
   it("uses root destinations and honest claim actions while keeping profile sections local", () => {
@@ -18,25 +18,25 @@ describe("canonical public chrome", () => {
     const primary = screen.getByRole("navigation", {name: "Primary"});
     expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(globalLabels);
     expect(within(primary).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/#product", "/#solutions", "/#explore", "/#resources"]);
+      .toEqual(["/explore/", "/organizers/", "/host/", "/host/#pricing"]);
     expect(screen.getByRole("link", {name: "Catch home"}).getAttribute("href")).toBe("/");
     const local = screen.getByRole("navigation", {name: "On this page"});
     expect(within(local).getAllByRole("link").map((link) => link.getAttribute("href")))
       .toEqual(["#events", "#about", "#reviews", "/claim/example/"]);
-    for (const name of ["Sign in for a claim", "Get started free"]) {
-      expect(within(screen.getByRole("banner")).getByRole("link", {name}).getAttribute("href")).toBe("/claim/");
+    for (const [name, href] of [["Claim your page", "/claim/"], ["Apply for a pilot", "/host/apply/"]]) {
+      expect(within(screen.getByRole("banner")).getByRole("link", {name}).getAttribute("href")).toBe(href);
     }
   });
 
   it("omits empty or repeated global secondary navigation on the root", () => {
-    render(<PublicSiteHeader localNav={[{href: "#product", label: "Product"}]} />);
+    render(<PublicSiteHeader localNav={[{href: "/host/", label: "Catch Host"}]} />);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 
   it("owns global/footer/legal links once and retains contextual copy, labels and anchors", () => {
     render(<PublicSiteFooter body="Existing page description" links={[
       ...publicSiteCopy.nav, ...siteFooterLegalLinks,
-      {href: "#resources", label: "Resources"},
+      {href: "/host/#pricing", label: "Pricing and access"},
       {href: "#about", label: "About this organiser"},
       {href: "/host/", label: "For hosts"},
       {href: "/host/", label: "For hosts"},
@@ -71,7 +71,7 @@ describe("canonical public chrome", () => {
     expect(dialog.hasAttribute("inert")).toBe(false);
     const mobile = within(dialog as HTMLElement);
     expect(mobile.getAllByRole("link").slice(0, 4).map((link) => link.textContent)).toEqual(globalLabels);
-    const last = mobile.getByRole("link", {name: "Get started free"});
+    const last = mobile.getByRole("link", {name: "Apply for a pilot"});
     fireEvent.keyDown(document, {key: "Tab", shiftKey: true});
     expect(document.activeElement).toBe(last);
     fireEvent.keyDown(document, {key: "Tab"});
@@ -81,14 +81,14 @@ describe("canonical public chrome", () => {
     expect(menu.getAttribute("aria-expanded")).toBe("false");
     expect(document.body.style.overflow).toBe("auto");
     fireEvent.click(menu);
-    fireEvent.click(mobile.getByRole("link", {name: "Product"}));
+    fireEvent.click(mobile.getByRole("link", {name: "Catch Host"}));
     expect(menu.getAttribute("aria-expanded")).toBe("false");
     expect(document.activeElement).toBe(menu);
     document.body.style.overflow = "";
   });
 
   const consentStates = [null, "essential", "analytics", "accepted"] as const;
-  const exits = ["Escape", "Close", "Sign in for a claim", "Get started free"] as const;
+  const exits = ["Escape", "Close", "Claim your page", "Apply for a pilot"] as const;
   it.each(consentStates.flatMap((choice) => exits.map((exit) => ({choice, exit}))))(
     "preserves $choice consent through menu focus ownership and $exit, then returns access to choices",
     ({choice, exit}) => {
@@ -116,7 +116,7 @@ describe("canonical public chrome", () => {
       const dialog = screen.getByRole("dialog");
       const mobile = within(dialog);
       const close = mobile.getByRole("button", {name: "Close"});
-      const last = mobile.getByRole("link", {name: "Get started free"});
+      const last = mobile.getByRole("link", {name: "Apply for a pilot"});
       expect(document.activeElement).toBe(close);
       expect(document.body.style.overflow).toBe("hidden");
       fireEvent.keyDown(document, {key: "Tab", shiftKey: true});
@@ -152,4 +152,14 @@ describe("canonical public chrome", () => {
       expect(getMarketingConsent()).toMatchObject({version: 2, choice: "essential", analytics: false, marketing: false});
     }
   );
+});
+
+it("guest chrome keeps event navigation and legal links without host claim prompts", () => {
+  render(<><PublicSiteHeader audience="guest" localNav={[{href: "/organizers/", label: "Organizers"}]}
+    localActions={[{href: "/organizers/host/", label: "View organizer"}]} />
+    <PublicSiteFooter audience="guest" body="Find your people." /></>);
+  expect(screen.queryByRole("link", {name: "Apply for a pilot"})).toBeNull();
+  expect(screen.queryByRole("link", {name: "Claim your page"})).toBeNull();
+  expect(screen.getByRole("link", {name: "Privacy"})).toBeTruthy();
+  expect(screen.getByRole("navigation", {name: "Primary"}).textContent).toBe("Organizers");
 });

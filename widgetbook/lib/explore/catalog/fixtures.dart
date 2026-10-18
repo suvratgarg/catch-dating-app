@@ -237,7 +237,7 @@ Event _event({
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1, minutes: 45)),
     meetingPoint: meetingPoint,
-    meetingLocation: EventMeetingLocation.legacy(
+    meetingLocation: eventMeetingLocationFromLegacy(
       name: meetingPoint,
       latitude: widgetbookExploreMumbai.latitude + distanceFromUserKm / 100,
       longitude: widgetbookExploreMumbai.longitude + distanceFromUserKm / 100,

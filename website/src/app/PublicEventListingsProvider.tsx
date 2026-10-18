@@ -5,7 +5,7 @@ import {publicEventListingsContext, usePublicEventListingsController} from
 
 export function PublicEventListingsProvider({children}: {children: ReactNode}) {
   const {pathname} = useLocation();
-  const enabled = pathname === "/" || pathname.startsWith("/events/") ||
+  const enabled = pathname === "/explore" || pathname === "/explore/" || pathname.startsWith("/events/") ||
     pathname === "/organizers" || pathname.startsWith("/organizers/");
   const value = usePublicEventListingsController(enabled);
   return <publicEventListingsContext.Provider value={value}>

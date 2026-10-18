@@ -91,18 +91,18 @@ Widget paymentConfirmationLoadingScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Backdrop states',
-  type: PaymentCheckoutEventBackdrop,
+  type: PaymentCheckoutHeader,
   path: '[P3 utility surfaces]/Payment confirmation',
 )
 Widget paymentCheckoutEventBackdropStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'PaymentCheckoutEventBackdrop',
+    title: 'PaymentCheckoutHeader',
     contractId: 'screen.payments.confirmation.checkout_backdrop',
     children: [
       WidgetbookPageStateCard(
         label: 'event summary',
         child: WidgetbookUtilityDeviceFrame(
-          child: PaymentCheckoutEventBackdrop(event: widgetbookUtilityEvent),
+          child: PaymentCheckoutHeader(event: widgetbookUtilityEvent),
         ),
       ),
     ],
@@ -111,7 +111,7 @@ Widget paymentCheckoutEventBackdropStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Provider states',
-  type: PaymentPendingCheckoutController,
+  type: PaymentPendingBody,
   path: '[P3 utility surfaces]/Payment confirmation',
 )
 Widget paymentPendingCheckoutControllerStates(BuildContext context) {
@@ -119,7 +119,7 @@ Widget paymentPendingCheckoutControllerStates(BuildContext context) {
     (payment) => payment.status == PaymentStatus.pending,
   );
   return WidgetbookPageCatalogFrame(
-    title: 'PaymentPendingCheckoutController',
+    title: 'PaymentPendingBody',
     contractId: 'screen.payments.confirmation.pending_controller',
     children: [
       WidgetbookPageStateCard(
@@ -129,7 +129,7 @@ Widget paymentPendingCheckoutControllerStates(BuildContext context) {
             eventsById: {widgetbookUtilityEvent.id: widgetbookUtilityEvent},
             paymentsByPaymentId: {pendingPayment.paymentId: pendingPayment},
             child: IgnorePointer(
-              child: PaymentPendingCheckoutController(
+              child: PaymentPendingBody(
                 data: _confirmationData(
                   pendingPayment,
                   checkoutUrl: Uri.parse('https://checkout.example/pay'),
@@ -204,13 +204,13 @@ Widget paymentPendingCheckoutBodyStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Provider states',
-  type: PaymentConfirmationBodyController,
+  type: PaymentConfirmedBody,
   path: '[P3 utility surfaces]/Payment confirmation',
 )
 Widget paymentConfirmationBodyControllerStates(BuildContext context) {
   final paidPayment = widgetbookUtilityPayments.first;
   return WidgetbookPageCatalogFrame(
-    title: 'PaymentConfirmationBodyController',
+    title: 'PaymentConfirmedBody',
     contractId: 'screen.payments.confirmation.body_controller',
     children: [
       WidgetbookPageStateCard(
@@ -219,7 +219,7 @@ Widget paymentConfirmationBodyControllerStates(BuildContext context) {
           child: WidgetbookPaymentScope(
             eventsById: {widgetbookUtilityEvent.id: widgetbookUtilityEvent},
             child: IgnorePointer(
-              child: PaymentConfirmationBodyController(
+              child: PaymentConfirmedBody(
                 data: _confirmationData(paidPayment),
                 event: widgetbookUtilityEvent,
               ),
@@ -319,7 +319,7 @@ Widget paymentCheckoutSheetStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Info surfaces',
-  type: PaymentConfirmationHeadsUp,
+  type: PaymentConfirmationNotice,
   path: '[P3 utility surfaces]/Payment confirmation',
 )
 Widget paymentConfirmationInfoStates(BuildContext context) {
@@ -329,7 +329,7 @@ Widget paymentConfirmationInfoStates(BuildContext context) {
     children: [
       const WidgetbookPageStateCard(
         label: 'heads up',
-        child: PaymentConfirmationHeadsUp(),
+        child: PaymentConfirmationNotice(),
       ),
       WidgetbookPageStateCard(
         label: 'referral banner',

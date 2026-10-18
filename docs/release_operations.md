@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.34
-updated: 2026-10-16
+version: 2.7.36
+updated: 2026-10-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -381,7 +381,7 @@ Preserve these contracts when narrowing work:
 | App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
 | Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
 | Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
-| Capture provenance and website image copies; marketing website | Conservative Flutter source/test/asset/package and capture-tool inputs select capture freshness; website/shared React inputs still select full React validation | Pinned Node-only Ubuntu lane runs source-stamp/input-hash, PNG/copy and derived metadata checks; selected lane must succeed in finalization and Required CI | Regenerate through the real capture tool after reviewing changed inputs; do not restamp or copy stale images |
+| Capture provenance and website image copies; marketing website | Conservative Flutter source/test/asset/package and capture-tool inputs select capture freshness; website/shared React inputs still select full React validation | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before checks/builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
 | Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
 
 Whole-product widget similarity is advisory and has no product acceptance
@@ -446,27 +446,29 @@ default to executing their own browser checks. No result crosses source commits
 or CI attempts, and altered commands lose the omission until their equivalence
 is verified again.
 
-On a Marketing main push, `ci.yml` owns React validation and its separate
-capture-freshness lane. `marketing-website.yml` waits up to 35 minutes for those
-two successful jobs on the exact source SHA, canonical workflow, repository,
-run and attempt. It records their job IDs in a seven-day artifact and omits its
-duplicate React invocation. It does not wait for unrelated lanes. Missing,
-failed, cancelled or ambiguous evidence blocks packaging; inspect the linked
-same-source CI jobs, repair the failure and rerun the source workflow. Only an
-explicitly skipped Marketing lane requests standalone React validation. Manual
-validation still executes the complete reusable validation workflow. Source,
-workflow and toolchain changes invalidate reuse across commits; dependency
-caches are not execution evidence.
+On a Marketing main push, `ci.yml` owns React validation and its canonical
+native capture producer. `marketing-website.yml` waits up to 90 minutes for the
+exact source/workflow/run/attempt. It verifies executed-job timestamps against
+the attempt start and selects only the exact attempt's capture artifact by name,
+ID and digest. Rehydrated old job results cannot authorize a new attempt. The
+consumer independently verifies the artifact and its bytes again before import.
+Missing, failed, cancelled or ambiguous evidence blocks packaging.
 
-Native app source and test changes select capture freshness through the impact
-graph without triggering a Marketing production build. Actual website, shared
-web UI, media and production snapshot inputs retain their validation and release
-triggers. Reused validation authorizes only the next packaging step: the release
-workflow still materializes read-only live organizer listings, checks production
-environment inputs, builds exact production bytes and verifies artifact hashes,
-promotion authorization and readback. A PR bundle never supplies production
-bytes. The check contract is enforced by `ci:main-marketing-validation` and
-`ci:web-hosting-delivery-workflow`; no cross-SHA validation reuse is supported.
+An explicitly skipped Marketing lane requires standalone React validation. If
+that same CI attempt produced captures for a native-only change, its exact bundle
+is reused; otherwise standalone validation requests the existing producer once.
+Manual validation uses the same path. Native source, fixture, package/font and
+capture helper changes trigger Marketing Website so refreshed media can reach
+its existing main release path. No source or attempt crosses this boundary.
+
+Production packaging still materializes read-only live organizer listings,
+validates production environment inputs and builds exact production bytes. It
+compares the built image and manifest bytes with the verified capture bundle
+before the existing Hosting package inventory and promotion checks. Recovery
+promotes an existing package without regeneration. A PR bundle never supplies
+production bytes. The contracts remain `ci:main-marketing-validation` and
+`ci:web-hosting-delivery-workflow`.
+
 
 Flutter reuses design parity and handoff checks only when the actual required
 Tools plan owns their complete registered checks. Standalone Flutter runs default
@@ -3215,3 +3217,86 @@ schema deployment, webhook configuration, provider parameters, numeric secret
 versions, IAM, rules, indexes and flags through full before/after comparisons.
 The separately approved replacement native TEST checkout and full refund remain
 required acceptance; the rejected attempt is retained and is not reset.
+
+## Protected CAT165 program-only rollout profile
+
+The `cat165` choice in the existing selective backend caller prepares an exact
+62-Function projection and one additive index. Source preparation is not deploy
+authority or full CAT165 privacy acceptance. The source owner remains accountable
+for the implementation, the existing runtime owner for rollout, and the serial
+integration coordinator for merge admission. Do not use this profile as a manual
+fallback, full backend baseline, token rotation or migration.
+
+The fixed candidate is `25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a`, historical
+package base `08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2`, successful main
+CI38778849364 attempt1 and artifact11995458204. The verifier pins ZIP, backend
+archive and provenance hashes. The sorted `functions:`-prefixed newline manifest
+hash is `e3504acd685e899c82a55ee0fc3126340c87ffaf31588d411ef6fab0ac7acecb`;
+`CAT165_RELEASE.targets` owns all 62 names. Inputs cannot override names, package,
+project or region. Current-main compatibility includes backend source, Operations
+assets, contracts, dependency locks and the protected deployment helpers.
+
+The original immutable package stays unchanged. Only the execution plan narrows.
+The single index is `organizerPrograms`, COLLECTION scope, ordered
+`organizerId ASC / createdBy ASC / startsAt DESC`. A separate exact-index document
+controls readiness, and a single explicit create command cannot reconcile or
+remove other indexes or field overrides. Its absence is required at the captured
+pre-state; an already-present index or a partial failed attempt requires owner
+review, not rerunning this one-time profile. It must reach READY before Functions.
+
+The workflow retains both non-cancelling production locks, recorded approval by
+a configured human PROD reviewer, exact current control-plane and successful
+producer checks, backend source review, immutable package verification, parameter
+coverage, selected secret readiness and read-only full metadata preservation.
+It checks all selected non-secret parameter values against the captured serving
+configuration before index creation; provider/credential changes fail closed.
+There is one index invocation and one exact Functions invocation, with no force,
+automatic retry, recovery input, IAM repair, rollback, DEV receipt or full-source
+cursor publication. Failure artifacts are isolated selected-only evidence.
+
+The eleven live exclusions remain **impacted/deferred**, not package-equivalent:
+`createOrganizerFormAutomation`, `createOrganizerProgram`, `flightAlertWebhook`,
+`getProgramHouseholdRsvpView`, `listOrganizerFormAutomationRuns`,
+`onEventAssistanceWhatsappEventCreated`, `programHouseholdItineraryIcs`,
+`refreshProgramFlightStatuses`, `setOrganizerFormAutomationState`,
+`submitProgramHouseholdRsvp`, and `upsertTransportVendor`.
+`anonymizeDueProgramsSweep` remains dormant and excluded. Preserve every retained
+Function's actual serving identity, including Extensions and mixed-source
+cohorts. Selected before/after identities are captured individually; no whole
+project source-equivalence claim follows from the selected release.
+
+The runtime owner reproduced a retained limitation with synthetic data against
+actual packaged code: previously minted household bearer tokens can still read
+the household projection and submit RSVP/consent until expiry. Selecting the
+unchanged bearer consumers would not remove this behavior. The completion receipt
+therefore always records `privacyAcceptanceComplete: false` and the limitation.
+Original creator/collaborator positive access, same-organizer-other-program and
+unrelated-organizer negative access, consent and read/query/sharing acceptance
+remain separate. This profile grants no live fixture, provider activation or
+human approval action. Do not mark CAT165 complete from source merge, index
+readiness or selected runtime deployment alone.
+
+The profile resolves SecretParam versions again immediately before each mutation
+boundary and rejects any difference from serving bindings; it never approves an
+implicit `latest` rotation. Every selected callable must already have the public
+invoker policy declared by the candidate. Event and scheduled Functions retain
+their existing IAM. Both preflights preserve the original provider parameters.
+
+The initial snapshot must match the 73 historical serving identities published
+in [the independent predecessor review](https://github.com/suvratgarg/catch-dating-app/pull/617#issuecomment-6203197509).
+The fixed in-code evidence pins every selected/deferred Function's name, revision,
+build and complete resolved storage source (bucket, object and generation).
+The 647/137 cohorts are receipt-backed for all these fields; the 6f08 Programs
+receipt covers revision/generation, with build/bucket/object separately pinned to
+the reviewed 15 October metadata observation. This historical expectation is not
+a fresh live observation. Fresh metadata must match before the initial snapshot
+can be persisted, and the original subsequent drift checks remain required.
+Missing, duplicate, misassigned or changed predecessors and the appearance of
+the dormant anonymization Function fail closed; investigate rather than rebase
+the expectation automatically. Snapshot schema v2 includes all 73 independently
+validated Cloud Run serving identities so deferred identities are explicit.
+
+The branch refresh after PR626 preserves this historical profile without widening
+its source or predecessor authority. The newer backend changes on main are
+rejected by its source-compatibility check; a separately reviewed runtime-owner
+disposition is required before this historical package could be used.

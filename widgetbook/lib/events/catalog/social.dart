@@ -1,11 +1,14 @@
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_route_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -227,23 +230,23 @@ Widget eventDetailHostSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Guest who is going',
-  type: GuestWhoIsGoing,
+  type: GuestWhoIsGoingCard,
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailGuestWhoIsGoingState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: GuestWhoIsGoing(),
+    child: GuestWhoIsGoingCard(),
   );
 }
 
 @widgetbook.UseCase(
   name: 'Hype avatars',
-  type: EventHypeAvatarStack,
+  type: EventHypeAvatarRow,
   path: '[Event Detail]/Sections',
 )
 Widget eventHypeAvatarStackState(BuildContext context) {
-  return EventHypeAvatarStack(
+  return EventHypeAvatarRow(
     eventId: widgetbookEvent.id,
     totalCount: 12,
     avatarItems: widgetbookEventsAvatarItems,
@@ -255,12 +258,12 @@ Widget eventHypeAvatarStackState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: "Who's going states",
-  type: WhoIsGoing,
+  type: WhoIsGoingSection,
   path: '[Event Detail]/Sections',
 )
 Widget whoIsGoingStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'WhoIsGoing',
+    title: 'WhoIsGoingSection',
     catalogId: 'section.event.who_is_going.roster',
     children: [
       WidgetbookPageStateCard(
@@ -269,7 +272,7 @@ Widget whoIsGoingStates(BuildContext context) {
           event: widgetbookEvent,
           roster: widgetbookEventsRoster(),
           avatarItems: widgetbookEventsAvatarItems,
-          child: WhoIsGoing(event: widgetbookEvent),
+          child: WhoIsGoingSection(event: widgetbookEvent),
         ),
       ),
       WidgetbookPageStateCard(
@@ -277,7 +280,7 @@ Widget whoIsGoingStates(BuildContext context) {
         child: WidgetbookEventScope(
           event: _emptyEvent,
           roster: EventParticipationRoster.empty(),
-          child: WhoIsGoing(event: _emptyEvent),
+          child: WhoIsGoingSection(event: _emptyEvent),
         ),
       ),
     ],
@@ -286,17 +289,17 @@ Widget whoIsGoingStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: "Who's going content",
-  type: WhoIsGoingContent,
+  type: WhoIsGoingBody,
   path: '[Event Detail]/Sections',
 )
 Widget whoIsGoingContentStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'WhoIsGoingContent',
+    title: 'WhoIsGoingBody',
     catalogId: 'section.event.who_is_going.content',
     children: [
       WidgetbookPageStateCard(
         label: 'upcoming roster',
-        child: WhoIsGoingContent(
+        child: WhoIsGoingBody(
           event: widgetbookEvent,
           totalCount: widgetbookEvent.signedUpCount,
           avatarItems: widgetbookEventsAvatarItems,
@@ -304,11 +307,11 @@ Widget whoIsGoingContentStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'empty roster',
-        child: WhoIsGoingContent(event: _emptyEvent, totalCount: 0),
+        child: WhoIsGoingBody(event: _emptyEvent, totalCount: 0),
       ),
       WidgetbookPageStateCard(
         label: 'post-event closed window',
-        child: WhoIsGoingContent(
+        child: WhoIsGoingBody(
           event: widgetbookEventsPastEvent,
           totalCount: 5,
           avatarItems: widgetbookEventsAvatarItems
@@ -323,17 +326,17 @@ Widget whoIsGoingContentStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Empty roster message',
-  type: EmptyRosterMessage,
+  type: WhoIsGoingEmptyState,
   path: '[Event Detail]/Sections',
 )
 Widget emptyRosterMessageStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'EmptyRosterMessage',
+    title: 'WhoIsGoingEmptyState',
     catalogId: 'section.event.who_is_going.empty_roster_message',
     children: [
       WidgetbookPageStateCard(
         label: 'upcoming',
-        child: const EmptyRosterMessage(
+        child: const WhoIsGoingEmptyState(
           title: 'No attendees yet',
           message: 'Be the first to book this event.',
         ),
@@ -343,7 +346,7 @@ Widget emptyRosterMessageStates(BuildContext context) {
         child: Builder(
           builder: (context) {
             final style = EventDetailSurfaceStyle.dark(CatchTokens.of(context));
-            return EmptyRosterMessage(
+            return WhoIsGoingEmptyState(
               title: 'No attendees booked',
               message: 'This event did not have any booked attendees.',
               surfaceStyle: style,
@@ -396,3 +399,20 @@ Widget swipeWindowBannerStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Walking and running route expectations',
+  type: EventDetailRouteSection,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailRouteSectionStates(BuildContext context) =>
+    WidgetbookEventDeviceFrame(
+      child: const SingleChildScrollView(
+        child: Column(
+          children: [
+            EventDetailRouteSection(plan: RouteEventPlan.hostedWalk),
+            EventDetailRouteSection(plan: RouteEventPlan.socialRun),
+          ],
+        ),
+      ),
+    );

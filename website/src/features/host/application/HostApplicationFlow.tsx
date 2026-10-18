@@ -324,11 +324,11 @@ export function HostApplicationFlow() {
               variant="ghost"
             >{websiteCopy["hostapplicationflow_0209"]}</Button>
             {step === "review" ? (
-              <Button disabled={isSubmitting} type="submit">
+              <Button key="submit" disabled={isSubmitting} type="submit">
                 {isSubmitting ? "Submitting..." : "Submit host packet"}
               </Button>
             ) : (
-              <Button onClick={goNext} type="button">{websiteCopy["hostapplicationflow_0220"]}</Button>
+              <Button key="continue" onClick={goNext} type="button">{websiteCopy["hostapplicationflow_0220"]}</Button>
             )}
           </ActionGroup>
         ) : (

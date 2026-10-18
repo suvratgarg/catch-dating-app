@@ -481,6 +481,17 @@ import {
   participantProfileClaimReceiptDocumentSchema,
   claimParticipantFormProfileCallablePayloadSchema,
   claimParticipantFormProfileCallableResponseSchema,
+  eventApprovalPreferenceDocumentSchema,
+  eventApprovalNotificationReceiptDocumentSchema,
+  eventApprovalNotificationSettingsDocumentSchema,
+  eventApprovalNotificationBudgetDocumentSchema,
+  eventApprovalNotificationMessageDocumentSchema,
+  eventApprovalNotificationDispatchDocumentSchema,
+  eventApprovalNotificationIntentSchema,
+  eventApprovalNotificationWorkSchema,
+  eventApprovalNotificationAttemptSchema,
+  manageEventApprovalNotificationsCallablePayloadSchema,
+  manageEventApprovalNotificationsCallableResponseSchema,
   getEventViewerStateCallablePayloadSchema,
   getEventViewerStateCallableResponseSchema,
   listParticipantActivityCallablePayloadSchema,
@@ -1731,6 +1742,17 @@ export const validateParticipantOrganizerCardDocument = ajv.compile(participantO
 export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
 export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
 export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateEventApprovalPreferenceDocument = ajv.compile(eventApprovalPreferenceDocumentSchema);
+export const validateEventApprovalNotificationReceiptDocument = ajv.compile(eventApprovalNotificationReceiptDocumentSchema);
+export const validateEventApprovalNotificationSettingsDocument = ajv.compile(eventApprovalNotificationSettingsDocumentSchema);
+export const validateEventApprovalNotificationBudgetDocument = ajv.compile(eventApprovalNotificationBudgetDocumentSchema);
+export const validateEventApprovalNotificationMessageDocument = ajv.compile(eventApprovalNotificationMessageDocumentSchema);
+export const validateEventApprovalNotificationDispatchDocument = ajv.compile(eventApprovalNotificationDispatchDocumentSchema);
+export const validateEventApprovalNotificationIntent = ajv.compile(eventApprovalNotificationIntentSchema);
+export const validateEventApprovalNotificationWork = ajv.compile(eventApprovalNotificationWorkSchema);
+export const validateEventApprovalNotificationAttempt = ajv.compile(eventApprovalNotificationAttemptSchema);
+export const validateManageEventApprovalNotificationsCallablePayload = ajv.compile(manageEventApprovalNotificationsCallablePayloadSchema);
+export const validateManageEventApprovalNotificationsCallableResponse = ajv.compile(manageEventApprovalNotificationsCallableResponseSchema);
 export const validateGetEventViewerStateCallablePayload = ajv.compile(getEventViewerStateCallablePayloadSchema);
 export const validateGetEventViewerStateCallableResponse = ajv.compile(getEventViewerStateCallableResponseSchema);
 export const validateListParticipantActivityCallablePayload = ajv.compile(listParticipantActivityCallablePayloadSchema);

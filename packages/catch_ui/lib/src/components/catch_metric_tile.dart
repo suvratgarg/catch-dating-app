@@ -152,7 +152,13 @@ class CatchMetricTile extends StatelessWidget {
         ? CatchSurface(
             padding: padding ?? CatchInsets.contentDense,
             borderRole: borderColor == null ? CatchBorderRole.boundary : null,
-            borderColor: borderColor,
+            borderSpec: borderColor == null
+                ? null
+                : CatchBorder.resolve(
+                    t,
+                    CatchBorderRole.boundary,
+                    color: borderColor,
+                  ),
             child: content,
           )
         : content;

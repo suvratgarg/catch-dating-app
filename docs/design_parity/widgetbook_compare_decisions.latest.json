@@ -99,8 +99,8 @@
     "decision": "separate concepts",
     "note": "these are the custom app bars for two different things",
     "recommended": "catch.hero_chrome",
-    "left": "ClubHeroAppBar",
-    "right": "EventDetailHeroAppBar"
+    "left": "ClubHeroTopBar",
+    "right": "EventDetailHeroTopBar"
   },
   {
     "ts": "2026-06-27T12:06:28.112Z",
@@ -129,7 +129,7 @@
     "decision": "separate concepts",
     "note": "",
     "recommended": "catch.map",
-    "left": "CatchActivityMapPin",
+    "left": "ActivityMapPin",
     "right": "MapPinTile"
   },
   {
@@ -329,7 +329,7 @@
     "decision": "separate concepts",
     "note": "",
     "recommended": "catch.roster",
-    "left": "CatchRosterTable",
+    "left": "ParticipantTable",
     "right": "CatchRosterTiles"
   },
   {
@@ -460,7 +460,7 @@
     "note": "",
     "recommended": "catch.person_avatar_stack",
     "left": "CatchPersonAvatarStack",
-    "right": "EventHypeAvatarStack"
+    "right": "EventHypeAvatarRow"
   },
   {
     "ts": "2026-06-27T11:27:33.189Z",
@@ -469,7 +469,7 @@
     "decision": "separate concepts",
     "note": "the report view should be composed host analytics sections",
     "recommended": "catch.analytics_panel",
-    "left": "HostAnalyticsReportView",
+    "left": "HostAnalyticsReportBody",
     "right": "HostAnalyticsSection"
   },
   {
@@ -595,22 +595,22 @@
   {
     "ts": "2026-06-26T14:37:50.134Z",
     "id": "topbar-vs-club-hero-appbar",
-    "title": "TopBar vs ClubHeroAppBar",
+    "title": "TopBar vs ClubHeroTopBar",
     "decision": "separate concepts",
     "note": "clubheroapp bar and top bar are different concepts. eventheroapp bar and the featured event explore section are also all different concepts. but you can bring some kind of streamlining to their naming conventions\n",
     "recommended": "catch.top_bar + catch.club_hero",
     "left": "CatchTopBar",
-    "right": "ClubHeroAppBar"
+    "right": "ClubHeroTopBar"
   },
   {
     "ts": "2026-06-26T13:45:46.529Z",
     "id": "duplicate-roster_row",
-    "title": "CatchRosterRow: catalog vs contract",
+    "title": "ParticipantRow: catalog vs contract",
     "decision": "merge",
     "note": "",
     "recommended": "catch.roster_row",
-    "left": "CatchRosterRow",
-    "right": "CatchRosterRow"
+    "left": "ParticipantRow",
+    "right": "ParticipantRow"
   },
   {
     "ts": "2026-06-26T13:44:40.625Z",
@@ -665,12 +665,12 @@
   {
     "ts": "2026-06-26T12:45:19.145Z",
     "id": "duplicate-roster_table",
-    "title": "CatchRosterTable: catalog vs contract",
+    "title": "ParticipantTable: catalog vs contract",
     "decision": "merge",
     "note": "",
     "recommended": "catch.roster_table",
-    "left": "CatchRosterTable",
-    "right": "CatchRosterTable"
+    "left": "ParticipantTable",
+    "right": "ParticipantTable"
   },
   {
     "ts": "2026-06-26T12:43:53.775Z",

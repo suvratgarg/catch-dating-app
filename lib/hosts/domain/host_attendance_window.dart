@@ -29,7 +29,7 @@ bool isHostAttendanceOpen({required Event event, required DateTime now}) {
   final startsAt = hostAttendanceWindowStartsAt(event);
   final endsAt = event.endTime.add(
     const Duration(
-      hours: CatchBusinessRules.eventHostAttendanceWindowAfterEventHours,
+      hours: BusinessRules.eventHostAttendanceWindowAfterEventHours,
     ),
   );
   return now.isAfter(startsAt) && now.isBefore(endsAt);
@@ -38,7 +38,7 @@ bool isHostAttendanceOpen({required Event event, required DateTime now}) {
 DateTime hostAttendanceWindowStartsAt(Event event) {
   return event.startTime.subtract(
     const Duration(
-      minutes: CatchBusinessRules.eventHostAttendanceWindowBeforeMinutes,
+      minutes: BusinessRules.eventHostAttendanceWindowBeforeMinutes,
     ),
   );
 }

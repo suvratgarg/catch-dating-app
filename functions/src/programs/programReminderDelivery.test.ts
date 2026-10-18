@@ -265,3 +265,239 @@ for (const change of ["assertionDeleted", "consentRevoked"]) {
         path.startsWith("programWhatsappDispatches/")).length, 0);
     });
 }
+
+test("advancing-clock replay preserves the first intent and expiry",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const h = harness(db);
+    await h.deliver();
+    const original = structuredClone(record(db).intent);
+    h.clock.now += 60_000;
+    assert.equal((await h.deliver()).kind, "retry");
+    assert.deepEqual(record(db).intent, original);
+    assert.equal(h.calls.length, 1);
+  });
+
+test("an expired original intent cannot acquire a fresh recovery window",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    db.updateDoc("organizerSenderConnections/conn1", {status: "inactive"});
+    const h = harness(db);
+    assert.equal((await h.deliver()).kind, "suppressed");
+    const original = structuredClone(record(db).intent);
+    h.clock.now = original.expiresAt + 1;
+    db.updateDoc("organizerSenderConnections/conn1", {status: "active"});
+    assert.deepEqual(await h.deliver(),
+      {kind: "suppressed", reason: "expired"});
+    assert.deepEqual(record(db).intent, original);
+    assert.equal(h.calls.length, 0);
+  });
+
+test("concurrent first producers with different clocks share one intent",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    let release!: () => void;
+    const bothRead = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let arrivals = 0;
+    db.beforeCommit = async () => {
+      if (arrivals >= 2) return;
+      arrivals++;
+      if (arrivals === 2) release();
+      await bothRead;
+    };
+    let sends = 0;
+    const invoke = (firstNow: number) => {
+      let first = true;
+      return deliverProgramReminder({db: db as unknown as Firestore,
+        moment, run, facts, recipient, action,
+        provider: {sendTemplate: async () => {
+          sends++;
+          return {providerMessageId: "concurrent-1"};
+        }},
+        credentials: {accessBound: async () => "token-1"},
+        now: () => {
+          if (!first) return NOW + 2;
+          first = false;
+          return firstNow;
+        }});
+    };
+    const pending = Promise.all([invoke(NOW), invoke(NOW + 1)]);
+    try {
+      await pending;
+      assert.equal(arrivals, 2);
+      assert.equal(sends, 1);
+      assert.equal(record(db).attempts.length, 1);
+      assert.equal(record(db).intent.createdAt, NOW);
+      assert.equal(record(db).intent.expiresAt, NOW + 6 * 3_600_000);
+    } finally {
+      release();
+      await pending.catch(() => undefined);
+    }
+  });
+
+for (const change of ["title", "template", "revision"] as const) {
+  test(`replay still rejects changed immutable ${change}`, async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const h = harness(db);
+    await h.deliver();
+    const original = structuredClone(record(db));
+    await assert.rejects(deliverProgramReminder({
+      db: db as unknown as Firestore,
+      moment: {...moment,
+        ...(change === "title" ? {name: "Other title"} : {}),
+        ...(change === "revision" ? {revision: moment.revision + 1} : {})},
+      run, facts, recipient,
+      action: {...action,
+        ...(change === "template" ? {templateId: "other-template"} : {})},
+      now: () => NOW + 1,
+      provider: {sendTemplate: async () => {
+        assert.fail("changed content must not reach provider");
+      }},
+      credentials: {accessBound: async () => "token-1"},
+    }), /Message intent identity already has other content/);
+    assert.deepEqual(record(db), original);
+    assert.equal(h.calls.length, 1);
+  });
+}
+
+test("uncommitted enqueue failure preserves its error and performs no send",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const h = harness(db);
+    const failure = new Error("enqueue unavailable");
+    db.beforeCommit = async () => {
+      throw failure;
+    };
+    await assert.rejects(h.deliver(), (error) => error === failure);
+    assert.equal(h.calls.length, 0);
+    assert.equal([...db.docs.keys()].filter((path) =>
+      path.startsWith("programDeliveryMessages/")).length, 0);
+    db.beforeCommit = undefined;
+    assert.equal((await h.deliver()).kind, "sent");
+  });
+
+test("ambiguous enqueue completion recovers only the committed intent",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const transaction = db.runTransaction.bind(db);
+    let fail = true;
+    db.runTransaction = async (callback) => {
+      const value = await transaction(callback);
+      if (fail) {
+        fail = false;
+        throw new Error("enqueue committed but response lost");
+      }
+      return value;
+    };
+    const h = harness(db);
+    assert.equal((await h.deliver()).kind, "sent");
+    assert.equal(h.calls.length, 1);
+    assert.equal(record(db).intent.createdAt, NOW);
+    assert.equal(record(db).attempts.length, 1);
+  });
+
+test("failed initial intent read is not treated as an absent record",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const collection = db.collection.bind(db);
+    const failure = new Error("intent read unavailable");
+    db.collection = (path) => {
+      const result = collection(path);
+      if (path !== "programDeliveryMessages") return result;
+      const doc = result.doc.bind(result);
+      result.doc = (id) => {
+        const ref = doc(id);
+        ref.get = async () => {
+          throw failure;
+        };
+        return ref;
+      };
+      return result;
+    };
+    const h = harness(db);
+    await assert.rejects(h.deliver(), (error) => error === failure);
+    assert.equal(h.calls.length, 0);
+    assert.equal(db.transactionCommits, 0);
+  });
+
+test("unknown provider outcome stays held on advancing-clock replay",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    let sends = 0;
+    let now = NOW;
+    const invoke = () => deliverProgramReminder({
+      db: db as unknown as Firestore, moment, run, facts, recipient, action,
+      now: () => now, credentials: {accessBound: async () => "token-1"},
+      provider: {sendTemplate: async () => {
+        sends++;
+        throw new Error("provider outcome unknown");
+      }},
+    });
+    await invoke();
+    now += 60_000;
+    assert.equal((await invoke()).kind, "retry");
+    assert.equal(sends, 1);
+    assert.equal(record(db).attempts[0].state.kind, "unknown");
+  });
+
+test("failed recovery read rejects instead of claiming enqueue recovery",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const collection = db.collection.bind(db);
+    const readFailure = new Error("recovery read unavailable");
+    let rejectReads = false;
+    db.collection = (path) => {
+      const result = collection(path);
+      if (path !== "programDeliveryMessages") return result;
+      const doc = result.doc.bind(result);
+      result.doc = (id) => {
+        const ref = doc(id);
+        const get = ref.get.bind(ref);
+        ref.get = async () => {
+          if (rejectReads) throw readFailure;
+          return get();
+        };
+        return ref;
+      };
+      return result;
+    };
+    db.beforeCommit = async () => {
+      rejectReads = true;
+      throw new Error("enqueue outcome unavailable");
+    };
+    const h = harness(db);
+    await assert.rejects(h.deliver(), (error) => error === readFailure);
+    assert.equal(h.calls.length, 0);
+    assert.equal(db.transactionCommits, 0);
+  });
+
+test("recovery retries enqueue once and never retries the provider",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    const h = harness(db);
+    await h.deliver();
+    const original = structuredClone(record(db));
+    const failure = new Error("enqueue remains unavailable");
+    let attempts = 0;
+    db.runTransaction = async () => {
+      attempts++;
+      throw failure;
+    };
+    h.clock.now++;
+    await assert.rejects(h.deliver(), (error) => error === failure);
+    assert.equal(attempts, 2);
+    assert.equal(h.calls.length, 1);
+    assert.deepEqual(record(db), original);
+  });

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -30,7 +31,7 @@ final _externalFeedItem = ExploreExternalEventItem(
 
 @widgetbook.UseCase(
   name: 'Feed states',
-  type: ExploreFeedContentSliver,
+  type: ExploreFeedSliverBody,
   path: '[Explore]/Sections',
 )
 Widget exploreEventsSectionStates(BuildContext context) {
@@ -213,7 +214,7 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
     final filters = ref.watch(exploreFiltersProvider);
     return CustomScrollView(
       slivers: buildExploreEventsSlivers(
-        ref.watch(exploreFeedViewModelProvider),
+        catchAsyncStateFromAsyncValue(ref.watch(exploreFeedViewModelProvider)),
         l10n: context.l10n,
         filters: filters,
         searchQuery: ref.watch(exploreSearchQueryProvider).trim(),

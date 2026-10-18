@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_event_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -76,7 +77,7 @@ class _ExploreDiscoveryCoverHeaderState
       coverItem,
       l10n: context.l10n,
     );
-    return CatchCoverStory(
+    return FeaturedEventPoster(
       activityKind: coverItem.event.activityKind,
       kicker: coverState.kicker,
       title: coverState.title,
