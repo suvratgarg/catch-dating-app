@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 42,
-  "updated": "2026-10-18",
+  "version": 43,
+  "updated": "2026-10-19",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -1089,7 +1089,12 @@
           "with-action"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contract owns a different responsibility."
     },
     {
       "id": "shared_admin_command_stack",
@@ -1108,7 +1113,11 @@
           "commands"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.section_stack"
+      ],
+      "comparisonReason": "Vertical stack of command rows, not of complete sections."
     },
     {
       "id": "shared_admin_decision_footer_shell",
@@ -1147,7 +1156,11 @@
           "detail"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section_stack"
+      ],
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections."
     },
     {
       "id": "shared_admin_diff_list",
@@ -1166,7 +1179,11 @@
           "rows"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.journey_steps"
+      ],
+      "comparisonReason": "Unordered container of field diff rows; CatchStepList is a numbered journey."
     },
     {
       "id": "shared_admin_diff_row",
@@ -1185,7 +1202,12 @@
           "before-after"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Before/after comparison of one field for review; not passive metadata and not directory navigation."
     },
     {
       "id": "shared_admin_directory_screen_stack",
@@ -1204,7 +1226,11 @@
           "directory"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section_stack"
+      ],
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections."
     },
     {
       "id": "shared_admin_editor_grid",
@@ -1244,7 +1270,8 @@
           "wide"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Panel with editor styling; same contract as Panel.",
+      "componentId": "catch.section"
     },
     {
       "id": "shared_admin_editor_section",
@@ -1263,7 +1290,8 @@
           "fieldset"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Fieldset that groups editor fields: the form-rows recipe of catch.section.",
+      "componentId": "catch.section"
     },
     {
       "id": "shared_admin_environment_status",
@@ -1895,7 +1923,12 @@
           "summary"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "Variant-styled layout region of the intake screens with no heading or section anatomy."
     },
     {
       "id": "shared_admin_intake_section_title",
@@ -1933,7 +1966,11 @@
           "sources"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.journey_steps"
+      ],
+      "comparisonReason": "Unordered container of intake source cards; not a numbered journey."
     },
     {
       "id": "shared_admin_intake_stage_rail",
@@ -1955,7 +1992,11 @@
           "ready"
         ]
       },
-      "notes": "Keyboard-accessible, count-backed stage lens used by organizer and event intake workspaces."
+      "notes": "Keyboard-accessible, count-backed stage lens used by organizer and event intake workspaces.",
+      "comparedWith": [
+        "catch.button"
+      ],
+      "comparisonReason": "Numbered step navigation rail that renders one button per stage. It is a port of Flutter's CatchFormStepList (catch.screen_body.form_step_overview, T3), which needs a registry review to promote it to T2."
     },
     {
       "id": "shared_admin_intake_state_grid",
@@ -2056,7 +2097,8 @@
           "icon"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Anchor rendered as the ghost or icon button, disabled while an operation is pending: a link recipe of catch.button.",
+      "componentId": "catch.button"
     },
     {
       "id": "shared_admin_loading_icon",
@@ -3509,7 +3551,8 @@
           "ownership-footer"
         ]
       },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: label, value and caption are CatchMetricTile, a member of catch.metric_strip. The footer slot and attention tone have no Flutter counterpart, and Flutter grid data requires an icon admin does not render; Phase 7e reconciles the contract.",
+      "componentId": "catch.metric_strip"
     },
     {
       "id": "shared_admin_metric_grid",
@@ -3530,7 +3573,8 @@
           "explicit-columns"
         ]
       },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: a labelled grid of independent measurements is CatchMetricSection.grid.",
+      "componentId": "catch.metric_strip"
     },
     {
       "id": "shared_admin_section_caption",
@@ -4305,7 +4349,11 @@
           "items"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.journey_steps"
+      ],
+      "comparisonReason": "Container of readiness checklist items with arbitrary content; not a numbered, line-traced journey."
     },
     {
       "id": "shared_admin_roadmap_list_item",
@@ -4324,7 +4372,15 @@
           "single"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row",
+        "catch.icon_tile",
+        "catch.option_card",
+        "catch.analytics_metric"
+      ],
+      "comparisonReason": "Toned checklist item wrapping arbitrary content; none of the matched contracts is a blocker or warning checklist entry."
     },
     {
       "id": "shared_admin_row_title",
@@ -4402,7 +4458,11 @@
           "title-status"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.step_header"
+      ],
+      "comparisonReason": "Heading row of a search-candidate card; no step navigation or progress."
     },
     {
       "id": "shared_admin_search_candidate_list",
@@ -4441,7 +4501,8 @@
           "search-and-results"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx. Phase 7d: Bounded card around one search candidate: per D13, card containment is a CatchSurface recipe.",
+      "componentId": "catch.surface"
     },
     {
       "id": "shared_admin_search_candidate_snippet",
@@ -4559,7 +4620,8 @@
           "default"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Bounded card around the sign-in form: per D13, card containment is a CatchSurface recipe.",
+      "componentId": "catch.surface"
     },
     {
       "id": "shared_admin_sign_in_screen",
@@ -4678,7 +4740,8 @@
           "selected"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Selectable table row: CatchTableRow, a member of catch.table.",
+      "componentId": "catch.table"
     },
     {
       "id": "shared_admin_tag",
@@ -4700,7 +4763,8 @@
           "link"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Compared with catch.chip (2026-10-17 name match): it labels muted metadata and status values (status, priority, flags, counts) with status tones, which is CatchBadge; CatchChip covers interest tags, choices and removable values. It does not render BadgeControl yet.",
+      "componentId": "catch.badge"
     },
     {
       "id": "shared_admin_tag_list",
@@ -4719,7 +4783,11 @@
           "tags"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.journey_steps"
+      ],
+      "comparisonReason": "Wrap container for badges; not a step sequence."
     },
     {
       "id": "shared_admin_tag_row",
@@ -4739,7 +4807,12 @@
           "span"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Flex row that lays out badges; CatchMetaRow renders text metadata entries and CatchIndexRow is a navigation row."
     },
     {
       "id": "shared_admin_textarea_field",
@@ -4759,7 +4832,8 @@
           "compact"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Second, marketing-only adapter of TextareaControl beside TextareaField.",
+      "componentId": "catch.field"
     },
     {
       "id": "shared_admin_text_field",
@@ -4779,7 +4853,8 @@
           "disabled"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Second, marketing-only adapter of TextInputControl beside TextField.",
+      "componentId": "catch.field"
     },
     {
       "id": "shared_admin_toolbar",
@@ -4918,7 +4993,11 @@
           "compact"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section_stack"
+      ],
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections."
     },
     {
       "id": "shared_admin_workspace",
@@ -4959,7 +5038,8 @@
           "blocked"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Inline alert with icon, title, message and tone: CatchBanner, whose aliases include InlineAlert.",
+      "componentId": "catch.banner"
     },
     {
       "id": "shared_card_header",
@@ -5004,7 +5084,8 @@
           "unchecked"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of CheckboxControl, the one-boolean input.",
+      "componentId": "catch.toggle"
     },
     {
       "id": "shared_data_table",
@@ -5024,7 +5105,8 @@
           "selected"
         ]
       },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of the @catch/web-ui DataTableControl.",
+      "componentId": "catch.table"
     },
     {
       "id": "shared_decision_footer",
@@ -5089,7 +5171,8 @@
           "icon"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Ghost button that opens the native file input: a file-picker recipe of catch.button.",
+      "componentId": "catch.button"
     },
     {
       "id": "shared_inline_text_field",
@@ -5128,7 +5211,11 @@
           "with-actions"
         ]
       },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.step_header"
+      ],
+      "comparisonReason": "Page title header with eyebrow, copy and actions; no step navigation or progress."
     },
     {
       "id": "shared_panel",
@@ -5148,7 +5235,8 @@
           "action"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Titled container with icon and action: the contained recipe of catch.section (aliases SectionPanel, TitledSection). D13 makes its box a CatchSurface recipe.",
+      "componentId": "catch.section"
     },
     {
       "id": "shared_quality_list",
@@ -5167,7 +5255,11 @@
           "rows"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.journey_steps"
+      ],
+      "comparisonReason": "Unordered container of quality and alert rows; not a numbered journey."
     },
     {
       "id": "shared_quality_row",
@@ -5189,7 +5281,12 @@
           "blocked"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Toned status row with icon and arbitrary content; meta rows are untoned factual entries and index rows navigate."
     },
     {
       "id": "shared_risk_badge",
@@ -5211,7 +5308,8 @@
           "watch"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Toned risk label: a status recipe of catch.badge.",
+      "componentId": "catch.badge"
     },
     {
       "id": "shared_search_field",
@@ -5297,7 +5395,8 @@
           "default"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of SelectControl.",
+      "componentId": "catch.field"
     },
     {
       "id": "shared_state_row",
@@ -5317,7 +5416,8 @@
           "empty"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Passive label and strong value: the strong-trailing group recipe of CatchMetaRow.",
+      "componentId": "catch.meta_row"
     },
     {
       "id": "shared_status_banner",
@@ -5337,7 +5437,8 @@
           "error"
         ]
       },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Error or success band with icon and role alert or status: CatchBanner (2026-10-17 name match, confirmed).",
+      "componentId": "catch.banner"
     },
     {
       "id": "shared_status_chip",
@@ -5378,7 +5479,8 @@
           "default"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Raw button styled as a compact table action: a recipe of catch.button.",
+      "componentId": "catch.button"
     },
     {
       "id": "shared_tag_list",
@@ -5421,7 +5523,8 @@
           "wide"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of TextareaControl.",
+      "componentId": "catch.field"
     },
     {
       "id": "shared_text_field",

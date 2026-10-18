@@ -80,11 +80,23 @@
           "pattern": "^catch\\.[a-z0-9_.-]+$",
           "description": "The design/components/catch.components.json contract this export implements as a website adapter."
         },
+        "comparedWith": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^catch\\.[a-z0-9_.-]+$"},
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Contracts the React component inventory matched by name or rendering and that this export does not implement."
+        },
+        "comparisonReason": {
+          "type": "string",
+          "minLength": 20,
+          "description": "The responsibility that differs from every comparedWith contract."
+        },
         "css": {
           "type": "array",
           "items": {"type": "string"},
-          "minItems": 1,
-          "uniqueItems": true
+          "uniqueItems": true,
+          "description": "Owned stylesheets. Empty only for an unstyled supporting component; the registry checker requires one for routes, sections and flows."
         },
         "notes": {"type": "string"},
         "storybook": {
